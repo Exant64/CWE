@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+  <Groups>
+    <Group name="Chao World Extended" display="01 - Main Features">
+      <Property name="UnusedToys" type="bool" defaultvalue="True" display= "Bring Unused Toys">
+        <HelpText>Brings back the toys Piano and Organ for Hero Garden and Dark Garden. Along with Rattles alignment!</HelpText>
+      </Property>
+      <Property name="NewInventory" type="bool" defaultvalue="True" display= "New Inventory Display">
+        <HelpText>The Inventory will shows actual items instead of just icons.</HelpText>
+      </Property>
+      <Property name="ToyMove" type="bool" defaultvalue="True" display= "Enable Movable Toys">
+        <HelpText>Enable being able to pickup toys and save their current position.</HelpText>
+      </Property>
+      <Property name="GardenMagnitude" type="bool" defaultvalue="True" display= "Gardens won't affect Attributes">
+        <HelpText>The Hero Garden and Dark Garden won't affect the Chao's magnitude and alignment.</HelpText>
+      </Property>
+      <Property name="EggColor" type="bool" defaultvalue="True" display= "New Egg Colors">
+        <HelpText>The Egg Colors change based on the Chao's Shininess and Colors.</HelpText>
+      </Property>
+      <Property name="PlayerSpeed" type="bool" defaultvalue="True" display= "Adjusted Characters">
+        <HelpText>Tails and Metal Sonic speed are better adjusted now for the Chao World.</HelpText>
+      </Property>
+      <Property name="BirthdayEvent" type="bool" defaultvalue="True" display= "Birthday Event">
+        <HelpText>A Chao can throw Birthday parties! Everyone will join to celebrate and eat some Cakes.</HelpText>
+      </Property>
+      <Property name="SpawnOmochao" type="bool" defaultvalue="True" display= "Omochao Building">
+        <HelpText>Option to disable the omochao building if you don't want to see it anymore</HelpText>
+      </Property>
+      <Property name="OmochaoParts" type="bool" defaultvalue="False" display= "Animal Parts on Omochao">
+        <HelpText>Animal Parts appear on Omochao.</HelpText>
+      </Property>
+      <Property name="FruitRebalance" type="bool" defaultvalue="True" display= "Fruit Rebalance">
+        <HelpText>Rebalances the stats of all vanilla fruits.</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="DayNight" display="02 - DayNight System">
+      <Property name="DayNightCycle" type="bool" defaultvalue="True" display= "Day Night Cycle">
+        <HelpText>Time passes in the gardens with slight weather changes (Warning: May not be compatible with some Texture mods)</HelpText>
+      </Property>
+      <Property name="DayNightCheat" type="bool" defaultvalue="False" display= "Day Night Cheat Menu">
+        <HelpText>Lets you edit the current time by pressing X+Y (Note: It pauses passing time)</HelpText>
+      </Property>
+      <Property name="NoDayNightTransition" type="bool" defaultvalue="False" display= "No Day Night Transition">
+        <HelpText>Disables the transition between time changes</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Advanced" display="03 - Advanced Features">
+      <Property name="AdvancedChaosandCharactersChaoarelikeNormalChao" type="bool" defaultvalue="False" display= "Rare Chao act like Normal Chao">
+        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allow Chaos Chao to hav expression!</HelpText>
+      </Property>
+      <Property name="AdvancedMedalChaocanmakeJewelChao" type="bool" defaultvalue="False" display= "Medals can breed Jewel Chao">
+        <HelpText>When breeding, Chao with medals from races could produce a Jewel Chao corresponding with the medal they’re wearing.</HelpText>
+      </Property>
+      <Property name="AdvancedCreateNEWShinyJewelMonotone" type="bool" defaultvalue="False" display= "Get NEW Shiny Jewel Monotone">
+        <HelpText>Enable the ability to get the new Shiny Jewel Monotones. If a Shiny Monotone breeds with a Jewel Chao you may get one. This does not overwrite regular Shiny Jewels, which can still be gotten by breeding a Shiny Two-tone with a Jewel.</HelpText>
+      </Property>
+      <Property name="AdvancedMixingColors" type="bool" defaultvalue="False" display= "Mixing Colors">
+        <HelpText>Enables new Mixed Color chao. If two colored Chao breed, the newborn Chao’s color would be a mix of both parents instead of the color of just one.</HelpText>
+      </Property>
+      <Property name="AdvancedNewbornChaoHaveVaryingShadesofColor" type="bool" defaultvalue="False" display= "Varying Shades of Color">
+        <HelpText>The Next Color Chao from the Black Market will be born with varying shades of the original color (including the original color itself).</HelpText>
+      </Property>
+      <Property name="AdvancedNormalChaocanmakeColorChao" type="bool" defaultvalue="False" display= "Normal Chao can make Color Chao">
+        <HelpText>A Chao with the normal default color can make a colored Chao based of the Evolution when breeding, if its stat influence is High enough. If a Chao has a Monster Evolution, the newborn could also be transparent!</HelpText>
+      </Property>
+      <Property name="AdvancedEyeColorsforNewbornChao" type="bool" defaultvalue="False" display= "Eye Colors for Newborn Chao">
+        <HelpText>Newborn Chao could be born with more shades of eye colors than the default dark blue</HelpText>
+      </Property>
+      <Property name="EnableMonsterEvolution" type="MonsterEvo" defaultvalue="0" display= "Monster Evolution">
+        <HelpText>Allows Chao to gain a higher magnitude in stat influence once the stat is above 2000 points.</HelpText>
+      </Property>
+      <Property name="FixMonsterEvo" type="bool" defaultvalue="False" display= "Fix Monster Evolution Transparency">
+        <HelpText>Fixes monster evolved chao turning transparent.</HelpText>
+      </Property>
+      <Property name="AdvancedFruitscanSpoilt" type="bool" defaultvalue="False" display= "Spoiled Fruits">
+        <HelpText>If left out long enough, fruit may spoil. Feeding a spoiled fruit to your Chao will decrease its Magnitude and Stamina.</HelpText>
+      </Property>
+      <Property name="AdvancedTransformPCShinyJewelsintoGCShinyJewels" type="bool" defaultvalue="False" display= "Transform PC Shiny Jewels into GC Shiny Jewels">
+        <HelpText>"Restores" the way Shiny Jewel Chao look to the GameCube Shiny Jewels. (/!\ Require Chao Backup, this cannot be undo after save /!\)</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Hard" display="04 - Hard Mode">
+      <Property name="HardBullyChaoRequiresMoreChaoAnimations" type="bool" defaultvalue="False" display= "Bully Chao">
+        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Requires “More Chao Animations” turned on to work.</HelpText>
+      </Property>
+      <Property name="ChaoDrown" type="bool" defaultvalue="False" display= "Chao Drown">
+        <HelpText>If the Chao can't swim, they will slowly lose Happiness, and if it reaches -100, they Drown.</HelpText>
+      </Property>
+      <Property name="HardEnableSpinDashandSomersault" type="bool" defaultvalue="False" display= "Enable SpinDash and Somersault">
+        <HelpText>Enables Spindash and Somersault in the Chao Gardens. Be careful, you could hurt your Chao!</HelpText>
+      </Property>
+      <Property name="ChaoHunger" type="bool" defaultvalue="False" display= "Chao Hunger">
+        <HelpText>When Chao are Starving, they will start Crying, being Angry, and losing happiness. This also Boost Stamina by 25% for Fruit Garden.</HelpText>
+      </Property>
+      <Property name="HardChaoAttention" type="bool" defaultvalue="False" display= "Chao Attention">
+        <HelpText>Chao will lose happiness if you don’t give them attention for a while.</HelpText>
+      </Property>
+      <Property name="HardAnnoyingMeanChao" type="bool" defaultvalue="False" display= "Annoying Mean Chao">
+        <HelpText>Chao with Mean Eyes will slowy hate all Characters, which will make them harder to deal with, espescially with Bully Chao turned on.</HelpText>
+      </Property>
+      <Property name="ChaoSick" type="SickLevel" defaultvalue="0" display= "Sick Chao Rarity">
+        <HelpText>Increase the Chance of your Chao getting Sick. Does nothing much but go Heal your Chao and make the Doctor do his job.</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Easy" display="05 - Easy Mode">
+      <Property name="EmotionDisplay" type="bool" defaultvalue="False" display= "Emotion Display">
+        <HelpText>Icons show up next to Chao that display if they're Hungry, Sad, Sick, Etc</HelpText>
+      </Property>
+      <Property name="EasyFruitsNeverDespawn" type="bool" defaultvalue="False" display= "Fruits Never Despawn">
+        <HelpText>Instead of disappearing after a while, Fruits will stay in the Garden indefinitely.</HelpText>
+      </Property>
+      <Property name="AnimalReuse" type="bool" defaultvalue="False" display= "Reusable Animals">
+        <HelpText>Animals are reusable without doing the glitch.</HelpText>
+      </Property>
+      <Property name="EasyReusableChaosDrive" type="bool" defaultvalue="False" display= "Reusable Chaos Drive">
+        <HelpText>Chaos Drives are reusable without doing the glitch.</HelpText>
+      </Property>
+      <Property name="EasyInstantGrowTrees" type="bool" defaultvalue="False" display= "Instantly Grow Trees">
+        <HelpText>Trees grow to their full size immediately after the seed is planted.</HelpText>
+      </Property>
+      <Property name="EasyInstantGrowFruits" type="bool" defaultvalue="False" display= "Instantly Grow Fruits">
+        <HelpText>Fruits grow to their full size immediately from the Trees.</HelpText>
+      </Property>
+      <Property name="EasyChaocan'thateCharacters" type="bool" defaultvalue="False" display= "Chao can't hate Characters">
+        <HelpText>A Chao’s bond with a character will never drop below 0.</HelpText>
+      </Property>
+      <Property name="EasyAutoGenerateStats" type="bool" defaultvalue="False" display= "Auto Generate Stats">
+        <HelpText>A Chao’s stats will increase on its own through its lifetime until level 10.</HelpText>
+      </Property>
+      <Property name="EasyStrongerChaosDrive" type="bool" defaultvalue="False" display= "Stronger Chaos Drive">
+        <HelpText>Chaos Drives will give Chao more points toward their stats.</HelpText>
+      </Property>
+      <Property name="EasyReincarnationRequires20Happiness" type="bool" defaultvalue="False" display= "Reincarnation Requires 20 Happiness">
+        <HelpText>Chao only need 20 Happiness to Reincarnate instead of die. Pretty useful if you wanna try Hard Code.</HelpText>
+      </Property>
+      <Property name="DisableReincarnation" type="bool" defaultvalue="False" display = "Disable Reincarnation">
+        <HelpText>Disables natural reincarnation.</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Misc" display="06 - Miscellaneous Features">
+      <Property name="SaveMultiSavefile" type="bool" defaultvalue="False" display= "Multi Savefile">
+        <HelpText>Each SA2 save also includes its own Chao World file instead of using one file universally.</HelpText>
+      </Property>
+      <Property name="BonusChaoCounter" type="bool" defaultvalue="False" display= "Chao Counter">
+        <HelpText>Adds a Chao Counter on the screen when paused to see how many Chao are in the garden.</HelpText>
+      </Property>
+      <Property name="KeepAnimalParts" type="bool" defaultvalue="False" display= "Keep All Current Animal Parts">
+        <HelpText>Prevents Chao from getting any new animal parts.</HelpText>
+      </Property>
+      <Property name="DisableBreed" type="bool" defaultvalue="False" display= "Disable Breeding">
+        <HelpText>Prevents Chao from breeding.</HelpText>
+      </Property>
+      <Property name="OtherDisableAnimalPartsArmslegs" type="bool" defaultvalue="False" display= "Disable Animal Parts (Arms + legs)">
+        <HelpText>Chao will not keep animal parts on their arms and legs. Chao can still have other animal parts such as ears, wings, and tails.</HelpText>
+      </Property>
+      <Property name="OtherDisableAnimalPartsALL" type="bool" defaultvalue="False" display= "Disable Animal Parts (ALL)">
+        <HelpText>Chao will not keep any animal parts.</HelpText>
+      </Property>
+      <Property name="AdvancedDynamicLifetime" type="bool" defaultvalue="False" display= "Dynamic Lifetime">
+        <HelpText>The rate at which Chao will grow, evolve, and reincarnate depends on how many Chao are in the garden. Less Chao per garden makes them grow faster.</HelpText>
+      </Property>
+      <Property name="BonusLuckyChao" type="bool" defaultvalue="False" display= "Lucky Chao">
+        <HelpText>Gives a 1/60 chance that Chao will be born with a Hat, Toy, or Lesson.</HelpText>
+      </Property>
+      <Property name="BonusStayBabyChaoUntilalllvl.10" type="bool" defaultvalue="False" display= "Stay Baby Chao Until lvl.10">
+        <HelpText>A Baby Chao will not evolve unless all the stats reach level 10, or Stamina reaches level 99.</HelpText>
+      </Property>
+      <Property name="BonusMergeHeroandDarkGardenChaoSlots" type="bool" defaultvalue="False" display= "Merge Hero and Dark Garden Chao Slots">
+        <HelpText>The same Chao will appear in both the Hero and Dark Gardens. Up to 16 Chao can be in the Hero and Dark Gardens.</HelpText>
+      </Property>
+      <Property name="GardenLimit" type="int" defaultvalue="8" display= "Chao in Garden Limit">
+        <HelpText>Increase the number of chao you want to be in the Garden, from 8 to 24. Reminder that it will NOT increase the number of chao you can get per save.</HelpText>
+      </Property>
+      <Property name="PersonalityMultiply" type="Multiplier" defaultvalue="1" display= "Personality Multiplier">
+        <HelpText>Multiply the Personality Effect, this affect the Chao Emotions and Behaviors, can make a Garden extremely active.</HelpText>
+      </Property>
+      <Property name="OtherSADXChaoAlignment" type="bool" defaultvalue="False" display= "SADX Chao Alignment">
+        <HelpText>A Chao’s hero/dark alignment can only be changed with Hero and Dark fruits like in SADX.</HelpText>
+      </Property>
+      <Property name="OtherMoreandRandomChaoFace" type="bool" defaultvalue="False" display= "More faces for newborn Chao">
+        <HelpText>Adds lots of new random face combinations for newborn Chao. Also restores some unused mouths.</HelpText>
+      </Property>
+      <Property name="OtherRemoveDarkChao'sMeanEyesOverride" type="bool" defaultvalue="False" display= "Remove Dark Chao's Mean Eyes Override">
+        <HelpText>A Chao evolving into a Dark Chao will keep its original eyes instead of being overwritten with the classic Dark Chao Mean Eyes.</HelpText>
+      </Property>
+      <Property name="ForceShinyTT" type="bool" defaultvalue="False" display= "Force Shiny Twotone">
+        <HelpText>Turns all Bright Chao into Shiny Twotone. (disabling this code will return them to their original look)</HelpText>
+      </Property>
+      <Property name="DisableLevelupJingle" type="bool" defaultvalue="False" display= "Disable Level Up Jingle">
+        <HelpText>Disables the level up sound effect (original code by Buster).</HelpText>
+      </Property>
+      <Property name="HDToyModels" type="bool" defaultvalue="False" display= "HD Toy Models">
+        <HelpText>HD Chao Toys from the Sega Superstars Chao Minigame.</HelpText>
+      </Property>
+      <Property name="BlackMarketShort" type="bool" defaultvalue="False" display= "Shorten Black Market Dialog">
+        <HelpText>Less dialog in Black Market.</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Detail" display="07 - Detail Settings">
+      <Property name="DetailFittingPersonality" type="bool" defaultvalue="False" display= "Fitting Personality">
+        <HelpText>Personalities are tied to more Chao Faces.</HelpText>
+      </Property>
+      <Property name="DetailDoctorChaogivemoreInformationEN" type="bool" defaultvalue="False" display= "Doctor Chao gives more Information">
+        <HelpText>Adds more things for the Chao Doctor to say. (English only)</HelpText>
+      </Property>
+      <Property name="MoreAnimation" type="bool" defaultvalue="False" display= "More Chao Animation">
+        <HelpText>Bring and Restore Unused Animations to the game, bring some new Behavior to Chao, and give them more Expression</HelpText>
+      </Property>
+      <Property name="ClassroomTimerDisplay" type="bool" defaultvalue="True" display= "Classroom Timer Display">
+        <HelpText>Shows how much time until lesson rerolls, and when your chao will finish their lesson.</HelpText>
+      </Property>
+      <Property name="MoreSound" type="bool" defaultvalue="False" display= "More Chao Sound">
+        <HelpText>Restores unused sounds and sounds from SADX. Chao make more sounds while doing actions.</HelpText>
+      </Property>
+      <Property name="HDHoodie" type="bool" defaultvalue="False" display= "HD Hoodie Model">
+        <HelpText>Hoodie models are higher poly.</HelpText>
+      </Property>
+      <Property name="DCCocoon" type="bool" defaultvalue="False" display= "Dreamcast Cocoons">
+        <HelpText>Cocoons behave as they do in the DC version (all cocoons are grey).</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Input" display="08 - Input Codes">
+      <Property name="ControllerOnlyBetterCameraControl" type="bool" defaultvalue="False" display= "(Controller) Better Camera Control">
+        <HelpText>Use the D-Pad and C Stick to have better control of the camera in the Chao Garden. Use L+R to reset the camera back to default.</HelpText>
+      </Property>
+      <Property name="KeyboardwithNumpadBetterCameraControl" type="bool" defaultvalue="False" display= "(Numpad) Better Camera Control">
+        <HelpText>Use the Keyboard numpad (-, +, *, Page Up, Page Down, Home, End) to have better control of the camera in the Chao Garden. Use / to reset the camera back to default.</HelpText>
+      </Property>
+      <Property name="KeyboardwithoutNumpadBetterCameraControl" type="bool" defaultvalue="False" display= "(Keyboard) Better Camera Control">
+        <HelpText>Use the Keyboard numpad (-, +, *, R, F, T, G) to have better control of the camera in the Chao Garden. Use BackSpace to reset the camera back to default.</HelpText>
+      </Property>
+      <Property name="SaveHoldXtoLoadNegativeChaoSave" type="bool" defaultvalue="False" display= "Hold X to Load Negative Chao Save">
+        <HelpText>Hold down X (or Blue Input for Keyboard) while Chao World is loading to load an alternate save file in which Chao have opposite textures (i.e. Hero Chao are dark colored and Dark Chao are light colored).</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Race" display="09 - Race and Karate Features">
+      <Property name="BonusChaoKarategiveMedal" type="bool" defaultvalue="False" display= "Chao Karate gives Medals">
+        <HelpText>Winning a Karate match will give the Chao a medal. Uses some of the SADX exclusive medals.</HelpText>
+      </Property>
+      <Property name="RaceJewelandBeginnerRacebecome8PPartyRace" type="bool" defaultvalue="False" display= "Jewel and Beginner Race become 8P Party Race">
+        <HelpText>The Jewel Race and Beginner Race will pit the first 8 Chao in your file against each other in an 8-way Party Race. Also block the ability to Boost.</HelpText>
+      </Property>
+      <Property name="RaceCameraswitchManuallyusingkeyboard" type="bool" defaultvalue="False" display= "Manually switch Camera (keyboard)">
+        <HelpText>Use numbers 1-8 on the keyboard to switch to the perspective of any chao in the Chao Race.</HelpText>
+      </Property>
+      <Property name="RaceWinJewelChaoinJewelRace" type="bool" defaultvalue="False" display= "Win Jewel Chao in Jewel Race">
+        <HelpText>Winning the 5th level of a Jewel Race will reward you with a Jewel Chao.</HelpText>
+      </Property>
+      <Property name="RaceChaoGainExpatChaoRace" type="bool" defaultvalue="False" display= "Chao Gain Exp at Chao Race">
+        <HelpText>Chao will slowly gain stat points while in a race.</HelpText>
+      </Property>
+
+      <Property name="JackInBoxPunishment" type="bool" defaultvalue="False" display= "Reduce Jack n Box Punishment">
+        <HelpText>Reduces Jack in the Box punishment from ~8 seconds to ~3 seconds</HelpText>
+      </Property>
+      <Property name="IgnoreMinigameIntel" type="bool" defaultvalue="False" display= "Ignore the Minigame Intel">
+        <HelpText>Chao will ignore the intelligence minigame.</HelpText>
+      </Property>
+    </Group>
+
+    <Group name="Cheat" display="99 - Cheat and Debug">
+      <Property name="ToyReset" type="bool" defaultvalue="False" display= "Toy Reset Button">
+        <HelpText>Press X+A+L outside of the gardens to reset the toys to their default position.</HelpText>
+      </Property>
+      <Property name="CheatBlackMarket" type="bool" defaultvalue="False" display= "Black Market Debug Menu">
+        <HelpText>Use X+Y (or Yellow Input and Blue Input for Keyboard) in the Black Market to activate the Debug Menu.</HelpText>
+      </Property>
+      <Property name="CheatDisableLevelLimit" type="bool" defaultvalue="False" display= "Disable Level Limit">
+        <HelpText>A Chao’s stat can be leveled up infinitely, instead of capping at 99.</HelpText>
+      </Property>
+    </Group>
+
+  </Groups>
+  <Enums>
+    <Enum name="OnOff">
+      <EnumMember name="0" display="Off/Disabled"></EnumMember>
+      <EnumMember name="1" display="On"></EnumMember>
+    </Enum>
+    <Enum name="MonsterEvo">
+      <EnumMember name="0" display="Off/Disabled"></EnumMember>
+      <EnumMember name="1" display="Regular"></EnumMember>
+      <EnumMember name="2" display="Regular+Stamina"></EnumMember>
+    </Enum>
+    <Enum name="SickLevel">
+      <EnumMember name="0" display="Rare (1/6000)"></EnumMember>
+      <EnumMember name="1" display="Normal (1/600)"></EnumMember>
+      <EnumMember name="2" display="Frequent (1/60)"></EnumMember>
+      <EnumMember name="3" display="Oh no.(1/6)"></EnumMember>
+    </Enum>
+    <Enum name="Multiplier">
+      <EnumMember name="1" display="Off/Disabled"></EnumMember>
+      <EnumMember name="2" display="Double"></EnumMember>
+      <EnumMember name="3" display="Triple"></EnumMember>
+    </Enum>
+  </Enums>
+</ConfigSchema>

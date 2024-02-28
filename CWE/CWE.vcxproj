@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="CWEV9|Win32">
+      <Configuration>CWEV9</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="CWEV9|x64">
+      <Configuration>CWEV9</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>CWE</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\SA2\mods\ChaoWorldExtended\!ChaoWorldExtended</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>F:\SA2\mods\ChaoWorldExtended\!ChaoWorldExtended\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SA2_PATH)\mods\ChaoWorldExtended\!ChaoWorldExtended\</OutDir>
+    <IncludePath>$(SolutionDir)CWE;$(IncludePath)</IncludePath>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>F:\Coding\SAModding\BrightFix\BrightFix\include;F:\Coding\VSRepos\SA2ModLoaderNew\libmodutils;F:\Coding\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>F:\SA2\mods\BrightFix;F:\Coding\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BrightFixDebug.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>F:\Coding\SAModding\BrightFix\BrightFix\include;F:\Coding\VSRepos\SA2ModLoaderNew\libmodutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>F:\SA2\mods\BrightFix;F:\Coding\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <DisableSpecificWarnings>26495</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="alg_kinder_bl.h" />
+    <ClInclude Include="alg_kinder_cl.h" />
+    <ClInclude Include="alg_kinder_he.h" />
+    <ClInclude Include="alg_kinder_ortho.h" />
+    <ClInclude Include="ALifeSDK_Functions.h" />
+    <ClInclude Include="alo_accessory.h" />
+    <ClInclude Include="alo_fruit.h" />
+    <ClInclude Include="alo_obakehead.h" />
+    <ClInclude Include="alo_boat.h" />
+    <ClInclude Include="alo_coffin.h" />
+    <ClInclude Include="alo_special.h" />
+    <ClInclude Include="al_behavior\albhv.h" />
+    <ClInclude Include="al_behavior\albhv_birthday.h" />
+    <ClInclude Include="al_behavior\albhv_music.h" />
+    <ClInclude Include="al_behavior\alsbhv.h" />
+    <ClInclude Include="al_behavior\al_behavior.h" />
+    <ClInclude Include="al_chao_counter.h" />
+    <ClInclude Include="al_edit.h" />
+    <ClInclude Include="al_emotion.h" />
+    <ClInclude Include="al_face.h" />
+    <ClInclude Include="al_behavior\al_intention.h" />
+    <ClInclude Include="al_behavior\al_knowledge.h" />
+    <ClInclude Include="al_butterfly.h" />
+    <ClInclude Include="al_console.h" />
+    <ClInclude Include="al_daynight.h" />
+    <ClInclude Include="al_draw.h" />
+    <ClInclude Include="al_gene.h" />
+    <ClInclude Include="al_look.h" />
+    <ClInclude Include="al_marketattr.h" />
+    <ClInclude Include="al_minimal.h" />
+    <ClInclude Include="al_msg_font.h" />
+    <ClInclude Include="al_msg_win.h" />
+    <ClInclude Include="al_parts.h" />
+    <ClInclude Include="al_misc.h" />
+    <ClInclude Include="AL_ModAPI.h" />
+    <ClInclude Include="al_modelcontainer.h" />
+    <ClInclude Include="al_motion.h" />
+    <ClInclude Include="al_msg_warn.h" />
+    <ClInclude Include="al_name.h" />
+    <ClInclude Include="al_odekake.h" />
+    <ClInclude Include="al_ode_guide.h" />
+    <ClInclude Include="al_palette.h" />
+    <ClInclude Include="al_parameter.h" />
+    <ClInclude Include="al_piano.h" />
+    <ClInclude Include="al_registry.h" />
+    <ClInclude Include="al_sandhole.h" />
+    <ClInclude Include="al_save.h" />
+    <ClInclude Include="al_shape.h" />
+    <ClInclude Include="al_social.h" />
+    <ClInclude Include="al_stage.h" />
+    <ClInclude Include="al_texlist.h" />
+    <ClInclude Include="al_toy_move.h" />
+    <ClInclude Include="al_tv.h" />
+    <ClInclude Include="al_world.h" />
+    <ClInclude Include="api\api_customchao.h" />
+    <ClInclude Include="api\api_msg.h" />
+    <ClInclude Include="api\api_tree.h" />
+    <ClInclude Include="chao\al_motion\alm_accordion.nam" />
+    <ClInclude Include="chao\al_motion\alm_all.h" />
+    <ClInclude Include="chao\al_motion\alm_duck.h" />
+    <ClInclude Include="code_system\CodeParser.hpp" />
+    <ClInclude Include="code_system\codes\include\advanced\code_gc_shinyjewel.h" />
+    <ClInclude Include="code_system\codes\include\bonus\code_babychaolevel.h" />
+    <ClInclude Include="code_system\codes\include\bonus\code_mergeherodark.h" />
+    <ClInclude Include="code_system\codes\include\cheat\code_levellimit.h" />
+    <ClInclude Include="code_system\codes\include\code_animal_reuse.h" />
+    <ClInclude Include="code_system\codes\include\code_birthday.h" />
+    <ClInclude Include="code_system\codes\include\code_canthatecharacters.h" />
+    <ClInclude Include="code_system\codes\include\code_dccocoon.h" />
+    <ClInclude Include="code_system\codes\include\code_disablebreed.h" />
+    <ClInclude Include="code_system\codes\include\code_disjingle.h" />
+    <ClInclude Include="code_system\codes\include\code_drown.h" />
+    <ClInclude Include="code_system\codes\include\code_dynamiclifetime.h" />
+    <ClInclude Include="code_system\codes\include\code_fruit_nodespawn.h" />
+    <ClInclude Include="code_system\codes\include\code_hdtoy.h" />
+    <ClInclude Include="code_system\codes\include\code_hunger.h" />
+    <ClInclude Include="code_system\codes\include\code_multisave.h" />
+    <ClInclude Include="code_system\codes\include\code_racecam_switch.h" />
+    <ClInclude Include="code_system\codes\include\code_racefair.h" />
+    <ClInclude Include="code_system\codes\include\code_shinyjewelmonotone.h" />
+    <ClInclude Include="code_system\codes\include\code_eggcolor.h" />
+    <ClInclude Include="code_system\codes\include\code_gardenlimit.h" />
+    <ClInclude Include="code_system\codes\include\easy\code_disable_reincarnation.h" />
+    <ClInclude Include="code_system\code_manager.h" />
+    <ClInclude Include="code_system\codes\include\code_monsterevo.h" />
+    <ClInclude Include="code_system\codes\include\code_personality.h" />
+    <ClInclude Include="code_system\codes\include\code_playerspeed.h" />
+    <ClInclude Include="code_system\codes\include\code_sick.h" />
+    <ClInclude Include="code_system\cwe_codes.h" />
+    <ClInclude Include="code_system\cwe_patch.h" />
+    <ClInclude Include="code_system\cwe_transpile.h" />
+    <ClInclude Include="collision_debug.h" />
+    <ClInclude Include="code_system\cwe_code.h" />
+    <ClInclude Include="cwe_api.h" />
+    <ClInclude Include="cwe_fixes.h" />
+    <ClInclude Include="cwe_func.h" />
+    <ClInclude Include="c_colli.h" />
+    <ClInclude Include="data\accessory\ala_all.h" />
+    <ClInclude Include="data\accessory\ala_glasses_aviators.nja" />
+    <ClInclude Include="alg_kinder_co.h" />
+    <ClInclude Include="data\al_fonames.h" />
+    <ClInclude Include="al_growtree.h" />
+    <ClInclude Include="al_race.h" />
+    <ClInclude Include="data\al_seentry.h" />
+    <ClInclude Include="data\ChaoShader.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\ali_all.h" />
+    <ClInclude Include="data\lens\LensBoxJewel.h" />
+    <ClInclude Include="data\lens\LensModels.h" />
+    <ClInclude Include="data\minimal\AnimalAnims.h" />
+    <ClInclude Include="data\minimal\AnimalModels.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\CakeTest.h" />
+    <ClInclude Include="Chao.h" />
+    <ClInclude Include="ChaoMain.h" />
+    <ClInclude Include="data\minimal\minimal_all.h" />
+    <ClInclude Include="al_omochao_build.h" />
+    <ClInclude Include="data\omochao\omobuild_all.h" />
+    <ClInclude Include="data\ShinyJewelColors.h" />
+    <ClInclude Include="data\special\als_all.h" />
+    <ClInclude Include="define.h" />
+    <ClInclude Include="FunctionHook.h" />
+    <ClInclude Include="IniFile.h" />
+    <ClInclude Include="data\lens\LensBoxDark.h" />
+    <ClInclude Include="data\lens\LensBoxDefault.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperFly.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperPower.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperRun.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperSwim.h" />
+    <ClInclude Include="data\lens\LensBoxGreen.h" />
+    <ClInclude Include="data\lens\LensBoxHero.h" />
+    <ClInclude Include="data\lens\LensBoxMagenta.h" />
+    <ClInclude Include="data\lens\LensBoxNeut.h" />
+    <ClInclude Include="data\lens\LensBoxPurple.h" />
+    <ClInclude Include="data\lens\LensBoxRed.h" />
+    <ClInclude Include="data\lens\LensBoxRobot.h" />
+    <ClInclude Include="data\lens\LensBoxSnake.h" />
+    <ClInclude Include="data\lens\LensBoxSpartoi.h" />
+    <ClInclude Include="data\lens\LensBoxYellow.h" />
+    <ClInclude Include="kce_helper.h" />
+    <ClInclude Include="MemAccess.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\Mushroom2x.h" />
+    <ClInclude Include="data\toy\NeutralSandCastleModel.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="ninja.h" />
+    <ClInclude Include="ninja_functions.h" />
+    <ClInclude Include="PaletteFix.h" />
+    <ClInclude Include="patchedcolors.h" />
+    <ClInclude Include="data\parts\RaccoonArms.h" />
+    <ClInclude Include="register\api_register.h" />
+    <ClInclude Include="SA2Enums.h" />
+    <ClInclude Include="SA2Functions.h" />
+    <ClInclude Include="SA2ModLoader.h" />
+    <ClInclude Include="SA2Structs.h" />
+    <ClInclude Include="SA2Variables.h" />
+    <ClInclude Include="data\parts\SADXParts.h" />
+    <ClInclude Include="data\toy\SandHoleModel.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\ShinyFruit.h" />
+    <ClInclude Include="save\save_serializable.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TextConv.h" />
+    <ClInclude Include="Trampoline.h" />
+    <ClInclude Include="ui\al_ortho.h" />
+    <ClInclude Include="ui\controller.h" />
+    <ClInclude Include="ui\selectable.h" />
+    <ClInclude Include="usercall.h" />
+    <ClInclude Include="UsercallFunctionGen.cpp" />
+    <ClInclude Include="UsercallFunctionHandler.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="alg_kinder_bl.cpp" />
+    <ClCompile Include="alg_kinder_cl.cpp" />
+    <ClCompile Include="alg_kinder_he.cpp" />
+    <ClCompile Include="alg_kinder_ortho.cpp" />
+    <ClCompile Include="ALifeSDK_Functions.cpp" />
+    <ClCompile Include="alo_accessory.cpp" />
+    <ClCompile Include="alo_boat.cpp" />
+    <ClCompile Include="alo_coffin.cpp" />
+    <ClCompile Include="alo_fruit.cpp" />
+    <ClCompile Include="alo_obakehead.cpp" />
+    <ClCompile Include="alo_special.cpp" />
+    <ClCompile Include="al_behavior\albhv_birthday.cpp" />
+    <ClCompile Include="al_behavior\albhv_boat.cpp" />
+    <ClCompile Include="al_behavior\albhv_capture.cpp" />
+    <ClCompile Include="al_behavior\albhv_coffin.cpp" />
+    <ClCompile Include="al_behavior\albhv_console.cpp" />
+    <ClCompile Include="al_behavior\albhv_dance.cpp" />
+    <ClCompile Include="al_behavior\albhv_float.cpp" />
+    <ClCompile Include="al_behavior\albhv_glide.cpp" />
+    <ClCompile Include="al_behavior\albhv_life.cpp" />
+    <ClCompile Include="al_behavior\albhv_ltoy.cpp" />
+    <ClCompile Include="al_behavior\albhv_music.cpp" />
+    <ClCompile Include="al_behavior\albhv_piano.cpp" />
+    <ClCompile Include="al_behavior\albhv_stoy.cpp" />
+    <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
+    <ClCompile Include="al_behavior\albhv_tree.cpp" />
+    <ClCompile Include="al_behavior\albhv_wrench.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_chat.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_common.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_gossip.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_holdhand.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_hug.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
+    <ClCompile Include="al_behavior\al_behavior.cpp" />
+    <ClInclude Include="al_chao_info.h" />
+    <ClCompile Include="al_chao_counter.cpp" />
+    <ClCompile Include="al_edit.cpp" />
+    <ClCompile Include="al_emotion.cpp" />
+    <ClCompile Include="al_face.cpp" />
+    <ClCompile Include="al_behavior\al_intention.cpp" />
+    <ClCompile Include="al_behavior\al_knowledge.cpp" />
+    <ClCompile Include="al_butterfly.cpp" />
+    <ClCompile Include="al_console.cpp" />
+    <ClCompile Include="al_customization.cpp" />
+    <ClCompile Include="al_daynight.cpp" />
+    <ClCompile Include="al_draw.cpp" />
+    <ClCompile Include="al_gene.cpp" />
+    <ClCompile Include="al_look.cpp" />
+    <ClCompile Include="al_marketattr.cpp" />
+    <ClCompile Include="al_minimal.cpp" />
+    <ClCompile Include="al_misc.cpp" />
+    <ClCompile Include="AL_ModAPI.cpp" />
+    <ClCompile Include="al_modelcontainer.cpp" />
+    <ClCompile Include="al_motion.cpp" />
+    <ClCompile Include="al_msg_font.cpp" />
+    <ClCompile Include="al_msg_win.cpp" />
+    <ClCompile Include="al_name.cpp" />
+    <ClCompile Include="al_namedisplay.cpp" />
+    <ClCompile Include="al_odekake.cpp" />
+    <ClCompile Include="al_ode_guest.cpp" />
+    <ClCompile Include="al_ode_guide.cpp" />
+    <ClCompile Include="al_ode_hikkoshi.cpp" />
+    <ClCompile Include="al_ode_joycarry.cpp" />
+    <ClCompile Include="al_ode_nazukeya.cpp" />
+    <ClCompile Include="al_ode_storage.cpp" />
+    <ClCompile Include="al_omochao_build.cpp" />
+    <ClCompile Include="al_parameter.cpp" />
+    <ClCompile Include="al_parts.cpp" />
+    <ClCompile Include="al_piano.cpp" />
+    <ClCompile Include="al_registry.cpp" />
+    <ClCompile Include="al_sandhole.cpp" />
+    <ClCompile Include="al_save.cpp" />
+    <ClCompile Include="al_script.cpp" />
+    <ClCompile Include="al_shape.cpp" />
+    <ClCompile Include="al_social.cpp" />
+    <ClCompile Include="al_stage.cpp" />
+    <ClCompile Include="al_texlist.cpp" />
+    <ClCompile Include="al_toy_move.cpp" />
+    <ClCompile Include="al_world.cpp" />
+    <ClCompile Include="api\api_customchao.cpp" />
+    <ClCompile Include="api\api_msg.cpp" />
+    <ClCompile Include="api\api_tree.cpp" />
+    <ClCompile Include="Chao.cpp" />
+    <ClCompile Include="ChaoMain.cpp" />
+    <ClCompile Include="alo_float.cpp" />
+    <ClCompile Include="code_system\CodeParser.cpp" />
+    <ClCompile Include="code_system\codes\code_animal_reuse.cpp" />
+    <ClCompile Include="code_system\codes\code_birthday.cpp" />
+    <ClCompile Include="code_system\codes\code_dccocoon.cpp" />
+    <ClCompile Include="code_system\codes\code_disjingle.cpp" />
+    <ClCompile Include="code_system\codes\code_drown.cpp" />
+    <ClCompile Include="code_system\codes\code_hdtoy.cpp" />
+    <ClCompile Include="code_system\codes\code_hunger.cpp" />
+    <ClCompile Include="code_system\codes\code_eggcolor.cpp" />
+    <ClCompile Include="code_system\codes\code_gardenlimit.cpp" />
+    <ClCompile Include="code_system\codes\code_monsterevo.cpp" />
+    <ClCompile Include="code_system\codes\code_personality.cpp" />
+    <ClCompile Include="code_system\codes\code_playerspeed.cpp" />
+    <ClCompile Include="code_system\codes\code_sick.cpp" />
+    <ClCompile Include="code_system\cwe_patch.cpp" />
+    <ClCompile Include="code_system\cwe_transpile.cpp" />
+    <ClCompile Include="collision_debug.cpp" />
+    <ClCompile Include="CWE.cpp" />
+    <ClCompile Include="al_palette.cpp" />
+    <ClCompile Include="code_system\cwe_codes.cpp" />
+    <ClCompile Include="al_growtree.cpp" />
+    <ClCompile Include="alg_kinder_co.cpp" />
+    <ClCompile Include="al_race.cpp" />
+    <ClCompile Include="cwe_fixes.cpp" />
+    <ClCompile Include="cwe_func.cpp" />
+    <ClCompile Include="c_colli.cpp" />
+    <ClCompile Include="experimental_daynight.cpp" />
+    <ClCompile Include="experimental_rendertarget.cpp" />
+    <ClCompile Include="IniFile.cpp" />
+    <ClCompile Include="kce_helper.cpp" />
+    <ClCompile Include="memory.cpp" />
+    <ClCompile Include="ninja_functions.cpp" />
+    <ClCompile Include="PaletteFix.cpp" />
+    <ClCompile Include="register\api_accessory.cpp" />
+    <ClCompile Include="register\api_fruit.cpp" />
+    <ClCompile Include="register\api_minimal.cpp" />
+    <ClCompile Include="register\api_motion.cpp" />
+    <ClCompile Include="register\api_register.cpp" />
+    <ClCompile Include="register\api_special.cpp" />
+    <ClCompile Include="save\save_serializable.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CWEV9|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextConv.cpp" />
+    <ClCompile Include="Trampoline.cpp" />
+    <ClCompile Include="ui\al_ortho.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="al_animation.cpp" />
+    <None Include="al_animation.h" />
+    <None Include="chao\al_motion\alm_dance_d.nam" />
+    <None Include="chao\al_motion\alm_dance_h.nja" />
+    <None Include="chao\al_motion\alm_dance_n.nam" />
+    <None Include="chao\al_motion\alm_egg_crawl.nam" />
+    <None Include="chao\al_motion\alm_floaty.nam" />
+    <None Include="chao\al_motion\alm_guitar.nam" />
+    <None Include="chao\al_motion\alm_sunaasubi.nam" />
+    <None Include="chao\al_motion\alm_tailsfly.nam" />
+    <None Include="chao\al_motion\alm_triangle.nam" />
+    <None Include="chao\al_motion\alm_wrench.nam" />
+    <None Include="data\accessory\ala_baseballcap.nja" />
+    <None Include="data\accessory\ala_birthdayhat.nja" />
+    <None Include="data\accessory\ala_bowtie_red.nja" />
+    <None Include="data\accessory\ala_full_mannequin.nja" />
+    <None Include="data\accessory\ala_glasses_round.nja" />
+    <None Include="data\accessory\ala_glasses_square.nja" />
+    <None Include="data\accessory\ala_headphones.nja" />
+    <None Include="data\accessory\ala_hoodie.nja" />
+    <None Include="data\accessory\ala_hoodie_low.nja" />
+    <None Include="data\accessory\ala_hoodie_pink.nja" />
+    <None Include="data\accessory\ala_hoodie_pink_low.nja" />
+    <None Include="data\accessory\ala_neckbowtie.nja" />
+    <None Include="data\accessory\ala_pacifier.nja" />
+    <None Include="data\accessory\ala_presshat.nja" />
+    <None Include="data\alo_missing_tree.nja" />
+    <None Include="data\al_model\ali_medal_ame.nja" />
+    <None Include="data\al_model\ali_medal_eme.nja" />
+    <None Include="data\al_model\ali_medal_none.nja" />
+    <None Include="data\al_model\ali_medal_pal.nja" />
+    <None Include="data\al_model\ali_medal_rub.nja" />
+    <None Include="data\al_model\ali_model_saf.nja" />
+    <None Include="data\al_model\al_baldroot.nja" />
+    <None Include="data\al_model\al_egg_chao.nja" />
+    <None Include="data\al_model\al_nnz.nja" />
+    <None Include="data\al_model\al_omochao.nja" />
+    <None Include="data\al_model\al_spartoi.nja" />
+    <None Include="data\al_model\herochaosfly.nja" />
+    <None Include="data\amytest.nja" />
+    <None Include="data\chaotree.nja">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="data\cwe\object_common_cnk\ali_chaoseed.nja" />
+    <None Include="data\cwe\object_common_cnk\ali_orange.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_cakeslice.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
+    <None Include="data\debug\alr_camera.nja" />
+    <None Include="data\debug\alr_chaoicon.nja" />
+    <None Include="data\debug\alr_cube.nja" />
+    <None Include="data\minimal\bee.mini" />
+    <None Include="data\minimal\lady.mini" />
+    <None Include="data\minimal\scorpion.mini" />
+    <None Include="data\omochao\omobuild_arms.nja" />
+    <None Include="data\omochao\omobuild_base.nja" />
+    <None Include="data\omochao\omobuild_eyel.nja" />
+    <None Include="data\omochao\omobuild_eyer.nja" />
+    <None Include="data\omochao\omobuild_legs.nja" />
+    <None Include="data\omochao\omobuild_mouth.nja" />
+    <None Include="data\omochao\omobuild_prop.nja" />
+    <None Include="data\special\als_bottle.nja" />
+    <None Include="data\special\als_box.nja" />
+    <None Include="data\special\als_brush_hf.nja" />
+    <None Include="data\special\als_brush_hn.nja" />
+    <None Include="data\special\als_brush_hp.nja" />
+    <None Include="data\special\als_brush_hr.nja" />
+    <None Include="data\special\als_brush_hs.nja" />
+    <None Include="data\special\als_dcwings.nja" />
+    <None Include="data\special\als_mirror.nja" />
+    <None Include="data\toy\alo_accordion.nja" />
+    <None Include="data\toy\alo_guitar.nja" />
+    <None Include="data\toy\alo_pail.nja" />
+    <None Include="data\toy\al_toy_rattle.nja" />
+    <None Include="data\toy\al_toy_triangle.nja" />
+    <None Include="data\toy\al_toy_wrench_prize.nja" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

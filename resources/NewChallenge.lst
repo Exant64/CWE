@@ -1,0 +1,7085 @@
+Code "Get ready for the New Challenge Race" Required
+write32 013620b0 0x6577656E
+write8 013620b4 0x72
+write8 0053FD6C 01
+ifeq8 01934B70 90
+	ifltequ8 0134062c 3
+		write8 01A0FBD3 0
+		write8 01A0FBD4 0
+		write8 01A0FBD5 0
+	endif
+	write8 01DB10A4 0
+	ifeq8 01934be0 13
+		write8 01934be0 16
+	endif
+	ifgtequ8 019F6ED0 13
+		write8 019F6ED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019F7ED0 13
+		write8 019F7ED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019F76D0 13
+		write8 019F76D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019F8ED0 13
+		write8 019F8ED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019F86D0 13
+		write8 019F86D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019F9ED0 13
+		write8 019F9ED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019F96D0 13
+		write8 019F96D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FAED0 13
+		write8 019FAED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FA6D0 13
+		write8 019FA6D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FbED0 13
+		write8 019FbED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019Fb6D0 13
+		write8 019Fb6D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FcED0 13
+		write8 019FcED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019Fc6D0 13
+		write8 019Fc6D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FdED0 13
+		write8 019FdED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019Fd6D0 13
+		write8 019Fd6D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FeED0 13
+		write8 019FeED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019Fe6D0 13
+		write8 019Fe6D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019FfED0 13
+		write8 019FfED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 019Ff6D0 13
+		write8 019Ff6D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 01a00ED0 13
+		write8 01a00ED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 01a006D0 13
+		write8 01a006D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 01a01ED0 13
+		write8 01a01ED0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 01a016D0 13
+		write8 01a016D0 0
+		write16 012D9914 0x3130
+	endif
+	ifgtequ8 01a026D0 13
+		write8 01a026D0 0
+		write16 012D9914 0x3130
+	endif
+	ifeq8 0134046c 4
+		ifeq8 01DB961D 5
+			write8 01DB961D 0
+		endif
+		ifeq8 01DB9E1D 5
+			write8 01DB9E1D 0
+		endif
+		ifeq8 01DBA61D 5
+			write8 01DBA61D 0
+		endif
+		ifeq8 01DBAE1D 5
+			write8 01DBAE1D 0
+		endif
+		ifeq8 01DBb61D 5
+			write8 01DBb61D 0
+		endif
+		ifeq8 01DBbe1D 5
+			write8 01DBbe1D 0
+		endif
+		ifeq8 01DBc61D 5
+			write8 01DBc61D 0
+		endif
+	endif
+	ifeq8 0134062c 5
+		write32 01366FB4 0x615F725F
+		ifeq8 0134046c 4
+			write16 01367370 0x4C41
+			write8 0174aff7 0
+			write8 01A0FBD6 0
+			ifeq8 0174AFE3 3
+				write8 0174AFE3 0
+			endif
+			write16 01366FE6 0x635F
+			write16 01367006 0x685F
+			write16 01366FD6 0x6A5F
+			write32 0133C13F 0x45434152
+			write32 0133bbe7 0x45434152
+		endif
+	endif
+	ifne8 0134062c 4
+		ifne8 0134046c 4
+			ifeq8 01A5CC24 0
+				readreg8 01A0FBD5 1
+				writereg8 01A0FBD6 1
+			endif
+		endif
+	endif
+	ifeq8 01A0FBD3 2
+		ifeq8 0134046c 5
+			ifeq8 01DB961D 0
+				write8 01DB961D 5
+			endif
+			ifeq8 01DB9E1D 0
+				write8 01DB9E1D 5
+			endif
+			ifeq8 01DBA61D 0
+				write8 01DBA61D 5
+			endif
+			ifeq8 01DBAE1D 0
+				write8 01DBAE1D 5
+			endif
+			ifeq8 01DBb61D 0
+				write8 01DBb61D 5
+			endif
+			ifeq8 01DBbe1D 0
+				write8 01DBbe1D 5
+			endif
+			ifeq8 01DBc61D 0
+				write8 01DBc61D 5
+			endif
+		endif
+		ifeq8 0134046c 5
+			write8 01a26E65 5
+		endif
+		ifeq32 p01A5A25C|4|34|0 0x13
+			ifeq16 012D9914 0x3130
+				ifgtequ8 p01A5CC20|30 1
+					write8 p01A5CC20|30 0
+				endif
+				ifgtequ8 p01A5CC20|34 1
+					write8 p01A5CC20|34 0
+				endif
+			endif
+			ifeq16 012D9914 0x3230
+				ifgtequ8 p01A5CC20|30 2
+					write8 p01A5CC20|30 1
+				endif
+				ifgtequ8 p01A5CC20|34 1
+					write8 p01A5CC20|34 0
+				endif
+			endif
+			ifeq16 012D9914 0x3330
+				ifgtequ8 p01A5CC20|30 3
+					write8 p01A5CC20|30 2
+				endif
+				ifgtequ8 p01A5CC20|34 1
+					write8 p01A5CC20|34 0
+				endif
+			endif
+			ifeq16 012D9914 0x3430
+				ifgtequ8 p01A5CC20|34 1
+					write8 p01A5CC20|34 0
+				endif
+			endif
+			ifeq16 012D9914 0x3530
+				ifeq8 p01A5CC20|34 1
+					ifgtequ8 p01A5CC20|30 1
+						write8 p01A5CC20|30 0
+					endif
+				endif
+				ifgtequ8 p01A5CC20|34 2
+					write8 p01A5CC20|34 1
+				endif
+			endif
+			ifeq16 012D9914 0x3630
+				ifeq8 p01A5CC20|34 1
+					ifgtequ8 p01A5CC20|30 2
+						write8 p01A5CC20|30 1
+					endif
+				endif
+				ifgtequ8 p01A5CC20|34 2
+					write8 p01A5CC20|34 1
+				endif
+			endif
+			ifeq16 012D9914 0x3730
+				ifeq8 p01A5CC20|34 1
+					ifgtequ8 p01A5CC20|30 3
+						write8 p01A5CC20|30 2
+					endif
+				endif
+				ifgtequ8 p01A5CC20|34 2
+					write8 p01A5CC20|34 1
+				endif
+			endif
+			ifeq16 012D9914 0x3830
+				ifgtequ8 p01A5CC20|34 2
+					write8 p01A5CC20|34 1
+				endif
+			endif
+			ifeq16 012D9914 0x3930
+				ifeq8 p01A5CC20|34 2
+					ifgtequ8 p01A5CC20|30 1
+						write8 p01A5CC20|30 0
+					endif
+				endif
+			endif
+			ifeq16 012D9914 0x3031
+				ifeq8 p01A5CC20|34 2
+					ifgtequ8 p01A5CC20|30 2
+						write8 p01A5CC20|30 1
+					endif
+				endif
+			endif
+			ifeq16 012D9914 0x3131
+				ifeq8 p01A5CC20|34 2
+					ifgtequ8 p01A5CC20|30 3
+						write8 p01A5CC20|30 2
+					endif
+				endif
+			endif
+		endif
+		ifeq8 01A0FBD4 10
+			ifeq8 01A0FBD6 0
+				ifeq8 01A5CC24 1
+					write8 01A0FBD3 2
+					write8 01A0FBD4 10
+					write8 01A0FBD5 0
+					write16 01367370 0x3130
+					write16 01DB9578 1766
+					write16 01DB957A 1766
+					write16 01DB957C 1766
+					write16 01DB957E 1766
+					write16 01DB9584 1000
+					write8 01DB961A 0x04
+					write16 01DB9D78 1766
+					write16 01DB9D7A 1766
+					write16 01DB9D7C 1666
+					write16 01DB9D7E 1866
+					write16 01DB9D84 1000
+					write8 01DB9E1A 0x08
+					write16 01DBA578 1766
+					write16 01DBA57A 1766
+					write16 01DBA57C 1666
+					write16 01DBA57E 1866
+					write16 01DBA584 1000
+					write8 01DBA61A 0x05
+					write16 01DBAD78 1666
+					write16 01DBAD7A 1866
+					write16 01DBAD7C 1766
+					write16 01DBAD7E 1766
+					write16 01DBAD84 1000
+					write8 01DBAE1A 0x06
+					write16 01DBB578 1666
+					write16 01DBB57A 1666
+					write16 01DBB57C 1666
+					write16 01DBB57E 1666
+					write16 01DBB584 1000
+					write8 01DBB61A 0x02
+					write16 01DBBD78 1866
+					write16 01DBBD7A 1666
+					write16 01DBBD7C 1766
+					write16 01DBBD7E 1766
+					write16 01DBBD84 1000
+					write8 01DBBE1A 0x01
+					write16 01DBC578 1866
+					write16 01DBC57A 1866
+					write16 01DBC57C 1866
+					write16 01DBC57E 1866
+					write16 01DBC584 0600
+					write8 01DBC61A 0x10
+				endif
+				ifeq8 0134062c 4
+					write16 01366FE6 0x315F
+				endif
+			endif
+			ifeq8 01A0FBD6 1
+				ifeq8 01A5CC24 1
+					write8 01A0FBD3 2
+					write8 01A0FBD4 10
+					write8 01A0FBD5 18
+					write16 01367370 0x3230
+					write32 01A5CC04 0x00000000
+					write32 01A5CC08 0x00000000
+					write32 01A5CC0C 0x00000000
+					write32 01A5CC10 0x00000000
+					write32 01A5CC14 0x00000000
+					write32 01A5CC18 0x00000000
+					write16 01DBC578 0066
+					write16 01DBC57A 3966
+					write16 01DBC57C 1766
+					write16 01DBC57E 1266
+					write8 01DBC618 0x00
+					write8 01DBC5C0 0x0B
+					writefloat 01DBC5E8 0
+					writefloat 01DBC5EC 1
+					writefloat 01DBC600 1.2
+					write8 01DBC611 0x00
+					write8 01DBC612 0x03
+					write8 01DBC65C 0xFF
+					write8 01DBC65D 0xFF
+					write8 01DBC65E 0xFF
+					write8 01DBC65F 0xFF
+					write8 01DBC660 0xFF
+					write8 01DBC661 0xFF
+					write8 01DBC662 0xFF
+					write8 01DBC663 0xFF
+				endif
+				ifeq8 0134062c 4
+					write16 01366FE6 0x325F
+				endif
+			endif
+			ifeq8 01A0FBD6 2
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3330
+				endif
+				ifeq8 0134062c 4
+					write16 01366FE6 0x335F
+				endif
+				write16 01DB957C 1666
+				write16 01DB9D7C 1466
+				write16 01DBA57C 1466
+				write16 01DBAD7C 1866
+				write16 01DBb57C 1666
+				write16 01DBbD7C 1866
+				write16 01DBc57C 2066
+				ifeq8 01DB961D 2
+					write8 01DB961D 0
+				endif
+				ifeq8 01DB9e1D 2
+					write8 01DB9e1D 0
+				endif
+				ifeq8 01DBa61D 2
+					write8 01DBa61D 0
+				endif
+				ifeq8 01DBae1D 2
+					write8 01DBae1D 0
+				endif
+				ifeq8 01DBb61D 2
+					write8 01DBb61D 0
+				endif
+				ifeq8 01DBbe1D 2
+					write8 01DBbe1D 0
+				endif
+				ifeq8 01A0FBD0 0
+					ifeq8 01A0FBD1 0
+						ifeq8 01A0FBD2 1
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							write8 01A0FBD2 2
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD6 3
+				ifeq8 01A5CC24 1
+					write8 01A0FBD3 2
+					write8 01A0FBD4 10
+					write8 01A0FBD5 16
+					write16 01366FE6 0x345F
+					write16 01367370 0x3430
+					ifeq8 01DB961D 3
+						write8 01DB961D 0
+					endif
+					ifeq8 01DB9e1D 3
+						write8 01DB9e1D 0
+					endif
+					ifeq8 01DBa61D 3
+						write8 01DBa61D 0
+					endif
+					ifeq8 01DBae1D 3
+						write8 01DBae1D 0
+					endif
+					ifeq8 01DBb61D 3
+						write8 01DBb61D 0
+					endif
+					ifeq8 01DBbe1D 3
+						write8 01DBbe1D 0
+					endif
+					ifeq8 01DBc61D 3
+						write8 01DBc61D 0
+					endif
+				endif
+				ifeq8 01A0FBD5 16
+					ifeq8 0134062c 4
+						write8 0174AFE3 3
+					endif
+					ifeq8 0134062c 4
+						ifeq8 0134046c 5
+							write8 0174aff7 1
+						endif
+					endif
+					ifeq8 01DCFAE4 1
+						write8 0174aff7 1
+					endif
+					ifeq8 0174AFDB 10
+						write8 01DCFAE0 8
+						write8 01DCFAE0 8
+						write8 01DCFAE4 1
+					endif
+					ifeq8 01934be0 16
+						ifeq16 01A529EC 0
+							ifeq16 01A52C4C 512
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									add32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|88 200
+									add32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|8C 200
+								endif
+							endif
+						endif
+						ifeq16 01A529EC 512
+							ifeq16 01A52C4C 512
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									add32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|88 10
+									add32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|8C 10
+								endif
+							endif
+						endif
+					endif
+					write32 01A5CC04 0x00000000
+					write32 01A5CC08 0x00000000
+					write32 01A5CC0C 0x00000000
+					write32 01A5CC10 0x00000000
+					write32 01A5CC14 0x00000000
+					write32 01A5CC18 0x00000000
+					write32 01A5CC1C 0x00000000
+					ifeq8 01A0FBD0 0
+						ifeq8 01A0FBD1 0
+							ifeq8 01A0FBD2 0
+								write8 0174AFDB 9
+								write8 0174AFDC 0
+								write8 0174AFDD 0
+								write8 01A0FBD2 1
+							endif
+						endif
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+						writefloat p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B8 0.8
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 100
+							write8 0174aff7 0
+							write32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 129
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 101
+							write8 0174aff7 0
+							write32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 129
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 102
+							write8 0174aff7 0
+							write32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 129
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD6 4
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3530
+				endif
+				write8 01DB95C0 0x09
+				write8 01DB9611 0x00
+				write8 01DB9612 0x08
+				write8 01DB9618 0x04
+				writefloat 01DB95E8 -1
+				writefloat 01DB95EC -1
+				writefloat 01DB9600 1.2
+				ifeq8 0134062c 4
+					write16 01366FE6 0x355F
+				endif
+				write8 01DB9dC0 0x0F
+				write8 01DB9e11 0x00
+				write8 01DB9e12 0x04
+				write8 01DB9e18 0x0A
+				writefloat 01DB9dE8 0
+				writefloat 01DB9dEC -1
+				writefloat 01DB9e00 1.2
+				write8 01DBA5C0 0x05
+				write8 01DBA611 0x09
+				write8 01DBA612 0x03
+				write8 01DBA618 0x02
+				writefloat 01DBA600 0
+				write8 01DBADC0 0x0D
+				write8 01DBAE19 0x01
+				write8 01DBAE12 0x00
+				write8 01DBAE18 0x03
+				writefloat 01DBADE8 -1
+				writefloat 01DBADEC 0
+				writefloat 01DBAE00 1.2
+				write8 01DBb5C0 0x0C
+				write8 01DBb611 0x00
+				write8 01DBb612 0x02
+				write8 01DBb618 0x01
+				writefloat 01DBb5E8 0
+				writefloat 01DBb5EC 0
+				writefloat 01DBb600 1.2
+				write8 01DBbDC0 0x12
+				write8 01DBBE11 0x04
+				write8 01DBBE12 0x00
+				write8 01DBBE18 0x05
+				writefloat 01DBBAE8 -1
+				writefloat 01DBBAEC 0
+				writefloat 01DBBE00 1.2
+				write8 01DBc5C0 0x0B
+				write8 01DBc611 0x05
+				write8 01DBc612 0x05
+				write8 01DBc618 0x0B
+				writefloat 01DBc5E8 0
+				writefloat 01DBc5EC -1
+				writefloat 01DBc600 1.2
+				write16 01DB9578 1866
+				write16 01DB957A 1866
+				write16 01DB957C 1866
+				write16 01DB957E 1866
+				write16 01DB9584 1200
+				write16 01DB9D78 1966
+				write16 01DB9D7A 1966
+				write16 01DB9D7C 1966
+				write16 01DB9D7E 1966
+				write16 01DB9D84 1100
+				write16 01DBA578 1766
+				write16 01DBA57A 1766
+				write16 01DBA57C 1766
+				write16 01DBA57E 1766
+				write16 01DBA584 1300
+				write16 01DBAD78 1866
+				write16 01DBAD7A 1866
+				write16 01DBAD7C 1866
+				write16 01DBAD7E 1866
+				write16 01DBAD84 1200
+				write16 01DBB578 1966
+				write16 01DBB57A 1966
+				write16 01DBB57C 1966
+				write16 01DBB57E 1966
+				write16 01DBB584 1100
+				write16 01DBBD78 1766
+				write16 01DBBD7A 1766
+				write16 01DBBD7C 1766
+				write16 01DBBD7E 1766
+				write16 01DBBD84 1300
+				write16 01DBC578 1866
+				write16 01DBC57A 1866
+				write16 01DBC57C 1866
+				write16 01DBC57E 1866
+				write16 01DBC584 1200
+				write8 01DB965D 0x0E
+				write8 01DB9E5D 0x0B
+				write8 01DBA65D 0x06
+				write8 01DBAE5D 0xFF
+				write8 01DBB65D 0x04
+				write8 01DBBE5D 0x03
+				write8 01DBC65D 0x0D
+				write8 01DB961A 0x0
+				write8 01DB9E1A 0x0
+				write8 01DBA61A 0x0
+				write8 01DBAE1A 0x0
+				write8 01DBB61A 0x0
+				write8 01DBBE1A 0x0
+				write8 01DBC61A 0x0
+				ifeq8 01A0FBD0 0
+					ifeq8 01A0FBD1 0
+						ifeq8 01A0FBD2 1
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+							endif
+							write8 01A0FBD2 2
+						endif
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055FB00
+						write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|0 0
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD6 5
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3630
+					write8 01A0FBD3 1
+					write8 01A0FBD4 3
+					write8 01A0FBD5 6
+					write8 01DB95C0 0x0E
+					writefloat 01DB95E8 0
+					writefloat 01DB95EC -1
+					writefloat 01DB9600 1.2
+					write8 01DB9DC0 0x10
+					write8 01DB9E1B 0x01
+					writefloat 01DB9DE8 0
+					writefloat 01DB9DEC -1
+					writefloat 01DB9E00 1.2
+					write8 01DBA5C0 0x0C
+					writefloat 01DBA5E8 0
+					writefloat 01DBA5EC -1
+					writefloat 01DBA600 1.2
+					write8 01DBADC0 0x08
+					write8 01DBAE1B 0x01
+					writefloat 01DBADE8 -1
+					writefloat 01DBADEC 0
+					writefloat 01DBAE00 1.2
+					write8 01DBb5C0 0x09
+					writefloat 01DBb5E8 0
+					writefloat 01DBb5EC -1
+					writefloat 01DBb600 1.2
+					write8 01DBbdC0 0x07
+					write8 01DBbE1B 0x01
+					writefloat 01DBbdE8 -1
+					writefloat 01DBbdEC 0
+					writefloat 01DBbe00 1.2
+					write8 01DBc5C0 0x12
+					writefloat 01DBc5E8 0
+					writefloat 01DBc5EC 1
+					writefloat 01DBc600 1.2
+					write16 01DB9578 2866
+					write16 01DB957A 2066
+					write16 01DB957C 2466
+					write16 01DB957E 1666
+					write16 01DB9584 2000
+					write16 01DB9D78 2666
+					write16 01DB9D7A 2266
+					write16 01DB9D7C 2466
+					write16 01DB9D7E 1666
+					write16 01DB9D84 2000
+					write16 01DBA578 2866
+					write16 01DBA57A 2466
+					write16 01DBA57C 2066
+					write16 01DBA57E 1666
+					write16 01DBA584 2000
+					write16 01DBAD78 3066
+					write16 01DBAD7A 2266
+					write16 01DBAD7C 2266
+					write16 01DBAD7E 1466
+					write16 01DBAD84 2000
+					write16 01DBB578 3266
+					write16 01DBB57A 2266
+					write16 01DBB57C 1866
+					write16 01DBB57E 1666
+					write16 01DBB584 2000
+					write16 01DBBD78 2866
+					write16 01DBBD7A 2266
+					write16 01DBBD7C 2266
+					write16 01DBBD7E 1666
+					write16 01DBBD84 2000
+					write16 01DBC578 2866
+					write16 01DBC57A 2266
+					write16 01DBC57C 2066
+					write16 01DBC57E 1866
+					write16 01DBC584 2000
+					write8 01DB9618 0x15
+					write8 01DB9E18 0x15
+					write8 01DBA618 0x15
+					write8 01DBAE18 0x04
+					write8 01DBB618 0x15
+					write8 01DBBE18 0x15
+					write8 01DBC618 0x15
+					write8 01DB9661 0x01
+					write8 01DB9E61 0x01
+					write8 01DBA661 0x01
+					write8 01DBAE61 0x01
+					write8 01DBB661 0x01
+					write8 01DBBE61 0x01
+					write8 01DBC661 0x01
+					ifeq8 01DB961D 1
+						write8 01DB961D 0
+					endif
+					ifeq8 01DB9e1D 1
+						write8 01DB9e1D 0
+					endif
+					ifeq8 01DBa61D 1
+						write8 01DBa61D 0
+					endif
+					ifeq8 01DBae1D 1
+						write8 01DBae1D 0
+					endif
+					ifeq8 01DBb61D 1
+						write8 01DBb61D 0
+					endif
+					ifeq8 01DBbe1D 1
+						write8 01DBbe1D 0
+					endif
+					ifeq8 01DBc61D 1
+						write8 01DBc61D 0
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD6 6
+				ifeq8 01A5CC24 1
+					write8 01A0FBD3 1
+					write8 01A0FBD4 7
+					write8 01A0FBD5 12
+					write16 01367370 0x3730
+					write8 01DB95C0 0x10
+					writefloat 01DB95E8 -0.5
+					writefloat 01DB95EC 1
+					writefloat 01DB9600 1.2
+					write8 01DB9dC0 0x11
+					writefloat 01DB9dE8 -0.5
+					writefloat 01DB9dEC 0
+					writefloat 01DB9e00 0.6
+					write8 01DBa5C0 0x13
+					writefloat 01DBa5E8 0.5
+					writefloat 01DBa5EC -0.5
+					writefloat 01DBa600 1.2
+					write8 01DBadC0 0x0E
+					writefloat 01DBadE8 0
+					writefloat 01DBadEC 1
+					writefloat 01DBae00 1.2
+					write8 01DBb5C0 0x0D
+					write8 01DBb618 0x1E
+					writefloat 01DBb5E8 1
+					writefloat 01DBb5EC 0
+					writefloat 01DBb600 1.2
+					write8 01DBBDC0 0x08
+					writefloat 01DBBDE8 0.5
+					writefloat 01DBbdEC 0
+					writefloat 01DBbe00 1.2
+					write8 01DBC5C0 0x0A
+					writefloat 01DBC5E8 0.2
+					writefloat 01DBC5EC -1
+					writefloat 01DBC600 1.2
+					write16 01DB9578 2366
+					write16 01DB957A 2366
+					write16 01DB957C 2566
+					write16 01DB957E 2366
+					write16 01DB9584 2000
+					write16 01DB9D78 2366
+					write16 01DB9D7A 2366
+					write16 01DB9D7C 2266
+					write16 01DB9D7E 2666
+					write16 01DB9D84 2000
+					write16 01DBA578 2066
+					write16 01DBA57A 2366
+					write16 01DBA57C 2566
+					write16 01DBA57E 2666
+					write16 01DBA584 2000
+					write16 01DBAD78 2366
+					write16 01DBAD7A 2366
+					write16 01DBAD7C 2866
+					write16 01DBAD7E 2066
+					write16 01DBAD84 2000
+					write16 01DBB578 2066
+					write16 01DBB57A 2666
+					write16 01DBB57C 2566
+					write16 01DBB57E 2366
+					write16 01DBB584 2000
+					write16 01DBBD78 2666
+					write16 01DBBD7A 2366
+					write16 01DBBD7C 2266
+					write16 01DBBD7E 2366
+					write16 01DBBD84 2000
+					write16 01DBC578 2666
+					write16 01DBC57A 2366
+					write16 01DBC57C 2566
+					write16 01DBC57E 2066
+					write16 01DBC584 2000
+					write8 01DB9619 0x01
+					write8 01DB9E19 0x01
+					write8 01DBA619 0x01
+					write8 01DBAE19 0x01
+					write8 01DBB619 0x01
+					write8 01DBBE19 0x01
+					write8 01DBC619 0x01
+					write8 01DB9615 0
+					write8 01DB9e15 0
+					write8 01DBA615 0
+					write8 01DBAe15 0
+					write8 01DBb615 0
+					write8 01DBbe15 0
+					write8 01DBc615 0
+					write8 01DB9611 0
+					write8 01DB9e11 0
+					write8 01DBA611 0
+					write8 01DBAe11 0
+					write8 01DBb611 0
+					write8 01DBbe11 0
+					write8 01DBc611 0
+				endif
+			endif
+			ifeq8 01A0FBD6 7
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3830
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F6EC4
+							readreg16 019F6F08 0
+							writereg16 01DBC584 0
+							readreg16 019F6EFC 1
+							writereg16 01DBC578 1
+							readreg16 019F6EFE 2
+							writereg16 01DBC57A 2
+							readreg16 019F6F00 3
+							writereg16 01DBC57C 3
+							readreg16 019F6F02 4
+							writereg16 01DBC57E 4
+							readreg8 019F6F44 5
+							writereg8 01DBC5C0 5
+							readreg8 019F6F9D 6
+							writereg8 01DBC619 6
+							readreg8 019F6F99 7
+							writereg8 01DBC615 7
+							readreg8 019F6F97 8
+							writereg8 01DBC613 8
+							readreg8 019F6F9A 9
+							writereg8 01DBC616 9
+							readreg32 019F6F6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F6F70 11
+							writereg32 01DBC5EC 11
+							readreg32 019F6F84 12
+							writereg32 01DBC600 12
+							readreg32 019F6F64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F76C4
+							readreg16 019F7708 0
+							writereg16 01DBC584 0
+							readreg16 019F76FC 1
+							writereg16 01DBC578 1
+							readreg16 019F76FE 2
+							writereg16 01DBC57A 2
+							readreg16 019F7700 3
+							writereg16 01DBC57C 3
+							readreg16 019F7702 4
+							writereg16 01DBC57E 4
+							readreg8 019F7744 5
+							writereg8 01DBC5C0 5
+							readreg8 019F779D 6
+							writereg8 01DBC619 6
+							readreg8 019F7799 7
+							writereg8 01DBC615 7
+							readreg8 019F7797 8
+							writereg8 01DBC613 8
+							readreg8 019F779A 9
+							writereg8 01DBC616 9
+							readreg32 019F776C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F7770 11
+							writereg32 01DBC5EC 11
+							readreg32 019F7784 12
+							writereg32 01DBC600 12
+							readreg32 019F7764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F7EC4
+							readreg16 019F7F08 0
+							writereg16 01DBC584 0
+							readreg16 019F7EFC 1
+							writereg16 01DBC578 1
+							readreg16 019F7EFE 2
+							writereg16 01DBC57A 2
+							readreg16 019F7F00 3
+							writereg16 01DBC57C 3
+							readreg16 019F7F02 4
+							writereg16 01DBC57E 4
+							readreg8 019F7F44 5
+							writereg8 01DBC5C0 5
+							readreg8 019F7F9D 6
+							writereg8 01DBC619 6
+							readreg8 019F7F99 7
+							writereg8 01DBC615 7
+							readreg8 019F7F97 8
+							writereg8 01DBC613 8
+							readreg8 019F7F9A 9
+							writereg8 01DBC616 9
+							readreg32 019F7F6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F7F70 11
+							writereg32 01DBC5EC 11
+							readreg32 019F7F84 12
+							writereg32 01DBC600 12
+							readreg32 019F7F64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F86C4
+							readreg16 019F8708 0
+							writereg16 01DBC584 0
+							readreg16 019F86FC 1
+							writereg16 01DBC578 1
+							readreg16 019F86FE 2
+							writereg16 01DBC57A 2
+							readreg16 019F8700 3
+							writereg16 01DBC57C 3
+							readreg16 019F8702 4
+							writereg16 01DBC57E 4
+							readreg8 019F8744 5
+							writereg8 01DBC5C0 5
+							readreg8 019F879D 6
+							writereg8 01DBC619 6
+							readreg8 019F8799 7
+							writereg8 01DBC615 7
+							readreg8 019F8797 8
+							writereg8 01DBC613 8
+							readreg8 019F879A 9
+							writereg8 01DBC616 9
+							readreg32 019F876C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F8770 11
+							writereg32 01DBC5EC 11
+							readreg32 019F8784 12
+							writereg32 01DBC600 12
+							readreg32 019F8764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F8EC4
+							readreg16 019F8F08 0
+							writereg16 01DBC584 0
+							readreg16 019F8EFC 1
+							writereg16 01DBC578 1
+							readreg16 019F8EFE 2
+							writereg16 01DBC57A 2
+							readreg16 019F8F00 3
+							writereg16 01DBC57C 3
+							readreg16 019F8F02 4
+							writereg16 01DBC57E 4
+							readreg8 019F8F44 5
+							writereg8 01DBC5C0 5
+							readreg8 019F8F9D 6
+							writereg8 01DBC619 6
+							readreg8 019F8F99 7
+							writereg8 01DBC615 7
+							readreg8 019F8F97 8
+							writereg8 01DBC613 8
+							readreg8 019F8F9A 9
+							writereg8 01DBC616 9
+							readreg32 019F8F6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F8F70 11
+							writereg32 01DBC5EC 11
+							readreg32 019F8F84 12
+							writereg32 01DBC600 12
+							readreg32 019F8F64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F96C4
+							readreg16 019F9708 0
+							writereg16 01DBC584 0
+							readreg16 019F96FC 1
+							writereg16 01DBC578 1
+							readreg16 019F96FE 2
+							writereg16 01DBC57A 2
+							readreg16 019F9700 3
+							writereg16 01DBC57C 3
+							readreg16 019F9702 4
+							writereg16 01DBC57E 4
+							readreg8 019F9744 5
+							writereg8 01DBC5C0 5
+							readreg8 019F979D 6
+							writereg8 01DBC619 6
+							readreg8 019F9799 7
+							writereg8 01DBC615 7
+							readreg8 019F9797 8
+							writereg8 01DBC613 8
+							readreg8 019F979A 9
+							writereg8 01DBC616 9
+							readreg32 019F976C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F9770 11
+							writereg32 01DBC5EC 11
+							readreg32 019F9784 12
+							writereg32 01DBC600 12
+							readreg32 019F9764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019F9EC4
+							readreg16 019F9F08 0
+							writereg16 01DBC584 0
+							readreg16 019F9EFC 1
+							writereg16 01DBC578 1
+							readreg16 019F9EFE 2
+							writereg16 01DBC57A 2
+							readreg16 019F9F00 3
+							writereg16 01DBC57C 3
+							readreg16 019F9F02 4
+							writereg16 01DBC57E 4
+							readreg8 019F9F44 5
+							writereg8 01DBC5C0 5
+							readreg8 019F9F9D 6
+							writereg8 01DBC619 6
+							readreg8 019F9F99 7
+							writereg8 01DBC615 7
+							readreg8 019F9F97 8
+							writereg8 01DBC613 8
+							readreg8 019F9F9A 9
+							writereg8 01DBC616 9
+							readreg32 019F9F6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019F9F70 11
+							writereg32 01DBC5EC 11
+							readreg32 019F9F84 12
+							writereg32 01DBC600 12
+							readreg32 019F9F64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FA6C4
+							readreg16 019FA708 0
+							writereg16 01DBC584 0
+							readreg16 019FA6FC 1
+							writereg16 01DBC578 1
+							readreg16 019FA6FE 2
+							writereg16 01DBC57A 2
+							readreg16 019FA700 3
+							writereg16 01DBC57C 3
+							readreg16 019FA702 4
+							writereg16 01DBC57E 4
+							readreg8 019FA744 5
+							writereg8 01DBC5C0 5
+							readreg8 019FA79D 6
+							writereg8 01DBC619 6
+							readreg8 019FA799 7
+							writereg8 01DBC615 7
+							readreg8 019FA797 8
+							writereg8 01DBC613 8
+							readreg8 019FA79A 9
+							writereg8 01DBC616 9
+							readreg32 019FA76C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FA770 11
+							writereg32 01DBC5EC 11
+							readreg32 019FA784 12
+							writereg32 01DBC600 12
+							readreg32 019FA764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FAEC4
+							readreg16 019FAF08 0
+							writereg16 01DBC584 0
+							readreg16 019FAEFC 1
+							writereg16 01DBC578 1
+							readreg16 019FAEFE 2
+							writereg16 01DBC57A 2
+							readreg16 019FAF00 3
+							writereg16 01DBC57C 3
+							readreg16 019FAF02 4
+							writereg16 01DBC57E 4
+							readreg8 019FAF44 5
+							writereg8 01DBC5C0 5
+							readreg8 019FAF9D 6
+							writereg8 01DBC619 6
+							readreg8 019FAF99 7
+							writereg8 01DBC615 7
+							readreg8 019FAF97 8
+							writereg8 01DBC613 8
+							readreg8 019FAF9A 9
+							writereg8 01DBC616 9
+							readreg32 019FAF6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FAF70 11
+							writereg32 01DBC5EC 11
+							readreg32 019FAF84 12
+							writereg32 01DBC600 12
+							readreg32 019FAF64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FB6C4
+							readreg16 019FB708 0
+							writereg16 01DBC584 0
+							readreg16 019FB6FC 1
+							writereg16 01DBC578 1
+							readreg16 019FB6FE 2
+							writereg16 01DBC57A 2
+							readreg16 019FB700 3
+							writereg16 01DBC57C 3
+							readreg16 019FB702 4
+							writereg16 01DBC57E 4
+							readreg8 019FB744 5
+							writereg8 01DBC5C0 5
+							readreg8 019FB79D 6
+							writereg8 01DBC619 6
+							readreg8 019FB799 7
+							writereg8 01DBC615 7
+							readreg8 019FB797 8
+							writereg8 01DBC613 8
+							readreg8 019FB79A 9
+							writereg8 01DBC616 9
+							readreg32 019FB76C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FB770 11
+							writereg32 01DBC5EC 11
+							readreg32 019FB784 12
+							writereg32 01DBC600 12
+							readreg32 019FB764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FBEC4
+							readreg16 019FBF08 0
+							writereg16 01DBC584 0
+							readreg16 019FBEFC 1
+							writereg16 01DBC578 1
+							readreg16 019FBEFE 2
+							writereg16 01DBC57A 2
+							readreg16 019FBF00 3
+							writereg16 01DBC57C 3
+							readreg16 019FBF02 4
+							writereg16 01DBC57E 4
+							readreg8 019FBF44 5
+							writereg8 01DBC5C0 5
+							readreg8 019FBF9D 6
+							writereg8 01DBC619 6
+							readreg8 019FBF99 7
+							writereg8 01DBC615 7
+							readreg8 019FBF97 8
+							writereg8 01DBC613 8
+							readreg8 019FBF9A 9
+							writereg8 01DBC616 9
+							readreg32 019FBF6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FBF70 11
+							writereg32 01DBC5EC 11
+							readreg32 019FBF84 12
+							writereg32 01DBC600 12
+							readreg32 019FBF64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FC6C4
+							readreg16 019FC708 0
+							writereg16 01DBC584 0
+							readreg16 019FC6FC 1
+							writereg16 01DBC578 1
+							readreg16 019FC6FE 2
+							writereg16 01DBC57A 2
+							readreg16 019FC700 3
+							writereg16 01DBC57C 3
+							readreg16 019FC702 4
+							writereg16 01DBC57E 4
+							readreg8 019FC744 5
+							writereg8 01DBC5C0 5
+							readreg8 019FC79D 6
+							writereg8 01DBC619 6
+							readreg8 019FC799 7
+							writereg8 01DBC615 7
+							readreg8 019FC797 8
+							writereg8 01DBC613 8
+							readreg8 019FC79A 9
+							writereg8 01DBC616 9
+							readreg32 019FC76C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FC770 11
+							writereg32 01DBC5EC 11
+							readreg32 019FC784 12
+							writereg32 01DBC600 12
+							readreg32 019FC764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FCEC4
+							readreg16 019FCF08 0
+							writereg16 01DBC584 0
+							readreg16 019FCEFC 1
+							writereg16 01DBC578 1
+							readreg16 019FCEFE 2
+							writereg16 01DBC57A 2
+							readreg16 019FCF00 3
+							writereg16 01DBC57C 3
+							readreg16 019FCF02 4
+							writereg16 01DBC57E 4
+							readreg8 019FCF44 5
+							writereg8 01DBC5C0 5
+							readreg8 019FCF9D 6
+							writereg8 01DBC619 6
+							readreg8 019FCF99 7
+							writereg8 01DBC615 7
+							readreg8 019FCF97 8
+							writereg8 01DBC613 8
+							readreg8 019FCF9A 9
+							writereg8 01DBC616 9
+							readreg32 019FCF6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FCF70 11
+							writereg32 01DBC5EC 11
+							readreg32 019FCF84 12
+							writereg32 01DBC600 12
+							readreg32 019FCF64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FD6C4
+							readreg16 019FD708 0
+							writereg16 01DBC584 0
+							readreg16 019FD6FC 1
+							writereg16 01DBC578 1
+							readreg16 019FD6FE 2
+							writereg16 01DBC57A 2
+							readreg16 019FD700 3
+							writereg16 01DBC57C 3
+							readreg16 019FD702 4
+							writereg16 01DBC57E 4
+							readreg8 019FD744 5
+							writereg8 01DBC5C0 5
+							readreg8 019FD79D 6
+							writereg8 01DBC619 6
+							readreg8 019FD799 7
+							writereg8 01DBC615 7
+							readreg8 019FD797 8
+							writereg8 01DBC613 8
+							readreg8 019FD79A 9
+							writereg8 01DBC616 9
+							readreg32 019FD76C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FD770 11
+							writereg32 01DBC5EC 11
+							readreg32 019FD784 12
+							writereg32 01DBC600 12
+							readreg32 019FD764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FDEC4
+							readreg16 019FDF08 0
+							writereg16 01DBC584 0
+							readreg16 019FDEFC 1
+							writereg16 01DBC578 1
+							readreg16 019FDEFE 2
+							writereg16 01DBC57A 2
+							readreg16 019FDF00 3
+							writereg16 01DBC57C 3
+							readreg16 019FDF02 4
+							writereg16 01DBC57E 4
+							readreg8 019FDF44 5
+							writereg8 01DBC5C0 5
+							readreg8 019FDF9D 6
+							writereg8 01DBC619 6
+							readreg8 019FDF99 7
+							writereg8 01DBC615 7
+							readreg8 019FDF97 8
+							writereg8 01DBC613 8
+							readreg8 019FDF9A 9
+							writereg8 01DBC616 9
+							readreg32 019FDF6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FDF70 11
+							writereg32 01DBC5EC 11
+							readreg32 019FDF84 12
+							writereg32 01DBC600 12
+							readreg32 019FDF64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FE6C4
+							readreg16 019FE708 0
+							writereg16 01DBC584 0
+							readreg16 019FE6FC 1
+							writereg16 01DBC578 1
+							readreg16 019FE6FE 2
+							writereg16 01DBC57A 2
+							readreg16 019FE700 3
+							writereg16 01DBC57C 3
+							readreg16 019FE702 4
+							writereg16 01DBC57E 4
+							readreg8 019FE744 5
+							writereg8 01DBC5C0 5
+							readreg8 019FE79D 6
+							writereg8 01DBC619 6
+							readreg8 019FE799 7
+							writereg8 01DBC615 7
+							readreg8 019FE797 8
+							writereg8 01DBC613 8
+							readreg8 019FE79A 9
+							writereg8 01DBC616 9
+							readreg32 019FE76C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FE770 11
+							writereg32 01DBC5EC 11
+							readreg32 019FE784 12
+							writereg32 01DBC600 12
+							readreg32 019FE764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FEEC4
+							readreg16 019FEF08 0
+							writereg16 01DBC584 0
+							readreg16 019FEEFC 1
+							writereg16 01DBC578 1
+							readreg16 019FEEFE 2
+							writereg16 01DBC57A 2
+							readreg16 019FEF00 3
+							writereg16 01DBC57C 3
+							readreg16 019FEF02 4
+							writereg16 01DBC57E 4
+							readreg8 019FEF44 5
+							writereg8 01DBC5C0 5
+							readreg8 019FEF9D 6
+							writereg8 01DBC619 6
+							readreg8 019FEF99 7
+							writereg8 01DBC615 7
+							readreg8 019FEF97 8
+							writereg8 01DBC613 8
+							readreg8 019FEF9A 9
+							writereg8 01DBC616 9
+							readreg32 019FEF6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FEF70 11
+							writereg32 01DBC5EC 11
+							readreg32 019FEF84 12
+							writereg32 01DBC600 12
+							readreg32 019FEF64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FF6C4
+							readreg16 019FF708 0
+							writereg16 01DBC584 0
+							readreg16 019FF6FC 1
+							writereg16 01DBC578 1
+							readreg16 019FF6FE 2
+							writereg16 01DBC57A 2
+							readreg16 019FF700 3
+							writereg16 01DBC57C 3
+							readreg16 019FF702 4
+							writereg16 01DBC57E 4
+							readreg8 019FF744 5
+							writereg8 01DBC5C0 5
+							readreg8 019FF79D 6
+							writereg8 01DBC619 6
+							readreg8 019FF799 7
+							writereg8 01DBC615 7
+							readreg8 019FF797 8
+							writereg8 01DBC613 8
+							readreg8 019FF79A 9
+							writereg8 01DBC616 9
+							readreg32 019FF76C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FF770 11
+							writereg32 01DBC5EC 11
+							readreg32 019FF784 12
+							writereg32 01DBC600 12
+							readreg32 019FF764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x019FFEC4
+							readreg16 019FFF08 0
+							writereg16 01DBC584 0
+							readreg16 019FFEFC 1
+							writereg16 01DBC578 1
+							readreg16 019FFEFE 2
+							writereg16 01DBC57A 2
+							readreg16 019FFF00 3
+							writereg16 01DBC57C 3
+							readreg16 019FFF02 4
+							writereg16 01DBC57E 4
+							readreg8 019FFF44 5
+							writereg8 01DBC5C0 5
+							readreg8 019FFF9D 6
+							writereg8 01DBC619 6
+							readreg8 019FFF99 7
+							writereg8 01DBC615 7
+							readreg8 019FFF97 8
+							writereg8 01DBC613 8
+							readreg8 019FFF9A 9
+							writereg8 01DBC616 9
+							readreg32 019FFF6C 10
+							writereg32 01DBC5E8 10
+							readreg32 019FFF70 11
+							writereg32 01DBC5EC 11
+							readreg32 019FFF84 12
+							writereg32 01DBC600 12
+							readreg32 019FFF64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x01A006C4
+							readreg16 01A00708 0
+							writereg16 01DBC584 0
+							readreg16 01A006FC 1
+							writereg16 01DBC578 1
+							readreg16 01A006FE 2
+							writereg16 01DBC57A 2
+							readreg16 01A00700 3
+							writereg16 01DBC57C 3
+							readreg16 01A00702 4
+							writereg16 01DBC57E 4
+							readreg8 01A00744 5
+							writereg8 01DBC5C0 5
+							readreg8 01A0079D 6
+							writereg8 01DBC619 6
+							readreg8 01A00799 7
+							writereg8 01DBC615 7
+							readreg8 01A00797 8
+							writereg8 01DBC613 8
+							readreg8 01A0079A 9
+							writereg8 01DBC616 9
+							readreg32 01A0076C 10
+							writereg32 01DBC5E8 10
+							readreg32 01A00770 11
+							writereg32 01DBC5EC 11
+							readreg32 01A00784 12
+							writereg32 01DBC600 12
+							readreg32 01A00764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x01A00EC4
+							readreg16 01A00F08 0
+							writereg16 01DBC584 0
+							readreg16 01A00EFC 1
+							writereg16 01DBC578 1
+							readreg16 01A00EFE 2
+							writereg16 01DBC57A 2
+							readreg16 01A00F00 3
+							writereg16 01DBC57C 3
+							readreg16 01A00F02 4
+							writereg16 01DBC57E 4
+							readreg8 01A00F44 5
+							writereg8 01DBC5C0 5
+							readreg8 01A00F9D 6
+							writereg8 01DBC619 6
+							readreg8 01A00F99 7
+							writereg8 01DBC615 7
+							readreg8 01A00F97 8
+							writereg8 01DBC613 8
+							readreg8 01A00F9A 9
+							writereg8 01DBC616 9
+							readreg32 01A00F6C 10
+							writereg32 01DBC5E8 10
+							readreg32 01A00F70 11
+							writereg32 01DBC5EC 11
+							readreg32 01A00F84 12
+							writereg32 01DBC600 12
+							readreg32 01A00F64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x01A016C4
+							readreg16 01A01708 0
+							writereg16 01DBC584 0
+							readreg16 01A016FC 1
+							writereg16 01DBC578 1
+							readreg16 01A016FE 2
+							writereg16 01DBC57A 2
+							readreg16 01A01700 3
+							writereg16 01DBC57C 3
+							readreg16 01A01702 4
+							writereg16 01DBC57E 4
+							readreg8 01A01744 5
+							writereg8 01DBC5C0 5
+							readreg8 01A0179D 6
+							writereg8 01DBC619 6
+							readreg8 01A01799 7
+							writereg8 01DBC615 7
+							readreg8 01A01797 8
+							writereg8 01DBC613 8
+							readreg8 01A0179A 9
+							writereg8 01DBC616 9
+							readreg32 01A0176C 10
+							writereg32 01DBC5E8 10
+							readreg32 01A01770 11
+							writereg32 01DBC5EC 11
+							readreg32 01A01784 12
+							writereg32 01DBC600 12
+							readreg32 01A01764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x01A01EC4
+							readreg16 01A01F08 0
+							writereg16 01DBC584 0
+							readreg16 01A01EFC 1
+							writereg16 01DBC578 1
+							readreg16 01A01EFE 2
+							writereg16 01DBC57A 2
+							readreg16 01A01F00 3
+							writereg16 01DBC57C 3
+							readreg16 01A01F02 4
+							writereg16 01DBC57E 4
+							readreg8 01A01F44 5
+							writereg8 01DBC5C0 5
+							readreg8 01A01F9D 6
+							writereg8 01DBC619 6
+							readreg8 01A01F99 7
+							writereg8 01DBC615 7
+							readreg8 01A01F97 8
+							writereg8 01DBC613 8
+							readreg8 01A01F9A 9
+							writereg8 01DBC616 9
+							readreg32 01A01F6C 10
+							writereg32 01DBC5E8 10
+							readreg32 01A01F70 11
+							writereg32 01DBC5EC 11
+							readreg32 01A01F84 12
+							writereg32 01DBC600 12
+							readreg32 01A01F64 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					ifeq32 p01A5A264|44|0 0x4F414843
+						ifeq32 p01A5A264|34|5C 0x01A026C4
+							readreg16 01A02708 0
+							writereg16 01DBC584 0
+							readreg16 01A026FC 1
+							writereg16 01DBC578 1
+							readreg16 01A026FE 2
+							writereg16 01DBC57A 2
+							readreg16 01A02700 3
+							writereg16 01DBC57C 3
+							readreg16 01A02702 4
+							writereg16 01DBC57E 4
+							readreg8 01A02744 5
+							writereg8 01DBC5C0 5
+							readreg8 01A0279D 6
+							writereg8 01DBC619 6
+							readreg8 01A02799 7
+							writereg8 01DBC615 7
+							readreg8 01A02797 8
+							writereg8 01DBC613 8
+							readreg8 01A0279A 9
+							writereg8 01DBC616 9
+							readreg32 01A0276C 10
+							writereg32 01DBC5E8 10
+							readreg32 01A02770 11
+							writereg32 01DBC5EC 11
+							readreg32 01A02784 12
+							writereg32 01DBC600 12
+							readreg32 01A02764 13
+							writereg32 01DBC6D0 13
+						endif
+					endif
+					write32 01A5CC04 0x00000000
+					write32 01A5CC08 0x00000000
+					write32 01A5CC0C 0x00000000
+					write32 01A5CC10 0x00000000
+					write32 01A5CC14 0x00000000
+					write32 01A5CC18 0x00000000
+					write8 01DBC618 0x99
+					write8 01DBC611 0x00
+					write8 01DBC612 0x01
+				endif
+				ifeq8 0134062c 4
+					write16 01366FE6 0x385F
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 5
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq8 01DCFAE4 0
+						ifgtequ8 01A0FBD0 4
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+							endif
+						endif
+						ifltequ8 01A0FBD0 3
+							ifeq8 01DCFAE0 1
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538D00
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+									endif
+									ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+										write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+									endif
+								endif
+							endif
+							ifne8 01DCFAE0 1
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9f
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9e
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8f
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8e
+								endif
+							endif
+						endif
+					endif
+				endif
+				ifeq8 01A0FBD0 0
+					ifeq8 01A0FBD2 1
+						add16 01DBC578 1
+						add16 01DBC57A 1
+						add16 01DBC57C 1
+						add16 01DBC57E 1
+						add16 01DBC584 1
+						write8 01A0FBD2 2
+					endif
+				endif
+				ifeq8 01A0FBD0 1
+					ifeq8 01A0FBD2 1
+						add16 01DBC578 2
+						add16 01DBC57A 2
+						add16 01DBC57C 2
+						add16 01DBC57E 2
+						add16 01DBC584 2
+						write8 01A0FBD2 2
+					endif
+				endif
+				ifeq8 01A0FBD0 2
+					ifeq8 01A0FBD2 1
+						add16 01DBC578 4
+						add16 01DBC57A 4
+						add16 01DBC57C 4
+						add16 01DBC57E 4
+						add16 01DBC584 4
+						write8 01A0FBD2 2
+					endif
+				endif
+				ifeq8 01A0FBD0 3
+					ifeq8 01A0FBD2 1
+						add16 01DBC578 8
+						add16 01DBC57A 8
+						add16 01DBC57C 8
+						add16 01DBC57E 8
+						add16 01DBC584 8
+						write8 01A0FBD2 2
+					endif
+				endif
+				ifeq8 01A0FBD0 4
+					ifeq8 01A0FBD2 1
+						add16 01DBC578 16
+						add16 01DBC57A 16
+						add16 01DBC57C 16
+						add16 01DBC57E 16
+						add16 01DBC584 16
+						write8 01A0FBD2 2
+					endif
+				endif
+				ifgtequ16 01DBC578 4000
+					write16 01DBC578 3966
+				endif
+				ifgtequ16 01DBC57A 4000
+					write16 01DBC57A 3966
+				endif
+				ifgtequ16 01DBC57C 4000
+					write16 01DBC57C 3966
+				endif
+				ifgtequ16 01DBC57E 4000
+					write16 01DBC57E 3966
+				endif
+				ifgtequ16 01DBC584 4000
+					write16 01DBC584 3966
+				endif
+				ifltequ16 01DBC578 6
+					write16 01DBC578 6
+				endif
+				ifltequ16 01DBC57A 6
+					write16 01DBC57A 6
+				endif
+				ifltequ16 01DBC57C 6
+					write16 01DBC57C 6
+				endif
+				ifltequ16 01DBC57E 6
+					write16 01DBC57E 6
+				endif
+				ifltequ16 01DBC584 6
+					write16 01DBC584 6
+				endif
+			endif
+			ifeq8 01A0FBD6 8
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3930
+					write8 01A0FBD3 1
+					write8 01A0FBD4 8
+					write8 01A0FBD5 6
+					write32 01A5CC04 0x00000000
+					write32 01A5CC1C 0x00000000
+					write8 01DB9e19 0
+					write8 01DBA619 1
+					write8 01DBb619 1
+					write8 01DBbe19 0
+					write8 01DB9e1b 0
+					write8 01DBA61b 0
+					write8 01DBAe1b 0
+					write8 01DBb61b 1
+					write8 01DBbe1b 1
+					write8 01DB9e13 0
+					write8 01DBA613 0
+					write8 01DBAe13 0
+					write8 01DBb613 0
+					write8 01DBbe13 0
+					write8 01DB9e15 0
+					write8 01DBA615 0
+					write8 01DBAe15 0
+					write8 01DBb615 0
+					write8 01DBbe15 0
+				endif
+			endif
+			ifeq8 01A0FBD6 9
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3031
+				endif
+				ifeq8 0134062c 4
+					write32 0133bbe7 0x5449554E
+					write16 01366FE6 0x3031
+				endif
+				write8 01DB95C0 0x09
+				writefloat 01DB95E8 0
+				writefloat 01DB95EC 2
+				writefloat 01DB9600 0.5
+				write8 01DB9611 0x00
+				write8 01DB9612 0x03
+				write8 01DB9618 0x06
+				write8 01DB9619 0x00
+				write8 01DB961B 0x01
+				write8 01DB965C 0xFF
+				write8 01DB965D 0xFF
+				write8 01DB965E 0x09
+				write8 01DB965F 0x0D
+				write8 01DB9660 0xFF
+				write8 01DB9661 0x14
+				write8 01DB9662 0x14
+				write8 01DB9663 0xFF
+				write8 01DB9DC0 0x08
+				writefloat 01DB9DE8 0
+				writefloat 01DB9DEC 1
+				writefloat 01DB9E00 1.2
+				write8 01DB9E11 0x05
+				write8 01DB9E12 0x08
+				write8 01DB9E18 0x09
+				write8 01DB9E19 0x00
+				write8 01DB9E1B 0x00
+				write8 01DB9E5C 0xFF
+				write8 01DB9E5D 0xFF
+				write8 01DB9E5E 0xFF
+				write8 01DB9E5F 0xFF
+				write8 01DB9E60 0xFF
+				write8 01DB9E61 0x0B
+				write8 01DB9E62 0x0B
+				write8 01DB9E63 0xFF
+				write8 01DBA5C0 0x09
+				writefloat 01DBA5E8 0
+				writefloat 01DBA5EC 1
+				writefloat 01DBA600 1.2
+				write8 01DBA611 0x00
+				write8 01DBA612 0x00
+				write8 01DBA618 0x09
+				write8 01DBA619 0x00
+				write8 01DBA61B 0x01
+				write8 01DBA65C 0xFF
+				write8 01DBA65D 0xFF
+				write8 01DBA65E 0x14
+				write8 01DBA65F 0xFF
+				write8 01DBA660 0xFF
+				write8 01DBA661 0x14
+				write8 01DBA662 0x14
+				write8 01DBA663 0xFF
+				write8 01DBADC0 0x16
+				write8 01DBAE11 0x00
+				write8 01DBAE12 0x00
+				write8 01DBAE18 0x00
+				write8 01DBAE19 0x00
+				write8 01DBAE1B 0x00
+				write8 01DBAE15 0x06
+				write8 01DBB5C0 0x0C
+				writefloat 01DBB5E8 1
+				writefloat 01DBB5EC 1
+				writefloat 01DBB600 1.2
+				write8 01DBB611 0x00
+				write8 01DBB612 0x00
+				write8 01DBB618 0x0C
+				write8 01DBB619 0x00
+				write8 01DBB61B 0x00
+				write8 01DBB65C 0xFF
+				write8 01DBB65D 0xFF
+				write8 01DBB65E 0xFF
+				write8 01DBB65F 0xFF
+				write8 01DBB660 0xFF
+				write8 01DBB661 0xFF
+				write8 01DBB662 0xFF
+				write8 01DBB663 0xFF
+				write8 01DBBDC0 0x14
+				write8 01DBBE18 0x09
+				write8 01DBBE19 0x00
+				write8 01DBBE1B 0x01
+				write8 01DBC5C0 0x10
+				writefloat 01DBC5E8 -1
+				writefloat 01DBC5EC 1
+				writefloat 01DBC600 1.2
+				write8 01DBC611 0x00
+				write8 01DBC612 0x01
+				write8 01DBC618 0x0D
+				write8 01DBC619 0x00
+				write8 01DBC61B 0x01
+				write8 01DBC65C 0xFF
+				write8 01DBC65D 0xFF
+				write8 01DBC65E 0xFF
+				write8 01DBC65F 0xFF
+				write8 01DBC660 0xFF
+				write8 01DBC661 0xFF
+				write8 01DBC662 0xFF
+				write8 01DBC663 0xFF
+				ifeq8 01A0FBD0 0
+					write16 01DB9578 2766
+					write16 01DB957A 2566
+					write16 01DB957C 2566
+					write16 01DB957E 2766
+					write16 01DB9584 3000
+					write16 01DB9D78 2766
+					write16 01DB9D7A 2766
+					write16 01DB9D7C 2566
+					write16 01DB9D7E 2566
+					write16 01DB9D84 3000
+					write16 01DBA578 2766
+					write16 01DBA57A 2566
+					write16 01DBA57C 2766
+					write16 01DBA57E 2566
+					write16 01DBA584 3000
+					write16 01DBAD78 2566
+					write16 01DBAD7A 2766
+					write16 01DBAD7C 2566
+					write16 01DBAD7E 2766
+					write16 01DBAD84 3000
+					write16 01DBb578 2566
+					write16 01DBb57A 2766
+					write16 01DBb57C 2766
+					write16 01DBb57E 2566
+					write16 01DBb584 3000
+					write16 01DBbD78 2766
+					write16 01DBbD7A 2766
+					write16 01DBbD7C 2766
+					write16 01DBbD7E 2766
+					write16 01DBbD84 3000
+					write16 01DBc578 2566
+					write16 01DBc57A 2566
+					write16 01DBc57C 2766
+					write16 01DBc57E 2766
+					write16 01DBc584 3000
+				endif
+				ifeq8 01A0FBD0 1
+					write16 01DB9578 2866
+					write16 01DB957A 2666
+					write16 01DB957C 2666
+					write16 01DB957E 2866
+					write16 01DB9584 3000
+					write16 01DB9D78 2866
+					write16 01DB9D7A 2866
+					write16 01DB9D7C 2666
+					write16 01DB9D7E 2666
+					write16 01DB9D84 3000
+					write16 01DBA578 2866
+					write16 01DBA57A 2666
+					write16 01DBA57C 2866
+					write16 01DBA57E 2666
+					write16 01DBA584 3000
+					write16 01DBAD78 2666
+					write16 01DBAD7A 2866
+					write16 01DBAD7C 2666
+					write16 01DBAD7E 2866
+					write16 01DBAD84 3000
+					write16 01DBb578 2666
+					write16 01DBb57A 2866
+					write16 01DBb57C 2866
+					write16 01DBb57E 2666
+					write16 01DBb584 3000
+					write16 01DBbD78 2866
+					write16 01DBbD7A 2866
+					write16 01DBbD7C 2866
+					write16 01DBbD7E 2866
+					write16 01DBbD84 3000
+					write16 01DBc578 2666
+					write16 01DBc57A 2666
+					write16 01DBc57C 2866
+					write16 01DBc57E 2866
+					write16 01DBc584 3000
+				endif
+				ifeq8 01A0FBD0 2
+					write16 01DB9578 2966
+					write16 01DB957A 2766
+					write16 01DB957C 2766
+					write16 01DB957E 2966
+					write16 01DB9584 3000
+					write16 01DB9D78 2966
+					write16 01DB9D7A 2966
+					write16 01DB9D7C 2766
+					write16 01DB9D7E 2766
+					write16 01DB9D84 3000
+					write16 01DBA578 2966
+					write16 01DBA57A 2766
+					write16 01DBA57C 2966
+					write16 01DBA57E 2766
+					write16 01DBA584 3000
+					write16 01DBAD78 2766
+					write16 01DBAD7A 2966
+					write16 01DBAD7C 2766
+					write16 01DBAD7E 2966
+					write16 01DBAD84 3000
+					write16 01DBb578 2766
+					write16 01DBb57A 2966
+					write16 01DBb57C 2966
+					write16 01DBb57E 2766
+					write16 01DBb584 3000
+					write16 01DBbD78 2966
+					write16 01DBbD7A 2966
+					write16 01DBbD7C 2966
+					write16 01DBbD7E 2966
+					write16 01DBbD84 3000
+					write16 01DBc578 2766
+					write16 01DBc57A 2766
+					write16 01DBc57C 2966
+					write16 01DBc57E 2966
+					write16 01DBc584 3000
+				endif
+			endif
+			ifeq8 01A0FBD6 10
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3131
+				endif
+				ifeq8 0134062c 4
+					write32 0133bbe7 0x4E455645
+					write16 01366FE6 0x3131
+				endif
+				write8 01DB95C0 0x0D
+				write8 01DB9615 0x0E
+				write8 01DB9618 0x00
+				write8 01DB9619 0x00
+				write8 01DB961B 0x00
+				write8 01DB965C 0xFF
+				write8 01DB965D 0xFF
+				write8 01DB965E 0xFF
+				write8 01DB965F 0xFF
+				write8 01DB9660 0xFF
+				write8 01DB9661 0xFF
+				write8 01DB9662 0xFF
+				write8 01DB9663 0xFF
+				write8 01DB9DC0 0x0E
+				write8 01DB9E15 0x0D
+				write8 01DB9E18 0x00
+				write8 01DB9E19 0x00
+				write8 01DB9E1B 0x00
+				write8 01DB9E5C 0xFF
+				write8 01DB9E5D 0xFF
+				write8 01DB9E5E 0xFF
+				write8 01DB9E5F 0xFF
+				write8 01DB9E60 0xFF
+				write8 01DB9E61 0xFF
+				write8 01DB9E62 0xFF
+				write8 01DB9E63 0xFF
+				write8 01DBA5C0 0x12
+				write8 01DBA615 0x0C
+				write8 01DBA618 0x00
+				write8 01DBA619 0x00
+				write8 01DBA61B 0x00
+				write8 01DBA65C 0xFF
+				write8 01DBA65D 0xFF
+				write8 01DBA65E 0xFF
+				write8 01DBA65F 0xFF
+				write8 01DBA660 0xFF
+				write8 01DBA661 0xFF
+				write8 01DBA662 0xFF
+				write8 01DBA663 0xFF
+				write8 01DBADC0 0x0E
+				write8 01DBAE11 0x0A
+				write8 01DBAE12 0x04
+				write8 01DBAE18 0x00
+				write8 01DBAE19 0x00
+				write8 01DBAE1B 0x00
+				write8 01DBAE5C 0xFF
+				write8 01DBAE5D 0xFF
+				write8 01DBAE5E 0xFF
+				write8 01DBAE5F 0x12
+				write8 01DBAE60 0xFF
+				write8 01DBAE61 0xFF
+				write8 01DBAE62 0xFF
+				write8 01DBAE63 0xFF
+				write8 01DBB5C0 0x15
+				write8 01DBB61A 0x0b
+				write8 01DBB61B 0x00
+				write8 01DBBDC0 0x16
+				write8 01DBBE1A 0x07
+				write8 01DBBE1B 0x00
+				write8 01DBC5C0 0x14
+				write8 01DBC61A 0x09
+				write8 01DBC61B 0x00
+				write32 01A5CC04 0x01DB9540
+				write32 01A5CC08 0x01DB9D40
+				write32 01A5CC0C 0x01DBA540
+				write32 01A5CC10 0x01DBAD40
+				write32 01A5CC14 0x01DBB540
+				write32 01A5CC18 0x01DBBD40
+				write32 01A5CC1C 0x01DBC540
+				write16 01DB9578 2566
+				write16 01DB957A 2666
+				write16 01DB957C 2466
+				write16 01DB957E 2566
+				write16 01DB9584 3000
+				write16 01DB9D78 2666
+				write16 01DB9D7A 2566
+				write16 01DB9D7C 2566
+				write16 01DB9D7E 2466
+				write16 01DB9D84 3000
+				write16 01DBA578 2566
+				write16 01DBA57A 2566
+				write16 01DBA57C 2466
+				write16 01DBA57E 2666
+				write16 01DBA584 3000
+				write16 01DBAD78 2666
+				write16 01DBAD7A 2866
+				write16 01DBAD7C 3066
+				write16 01DBAD7E 2866
+				write16 01DBAD84 3250
+				write16 01DBb578 3266
+				write16 01DBb57A 3066
+				write16 01DBb57C 3066
+				write16 01DBb57E 2866
+				write16 01DBb584 3500
+				write16 01DBbD78 2866
+				write16 01DBbD7A 3066
+				write16 01DBbD7C 3066
+				write16 01DBbD7E 3266
+				write16 01DBbD84 3500
+				write16 01DBc578 3066
+				write16 01DBc57A 2866
+				write16 01DBc57C 3266
+				write16 01DBc57E 3066
+				write16 01DBc584 3500
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|694 10
+				endif
+			endif
+			ifeq8 01A0FBD6 11
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq8 01DCFAE4 0
+						ifne8 01DCFAF4 1
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+								endif
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538D00
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+								endif
+							endif
+						endif
+						ifeq8 01DCFAF4 1
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9f
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9e
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8f
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8e
+							endif
+						endif
+					endif
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq8 01DCFAE4 0
+						ifne8 01DCFB1C 1
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x0055F700
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+								endif
+							endif
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538D00
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9F
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+								endif
+								ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8E
+									write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8F
+								endif
+							endif
+						endif
+						ifeq8 01DCFB1C 1
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD3
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0xD2
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x93
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x92
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9f
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x9e
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x83
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x82
+							endif
+							ifeq8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8f
+								write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|A1 0x8e
+							endif
+						endif
+					endif
+				endif
+				ifeq8 01A5CC24 1
+					write16 01367370 0x3231
+				endif
+				write32 01A5CC04 0x01DB9540
+				write32 01A5CC08 0x01DB9D40
+				write32 01A5CC0C 0x01DBA540
+				write32 01A5CC10 0x01DBAD40
+				write32 01A5CC14 0x01DBB540
+				write32 01A5CC18 0x01DBBD40
+				write32 01A5CC1C 0x01DBC540
+				ifeq8 0134062c 4
+					write16 01366FE6 0x3231
+				endif
+				write8 01DBC61D 0x02
+				write8 01DBBDC0 0x02
+				write8 01DBBE13 0x01
+				ifeq8 0134062c 5
+					ifeq8 0174AFDD 0x0
+						write8 01DBBE16 0x00
+					endif
+					ifeq8 0174AFDD 0x30
+						write8 01DBBE16 0x01
+					endif
+					ifeq8 0174AFDD 0x0
+						writefloat 01DBBDE8 1
+						writefloat 01DBBDEC 0
+					endif
+					ifeq8 0174AFDD 0x10
+						writefloat 01DBBDE8 0
+						writefloat 01DBBDEC 1
+					endif
+					ifeq8 0174AFDD 0x20
+						writefloat 01DBBDE8 -1
+						writefloat 01DBBDEC 0
+					endif
+					ifeq8 0174AFDD 0x30
+						writefloat 01DBBDE8 0
+						writefloat 01DBBDEC -1
+					endif
+					ifeq8 0174AFDD 0x40
+						writefloat 01DBBDE8 1
+						writefloat 01DBBDEC -1
+					endif
+					ifeq8 0174AFDD 0x50
+						writefloat 01DBBDE8 -1
+						writefloat 01DBBDEC 1
+					endif
+					add8 01DBBE15 0x01
+					ifgtequ8 01DBBE15 0x03
+						write8 01DBBE15 0x00
+					endif
+				endif
+				writefloat 01DBBDF0 0
+				writefloat 01DBBE00 0.6
+				write8 01DBB5C0 0x05
+				write8 01DBB611 0x0A
+				write8 01DBB612 0x04
+				write8 01DBB618 0x09
+				write8 01DBB619 0x01
+				write8 01DBB61B 0x01
+				writefloat 01DBB600 0
+				ifeq8 0134062c 5
+					add8 01DBB65C 0x01
+					ifgtequ8 01DBB65C 0x15
+						write8 01DBB65C 0x00
+					endif
+					add8 01DBB65D 0x02
+					ifgtequ8 01DBB65D 0x15
+						write8 01DBB65D 0x00
+					endif
+					add8 01DBB65E 0x03
+					ifgtequ8 01DBB65E 0x15
+						write8 01DBB65E 0x00
+					endif
+					add8 01DBB65F 0x04
+					ifgtequ8 01DBB65F 0x15
+						write8 01DBB65F 0x00
+					endif
+					add8 01DBB660 0x05
+					ifgtequ8 01DBB660 0x15
+						write8 01DBB660 0x00
+					endif
+					add8 01DBB661 0x06
+					ifgtequ8 01DBB661 0x15
+						write8 01DBB661 0x00
+					endif
+					add8 01DBB662 0x07
+					ifgtequ8 01DBB662 0x15
+						write8 01DBB662 0x00
+					endif
+					add8 01DBB663 0x08
+					ifgtequ8 01DBB663 0x15
+						write8 01DBB663 0x00
+					endif
+				endif
+				ifeq8 0134062c 5
+					ifeq8 0174AFDD 0x0
+						write8 01DBADC0 0x05
+					endif
+					ifeq8 0174AFDD 0x10
+						write8 01DBADC0 0x08
+					endif
+					ifeq8 0174AFDD 0x20
+						write8 01DBADC0 0x0B
+					endif
+					ifeq8 0174AFDD 0x30
+						write8 01DBADC0 0x0E
+					endif
+					ifeq8 0174AFDD 0x40
+						write8 01DBADC0 0x11
+					endif
+					ifeq8 0174AFDD 0x50
+						write8 01DBADC0 0x08
+					endif
+				endif
+				write8 01DBAE11 0x00
+				write8 01DBAE12 0x03
+				write8 01DBAE1A 0x01
+				writefloat 01DBADE8 0
+				writefloat 01DBADEC 0
+				writefloat 01DBAE00 1.2
+				write8 01DBA5C0 0x02
+				write8 01DBA611 0x09
+				write8 01DBA612 0x00
+				write8 01DBA618 0x07
+				writefloat 01DBA5F0 0
+				writefloat 01DBA5E8 0
+				writefloat 01DBA5EC 0
+				writefloat 01DBA600 1.2
+				ifeq8 01A0FBD0 0
+					write16 01DBC578 2127
+					write16 01DBC57A 1985
+					write16 01DBC57C 1994
+					write16 01DBC57E 2103
+					write16 01DBC584 1500
+					write16 01DBBD78 2664
+					write16 01DBBD7A 2617
+					write16 01DBBD7C 2709
+					write16 01DBBD7E 2651
+					write16 01DBBD84 3000
+					write16 01DBB578 2833
+					write16 01DBB57A 2833
+					write16 01DBB57C 2833
+					write16 01DBB57E 3166
+					write16 01DBB584 3500
+					write16 01DBAD78 1793
+					write16 01DBAD7A 1836
+					write16 01DBAD7C 1889
+					write16 01DBAD7E 1821
+					write16 01DBAD84 1000
+					write16 01DBA578 3266
+					write16 01DBA57A 3266
+					write16 01DBA57C 3266
+					write16 01DBA57E 3266
+					write16 01DBA584 4000
+					write16 01DB9D78 2611
+					write16 01DB9D7A 2610
+					write16 01DB9D7C 2547
+					write16 01DB9D7E 2564
+					write16 01DB9D84 2000
+					write16 01DB9578 3166
+					write16 01DB957A 3166
+					write16 01DB957C 3166
+					write16 01DB957E 3166
+					write16 01DB9584 3750
+				endif
+				ifeq8 01A0FBD0 1
+					write16 01DBC578 2227
+					write16 01DBC57A 2085
+					write16 01DBC57C 2094
+					write16 01DBC57E 2203
+					write16 01DBC584 1500
+					write16 01DBBD78 2764
+					write16 01DBBD7A 2717
+					write16 01DBBD7C 2809
+					write16 01DBBD7E 2751
+					write16 01DBBD84 3000
+					write16 01DBB578 2933
+					write16 01DBB57A 2933
+					write16 01DBB57C 2933
+					write16 01DBB57E 3266
+					write16 01DBB584 3500
+					write16 01DBAD78 1893
+					write16 01DBAD7A 1936
+					write16 01DBAD7C 1989
+					write16 01DBAD7E 1921
+					write16 01DBAD84 1000
+					write16 01DBA578 3366
+					write16 01DBA57A 3366
+					write16 01DBA57C 3366
+					write16 01DBA57E 3366
+					write16 01DBA584 4000
+					write16 01DB9D78 2711
+					write16 01DB9D7A 2710
+					write16 01DB9D7C 2647
+					write16 01DB9D7E 2664
+					write16 01DB9D84 2000
+					write16 01DB9578 3266
+					write16 01DB957A 3266
+					write16 01DB957C 3266
+					write16 01DB957E 3266
+					write16 01DB9584 3750
+				endif
+				ifeq8 01A0FBD0 2
+					write16 01DBC578 2327
+					write16 01DBC57A 2185
+					write16 01DBC57C 2194
+					write16 01DBC57E 2303
+					write16 01DBC584 1500
+					write16 01DBBD78 2864
+					write16 01DBBD7A 2817
+					write16 01DBBD7C 2909
+					write16 01DBBD7E 2851
+					write16 01DBBD84 3000
+					write16 01DBB578 3033
+					write16 01DBB57A 3033
+					write16 01DBB57C 3033
+					write16 01DBB57E 3366
+					write16 01DBB584 3500
+					write16 01DBAD78 1993
+					write16 01DBAD7A 2036
+					write16 01DBAD7C 2089
+					write16 01DBAD7E 2021
+					write16 01DBAD84 1000
+					write16 01DBA578 3466
+					write16 01DBA57A 3466
+					write16 01DBA57C 3466
+					write16 01DBA57E 3466
+					write16 01DBA584 4000
+					write16 01DB9D78 2811
+					write16 01DB9D7A 2810
+					write16 01DB9D7C 2747
+					write16 01DB9D7E 2764
+					write16 01DB9D84 2000
+					write16 01DB9578 3366
+					write16 01DB957A 3366
+					write16 01DB957C 3366
+					write16 01DB957E 3366
+					write16 01DB9584 3750
+				endif
+				ifeq8 0134062c 5
+					add8 01DB9DC0 0x01
+					ifgtequ8 01DB9DC0 0x14
+						write8 01DB9DC0 0x05
+					endif
+				endif
+				write8 01DB9E11 0x0A
+				write8 01DB9E12 0x01
+				write8 01DB9E1A 0x09
+				writefloat 01DB9DE8 1
+				writefloat 01DB9DEC -1
+				writefloat 01DB9E00 1.2
+				write8 01DB9E5D 0x12
+				write8 01DB95C0 0x14
+			endif
+		endif
+	endif
+	ifeq8 01A0FBD3 1
+		ifeq8 01A0FBD4 3
+			ifeq8 01A0FBD5 6
+				ifeq8 0134062c 4
+					write16 01366FD6 0x365F
+					write32 0133BBE7 0x444C4F43
+					write32 0133C13F 0x444C4F43
+				endif
+				ifeq8 0134046c 5
+					ifeq8 01DB961D 0
+						write8 01DB961D 5
+					endif
+					ifeq8 01DB9E1D 0
+						write8 01DB9E1D 5
+					endif
+					ifeq8 01DBA61D 0
+						write8 01DBA61D 5
+					endif
+					ifeq8 01DBAE1D 0
+						write8 01DBAE1D 5
+					endif
+					ifeq8 01DBb61D 0
+						write8 01DBb61D 5
+					endif
+					ifeq8 01DBbe1D 0
+						write8 01DBbe1D 5
+					endif
+					ifeq8 01DBc61D 0
+						write8 01DBc61D 5
+					endif
+				endif
+				writefloat 01DB95F0 0
+				writefloat 01DB9DF0 -1
+				writefloat 01DBA5F0 1
+				writefloat 01DBADF0 0
+				writefloat 01DBB5F0 1
+				writefloat 01DBBDF0 -1
+				writefloat 01DBC5F0 1
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 1
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538BE0
+						write32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 498
+					endif
+				endif
+				ifeq8 01934be0 16
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538A40
+							ifgtequ32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|8C 100
+								sub32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|8C 50
+							endif
+							ifgtequ32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|88 100
+								sub32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|88 50
+							endif
+						endif
+					endif
+				endif
+			endif
+		endif
+		ifeq8 01A0FBD4 8
+			ifeq8 01A0FBD5 6
+				ifeq8 0134062c 4
+					write16 01366FD6 0x395F
+					write32 0133bbe7 0x5449554E
+				endif
+				ifeq8 0134062c 5
+					add8 01DB9E18 1
+					add8 01DBA618 2
+					add8 01DBAe1A 1
+					add8 01DBb618 3
+					add8 01DBbe18 4
+					ifeq8 0174AFDD 0
+						write8 01DB9dc0 0x14
+						write8 01DBA5c0 0x15
+						write8 01DBAdc0 0x16
+						write8 01DBb5c0 0x14
+						write8 01DBbdc0 0x15
+					endif
+					ifeq8 0174AFDD 10
+						write8 01DB9dc0 0x15
+						write8 01DBA5c0 0x16
+						write8 01DBAdc0 0x14
+						write8 01DBb5c0 0x16
+						write8 01DBbdc0 0x14
+					endif
+					ifeq8 0174AFDD 20
+						write8 01DB9dc0 0x16
+						write8 01DBA5c0 0x14
+						write8 01DBAdc0 0x14
+						write8 01DBb5c0 0x15
+						write8 01DBbdc0 0x16
+					endif
+					ifeq8 0174AFDD 30
+						write8 01DB9dc0 0x16
+						write8 01DBA5c0 0x14
+						write8 01DBAdc0 0x15
+						write8 01DBb5c0 0x16
+						write8 01DBbdc0 0x15
+					endif
+					ifeq8 0174AFDD 40
+						write8 01DB9dc0 0x15
+						write8 01DBA5c0 0x16
+						write8 01DBAdc0 0x16
+						write8 01DBb5c0 0x15
+						write8 01DBbdc0 0x14
+					endif
+					ifeq8 0174AFDD 50
+						write8 01DB9dc0 0x14
+						write8 01DBA5c0 0x15
+						write8 01DBAdc0 0x15
+						write8 01DBb5c0 0x16
+						write8 01DBbdc0 0x14
+					endif
+					ifgtequ8 01DB9E18 0x0E
+						write8 01DB9e18 0x00
+					endif
+					ifgtequ8 01DBA618 0x0E
+						write8 01DBA618 0x00
+					endif
+					ifgtequ8 01DBB618 0x0E
+						write8 01DBb618 0x00
+					endif
+					ifgtequ8 01DBbe18 0x0E
+						write8 01DBbe18 0x00
+					endif
+					ifgtequ8 01DBAe1A 0x0C
+						write8 01DBAe1A 0x01
+					endif
+				endif
+				ifeq8 01A0FBD0 0
+					write16 01DB9D78 2666
+					write16 01DB9D7A 2266
+					write16 01DB9D7C 2466
+					write16 01DB9D7E 2466
+					write16 01DB9D84 3000
+					write16 01DBA578 2466
+					write16 01DBA57A 2666
+					write16 01DBA57C 2266
+					write16 01DBA57E 2466
+					write16 01DBA584 3000
+					write16 01DBAD78 2466
+					write16 01DBAD7A 2466
+					write16 01DBAD7C 2466
+					write16 01DBAD7E 2466
+					write16 01DBAD84 3000
+					write16 01DBb578 2466
+					write16 01DBb57A 2466
+					write16 01DBb57C 2666
+					write16 01DBb57E 2266
+					write16 01DBb584 3000
+					write16 01DBbD78 2266
+					write16 01DBbD7A 2466
+					write16 01DBbD7C 2466
+					write16 01DBbD7E 2666
+					write16 01DBbD84 3000
+				endif
+				ifeq8 01A0FBD0 1
+					write16 01DB9D78 2766
+					write16 01DB9D7A 2366
+					write16 01DB9D7C 2566
+					write16 01DB9D7E 2566
+					write16 01DB9D84 3000
+					write16 01DBA578 2566
+					write16 01DBA57A 2766
+					write16 01DBA57C 2366
+					write16 01DBA57E 2566
+					write16 01DBA584 3000
+					write16 01DBAD78 2566
+					write16 01DBAD7A 2566
+					write16 01DBAD7C 2566
+					write16 01DBAD7E 2566
+					write16 01DBAD84 3000
+					write16 01DBb578 2566
+					write16 01DBb57A 2566
+					write16 01DBb57C 2766
+					write16 01DBb57E 2366
+					write16 01DBb584 3000
+					write16 01DBbD78 2366
+					write16 01DBbD7A 2566
+					write16 01DBbD7C 2566
+					write16 01DBbD7E 2766
+					write16 01DBbD84 3000
+				endif
+				ifeq8 01A0FBD0 2
+					write16 01DB9D78 2866
+					write16 01DB9D7A 2466
+					write16 01DB9D7C 2666
+					write16 01DB9D7E 2666
+					write16 01DB9D84 3000
+					write16 01DBA578 2666
+					write16 01DBA57A 2866
+					write16 01DBA57C 2466
+					write16 01DBA57E 2666
+					write16 01DBA584 3000
+					write16 01DBAD78 2666
+					write16 01DBAD7A 2666
+					write16 01DBAD7C 2666
+					write16 01DBAD7E 2666
+					write16 01DBAD84 3000
+					write16 01DBb578 2666
+					write16 01DBb57A 2666
+					write16 01DBb57C 2866
+					write16 01DBb57E 2466
+					write16 01DBb584 3000
+					write16 01DBbD78 2466
+					write16 01DBbD7A 2666
+					write16 01DBbD7C 2666
+					write16 01DBbD7E 2866
+					write16 01DBbD84 3000
+				endif
+			endif
+		endif
+		ifeq8 01A0FBD4 7
+			ifeq8 01A0FBD5 12
+				ifeq8 0134062c 4
+					write16 01366FD6 0x375F
+					write32 0133BBE7 0x444E4153
+				endif
+				writefloat 01DB95F0 -1
+				writefloat 01DB9DF0 0
+				writefloat 01DBA5F0 -1
+				writefloat 01DBADF0 0
+				writefloat 01DBB5F0 -1
+				writefloat 01DBBDF0 0
+				writefloat 01DBC5F0 -1
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					write8 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|690 2
+				endif
+				ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538BE0
+						write32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|B4 487
+					endif
+				endif
+				ifeq8 01934be0 16
+					ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+						ifne32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|43C 0x00538A40
+							ifgtequ32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|8C 10
+								sub32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|8C 2
+							endif
+							ifgtequ32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|88 10
+								sub32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|88 2
+							endif
+						endif
+					endif
+				endif
+			endif
+		endif
+	endif
+	ifeq8 01DCFAE4 1
+		ifeq8 01DCFAE0 1
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 0
+						write32 01366FB4 0x315F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 0
+											write8 019F6ED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 0
+											write8 019F76D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 0
+											write8 019F7ED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 0
+											write8 019F86D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 0
+											write8 019F8ED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 0
+											write8 019F96D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 0
+											write8 019F9ED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 0
+											write8 019FA6D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 0
+											write8 019FAED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 0
+											write8 019FB6D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 0
+											write8 019FBED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 0
+											write8 019FC6D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 0
+											write8 019FCED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 0
+											write8 019FD6D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 0
+											write8 019FDED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 0
+											write8 019FE6D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 0
+											write8 019FEED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 0
+											write8 019FF6D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 0
+											write8 019FFED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 0
+											write8 01A006D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 0
+											write8 01A00ED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 0
+											write8 01A016D0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 0
+											write8 01A01ED0 1
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 0
+											write8 01A026D0 1
+										endif
+									endif
+								endif
+								add32 0174b05c 100
+								write8 0134046c 5
+								ifne8 019F6F9E 16
+									ifne8 019F779E 16
+										ifne8 019F7F9E 16
+											ifne8 019F879E 16
+												ifne8 019F8F9E 16
+													ifne8 019F979E 16
+														ifne8 019F9F9E 16
+															ifne8 019FA79E 16
+																ifne8 019FAF9E 16
+																	ifne8 019FB79E 16
+																		ifne8 019FBF9E 16
+																			ifne8 019FC79E 16
+																				ifne8 019FCF9E 16
+																					ifne8 019FD79E 16
+																						ifne8 019FDF9E 16
+																							ifne8 019FE79E 16
+																								ifne8 019FEF9E 16
+																									ifne8 019FF79E 16
+																										ifne8 019FFF9E 16
+																											ifne8 01A0079E 16
+																												ifne8 01A00F9E 16
+																													ifne8 01A0179E 16
+																														ifne8 01A01F9E 16
+																															ifne8 01A0279E 16
+																																write8 01DBEDAC 1
+																																write8 01DBEDA1 0x45
+																																write8 01DBEDA0 1
+																															endif
+																														endif
+																													endif
+																												endif
+																											endif
+																										endif
+																									endif
+																								endif
+																							endif
+																						endif
+																					endif
+																				endif
+																			endif
+																		endif
+																	endif
+																endif
+															endif
+														endif
+													endif
+												endif
+											endif
+										endif
+									endif
+								endif
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 18
+						write32 01366FB4 0x325F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 1
+											write8 019F6ED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 1
+											write8 019F76D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 1
+											write8 019F7ED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 1
+											write8 019F86D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 1
+											write8 019F8ED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 1
+											write8 019F96D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 1
+											write8 019F9ED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 1
+											write8 019FA6D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 1
+											write8 019FAED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 1
+											write8 019FB6D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 1
+											write8 019FBED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 1
+											write8 019FC6D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 1
+											write8 019FCED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 1
+											write8 019FD6D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 1
+											write8 019FDED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 1
+											write8 019FE6D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 1
+											write8 019FEED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 1
+											write8 019FF6D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 1
+											write8 019FFED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 1
+											write8 01A006D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 1
+											write8 01A00ED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 1
+											write8 01A016D0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 1
+											write8 01A01ED0 2
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 1
+											write8 01A026D0 2
+										endif
+									endif
+								endif
+								add32 0174b05c 200
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 2
+						write32 01366FB4 0x325F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 2
+											write8 019F6ED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 2
+											write8 019F76D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 2
+											write8 019F7ED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 2
+											write8 019F86D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 2
+											write8 019F8ED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 2
+											write8 019F96D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 2
+											write8 019F9ED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 2
+											write8 019FA6D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 2
+											write8 019FAED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 2
+											write8 019FB6D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 2
+											write8 019FBED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 2
+											write8 019FC6D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 2
+											write8 019FCED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 2
+											write8 019FD6D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 2
+											write8 019FDED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 2
+											write8 019FE6D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 2
+											write8 019FEED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 2
+											write8 019FF6D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 2
+											write8 019FFED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 2
+											write8 01A006D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 2
+											write8 01A00ED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 2
+											write8 01A016D0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 2
+											write8 01A01ED0 3
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 2
+											write8 01A026D0 3
+										endif
+									endif
+								endif
+								add32 0174b05c 400
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 16
+						write32 01366FB4 0x325F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 3
+											write8 019F6ED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 3
+											write8 019F76D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 3
+											write8 019F7ED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 3
+											write8 019F86D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 3
+											write8 019F8ED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 3
+											write8 019F96D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 3
+											write8 019F9ED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 3
+											write8 019FA6D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 3
+											write8 019FAED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 3
+											write8 019FB6D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 3
+											write8 019FBED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 3
+											write8 019FC6D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 3
+											write8 019FCED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 3
+											write8 019FD6D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 3
+											write8 019FDED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 3
+											write8 019FE6D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 3
+											write8 019FEED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 3
+											write8 019FF6D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 3
+											write8 019FFED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 3
+											write8 01A006D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 3
+											write8 01A00ED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 3
+											write8 01A016D0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 3
+											write8 01A01ED0 4
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 3
+											write8 01A026D0 4
+										endif
+									endif
+								endif
+								add32 0174b05c 600
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 4
+						write32 01366FB4 0x315F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 4
+											write8 019F6ED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 4
+											write8 019F76D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 4
+											write8 019F7ED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 4
+											write8 019F86D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 4
+											write8 019F8ED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 4
+											write8 019F96D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 4
+											write8 019F9ED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 4
+											write8 019FA6D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 4
+											write8 019FAED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 4
+											write8 019FB6D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 4
+											write8 019FBED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 4
+											write8 019FC6D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 4
+											write8 019FCED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 4
+											write8 019FD6D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 4
+											write8 019FDED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 4
+											write8 019FE6D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 4
+											write8 019FEED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 4
+											write8 019FF6D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 4
+											write8 019FFED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 4
+											write8 01A006D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 4
+											write8 01A00ED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 4
+											write8 01A016D0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 4
+											write8 01A01ED0 5
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 4
+											write8 01A026D0 5
+										endif
+									endif
+								endif
+								add32 0174b05c 800
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 1
+				ifeq8 01A0FBD4 3
+					ifeq8 01A0FBD5 6
+						write32 01366FB4 0x315F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 5
+											write8 019F6ED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 5
+											write8 019F76D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 5
+											write8 019F7ED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 5
+											write8 019F86D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 5
+											write8 019F8ED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 5
+											write8 019F96D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 5
+											write8 019F9ED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 5
+											write8 019FA6D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 5
+											write8 019FAED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 5
+											write8 019FB6D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 5
+											write8 019FBED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 5
+											write8 019FC6D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 5
+											write8 019FCED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 5
+											write8 019FD6D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 5
+											write8 019FDED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 5
+											write8 019FE6D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 5
+											write8 019FEED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 5
+											write8 019FF6D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 5
+											write8 019FFED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 5
+											write8 01A006D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 5
+											write8 01A00ED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 5
+											write8 01A016D0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 5
+											write8 01A01ED0 6
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 5
+											write8 01A026D0 6
+										endif
+									endif
+								endif
+								add32 0174b05c 1200
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 1
+				ifeq8 01A0FBD4 7
+					ifeq8 01A0FBD5 12
+						write32 01366FB4 0x315F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 6
+											write8 019F6ED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 6
+											write8 019F76D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 6
+											write8 019F7ED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 6
+											write8 019F86D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 6
+											write8 019F8ED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 6
+											write8 019F96D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 6
+											write8 019F9ED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 6
+											write8 019FA6D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 6
+											write8 019FAED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 6
+											write8 019FB6D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 6
+											write8 019FBED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 6
+											write8 019FC6D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 6
+											write8 019FCED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 6
+											write8 019FD6D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 6
+											write8 019FDED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 6
+											write8 019FE6D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 6
+											write8 019FEED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 6
+											write8 019FF6D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 6
+											write8 019FFED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 6
+											write8 01A006D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 6
+											write8 01A00ED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 6
+											write8 01A016D0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 6
+											write8 01A01ED0 7
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 6
+											write8 01A026D0 7
+										endif
+									endif
+								endif
+								add32 0174b05c 1600
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 7
+						write32 01366FB4 0x325F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 7
+											write8 019F6ED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 7
+											write8 019F76D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 7
+											write8 019F7ED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 7
+											write8 019F86D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 7
+											write8 019F8ED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 7
+											write8 019F96D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 7
+											write8 019F9ED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 7
+											write8 019FA6D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 7
+											write8 019FAED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 7
+											write8 019FB6D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 7
+											write8 019FBED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 7
+											write8 019FC6D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 7
+											write8 019FCED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 7
+											write8 019FD6D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 7
+											write8 019FDED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 7
+											write8 019FE6D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 7
+											write8 019FEED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 7
+											write8 019FF6D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 7
+											write8 019FFED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 7
+											write8 01A006D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 7
+											write8 01A00ED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 7
+											write8 01A016D0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 7
+											write8 01A01ED0 8
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 7
+											write8 01A026D0 8
+										endif
+									endif
+								endif
+								add32 0174b05c 1
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 1
+				ifeq8 01A0FBD4 8
+					ifeq8 01A0FBD5 6
+						write32 01366FB4 0x335F705F
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+								ifltequ8 019F6ED0 8
+									write8 019F6ED0 9
+								endif
+								write8 019F6F9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+								ifltequ8 019F76D0 8
+									write8 019F76D0 9
+								endif
+								write8 019F779b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+								ifltequ8 019F7ED0 8
+									write8 019F7ED0 9
+								endif
+								write8 019F7F9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+								ifltequ8 019F86D0 8
+									write8 019F86D0 9
+								endif
+								write8 019F879b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+								ifltequ8 019F8ED0 8
+									write8 019F8ED0 9
+								endif
+								write8 019F8F9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+								ifltequ8 019F96D0 8
+									write8 019F96D0 9
+								endif
+								write8 019F979b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+								ifltequ8 019F9ED0 8
+									write8 019F9ED0 9
+								endif
+								write8 019F9F9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+								ifltequ8 019FA6D0 8
+									write8 019FA6D0 9
+								endif
+								write8 019FA79b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+								ifltequ8 019FAED0 8
+									write8 019FAED0 9
+								endif
+								write8 019FAF9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+								ifltequ8 019FB6D0 8
+									write8 019FB6D0 9
+								endif
+								write8 019FB79b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+								ifltequ8 019FBED0 8
+									write8 019FBED0 9
+								endif
+								write8 019FBF9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+								ifltequ8 019FC6D0 8
+									write8 019FC6D0 9
+								endif
+								write8 019FC79b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+								ifltequ8 019FCED0 8
+									write8 019FCED0 9
+								endif
+								write8 019FCF9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+								ifltequ8 019FD6D0 8
+									write8 019FD6D0 9
+								endif
+								write8 019FD79b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+								ifltequ8 019FDED0 8
+									write8 019FDED0 9
+								endif
+								write8 019FDF9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+								ifltequ8 019FE6D0 8
+									write8 019FE6D0 9
+								endif
+								write8 019FE79b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+								ifltequ8 019FEED0 8
+									write8 019FEED0 9
+								endif
+								write8 019FEF9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+								ifltequ8 019FF6D0 8
+									write8 019FF6D0 9
+								endif
+								write8 019FF79b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+								ifltequ8 019FFED0 8
+									write8 019FFED0 9
+								endif
+								write8 019FFF9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+								ifltequ8 01A006D0 8
+									write8 01A006D0 9
+								endif
+								write8 01A0079b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+								ifltequ8 01A00ED0 8
+									write8 01A00ED0 9
+								endif
+								write8 01A00F9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+								ifltequ8 01A016D0 8
+									write8 01A016D0 9
+								endif
+								write8 01A0179b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+								ifltequ8 01A01ED0 8
+									write8 01A01ED0 9
+								endif
+								write8 01A01F9b 7
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+								ifltequ8 01A026D0 8
+									write8 01A026D0 9
+								endif
+								write8 01A0279b 7
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 9
+						write32 01366FB4 0x325F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 9
+											write8 019F6ED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 9
+											write8 019F76D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 9
+											write8 019F7ED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 9
+											write8 019F86D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 9
+											write8 019F8ED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 9
+											write8 019F96D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 9
+											write8 019F9ED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 9
+											write8 019FA6D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 9
+											write8 019FAED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 9
+											write8 019FB6D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 9
+											write8 019FBED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 9
+											write8 019FC6D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 9
+											write8 019FCED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 9
+											write8 019FD6D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 9
+											write8 019FDED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 9
+											write8 019FE6D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 9
+											write8 019FEED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 9
+											write8 019FF6D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 9
+											write8 019FFED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 9
+											write8 01A006D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 9
+											write8 01A00ED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 9
+											write8 01A016D0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 9
+											write8 01A01ED0 10
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 9
+											write8 01A026D0 10
+										endif
+									endif
+								endif
+								add32 0174b05c 6400
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 10
+						write32 01366FB4 0x325F705F
+						ifeq8 0134062c 5
+							ifeq8 0134046c 4
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+										ifltequ8 019F6ED0 10
+											write8 019F6ED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+										ifltequ8 019F76D0 10
+											write8 019F76D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+										ifltequ8 019F7ED0 10
+											write8 019F7ED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+										ifltequ8 019F86D0 10
+											write8 019F86D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+										ifltequ8 019F8ED0 10
+											write8 019F8ED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+										ifltequ8 019F96D0 10
+											write8 019F96D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+										ifltequ8 019F9ED0 10
+											write8 019F9ED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+										ifltequ8 019FA6D0 10
+											write8 019FA6D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+										ifltequ8 019FAED0 10
+											write8 019FAED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+										ifltequ8 019FB6D0 10
+											write8 019FB6D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+										ifltequ8 019FBED0 10
+											write8 019FBED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+										ifltequ8 019FC6D0 10
+											write8 019FC6D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+										ifltequ8 019FCED0 10
+											write8 019FCED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+										ifltequ8 019FD6D0 10
+											write8 019FD6D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+										ifltequ8 019FDED0 10
+											write8 019FDED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+										ifltequ8 019FE6D0 10
+											write8 019FE6D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+										ifltequ8 019FEED0 10
+											write8 019FEED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+										ifltequ8 019FF6D0 10
+											write8 019FF6D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+										ifltequ8 019FFED0 10
+											write8 019FFED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+										ifltequ8 01A006D0 10
+											write8 01A006D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+										ifltequ8 01A00ED0 10
+											write8 01A00ED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+										ifltequ8 01A016D0 10
+											write8 01A016D0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+										ifltequ8 01A01ED0 10
+											write8 01A01ED0 11
+										endif
+									endif
+								endif
+								ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+									ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+										ifltequ8 01A026D0 10
+											write8 01A026D0 11
+										endif
+									endif
+								endif
+								add32 0174b05c 12800
+								write8 0134046c 5
+							endif
+						endif
+					endif
+				endif
+			endif
+			ifeq8 01A0FBD3 2
+				ifeq8 01A0FBD4 10
+					ifeq8 01A0FBD5 11
+						write32 01366FB4 0x345F705F
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F6EC4
+								ifltequ8 019F6ED0 11
+									write8 019F6ED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F76C4
+								ifltequ8 019F76D0 11
+									write8 019F76D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F7EC4
+								ifltequ8 019F7ED0 11
+									write8 019F7ED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F86C4
+								ifltequ8 019F86D0 11
+									write8 019F86D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F8EC4
+								ifltequ8 019F8ED0 11
+									write8 019F8ED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F96C4
+								ifltequ8 019F96D0 11
+									write8 019F96D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019F9EC4
+								ifltequ8 019F9ED0 11
+									write8 019F9ED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FA6C4
+								ifltequ8 019FA6D0 11
+									write8 019FA6D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FAEC4
+								ifltequ8 019FAED0 11
+									write8 019FAED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FB6C4
+								ifltequ8 019FB6D0 11
+									write8 019FB6D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FBEC4
+								ifltequ8 019FBED0 11
+									write8 019FBED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FC6C4
+								ifltequ8 019FC6D0 11
+									write8 019FC6D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FCEC4
+								ifltequ8 019FCED0 11
+									write8 019FCED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FD6C4
+								ifltequ8 019FD6D0 11
+									write8 019FD6D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FDEC4
+								ifltequ8 019FDED0 11
+									write8 019FDED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FE6C4
+								ifltequ8 019FE6D0 11
+									write8 019FE6D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FEEC4
+								ifltequ8 019FEED0 11
+									write8 019FEED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FF6C4
+								ifltequ8 019FF6D0 11
+									write8 019FF6D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x019FFEC4
+								ifltequ8 019FFED0 11
+									write8 019FFED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A006C4
+								ifltequ8 01A006D0 11
+									write8 01A006D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A00EC4
+								ifltequ8 01A00ED0 11
+									write8 01A00ED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A016C4
+								ifltequ8 01A016D0 11
+									write8 01A016D0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A01EC4
+								ifltequ8 01A01ED0 11
+									write8 01A01ED0 12
+								endif
+							endif
+						endif
+						ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|44|0 0x4F414843
+							ifeq32 p01A5A25C|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|34|5C 0x01A026C4
+								ifltequ8 01A026D0 11
+									write8 01A026D0 12
+								endif
+							endif
+						endif
+					endif
+				endif
+			endif
+		endif
+		ifne8 01DCFAE0 1
+			write32 01366FB4 0x615F725F
+		endif
+	endif
+	ifgtequ8 019F6ED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F6ED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F6ED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F6ED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F6ED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F6ED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F6ED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F6ED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F6ED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F6ED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F6ED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F6ED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019F7ED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F7ED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F7ED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F7ED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F7ED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F7ED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F7ED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F7ED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F7ED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F7ED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F7ED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F7ED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019F8ED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F8ED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F8ED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F8ED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F8ED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F8ED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F8ED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F8ED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F8ED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F8ED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F8ED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F8ED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019F9ED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F9ED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F9ED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F9ED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F9ED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F9ED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F9ED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F9ED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F9ED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F9ED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F9ED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F9ED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FAED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FAED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FAED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FAED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FAED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FAED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FAED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FAED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FAED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FAED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FAED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FAED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FbED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FbED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FbED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FbED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FbED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FbED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FbED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FbED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FbED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FbED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FbED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FbED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FCED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FCED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FCED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FCED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FCED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FCED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FCED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FCED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FCED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FCED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FCED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FCED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FDED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FDED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FDED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FDED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FDED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FDED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FDED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FDED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FDED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FDED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FDED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FDED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FEED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FEED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FEED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FEED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FEED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FEED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FEED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FEED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FEED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FEED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FEED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FEED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FFED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FFED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FFED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FFED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FFED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FFED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FFED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FFED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FFED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FFED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FFED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FFED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 01A00ED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 01A00ED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 01A00ED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 01A00ED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 01A00ED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 01A00ED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 01A00ED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 01A00ED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 01A00ED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 01A00ED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 01A00ED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 01A00ED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 01A01ED0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 01A01ED0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 01A01ED0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 01A01ED0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 01A01ED0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 01A01ED0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 01A01ED0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 01A01ED0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 01A01ED0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 01A01ED0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 01A01ED0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 01A01ED0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019F76D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F76D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F76D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F76D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F76D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F76D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F76D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F76D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F76D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F76D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F76D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F76D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019F86D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F86D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F86D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F86D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F86D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F86D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F86D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F86D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F86D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F86D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F86D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F86D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019F96D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019F96D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019F96D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019F96D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019F96D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019F96D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019F96D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019F96D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019F96D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019F96D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019F96D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019F96D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FA6D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FA6D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FA6D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FA6D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FA6D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FA6D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FA6D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FA6D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FA6D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FA6D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FA6D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FA6D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FB6D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FB6D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FB6D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FB6D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FB6D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FB6D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FB6D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FB6D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FB6D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FB6D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FB6D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FB6D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FC6D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FC6D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FC6D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FC6D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FC6D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FC6D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FC6D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FC6D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FC6D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FC6D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FC6D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FC6D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FD6D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FD6D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FD6D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FD6D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FD6D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FD6D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FD6D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FD6D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FD6D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FD6D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FD6D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FD6D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FE6D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FE6D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FE6D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FE6D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FE6D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FE6D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FE6D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FE6D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FE6D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FE6D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FE6D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FE6D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 019FF6D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 019FF6D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 019FF6D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 019FF6D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 019FF6D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 019FF6D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 019FF6D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 019FF6D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 019FF6D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 019FF6D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 019FF6D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 019FF6D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 01A006D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 01A006D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 01A006D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 01A006D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 01A006D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 01A006D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 01A006D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 01A006D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 01A006D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 01A006D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 01A006D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 01A006D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 01A016D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 01A016D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 01A016D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 01A016D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 01A016D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 01A016D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 01A016D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 01A016D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 01A016D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 01A016D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 01A016D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 01A016D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifgtequ8 01A026D0 0
+		ifeq16 012D9914 0x4c41
+			write16 012D9914 0x3130
+		endif
+	endif
+	ifgtequ8 01A026D0 1
+		ifeq16 012D9914 0x3130
+			write16 012D9914 0x3230
+		endif
+	endif
+	ifgtequ8 01A026D0 2
+		ifeq16 012D9914 0x3230
+			write16 012D9914 0x3330
+		endif
+	endif
+	ifgtequ8 01A026D0 3
+		ifeq16 012D9914 0x3330
+			write16 012D9914 0x3430
+		endif
+	endif
+	ifgtequ8 01A026D0 4
+		ifeq16 012D9914 0x3430
+			write16 012D9914 0x3530
+		endif
+	endif
+	ifgtequ8 01A026D0 5
+		ifeq16 012D9914 0x3530
+			write16 012D9914 0x3630
+		endif
+	endif
+	ifgtequ8 01A026D0 6
+		ifeq16 012D9914 0x3630
+			write16 012D9914 0x3730
+		endif
+	endif
+	ifgtequ8 01A026D0 7
+		ifeq16 012D9914 0x3730
+			write16 012D9914 0x3830
+		endif
+	endif
+	ifgtequ8 01A026D0 8
+		ifeq16 012D9914 0x3830
+			write16 012D9914 0x3930
+		endif
+	endif
+	ifgtequ8 01A026D0 9
+		ifeq16 012D9914 0x3930
+			write16 012D9914 0x3031
+		endif
+	endif
+	ifgtequ8 01A026D0 10
+		ifeq16 012D9914 0x3031
+			write16 012D9914 0x3131
+		endif
+	endif
+	ifgtequ8 01A026D0 11
+		ifeq16 012D9914 0x3131
+			write16 012D9914 0x3231
+		endif
+	endif
+	ifltequ8 019F6ED0 8
+		ifeq8 019F6F9b 0x07
+			write8 019F6F9b 0x00
+		endif
+	endif
+	ifltequ8 019F6ED0 11
+		ifeq8 019F6F9b 0x08
+			write8 019F6F9b 0x00
+		endif
+	endif
+	ifeq8 019F6FA0 0x45
+		write8 019F6F9C 0
+		write8 019F6F9E 16
+		write8 019F6F9F 0
+		write8 019F7390 0
+		write8 019F7391 0
+		write8 019F7394 16
+		write8 019F7395 16
+		write8 019F7396 0
+		write8 019F7397 0
+		write8 019F6FA0 00
+	endif
+	ifltequ8 019F76D0 8
+		ifeq8 019F779b 0x07
+			write8 019F779b 0x00
+		endif
+	endif
+	ifltequ8 019F76D0 11
+		ifeq8 019F779b 0x08
+			write8 019F779b 0x00
+		endif
+	endif
+	ifeq8 019F77A0 0x45
+		write8 019F779C 0
+		write8 019F779E 16
+		write8 019F779F 0
+		write8 019F7B90 0
+		write8 019F7B91 0
+		write8 019F7B94 16
+		write8 019F7B95 16
+		write8 019F7B96 0
+		write8 019F7B97 0
+		write8 019F77A0 00
+	endif
+	ifltequ8 019F7ED0 8
+		ifeq8 019F7F9b 0x07
+			write8 019F7F9b 0x00
+		endif
+	endif
+	ifltequ8 019F7ED0 11
+		ifeq8 019F7F9b 0x08
+			write8 019F7F9b 0x00
+		endif
+	endif
+	ifeq8 019F7FA0 0x45
+		write8 019F7F9C 0
+		write8 019F7F9E 16
+		write8 019F7F9F 0
+		write8 019F8390 0
+		write8 019F8391 0
+		write8 019F8394 16
+		write8 019F8395 16
+		write8 019F8396 0
+		write8 019F8397 0
+		write8 019F7FA0 00
+	endif
+	ifltequ8 019F86D0 8
+		ifeq8 019F879b 0x07
+			write8 019F879b 0x00
+		endif
+	endif
+	ifltequ8 019F86D0 11
+		ifeq8 019F879b 0x08
+			write8 019F879b 0x00
+		endif
+	endif
+	ifeq8 019F87A0 0x45
+		write8 019F879C 0
+		write8 019F879E 16
+		write8 019F879F 0
+		write8 019F8B90 0
+		write8 019F8B91 0
+		write8 019F8B94 16
+		write8 019F8B95 16
+		write8 019F8B96 0
+		write8 019F8B97 0
+		write8 019F87A0 00
+	endif
+	ifltequ8 019F8ED0 8
+		ifeq8 019F8F9b 0x07
+			write8 019F8F9b 0x00
+		endif
+	endif
+	ifltequ8 019F8ED0 11
+		ifeq8 019F8F9b 0x08
+			write8 019F8F9b 0x00
+		endif
+	endif
+	ifeq8 019F8FA0 0x45
+		write8 019F8F9C 0
+		write8 019F8F9E 16
+		write8 019F8F9F 0
+		write8 019F9390 0
+		write8 019F9391 0
+		write8 019F9394 16
+		write8 019F9395 16
+		write8 019F9396 0
+		write8 019F9397 0
+		write8 019F8FA0 00
+	endif
+	ifltequ8 019F96D0 8
+		ifeq8 019F979b 0x07
+			write8 019F979b 0x00
+		endif
+	endif
+	ifltequ8 019F96D0 11
+		ifeq8 019F979b 0x08
+			write8 019F979b 0x00
+		endif
+	endif
+	ifeq8 019F97A0 0x45
+		write8 019F979C 0
+		write8 019F979E 16
+		write8 019F979F 0
+		write8 019F9B90 0
+		write8 019F9B91 0
+		write8 019F9B94 16
+		write8 019F9B95 16
+		write8 019F9B96 0
+		write8 019F9B97 0
+		write8 019F97A0 00
+	endif
+	ifltequ8 019F9ED0 8
+		ifeq8 019F9F9b 0x07
+			write8 019F9F9b 0x00
+		endif
+	endif
+	ifltequ8 019F9ED0 11
+		ifeq8 019F9F9b 0x08
+			write8 019F9F9b 0x00
+		endif
+	endif
+	ifeq8 019F9FA0 0x45
+		write8 019F9F9C 0
+		write8 019F9F9E 16
+		write8 019F9F9F 0
+		write8 019Fa390 0
+		write8 019Fa391 0
+		write8 019Fa394 16
+		write8 019Fa395 16
+		write8 019Fa396 0
+		write8 019Fa397 0
+		write8 019F9FA0 00
+	endif
+	ifltequ8 019Fa6D0 8
+		ifeq8 019Fa79b 0x07
+			write8 019Fa79b 0x00
+		endif
+	endif
+	ifltequ8 019Fa6D0 11
+		ifeq8 019Fa79b 0x08
+			write8 019Fa79b 0x00
+		endif
+	endif
+	ifeq8 019Fa7A0 0x45
+		write8 019Fa79C 0
+		write8 019Fa79E 16
+		write8 019Fa79F 0
+		write8 019FaB90 0
+		write8 019FaB91 0
+		write8 019FaB94 16
+		write8 019FaB95 16
+		write8 019FaB96 0
+		write8 019FaB97 0
+		write8 019Fa7A0 00
+	endif
+	ifltequ8 019FaED0 8
+		ifeq8 019FaF9b 0x07
+			write8 019FaF9b 0x00
+		endif
+	endif
+	ifltequ8 019FaED0 11
+		ifeq8 019FaF9b 0x08
+			write8 019FaF9b 0x00
+		endif
+	endif
+	ifeq8 019FaFA0 0x45
+		write8 019FaF9C 0
+		write8 019FaF9E 16
+		write8 019FaF9F 0
+		write8 019Fb390 0
+		write8 019Fb391 0
+		write8 019Fb394 16
+		write8 019Fb395 16
+		write8 019Fb396 0
+		write8 019Fb397 0
+		write8 019FaFA0 00
+	endif
+	ifltequ8 019Fb6D0 8
+		ifeq8 019Fb79b 0x07
+			write8 019Fb79b 0x00
+		endif
+	endif
+	ifltequ8 019Fb6D0 11
+		ifeq8 019Fb79b 0x08
+			write8 019Fb79b 0x00
+		endif
+	endif
+	ifeq8 019Fb7A0 0x45
+		write8 019Fb79C 0
+		write8 019Fb79E 16
+		write8 019Fb79F 0
+		write8 019FbB90 0
+		write8 019FbB91 0
+		write8 019FbB94 16
+		write8 019FbB95 16
+		write8 019FbB96 0
+		write8 019FbB97 0
+		write8 019Fb7A0 00
+	endif
+	ifltequ8 019FbED0 8
+		ifeq8 019FbF9b 0x07
+			write8 019FbF9b 0x00
+		endif
+	endif
+	ifltequ8 019FbED0 11
+		ifeq8 019FbF9b 0x08
+			write8 019FbF9b 0x00
+		endif
+	endif
+	ifeq8 019FbFA0 0x45
+		write8 019FbF9C 0
+		write8 019FbF9E 16
+		write8 019FbF9F 0
+		write8 019Fc390 0
+		write8 019Fc391 0
+		write8 019Fc394 16
+		write8 019Fc395 16
+		write8 019Fc396 0
+		write8 019Fc397 0
+		write8 019FbFA0 00
+	endif
+	ifltequ8 019Fc6D0 8
+		ifeq8 019Fc79b 0x07
+			write8 019Fc79b 0x00
+		endif
+	endif
+	ifltequ8 019Fc6D0 11
+		ifeq8 019Fc79b 0x08
+			write8 019Fc79b 0x00
+		endif
+	endif
+	ifeq8 019Fc7A0 0x45
+		write8 019Fc79C 0
+		write8 019Fc79E 16
+		write8 019Fc79F 0
+		write8 019FcB90 0
+		write8 019FcB91 0
+		write8 019FcB94 16
+		write8 019FcB95 16
+		write8 019FcB96 0
+		write8 019FcB97 0
+		write8 019Fc7A0 00
+	endif
+	ifltequ8 019FcED0 8
+		ifeq8 019FcF9b 0x07
+			write8 019FcF9b 0x00
+		endif
+	endif
+	ifltequ8 019FcED0 11
+		ifeq8 019FcF9b 0x08
+			write8 019FcF9b 0x00
+		endif
+	endif
+	ifeq8 019FcFA0 0x45
+		write8 019FcF9C 0
+		write8 019FcF9E 16
+		write8 019FcF9F 0
+		write8 019Fd390 0
+		write8 019Fd391 0
+		write8 019Fd394 16
+		write8 019Fd395 16
+		write8 019Fd396 0
+		write8 019Fd397 0
+		write8 019FcFA0 00
+	endif
+	ifltequ8 019Fd6D0 8
+		ifeq8 019Fd79b 0x07
+			write8 019Fd79b 0x00
+		endif
+	endif
+	ifltequ8 019Fd6D0 11
+		ifeq8 019Fd79b 0x08
+			write8 019Fd79b 0x00
+		endif
+	endif
+	ifeq8 019Fd7A0 0x45
+		write8 019Fd79C 0
+		write8 019Fd79E 16
+		write8 019Fd79F 0
+		write8 019FdB90 0
+		write8 019FdB91 0
+		write8 019FdB94 16
+		write8 019FdB95 16
+		write8 019FdB96 0
+		write8 019FdB97 0
+		write8 019Fd7A0 00
+	endif
+	ifltequ8 019FdED0 8
+		ifeq8 019FdF9b 0x07
+			write8 019FdF9b 0x00
+		endif
+	endif
+	ifltequ8 019FdED0 11
+		ifeq8 019FdF9b 0x08
+			write8 019FdF9b 0x00
+		endif
+	endif
+	ifeq8 019FdFA0 0x45
+		write8 019FdF9C 0
+		write8 019FdF9E 16
+		write8 019FdF9F 0
+		write8 019Fe390 0
+		write8 019Fe391 0
+		write8 019Fe394 16
+		write8 019Fe395 16
+		write8 019Fe396 0
+		write8 019Fe397 0
+		write8 019FdFA0 00
+	endif
+	ifltequ8 019Fe6D0 8
+		ifeq8 019Fe79b 0x07
+			write8 019Fe79b 0x00
+		endif
+	endif
+	ifltequ8 019Fe6D0 11
+		ifeq8 019Fe79b 0x08
+			write8 019Fe79b 0x00
+		endif
+	endif
+	ifeq8 019Fe7A0 0x45
+		write8 019Fe79C 0
+		write8 019Fe79E 16
+		write8 019Fe79F 0
+		write8 019FeB90 0
+		write8 019FeB91 0
+		write8 019FeB94 16
+		write8 019FeB95 16
+		write8 019FeB96 0
+		write8 019FeB97 0
+		write8 019Fe7A0 00
+	endif
+	ifltequ8 019FeED0 8
+		ifeq8 019FeF9b 0x07
+			write8 019FeF9b 0x00
+		endif
+	endif
+	ifltequ8 019FeED0 11
+		ifeq8 019FeF9b 0x08
+			write8 019FeF9b 0x00
+		endif
+	endif
+	ifeq8 019FeFA0 0x45
+		write8 019FeF9C 0
+		write8 019FeF9E 16
+		write8 019FeF9F 0
+		write8 019Ff390 0
+		write8 019Ff391 0
+		write8 019Ff394 16
+		write8 019Ff395 16
+		write8 019Ff396 0
+		write8 019Ff397 0
+		write8 019FeFA0 00
+	endif
+	ifltequ8 019Ff6D0 8
+		ifeq8 019Ff79b 0x07
+			write8 019Ff79b 0x00
+		endif
+	endif
+	ifltequ8 019Ff6D0 11
+		ifeq8 019Ff79b 0x08
+			write8 019Ff79b 0x00
+		endif
+	endif
+	ifeq8 019Ff7A0 0x45
+		write8 019Ff79C 0
+		write8 019Ff79E 16
+		write8 019Ff79F 0
+		write8 019FfB90 0
+		write8 019FfB91 0
+		write8 019FfB94 16
+		write8 019FfB95 16
+		write8 019FfB96 0
+		write8 019FfB97 0
+		write8 019Ff7A0 00
+	endif
+	ifltequ8 019FfED0 8
+		ifeq8 019FfF9b 0x07
+			write8 019FfF9b 0x00
+		endif
+	endif
+	ifltequ8 019FfED0 11
+		ifeq8 019FfF9b 0x08
+			write8 019FfF9b 0x00
+		endif
+	endif
+	ifeq8 019FfFA0 0x45
+		write8 019FfF9C 0
+		write8 019FfF9E 16
+		write8 019FfF9F 0
+		write8 01a00390 0
+		write8 01a00391 0
+		write8 01a00394 16
+		write8 01a00395 16
+		write8 01a00396 0
+		write8 01a00397 0
+		write8 019FfFA0 00
+	endif
+	ifltequ8 01a006D0 8
+		ifeq8 01a0079b 0x07
+			write8 01a0079b 0x00
+		endif
+	endif
+	ifltequ8 01a006D0 11
+		ifeq8 01a0079b 0x08
+			write8 01a0079b 0x00
+		endif
+	endif
+	ifeq8 01a007A0 0x45
+		write8 01a0079C 0
+		write8 01a0079E 16
+		write8 01a0079F 0
+		write8 01a00B90 0
+		write8 01a00B91 0
+		write8 01a00B94 16
+		write8 01a00B95 16
+		write8 01a00B96 0
+		write8 01a00B97 0
+		write8 01a007A0 00
+	endif
+	ifltequ8 01a00ED0 8
+		ifeq8 01a00F9b 0x07
+			write8 01a00F9b 0x00
+		endif
+	endif
+	ifltequ8 01a00ED0 11
+		ifeq8 01a00F9b 0x08
+			write8 01a00F9b 0x00
+		endif
+	endif
+	ifeq8 01a00FA0 0x45
+		write8 01a00F9C 0
+		write8 01a00F9E 16
+		write8 01a00F9F 0
+		write8 01a01390 0
+		write8 01a01391 0
+		write8 01a01394 16
+		write8 01a01395 16
+		write8 01a01396 0
+		write8 01a01397 0
+		write8 01a00FA0 00
+	endif
+	ifltequ8 01a016D0 8
+		ifeq8 01a0179b 0x07
+			write8 01a0179b 0x00
+		endif
+	endif
+	ifltequ8 01a016D0 11
+		ifeq8 01a0179b 0x08
+			write8 01a0179b 0x00
+		endif
+	endif
+	ifeq8 01a017A0 0x45
+		write8 01a0179C 0
+		write8 01a0179E 16
+		write8 01a0179F 0
+		write8 01a01B90 0
+		write8 01a01B91 0
+		write8 01a01B94 16
+		write8 01a01B95 16
+		write8 01a01B96 0
+		write8 01a01B97 0
+		write8 01a017A0 00
+	endif
+	ifltequ8 01a01ED0 8
+		ifeq8 01a01F9b 0x07
+			write8 01a01F9b 0x00
+		endif
+	endif
+	ifltequ8 01a01ED0 11
+		ifeq8 01a01F9b 0x08
+			write8 01a01F9b 0x00
+		endif
+	endif
+	ifeq8 01a01FA0 0x45
+		write8 01a01F9C 0
+		write8 01a01F9E 16
+		write8 01a01F9F 0
+		write8 01a02390 0
+		write8 01a02391 0
+		write8 01a02394 16
+		write8 01a02395 16
+		write8 01a02396 0
+		write8 01a02397 0
+		write8 01a01FA0 00
+	endif
+	ifltequ8 01a026D0 8
+		ifeq8 01a0279b 0x07
+			write8 01a0279b 0x00
+		endif
+	endif
+	ifltequ8 01a026D0 11
+		ifeq8 01a0279b 0x08
+			write8 01a0279b 0x00
+		endif
+	endif
+	ifeq8 01a027A0 0x45
+		write8 01a0279C 0
+		write8 01a0279E 16
+		write8 01a0279F 0
+		write8 01a02B90 0
+		write8 01a02B91 0
+		write8 01a02B94 16
+		write8 01a02B95 16
+		write8 01a02B96 0
+		write8 01a02B97 0
+		write8 01a027A0 00
+	endif
+endif
+

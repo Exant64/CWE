@@ -1,0 +1,794 @@
+NJS_MKEY_F ARM_000_object_00016DB4Action_1_pos[] = {
+	{ 0, 0, 1.767465f, -0.00001f },
+	{ 1, 0, 1.772439f, -0.00001f },
+	{ 2, 0, 1.786435f, -0.00001f },
+	{ 3, 0, 1.808066f, -0.00001f },
+	{ 4, 0, 1.835943f, -0.00001f },
+	{ 5, 0, 1.868678f, -0.00001f },
+	{ 6, 0, 1.904884f, -0.00001f },
+	{ 7, 0, 1.943172f, -0.00001f },
+	{ 8, 0, 1.982153f, -0.00001f },
+	{ 9, 0, 2.020441f, -0.00001f },
+	{ 10, 0, 2.056646f, -0.00001f },
+	{ 11, 0, 2.089381f, -0.00001f },
+	{ 12, 0, 2.117259f, -0.00001f },
+	{ 13, 0, 2.138889f, -0.00001f },
+	{ 14, 0, 2.152886f, -0.00001f },
+	{ 15, 0, 2.15786f, -0.00001f },
+	{ 16, 0, 2.152886f, -0.00001f },
+	{ 17, 0, 2.138889f, -0.00001f },
+	{ 18, 0, 2.117259f, -0.00001f },
+	{ 19, 0, 2.089381f, -0.00001f },
+	{ 20, 0, 2.056646f, -0.00001f },
+	{ 21, 0, 2.020441f, -0.00001f },
+	{ 22, 0, 1.982153f, -0.00001f },
+	{ 23, 0, 1.943172f, -0.00001f },
+	{ 24, 0, 1.904884f, -0.00001f },
+	{ 25, 0, 1.868678f, -0.00001f },
+	{ 26, 0, 1.835943f, -0.00001f },
+	{ 27, 0, 1.808066f, -0.00001f },
+	{ 28, 0, 1.786435f, -0.00001f },
+	{ 29, 0, 1.772439f, -0.00001f },
+	{ 30, 0, 1.767465f, -0.00001f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_1_rot[] = {
+	{ 0, 0x404B, 0, 0 },
+	{ 1, 0x404B, 0, 0 },
+	{ 2, 0x404B, 0, 0 },
+	{ 3, 0x404B, 0, 0 },
+	{ 4, 0x404B, 0, 0 },
+	{ 5, 0x404B, 0, 0 },
+	{ 6, 0x404B, 0, 0 },
+	{ 7, 0x404B, 0, 0 },
+	{ 8, 0x404B, 0, 0 },
+	{ 9, 0x404B, 0, 0 },
+	{ 10, 0x404B, 0, 0 },
+	{ 11, 0x404B, 0, 0 },
+	{ 12, 0x404B, 0, 0 },
+	{ 13, 0x404B, 0, 0 },
+	{ 14, 0x404B, 0, 0 },
+	{ 15, 0x404B, 0, 0 },
+	{ 30, 0x404B, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_2_pos[] = {
+	{ 0, 0.5484f, 0.50696f, -0.255331f },
+	{ 1, 0.5484f, 0.50696f, -0.255331f },
+	{ 2, 0.5484f, 0.50696f, -0.255331f },
+	{ 3, 0.5484f, 0.50696f, -0.255331f },
+	{ 4, 0.5484f, 0.50696f, -0.255331f },
+	{ 5, 0.5484f, 0.50696f, -0.255331f },
+	{ 6, 0.5484f, 0.50696f, -0.255331f },
+	{ 7, 0.5484f, 0.50696f, -0.255331f },
+	{ 8, 0.5484f, 0.50696f, -0.255331f },
+	{ 9, 0.5484f, 0.50696f, -0.255331f },
+	{ 10, 0.5484f, 0.50696f, -0.255331f },
+	{ 11, 0.5484f, 0.50696f, -0.255331f },
+	{ 12, 0.5484f, 0.50696f, -0.255331f },
+	{ 13, 0.5484f, 0.50696f, -0.255331f },
+	{ 14, 0.5484f, 0.50696f, -0.255331f },
+	{ 15, 0.5484f, 0.50696f, -0.255331f },
+	{ 30, 0.5484f, 0.50696f, -0.255331f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_2_rot[] = {
+	{ 0, 0xFFFFC374, 0x1017, 0x302 },
+	{ 1, 0xFFFFC3CF, 0x100E, 0x325 },
+	{ 2, 0xFFFFC4CF, 0xFF3, 0x385 },
+	{ 3, 0xFFFFC656, 0xFC7, 0x416 },
+	{ 4, 0xFFFFC846, 0xF8B, 0x4CC },
+	{ 5, 0xFFFFCA7F, 0xF40, 0x59B },
+	{ 6, 0xFFFFCCE3, 0xEE8, 0x676 },
+	{ 7, 0xFFFFCF56, 0xE84, 0x753 },
+	{ 8, 0xFFFFD1BD, 0xE19, 0x829 },
+	{ 9, 0xFFFFD405, 0xDA9, 0x8EF },
+	{ 10, 0xFFFFD61A, 0xD3A, 0x9A1 },
+	{ 11, 0xFFFFD7EE, 0xCD1, 0xA39 },
+	{ 12, 0xFFFFD973, 0xC75, 0xAB5 },
+	{ 13, 0xFFFFDA9A, 0xC2B, 0xB11 },
+	{ 14, 0xFFFFDB57, 0xBFB, 0xB4B },
+	{ 15, 0xFFFFDB99, 0xBEA, 0xB5F },
+	{ 16, 0xFFFFDB57, 0xBFB, 0xB4B },
+	{ 17, 0xFFFFDA9A, 0xC2B, 0xB11 },
+	{ 18, 0xFFFFD973, 0xC75, 0xAB5 },
+	{ 19, 0xFFFFD7EE, 0xCD1, 0xA39 },
+	{ 20, 0xFFFFD61A, 0xD3A, 0x9A1 },
+	{ 21, 0xFFFFD405, 0xDA9, 0x8EF },
+	{ 22, 0xFFFFD1BD, 0xE19, 0x829 },
+	{ 23, 0xFFFFCF56, 0xE84, 0x753 },
+	{ 24, 0xFFFFCCE3, 0xEE8, 0x676 },
+	{ 25, 0xFFFFCA7F, 0xF40, 0x59B },
+	{ 26, 0xFFFFC846, 0xF8B, 0x4CC },
+	{ 27, 0xFFFFC656, 0xFC7, 0x416 },
+	{ 28, 0xFFFFC4CF, 0xFF3, 0x385 },
+	{ 29, 0xFFFFC3CF, 0x100E, 0x325 },
+	{ 30, 0xFFFFC374, 0x1017, 0x302 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_3_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_3_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_4_pos[] = {
+	{ 0, -0.095019f, -1.097738f, 0.050228f },
+	{ 30, -0.095019f, -1.097738f, 0.050228f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_4_rot[] = {
+	{ 0, 0x3CC, 0x19B, 0xFFFFF041 },
+	{ 30, 0x3CC, 0x19B, 0xFFFFF041 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_5_pos[] = {
+	{ 0, 0.348433f, 0.051535f, 0.55143f },
+	{ 1, 0.348433f, 0.05151f, 0.54798f },
+	{ 2, 0.348433f, 0.05144f, 0.538272f },
+	{ 3, 0.348433f, 0.051332f, 0.523268f },
+	{ 4, 0.348433f, 0.051193f, 0.503931f },
+	{ 5, 0.348433f, 0.051029f, 0.481225f },
+	{ 6, 0.348433f, 0.050848f, 0.456112f },
+	{ 7, 0.348433f, 0.050657f, 0.429554f },
+	{ 8, 0.348433f, 0.050462f, 0.402515f },
+	{ 9, 0.348433f, 0.05027f, 0.375958f },
+	{ 10, 0.348433f, 0.05009f, 0.350845f },
+	{ 11, 0.348433f, 0.049926f, 0.328138f },
+	{ 12, 0.348433f, 0.049787f, 0.308802f },
+	{ 13, 0.348433f, 0.049678f, 0.293798f },
+	{ 14, 0.348433f, 0.049608f, 0.28409f },
+	{ 15, 0.348433f, 0.049584f, 0.28064f },
+	{ 16, 0.348433f, 0.049608f, 0.28409f },
+	{ 17, 0.348433f, 0.049678f, 0.293798f },
+	{ 18, 0.348433f, 0.049787f, 0.308802f },
+	{ 19, 0.348433f, 0.049926f, 0.328138f },
+	{ 20, 0.348433f, 0.05009f, 0.350845f },
+	{ 21, 0.348433f, 0.05027f, 0.375958f },
+	{ 22, 0.348433f, 0.050462f, 0.402515f },
+	{ 23, 0.348433f, 0.050657f, 0.429554f },
+	{ 24, 0.348433f, 0.050848f, 0.456112f },
+	{ 25, 0.348433f, 0.051029f, 0.481225f },
+	{ 26, 0.348433f, 0.051193f, 0.503931f },
+	{ 27, 0.348433f, 0.051332f, 0.523268f },
+	{ 28, 0.348433f, 0.05144f, 0.538272f },
+	{ 29, 0.348433f, 0.05151f, 0.54798f },
+	{ 30, 0.348433f, 0.051535f, 0.55143f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_5_rot[] = {
+	{ 0, 0xC6D, 0, 0 },
+	{ 1, 0xC41, 0, 0 },
+	{ 2, 0xBC5, 0, 0 },
+	{ 3, 0xB06, 0, 0 },
+	{ 4, 0xA12, 0, 0 },
+	{ 5, 0x8F3, 0, 0 },
+	{ 6, 0x7B8, 0, 0 },
+	{ 7, 0x66C, 0, 0 },
+	{ 8, 0x51A, 0, 0 },
+	{ 9, 0x3D0, 0, 0 },
+	{ 10, 0x297, 0, 0 },
+	{ 11, 0x17D, 0, 0 },
+	{ 12, 0x8C, 0, 0 },
+	{ 13, 0xFFFFFFD1, 0, 0 },
+	{ 14, 0xFFFFFF58, 0, 0 },
+	{ 15, 0xFFFFFF2C, 0, 0 },
+	{ 16, 0xFFFFFF58, 0, 0 },
+	{ 17, 0xFFFFFFD1, 0, 0 },
+	{ 18, 0x8C, 0, 0 },
+	{ 19, 0x17D, 0, 0 },
+	{ 20, 0x297, 0, 0 },
+	{ 21, 0x3D0, 0, 0 },
+	{ 22, 0x51A, 0, 0 },
+	{ 23, 0x66C, 0, 0 },
+	{ 24, 0x7B8, 0, 0 },
+	{ 25, 0x8F3, 0, 0 },
+	{ 26, 0xA12, 0, 0 },
+	{ 27, 0xB06, 0, 0 },
+	{ 28, 0xBC5, 0, 0 },
+	{ 29, 0xC41, 0, 0 },
+	{ 30, 0xC6D, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_6_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_6_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_7_pos[] = {
+	{ 0, 0, -0.02554f, -0.8f },
+	{ 1, 0, -0.02554f, -0.8f },
+	{ 2, 0, -0.02554f, -0.8f },
+	{ 3, 0, -0.02554f, -0.8f },
+	{ 4, 0, -0.02554f, -0.8f },
+	{ 5, 0, -0.02554f, -0.8f },
+	{ 6, 0, -0.02554f, -0.8f },
+	{ 7, 0, -0.02554f, -0.8f },
+	{ 8, 0, -0.02554f, -0.8f },
+	{ 9, 0, -0.02554f, -0.8f },
+	{ 10, 0, -0.02554f, -0.8f },
+	{ 11, 0, -0.02554f, -0.8f },
+	{ 12, 0, -0.02554f, -0.8f },
+	{ 13, 0, -0.02554f, -0.8f },
+	{ 14, 0, -0.02554f, -0.8f },
+	{ 15, 0, -0.02554f, -0.8f },
+	{ 16, 0, -0.02554f, -0.8f },
+	{ 17, 0, -0.02554f, -0.8f },
+	{ 18, 0, -0.02554f, -0.8f },
+	{ 19, 0, -0.02554f, -0.8f },
+	{ 20, 0, -0.02554f, -0.8f },
+	{ 21, 0, -0.02554f, -0.8f },
+	{ 22, 0, -0.02554f, -0.8f },
+	{ 23, 0, -0.02554f, -0.8f },
+	{ 24, 0, -0.02554f, -0.8f },
+	{ 25, 0, -0.02554f, -0.8f },
+	{ 30, 0, -0.02554f, -0.8f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_7_rot[] = {
+	{ 0, 0x38E3, 0, 0 },
+	{ 1, 0x38E1, 0xF, 0x812 },
+	{ 2, 0x3885, 0x2D, 0x19FF },
+	{ 3, 0x3719, 0x49, 0x3747 },
+	{ 4, 0x37E5, 0x32, 0x62A7 },
+	{ 5, 0x3979, 0, 0x7FF2 },
+	{ 6, 0x392A, 0xFFFFFFD4, 0xFFFF993B },
+	{ 7, 0x38D2, 0xFFFFFFB8, 0xFFFFB4BA },
+	{ 8, 0x38DC, 0xFFFFFFBA, 0xFFFFCF40 },
+	{ 9, 0x38EA, 0xFFFFFFD6, 0xFFFFE7AC },
+	{ 10, 0x38E3, 0, 0xFFFFFFF0 },
+	{ 11, 0x38EA, 0x2A, 0x1834 },
+	{ 12, 0x38DC, 0x46, 0x30A6 },
+	{ 13, 0x38D4, 0x48, 0x4B2E },
+	{ 14, 0x392C, 0x2C, 0x66A0 },
+	{ 15, 0x3979, 0, 0x7FDE },
+	{ 16, 0x3929, 0xFFFFFFD4, 0xFFFF9928 },
+	{ 17, 0x38D3, 0xFFFFFFB8, 0xFFFFB4A1 },
+	{ 18, 0x38DD, 0xFFFFFFBA, 0xFFFFCF1B },
+	{ 19, 0x38EA, 0xFFFFFFD5, 0xFFFFE782 },
+	{ 20, 0x38E3, 0, 0xFFFFFFC5 },
+	{ 21, 0x38CF, 0x28, 0x1711 },
+	{ 22, 0x37AB, 0x44, 0x2D7E },
+	{ 23, 0x357F, 0x45, 0x512D },
+	{ 24, 0x37F7, 0x13, 0x75AD },
+	{ 25, 0x3979, 1, 0x7FB6 },
+	{ 26, 0x35F5, 0x17, 0x737D },
+	{ 27, 0x32F4, 0x47, 0x3252 },
+	{ 28, 0x3814, 0x27, 0x163F },
+	{ 29, 0x38DE, 0xE, 0x7AC },
+	{ 30, 0x38E3, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_8_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_8_rot[] = {
+	{ 0, 0xFFFFF559, 0, 0 },
+	{ 30, 0xFFFFF559, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_9_pos[] = {
+	{ 0, -0.548431f, 0.506961f, -0.255332f },
+	{ 1, -0.548431f, 0.506961f, -0.255332f },
+	{ 2, -0.548431f, 0.506961f, -0.255332f },
+	{ 3, -0.548431f, 0.506961f, -0.255332f },
+	{ 4, -0.548431f, 0.506961f, -0.255332f },
+	{ 5, -0.548431f, 0.506961f, -0.255332f },
+	{ 6, -0.548431f, 0.506961f, -0.255332f },
+	{ 7, -0.548431f, 0.506961f, -0.255332f },
+	{ 8, -0.548431f, 0.506961f, -0.255332f },
+	{ 9, -0.548431f, 0.506961f, -0.255332f },
+	{ 10, -0.548431f, 0.506961f, -0.255331f },
+	{ 11, -0.548431f, 0.506961f, -0.255331f },
+	{ 12, -0.548431f, 0.506961f, -0.255331f },
+	{ 13, -0.548431f, 0.506961f, -0.255331f },
+	{ 14, -0.548431f, 0.506961f, -0.255331f },
+	{ 15, -0.548431f, 0.506961f, -0.255331f },
+	{ 30, -0.548431f, 0.506961f, -0.255331f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_9_rot[] = {
+	{ 0, 0x3C59, 0x708C, 0xFFFFFCE5 },
+	{ 1, 0x3BFE, 0x7096, 0xFFFFFCC4 },
+	{ 2, 0x3B00, 0x70B1, 0xFFFFFC69 },
+	{ 3, 0x397B, 0x70DD, 0xFFFFFBDE },
+	{ 4, 0x378F, 0x7119, 0xFFFFFB30 },
+	{ 5, 0x3559, 0x7163, 0xFFFFFA6B },
+	{ 6, 0x32F9, 0x71BB, 0xFFFFF99A },
+	{ 7, 0x308A, 0x721E, 0xFFFFF8C7 },
+	{ 8, 0x2E25, 0x7288, 0xFFFFF7FC },
+	{ 9, 0x2BE0, 0x72F6, 0xFFFFF73E },
+	{ 10, 0x29CD, 0x7363, 0xFFFFF695 },
+	{ 11, 0x27FB, 0x73C9, 0xFFFFF604 },
+	{ 12, 0x2677, 0x7423, 0xFFFFF58E },
+	{ 13, 0x2551, 0x746B, 0xFFFFF536 },
+	{ 14, 0x2494, 0x749A, 0xFFFFF4FF },
+	{ 15, 0x2452, 0x74AB, 0xFFFFF4EC },
+	{ 16, 0x2494, 0x749A, 0xFFFFF4FF },
+	{ 17, 0x2551, 0x746B, 0xFFFFF536 },
+	{ 18, 0x2677, 0x7423, 0xFFFFF58E },
+	{ 19, 0x27FB, 0x73C9, 0xFFFFF604 },
+	{ 20, 0x29CD, 0x7363, 0xFFFFF695 },
+	{ 21, 0x2BE0, 0x72F6, 0xFFFFF73E },
+	{ 22, 0x2E25, 0x7288, 0xFFFFF7FC },
+	{ 23, 0x308A, 0x721E, 0xFFFFF8C7 },
+	{ 24, 0x32F9, 0x71BB, 0xFFFFF99A },
+	{ 25, 0x3559, 0x7163, 0xFFFFFA6B },
+	{ 26, 0x378F, 0x7119, 0xFFFFFB30 },
+	{ 27, 0x397B, 0x70DD, 0xFFFFFBDE },
+	{ 28, 0x3B00, 0x70B1, 0xFFFFFC69 },
+	{ 29, 0x3BFE, 0x7096, 0xFFFFFCC4 },
+	{ 30, 0x3C59, 0x708C, 0xFFFFFCE5 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_10_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_10_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_11_pos[] = {
+	{ 0, -0.072569f, -1.107205f, -0.049265f },
+	{ 30, -0.072569f, -1.107205f, -0.049265f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_11_rot[] = {
+	{ 0, 0x3CC, 0x7E64, 0xFFFFF041 },
+	{ 30, 0x3CC, 0x7E64, 0xFFFFF041 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_12_pos[] = {
+	{ 0, -0.348432f, 0.051536f, 0.55143f },
+	{ 1, -0.348432f, 0.051511f, 0.54798f },
+	{ 2, -0.348432f, 0.051441f, 0.538272f },
+	{ 3, -0.348432f, 0.051333f, 0.523268f },
+	{ 4, -0.348432f, 0.051194f, 0.503931f },
+	{ 5, -0.348432f, 0.05103f, 0.481225f },
+	{ 6, -0.348432f, 0.050849f, 0.456112f },
+	{ 7, -0.348432f, 0.050658f, 0.429554f },
+	{ 8, -0.348432f, 0.050463f, 0.402515f },
+	{ 9, -0.348432f, 0.050272f, 0.375958f },
+	{ 10, -0.348432f, 0.050091f, 0.350845f },
+	{ 11, -0.348432f, 0.049927f, 0.328138f },
+	{ 12, -0.348432f, 0.049788f, 0.308802f },
+	{ 13, -0.348432f, 0.049679f, 0.293798f },
+	{ 14, -0.348432f, 0.04961f, 0.28409f },
+	{ 15, -0.348432f, 0.049585f, 0.28064f },
+	{ 16, -0.348432f, 0.04961f, 0.28409f },
+	{ 17, -0.348432f, 0.049679f, 0.293798f },
+	{ 18, -0.348432f, 0.049788f, 0.308802f },
+	{ 19, -0.348432f, 0.049927f, 0.328138f },
+	{ 20, -0.348432f, 0.050091f, 0.350845f },
+	{ 21, -0.348432f, 0.050272f, 0.375958f },
+	{ 22, -0.348432f, 0.050463f, 0.402515f },
+	{ 23, -0.348432f, 0.050658f, 0.429554f },
+	{ 24, -0.348432f, 0.050849f, 0.456112f },
+	{ 25, -0.348432f, 0.05103f, 0.481225f },
+	{ 26, -0.348432f, 0.051194f, 0.503931f },
+	{ 27, -0.348432f, 0.051333f, 0.523268f },
+	{ 28, -0.348432f, 0.051441f, 0.538272f },
+	{ 29, -0.348432f, 0.051511f, 0.54798f },
+	{ 30, -0.348432f, 0.051536f, 0.55143f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_12_rot[] = {
+	{ 0, 0xFFFFF393, 0x8000, 0 },
+	{ 1, 0xFFFFF3BF, 0x8000, 0 },
+	{ 2, 0xFFFFF43B, 0x8000, 0 },
+	{ 3, 0xFFFFF4FA, 0x8000, 0 },
+	{ 4, 0xFFFFF5EE, 0x8000, 0 },
+	{ 5, 0xFFFFF70D, 0x8000, 0 },
+	{ 6, 0xFFFFF848, 0x8000, 0 },
+	{ 7, 0xFFFFF994, 0x8000, 0 },
+	{ 8, 0xFFFFFAE6, 0x8000, 0 },
+	{ 9, 0xFFFFFC30, 0x8000, 0 },
+	{ 10, 0xFFFFFD69, 0x8000, 0 },
+	{ 11, 0xFFFFFE83, 0x8000, 0 },
+	{ 12, 0xFFFFFF74, 0x8000, 0 },
+	{ 13, 0x2F, 0x8000, 0 },
+	{ 14, 0xA8, 0x8000, 0 },
+	{ 15, 0xD4, 0x8000, 0 },
+	{ 16, 0xA8, 0x8000, 0 },
+	{ 17, 0x2F, 0x8000, 0 },
+	{ 18, 0xFFFFFF74, 0x8000, 0 },
+	{ 19, 0xFFFFFE83, 0x8000, 0 },
+	{ 20, 0xFFFFFD69, 0x8000, 0 },
+	{ 21, 0xFFFFFC30, 0x8000, 0 },
+	{ 22, 0xFFFFFAE6, 0x8000, 0 },
+	{ 23, 0xFFFFF994, 0x8000, 0 },
+	{ 24, 0xFFFFF848, 0x8000, 0 },
+	{ 25, 0xFFFFF70D, 0x8000, 0 },
+	{ 26, 0xFFFFF5EE, 0x8000, 0 },
+	{ 27, 0xFFFFF4FA, 0x8000, 0 },
+	{ 28, 0xFFFFF43B, 0x8000, 0 },
+	{ 29, 0xFFFFF3BF, 0x8000, 0 },
+	{ 30, 0xFFFFF393, 0x8000, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_13_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_13_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_14_pos[] = {
+	{ 0, 0, 1.66362f, 0.305458f },
+	{ 1, 0, 1.660887f, 0.305478f },
+	{ 2, 0, 1.653198f, 0.305533f },
+	{ 3, 0, 1.641315f, 0.305619f },
+	{ 4, 0, 1.626001f, 0.305729f },
+	{ 5, 0, 1.608017f, 0.305859f },
+	{ 6, 0, 1.588127f, 0.306002f },
+	{ 7, 0, 1.567093f, 0.306154f },
+	{ 8, 0, 1.545678f, 0.306308f },
+	{ 9, 0, 1.524644f, 0.30646f },
+	{ 10, 0, 1.504754f, 0.306603f },
+	{ 11, 0, 1.486771f, 0.306733f },
+	{ 12, 0, 1.471456f, 0.306843f },
+	{ 13, 0, 1.459573f, 0.306929f },
+	{ 14, 0, 1.451884f, 0.306984f },
+	{ 15, 0, 1.449151f, 0.307004f },
+	{ 16, 0, 1.451884f, 0.306984f },
+	{ 17, 0, 1.459573f, 0.306929f },
+	{ 18, 0, 1.471456f, 0.306843f },
+	{ 19, 0, 1.486771f, 0.306733f },
+	{ 20, 0, 1.504754f, 0.306603f },
+	{ 21, 0, 1.524644f, 0.30646f },
+	{ 22, 0, 1.545678f, 0.306308f },
+	{ 23, 0, 1.567093f, 0.306154f },
+	{ 24, 0, 1.588127f, 0.306002f },
+	{ 25, 0, 1.608017f, 0.305859f },
+	{ 26, 0, 1.626001f, 0.305729f },
+	{ 27, 0, 1.641315f, 0.305619f },
+	{ 28, 0, 1.653198f, 0.305533f },
+	{ 29, 0, 1.660887f, 0.305478f },
+	{ 30, 0, 1.66362f, 0.305458f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_14_rot[] = {
+	{ 0, 0xFFFFC2F6, 0, 0 },
+	{ 1, 0xFFFFC30B, 0, 0 },
+	{ 2, 0xFFFFC348, 0, 0 },
+	{ 3, 0xFFFFC3A6, 0, 0 },
+	{ 4, 0xFFFFC41E, 0, 0 },
+	{ 5, 0xFFFFC4AA, 0, 0 },
+	{ 6, 0xFFFFC544, 0, 0 },
+	{ 7, 0xFFFFC5E6, 0, 0 },
+	{ 8, 0xFFFFC68A, 0, 0 },
+	{ 9, 0xFFFFC729, 0, 0 },
+	{ 10, 0xFFFFC7BF, 0, 0 },
+	{ 11, 0xFFFFC845, 0, 0 },
+	{ 12, 0xFFFFC8B7, 0, 0 },
+	{ 13, 0xFFFFC90E, 0, 0 },
+	{ 14, 0xFFFFC947, 0, 0 },
+	{ 15, 0xFFFFC95B, 0, 0 },
+	{ 16, 0xFFFFC947, 0, 0 },
+	{ 17, 0xFFFFC90E, 0, 0 },
+	{ 18, 0xFFFFC8B7, 0, 0 },
+	{ 19, 0xFFFFC845, 0, 0 },
+	{ 20, 0xFFFFC7BF, 0, 0 },
+	{ 21, 0xFFFFC729, 0, 0 },
+	{ 22, 0xFFFFC68A, 0, 0 },
+	{ 23, 0xFFFFC5E6, 0, 0 },
+	{ 24, 0xFFFFC544, 0, 0 },
+	{ 25, 0xFFFFC4AA, 0, 0 },
+	{ 26, 0xFFFFC41E, 0, 0 },
+	{ 27, 0xFFFFC3A6, 0, 0 },
+	{ 28, 0xFFFFC348, 0, 0 },
+	{ 29, 0xFFFFC30B, 0, 0 },
+	{ 30, 0xFFFFC2F6, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_15_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_15_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_16_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_16_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_17_pos[] = {
+	{ 0, 0.572955f, 0.97026f, 1.250471f },
+	{ 30, 0.572955f, 0.97026f, 1.250471f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_17_rot[] = {
+	{ 0, 0xFFFFF92B, 0xD82, 0xFFFFFE43 },
+	{ 30, 0xFFFFF92B, 0xD82, 0xFFFFFE43 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_18_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_18_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_19_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_19_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_20_pos[] = {
+	{ 0, -0.572977f, 0.97026f, 1.250483f },
+	{ 30, -0.572977f, 0.97026f, 1.250483f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_20_rot[] = {
+	{ 0, 0xFFFFF92B, 0xFFFFF2CD, 0x16C },
+	{ 30, 0xFFFFF92B, 0xFFFFF2CD, 0x16C }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_21_pos[] = {
+	{ 0, 0.000017f, 0.000003f, 0 },
+	{ 30, 0.000017f, 0.000003f, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_21_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_22_pos[] = {
+	{ 0, 0.000017f, 0.000003f, 0 },
+	{ 30, 0.000017f, 0.000003f, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_22_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_23_pos[] = {
+	{ 0, 0.599993f, 1.840872f, 0.050001f },
+	{ 30, 0.599993f, 1.840872f, 0.050001f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_23_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_24_pos[] = {
+	{ 0, 0.7f, 2, -0.099999f },
+	{ 30, 0.7f, 2, -0.099999f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_24_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_25_pos[] = {
+	{ 0, -0.60001f, 1.840872f, 0.05f },
+	{ 30, -0.60001f, 1.840872f, 0.05f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_25_rot[] = {
+	{ 0, 0, 0xFFFF8035, 0 },
+	{ 30, 0, 0xFFFF8035, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_26_pos[] = {
+	{ 0, -0.700001f, 2, -0.099999f },
+	{ 30, -0.700001f, 2, -0.099999f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_26_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_27_pos[] = {
+	{ 0, 0, 0, 0.018806f },
+	{ 30, 0, 0, 0.018806f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_27_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_28_pos[] = {
+	{ 0, 0, 0.570259f, 1.381206f },
+	{ 30, 0, 0.570259f, 1.381206f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_28_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_29_pos[] = {
+	{ 0, 0, 1.97026f, 0.9f },
+	{ 30, 0, 1.97026f, 0.9f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_29_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_30_pos[] = {
+	{ 0, 0.870999f, 1.97026f, -0.3f },
+	{ 30, 0.870999f, 1.97026f, -0.3f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_30_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_31_pos[] = {
+	{ 0, -0.871001f, 1.97026f, -0.3f },
+	{ 30, -0.871001f, 1.97026f, -0.3f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_31_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_32_pos[] = {
+	{ 0, 0, 3.3f, 0 },
+	{ 30, 0, 3.3f, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_32_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_33_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_33_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_34_pos[] = {
+	{ 0, 0, 0.47026f, -0.5f },
+	{ 30, 0, 0.47026f, -0.5f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_34_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_35_pos[] = {
+	{ 0, 0.035687f, 0.081224f, 0.874748f },
+	{ 30, 0.035687f, 0.081224f, 0.874748f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_35_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_36_pos[] = {
+	{ 0, 0.2f, 0.47026f, -0.402769f },
+	{ 30, 0.2f, 0.47026f, -0.402769f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_36_rot[] = {
+	{ 0, 0, 0x1555, 0 },
+	{ 30, 0, 0x1555, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_37_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_37_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_38_pos[] = {
+	{ 0, -0.2f, 0.47026f, -0.402768f },
+	{ 30, -0.2f, 0.47026f, -0.402768f }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_38_rot[] = {
+	{ 0, 0, 0x6AAA, 0 },
+	{ 30, 0, 0x6AAA, 0 }
+};
+
+NJS_MKEY_F ARM_000_object_00016DB4Action_39_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MKEY_SA ARM_000_object_00016DB4Action_39_rot[] = {
+	{ 0, 0, 0, 0 },
+	{ 30, 0, 0, 0 }
+};
+
+NJS_MDATA2 ARM_000_object_00016DB4Action_mdat[] = {
+	{ NULL, NULL, 0, 0 },
+	{ ARM_000_object_00016DB4Action_1_pos, ARM_000_object_00016DB4Action_1_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_1_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_1_rot) },
+	{ ARM_000_object_00016DB4Action_2_pos, ARM_000_object_00016DB4Action_2_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_2_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_2_rot) },
+	{ ARM_000_object_00016DB4Action_3_pos, ARM_000_object_00016DB4Action_3_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_3_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_3_rot) },
+	{ ARM_000_object_00016DB4Action_4_pos, ARM_000_object_00016DB4Action_4_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_4_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_4_rot) },
+	{ ARM_000_object_00016DB4Action_5_pos, ARM_000_object_00016DB4Action_5_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_5_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_5_rot) },
+	{ ARM_000_object_00016DB4Action_6_pos, ARM_000_object_00016DB4Action_6_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_6_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_6_rot) },
+	{ ARM_000_object_00016DB4Action_7_pos, ARM_000_object_00016DB4Action_7_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_7_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_7_rot) },
+	{ ARM_000_object_00016DB4Action_8_pos, ARM_000_object_00016DB4Action_8_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_8_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_8_rot) },
+	{ ARM_000_object_00016DB4Action_9_pos, ARM_000_object_00016DB4Action_9_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_9_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_9_rot) },
+	{ ARM_000_object_00016DB4Action_10_pos, ARM_000_object_00016DB4Action_10_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_10_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_10_rot) },
+	{ ARM_000_object_00016DB4Action_11_pos, ARM_000_object_00016DB4Action_11_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_11_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_11_rot) },
+	{ ARM_000_object_00016DB4Action_12_pos, ARM_000_object_00016DB4Action_12_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_12_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_12_rot) },
+	{ ARM_000_object_00016DB4Action_13_pos, ARM_000_object_00016DB4Action_13_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_13_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_13_rot) },
+	{ ARM_000_object_00016DB4Action_14_pos, ARM_000_object_00016DB4Action_14_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_14_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_14_rot) },
+	{ ARM_000_object_00016DB4Action_15_pos, ARM_000_object_00016DB4Action_15_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_15_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_15_rot) },
+	{ ARM_000_object_00016DB4Action_16_pos, ARM_000_object_00016DB4Action_16_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_16_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_16_rot) },
+	{ ARM_000_object_00016DB4Action_17_pos, ARM_000_object_00016DB4Action_17_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_17_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_17_rot) },
+	{ ARM_000_object_00016DB4Action_18_pos, ARM_000_object_00016DB4Action_18_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_18_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_18_rot) },
+	{ ARM_000_object_00016DB4Action_19_pos, ARM_000_object_00016DB4Action_19_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_19_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_19_rot) },
+	{ ARM_000_object_00016DB4Action_20_pos, ARM_000_object_00016DB4Action_20_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_20_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_20_rot) },
+	{ ARM_000_object_00016DB4Action_21_pos, ARM_000_object_00016DB4Action_21_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_21_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_21_rot) },
+	{ ARM_000_object_00016DB4Action_22_pos, ARM_000_object_00016DB4Action_22_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_22_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_22_rot) },
+	{ ARM_000_object_00016DB4Action_23_pos, ARM_000_object_00016DB4Action_23_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_23_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_23_rot) },
+	{ ARM_000_object_00016DB4Action_24_pos, ARM_000_object_00016DB4Action_24_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_24_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_24_rot) },
+	{ ARM_000_object_00016DB4Action_25_pos, ARM_000_object_00016DB4Action_25_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_25_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_25_rot) },
+	{ ARM_000_object_00016DB4Action_26_pos, ARM_000_object_00016DB4Action_26_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_26_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_26_rot) },
+	{ ARM_000_object_00016DB4Action_27_pos, ARM_000_object_00016DB4Action_27_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_27_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_27_rot) },
+	{ ARM_000_object_00016DB4Action_28_pos, ARM_000_object_00016DB4Action_28_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_28_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_28_rot) },
+	{ ARM_000_object_00016DB4Action_29_pos, ARM_000_object_00016DB4Action_29_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_29_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_29_rot) },
+	{ ARM_000_object_00016DB4Action_30_pos, ARM_000_object_00016DB4Action_30_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_30_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_30_rot) },
+	{ ARM_000_object_00016DB4Action_31_pos, ARM_000_object_00016DB4Action_31_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_31_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_31_rot) },
+	{ ARM_000_object_00016DB4Action_32_pos, ARM_000_object_00016DB4Action_32_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_32_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_32_rot) },
+	{ ARM_000_object_00016DB4Action_33_pos, ARM_000_object_00016DB4Action_33_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_33_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_33_rot) },
+	{ ARM_000_object_00016DB4Action_34_pos, ARM_000_object_00016DB4Action_34_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_34_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_34_rot) },
+	{ ARM_000_object_00016DB4Action_35_pos, ARM_000_object_00016DB4Action_35_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_35_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_35_rot) },
+	{ ARM_000_object_00016DB4Action_36_pos, ARM_000_object_00016DB4Action_36_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_36_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_36_rot) },
+	{ ARM_000_object_00016DB4Action_37_pos, ARM_000_object_00016DB4Action_37_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_37_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_37_rot) },
+	{ ARM_000_object_00016DB4Action_38_pos, ARM_000_object_00016DB4Action_38_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_38_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_38_rot) },
+	{ ARM_000_object_00016DB4Action_39_pos, ARM_000_object_00016DB4Action_39_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_39_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_39_rot) }
+};
+
+NJS_MOTION motion_alm_tailsfly = { ARM_000_object_00016DB4Action_mdat, 31, NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1, NJD_MTYPE_LINER | 2 };

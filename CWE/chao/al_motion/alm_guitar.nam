@@ -1,0 +1,111 @@
+#pragma once
+NJS_MKEY_F asd_ARM_000_object_00016DB4Action_2_pos[] = {
+	{ 0, 0.5484f, 0.683364f, 0.089686f },
+	{ 1, 0.5484f, 0.683364f, 0.089686f },
+	{ 2, 0.5484f, 0.683364f, 0.089686f },
+	{ 3, 0.5484f, 0.683364f, 0.089686f },
+	{ 4, 0.5484f, 0.683364f, 0.089686f },
+	{ 5, 0.5484f, 0.683364f, 0.089686f },
+	{ 6, 0.5484f, 0.683364f, 0.089686f },
+	{ 7, 0.5484f, 0.683364f, 0.089686f },
+	{ 8, 0.5484f, 0.683364f, 0.089686f },
+	{ 9, 0.5484f, 0.683364f, 0.089686f },
+	{ 10, 0.5484f, 0.683364f, 0.089686f }
+};
+
+NJS_MKEY_SA asd_ARM_000_object_00016DB4Action_2_rot[] = {
+	{ 0, 0xFFFFD83D, 0xFFFFF22E, 0xA8D },
+	{ 1, 0xFFFFD88E, 0xFFFFF32E, 0xA79 },
+	{ 2, 0xFFFFD940, 0xFFFFF58A, 0xA4E },
+	{ 3, 0xFFFFD9FB, 0xFFFFF856, 0xA24 },
+	{ 4, 0xFFFFDA86, 0xFFFFFAAB, 0xA09 },
+	{ 5, 0xFFFFDABB, 0xFFFFFBA5, 0x9FF },
+	{ 6, 0xFFFFDA84, 0xFFFFFAA1, 0xA09 },
+	{ 7, 0xFFFFD9F5, 0xFFFFF836, 0xA26 },
+	{ 8, 0xFFFFD932, 0xFFFFF54E, 0xA53 },
+	{ 9, 0xFFFFD877, 0xFFFFF2D9, 0xA80 },
+	{ 10, 0xFFFFD822, 0xFFFFF1D0, 0xA96 }
+};
+
+NJS_MKEY_F asd_ARM_000_object_00016DB4Action_9_pos[] = {
+	{ 0, -0.548431f, 0.683365f, 0.089686f },
+	{ 1, -0.548431f, 0.683365f, 0.089686f },
+	{ 2, -0.548431f, 0.683365f, 0.089686f },
+	{ 3, -0.548431f, 0.683365f, 0.089686f },
+	{ 4, -0.548431f, 0.683365f, 0.089686f },
+	{ 5, -0.548431f, 0.683365f, 0.089686f },
+	{ 6, -0.548431f, 0.683365f, 0.089686f },
+	{ 7, -0.548431f, 0.683365f, 0.089686f },
+	{ 8, -0.548431f, 0.683365f, 0.089686f },
+	{ 9, -0.548431f, 0.683365f, 0.089686f },
+	{ 10, -0.548431f, 0.683365f, 0.089686f }
+};
+
+NJS_MKEY_SA asd_ARM_000_object_00016DB4Action_9_rot[] = {
+	{ 0, 0x22F1, 0xFFFF841D, 0xFFFFE5F2 },
+	{ 1, 0x22C4, 0xFFFF843E, 0xFFFFE5F6 },
+	{ 2, 0x230A, 0xFFFF840A, 0xFFFFE5EF },
+	{ 3, 0x23A4, 0xFFFF8397, 0xFFFFE5E1 },
+	{ 4, 0x243F, 0xFFFF8324, 0xFFFFE5D4 },
+	{ 5, 0x2486, 0xFFFF82F0, 0xFFFFE5CF },
+	{ 6, 0x2457, 0xFFFF8312, 0xFFFFE5D2 },
+	{ 7, 0x23E8, 0xFFFF8365, 0xFFFFE5DB },
+	{ 8, 0x2363, 0xFFFF83C8, 0xFFFFE5E7 },
+	{ 9, 0x22F4, 0xFFFF841A, 0xFFFFE5F1 },
+	{ 10, 0x22C6, 0xFFFF843D, 0xFFFFE5F6 }
+};
+
+NJS_MKEY_F asd_ARM_000_object_00016DB4Action_10_pos[] = {
+	{ 0, 0, 0, 0 },
+	{ 10, 0, 0, 0 }
+};
+
+NJS_MKEY_SA asd_ARM_000_object_00016DB4Action_10_rot[] = {
+	{ 0, 0xFFFFFF87, 0x32, 0xFFFFFFB3 },
+	{ 10, 0xFFFFFF87, 0x32, 0xFFFFFFB3 }
+};
+
+NJS_MDATA2 asd_ARM_000_object_00016DB4Action_mdat[] = {
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ asd_ARM_000_object_00016DB4Action_2_pos, asd_ARM_000_object_00016DB4Action_2_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_2_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_2_rot) },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ asd_ARM_000_object_00016DB4Action_9_pos, asd_ARM_000_object_00016DB4Action_9_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_9_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_9_rot) },
+	{ asd_ARM_000_object_00016DB4Action_10_pos, asd_ARM_000_object_00016DB4Action_10_rot, LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_10_pos), LengthOfArray<Uint32>(ARM_000_object_00016DB4Action_10_rot) },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 },
+	{ NULL, NULL, 0, 0 }
+};
+
+NJS_MOTION motion_alm_guitar = { asd_ARM_000_object_00016DB4Action_mdat, 11, NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1, NJD_MTYPE_LINER | 2 };
