@@ -138,9 +138,11 @@ void CWE_Patch_Init(const IniFile* config)
 		ChaoGlobal.MinimalAddAttrChild = 0;
 		ChaoGlobal.MinimalAddAttrAdult = 0;
 		ChaoGlobal.TimeAddAttrAdult = 0;
+		ChaoGlobal.TimeAddAttrChild = 0;
 		ChaoGlobal.DamageSubAttr = 0;
 		ChaoGlobal.NadeAddAttr = 0;
 		ChaoGlobal.ThrownSubAttr = 0;
+		ChaoGlobal.DakkoAddAttr = 0;
 	}
 
 	if (config->getBool("Misc", "OtherRemoveDarkChao'sMeanEyesOverride", false))
