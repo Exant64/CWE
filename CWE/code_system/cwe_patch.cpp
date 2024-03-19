@@ -3,8 +3,8 @@
 #include "CodeParser.hpp"
 #include "../IniFile.h"
 #include "../al_behavior/al_intention.h"
+#include "../define.h"
 
-#define WriteNoOP(from, to) WriteData<(to) - (from)>((char*)(from), (char)0x90);
 
 template<typename T>
 inline void PatchData(T* writeaddress, const T& data)
