@@ -4,6 +4,8 @@
 #include "../IniFile.h"
 #include "../al_behavior/al_intention.h"
 
+#define WriteNoOP(from, to) WriteData<(to) - (from)>((char*)(from), (char)0x90);
+
 template<typename T>
 inline void PatchData(T* writeaddress, const T& data)
 {
@@ -100,11 +102,12 @@ void CWE_Patch_Init(const IniFile* config)
 	{
 		PrintDebug("Patch AdvancedChaosandCharactersChaoarelikeNormalChao");
 		PatchData((unsigned char*)0x00535A43, (unsigned char)0xFF);
-		PatchData((unsigned char*)0x0056297E, (unsigned char)0x19);
-		PatchData((unsigned char*)0x005628AD, (unsigned char)0x19);
 		PatchData((unsigned char*)0x00540212, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x0053A54B, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x0053A5BC, (unsigned char)0xFF);
+
+		WriteNoOP(0x5628AC, 0x5628B8);
+		WriteNoOP(0x56297D, 0x562989);
 	}
 
 	if (config->getBool("Hard", "HardEnableSpinDashandSomersault", false))
