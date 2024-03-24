@@ -399,6 +399,9 @@
     <ClInclude Include="TextConv.h" />
     <ClInclude Include="Trampoline.h" />
     <ClInclude Include="ui\al_ortho.h" />
+    <ClInclude Include="ui\al_tween.h" />
+    <ClInclude Include="ui\al_tween_interp.h" />
+    <ClInclude Include="ui\al_tween_types.h" />
     <ClInclude Include="ui\controller.h" />
     <ClInclude Include="ui\selectable.h" />
     <ClInclude Include="usercall.h" />
@@ -442,6 +445,7 @@
     <ClCompile Include="al_behavior\alsbhv_hug.cpp" />
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
+    <ClCompile Include="ui\al_tween_interp.cpp" />
     <ClInclude Include="al_chao_info.h" />
     <ClCompile Include="al_chao_counter.cpp" />
     <ClCompile Include="al_edit.cpp" />
