@@ -570,6 +570,15 @@
     <ClInclude Include="code_system\codes\include\easy\code_disable_reincarnation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ui\al_tween.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\al_tween_interp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\al_tween_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -957,6 +966,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="kce_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\al_tween_interp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
