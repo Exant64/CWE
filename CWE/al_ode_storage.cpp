@@ -8,6 +8,8 @@
 #include "al_sandhole.h"
 #include "memory.h"
 
+#include "al_ode_menu.h"
+
 #include <fstream>
 
 void someUIProjectionCode(NJS_VECTOR* a1, NJS_VECTOR* a2);
@@ -198,27 +200,8 @@ void AL_OdekakeStorage(ODE_MENU_MASTER_WORK* a1)
 	case 1:
 		break;
 	case 2:
-		AL_OdekakeMenuMaster_Data_ptr->NextStage = 0;
-		if (AL_OdekakeMenuMaster_Data_ptr)
-		{
-			void(__cdecl * v0)(ODE_MENU_MASTER_WORK*); // eax
-			v0 = AL_OdekakeMenuMaster_Data_ptr->mfStageExit;
-			if (v0)
-			{
-				//	v0(AL_OdekakeMenuMaster_Data_ptr);
-			}
-			AL_OdekakeMenuMaster_Data_ptr->PreStage = AL_OdekakeMenuMaster_Data_ptr->CurrStage;
-			AL_OdekakeMenuMaster_Data_ptr->CurrStage = AL_OdekakeMenuMaster_Data_ptr->NextStage;
-			AL_OdekakeMenuMaster_Data_ptr->mode = 0;
-			AL_OdekakeMenuMaster_Data_ptr->timer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->subtimer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->state = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorX = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorY = 2;
-			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mfStageExit = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mpStageWork = 0;
-		}
+		AL_OdeMenuSetNextStage(0);
+		AL_OdeMenuChangeStage();
 		break;
 	}
 }

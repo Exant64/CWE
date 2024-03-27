@@ -7,6 +7,21 @@
 #include <cstdio>
 #include "ChaoMain.h"
 #include "al_ode_guide.h"
+#include "al_ode_menu.h"
+
+static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1);
+
+CWE_API_ODEKAKE_ENTRY OdakakeMoveEntry = {
+	AL_OdekakeMove, 
+	nullptr, 
+	ODE_FLAGS_REQUIRE_NO_CHAO , 
+	&stru_11BA528[31],
+	&stru_11BA528[6],
+	&stru_11BA528[7],
+	&stru_11BA528[20],
+	&stru_11BA528[21], 
+	1.0, 1.0, 0.5, 0.0 
+};
 
 #pragma pack(push, 8)
 struct SelectMenuThing
@@ -116,7 +131,7 @@ VoidFunc(al_confirmsave_load_zero, 0x00530230);
 
 // to check the current save we extract the "save number" from the filename
 // multiSaveIndices[] is also this array
-char GetMultiSaveIndex() {
+static char GetMultiSaveIndex() {
 	// ecw's multisaves are longer than the vanilla/cwe ones, that's how we detect if it's ecw's or not
 	if (strlen(selectedSavePath) == strlen(CurrentChaoSaveFileString)) {
 		// if length matches, we're in a vanilla/cwe file
@@ -143,7 +158,7 @@ char GetMultiSaveIndex() {
 	return '0' + numberConverted;
 }
 
-void AL_SaveSecondFile() {
+static void AL_SaveSecondFile() {
 	WriteChaoSaveChecksum((char*)SecondChaoSaveFilePointer);
 
 	// i don't remember why the offset we need is exactly 0x3040 but... yeah
@@ -158,7 +173,7 @@ void AL_SaveSecondFile() {
 	}
 }
 
-ChaoData* AL_GetSecondFileChao() {
+static ChaoData* AL_GetSecondFileChao() {
 	int backup = ChaoSaveIndexThing;
 	ChaoSaveIndexThing = 1;
 	ChaoData* data = AL_GetNewChaoSaveInfo();
@@ -166,7 +181,7 @@ ChaoData* AL_GetSecondFileChao() {
 	return data;
 }
 
-void AL_HikkoshiMenuExecutor(ObjectMaster *a1) {
+static void AL_HikkoshiMenuExecutor(ObjectMaster *a1) {
 	if (a1->Data1.Entity->Action == 0) {
 		if (*(int*)0x1AED254 == 2) { // menu is quitting 
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
@@ -269,7 +284,7 @@ static ChaoHudThingB HikkoshiUI[] = {
 // the generic menu sprite array used throughout the odekake menus
 DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
 
-void AL_HikkoshiMenuDisplayer(ObjectMaster* a1) {
+static void AL_HikkoshiMenuDisplayer(ObjectMaster* a1) {
 	*(char*)0x25EFFCC = 0;
 
 	//DrawChaoHudThingB(MenuArray[2], 472, 399, -1.2f, 1, 1, 0, 0); //the middle arrow thing
@@ -300,13 +315,13 @@ void AL_HikkoshiMenuDisplayer(ObjectMaster* a1) {
 	*(char*)0x25EFFCC = 1;
 }
 
-void AL_HikkoshiMenu() {
+static void AL_HikkoshiMenu() {
 	ObjectMaster* a1 = LoadObject(3, "HikkoshiMenuExecutor", AL_HikkoshiMenuExecutor, LoadObj_Data1);
 	a1->DisplaySub = AL_HikkoshiMenuDisplayer;
 	a1->Data1.Entity->Scale.x = 0;
 }
 
-void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
+static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 	int previousSelected;
 
 	switch (a1->mode) {
@@ -392,28 +407,8 @@ void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 		}
 		break;
 	case 4:
-		// generic odekake destructor
-		AL_OdekakeMenuMaster_Data_ptr->NextStage = 0;
-		if (AL_OdekakeMenuMaster_Data_ptr)
-		{
-			void(__cdecl * v0)(ODE_MENU_MASTER_WORK*); // eax
-			v0 = AL_OdekakeMenuMaster_Data_ptr->mfStageExit;
-			if (v0)
-			{
-				//	v0(AL_OdekakeMenuMaster_Data_ptr);
-			}
-			AL_OdekakeMenuMaster_Data_ptr->PreStage = AL_OdekakeMenuMaster_Data_ptr->CurrStage;
-			AL_OdekakeMenuMaster_Data_ptr->CurrStage = AL_OdekakeMenuMaster_Data_ptr->NextStage;
-			AL_OdekakeMenuMaster_Data_ptr->mode = 0;
-			AL_OdekakeMenuMaster_Data_ptr->timer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->subtimer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->state = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorX = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorY = 2;
-			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mfStageExit = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mpStageWork = 0;
-		}
+		AL_OdeMenuSetNextStage(0);
+		AL_OdeMenuChangeStage();
 		break;
 	case 5:
 		// todo: use al_msg_warn.h functions for this
