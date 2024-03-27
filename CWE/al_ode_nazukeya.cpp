@@ -5,22 +5,34 @@
 #include "ninja_functions.h"
 #include <cstdio>
 
+#include "al_ode_menu.h"
+#include "al_texlist.h"
+
+static ChaoHudThingB NameMenuSprites[] = {
+	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &NAME_ODE_TEXLIST, 0}, //text
+	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &NAME_ODE_TEXLIST, 0}, //grey text
+	{1, 32, 32, 0.01f, 0.01f, 0.99f, 1, &NAME_ODE_TEXLIST, 1} //icon
+};
+
+static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1);
+
+CWE_API_ODEKAKE_ENTRY OdekakeNameEntry = { AL_OdekakeName, nullptr, ODE_FLAGS_REQUIRE_CHAO, &NameMenuSprites[2], &NameMenuSprites[0], &NameMenuSprites[1], nullptr, nullptr };
+
 char NazukeyaBuff[0x60 + 4 + sizeof(AL_NAME)];
 ObjectMaster* nazukeyaObj = 0;
 FunctionPointer(void, sub_5827A0, (int a1), 0x5827A0);
-void __cdecl Nazukeya_Main(ObjectMaster *a1)
-{
+
+static void Nazukeya_Main(ObjectMaster *a1) {
 	sub_582F60((char*)NazukeyaBuff);
 }
-void __cdecl Nazukeya_Display(ObjectMaster *a1)
-{
+
+static void Nazukeya_Display(ObjectMaster *a1) {
 	sub_5827A0((int)NazukeyaBuff);
 }
 
 //asdsd
 FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
-void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1)
-{
+static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 	int v4;
 	switch (a1->mode)
 	{
@@ -57,27 +69,8 @@ void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1)
 		}
 		break;
 	case 2:
-		AL_OdekakeMenuMaster_Data_ptr->NextStage = 0;
-		if (AL_OdekakeMenuMaster_Data_ptr)
-		{
-			void(__cdecl * v0)(ODE_MENU_MASTER_WORK*); // eax
-			v0 = AL_OdekakeMenuMaster_Data_ptr->mfStageExit;
-			if (v0)
-			{
-				//	v0(AL_OdekakeMenuMaster_Data_ptr);
-			}
-			AL_OdekakeMenuMaster_Data_ptr->PreStage = AL_OdekakeMenuMaster_Data_ptr->CurrStage;
-			AL_OdekakeMenuMaster_Data_ptr->CurrStage = AL_OdekakeMenuMaster_Data_ptr->NextStage;
-			AL_OdekakeMenuMaster_Data_ptr->mode = 0;
-			AL_OdekakeMenuMaster_Data_ptr->timer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->subtimer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->state = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorX = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorY = 2;
-			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mfStageExit = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mpStageWork = 0;
-		}
+		AL_OdeMenuSetNextStage(0);
+		AL_OdeMenuChangeStage();
 		break;
 	}
 }

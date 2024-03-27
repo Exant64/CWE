@@ -29,6 +29,23 @@
 #include "ui/al_ortho.h"
 #include "al_ode_guide.h"
 
+#include "al_ode_menu.h"
+
+// the menu entry
+static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
+
+CWE_API_ODEKAKE_ENTRY OdekakeCustomizationEntry = {
+	AL_OdekakeCustomization, 
+	nullptr, 
+	ODE_FLAGS_REQUIRE_CHAO, 
+	&stru_11BA528[32],
+	&stru_11BA528[8],
+	&stru_11BA528[9],
+	&stru_11BA528[22],
+	&stru_11BA528[23], 
+	1.0, 1.0, 0.5, 0.5 
+};
+
 //constants
 const int HatsSubMenuCount = AccessoryTypeCount + 1; //(accessories + vanilla hat)
 const std::string baseLayerName = "base";
@@ -429,8 +446,7 @@ ObjectMaster* pChao;
 UIController* customizationController = nullptr;
 ObjectMaster* largeBar = 0;
 
-void __cdecl AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1)
-{	
+static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {	
 	NJS_VECTOR posIn = { 130, 190, -30 }, posOut;
 	switch (a1->mode)
 	{
@@ -536,27 +552,8 @@ void __cdecl AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1)
 		delete customizationController;
 		customizationController = 0;
 
-		AL_OdekakeMenuMaster_Data_ptr->NextStage = 0;
-		if (AL_OdekakeMenuMaster_Data_ptr)
-		{
-			void(__cdecl * v0)(ODE_MENU_MASTER_WORK*); // eax
-			v0 = AL_OdekakeMenuMaster_Data_ptr->mfStageExit;
-			if (v0)
-			{
-				//	v0(AL_OdekakeMenuMaster_Data_ptr);
-			}
-			AL_OdekakeMenuMaster_Data_ptr->PreStage = AL_OdekakeMenuMaster_Data_ptr->CurrStage;
-			AL_OdekakeMenuMaster_Data_ptr->CurrStage = AL_OdekakeMenuMaster_Data_ptr->NextStage;
-			AL_OdekakeMenuMaster_Data_ptr->mode = 0;
-			AL_OdekakeMenuMaster_Data_ptr->timer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->subtimer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->state = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorX = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorY = 0;
-			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mfStageExit = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mpStageWork = 0;
-		}
+		AL_OdeMenuSetNextStage(0);
+		AL_OdeMenuChangeStage();
 		break;
 	}
 }

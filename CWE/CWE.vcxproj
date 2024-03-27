@@ -269,6 +269,7 @@
     <ClInclude Include="al_minimal.h" />
     <ClInclude Include="al_msg_font.h" />
     <ClInclude Include="al_msg_win.h" />
+    <ClInclude Include="al_ode_menu.h" />
     <ClInclude Include="al_parts.h" />
     <ClInclude Include="al_misc.h" />
     <ClInclude Include="AL_ModAPI.h" />

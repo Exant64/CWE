@@ -6,6 +6,21 @@
 #include <cstdio>
 #include "al_ode_guide.h"
 
+#include "al_texlist.h"
+
+#include "al_ode_menu.h"
+
+static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1);
+
+static ChaoHudThingB GuestMenu[] = {
+	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //text
+	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //grey text
+	{1, 40, 40, 0, 0, 0.99f, 1, &AL_ODE_GUEST_TEXLIST, 1}, //icon
+	{1, 48, 48, 0, 0, 0.99f, 1, &AL_ODE_GUEST_TEXLIST, 2}, //icon black and white
+};
+
+CWE_API_ODEKAKE_ENTRY OdekakeGuestEntry = { AL_OdekakeGuest, nullptr, ODE_FLAGS_REQUIRE_CHAO, &GuestMenu[2],&GuestMenu[0],&GuestMenu[1],&GuestMenu[3] , &GuestMenu[0], 1.0, 1.0, 0.5, 0.5 };
+
 //please please please clean this up
 const int someUIProjectionCodeCopyPtr = 0x0055A060;
 void someUIProjectionCodeCopy(NJS_VECTOR* a1, NJS_VECTOR* a2)
@@ -18,8 +33,8 @@ void someUIProjectionCodeCopy(NJS_VECTOR* a1, NJS_VECTOR* a2)
 	}
 }
 
-ObjectMaster* pGuestChao = 0;
-void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
+static ObjectMaster* pGuestChao = NULL;
+static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 {
 	NJS_VECTOR posIn = { 240, 300, -25 };
 
@@ -66,19 +81,8 @@ void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 		if (AL_OdekakeMenuMaster_Data_ptr->timer > 60) {
 			AlMsgWarnDelete(0);
 
-			AL_OdekakeMenuMaster_Data_ptr->NextStage = 0;
-
-			AL_OdekakeMenuMaster_Data_ptr->PreStage = AL_OdekakeMenuMaster_Data_ptr->CurrStage;
-			AL_OdekakeMenuMaster_Data_ptr->CurrStage = AL_OdekakeMenuMaster_Data_ptr->NextStage;
-			AL_OdekakeMenuMaster_Data_ptr->mode = 0;
-			AL_OdekakeMenuMaster_Data_ptr->timer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->subtimer = 0;
-			AL_OdekakeMenuMaster_Data_ptr->state = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorX = 0;
-			AL_OdekakeMenuMaster_Data_ptr->cursorY = 2;
-			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mfStageExit = 0;
-			AL_OdekakeMenuMaster_Data_ptr->mpStageWork = 0;			
+			AL_OdeMenuSetNextStage(0);
+			AL_OdeMenuChangeStage();
 		}
 		break;
 	}

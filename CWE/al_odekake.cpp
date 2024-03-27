@@ -9,20 +9,21 @@
 #include "al_ode_guide.h"
 
 #include "cwe_api.h"
+#include <al_ode_menu.h>
 
+// todo: move this maybe somewhere more appropriate
 std::vector<CWE_API_ODEKAKE_ENTRY> odekakeMenuEntries;
 
 void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1);
 void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1);
 void AL_OdekakeStorage(ODE_MENU_MASTER_WORK* a1);
-
 void __cdecl AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
-void __cdecl AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1)
-{
+
+void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1) {
 	sub_5A6F50(a1);
 }
-void __cdecl AL_OdekakeMenuMaster_(ObjectMaster* a1)
-{
+
+void __cdecl AL_OdekakeMenuMaster_(ObjectMaster* a1) {
 	ODE_MENU_MASTER_WORK* pOde = AL_OdekakeMenuMaster_Data_ptr;
 	int stage = pOde->CurrStage;
 
@@ -36,19 +37,15 @@ void __cdecl AL_OdekakeMenuMaster_(ObjectMaster* a1)
 	}
 	pOde->state = 0;
 }
-ChaoDataBase* __cdecl GBAManager_GetChaoDataPointer() {
-	ChaoDataBase* result; // eax
 
-	if (AL_GBAManagerExecutor_ptr)
-	{
-		result = (ChaoDataBase*) * ((int*)AL_GBAManagerExecutor_ptr + 5);
+ChaoDataBase* GBAManager_GetChaoDataPointer() {
+	if (!AL_GBAManagerExecutor_ptr) {
+		return nullptr;
 	}
-	else
-	{
-		result = 0;
-	}
-	return result;
+	
+	return (ChaoDataBase*)*((int*)AL_GBAManagerExecutor_ptr + 5);
 }
+
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
 FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
 int Odekake_EnabledButtonsCWE[255] = { 0 }; //big placeholder buffer, ill decide a max size at some point
@@ -59,8 +56,7 @@ bool AL_OdekakeIsGuest() {
 	return Odekake_EnabledButtons && pParam && pParam->field_19 == 1;
 }
 
-void __cdecl AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5)
-{
+void __cdecl AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) {
 	int isThereChao = Odekake_EnabledButtons;
 	bool guest = AL_OdekakeIsGuest();
 
@@ -81,7 +77,6 @@ void __cdecl AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5)
 	CreateButtonGuide(SELECT | CONFIRM | BACK);
 }
 
-DataArray(ChaoHudThingB, stru_11BA528, 0x11BA528, 30);
 ObjectFunc(sub_5AC010,0x5AC010);
 void NewButtonDraw(ObjectMaster *a1)
 {
@@ -186,37 +181,11 @@ void BarDraw(ObjectMaster* a1)
 	NewBarDraw(a1);
 }
 
-FunctionPointer(void, LoadNextChaoLevel, (int a1), 0x0052B5B0);
-void __cdecl AL_OdekakeQuit(ODE_MENU_MASTER_WORK*)
-{
-	LoadNextChaoLevel(LastChaoArea);
-	PlaySoundProbably(32787, 0, 0, 0);
-}
-
-// what a consistent naming scheme (and i won't fix it because i honestly don't know what to decide on with all our globals)
-ChaoHudThingB nameMenu[] = {
-	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &NAME_ODE_TEXLIST, 0}, //text
-	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &NAME_ODE_TEXLIST, 0}, //grey text
-	{1, 32, 32, 0.01f, 0.01f, 0.99f, 1, &NAME_ODE_TEXLIST, 1} //icon
-};
-
-ChaoHudThingB GuestMenu[] = {
-	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //text
-	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //grey text
-	{1, 40, 40, 0, 0, 0.99f, 1, &AL_ODE_GUEST_TEXLIST, 1}, //icon
-	{1, 48, 48, 0, 0, 0.99f, 1, &AL_ODE_GUEST_TEXLIST, 2}, //icon black and white
-};
-
-
-extern void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1);
-static CWE_API_ODEKAKE_ENTRY goodbyeEntry = { AL_OdekakeGoodbye, nullptr, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[33],&stru_11BA528[10],&stru_11BA528[11],&stru_11BA528[24],&stru_11BA528[25], 1.0, 0.0, 0.7265625, 0.74609375 };
-static CWE_API_ODEKAKE_ENTRY nameEntry = {AL_OdekakeName, nullptr, ODE_FLAGS_REQUIRE_CHAO, &nameMenu[2],&nameMenu[0],&nameMenu[1],nullptr,nullptr };
-static CWE_API_ODEKAKE_ENTRY moveEntry = { AL_OdekakeMove, nullptr, ODE_FLAGS_REQUIRE_NO_CHAO , &stru_11BA528[31],&stru_11BA528[6],&stru_11BA528[7],&stru_11BA528[20],&stru_11BA528[21], 1.0, 1.0, 0.5, 0.0 };
-static CWE_API_ODEKAKE_ENTRY customizationEntry = { AL_OdekakeCustomization, nullptr, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[32],&stru_11BA528[8],&stru_11BA528[9],&stru_11BA528[22],&stru_11BA528[23], 1.0, 1.0, 0.5, 0.5 };
-static CWE_API_ODEKAKE_ENTRY guestEntry = { AL_OdekakeGuest, nullptr, ODE_FLAGS_REQUIRE_CHAO, &GuestMenu[2],&GuestMenu[0],&GuestMenu[1],&GuestMenu[3] , &GuestMenu[0], 1.0, 1.0, 0.5, 0.5 };
+// todo: maybe move these somewhere more findable?
+static CWE_API_ODEKAKE_ENTRY OdekakeGoodbyeEntry = { AL_OdekakeGoodbye, nullptr, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[33],&stru_11BA528[10],&stru_11BA528[11],&stru_11BA528[24],&stru_11BA528[25], 1.0, 0.0, 0.7265625, 0.74609375 };
 
 // the quit entry is basically dummied out (except for the button sprites), because the menu is hardcoded to exit on the last button, so no functionality is needed for it
-static CWE_API_ODEKAKE_ENTRY quitEntry = { nullptr, nullptr, ODE_FLAGS_NONE, &stru_11BA528[34],&stru_11BA528[12],&stru_11BA528[13],nullptr,nullptr };
+static CWE_API_ODEKAKE_ENTRY OdekakeQuitEntry = { nullptr, nullptr, ODE_FLAGS_NONE, &stru_11BA528[34],&stru_11BA528[12],&stru_11BA528[13],nullptr,nullptr };
 
 void GoodbyeBar()
 {
@@ -268,7 +237,7 @@ void AddOdekakeMenu(const CWE_API_ODEKAKE_ENTRY& entry) {
 void AL_Odekake_Finalize() {
 	// this should be the last button in the menu, always
 	// it's unnecessary to have this in a separate function but i didn't know any other way to "categorize" these types of changes
-	odekakeMenuEntries.push_back(quitEntry);
+	odekakeMenuEntries.push_back(OdekakeQuitEntry);
 }
 
 void AL_Odekake_Update() {
@@ -306,15 +275,15 @@ void AL_Odekake_Init()
 
 	odekakeMenuEntries.clear();
 	//if(cweSaveFile.transporterFlag & eTRANSPORTER::NAME)
-		odekakeMenuEntries.push_back(nameEntry);
+		odekakeMenuEntries.push_back(OdekakeNameEntry);
 	//if (cweSaveFile.transporterFlag & eTRANSPORTER::MOVE)
-		odekakeMenuEntries.push_back(moveEntry);
+		odekakeMenuEntries.push_back(OdakakeMoveEntry);
 	//if (cweSaveFile.transporterFlag & eTRANSPORTER::CUSTOMIZATION)
-		odekakeMenuEntries.push_back(customizationEntry);
+		odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
 
-	odekakeMenuEntries.push_back(guestEntry);
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
 		
-	odekakeMenuEntries.push_back(goodbyeEntry);
+	odekakeMenuEntries.push_back(OdekakeGoodbyeEntry);
 
 	WriteData((char*)0x005AC2BE, (char)30); //displayfixes
 	WriteData((char*)0x005AC259, (char)4);
