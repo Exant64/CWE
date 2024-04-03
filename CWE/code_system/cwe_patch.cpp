@@ -3,6 +3,8 @@
 #include "CodeParser.hpp"
 #include "../IniFile.h"
 #include "../al_behavior/al_intention.h"
+#include "../define.h"
+
 
 template<typename T>
 inline void PatchData(T* writeaddress, const T& data)
@@ -100,13 +102,12 @@ void CWE_Patch_Init(const IniFile* config)
 	{
 		PrintDebug("Patch AdvancedChaosandCharactersChaoarelikeNormalChao");
 		PatchData((unsigned char*)0x00535A43, (unsigned char)0xFF);
-		PatchData((unsigned char*)0x0056297E, (unsigned char)0x19);
-		PatchData((unsigned char*)0x00562982, (unsigned char)0xFF);
-		PatchData((unsigned char*)0x005628AD, (unsigned char)0x19);
-		PatchData((unsigned char*)0x005628B1, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x00540212, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x0053A54B, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x0053A5BC, (unsigned char)0xFF);
+
+		WriteNoOP(0x5628AC, 0x5628B8);
+		WriteNoOP(0x56297D, 0x562989);
 	}
 
 	if (config->getBool("Hard", "HardEnableSpinDashandSomersault", false))
@@ -138,9 +139,11 @@ void CWE_Patch_Init(const IniFile* config)
 		ChaoGlobal.MinimalAddAttrChild = 0;
 		ChaoGlobal.MinimalAddAttrAdult = 0;
 		ChaoGlobal.TimeAddAttrAdult = 0;
+		ChaoGlobal.TimeAddAttrChild = 0;
 		ChaoGlobal.DamageSubAttr = 0;
 		ChaoGlobal.NadeAddAttr = 0;
 		ChaoGlobal.ThrownSubAttr = 0;
+		ChaoGlobal.DakkoAddAttr = 0;
 	}
 
 	if (config->getBool("Misc", "OtherRemoveDarkChao'sMeanEyesOverride", false))
