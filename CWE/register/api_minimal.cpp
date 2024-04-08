@@ -4,23 +4,6 @@
 #include <data/minimal/minimal_all.h>
 
 void ALAPI_RegisterMinimal(CWE_REGAPI* cwe_api) {
-	if (*(Uint32*)0x0042DF60 == 0xD90CEC83) {
-		PrintDebug("!!interpolation fix isn't active, killing animal keyframes!!");
-
-		((NJS_MDATA2*)ladybird_entry.motions[0]->mdata)[3].p[1] = 0;
-		((NJS_MDATA2*)ladybird_entry.motions[0]->mdata)[3].nb[1] = 0;
-
-		((NJS_MDATA2*)scorpion_entry.motions[0]->mdata)[1].p[1] = 0;
-		((NJS_MDATA2*)scorpion_entry.motions[0]->mdata)[1].nb[1] = 0;
-		((NJS_MDATA2*)scorpion_entry.motions[0]->mdata)[3].p[1] = 0;
-		((NJS_MDATA2*)scorpion_entry.motions[0]->mdata)[3].nb[1] = 0;
-
-		((NJS_MDATA2*)scorpion_entry.motions[1]->mdata)[1].p[1] = 0;
-		((NJS_MDATA2*)scorpion_entry.motions[1]->mdata)[1].nb[1] = 0;
-		((NJS_MDATA2*)scorpion_entry.motions[1]->mdata)[3].p[1] = 0;
-		((NJS_MDATA2*)scorpion_entry.motions[1]->mdata)[3].nb[1] = 0;
-	}
-
 	BeeID = cwe_api->AddChaoMinimal(&bee_entry);
 	cwe_api->AddChaoMinimal(&ladybird_entry);
 	cwe_api->AddChaoMinimal(&scorpion_entry);
