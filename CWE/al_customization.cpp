@@ -534,11 +534,12 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		break;
 	case 2:
 		a1->timer++;
-		if (a1->timer > 60)
+		if (a1->timer > 90)
 		{
 			a1->timer = 0;
 			a1->mode++;
 		}
+		break;
 	case 3:
 		if (a1->state == 0)
 		{
