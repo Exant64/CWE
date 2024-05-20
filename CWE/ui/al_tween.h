@@ -85,7 +85,7 @@ ObjectMaster* CreateTween(ObjectMaster* parent, const EASE_TYPE easingMode, cons
 		tp = LoadObject(4, "AL_Tween", TweenExecutor<T>, (LoadObj)0);
 	}
 	else {
-		tp = LoadChildObject((LoadObj)0, TweenExecutor<T>, tp);
+		tp = LoadChildObject((LoadObj)0, TweenExecutor<T>, parent);
 	}
 
 	tp->Data2.Undefined = ALLOC(TweenData<T>);

@@ -10,30 +10,33 @@
 
 #include "cwe_api.h"
 #include <al_ode_menu.h>
+#include <al_ode_mainmenubar.h>
 
 // todo: move this maybe somewhere more appropriate
 std::vector<CWE_API_ODEKAKE_ENTRY> odekakeMenuEntries;
 
-void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1);
-void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1);
-void AL_OdekakeStorage(ODE_MENU_MASTER_WORK* a1);
-void __cdecl AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
-
-void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1) {
+static void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1) {
 	sub_5A6F50(a1);
 }
 
-void __cdecl AL_OdekakeMenuMaster_(ObjectMaster* a1) {
+static void AL_OdekakeMenuMaster_(ObjectMaster* a1) {
 	ODE_MENU_MASTER_WORK* pOde = AL_OdekakeMenuMaster_Data_ptr;
 	int stage = pOde->CurrStage;
 
-	if (stage && odekakeMenuEntries[stage - 1].pMenuFunc)
-	{
+	if (stage && odekakeMenuEntries[stage - 1].pMenuFunc) {
 		odekakeMenuEntries[stage - 1].pMenuFunc(pOde);
 	}
-	else
-	{
+	else {
+		// this hack is needed so that we can have our own logic without having to hook the whole function
+		// (basically, prevent any changes to the cursor done by the original code)
+		int cursorY = AL_OdekakeMenuMaster_Data_ptr->cursorY;
 		sub_5A6C20(pOde);
+		AL_OdekakeMenuMaster_Data_ptr->cursorY = cursorY;
+
+		// if the menu is in the "selection" mode
+		if (pOde->mode == 3) {
+			AL_Odekake_MenuMaster_Selection();
+		}
 	}
 	pOde->state = 0;
 }
@@ -46,84 +49,14 @@ ChaoDataBase* GBAManager_GetChaoDataPointer() {
 	return (ChaoDataBase*)*((int*)AL_GBAManagerExecutor_ptr + 5);
 }
 
-DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
-FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
-int Odekake_EnabledButtonsCWE[255] = { 0 }; //big placeholder buffer, ill decide a max size at some point
 
-bool AL_OdekakeIsGuest() {
-	ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
-
-	return Odekake_EnabledButtons && pParam && pParam->field_19 == 1;
-}
-
-void __cdecl AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) {
-	int isThereChao = Odekake_EnabledButtons;
-	bool guest = AL_OdekakeIsGuest();
-
-	for (size_t i = 0; i < odekakeMenuEntries.size(); i++)
-	{
-		const auto& entry = odekakeMenuEntries[i];
-
-		if(entry.Flags & ODE_FLAGS_REQUIRE_CHAO)
-			Odekake_EnabledButtonsCWE[i] = (isThereChao && !guest) ? 1 : 0;
-		else if (entry.Flags & ODE_FLAGS_REQUIRE_NO_CHAO)
-			Odekake_EnabledButtonsCWE[i] = isThereChao ? 0 : 1; //flipped
-		else
-			Odekake_EnabledButtonsCWE[i] = 1;
-
-		sub_5AC390((Sint8)i, 320, 209 + (56 * ((float)i - 1)), 38 + (short)(8 * i), &Odekake_EnabledButtonsCWE[i]);
-	}
-
-	CreateButtonGuide(SELECT | CONFIRM | BACK);
-}
-
-ObjectFunc(sub_5AC010,0x5AC010);
-void NewButtonDraw(ObjectMaster *a1)
-{
-	EntityData1* v1 = a1->Data1.Entity;
-	SetChaoHUDThingBColor(*(float*)& v1->Rotation.z, 1, 1, 1);
-	
-	float v15, v23, v13, a1a, v22;
-	a1a = *(float*)& v1->Rotation.x;
-	v22 = *(float*)& v1->Rotation.y;
-	ChaoHudThingB* v12 = odekakeMenuEntries[v1->field_2].ButtonText;
-	if (!*(int*)(*(int*)(&v1->Scale.y)))
-	{
-		v12 = odekakeMenuEntries[v1->field_2].GreyButtonText;
-	}
-	v23 = v22 - 5;
-	v13 = a1a - 44;
-	DrawChaoHudThingB(v12, v13, v23, -100, 1, 1, -1, 1);
-	
-	if (!*(int*)(*(int*)(&v1->Scale.y)))
-	{
-		v15 = *(float*)0xB50FC4;
-	}
-	else
-	{
-		v15 = 0.08f;
-	}
-	float v16 = v15;
-	float v17 = njSin(*(int*)(&v1->Position.y)) * (v1->Position.z * v16) + 1;
-	float v18 = v17;
-	float v19 = 2 - v17;
-	float a4 = v18;
-	float a1b = a1a - 72;
-	DrawChaoHudThingB(odekakeMenuEntries[v1->field_2].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
-	SetChaoHUDThingBColor(1, 1, 1, 1);
-}
-void __cdecl ButtonDraw(ObjectMaster *a1)
-{
-	sub_5AC010(a1);
-	NewButtonDraw(a1);
-}
 void sub_558BA0(int a1, int a2, int a3, float a4, float a5, float a6)
 {
 	DrawChaoHudThingB((ChaoHudThingB*)a3, a4, a5, a6, 1, 1, a2, a1);
 }
+
 void NewBarDraw(ObjectMaster *a1)
 {
-
 	EntityData1* v1 = a1->Data1.Entity;
 	float a2 = *(float*)& v1->Rotation.x;
 	float a3 = *(float*)& v1->Rotation.y;
@@ -238,20 +171,15 @@ void AL_Odekake_Finalize() {
 	// this should be the last button in the menu, always
 	// it's unnecessary to have this in a separate function but i didn't know any other way to "categorize" these types of changes
 	odekakeMenuEntries.push_back(OdekakeQuitEntry);
+
+	AL_Odekake_MainMenuBar_Finalize();
 }
 
 void AL_Odekake_Update() {
-	
-
 	unsigned char FirstMenuButton = 0;
 	unsigned char LastMenuButton = (Uint8)odekakeMenuEntries.size() - 1;
 
-	// todo: check if these are even needed
-	WriteData((char*)0x005A6D81, (char)FirstMenuButton);
-	WriteData((char*)0x005A6D6E, (char)FirstMenuButton);
-
 	WriteData((char*)0x005A6E8D, (char)LastMenuButton); //"check button to exit from if pressing B" 
-	WriteData((char*)0x005A6EC0, (char)LastMenuButton); //button to go to if pressing B
 
 	WriteData((char*)0x5A6D76, (char)LastMenuButton); //selection
 	WriteData((char*)0x005A6D7C, (char)LastMenuButton);
@@ -282,18 +210,23 @@ void AL_Odekake_Init()
 		odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
 
 	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-		
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+
 	odekakeMenuEntries.push_back(OdekakeGoodbyeEntry);
 
 	WriteData((char*)0x005AC2BE, (char)30); //displayfixes
 	WriteData((char*)0x005AC259, (char)4);
-	
-	WriteData<5>((char*)0x005A6CD3, (char)0x90); //kills first button so i can fully create my own
 
-	//button new
-	WriteData((int*)0x5ac3da, (int)ButtonDraw);
-	WriteData<5>((char*)0x005AC2AD, (char)0x90);
-	WriteData<5>((char*)0x005AC345, (char)0x90);
+	AL_Odekake_MainMenuBar_Init();
+
+	// kill the scrolling code so we can have our own in the MenuMaster hook
+	WriteData<6>((char*)0x005A6EBE, (char)0x90);
+
 	//bar new
 	WriteData((int*)0x5ABD75, (int)BarDraw);
 	WriteData<5>((char*)0x005ABCA4, (char)0x90);
@@ -304,12 +237,6 @@ void AL_Odekake_Init()
 	//fix name??
 	WriteData((char*)0x01314164, (char)0x4E);
 	WriteData((char*)0x01314165, (char)0x45);
-
-	//fix selection
-	WriteData((int*)0x5A6DC6, (int)Odekake_EnabledButtonsCWE);
-
-	//hook button creation
-	WriteCall((void*)0x005A6CFA, AL_OdekakeButtons);
 
 	//obviously hook the menumaster
 	WriteJump((void*)AL_OdekakeMenuMaster, AL_OdekakeMenuMaster_);
