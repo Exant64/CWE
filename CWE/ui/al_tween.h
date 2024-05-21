@@ -9,7 +9,7 @@
 #include "al_tween_types.h"
 #include "al_tween_interp.h"
 
-typedef void(*TweenCallback)();
+typedef void(*TweenCallback)(task* pParent);
 
 template <typename T>
 struct TweenData {
@@ -20,6 +20,7 @@ struct TweenData {
 	int FrameCount;
 	int Timer;
 	TweenCallback Callback;
+	task* Parent;
 };
 
 #define GET_TWEEN_DATA(tp) ((TweenData<T>*)(tp->Data2.Undefined))
@@ -54,7 +55,7 @@ static void TweenExecutor(ObjectMaster* tp) {
 		tp->MainSub = DeleteObject_;
 
 		if (tween->Callback) {
-			tween->Callback();
+			tween->Callback(tween->Parent);
 		}
 
 		return;
@@ -99,6 +100,8 @@ ObjectMaster* CreateTween(ObjectMaster* parent, const EASE_TYPE easingMode, cons
 	tween->Timer = 0;
 	tween->FrameCount = frameCount;
 	tween->Callback = callback;
+
+	tween->Parent = parent;
 
 	return tp;
 }
