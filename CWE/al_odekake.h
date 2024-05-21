@@ -22,6 +22,8 @@ struct ODE_MENU_MASTER_WORK
 	void(__cdecl* mfStageExit)(ODE_MENU_MASTER_WORK*);
 };
 
+extern std::vector<CWE_API_ODEKAKE_ENTRY> odekakeMenuEntries;
+
 FunctionPointer(void, LargeTitleBarExecutor_Load, (char a1, float a2, float a3), 0x005ABD30);
 ThiscallFunctionPointer(void, sub_5A6C20, (ODE_MENU_MASTER_WORK* a1), 0x5A6C20);
 FastcallFunctionPointer(void, sub_5A6F50, (ODE_MENU_MASTER_WORK* a1), 0x5A6F50);
