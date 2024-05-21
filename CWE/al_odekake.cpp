@@ -210,12 +210,6 @@ void AL_Odekake_Init()
 		odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
 
 	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
 
 	odekakeMenuEntries.push_back(OdekakeGoodbyeEntry);
 
@@ -223,9 +217,6 @@ void AL_Odekake_Init()
 	WriteData((char*)0x005AC259, (char)4);
 
 	AL_Odekake_MainMenuBar_Init();
-
-	// kill the scrolling code so we can have our own in the MenuMaster hook
-	WriteData<6>((char*)0x005A6EBE, (char)0x90);
 
 	//bar new
 	WriteData((int*)0x5ABD75, (int)BarDraw);

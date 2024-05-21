@@ -3,11 +3,18 @@
 #include "ninja_functions.h"
 #include <al_ode_guide.h>
 #include <ui/al_tween.h>
+#include <al_texlist.h>
+#include <ALifeSDK_Functions.h>
 
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
 FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
 
 ObjectFunc(sub_5AC010, 0x5AC010);
+
+// the number of buttons that can be visible on screen, this is used in many calculations
+#define NB_BUTTONS_VISIBLE 6
+// the button to start scrolling the page at (from the top)
+#define START_SCROLL 3
 
 // we init these in AL_Odekake_MainMenuBar_Finalize
 static int* Odekake_EnabledButtonsCWE;
@@ -17,18 +24,21 @@ static const float GetButtonPosition(const int index) {
 	return 209 + (56 * ((float)index - 1));
 }
 
-static void ScrollingLogic(ObjectMaster* a1, int direction) {
+static const bool IsCursorOnTopOfScreen() {
+	return AL_OdekakeMenuMaster_Data_ptr->cursorY < START_SCROLL;
+}
+
+static const bool IsCursorOnBottomOfScreen() {
+	return AL_OdekakeMenuMaster_Data_ptr->cursorY > odekakeMenuEntries.size() - (NB_BUTTONS_VISIBLE - 1);
+}
+
+static void ScrollingLogic(ObjectMaster* a1) {
 	const EASE_TYPE ease = EASE_OUT;
 	const INTERP_TYPE interp = INTERP_EXPO;
 	const int timer = 15;
-	const float buttonSize = 56;
-
-	const int cursorY = AL_OdekakeMenuMaster_Data_ptr->cursorY;
-	const bool onTopOfScreen = cursorY < 3;
-	const bool onBottomOfScreen = cursorY > odekakeMenuEntries.size() - 5;
 
 	// if there aren't enough buttons anyways, no need to run this code
-	if (odekakeMenuEntries.size() < 6) {
+	if (odekakeMenuEntries.size() <= NB_BUTTONS_VISIBLE) {
 		return;
 	}
 
@@ -37,19 +47,22 @@ static void ScrollingLogic(ObjectMaster* a1, int direction) {
 
 		// buttons store their position in this field
 		float* pPosY = (float*)&pOdeButtonData->Rotation.y;
-
-		// move up or down based on which direction was pressed
-		float targetPos = *pPosY + buttonSize * (direction < 0 ? -1 : 1);
-
-		if (onTopOfScreen) {
+		
+		float targetPosY;
+		if (IsCursorOnTopOfScreen()) {
 			// if the selected button is on the top of the screen
 			// force all buttons to just be positioned from the top of the screen
 			// this is needed if "down" is pressed on the quit button to make it loop back around properly
-			targetPos = GetButtonPosition(i);
+			targetPosY = GetButtonPosition(i);
 		}
-		else if (onBottomOfScreen) {
+		else if (IsCursorOnBottomOfScreen()) {
 			// same here but from the bottom of the screen
-			targetPos = GetButtonPosition(i - (odekakeMenuEntries.size() - 5) + 1);
+			targetPosY = GetButtonPosition(i - (odekakeMenuEntries.size() - (NB_BUTTONS_VISIBLE - 1)) + 1);
+		}
+		else {
+			// position the buttons relative to where the cursor is when it starts scrolling
+			// (in the case of START_SCROLL = 3 for example, when you scroll the button always lands on the third position from the top)
+			targetPosY = GetButtonPosition((START_SCROLL - 1) + i - AL_OdekakeMenuMaster_Data_ptr->cursorY);
 		}
 
 		// do tween to target position
@@ -58,17 +71,15 @@ static void ScrollingLogic(ObjectMaster* a1, int direction) {
 			ease,
 			interp,
 			pPosY,
-			targetPos,
+			targetPosY,
 			timer,
 			nullptr
 		);
 
 		const int alphaTimer = 10;
 
-		// we use the "average" of the two positions because scrolling too fast made it too sensitive
-		// and sometimes didn't appropriately trigger the fade in/out
-		if (targetPos < (GetButtonPosition(-1) + GetButtonPosition(0)) / 2.f ||
-			targetPos >(GetButtonPosition(5) + GetButtonPosition(6)) / 2.f) {
+		// if the target position is "offscreen" (above the first button or below the second one)
+		if (targetPosY < GetButtonPosition(0) || targetPosY > GetButtonPosition(NB_BUTTONS_VISIBLE - 1)) {
 			// don't bother to tween if already 0
 			if (pOdeButtonData->Scale.z != 0) {
 				// tween to complete transparency (alpha 0)
@@ -104,6 +115,62 @@ static bool AL_OdekakeIsGuest() {
 	return Odekake_EnabledButtons && pParam && pParam->field_19 == 1;
 }
 
+static void AL_OdeScrollArrowExecutor(task* tp) {
+	if (!AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
+		return;
+	}
+
+	if (tp->Data1.Entity->Action != 0) {
+		return;
+	}
+
+	CreateTween(
+		tp,
+		EASE_OUT,
+		INTERP_ELASTIC,
+		&tp->Data1.Entity->Scale.x,
+		0.0f,
+		30,
+		[](task* pParent) {
+			DeleteObject_(pParent);
+		}
+	);
+
+	tp->Data1.Entity->Action = 1;
+}
+
+static void AL_OdeScrollArrowDisplayer(task* tp) {
+	SetShaders(1);
+	SetChaoHUDThingBColor(tp->Data1.Entity->Scale.z, 1, 1, 1);
+
+	static ChaoHudThingB UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
+	static ChaoHudThingB GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, &CWE_UI_TEXLIST, 34 };
+	static ChaoHudThingB DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, &CWE_UI_TEXLIST, 34 };
+	static ChaoHudThingB GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
+
+	float scl = tp->Data1.Entity->Scale.x;
+	DrawChaoHudThingB(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
+	DrawChaoHudThingB(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
+}
+
+static void AL_CreateOdeScrollArrow(task* pParent) {
+	task* tp = LoadChildObject(LoadObj_Data1, AL_OdeScrollArrowExecutor, pParent);
+	tp->field_1C = AL_OdeScrollArrowDisplayer;
+
+	tp->Data1.Entity->Scale.x = 0.0f;
+	tp->Data1.Entity->Scale.z = 1.0f;
+	
+	CreateTween(
+		tp,
+		EASE_OUT,
+		INTERP_ELASTIC,
+		&tp->Data1.Entity->Scale.x,
+		1.0f,
+		30,
+		nullptr
+	);
+}
+
 static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) {
 	const int isThereChao = Odekake_EnabledButtons;
 	const bool guest = AL_OdekakeIsGuest();
@@ -131,6 +198,11 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 		pOdeButtons[i] = ObjectLists[3]->NextObject;
 		// default alpha with 1 if supposed to be on screen when spawned, 0 if not
 		pOdeButtons[i]->Data1.Entity->Scale.z = i > 5 ? 0.0f : 1.0f;
+	}
+
+	// spawn scrolling arrows, only if there are enough buttons for it to be needed
+	if (odekakeMenuEntries.size() > NB_BUTTONS_VISIBLE) {
+		AL_CreateOdeScrollArrow(AL_OdekakeMenuMaster_Data_ptr->tp);
 	}
 
 	CreateButtonGuide(SELECT | CONFIRM | BACK);
@@ -200,8 +272,8 @@ void AL_Odekake_MenuMaster_Selection() {
 		}
 		PlaySoundProbably(0x8000, 0, 0, 0);
 
-		// trigger scrolling down
-		ScrollingLogic(tp, 1);
+		// trigger scrolling
+		ScrollingLogic(tp);
 	}
 
 	if (MenuButtons_Pressed[0] & Buttons_Down) {
@@ -212,15 +284,15 @@ void AL_Odekake_MenuMaster_Selection() {
 
 		PlaySoundProbably(0x8000, 0, 0, 0);
 
-		// trigger scrolling up
-		ScrollingLogic(tp, -1);
+		// trigger scrolling
+		ScrollingLogic(tp);
 	}
 
 	if (MenuButtons_Pressed[0] & Buttons_B) {
 		AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 
 		// trigger scrolling when jumping to exit button
-		ScrollingLogic(tp, 0);
+		ScrollingLogic(tp);
 	}
 }
 
@@ -234,6 +306,9 @@ void AL_Odekake_MainMenuBar_Finalize() {
 }
 
 void AL_Odekake_MainMenuBar_Init() {
+	// kill the scrolling code so we can have our own in the MenuMaster hook
+	WriteData<6>((char*)0x005A6EBE, (char)0x90);
+
 	// new button renderer
 	WriteData((int*)0x5ac3da, (int)ButtonDraw);
 	WriteData<5>((char*)0x005AC2AD, (char)0x90);
