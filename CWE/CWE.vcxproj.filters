@@ -579,6 +579,9 @@
     <ClInclude Include="ui\al_tween_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="al_ode_menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1048,5 +1051,6 @@
     </None>
     <None Include="data\amytest.nja" />
     <None Include="data\alo_missing_tree.nja" />
+    <None Include="..\BrightFix\BrightFix.sln" />
   </ItemGroup>
 </Project>

@@ -5,6 +5,8 @@
 #include "al_save.h"
 #include <stdexcept>
 #include "al_stage.h"
+#include "memory.h"
+#include <util.h>
 
 //struct per level
 struct AL_DayNightConfig {
@@ -296,25 +298,227 @@ void AL_DARK_OBJ_TEX_HOOK()
 	AL_DayNightTexLoad(AL_GetStageNumber());
 }
 
-void AL_DayNight_Init() {
+enum {
+	MODE_INIT_LT_COPY = 0,
+	MODE_LERP
+};
+
+static void AL_DayNightCycle_FreeModel(SA2B_Model* pModel) {
+	SA2B_VertexData* pVertices = pModel->Vertices;
+	while (pVertices->DataType != -1) {
+		if (pVertices->DataType == 3) { // vertex color type
+			FREE(pVertices->Data);
+			break;
+		}
+		pVertices++;
+	}
+
+	FREE(pVertices);
+}
+
+static void AL_DayNightCycle_FreeObject(NJS_OBJECT* pObj) {
+	if (!pObj) return;
+
+	if (pObj->sa2bmodel) {
+		AL_DayNightCycle_FreeModel(pObj->sa2bmodel);
+		FREE(pObj->sa2bmodel);
+	}
+}
+
+static void AL_DayNightCycle_FreeLandTableCOLAndObjects(LandTable* pLand) {
+	for (size_t i = 0; i < pLand->ChunkModelCount; i++) {
+		COL* pCol = &pLand->COLList[i];
+
+	}
+
+	FREE(pLand->COLList);
+}
+
+static void AL_DayNightCycle_CopyGCModel(const SA2B_Model* pSrc, SA2B_Model* pDst) {
+	// we only need to clone the vertex colors, so we loop through the vertex types until we find it
 	
+	const SA2B_VertexData* pSrcVert = pSrc->Vertices;
+	size_t vertexColorIndex = -1;
 
-	if (gConfigVal.DayNightCycle)
-	{
-		WriteCall((void*)0x54C840, AL_NEUT_OBJ_TEX_HOOK);
-		WriteCall((void*)0x54D275, AL_HERO_OBJ_TEX_HOOK);
-		WriteCall((void*)0x54B795, AL_DARK_OBJ_TEX_HOOK);
-
-		WriteCall((void*)0x0054C92D, LightingNeut);
-		WriteCall((void*)0x0054D307, LightingHero);
-		WriteCall((void*)0x0054B827, LightingDark);
-		//WriteCall((void*)0x52D453, AL_RACE_OBJ_TEX_N_HOOK);
-		//WriteCall((void*)0x54DB36, AL_ENTRANCE_OBJ_HOOK);
-		//WriteCall((void*)0x52D9FD, AL_KARATE_OBJ_TEX_HOOK);
-	}
-	else
-	{
-		SetTimeOfDay(AL_TIME_DAY);
+	// we first need the size of the whole thing
+	while (pSrcVert->DataType != -1) {
+		if (pSrcVert->DataType == 3) { // vertex color datatype == 3
+			vertexColorIndex = pSrcVert - pSrc->Vertices;
+		}
+		pSrcVert++;
 	}
 
+	if (vertexColorIndex == -1) {
+		// todo: how do we handle this
+		PrintDebug(__FUNCTION__  ": One of the models don't have vertex colors!!");
+		return;
+	}
+
+	const size_t vertexDataCount = (pSrcVert + 1 - pSrc->Vertices);
+	pDst->Vertices = ALLOC_ARRAY(vertexDataCount, SA2B_VertexData);
+	memcpy(pDst->Vertices, pSrc->Vertices, sizeof(SA2B_VertexData) * vertexDataCount);
+
+	SA2B_VertexData& pVertexColorData = pDst->Vertices[vertexColorIndex];
+	pVertexColorData.Data = ALLOC_ARRAY(pVertexColorData.DataSize, uint8_t);
+}
+
+static void AL_DayNightCycle_CopyCOLObject(const COL* pSrc, COL* pDst) {
+	// !!! we assume there are no children or siblings, DrawLandtable doesn't support hierarchies (thanks shad) !!!
+	pDst->Model = ALLOC(NJS_OBJECT);
+	*pDst->Model = *pSrc->Model;
+	
+	// little disorienting naming scheme, the COL's Model refers to NJS_OBJECT, not an actual model
+	const SA2B_Model* pSrcModel = pSrc->Model->sa2bmodel;
+	if (pSrcModel) {
+		SA2B_Model* pDstModel = ALLOC(SA2B_Model);
+		pDst->Model->sa2bmodel = pDstModel;
+
+		*pDstModel = *pSrcModel;
+		AL_DayNightCycle_CopyGCModel(pSrcModel, pDstModel);
+	}
+}
+
+static void AL_DayNightCycle_CopyLandTable(const LandTable* pSrc, LandTable* pDst) {
+	*pDst = *pSrc;
+	
+	pDst->COLList = reinterpret_cast<COL*>(ALLOC_ARRAY(pSrc->COLCount, COL));
+	memcpy(pDst->COLList, pSrc->COLList, pSrc->COLCount * sizeof(COL));
+
+	for (size_t i = 0; i < pSrc->ChunkModelCount; i++) {
+		AL_DayNightCycle_CopyCOLObject(&pSrc->COLList[i], &pDst->COLList[i]);
+	}
+}
+
+static NJS_ARGB VertColor;
+
+static void AL_DayNightCycle_ApplyVertexColor(const SA2B_VertexData* pSrcVertexColorData, SA2B_VertexData* pDstVertexColorData) {
+	// technically NJS_COLOR isn't good, because its ARGB not BGRA
+	// but we're dirty little cheaters and use NJS_COLOR anyways (we write to GRA instead of RGB)
+	NJS_COLOR* pSrcColors = reinterpret_cast<NJS_COLOR*>(pSrcVertexColorData->Data);
+	NJS_COLOR* pDstColors = reinterpret_cast<NJS_COLOR*>(pDstVertexColorData->Data);
+
+	for (size_t i = 0; i < pSrcVertexColorData->ElementCount; i++) {
+		NJS_COLOR& color = pDstColors[i];
+		color = pSrcColors[i];
+		color.argb.g = (Uint8)(color.argb.g * VertColor.r);
+		color.argb.r = (Uint8)(color.argb.r * VertColor.g);
+		color.argb.a = (Uint8)(color.argb.a * VertColor.b);
+	}
+	
+}
+
+static void AL_DayNightCycle_ApplyColorToLandTable(task* tp) {
+	const LandTable* pSrcLand = reinterpret_cast<LandTable * >(tp->Data1.Entity->Rotation.z);
+	LandTable* pDstLand = reinterpret_cast<LandTable*>(tp->Data2.Undefined);
+
+	for (size_t colIndex = 0; colIndex < pSrcLand->ChunkModelCount; colIndex++) {
+		const COL* pSrcCol = &pSrcLand->COLList[colIndex];
+		COL* pDstCol = &pDstLand->COLList[colIndex];
+
+		const NJS_OBJECT* pSrcObject = pSrcCol->Model;
+		if (!pSrcObject->sa2bmodel) continue;
+
+		const SA2B_Model* pSrcModel = pSrcCol->Model->sa2bmodel;
+		SA2B_Model* pDstModel = pDstCol->Model->sa2bmodel;
+
+		const SA2B_VertexData* pSrcVertices = pSrcModel->Vertices;
+		while (pSrcVertices->DataType != 0xFF) {
+			if (pSrcVertices->DataType == 3) {
+				SA2B_VertexData* pDstVertices = pDstModel->Vertices + (pSrcVertices - pSrcModel->Vertices);
+				AL_DayNightCycle_ApplyVertexColor(pSrcVertices, pDstVertices);
+				break;
+			}
+			pSrcVertices++;
+		}
+	}
+}
+
+static void LerpColor(NJS_ARGB& out, const NJS_ARGB& a, const NJS_ARGB& b, float t) {
+	out.r = lerp(a.r, b.r, t);
+	out.g = lerp(a.g, b.g, t);
+	out.b = lerp(a.b, b.b, t);
+}
+
+static void AL_DayNightCycleExecutor(task* tp) {
+	if (!gConfigVal.DayNightCycle) return;
+	if (!AL_IsGarden()) return;
+
+	EntityData1* work = tp->Data1.Entity;
+
+	switch (work->Action) {
+		case MODE_INIT_LT_COPY:
+			AL_DayNightCycle_CopyLandTable(CurrentLandTable, reinterpret_cast<LandTable*>(tp->Data2.Undefined));
+			tp->Data1.Entity->Rotation.z = (int)CurrentLandTable;
+			CurrentLandTable = reinterpret_cast<LandTable*>(tp->Data2.Undefined);
+			work->Action++;
+			break;
+		case MODE_LERP:
+			work->Rotation.x++;
+			if (work->Rotation.x > 60 * 5) {
+				work->Rotation.x = 0;
+				work->Rotation.y++;
+				work->Rotation.y = work->Rotation.y % 3;
+			}
+
+			const static NJS_ARGB ColorLerp[] = {
+				{1,1,1,1},
+				//{1,223/255.0f, 212/255.0f, 177/255.0f},
+				{1,1,200 / 255.0f, 152 / 255.0f},
+				{1,0.566252f,0.702886f,0.84448f}
+			};
+
+			int nextphase = (work->Rotation.y + 1) % 3;
+			LerpColor(VertColor, ColorLerp[work->Rotation.y], ColorLerp[nextphase], work->Rotation.x / (60 * 5.0f));
+
+			AL_DayNightCycle_ApplyColorToLandTable(tp);
+			break;
+	}
+
+	return;
+
+	if (work->Action == 1) {
+		//AL_DayNightTexLoad(CurrentChaoArea);
+		//AL_DayNightLightLoad(CurrentChaoArea);
+	}
+
+	if (AL_IsGarden()) {
+		if (work->Rotation.x < 62)
+			work->Rotation.x++;
+
+		if (!gConfigVal.DayNightCheat && work->Rotation.x >= 60) {
+			ChaoSaveTimer++; //(timer thing)
+			if (ChaoSaveTimer >= (60 * 60 * 18))
+			{
+				ChaoSaveTimer = 0; //reset timer
+				SetTimeOfDay(AL_TIME_DAY); //reset the time to day
+				if (njRandom() < 0.4f)
+					SetWeather(AL_WEATHER_RAIN);   //set weather to rain
+				else
+					SetWeather(AL_WEATHER_NONE);
+				//DayNightTransition_Create(AL_TIME_DAY, GetWeather());
+			}
+			else if (ChaoSaveTimer % (60 * 60 * 6) == 0)
+			{
+				//DayNightTransition_Create(GetTimeOfDay() + 1, GetWeather());
+			}
+		}
+	}
+}
+
+
+static void AL_DayNightCycleDestructor(task* tp) {
+	LandTable* pLand = reinterpret_cast<LandTable*>(tp->Data2.Undefined);
+
+	AL_DayNightCycle_FreeLandTableCOLAndObjects(pLand);
+	FREE(pLand);
+}
+
+void AL_CreateDayNightCycle() {
+	task* tp = LoadObject(4, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
+
+	tp->Data2.Undefined = ALLOC(LandTable);
+	tp->DeleteSub = AL_DayNightCycleDestructor;
+}
+
+void AL_DayNight_Init() {
 }

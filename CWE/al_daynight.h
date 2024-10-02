@@ -22,3 +22,4 @@ void DayNightTransition_Create(int time, int weather);
 void AL_DayNightLightLoad(int stage);
 
 void AL_DayNight_Init();
+void AL_CreateDayNightCycle();
