@@ -13,8 +13,8 @@ struct Light
 struct LightGC
 {
 	NJS_VECTOR direction;
-	float floatC;
-	float float10;
+	NJS_VECTOR lightColor;
+	NJS_VECTOR ambientReg;
 	NJS_ARGB float14;
 	char SomeFlag;
 	int field_25;
@@ -78,6 +78,7 @@ void njUnitMatrix(NJS_MATRIX_PTR matrix);
 void DrawQuadTexture(int a1, float a2);
 FunctionPointer(void, sub_781CB0, (int a1), 0x781CB0);
 DataArray(Light, Lights, 0x01DE4280, 12);
+DataArray(LightGC, LightsGC, 0x01DE4420, 12);
 
 #define RotateX(a) if(a) njRotateX(NULL, a)
 #define RotateY(a) if(a) njRotateY(NULL, a)
