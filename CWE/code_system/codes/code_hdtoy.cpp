@@ -37,5 +37,12 @@ void HDToyModels::Init() {
 	*((NJS_OBJECT*)0x1302C1C) = tvOld;
 	*((NJS_OBJECT*)0x125BF74) = radio;
 
-	g_HelperFunctions->ReplaceFile(".\\resource\\gd_PC\\PRS\\al_mm_kage.pak", ".\\resource\\gd_PC\\PRS\\al_hd_toy.pak");
+	g_HelperFunctions->ReplaceTexture(
+		"AL_TOY",
+		"tv01",
+		g_HelperFunctions->GetReplaceablePath(".\\resource\\gd_PC\\hd_toys_atlas.png"),
+		2348581,
+		0,
+		0
+	);
 }
