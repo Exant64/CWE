@@ -295,6 +295,7 @@
     <ClInclude Include="api\api_customchao.h" />
     <ClInclude Include="api\api_msg.h" />
     <ClInclude Include="api\api_tree.h" />
+    <ClInclude Include="api\api_util.h" />
     <ClInclude Include="chao\al_motion\alm_accordion.nam" />
     <ClInclude Include="chao\al_motion\alm_all.h" />
     <ClInclude Include="chao\al_motion\alm_duck.h" />

@@ -18,6 +18,7 @@
 #include "al_odekake.h"
 #include "api/api_msg.h"
 #include "api/api_customchao.h"
+#include "api/api_util.h"
 
 #include <unordered_set>
 #include <api/api_tree.h>
@@ -113,13 +114,15 @@ extern "C"
 
 	__declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
 	{
+		static APIErrorUtil error("RegisterChaoTexlistLoad error:");
+
 		if (!name) { 
-			PrintDebug("RegisterChaoTexlistLoad: name is nullptr, can't register");
+			error.print("name is nullptr");
 			return; 
 		}
 
 		if (!load) {
-			PrintDebug("RegisterChaoTexlistLoad: \"%s\"'s texlist is nullptr, can't register", name);
+			error.print("\"%s\"'s texlist is nullptr", name);
 			return;
 		}
 
@@ -214,22 +217,17 @@ extern "C"
 		ModAPI_MinimalFruit[fruitID].push_back(minimalFruit);
 	}
 
-	void FruitErrorMsg(ItemChance_old* oldChance)
-	{
-		char buf[MAX_PATH];
-		const char* FormattedFruitErrorString = "Fruit %s isn't compatible with CWE 9.4 or above, please update the mod, or alert the mod creator if you already did.";
+	void FruitErrorMsg(ItemChance_old* oldChance) {
 		auto* attrib = BlackMarketAttributes::Get()->Attrib(ChaoItemCategory_Fruit, oldChance->item);
-		if (attrib && attrib->Name >= 0 && (size_t)attrib->Name < MsgAlItem.size())
-			sprintf(buf, FormattedFruitErrorString, MsgAlItem[attrib->Name]);
-		else
-			strcpy(buf, "Unknown fruit isn't compatible with CWE 9.4 or above, please update the mod, or alert the mod creator if you already did.");
-		MessageBoxA(0, buf, "CWE", 0);
+		bool validNameID = attrib && attrib->Name >= 0 && (size_t)attrib->Name < MsgAlItem.size();
+
+		APIErrorUtil error("RegisterBlackMarketFruit error registering %s:", validNameID ? MsgAlItem[attrib->Name] : "Unknown Fruit");
+		error.print("incompatible with CWE 9.4 or above, please update the mod, or alert the mod creator if you already did.");
 	}
 
-	__declspec(dllexport) void RegisterBlackMarketGeneralFruit(int ID, int chance)
-	{
-		if (chance > 100)
-		{
+	__declspec(dllexport) void RegisterBlackMarketGeneralFruit(int ID, int chance) {
+		// this is a legacy check for pretty old mods that still passed in an ItemChance (and the old one, without the valid ID system)
+		if (chance > 100) {
 			FruitErrorMsg((ItemChance_old*)&chance);
 			return;
 		}
@@ -237,13 +235,12 @@ extern "C"
 		GeneralFruitMarket.push_back(itemChance);
 	}
 
-	__declspec(dllexport) void RegisterBlackMarketRareFruit(int ID, int chance)
-	{
-		if (chance > 100)
-		{
+	__declspec(dllexport) void RegisterBlackMarketRareFruit(int ID, int chance) {
+		if (chance > 100) {
 			FruitErrorMsg((ItemChance_old*)&chance);
 			return;
 		}
+
 		ItemChance itemChance = { (Uint16)ID, (Sint8)chance };
 		RareFruitMarket.push_back(itemChance);
 	}
