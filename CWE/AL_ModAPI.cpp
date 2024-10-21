@@ -27,6 +27,7 @@
 #pragma warning(push)
 #pragma warning( disable: 4838 )
 #include "data/alo_missing_tree.nja"
+#include <al_draw.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
@@ -247,6 +248,33 @@ extern "C"
 
 	__declspec(dllexport) int RegisterChaoAnimation(std::string name, MotionTableAction* action)
 	{
+		APIErrorUtil error("RegisterChaoAnimation error for animation \"%s\": ", name.c_str());
+
+		if (!action) {
+			error.print("action is null!");
+			return -1;
+		}
+
+		if (!action->NJS_MOTION) {
+			error.print("the action's animation is null! (missing file?)");
+			return -1;
+		}
+
+		if (action->NJS_MOTION->type != (NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1)) {
+			error.print("the animation's type is invalid! (scale keyframes in animation?)");
+			return -1;
+		}
+
+		const NJS_MDATA2* mdata = reinterpret_cast<NJS_MDATA2*>(action->NJS_MOTION->mdata);
+		for (size_t i = 0; i < AL_PART_END; i++) {
+			for (size_t j = 0; j < 2; j++) {
+				if (mdata[i].nb[j] && mdata[i].nb[j] > action->NJS_MOTION->nbFrame) {
+					error.print("the animation's model count is invalid!");
+					return -1;
+				}
+			}
+		}
+
 		int index = chaoAnimations.size();
 		registeredAnimations.insert(std::make_pair(name, index));
 		chaoAnimations.push_back(*action);
@@ -254,8 +282,17 @@ extern "C"
 	}
 
 	int RegisterChaoAnimTransition(const std::string& from, const std::string& to) {
-		if (!registeredAnimations.contains(from)) return 0;
-		if (!registeredAnimations.contains(to)) return 0;
+		APIErrorUtil error("RegisterChaoAnimTransition error (\"%s\"->\"%s\"): ", from.c_str(), to.c_str());
+		
+		if (!registeredAnimations.contains(from)) {
+			error.print("the \"from\" animation is not registered!");
+			return 0;
+		}
+
+		if (!registeredAnimations.contains(to)) {
+			error.print("the \"to\" animation is not registered!");
+			return 0;
+		}
 
 		chaoAnimations[registeredAnimations[from]].TransitionToID = registeredAnimations[to];
 		return 1;
