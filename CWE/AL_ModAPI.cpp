@@ -18,6 +18,7 @@
 #include "al_odekake.h"
 #include "api/api_msg.h"
 #include "api/api_customchao.h"
+#include "api/api_util.h"
 
 #include <unordered_set>
 #include <api/api_tree.h>
@@ -26,6 +27,7 @@
 #pragma warning(push)
 #pragma warning( disable: 4838 )
 #include "data/alo_missing_tree.nja"
+#include <al_draw.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
@@ -113,13 +115,15 @@ extern "C"
 
 	__declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
 	{
+		static APIErrorUtil error("RegisterChaoTexlistLoad error:");
+
 		if (!name) { 
-			PrintDebug("RegisterChaoTexlistLoad: name is nullptr, can't register");
+			error.print("name is nullptr");
 			return; 
 		}
 
 		if (!load) {
-			PrintDebug("RegisterChaoTexlistLoad: \"%s\"'s texlist is nullptr, can't register", name);
+			error.print("\"%s\"'s texlist is nullptr", name);
 			return;
 		}
 
@@ -214,22 +218,17 @@ extern "C"
 		ModAPI_MinimalFruit[fruitID].push_back(minimalFruit);
 	}
 
-	void FruitErrorMsg(ItemChance_old* oldChance)
-	{
-		char buf[MAX_PATH];
-		const char* FormattedFruitErrorString = "Fruit %s isn't compatible with CWE 9.4 or above, please update the mod, or alert the mod creator if you already did.";
+	void FruitErrorMsg(ItemChance_old* oldChance) {
 		auto* attrib = BlackMarketAttributes::Get()->Attrib(ChaoItemCategory_Fruit, oldChance->item);
-		if (attrib && attrib->Name >= 0 && (size_t)attrib->Name < MsgAlItem.size())
-			sprintf(buf, FormattedFruitErrorString, MsgAlItem[attrib->Name]);
-		else
-			strcpy(buf, "Unknown fruit isn't compatible with CWE 9.4 or above, please update the mod, or alert the mod creator if you already did.");
-		MessageBoxA(0, buf, "CWE", 0);
+		bool validNameID = attrib && attrib->Name >= 0 && (size_t)attrib->Name < MsgAlItem.size();
+
+		APIErrorUtil error("RegisterBlackMarketFruit error registering %s:", validNameID ? MsgAlItem[attrib->Name] : "Unknown Fruit");
+		error.print("incompatible with CWE 9.4 or above, please update the mod, or alert the mod creator if you already did.");
 	}
 
-	__declspec(dllexport) void RegisterBlackMarketGeneralFruit(int ID, int chance)
-	{
-		if (chance > 100)
-		{
+	__declspec(dllexport) void RegisterBlackMarketGeneralFruit(int ID, int chance) {
+		// this is a legacy check for pretty old mods that still passed in an ItemChance (and the old one, without the valid ID system)
+		if (chance > 100) {
 			FruitErrorMsg((ItemChance_old*)&chance);
 			return;
 		}
@@ -237,19 +236,45 @@ extern "C"
 		GeneralFruitMarket.push_back(itemChance);
 	}
 
-	__declspec(dllexport) void RegisterBlackMarketRareFruit(int ID, int chance)
-	{
-		if (chance > 100)
-		{
+	__declspec(dllexport) void RegisterBlackMarketRareFruit(int ID, int chance) {
+		if (chance > 100) {
 			FruitErrorMsg((ItemChance_old*)&chance);
 			return;
 		}
+
 		ItemChance itemChance = { (Uint16)ID, (Sint8)chance };
 		RareFruitMarket.push_back(itemChance);
 	}
 
 	__declspec(dllexport) int RegisterChaoAnimation(std::string name, MotionTableAction* action)
 	{
+		APIErrorUtil error("RegisterChaoAnimation error for animation \"%s\": ", name.c_str());
+
+		if (!action) {
+			error.print("action is null!");
+			return -1;
+		}
+
+		if (!action->NJS_MOTION) {
+			error.print("the action's animation is null! (missing file?)");
+			return -1;
+		}
+
+		if (action->NJS_MOTION->type != (NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1)) {
+			error.print("the animation's type is invalid! (scale keyframes in animation?)");
+			return -1;
+		}
+
+		const NJS_MDATA2* mdata = reinterpret_cast<NJS_MDATA2*>(action->NJS_MOTION->mdata);
+		for (size_t i = 0; i < AL_PART_END; i++) {
+			for (size_t j = 0; j < 2; j++) {
+				if (mdata[i].nb[j] && mdata[i].nb[j] > action->NJS_MOTION->nbFrame) {
+					error.print("the animation's model count is invalid!");
+					return -1;
+				}
+			}
+		}
+
 		int index = chaoAnimations.size();
 		registeredAnimations.insert(std::make_pair(name, index));
 		chaoAnimations.push_back(*action);
@@ -257,8 +282,17 @@ extern "C"
 	}
 
 	int RegisterChaoAnimTransition(const std::string& from, const std::string& to) {
-		if (!registeredAnimations.contains(from)) return 0;
-		if (!registeredAnimations.contains(to)) return 0;
+		APIErrorUtil error("RegisterChaoAnimTransition error (\"%s\"->\"%s\"): ", from.c_str(), to.c_str());
+		
+		if (!registeredAnimations.contains(from)) {
+			error.print("the \"from\" animation is not registered!");
+			return 0;
+		}
+
+		if (!registeredAnimations.contains(to)) {
+			error.print("the \"to\" animation is not registered!");
+			return 0;
+		}
 
 		chaoAnimations[registeredAnimations[from]].TransitionToID = registeredAnimations[to];
 		return 1;
