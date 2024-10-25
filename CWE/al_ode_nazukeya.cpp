@@ -30,8 +30,6 @@ static void Nazukeya_Display(ObjectMaster *a1) {
 	sub_5827A0((int)NazukeyaBuff);
 }
 
-//asdsd
-FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
 static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 	int v4;
 	switch (a1->mode)

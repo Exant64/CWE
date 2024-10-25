@@ -76,7 +76,10 @@ void njScale(NJS_MATRIX_PTR a1, float a2, float a3, float a4);
 
 void njUnitMatrix(NJS_MATRIX_PTR matrix);
 void DrawQuadTexture(int a1, float a2);
+
+FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
 FunctionPointer(void, sub_781CB0, (int a1), 0x781CB0);
+
 DataArray(Light, Lights, 0x01DE4280, 12);
 DataArray(LightGC, LightsGC, 0x01DE4420, 12);
 
