@@ -924,11 +924,17 @@ static bool AL_DayNightCycle_FindSkyboxTexID(uint32_t texID, DAYNIGHT_SKYBOX con
 // Checks if the COL's model has any skybox textures, if yes then it fills the list of texture IDs to change
 // (and what to change it to)
 static bool AL_DayNightCycle_CheckSkybox(const NJS_OBJECT* pSrcObj, DAYNIGHT_SKYBOX_TABLE& entry) {
+	static APIErrorUtil error("Error in CheckSkybox: ");
+
 	const SA2B_Model* pModel = pSrcObj->sa2bmodel;
 	const size_t sumGeoCount = pModel->OpaqueGeometryCount + pModel->TranslucentGeometryCount;
 
 	std::unique_ptr<DAYNIGHT_SKYBOX_TEXMAP_TABLE[]> texMapArray(new DAYNIGHT_SKYBOX_TEXMAP_TABLE[sumGeoCount]);
 	size_t texMapCount = 0;
+
+	bool isMixed = false;
+	bool needsOriginalTexlist[NB_PHASE] = { false };
+	bool showedError = false;
 
 	const auto checkAndAddGeo = [&](const SA2B_GeometryData* pGeo) {
 		// since these separate "geometries" can be sorta interpreted as separate materials
@@ -982,6 +988,24 @@ static bool AL_DayNightCycle_CheckSkybox(const NJS_OBJECT* pSrcObj, DAYNIGHT_SKY
 			texMap.originalLightingParameter = origLightingParameter;
 			texMap.pTexID = pTexID;
 			texMap.skybox = *pSkyboxEntry;
+
+			bool originalTexlist[4] = { false };
+			if (texMap.skybox.dayTexID == -1) {  originalTexlist[PHASE_DAY] = true; }
+			if (texMap.skybox.eveningTexID == -1) { originalTexlist[PHASE_EVE] = true; }
+			if (texMap.skybox.nightTexID == -1) { originalTexlist[PHASE_NGT] = true; }
+			if (texMap.skybox.cloudyTexID == -1) { originalTexlist[PHASE_CLD] = true; }
+			
+			if (texMap.skybox.eveningTexID == 7) __debugbreak();
+
+			for (size_t i = 0; i < NB_PHASE; i++) {
+				if (texMapCount > 1 && originalTexlist[i] != needsOriginalTexlist[i] && !showedError) {
+					error.print("one of the skybox models use both the original texture and the replacement texlist. This case cannot be handled, and the rendering is not guaranteed to run stable, please fix it.");
+					showedError = true;
+				}
+
+				needsOriginalTexlist[i] = originalTexlist[i];
+			}
+			
 		}
 	};
 
@@ -1174,9 +1198,9 @@ static void CopyLights(task* tp, size_t index) {
 	memcpy(&work.lights[index], Lights, sizeof(work.lights[index]));
 }
 
-static void DCLightToGCLight(size_t index) {
+static LightGC DCLightToGCLight(size_t index) {
 	// if already GC don't bother
-	if (LightsGC[index].SomeFlag & 1) return;
+	if (LightsGC[index].SomeFlag & 1) return LightsGC[0];
 
 	// enable the "gc light override" flag
 	LightsGC[index].SomeFlag |= 1;
@@ -1206,6 +1230,7 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	const LightGC& pSrcLight = (!hasSrcLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(work.phase);
 	const LightGC& pDstLight = (!hasDstLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(nextPhase);
 
+	LightsGC[0].SomeFlag |= 1;
 	LerpLight(LightsGC[0], pSrcLight, pDstLight, (work.timer / (60.f * 5)));
 }
 
@@ -1260,7 +1285,7 @@ static void AL_DayNightCycleExecutor(task* tp) {
 			// ofc, this is only necessary if there hasn't been a light specified for every phase
 			// because then we need to default to the existing one
 			for (size_t i = 0; i < 4; i++) {
-				DCLightToGCLight(i);
+				//DCLightToGCLight(i);
 			}
 
 			/*
