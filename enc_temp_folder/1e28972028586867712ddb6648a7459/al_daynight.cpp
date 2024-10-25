@@ -801,6 +801,14 @@ static void LerpLight(LightGC& out, const LightGC& a, const LightGC& b, float t)
 	LerpColor(out.ambientReg, a.ambientReg, b.ambientReg, t);
 }
 
+// Lerp DC light
+static void LerpLight(Light& out, const Light& a, const Light& b, float t) {
+	LerpColor(out.color, a.color, b.color, t);
+	out.ambient = lerp(a.ambient, b.ambient, t);
+	out.intensity = lerp(a.intensity, b.intensity, t);
+}
+
+
 static DAYNIGHT_WORK& GetWork(task* tp) {
 	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->Data2.Undefined);
 }
