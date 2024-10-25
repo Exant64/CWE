@@ -1204,7 +1204,7 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	const bool hasDstLight = gDayNightManager.HasLightForPhase(nextPhase);
 
 	const LightGC& pSrcLight = (!hasSrcLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(work.phase);
-	const LightGC& pDstLight = (!hasSrcLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(work.phase);
+	const LightGC& pDstLight = (!hasDstLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(nextPhase);
 
 	LerpLight(LightsGC[0], pSrcLight, pDstLight, (work.timer / (60.f * 5)));
 }
