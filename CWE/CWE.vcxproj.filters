@@ -962,9 +962,6 @@
     <ClCompile Include="PaletteFix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="experimental_daynight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="experimental_rendertarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

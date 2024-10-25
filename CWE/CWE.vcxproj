@@ -190,6 +190,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -528,7 +529,6 @@
     <ClCompile Include="cwe_fixes.cpp" />
     <ClCompile Include="cwe_func.cpp" />
     <ClCompile Include="c_colli.cpp" />
-    <ClCompile Include="experimental_daynight.cpp" />
     <ClCompile Include="experimental_rendertarget.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="kce_helper.cpp" />
