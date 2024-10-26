@@ -398,14 +398,13 @@ struct DAYNIGHT_SKYBOX {
 // Manages the loaded JSON data, contains vectors of said data so that I don't lose my sanity with writing memory management
 struct DAYNIGHT_DATA_MANAGER {
 private:
-	const char* m_skyboxTextureName = nullptr;
+	std::optional<std::string> m_skyboxTextureName = std::nullopt;
 	std::vector<DAYNIGHT_SKYBOX> m_skyboxEntries;
 	NJS_ARGB m_phaseColors[NB_PHASE];
-	LightGC m_lights[NB_PHASE];
-	bool m_lightLoaded[NB_PHASE];
+	std::optional<LightGC> m_lights[NB_PHASE];
 
 public:
-	const char* const GetSkyboxTextureFileName() const {
+	const std::optional<std::string>& GetSkyboxTextureFileName() const {
 		return m_skyboxTextureName;
 	}
 
@@ -414,12 +413,7 @@ public:
 		return m_phaseColors[phaseIndex];
 	}
 
-	const bool HasLightForPhase(size_t phaseIndex) const {
-		assert(phaseIndex < NB_PHASE);
-		return m_lightLoaded[phaseIndex];
-	}
-
-	const LightGC& GetLightForPhase(size_t phaseIndex) const {
+	const std::optional<LightGC>& GetLightForPhase(size_t phaseIndex) const {
 		assert(phaseIndex < NB_PHASE);
 		return m_lights[phaseIndex];
 	}
@@ -547,7 +541,7 @@ public:
 				return false;
 			}
 			else {
-				m_skyboxTextureName = _strdup(member.GetString());
+				m_skyboxTextureName = std::string(member.GetString());
 			}
 		}
 
@@ -693,8 +687,7 @@ public:
 					outLight.ambientReg = { ambient.r, ambient.g, ambient.b };
 					outLight.lightColor = { diffuse.r, diffuse.g, diffuse.b };
 
-					m_lights[i] = outLight;
-					m_lightLoaded[i] = true;
+					m_lights[i] = outLight;					
 				}
 
 				if (!phase.HasMember("color")) {
@@ -716,8 +709,12 @@ public:
 	}
 
 	void Clear() {
+		m_skyboxTextureName = std::nullopt;
 		m_skyboxEntries.clear();
-		memset(m_lightLoaded, false, sizeof(m_lightLoaded));
+		
+		for (size_t i = 0; i < NB_PHASE; i++) {
+			m_lights[i] = std::nullopt;
+		}
 	}
 } static gDayNightManager;
 
@@ -1197,25 +1194,29 @@ static void CopyLights(task* tp, size_t index) {
 	memcpy(&work.lights[index], Lights, sizeof(work.lights[index]));
 }
 
-static LightGC DCLightToGCLight(size_t index) {
-	// if already GC don't bother
-	if (LightsGC[index].SomeFlag & 1) return LightsGC[0];
+static LightGC DCLightToGCLight() {
+	// we only care about lerping light 0
+	size_t index = 0;
 
-	// enable the "gc light override" flag
-	LightsGC[index].SomeFlag |= 1;
+	// if already GC don't bother converting
+	if (LightsGC[index].SomeFlag & 1) return LightsGC[index];
 
-	LightsGC[index].direction = Lights[index].direction;
+	LightGC outLight;
 
-	LightsGC[index].ambientReg = Lights[index].color;
-	LightsGC[index].lightColor = Lights[index].color;
+	outLight.direction = Lights[index].direction;
 
-	LightsGC[index].ambientReg.x *= Lights[index].ambient;
-	LightsGC[index].ambientReg.y *= Lights[index].ambient;
-	LightsGC[index].ambientReg.z *= Lights[index].ambient;
+	outLight.ambientReg = Lights[index].color;
+	outLight.lightColor = Lights[index].color;
 
-	LightsGC[index].lightColor.x *= Lights[index].intensity;
-	LightsGC[index].lightColor.y *= Lights[index].intensity;
-	LightsGC[index].lightColor.z *= Lights[index].intensity;
+	outLight.ambientReg.x *= Lights[index].ambient;
+	outLight.ambientReg.y *= Lights[index].ambient;
+	outLight.ambientReg.z *= Lights[index].ambient;
+
+	outLight.lightColor.x *= Lights[index].intensity;
+	outLight.lightColor.y *= Lights[index].intensity;
+	outLight.lightColor.z *= Lights[index].intensity;
+
+	return outLight;
 }
 
 static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
@@ -1223,13 +1224,16 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 
 	const int nextPhase = (work.phase + 1) % 3;
 
-	const bool hasSrcLight = gDayNightManager.HasLightForPhase(work.phase);
-	const bool hasDstLight = gDayNightManager.HasLightForPhase(nextPhase);
+	const auto& srcLightPhase = gDayNightManager.GetLightForPhase(work.phase);
+	const auto& dstLightPhase = gDayNightManager.GetLightForPhase(nextPhase);
 
-	const LightGC& pSrcLight = (!hasSrcLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(work.phase);
-	const LightGC& pDstLight = (!hasDstLight) ? work.fallbackLight : gDayNightManager.GetLightForPhase(nextPhase);
+	const LightGC& pSrcLight = (!srcLightPhase) ? work.fallbackLight : srcLightPhase.value();
+	const LightGC& pDstLight = (!dstLightPhase) ? work.fallbackLight : dstLightPhase.value();
 
+	// we always use GC lights because it's what the json format uses
+	// the fallback light is either the first GC light, or the first DC light converted to GC (lossless)
 	LightsGC[0].SomeFlag |= 1;
+
 	LerpLight(LightsGC[0], pSrcLight, pDstLight, (work.timer / (60.f * 5)));
 }
 
@@ -1268,7 +1272,7 @@ static void AL_DayNightCycleExecutor(task* tp) {
 			{
 				const auto& skyboxFilename = gDayNightManager.GetSkyboxTextureFileName();
 				if (skyboxFilename) {
-					work.pSkyboxTexlist = LoadCharTextures((char*)skyboxFilename);
+					work.pSkyboxTexlist = LoadCharTextures((char*)skyboxFilename->c_str());
 				}
 			}
 
@@ -1283,12 +1287,11 @@ static void AL_DayNightCycleExecutor(task* tp) {
 			// so we can smoothly interpolate between the existing one and the ones in config
 			// ofc, this is only necessary if there hasn't been a light specified for every phase
 			// because then we need to default to the existing one
-			for (size_t i = 0; i < 4; i++) {
-				//DCLightToGCLight(i);
-			}
+			work.fallbackLight = DCLightToGCLight();
 
 			/*
-			// load the lights we want and copy them (todo maybe this is too hacky)
+			// this is temporary, enable when porting the lights, remove in final release
+			// load the lights we want and copy them
 			{
 				// this daynightconfig thing is temp for now too
 				const AL_DayNightConfig& config = gDayNightConfig.at(CurrentChaoArea);
@@ -1305,6 +1308,7 @@ static void AL_DayNightCycleExecutor(task* tp) {
 
 			DumpLightJson(tp);
 			*/
+
 			[[fallthrough]];
 		case MODE_LERP:
 			// most of this is just temp to test the rendering and all that
