@@ -579,13 +579,16 @@
     <ClInclude Include="ui\al_tween_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="api\api_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="al_ode_menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="al_ode_mainmenubar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="renderfix_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="api\api_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -975,6 +978,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\al_tween_interp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="al_ode_mainmenubar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

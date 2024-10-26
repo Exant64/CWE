@@ -272,6 +272,7 @@
     <ClInclude Include="al_minimal.h" />
     <ClInclude Include="al_msg_font.h" />
     <ClInclude Include="al_msg_win.h" />
+    <ClInclude Include="al_ode_mainmenubar.h" />
     <ClInclude Include="al_ode_menu.h" />
     <ClInclude Include="al_parts.h" />
     <ClInclude Include="al_misc.h" />
@@ -451,6 +452,7 @@
     <ClCompile Include="al_behavior\alsbhv_hug.cpp" />
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
+    <ClCompile Include="al_ode_mainmenubar.cpp" />
     <ClCompile Include="ui\al_tween_interp.cpp" />
     <ClInclude Include="al_chao_info.h" />
     <ClCompile Include="al_chao_counter.cpp" />
