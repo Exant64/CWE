@@ -731,12 +731,6 @@ public:
 	}
 } static gDayNightManager;
 
-
-enum {
-	MODE_INIT_LT_COPY = 0,
-	MODE_LERP
-};
-
 enum {
 	LIGHT_DEF = 0,
 	LIGHT_EVE = 1,
@@ -790,58 +784,11 @@ struct DAYNIGHT_WORK {
 	int skyboxCount;
 };
 
-
-// Lerp color for RGB only (without alpha) which we represent with an NJS_VECTOR for now
-static void LerpColor(NJS_VECTOR& out, const NJS_VECTOR& a, const NJS_VECTOR& b, float t) {
-	out.x = lerp(a.x, b.x, t);
-	out.y = lerp(a.y, b.y, t);
-	out.z = lerp(a.z, b.z, t);
-}
-
-// Lerp color for RGB part of an NJS_ARGB
-static void LerpColor(NJS_ARGB& out, const NJS_ARGB& a, const NJS_ARGB& b, float t) {
-	out.r = lerp(a.r, b.r, t);
-	out.g = lerp(a.g, b.g, t);
-	out.b = lerp(a.b, b.b, t);
-}
-
-// Lerp GC light
-static void LerpLight(LightGC& out, const LightGC& a, const LightGC& b, float t) {
-	LerpColor(out.lightColor, a.lightColor, b.lightColor, t);
-	LerpColor(out.ambientReg, a.ambientReg, b.ambientReg, t);
-}
-
 static DAYNIGHT_WORK& GetWork(task* tp) {
 	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->Data2.Undefined);
 }
 
-// Frees the copied object, the sa2bmodel, and the vertex colors it copies
-static void AL_DayNightCycle_FreeObject(NJS_OBJECT* pObj, SA2B_VertexData** pColorTable) {
-	if (!pObj) return;
-
-	// if we have vertex colors for the node that means we copied everything up to that point 
-	// so free them
-	auto pDstColors = pColorTable[VERTEX_COLOR_TABLE_DST];
-	if (pDstColors) {
-		FREE(pDstColors->Data);
-		FREE(pObj->sa2bmodel->Vertices);
-		FREE(pObj->sa2bmodel);
-		FREE(pObj);
-	}
-}
-
-// Frees the LandTable, its COLs and all their related data
-static void AL_DayNightCycle_FreeLandTableCOLAndObjects(task* tp) {
-	auto& work = GetWork(tp);
-	LandTable* pLand = work.pNewLandtable;
-
-	for (size_t i = 0; i < pLand->ChunkModelCount; i++) {
-		AL_DayNightCycle_FreeObject(pLand->COLList[i].Model, &work.pVertexColorTable[i * 2]);
-	}
-
-	FREE(pLand->COLList);
-	FREE(pLand);
-}
+#pragma region Skybox Utility Functions
 
 // Toggles the "color source" from whatever the original was to material color, and does it for alpha too
 static void AL_DayNightCycle_ToggleColorSourceToMaterial(DAYNIGHT_SKYBOX_TABLE& skybox, bool useMaterialColorLighting) {
@@ -860,6 +807,20 @@ static void AL_DayNightCycle_ToggleColorSourceToMaterial(DAYNIGHT_SKYBOX_TABLE& 
 			flag = texMap.originalLightingParameter;
 		}
 	}
+}
+
+// Finds the original texture ID in the skybox texture map table, and retrieves the texture IDs to map it to
+static bool AL_DayNightCycle_FindSkyboxTexID(uint32_t texID, DAYNIGHT_SKYBOX const** pSkybox) {
+	const auto& skyboxEntries = gDayNightManager.GetSkyboxEntries();
+
+	for (size_t i = 0; i < skyboxEntries.size(); i++) {
+		if (texID == skyboxEntries[i].origTexID) {
+			*pSkybox = &skyboxEntries[i];
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // Retrieves the skybox texture specified in the configuration for the phase argument
@@ -917,19 +878,7 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 	return isOriginalTexlist;
 }
 
-// Finds the original texture ID in the skybox texture map table, and retrieves the texture IDs to map it to
-static bool AL_DayNightCycle_FindSkyboxTexID(uint32_t texID, DAYNIGHT_SKYBOX const ** pSkybox) {
-	const auto& skyboxEntries = gDayNightManager.GetSkyboxEntries();
-
-	for (size_t i = 0; i < skyboxEntries.size(); i++) {
-		if (texID == skyboxEntries[i].origTexID) {
-			*pSkybox = &skyboxEntries[i];
-			return true;
-		}
-	}
-
-	return false;
-}
+#pragma endregion
 
 // Checks if the COL's model has any skybox textures, if yes then it fills the list of texture IDs to change
 // (and what to change it to)
@@ -942,7 +891,6 @@ static bool AL_DayNightCycle_CheckSkybox(const NJS_OBJECT* pSrcObj, DAYNIGHT_SKY
 	std::unique_ptr<DAYNIGHT_SKYBOX_TEXMAP_TABLE[]> texMapArray(new DAYNIGHT_SKYBOX_TEXMAP_TABLE[sumGeoCount]);
 	size_t texMapCount = 0;
 
-	bool isMixed = false;
 	bool needsOriginalTexlist[NB_PHASE] = { false };
 	bool showedError = false;
 
@@ -1149,6 +1097,73 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 	}
 }
 
+static void AL_DayNightCycle_InitFallbackLight(task* tp) {
+	auto& work = GetWork(tp);
+
+	// we only care about lerping light 0
+	size_t index = 0;
+
+	// if already GC don't bother converting
+	if (LightsGC[index].SomeFlag & 1) {
+		work.fallbackLight = LightsGC[index];
+		return;
+	}
+	
+	work.fallbackLight.direction = Lights[index].direction;
+
+	work.fallbackLight.ambientReg = Lights[index].color;
+	work.fallbackLight.lightColor = Lights[index].color;
+
+	work.fallbackLight.ambientReg.x *= Lights[index].ambient;
+	work.fallbackLight.ambientReg.y *= Lights[index].ambient;
+	work.fallbackLight.ambientReg.z *= Lights[index].ambient;
+
+	work.fallbackLight.lightColor.x *= Lights[index].intensity;
+	work.fallbackLight.lightColor.y *= Lights[index].intensity;
+	work.fallbackLight.lightColor.z *= Lights[index].intensity;
+}
+
+static void AL_DayNightCycle_Init(task* tp) {
+	auto& work = GetWork(tp);
+
+	const auto& skyboxFilename = gDayNightManager.GetSkyboxTextureFileName();
+	if (skyboxFilename) {
+		work.pSkyboxTexlist = LoadCharTextures((char*)skyboxFilename->c_str());
+	}
+
+	// for phases that don't have light specified we fallback to the original index 0 light
+	// if it's already GC format we copy it, if it's DC format we convert it losslessly
+	AL_DayNightCycle_InitFallbackLight(tp);
+
+	// copy the landtable and make the game render our new one, and initialize the skyboxes
+	AL_DayNightCycle_InitNewLandTable(tp);
+	work.pOldLandtable = CurrentLandTable;
+	CurrentLandTable = work.pNewLandtable;
+
+}
+
+#pragma region Executor
+
+// Lerp color for RGB only (without alpha) which we represent with an NJS_VECTOR for now
+static void LerpColor(NJS_VECTOR& out, const NJS_VECTOR& a, const NJS_VECTOR& b, float t) {
+	out.x = lerp(a.x, b.x, t);
+	out.y = lerp(a.y, b.y, t);
+	out.z = lerp(a.z, b.z, t);
+}
+
+// Lerp color for RGB part of an NJS_ARGB
+static void LerpColor(NJS_ARGB& out, const NJS_ARGB& a, const NJS_ARGB& b, float t) {
+	out.r = lerp(a.r, b.r, t);
+	out.g = lerp(a.g, b.g, t);
+	out.b = lerp(a.b, b.b, t);
+}
+
+// Lerp GC light
+static void LerpLight(LightGC& out, const LightGC& a, const LightGC& b, float t) {
+	LerpColor(out.lightColor, a.lightColor, b.lightColor, t);
+	LerpColor(out.ambientReg, a.ambientReg, b.ambientReg, t);
+}
+
 // Applies the color we want to the destination vertexdata, using the source vertexdata as the base color
 static void AL_DayNightCycle_ApplyVertexColor(const NJS_ARGB& mulColor, const SA2B_VertexData* pSrcVertexColorData, SA2B_VertexData* pDstVertexColorData) {
 	// technically NJS_COLOR isn't good, because in the GC models it's ARGB not BGRA
@@ -1190,7 +1205,6 @@ static void AL_DayNightCycle_ApplyColorToLandTable(task* tp) {
 	LerpColor(appliedColor, colorA, colorB, work.timer / (60 * 5.0f));
 
 	SA2B_VertexData** pVertexColorTable = work.pVertexColorTable;
-	
 	for (size_t colIndex = 0; colIndex < CurrentLandTable->ChunkModelCount; colIndex++) {
 		const SA2B_VertexData* pSrcVertices = pVertexColorTable[colIndex * 2 + VERTEX_COLOR_TABLE_SRC];
 		SA2B_VertexData* pDstVertices = pVertexColorTable[colIndex * 2 + VERTEX_COLOR_TABLE_DST];
@@ -1199,37 +1213,6 @@ static void AL_DayNightCycle_ApplyColorToLandTable(task* tp) {
 
 		AL_DayNightCycle_ApplyVertexColor(appliedColor, pSrcVertices, pDstVertices);
 	}
-}
-
-// Copy the game's lights into ours
-static void CopyLights(task* tp, size_t index) {
-	auto& work = GetWork(tp);
-	memcpy(&work.lights[index], Lights, sizeof(work.lights[index]));
-}
-
-static LightGC DCLightToGCLight() {
-	// we only care about lerping light 0
-	size_t index = 0;
-
-	// if already GC don't bother converting
-	if (LightsGC[index].SomeFlag & 1) return LightsGC[index];
-
-	LightGC outLight;
-
-	outLight.direction = Lights[index].direction;
-
-	outLight.ambientReg = Lights[index].color;
-	outLight.lightColor = Lights[index].color;
-
-	outLight.ambientReg.x *= Lights[index].ambient;
-	outLight.ambientReg.y *= Lights[index].ambient;
-	outLight.ambientReg.z *= Lights[index].ambient;
-
-	outLight.lightColor.x *= Lights[index].intensity;
-	outLight.lightColor.y *= Lights[index].intensity;
-	outLight.lightColor.z *= Lights[index].intensity;
-
-	return outLight;
 }
 
 static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
@@ -1250,74 +1233,54 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	LerpLight(LightsGC[0], pSrcLight, pDstLight, (work.timer / (60.f * 5)));
 }
 
-// this is temporary but it will be useful for porting the existing light files to json
-static void DumpLightJson(task* tp) {
-	auto& work = GetWork(tp);
-	const auto dump = [&](Light& light) {
-		PrintDebug("\"light\": {");
-		PrintDebug("\t\"direction\": [%f, %f, %f]", light.direction.x, light.direction.y, light.direction.z);
-		PrintDebug("\t\"diffuse\": [%f, %f, %f]", light.color.x * light.intensity, light.color.y * light.intensity, light.color.z * light.intensity);
-		PrintDebug("\t\"ambient\": [%f, %f, %f]", light.color.x * light.ambient, light.color.y * light.ambient, light.color.z * light.ambient);
-		PrintDebug("}");
-	};
-
-	PrintDebug("JSON LIGHT DUMP STARTS HERE");
-	PrintDebug("day");
-	dump(work.lights[PHASE_DAY][0]);
-	PrintDebug("evening");
-	dump(work.lights[PHASE_EVE][0]);
-	PrintDebug("night");
-	dump(work.lights[PHASE_NGT][0]);
-	PrintDebug("cloudy");
-	dump(work.lights[PHASE_CLD][0]);
-}
-
 // Main update function for the DNC
 static void AL_DayNightCycleExecutor(task* tp) {
-	if (!AL_IsGarden()) return;
+	enum {
+		MODE_INIT = 0,
+		MODE_LERP
+	};
 
 	auto& work = GetWork(tp);
 
 	switch (work.mode) {
-		case MODE_INIT_LT_COPY:
-			{
-				const auto& skyboxFilename = gDayNightManager.GetSkyboxTextureFileName();
-				if (skyboxFilename) {
-					work.pSkyboxTexlist = LoadCharTextures((char*)skyboxFilename->c_str());
-				}
-			}
-
-			// copy the landtable and make the game render our new one, and initialize the skyboxes
-			AL_DayNightCycle_InitNewLandTable(tp);
-			work.pOldLandtable = CurrentLandTable;
-			CurrentLandTable = work.pNewLandtable;
-
+		case MODE_INIT:
+			AL_DayNightCycle_Init(tp);
 			work.mode++;
 
-			// the config lights are in GC format so we convert any already loaded DC lights into GC
-			// so we can smoothly interpolate between the existing one and the ones in config
-			// ofc, this is only necessary if there hasn't been a light specified for every phase
-			// because then we need to default to the existing one
-			work.fallbackLight = DCLightToGCLight();
-
-			/*
 			// this is temporary, enable when porting the lights, remove in final release
 			// load the lights we want and copy them
+			/*
 			{
 				// this daynightconfig thing is temp for now too
 				const AL_DayNightConfig& config = gDayNightConfig.at(CurrentChaoArea);
 
 				LoadStageLight(config.DefaultLight);
-				CopyLights(tp, LIGHT_DEF);
+				memcpy(&work.lights[LIGHT_DEF], Lights, sizeof(work.lights[LIGHT_DEF]));
 				LoadStageLight(config.EveLight);
-				CopyLights(tp, LIGHT_EVE);
+				memcpy(&work.lights[LIGHT_EVE], Lights, sizeof(work.lights[LIGHT_EVE]));
 				LoadStageLight(config.NightLight);
-				CopyLights(tp, LIGHT_NGT);
+				memcpy(&work.lights[LIGHT_NGT], Lights, sizeof(work.lights[LIGHT_NGT]));
 				LoadStageLight(config.CloudLight);
-				CopyLights(tp, LIGHT_CLOUD);
+				memcpy(&work.lights[LIGHT_CLOUD], Lights, sizeof(work.lights[LIGHT_CLOUD]));
 			}
 
-			DumpLightJson(tp);
+			const auto dump = [&](Light& light) {
+				PrintDebug("\"light\": {");
+				PrintDebug("\t\"direction\": [%f, %f, %f]", light.direction.x, light.direction.y, light.direction.z);
+				PrintDebug("\t\"diffuse\": [%f, %f, %f]", light.color.x * light.intensity, light.color.y * light.intensity, light.color.z * light.intensity);
+				PrintDebug("\t\"ambient\": [%f, %f, %f]", light.color.x * light.ambient, light.color.y * light.ambient, light.color.z * light.ambient);
+				PrintDebug("}");
+			};
+
+			PrintDebug("JSON LIGHT DUMP STARTS HERE");
+			PrintDebug("day");
+			dump(work.lights[PHASE_DAY][0]);
+			PrintDebug("evening");
+			dump(work.lights[PHASE_EVE][0]);
+			PrintDebug("night");
+			dump(work.lights[PHASE_NGT][0]);
+			PrintDebug("cloudy");
+			dump(work.lights[PHASE_CLD][0]);
 			*/
 
 			[[fallthrough]];
@@ -1369,6 +1332,9 @@ static void AL_DayNightCycleExecutor(task* tp) {
 #endif
 }
 
+#pragma endregion
+
+#pragma region Destructor
 // Restores all model changes
 static void AL_DayNightCycle_RestoreAll(task* tp) {
 	auto& work = GetWork(tp);
@@ -1383,6 +1349,34 @@ static void AL_DayNightCycle_RestoreAll(task* tp) {
 		AL_DayNightCycle_ChangeSkyboxTextures(skybox, -1);
 		AL_DayNightCycle_ToggleColorSourceToMaterial(skybox, false);
 	}
+}
+
+// Frees the copied object, the sa2bmodel, and the vertex colors it copies
+static void AL_DayNightCycle_FreeObject(NJS_OBJECT* pObj, SA2B_VertexData** pColorTable) {
+	if (!pObj) return;
+
+	// if we have vertex colors for the node that means we copied everything up to that point 
+	// so free them
+	auto pDstColors = pColorTable[VERTEX_COLOR_TABLE_DST];
+	if (pDstColors) {
+		FREE(pDstColors->Data);
+		FREE(pObj->sa2bmodel->Vertices);
+		FREE(pObj->sa2bmodel);
+		FREE(pObj);
+	}
+}
+
+// Frees the LandTable, its COLs and all their related data
+static void AL_DayNightCycle_FreeLandTableCOLAndObjects(task* tp) {
+	auto& work = GetWork(tp);
+	LandTable* pLand = work.pNewLandtable;
+
+	for (size_t i = 0; i < pLand->ChunkModelCount; i++) {
+		AL_DayNightCycle_FreeObject(pLand->COLList[i].Model, &work.pVertexColorTable[i * 2]);
+	}
+
+	FREE(pLand->COLList);
+	FREE(pLand);
 }
 
 // Frees all the allocated copied stuff and skybox stuff
@@ -1416,6 +1410,10 @@ static void AL_DayNightCycleDestructor(task* tp) {
 
 	pDayNightTask = nullptr;
 }
+
+#pragma endregion
+
+#pragma region Displayer
 
 static void AL_DayNightCycle_SetSkyboxTexturesAndTexlist(task* tp, DAYNIGHT_SKYBOX_TABLE& skybox, int phase) {
 	auto& work = GetWork(tp);
@@ -1498,6 +1496,8 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	njColorBlendingMode(0, 8);
 	njColorBlendingMode(1, 6);
 }
+
+#pragma endregion
 
 // IF I don't happen to update this in time when the ECW API comes out
 // this will prevent the daynight cycle code from running if an ECW custom garden is active
