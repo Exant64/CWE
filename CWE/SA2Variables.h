@@ -31,7 +31,7 @@ DataPointer(ObjectListEntry, AL_RaceMaster_ObjectArray, 0x1353338);
 DataPointer(ObjectListHead, AL_RaceMaster_ObjectList, 0x13533F8);
 //DataPointer(NJS_VECTOR*, ProbablyChaoSpawnPoints, 0x1366260);
 DataArray(NJS_VECTOR, ProbablyChaoSpawnPoints, 0x1366260, 48);
-DataPointer(ChaoSegmentData*, ChaoSegments, 0x1366580);
+DataArray(ChaoSegmentData, ChaoSegments, 0x1366580, 19);
 DataPointer(LevelHeader, ChaoHeader, 0x1367380);
 
 DataArray(int, DebugCharacterList, 0x1415D18, 8);
