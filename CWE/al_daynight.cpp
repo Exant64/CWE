@@ -462,7 +462,7 @@ public:
 
 		// again as mentioned earlier, if the document is empty (which we handle above) or just a "{ }" then that's not an error
 		// it just counts the same as not having a config
-		if (d.Empty()) {
+		if (d.ObjectEmpty()) {
 			return false;
 		}
 
