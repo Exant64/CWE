@@ -377,6 +377,8 @@ static const char* AL_DayNightCycle_GetGardenID() {
 	case CHAO_STG_DARK:
 		return "dark";
 	}
+
+	return "none";
 }
 
 enum {
@@ -1158,11 +1160,6 @@ static void LerpColor(NJS_ARGB& out, const NJS_ARGB& a, const NJS_ARGB& b, float
 	out.b = lerp(a.b, b.b, t);
 }
 
-// Lerp GC light
-static void LerpLight(LightGC& out, const LightGC& a, const LightGC& b, float t) {
-	LerpColor(out.lightColor, a.lightColor, b.lightColor, t);
-	LerpColor(out.ambientReg, a.ambientReg, b.ambientReg, t);
-}
 
 // Applies the color we want to the destination vertexdata, using the source vertexdata as the base color
 static void AL_DayNightCycle_ApplyVertexColor(const NJS_ARGB& mulColor, const SA2B_VertexData* pSrcVertexColorData, SA2B_VertexData* pDstVertexColorData) {
@@ -1230,7 +1227,9 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	// the fallback light is either the first GC light, or the first DC light converted to GC (lossless)
 	LightsGC[0].SomeFlag |= 1;
 
-	LerpLight(LightsGC[0], pSrcLight, pDstLight, (work.timer / (60.f * 5)));
+	const float t = (work.timer / (60.f * 5));
+	LerpColor(LightsGC[0].lightColor, pSrcLight.lightColor, pDstLight.lightColor, t);
+	LerpColor(LightsGC[0].ambientReg, pSrcLight.ambientReg, pDstLight.ambientReg, t);
 }
 
 // Main update function for the DNC
@@ -1518,8 +1517,25 @@ static bool AL_DayNightCycle_CheckECWSafety() {
 	return true;
 }
 
+// Checks if we're in an area that is intended to have daynight cycle
+static bool AL_DayNightCycle_IsValidArea() {
+	switch (AL_GetStageNumber()) {
+		case CHAO_STG_NEUT:
+		case CHAO_STG_HERO:
+		case CHAO_STG_DARK:
+		case CHAO_STG_ENTRANCE:
+		// todo: do we also need to look for RACE_2P/KARATE_2P? come back to this when we add files for those
+		case CHAO_STG_RACE:
+		case CHAO_STG_KARATE:
+			return true;
+	}
+
+	return false;
+}
+
 void AL_CreateDayNightCycle() {
 	if (!gConfigVal.DayNightCycle) return;
+	if (!AL_DayNightCycle_IsValidArea()) return;
 	if (!AL_DayNightCycle_CheckECWSafety()) return;
 	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
 	
