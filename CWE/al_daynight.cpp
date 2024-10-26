@@ -989,14 +989,13 @@ static bool AL_DayNightCycle_CheckSkybox(const NJS_OBJECT* pSrcObj, DAYNIGHT_SKY
 			texMap.pTexID = pTexID;
 			texMap.skybox = *pSkyboxEntry;
 
+			// this check is needed so that a model doesn't use a combination/"hybrid" texlist setup with a material using original tex id and sky texlist tex id
 			bool originalTexlist[4] = { false };
-			if (texMap.skybox.dayTexID == -1) {  originalTexlist[PHASE_DAY] = true; }
-			if (texMap.skybox.eveningTexID == -1) { originalTexlist[PHASE_EVE] = true; }
-			if (texMap.skybox.nightTexID == -1) { originalTexlist[PHASE_NGT] = true; }
-			if (texMap.skybox.cloudyTexID == -1) { originalTexlist[PHASE_CLD] = true; }
+			if (texMap.skybox.dayTexID == -1) originalTexlist[PHASE_DAY] = true;
+			if (texMap.skybox.eveningTexID == -1) originalTexlist[PHASE_EVE] = true;
+			if (texMap.skybox.nightTexID == -1) originalTexlist[PHASE_NGT] = true;
+			if (texMap.skybox.cloudyTexID == -1) originalTexlist[PHASE_CLD] = true;
 			
-			if (texMap.skybox.eveningTexID == 7) __debugbreak();
-
 			for (size_t i = 0; i < NB_PHASE; i++) {
 				if (texMapCount > 1 && originalTexlist[i] != needsOriginalTexlist[i] && !showedError) {
 					error.print("one of the skybox models use both the original texture and the replacement texlist. This case cannot be handled, and the rendering is not guaranteed to run stable, please fix it.");
