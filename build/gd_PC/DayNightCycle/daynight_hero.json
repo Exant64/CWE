@@ -1,0 +1,62 @@
+{
+  "skyboxTextureName": "AL_HERO_SKY",
+  "phases": {
+    "day": {
+      "color": "#FFFFFF",
+      "light": {
+        "direction": [ 0, 1, 0 ],
+        "diffuse": [ 1, 1, 1 ],
+        "ambient": [ 0.2, 0.2, 0.2 ]
+      }
+    },
+    "evening": {
+      "color": [ 0.566252, 0.702886, 0.84448 ],
+      "light": {
+        "direction": [ 0, 1, 0 ],
+        "diffuse": [ 1, 1, 1 ],
+        "ambient": [ 0.2, 0.2, 0.2 ]
+      }
+    },
+    "night": {
+      "color": [ 1, 0.784313725, 0.596078431 ],
+      "light": {
+        "direction": [ 0, 1, 0 ],
+        "diffuse": [ 1, 1, 1 ],
+        "ambient": [ 0.2, 0.2, 0.2 ]
+      }
+    }
+  },
+
+  "skyboxMaterials": [
+    {
+      "originalTextureID": 27,
+      "dayTextureID": 0,
+      "eveningTextureID": 5,
+      "nightTextureID": 10
+    },
+    {
+      "originalTextureID": 28,
+      "dayTextureID": 1,
+      "eveningTextureID": 6,
+      "nightTextureID": 11
+    },
+    {
+      "originalTextureID": 29,
+      "dayTextureID": 2,
+      "eveningTextureID": 7,
+      "nightTextureID": 12
+    },
+    {
+      "originalTextureID": 30,
+      "dayTextureID": 3,
+      "eveningTextureID": 8,
+      "nightTextureID": 13
+    },
+    {
+      "originalTextureID": 31,
+      "dayTextureID": 4,
+      "eveningTextureID": 9,
+      "nightTextureID": 14
+    }
+  ]
+}
