@@ -437,6 +437,9 @@ public:
 
 		fseek(fp, 0L, SEEK_END);
 		size_t sz = ftell(fp);
+
+		// rapidjson expects a buffer with size of atleast 4
+		sz = max(sz, 4);
 		std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 		fseek(fp, 0, SEEK_SET);
@@ -445,7 +448,25 @@ public:
 		Document document;
 		const auto& d = document.ParseStream(is);
 
-		const auto parseFloat3 = [&](const auto & colorElement, NJS_VECTOR& outFloat3) {
+		if (d.HasParseError()) {
+			// we allow document empty error so that it's an easy way for a (non-secw) custom garden mod to "disable" DNC
+			if (d.GetParseError() != ParseErrorCode::kParseErrorDocumentEmpty) {
+				error.print("error parsing at %u: %s\n",
+					(unsigned)document.GetErrorOffset(),
+					GetParseError_En(d.GetParseError())
+				);
+			}
+
+			return false;
+		}
+
+		// again as mentioned earlier, if the document is empty (which we handle above) or just a "{ }" then that's not an error
+		// it just counts the same as not having a config
+		if (d.Empty()) {
+			return false;
+		}
+
+		const auto parseFloat3 = [&](const auto& colorElement, NJS_VECTOR& outFloat3) {
 			const size_t numOfElements = 3;
 			const auto& phaseColorArray = colorElement.GetArray();
 
@@ -477,7 +498,7 @@ public:
 			}
 
 			return true;
-		};
+			};
 
 		const auto parseColor = [&](const auto& colorElement, NJS_ARGB& outColor) {
 			if (colorElement.IsString()) {
@@ -525,14 +546,6 @@ public:
 
 			return true;
 		};
-
-		if (d.HasParseError()) {
-			error.print("error parsing at %u: %s\n",
-				(unsigned)document.GetErrorOffset(),
-				GetParseError_En(d.GetParseError())
-			);
-			return false;
-		}
 
 		if (d.HasMember("skyboxTextureName")) {
 			const auto& member = d["skyboxTextureName"];
@@ -1267,8 +1280,6 @@ static void AL_DayNightCycleExecutor(task* tp) {
 
 	switch (work.mode) {
 		case MODE_INIT_LT_COPY:
-			gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID());
-
 			{
 				const auto& skyboxFilename = gDayNightManager.GetSkyboxTextureFileName();
 				if (skyboxFilename) {
@@ -1490,6 +1501,7 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 
 void AL_CreateDayNightCycle() {
 	if (!gConfigVal.DayNightCycle) return;
+	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
 
 	task* tp = LoadObject(4, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
 	pDayNightTask = tp;
