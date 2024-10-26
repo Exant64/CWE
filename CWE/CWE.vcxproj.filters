@@ -1,1065 +1,390 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\al_toy">
-      <UniqueIdentifier>{6c1298f6-29c9-4a4c-9947-4e3f7db255d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\al_toy">
-      <UniqueIdentifier>{1f4a7022-59f1-4e7b-90bc-7d8be0e060f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\al_sdk">
-      <UniqueIdentifier>{af3eede3-09ce-44f2-806d-dccffdb47cf7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\al_sdk">
-      <UniqueIdentifier>{0ebcb7bc-40f1-486b-b925-e79537c26fe8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\al_toy\al_sandhole_model">
-      <UniqueIdentifier>{2cf558b2-726c-4878-a593-96dce465bd01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\al_behavior">
-      <UniqueIdentifier>{f114e351-edc1-4eb3-bc71-21a5919eeb02}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\SA2ModLoader">
-      <UniqueIdentifier>{2b5730ab-26f8-416c-ba27-ed36276ad7d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\models">
-      <UniqueIdentifier>{e81557f2-1d03-4c57-8a26-cb8c496092b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\models\al_mini_parts">
-      <UniqueIdentifier>{466b1db5-6a81-4697-9da3-af6dc90139f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\stg_kinder">
-      <UniqueIdentifier>{917ac983-21e5-4c2f-a708-0efbcf069dde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\stg_kinder">
-      <UniqueIdentifier>{6c855fcc-abe4-4239-b4b3-87b93cff21d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\test">
-      <UniqueIdentifier>{a72370d5-ff84-44e3-8c6f-fac7c366cdb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\models\fruit">
-      <UniqueIdentifier>{fc1092ca-72b4-455c-b648-1e9da3c921cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\models\lensbox">
-      <UniqueIdentifier>{9321b526-a2bf-4d0b-bc78-dab3d522619b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ModLoaderCommon">
-      <UniqueIdentifier>{f327ca61-7253-4398-a2e8-c6c428ee6a0c}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="alg_kinder_bl.cpp" />
+    <ClCompile Include="alg_kinder_cl.cpp" />
+    <ClCompile Include="alg_kinder_he.cpp" />
+    <ClCompile Include="alg_kinder_ortho.cpp" />
+    <ClCompile Include="ALifeSDK_Functions.cpp" />
+    <ClCompile Include="alo_accessory.cpp" />
+    <ClCompile Include="alo_boat.cpp" />
+    <ClCompile Include="alo_coffin.cpp" />
+    <ClCompile Include="alo_fruit.cpp" />
+    <ClCompile Include="alo_obakehead.cpp" />
+    <ClCompile Include="alo_special.cpp" />
+    <ClCompile Include="al_behavior\albhv_birthday.cpp" />
+    <ClCompile Include="al_behavior\albhv_boat.cpp" />
+    <ClCompile Include="al_behavior\albhv_capture.cpp" />
+    <ClCompile Include="al_behavior\albhv_coffin.cpp" />
+    <ClCompile Include="al_behavior\albhv_console.cpp" />
+    <ClCompile Include="al_behavior\albhv_dance.cpp" />
+    <ClCompile Include="al_behavior\albhv_float.cpp" />
+    <ClCompile Include="al_behavior\albhv_glide.cpp" />
+    <ClCompile Include="al_behavior\albhv_life.cpp" />
+    <ClCompile Include="al_behavior\albhv_ltoy.cpp" />
+    <ClCompile Include="al_behavior\albhv_music.cpp" />
+    <ClCompile Include="al_behavior\albhv_piano.cpp" />
+    <ClCompile Include="al_behavior\albhv_stoy.cpp" />
+    <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
+    <ClCompile Include="al_behavior\albhv_tree.cpp" />
+    <ClCompile Include="al_behavior\albhv_wrench.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_chat.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_common.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_gossip.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_holdhand.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_hug.cpp" />
+    <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
+    <ClCompile Include="al_behavior\al_behavior.cpp" />
+    <ClCompile Include="al_ode_mainmenubar.cpp" />
+    <ClCompile Include="ui\al_tween_interp.cpp" />
+    <ClCompile Include="al_chao_counter.cpp" />
+    <ClCompile Include="al_edit.cpp" />
+    <ClCompile Include="al_emotion.cpp" />
+    <ClCompile Include="al_face.cpp" />
+    <ClCompile Include="al_behavior\al_intention.cpp" />
+    <ClCompile Include="al_behavior\al_knowledge.cpp" />
+    <ClCompile Include="al_butterfly.cpp" />
+    <ClCompile Include="al_console.cpp" />
+    <ClCompile Include="al_customization.cpp" />
+    <ClCompile Include="al_daynight.cpp" />
+    <ClCompile Include="al_draw.cpp" />
+    <ClCompile Include="al_gene.cpp" />
+    <ClCompile Include="al_look.cpp" />
+    <ClCompile Include="al_marketattr.cpp" />
+    <ClCompile Include="al_minimal.cpp" />
+    <ClCompile Include="al_misc.cpp" />
+    <ClCompile Include="AL_ModAPI.cpp" />
+    <ClCompile Include="al_modelcontainer.cpp" />
+    <ClCompile Include="al_motion.cpp" />
+    <ClCompile Include="al_msg_font.cpp" />
+    <ClCompile Include="al_msg_win.cpp" />
+    <ClCompile Include="al_name.cpp" />
+    <ClCompile Include="al_namedisplay.cpp" />
+    <ClCompile Include="al_odekake.cpp" />
+    <ClCompile Include="al_ode_guest.cpp" />
+    <ClCompile Include="al_ode_guide.cpp" />
+    <ClCompile Include="al_ode_hikkoshi.cpp" />
+    <ClCompile Include="al_ode_joycarry.cpp" />
+    <ClCompile Include="al_ode_nazukeya.cpp" />
+    <ClCompile Include="al_ode_storage.cpp" />
+    <ClCompile Include="al_omochao_build.cpp" />
+    <ClCompile Include="al_parameter.cpp" />
+    <ClCompile Include="al_parts.cpp" />
+    <ClCompile Include="al_piano.cpp" />
+    <ClCompile Include="al_registry.cpp" />
+    <ClCompile Include="al_sandhole.cpp" />
+    <ClCompile Include="al_save.cpp" />
+    <ClCompile Include="al_script.cpp" />
+    <ClCompile Include="al_shape.cpp" />
+    <ClCompile Include="al_social.cpp" />
+    <ClCompile Include="al_stage.cpp" />
+    <ClCompile Include="al_texlist.cpp" />
+    <ClCompile Include="al_toy_move.cpp" />
+    <ClCompile Include="al_world.cpp" />
+    <ClCompile Include="api\api_customchao.cpp" />
+    <ClCompile Include="api\api_msg.cpp" />
+    <ClCompile Include="api\api_tree.cpp" />
+    <ClCompile Include="Chao.cpp" />
+    <ClCompile Include="ChaoMain.cpp" />
+    <ClCompile Include="alo_float.cpp" />
+    <ClCompile Include="code_system\CodeParser.cpp" />
+    <ClCompile Include="code_system\codes\code_animal_reuse.cpp" />
+    <ClCompile Include="code_system\codes\code_birthday.cpp" />
+    <ClCompile Include="code_system\codes\code_dccocoon.cpp" />
+    <ClCompile Include="code_system\codes\code_disjingle.cpp" />
+    <ClCompile Include="code_system\codes\code_drown.cpp" />
+    <ClCompile Include="code_system\codes\code_hdtoy.cpp" />
+    <ClCompile Include="code_system\codes\code_hunger.cpp" />
+    <ClCompile Include="code_system\codes\code_eggcolor.cpp" />
+    <ClCompile Include="code_system\codes\code_gardenlimit.cpp" />
+    <ClCompile Include="code_system\codes\code_monsterevo.cpp" />
+    <ClCompile Include="code_system\codes\code_personality.cpp" />
+    <ClCompile Include="code_system\codes\code_playerspeed.cpp" />
+    <ClCompile Include="code_system\codes\code_sick.cpp" />
+    <ClCompile Include="code_system\cwe_patch.cpp" />
+    <ClCompile Include="code_system\cwe_transpile.cpp" />
+    <ClCompile Include="collision_debug.cpp" />
+    <ClCompile Include="CWE.cpp" />
+    <ClCompile Include="al_palette.cpp" />
+    <ClCompile Include="code_system\cwe_codes.cpp" />
+    <ClCompile Include="al_growtree.cpp" />
+    <ClCompile Include="alg_kinder_co.cpp" />
+    <ClCompile Include="al_race.cpp" />
+    <ClCompile Include="cwe_fixes.cpp" />
+    <ClCompile Include="cwe_func.cpp" />
+    <ClCompile Include="c_colli.cpp" />
+    <ClCompile Include="experimental_rendertarget.cpp" />
+    <ClCompile Include="IniFile.cpp" />
+    <ClCompile Include="kce_helper.cpp" />
+    <ClCompile Include="memory.cpp" />
+    <ClCompile Include="ninja_functions.cpp" />
+    <ClCompile Include="PaletteFix.cpp" />
+    <ClCompile Include="register\api_accessory.cpp" />
+    <ClCompile Include="register\api_fruit.cpp" />
+    <ClCompile Include="register\api_minimal.cpp" />
+    <ClCompile Include="register\api_motion.cpp" />
+    <ClCompile Include="register\api_register.cpp" />
+    <ClCompile Include="register\api_special.cpp" />
+    <ClCompile Include="save\save_serializable.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TextConv.cpp" />
+    <ClCompile Include="Trampoline.cpp" />
+    <ClCompile Include="ui\al_ortho.cpp" />
+    <ClCompile Include="al_animation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ninja_functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChaoMain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Chao.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_piano.h">
-      <Filter>Header Files\al_toy</Filter>
-    </ClInclude>
-    <ClInclude Include="ALifeSDK_Functions.h">
-      <Filter>Header Files\al_sdk</Filter>
-    </ClInclude>
-    <ClInclude Include="al_sandhole.h">
-      <Filter>Header Files\al_toy</Filter>
-    </ClInclude>
-    <ClInclude Include="SA2Functions.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="SA2ModLoader.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="SA2Structs.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="SA2Variables.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="MemAccess.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="ninja.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="SA2Enums.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="al_parts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_minimal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alg_kinder_bl.h">
-      <Filter>Header Files\stg_kinder</Filter>
-    </ClInclude>
-    <ClInclude Include="AL_ModAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alo_fruit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="patchedcolors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alo_obakehead.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alg_kinder_he.h">
-      <Filter>Header Files\stg_kinder</Filter>
-    </ClInclude>
-    <ClInclude Include="IniFile.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="TextConv.h">
-      <Filter>Header Files\SA2ModLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="al_tv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxDark.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxDefault.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxGreen.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxHero.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxMagenta.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxNeut.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxPurple.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxRed.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxRobot.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxSnake.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxSpartoi.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxYellow.h">
-      <Filter>Header Files\models\lensbox</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\HyperFly.h">
-      <Filter>Header Files\models\fruit</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\HyperPower.h">
-      <Filter>Header Files\models\fruit</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\HyperRun.h">
-      <Filter>Header Files\models\fruit</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\HyperSwim.h">
-      <Filter>Header Files\models\fruit</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\Mushroom2x.h">
-      <Filter>Header Files\models\fruit</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\CakeTest.h">
-      <Filter>Header Files\test</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\ShinyFruit.h">
-      <Filter>Header Files\models\fruit</Filter>
-    </ClInclude>
-    <ClInclude Include="data\minimal\AnimalAnims.h">
-      <Filter>Header Files\models</Filter>
-    </ClInclude>
-    <ClInclude Include="data\minimal\AnimalModels.h">
-      <Filter>Header Files\models</Filter>
-    </ClInclude>
-    <ClInclude Include="data\parts\SADXParts.h">
-      <Filter>Header Files\models\al_mini_parts</Filter>
-    </ClInclude>
-    <ClInclude Include="data\parts\RaccoonArms.h">
-      <Filter>Header Files\models\al_mini_parts</Filter>
-    </ClInclude>
-    <ClInclude Include="data\toy\NeutralSandCastleModel.h">
-      <Filter>Header Files\al_toy\al_sandhole_model</Filter>
-    </ClInclude>
-    <ClInclude Include="data\toy\SandHoleModel.h">
-      <Filter>Header Files\al_toy\al_sandhole_model</Filter>
-    </ClInclude>
-    <ClInclude Include="al_butterfly.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chao\al_motion\alm_accordion.nam">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alo_accessory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_world.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_social.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\alsbhv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\al_knowledge.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\al_intention.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\accessory\ala_glasses_aviators.nja">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alo_boat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alo_coffin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_odekake.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_save.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alo_special.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_palette.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_daynight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="define.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chao\al_motion\alm_duck.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\albhv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\al_seentry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_registry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\CodeParser.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\cwe_codes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensModels.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\accessory\ala_all.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chao\al_motion\alm_all.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\special\als_all.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\cwe\object_common_cnk\ali_all.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\minimal\minimal_all.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\cwe_patch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_draw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_face.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_edit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\al_fonames.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\lens\LensBoxJewel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_omochao_build.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\ChaoShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_growtree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alg_kinder_ortho.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UsercallFunctionGen.cpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="usercall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_toy_move.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_look.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="collision_debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_parameter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\selectable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_modelcontainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_marketattr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\al_ortho.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Trampoline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="save\save_serializable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\ShinyJewelColors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alg_kinder_co.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_race.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cwe_fixes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="c_colli.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_name.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\cwe_transpile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_gene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\al_behavior.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_motion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_shape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\cwe_code.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\code_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_eggcolor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_chao_info.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_playerspeed.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\albhv_birthday.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_birthday.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_gardenlimit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_personality.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_monsterevo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_sick.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_hunger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_drown.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_dccocoon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_hdtoy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_racefair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_disjingle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_animal_reuse.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_racecam_switch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_multisave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_fruit_nodespawn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_dynamiclifetime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_shinyjewelmonotone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\cheat\code_levellimit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\bonus\code_babychaolevel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\advanced\code_gc_shinyjewel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_msg_warn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_ode_guide.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_stage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\omochao\omobuild_all.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_texlist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_emotion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="register\api_register.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_chao_counter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_disablebreed.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\code_canthatecharacters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\bonus\code_mergeherodark.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="api\api_msg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="api\api_customchao.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_msg_font.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_msg_win.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PaletteFix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alg_kinder_cl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_behavior\albhv_music.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="api\api_tree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cwe_api.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cwe_func.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="kce_helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UsercallFunctionHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="code_system\codes\include\easy\code_disable_reincarnation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\al_tween.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\al_tween_interp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\al_tween_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_ode_menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="al_ode_mainmenubar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="renderfix_api.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="api\api_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="alg_kinder_bl.h" />
+    <ClInclude Include="alg_kinder_cl.h" />
+    <ClInclude Include="alg_kinder_he.h" />
+    <ClInclude Include="alg_kinder_ortho.h" />
+    <ClInclude Include="ALifeSDK_Functions.h" />
+    <ClInclude Include="alo_accessory.h" />
+    <ClInclude Include="alo_fruit.h" />
+    <ClInclude Include="alo_obakehead.h" />
+    <ClInclude Include="alo_boat.h" />
+    <ClInclude Include="alo_coffin.h" />
+    <ClInclude Include="alo_special.h" />
+    <ClInclude Include="al_behavior\albhv.h" />
+    <ClInclude Include="al_behavior\albhv_birthday.h" />
+    <ClInclude Include="al_behavior\albhv_music.h" />
+    <ClInclude Include="al_behavior\alsbhv.h" />
+    <ClInclude Include="al_behavior\al_behavior.h" />
+    <ClInclude Include="al_chao_counter.h" />
+    <ClInclude Include="al_edit.h" />
+    <ClInclude Include="al_emotion.h" />
+    <ClInclude Include="al_face.h" />
+    <ClInclude Include="al_behavior\al_intention.h" />
+    <ClInclude Include="al_behavior\al_knowledge.h" />
+    <ClInclude Include="al_butterfly.h" />
+    <ClInclude Include="al_console.h" />
+    <ClInclude Include="al_daynight.h" />
+    <ClInclude Include="al_draw.h" />
+    <ClInclude Include="al_gene.h" />
+    <ClInclude Include="al_look.h" />
+    <ClInclude Include="al_marketattr.h" />
+    <ClInclude Include="al_minimal.h" />
+    <ClInclude Include="al_msg_font.h" />
+    <ClInclude Include="al_msg_win.h" />
+    <ClInclude Include="al_ode_mainmenubar.h" />
+    <ClInclude Include="al_ode_menu.h" />
+    <ClInclude Include="al_parts.h" />
+    <ClInclude Include="al_misc.h" />
+    <ClInclude Include="AL_ModAPI.h" />
+    <ClInclude Include="al_modelcontainer.h" />
+    <ClInclude Include="al_motion.h" />
+    <ClInclude Include="al_msg_warn.h" />
+    <ClInclude Include="al_name.h" />
+    <ClInclude Include="al_odekake.h" />
+    <ClInclude Include="al_ode_guide.h" />
+    <ClInclude Include="al_palette.h" />
+    <ClInclude Include="al_parameter.h" />
+    <ClInclude Include="al_piano.h" />
+    <ClInclude Include="al_registry.h" />
+    <ClInclude Include="al_sandhole.h" />
+    <ClInclude Include="al_save.h" />
+    <ClInclude Include="al_shape.h" />
+    <ClInclude Include="al_social.h" />
+    <ClInclude Include="al_stage.h" />
+    <ClInclude Include="al_texlist.h" />
+    <ClInclude Include="al_toy_move.h" />
+    <ClInclude Include="al_tv.h" />
+    <ClInclude Include="al_world.h" />
+    <ClInclude Include="api\api_customchao.h" />
+    <ClInclude Include="api\api_msg.h" />
+    <ClInclude Include="api\api_tree.h" />
+    <ClInclude Include="api\api_util.h" />
+    <ClInclude Include="chao\al_motion\alm_accordion.nam" />
+    <ClInclude Include="chao\al_motion\alm_all.h" />
+    <ClInclude Include="chao\al_motion\alm_duck.h" />
+    <ClInclude Include="code_system\CodeParser.hpp" />
+    <ClInclude Include="code_system\codes\include\advanced\code_gc_shinyjewel.h" />
+    <ClInclude Include="code_system\codes\include\bonus\code_babychaolevel.h" />
+    <ClInclude Include="code_system\codes\include\bonus\code_mergeherodark.h" />
+    <ClInclude Include="code_system\codes\include\cheat\code_levellimit.h" />
+    <ClInclude Include="code_system\codes\include\code_animal_reuse.h" />
+    <ClInclude Include="code_system\codes\include\code_birthday.h" />
+    <ClInclude Include="code_system\codes\include\code_canthatecharacters.h" />
+    <ClInclude Include="code_system\codes\include\code_dccocoon.h" />
+    <ClInclude Include="code_system\codes\include\code_disablebreed.h" />
+    <ClInclude Include="code_system\codes\include\code_disjingle.h" />
+    <ClInclude Include="code_system\codes\include\code_drown.h" />
+    <ClInclude Include="code_system\codes\include\code_dynamiclifetime.h" />
+    <ClInclude Include="code_system\codes\include\code_fruit_nodespawn.h" />
+    <ClInclude Include="code_system\codes\include\code_hdtoy.h" />
+    <ClInclude Include="code_system\codes\include\code_hunger.h" />
+    <ClInclude Include="code_system\codes\include\code_multisave.h" />
+    <ClInclude Include="code_system\codes\include\code_racecam_switch.h" />
+    <ClInclude Include="code_system\codes\include\code_racefair.h" />
+    <ClInclude Include="code_system\codes\include\code_shinyjewelmonotone.h" />
+    <ClInclude Include="code_system\codes\include\code_eggcolor.h" />
+    <ClInclude Include="code_system\codes\include\code_gardenlimit.h" />
+    <ClInclude Include="code_system\codes\include\easy\code_disable_reincarnation.h" />
+    <ClInclude Include="code_system\code_manager.h" />
+    <ClInclude Include="code_system\codes\include\code_monsterevo.h" />
+    <ClInclude Include="code_system\codes\include\code_personality.h" />
+    <ClInclude Include="code_system\codes\include\code_playerspeed.h" />
+    <ClInclude Include="code_system\codes\include\code_sick.h" />
+    <ClInclude Include="code_system\cwe_codes.h" />
+    <ClInclude Include="code_system\cwe_patch.h" />
+    <ClInclude Include="code_system\cwe_transpile.h" />
+    <ClInclude Include="collision_debug.h" />
+    <ClInclude Include="code_system\cwe_code.h" />
+    <ClInclude Include="cwe_api.h" />
+    <ClInclude Include="cwe_fixes.h" />
+    <ClInclude Include="cwe_func.h" />
+    <ClInclude Include="c_colli.h" />
+    <ClInclude Include="data\accessory\ala_all.h" />
+    <ClInclude Include="data\accessory\ala_glasses_aviators.nja" />
+    <ClInclude Include="alg_kinder_co.h" />
+    <ClInclude Include="data\al_fonames.h" />
+    <ClInclude Include="al_growtree.h" />
+    <ClInclude Include="al_race.h" />
+    <ClInclude Include="data\al_seentry.h" />
+    <ClInclude Include="data\ChaoShader.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\ali_all.h" />
+    <ClInclude Include="data\lens\LensBoxJewel.h" />
+    <ClInclude Include="data\lens\LensModels.h" />
+    <ClInclude Include="data\minimal\AnimalAnims.h" />
+    <ClInclude Include="data\minimal\AnimalModels.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\CakeTest.h" />
+    <ClInclude Include="Chao.h" />
+    <ClInclude Include="ChaoMain.h" />
+    <ClInclude Include="data\minimal\minimal_all.h" />
+    <ClInclude Include="al_omochao_build.h" />
+    <ClInclude Include="data\omochao\omobuild_all.h" />
+    <ClInclude Include="data\ShinyJewelColors.h" />
+    <ClInclude Include="data\special\als_all.h" />
+    <ClInclude Include="define.h" />
+    <ClInclude Include="FunctionHook.h" />
+    <ClInclude Include="IniFile.h" />
+    <ClInclude Include="data\lens\LensBoxDark.h" />
+    <ClInclude Include="data\lens\LensBoxDefault.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperFly.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperPower.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperRun.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\HyperSwim.h" />
+    <ClInclude Include="data\lens\LensBoxGreen.h" />
+    <ClInclude Include="data\lens\LensBoxHero.h" />
+    <ClInclude Include="data\lens\LensBoxMagenta.h" />
+    <ClInclude Include="data\lens\LensBoxNeut.h" />
+    <ClInclude Include="data\lens\LensBoxPurple.h" />
+    <ClInclude Include="data\lens\LensBoxRed.h" />
+    <ClInclude Include="data\lens\LensBoxRobot.h" />
+    <ClInclude Include="data\lens\LensBoxSnake.h" />
+    <ClInclude Include="data\lens\LensBoxSpartoi.h" />
+    <ClInclude Include="data\lens\LensBoxYellow.h" />
+    <ClInclude Include="kce_helper.h" />
+    <ClInclude Include="MemAccess.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\Mushroom2x.h" />
+    <ClInclude Include="data\toy\NeutralSandCastleModel.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="ninja.h" />
+    <ClInclude Include="ninja_functions.h" />
+    <ClInclude Include="PaletteFix.h" />
+    <ClInclude Include="patchedcolors.h" />
+    <ClInclude Include="data\parts\RaccoonArms.h" />
+    <ClInclude Include="register\api_register.h" />
+    <ClInclude Include="renderfix_api.h" />
+    <ClInclude Include="SA2Enums.h" />
+    <ClInclude Include="SA2Functions.h" />
+    <ClInclude Include="SA2ModLoader.h" />
+    <ClInclude Include="SA2Structs.h" />
+    <ClInclude Include="SA2Variables.h" />
+    <ClInclude Include="data\parts\SADXParts.h" />
+    <ClInclude Include="data\toy\SandHoleModel.h" />
+    <ClInclude Include="data\cwe\object_common_cnk\ShinyFruit.h" />
+    <ClInclude Include="save\save_serializable.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TextConv.h" />
+    <ClInclude Include="Trampoline.h" />
+    <ClInclude Include="ui\al_ortho.h" />
+    <ClInclude Include="ui\al_tween.h" />
+    <ClInclude Include="ui\al_tween_interp.h" />
+    <ClInclude Include="ui\al_tween_types.h" />
+    <ClInclude Include="ui\controller.h" />
+    <ClInclude Include="ui\selectable.h" />
+    <ClInclude Include="usercall.h" />
+    <ClInclude Include="UsercallFunctionGen.cpp" />
+    <ClInclude Include="UsercallFunctionHandler.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="al_chao_info.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWE.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ninja_functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Chao.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_piano.cpp">
-      <Filter>Source Files\al_toy</Filter>
-    </ClCompile>
-    <ClCompile Include="ALifeSDK_Functions.cpp">
-      <Filter>Source Files\al_sdk</Filter>
-    </ClCompile>
-    <ClCompile Include="al_sandhole.cpp">
-      <Filter>Source Files\al_toy</Filter>
-    </ClCompile>
-    <ClCompile Include="ChaoMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_minimal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alg_kinder_bl.cpp">
-      <Filter>Source Files\stg_kinder</Filter>
-    </ClCompile>
-    <ClCompile Include="AL_ModAPI.cpp">
-      <Filter>Source Files\al_sdk</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_fruit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_obakehead.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alg_kinder_he.cpp">
-      <Filter>Source Files\stg_kinder</Filter>
-    </ClCompile>
-    <ClCompile Include="IniFile.cpp">
-      <Filter>Source Files\ModLoaderCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="TextConv.cpp">
-      <Filter>Source Files\ModLoaderCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="al_console.cpp">
-      <Filter>Source Files\al_toy</Filter>
-    </ClCompile>
-    <ClCompile Include="al_butterfly.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_accessory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_world.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_social.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\alsbhv_chat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\alsbhv_common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\alsbhv_holdhand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\al_intention.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\al_knowledge.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\alsbhv_mayu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_tree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_music.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\alsbhv_gossip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_boat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_boat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_float.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_float.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_coffin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_coffin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_namedisplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_customization.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_odekake.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_hikkoshi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_save.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alo_special.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_palette.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_nazukeya.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_daynight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_joycarry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_birthday.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\alsbhv_hug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_stoy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_registry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\cwe_codes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\CodeParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\cwe_patch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_piano.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_sunaasubi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_face.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_dance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_edit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_omochao_build.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_wrench.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_growtree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alg_kinder_ortho.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_toy_move.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_look.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="collision_debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_script.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_ltoy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_parameter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_modelcontainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_marketattr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\al_ortho.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Trampoline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="save\save_serializable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alg_kinder_co.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_race.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cwe_fixes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_playerspeed.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_parts.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_name.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="c_colli.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\cwe_transpile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_gene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_glide.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_life.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\al_behavior.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_misc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_motion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_shape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_eggcolor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_birthday.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_gardenlimit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_personality.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_monsterevo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_sick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_hunger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_drown.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_dccocoon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_hdtoy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_disjingle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="code_system\codes\code_animal_reuse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_guest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_guide.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_stage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_texlist.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_emotion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="memory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="register\api_fruit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="register\api_special.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="register\api_minimal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="register\api_accessory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="register\api_motion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="register\api_register.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_chao_counter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_storage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_behavior\albhv_capture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="api\api_msg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="api\api_customchao.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_msg_font.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alg_kinder_cl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_msg_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PaletteFix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="experimental_rendertarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="api\api_tree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cwe_func.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="kce_helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\al_tween_interp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="al_ode_mainmenubar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="..\BrightFix\BrightFix.sln" />
+    <None Include="al_animation.h" />
+    <None Include="chao\al_motion\alm_dance_d.nam" />
+    <None Include="chao\al_motion\alm_dance_h.nja" />
+    <None Include="chao\al_motion\alm_dance_n.nam" />
+    <None Include="chao\al_motion\alm_egg_crawl.nam" />
+    <None Include="chao\al_motion\alm_floaty.nam" />
+    <None Include="chao\al_motion\alm_guitar.nam" />
     <None Include="chao\al_motion\alm_sunaasubi.nam" />
     <None Include="chao\al_motion\alm_tailsfly.nam" />
-    <None Include="data\al_model\al_spartoi.nja" />
     <None Include="chao\al_motion\alm_triangle.nam" />
-    <None Include="data\toy\al_toy_triangle.nja" />
-    <None Include="data\toy\alo_accordion.nja" />
+    <None Include="chao\al_motion\alm_wrench.nam" />
+    <None Include="data\accessory\ala_baseballcap.nja" />
+    <None Include="data\accessory\ala_birthdayhat.nja" />
+    <None Include="data\accessory\ala_bowtie_red.nja" />
+    <None Include="data\accessory\ala_full_mannequin.nja" />
     <None Include="data\accessory\ala_glasses_round.nja" />
     <None Include="data\accessory\ala_glasses_square.nja" />
-    <None Include="data\accessory\ala_bowtie_red.nja" />
-    <None Include="chao\al_motion\alm_dance_n.nam" />
-    <None Include="chao\al_motion\alm_guitar.nam" />
-    <None Include="data\toy\alo_guitar.nja" />
-    <None Include="data\accessory\ala_baseballcap.nja" />
-    <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
-    <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
-    <None Include="chao\al_motion\alm_floaty.nam" />
-    <None Include="data\toy\alo_pail.nja" />
+    <None Include="data\accessory\ala_headphones.nja" />
+    <None Include="data\accessory\ala_hoodie.nja" />
+    <None Include="data\accessory\ala_hoodie_low.nja" />
+    <None Include="data\accessory\ala_hoodie_pink.nja" />
+    <None Include="data\accessory\ala_hoodie_pink_low.nja" />
+    <None Include="data\accessory\ala_neckbowtie.nja" />
+    <None Include="data\accessory\ala_pacifier.nja" />
+    <None Include="data\accessory\ala_presshat.nja" />
+    <None Include="data\alo_missing_tree.nja" />
     <None Include="data\al_model\ali_medal_ame.nja" />
     <None Include="data\al_model\ali_medal_eme.nja" />
+    <None Include="data\al_model\ali_medal_none.nja" />
     <None Include="data\al_model\ali_medal_pal.nja" />
     <None Include="data\al_model\ali_medal_rub.nja" />
     <None Include="data\al_model\ali_model_saf.nja" />
-    <None Include="data\al_model\ali_medal_none.nja" />
-    <None Include="data\accessory\ala_headphones.nja" />
-    <None Include="data\special\als_dcwings.nja" />
-    <None Include="data\debug\alr_cube.nja" />
-    <None Include="data\debug\alr_chaoicon.nja" />
-    <None Include="data\debug\alr_camera.nja" />
-    <None Include="data\accessory\ala_birthdayhat.nja" />
-    <None Include="data\special\als_mirror.nja" />
-    <None Include="data\cwe\object_common_cnk\alo_cakeslice.nja" />
-    <None Include="data\minimal\bee.mini" />
-    <None Include="data\cwe\object_common_cnk\ali_orange.nja" />
-    <None Include="data\minimal\lady.mini" />
-    <None Include="data\minimal\scorpion.mini" />
-    <None Include="data\special\als_brush_hn.nja" />
-    <None Include="data\al_model\al_egg_chao.nja" />
-    <None Include="data\special\als_brush_hs.nja" />
-    <None Include="data\special\als_brush_hf.nja" />
-    <None Include="data\special\als_brush_hr.nja" />
-    <None Include="data\special\als_brush_hp.nja" />
-    <None Include="data\accessory\ala_pacifier.nja" />
-    <None Include="data\al_model\al_omochao.nja" />
-    <None Include="chao\al_motion\alm_dance_h.nja" />
-    <None Include="chao\al_motion\alm_dance_d.nam" />
-    <None Include="data\special\als_bottle.nja" />
-    <None Include="chao\al_motion\alm_egg_crawl.nam" />
-    <None Include="data\accessory\ala_presshat.nja" />
-    <None Include="data\omochao\omobuild_base.nja" />
-    <None Include="data\omochao\omobuild_arms.nja" />
-    <None Include="data\omochao\omobuild_legs.nja" />
-    <None Include="data\omochao\omobuild_eyel.nja" />
-    <None Include="data\omochao\omobuild_eyer.nja" />
-    <None Include="data\omochao\omobuild_prop.nja" />
-    <None Include="data\toy\al_toy_rattle.nja" />
-    <None Include="data\toy\al_toy_wrench_prize.nja" />
-    <None Include="chao\al_motion\alm_wrench.nam" />
-    <None Include="data\accessory\ala_hoodie.nja" />
-    <None Include="data\accessory\ala_full_mannequin.nja" />
-    <None Include="data\special\als_box.nja" />
-    <None Include="data\omochao\omobuild_mouth.nja" />
-    <None Include="data\accessory\ala_hoodie_pink.nja" />
-    <None Include="data\accessory\ala_neckbowtie.nja" />
     <None Include="data\al_model\al_baldroot.nja" />
-    <None Include="data\accessory\ala_hoodie_low.nja" />
-    <None Include="data\accessory\ala_hoodie_pink_low.nja" />
-    <None Include="data\al_model\herochaosfly.nja" />
+    <None Include="data\al_model\al_egg_chao.nja" />
     <None Include="data\al_model\al_nnz.nja" />
+    <None Include="data\al_model\al_omochao.nja" />
+    <None Include="data\al_model\al_spartoi.nja" />
+    <None Include="data\al_model\herochaosfly.nja" />
+    <None Include="data\amytest.nja" />
     <None Include="data\chaotree.nja" />
     <None Include="data\cwe\object_common_cnk\ali_chaoseed.nja" />
-    <None Include="al_animation.h">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="data\amytest.nja" />
-    <None Include="data\alo_missing_tree.nja" />
-    <None Include="..\BrightFix\BrightFix.sln" />
+    <None Include="data\cwe\object_common_cnk\ali_orange.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_cakeslice.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
+    <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
+    <None Include="data\debug\alr_camera.nja" />
+    <None Include="data\debug\alr_chaoicon.nja" />
+    <None Include="data\debug\alr_cube.nja" />
+    <None Include="data\minimal\bee.mini" />
+    <None Include="data\minimal\lady.mini" />
+    <None Include="data\minimal\scorpion.mini" />
+    <None Include="data\omochao\omobuild_arms.nja" />
+    <None Include="data\omochao\omobuild_base.nja" />
+    <None Include="data\omochao\omobuild_eyel.nja" />
+    <None Include="data\omochao\omobuild_eyer.nja" />
+    <None Include="data\omochao\omobuild_legs.nja" />
+    <None Include="data\omochao\omobuild_mouth.nja" />
+    <None Include="data\omochao\omobuild_prop.nja" />
+    <None Include="data\special\als_bottle.nja" />
+    <None Include="data\special\als_box.nja" />
+    <None Include="data\special\als_brush_hf.nja" />
+    <None Include="data\special\als_brush_hn.nja" />
+    <None Include="data\special\als_brush_hp.nja" />
+    <None Include="data\special\als_brush_hr.nja" />
+    <None Include="data\special\als_brush_hs.nja" />
+    <None Include="data\special\als_dcwings.nja" />
+    <None Include="data\special\als_mirror.nja" />
+    <None Include="data\toy\alo_accordion.nja" />
+    <None Include="data\toy\alo_guitar.nja" />
+    <None Include="data\toy\alo_pail.nja" />
+    <None Include="data\toy\al_toy_rattle.nja" />
+    <None Include="data\toy\al_toy_triangle.nja" />
+    <None Include="data\toy\al_toy_wrench_prize.nja" />
   </ItemGroup>
 </Project>
