@@ -1499,10 +1499,30 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	njColorBlendingMode(1, 6);
 }
 
+// IF I don't happen to update this in time when the ECW API comes out
+// this will prevent the daynight cycle code from running if an ECW custom garden is active
+// !! remove when the support is added !!
+static bool AL_DayNightCycle_CheckECWSafety() {
+	switch (AL_GetStageNumber()) {
+		case CHAO_STG_NEUT:
+			if (ChaoSegments[0].Prolog != ChaoStgNeut_Prolog) return false;
+			break;
+		case CHAO_STG_HERO:
+			if (ChaoSegments[1].Prolog != ChaoStgHero_Prolog) return false;
+			break;
+		case CHAO_STG_DARK:
+			if (ChaoSegments[2].Prolog != ChaoStgDark_Prolog) return false;
+			break;
+	}
+
+	return true;
+}
+
 void AL_CreateDayNightCycle() {
 	if (!gConfigVal.DayNightCycle) return;
+	if (!AL_DayNightCycle_CheckECWSafety()) return;
 	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
-
+	
 	task* tp = LoadObject(4, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
 	pDayNightTask = tp;
 
