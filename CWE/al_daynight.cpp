@@ -886,6 +886,8 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 	// this bool is needed to tell the displayer if the skybox texture falls back to the original texlist and original texID
 	bool isOriginalTexlist = false;
 	
+	bool hasSkyboxTexlist = gDayNightManager.GetSkyboxTextureFileName().has_value();
+
 	for (size_t t = 0; t < skybox.texMapCount; t++) {
 		const auto changeTexGC = [](uint32_t& data, uint32_t texID) {
 			data &= 0xFFFF0000;
@@ -898,10 +900,11 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 		};
 
 		auto& texMap = skybox.pTexMap[t];
+
 		bool outIsOriginalTexlist;
 		const auto texID = AL_DayNightCycle_GetSkyboxTextureForPhase(texMap.skybox, phase, outIsOriginalTexlist);
 
-		if (outIsOriginalTexlist) {			
+		if (outIsOriginalTexlist) {
 			isOriginalTexlist = true;
 		}
 
@@ -913,7 +916,7 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 		}
 	}
 
-	return isOriginalTexlist;
+	return !hasSkyboxTexlist || isOriginalTexlist;
 }
 
 #pragma endregion
@@ -962,7 +965,14 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 			/** NJD_TINYOFF **/
 			uint16_t texID = ((Uint16*)plist)[1] & 0x1FFF;
 
+			// don't let the originalTexlist stuff scare you, it's all for errorchecking models with multiple textures,
+			// specifically the case where one of the textures dont get overwritten and use the original skybox, while another one is
+			// meaning it requires two texlists which is not possible to render
+			// that's what we're checking for
+
+			bool originalTexlist[4] = { false };
 			const DAYNIGHT_SKYBOX* pResultSkyboxEntry;
+
 			if (AL_DayNightCycle_FindSkyboxTexID(texID, &pResultSkyboxEntry)) {
 				DAYNIGHT_SKYBOX_TEXMAP_TABLE texMap = {};
 
@@ -972,22 +982,29 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 				texMapCount++;
 				texMapTableList.push_back(texMap);
 
-				// this check is needed so that a model doesn't use a combination/"hybrid" texlist setup with a material using original tex id and sky texlist tex id
-				if (!showMixedTexlistError) {
-					bool originalTexlist[4] = { false };
-					if (texMap.skybox.dayTexID == -1) originalTexlist[PHASE_DAY] = true;
-					if (texMap.skybox.eveningTexID == -1) originalTexlist[PHASE_EVE] = true;
-					if (texMap.skybox.nightTexID == -1) originalTexlist[PHASE_NGT] = true;
-					if (texMap.skybox.cloudyTexID == -1) originalTexlist[PHASE_CLD] = true;
+				// if any of the phases don't have a replacement, that one stays unreplaced aka uses original texlist
+				if (texMap.skybox.dayTexID == -1) originalTexlist[PHASE_DAY] = true;
+				if (texMap.skybox.eveningTexID == -1) originalTexlist[PHASE_EVE] = true;
+				if (texMap.skybox.nightTexID == -1) originalTexlist[PHASE_NGT] = true;
+				if (texMap.skybox.cloudyTexID == -1) originalTexlist[PHASE_CLD] = true;
+			}
+			else {
+				// if the tex ID doesn't have a skybox replacement thing going on
+				// then it uses original texlist 
+				for (size_t i = 0; i < NB_PHASE; i++) {
+					originalTexlist[i] = true;
+				}
+			}
 
-					for (size_t i = 0; i < NB_PHASE; i++) {
-						// if the original texlist requirement changes after the first entry it means we found a mixed case
-						if (texMapTableList.size() > 1 && originalTexlist[i] != needsOriginalTexlist[i]) {
-							showMixedTexlistError = true;
-						}
-
-						needsOriginalTexlist[i] = originalTexlist[i];
+			// only bother with the error check if it has a skybox texlist (otherwise everything is original texlist anyways)
+			if (!showMixedTexlistError && gDayNightManager.GetSkyboxTextureFileName()) {
+				for (size_t i = 0; i < NB_PHASE; i++) {
+					// if the original texlist requirement changes after the first entry it means we found a mixed case
+					if (texMapTableList.size() > 1 && originalTexlist[i] != needsOriginalTexlist[i]) {
+						showMixedTexlistError = true;
 					}
+
+					needsOriginalTexlist[i] = originalTexlist[i];
 				}
 			}
 
@@ -1578,7 +1595,6 @@ static void AL_DayNightCycleExecutor(task* tp) {
 
 			// this is temporary, enable when porting the lights, remove in final release
 			// load the lights we want and copy them
-			/*
 			{
 				// this daynightconfig thing is temp for now too
 				const AL_DayNightConfig& config = gDayNightConfig.at(CurrentChaoArea);
@@ -1610,7 +1626,6 @@ static void AL_DayNightCycleExecutor(task* tp) {
 			dump(work.lights[PHASE_NGT][0]);
 			PrintDebug("cloudy");
 			dump(work.lights[PHASE_CLD][0]);
-			*/
 
 			[[fallthrough]];
 		case MODE_LERP:
