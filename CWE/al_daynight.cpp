@@ -858,22 +858,28 @@ static uint32_t AL_DayNightCycle_GetSkyboxTextureForPhase(const DAYNIGHT_SKYBOX&
 
 	uint32_t texID = skyboxEntry.origTexID;
 	switch (phase) {
-	case 0:
+	case PHASE_DAY:
 		if (skyboxEntry.dayTexID != -1) {
 			originalTexlist = false;
 			texID = skyboxEntry.dayTexID;
 		}
 		break;
-	case 1:
+	case PHASE_EVE:
 		if (skyboxEntry.eveningTexID != -1) {
 			originalTexlist = false;
 			texID = skyboxEntry.eveningTexID;
 		}
 		break;
-	case 2:
+	case PHASE_NGT:
 		if (skyboxEntry.nightTexID != -1) {
 			originalTexlist = false;
 			texID = skyboxEntry.nightTexID;
+		}
+		break;
+	case PHASE_CLD:
+		if (skyboxEntry.cloudyTexID != -1) {
+			originalTexlist = false;
+			texID = skyboxEntry.cloudyTexID;
 		}
 		break;
 	}
@@ -925,7 +931,7 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObject, NJS_OBJECT*& pDstObject, std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE>& texMapTableList, bool& showMixedTexlistError) {
 	bool needsOriginalTexlist[NB_PHASE] = { false };
 
-	size_t texMapCount = 0;
+	size_t tinyTIDCount = 0;
 
 	// plist parsing code yoinked from shaddatic, credit to them
 	// i aped the code a little, sorry shad
@@ -969,24 +975,22 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 			// specifically the case where one of the textures dont get overwritten and use the original skybox, while another one is
 			// meaning it requires two texlists which is not possible to render
 			// that's what we're checking for
-
-			bool originalTexlist[4] = { false };
+			bool originalTexlist[4] = { false, false, false, false };
 			const DAYNIGHT_SKYBOX* pResultSkyboxEntry;
-
+			
 			if (AL_DayNightCycle_FindSkyboxTexID(texID, &pResultSkyboxEntry)) {
 				DAYNIGHT_SKYBOX_TEXMAP_TABLE texMap = {};
 
 				texMap.pChunkTexID = (uint16_t*)&plist[1];
 				texMap.skybox = *pResultSkyboxEntry;
 
-				texMapCount++;
 				texMapTableList.push_back(texMap);
 
 				// if any of the phases don't have a replacement, that one stays unreplaced aka uses original texlist
-				if (texMap.skybox.dayTexID == -1) originalTexlist[PHASE_DAY] = true;
-				if (texMap.skybox.eveningTexID == -1) originalTexlist[PHASE_EVE] = true;
-				if (texMap.skybox.nightTexID == -1) originalTexlist[PHASE_NGT] = true;
-				if (texMap.skybox.cloudyTexID == -1) originalTexlist[PHASE_CLD] = true;
+				if (texMap.skybox.dayTexID == -1)		originalTexlist[PHASE_DAY] = true;
+				if (texMap.skybox.eveningTexID == -1)	originalTexlist[PHASE_EVE] = true;
+				if (texMap.skybox.nightTexID == -1)		originalTexlist[PHASE_NGT] = true;
+				if (texMap.skybox.cloudyTexID == -1)	originalTexlist[PHASE_CLD] = true;
 			}
 			else {
 				// if the tex ID doesn't have a skybox replacement thing going on
@@ -996,15 +1000,17 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 				}
 			}
 
+			tinyTIDCount++;
+
 			// only bother with the error check if it has a skybox texlist (otherwise everything is original texlist anyways)
 			if (!showMixedTexlistError && gDayNightManager.GetSkyboxTextureFileName()) {
 				for (size_t i = 0; i < NB_PHASE; i++) {
 					// if the original texlist requirement changes after the first entry it means we found a mixed case
-					if (texMapTableList.size() > 1 && originalTexlist[i] != needsOriginalTexlist[i]) {
+					if (tinyTIDCount > 1 && originalTexlist[i] != needsOriginalTexlist[i]) {
 						showMixedTexlistError = true;
 					}
 
-					needsOriginalTexlist[i] = originalTexlist[i];
+					needsOriginalTexlist[i] |= originalTexlist[i];
 				}
 			}
 
@@ -1018,7 +1024,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 
 	// if the skybox is texmapped, let's remove vertex colors from it if it has any
 	// it's the only way we can enable material colors on it
-	if (texMapCount > 0) {
+	if (texMapTableList.size() > 0) {
 		// first we need to find the end of the vertexchunk
 		Uint32* pSrcSearchEnd = (Uint32*)pObject->chunkmodel->vlist;
 		Uint8 chunkType = pSrcSearchEnd[0] & 0xFF;
@@ -1142,7 +1148,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 			texMapTableList.push_back(texMap);
 
 			// this check is needed so that a model doesn't use a combination/"hybrid" texlist setup with a material using original tex id and sky texlist tex id
-			if (!showMixedTexlistError) {
+			if (!showMixedTexlistError && gDayNightManager.GetSkyboxTextureFileName()) {
 				bool originalTexlist[4] = { false };
 				if (texMap.skybox.dayTexID == -1) originalTexlist[PHASE_DAY] = true;
 				if (texMap.skybox.eveningTexID == -1) originalTexlist[PHASE_EVE] = true;
@@ -1196,30 +1202,33 @@ static bool AL_DayNightCycle_CheckSkybox(bool isGC, NJS_OBJECT* pSrcObj, DAYNIGH
 	}
 
 	if (mixedTexlistError) {
-		error.print("one of the skybox models use both the original texture and the replacement texlist. This case cannot be handled, and the rendering is not guaranteed to run stable, please fix it.");
+		error.print("one of the skybox models use both the original texture and the replacement texlist, this skybox model will be omitted from handling.");
+		return false;
 	}
 
-	if (!texMapTableList.empty()) {
-		entry.texMapCount = texMapTableList.size();
-		entry.pTexMap = ALLOC_ARRAY(entry.texMapCount, DAYNIGHT_SKYBOX_TEXMAP_TABLE);
-		entry.isChunk = !isGC;
-		entry.pObj = pSrcObj;
+	if (texMapTableList.empty()) {
+		return false;
+	}
 
-		if (entry.isChunk) {
-			if (pDstChunkObj) {
-				entry.isCopied = true;
-				entry.pObj = pDstChunkObj;
-			}
-		}
+	entry.texMapCount = texMapTableList.size();
+	entry.pTexMap = ALLOC_ARRAY(entry.texMapCount, DAYNIGHT_SKYBOX_TEXMAP_TABLE);
+	entry.isChunk = !isGC;
+	entry.pObj = pSrcObj;
 
-		memcpy(entry.pTexMap, texMapTableList.data(), entry.texMapCount * sizeof(DAYNIGHT_SKYBOX_TEXMAP_TABLE));
-
-		if (isGC) {
-			AL_DayNightCycle_ToggleColorSourceToMaterial(entry, true);
+	if (entry.isChunk) {
+		if (pDstChunkObj) {
+			entry.isCopied = true;
+			entry.pObj = pDstChunkObj;
 		}
 	}
 
-	return !texMapTableList.empty();
+	memcpy(entry.pTexMap, texMapTableList.data(), entry.texMapCount * sizeof(DAYNIGHT_SKYBOX_TEXMAP_TABLE));
+
+	if (isGC) {
+		AL_DayNightCycle_ToggleColorSourceToMaterial(entry, true);
+	}
+
+	return true;
 }
 
 // Copies the vertex data of the source model (for the colors) and gets the pointer to the vertex colors to not have to look for them again
@@ -1447,7 +1456,6 @@ static void AL_DayNightCycle_Init(task* tp) {
 	AL_DayNightCycle_InitNewLandTable(tp);
 	work.pOldLandtable = CurrentLandTable;
 	CurrentLandTable = work.pNewLandtable;
-
 }
 
 #pragma region Executor
@@ -1589,33 +1597,33 @@ static void AL_DayNightCycleExecutor(task* tp) {
 	auto& work = GetWork(tp);
 
 	switch (work.mode) {
-		case MODE_INIT:
-			AL_DayNightCycle_Init(tp);
-			work.mode++;
+	case MODE_INIT:
+		AL_DayNightCycle_Init(tp);
+		work.mode++;
 
-			// this is temporary, enable when porting the lights, remove in final release
-			// load the lights we want and copy them
-			{
-				// this daynightconfig thing is temp for now too
-				const AL_DayNightConfig& config = gDayNightConfig.at(CurrentChaoArea);
+		// this is temporary, enable when porting the lights, remove in final release
+		// load the lights we want and copy them
+		{
+			// this daynightconfig thing is temp for now too
+			const AL_DayNightConfig& config = gDayNightConfig.at(CurrentChaoArea);
 
-				LoadStageLight(config.DefaultLight);
-				memcpy(&work.lights[LIGHT_DEF], Lights, sizeof(work.lights[LIGHT_DEF]));
-				LoadStageLight(config.EveLight);
-				memcpy(&work.lights[LIGHT_EVE], Lights, sizeof(work.lights[LIGHT_EVE]));
-				LoadStageLight(config.NightLight);
-				memcpy(&work.lights[LIGHT_NGT], Lights, sizeof(work.lights[LIGHT_NGT]));
-				LoadStageLight(config.CloudLight);
-				memcpy(&work.lights[LIGHT_CLOUD], Lights, sizeof(work.lights[LIGHT_CLOUD]));
-			}
-
+			LoadStageLight(config.DefaultLight);
+			memcpy(&work.lights[LIGHT_DEF], Lights, sizeof(work.lights[LIGHT_DEF]));
+			LoadStageLight(config.EveLight);
+			memcpy(&work.lights[LIGHT_EVE], Lights, sizeof(work.lights[LIGHT_EVE]));
+			LoadStageLight(config.NightLight);
+			memcpy(&work.lights[LIGHT_NGT], Lights, sizeof(work.lights[LIGHT_NGT]));
+			LoadStageLight(config.CloudLight);
+			memcpy(&work.lights[LIGHT_CLOUD], Lights, sizeof(work.lights[LIGHT_CLOUD]));
+		}
+		{
 			const auto dump = [&](Light& light) {
 				PrintDebug("\"light\": {");
 				PrintDebug("\t\"direction\": [%f, %f, %f]", light.direction.x, light.direction.y, light.direction.z);
 				PrintDebug("\t\"diffuse\": [%f, %f, %f]", light.color.x * light.intensity, light.color.y * light.intensity, light.color.z * light.intensity);
 				PrintDebug("\t\"ambient\": [%f, %f, %f]", light.color.x * light.ambient, light.color.y * light.ambient, light.color.z * light.ambient);
 				PrintDebug("}");
-			};
+				};
 
 			PrintDebug("JSON LIGHT DUMP STARTS HERE");
 			PrintDebug("day");
@@ -1626,33 +1634,34 @@ static void AL_DayNightCycleExecutor(task* tp) {
 			dump(work.lights[PHASE_NGT][0]);
 			PrintDebug("cloudy");
 			dump(work.lights[PHASE_CLD][0]);
+		}
 
-			[[fallthrough]];
-		case MODE_LERP:
-			// most of this is just temp to test the rendering and all that
-			work.timer++;
-			if (work.timer > 60 * 5) {
-				work.timer = 0;
+		[[fallthrough]];
+	case MODE_LERP:
+		// most of this is just temp to test the rendering and all that
+		work.timer++;
+		if (work.timer > 60 * 5) {
+			work.timer = 0;
 
-				work.phase++;
-				work.phase = work.phase % 3;
-			}
+			work.phase++;
+			work.phase = work.phase % 3;
+		}
 
-			// placeholder
-			int nextPhase = (work.phase + 1) % 3;
+		// placeholder
+		int nextPhase = (work.phase + 1) % 3;
 
-			NJS_ARGB appliedColor;
+		NJS_ARGB appliedColor;
 
-			const auto& colorA = gDayNightManager.GetColorForPhase(work.phase);
-			const auto& colorB = gDayNightManager.GetColorForPhase(nextPhase);
+		const auto& colorA = gDayNightManager.GetColorForPhase(work.phase);
+		const auto& colorB = gDayNightManager.GetColorForPhase(nextPhase);
 
-			LerpColor(appliedColor, colorA, colorB, work.timer / (60 * 5.0f));
+		LerpColor(appliedColor, colorA, colorB, work.timer / (60 * 5.0f));
 
-			work.appliedColor = appliedColor;
+		work.appliedColor = appliedColor;
 
-			AL_DayNightCycle_ApplyLightLerp(tp);
-			AL_DayNightCycle_ApplyColorToLandTable(tp);
-			break;
+		AL_DayNightCycle_ApplyLightLerp(tp);
+		AL_DayNightCycle_ApplyColorToLandTable(tp);
+		break;
 	}
 
 	// old dnc
