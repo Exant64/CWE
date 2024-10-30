@@ -1,5 +1,5 @@
 {
-  "skyboxTextureName": "AL_ENTRANCE_SKY",
+  "textureFileName": "AL_ENTRANCE_SKY",
 
   "phases": {
     "day": {

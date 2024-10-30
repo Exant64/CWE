@@ -1,5 +1,5 @@
 {
-  "skyboxTextureName": "AL_DARK_SKY",
+  "textureFileName": "AL_DARK_SKY",
   "phases": {
     "day": {
       "color": "#FFFFFF",
@@ -35,4 +35,4 @@
       "cloudyTextureID": 1
     }
   ]
-  }
+}

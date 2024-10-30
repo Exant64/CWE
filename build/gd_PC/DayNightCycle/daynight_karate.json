@@ -1,5 +1,5 @@
 {
-  "skyboxTextureName": "AL_KARATE_SKY",
+  "textureFileName": "AL_KARATE_SKY",
 
   "phases": {
     "day": {

@@ -1,5 +1,5 @@
 {
-  "skyboxTextureName": "AL_HERO_SKY",
+  "textureFileName": "AL_HERO_SKY",
   "phases": {
     "day": {
       "color": "#FFFFFF",
@@ -35,41 +35,41 @@
     }
   },
 
-    "skyboxMaterials": [
-      {
-        "originalTextureID": 27,
-        "dayTextureID": 0,
-        "eveningTextureID": 5,
-        "nightTextureID": 10,
-        "cloudyTextureID": 15
-      },
-      {
-        "originalTextureID": 28,
-        "dayTextureID": 1,
-        "eveningTextureID": 6,
-        "nightTextureID": 11,
-        "cloudyTextureID": 16
-      },
-      {
-        "originalTextureID": 29,
-        "dayTextureID": 2,
-        "eveningTextureID": 7,
-        "nightTextureID": 12,
-        "cloudyTextureID": 17
-      },
-      {
-        "originalTextureID": 30,
-        "dayTextureID": 3,
-        "eveningTextureID": 8,
-        "nightTextureID": 13,
-        "cloudyTextureID": 18
-      },
-      {
-        "originalTextureID": 31,
-        "dayTextureID": 4,
-        "eveningTextureID": 9,
-        "nightTextureID": 14,
-        "cloudyTextureID": 19
-      }
-    ]
-  }
+  "skyboxMaterials": [
+    {
+      "originalTextureID": 27,
+      "dayTextureID": 0,
+      "eveningTextureID": 5,
+      "nightTextureID": 10,
+      "cloudyTextureID": 15
+    },
+    {
+      "originalTextureID": 28,
+      "dayTextureID": 1,
+      "eveningTextureID": 6,
+      "nightTextureID": 11,
+      "cloudyTextureID": 16
+    },
+    {
+      "originalTextureID": 29,
+      "dayTextureID": 2,
+      "eveningTextureID": 7,
+      "nightTextureID": 12,
+      "cloudyTextureID": 17
+    },
+    {
+      "originalTextureID": 30,
+      "dayTextureID": 3,
+      "eveningTextureID": 8,
+      "nightTextureID": 13,
+      "cloudyTextureID": 18
+    },
+    {
+      "originalTextureID": 31,
+      "dayTextureID": 4,
+      "eveningTextureID": 9,
+      "nightTextureID": 14,
+      "cloudyTextureID": 19
+    }
+  ]
+}

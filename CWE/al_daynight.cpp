@@ -422,14 +422,14 @@ struct DAYNIGHT_SKYBOX {
 // Manages the loaded JSON data, contains vectors of said data so that I don't lose my sanity with writing memory management
 struct DAYNIGHT_DATA_MANAGER {
 private:
-	std::optional<std::string> m_skyboxTextureName = std::nullopt;
+	std::optional<std::string> m_textureFileName = std::nullopt;
 	std::vector<DAYNIGHT_SKYBOX> m_skyboxEntries;
 	NJS_ARGB m_phaseColors[NB_PHASE];
 	std::optional<LightGC> m_lights[NB_PHASE];
 
 public:
-	const std::optional<std::string>& GetSkyboxTextureFileName() const {
-		return m_skyboxTextureName;
+	const std::optional<std::string>& GetTextureFileName() const {
+		return m_textureFileName;
 	}
 
 	const NJS_ARGB& GetColorForPhase(size_t phaseIndex) const {
@@ -571,14 +571,14 @@ public:
 			return true;
 		};
 
-		if (d.HasMember("skyboxTextureName")) {
-			const auto& member = d["skyboxTextureName"];
+		if (d.HasMember("textureFileName")) {
+			const auto& member = d["textureFileName"];
 			if (!member.IsString()) {
-				error.print("\"skyboxTextureName\" is not a string!");
+				error.print("\"textureFileName\" is not a string!");
 				return false;
 			}
 			else {
-				m_skyboxTextureName = std::string(member.GetString());
+				m_textureFileName = std::string(member.GetString());
 			}
 		}
 
@@ -746,7 +746,7 @@ public:
 	}
 
 	void Clear() {
-		m_skyboxTextureName = std::nullopt;
+		m_textureFileName = std::nullopt;
 		m_skyboxEntries.clear();
 		
 		for (size_t i = 0; i < NB_PHASE; i++) {
@@ -799,7 +799,7 @@ struct DAYNIGHT_WORK {
 	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
 	Uint32** pVertexColorTableChunk;
 
-	NJS_TEXLIST* pSkyboxTexlist;
+	NJS_TEXLIST* pTexlist;
 
 	int timer;
 	int phase;
@@ -863,7 +863,7 @@ static bool AL_DayNightCycle_FindSkyboxTexID(uint32_t texID, DAYNIGHT_SKYBOX con
 
 // Retrieves the skybox texture specified in the configuration for the phase argument
 // Returns the original tex ID if the phase is invalid, for restoring them later on in the destructor
-static uint32_t AL_DayNightCycle_GetSkyboxTextureForPhase(const DAYNIGHT_SKYBOX& skyboxEntry, int phase, bool& originalTexlist) {
+static uint32_t AL_DayNightCycle_GetTextureForPhase(const DAYNIGHT_SKYBOX& skyboxEntry, int phase, bool& originalTexlist) {
 	uint32_t texID = skyboxEntry.origTexID;
 	originalTexlist = false;
 
@@ -891,11 +891,11 @@ static uint32_t AL_DayNightCycle_GetSkyboxTextureForPhase(const DAYNIGHT_SKYBOX&
 };
 
 // Changes the textures for the skybox entry according to the phase, check above function for info about "phase" argument's behavior
-static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox, int phase) {
+static bool AL_DayNightCycle_ChangeTextures(DAYNIGHT_SKYBOX_TABLE& skybox, int phase) {
 	// this bool is needed to tell the displayer if the skybox texture falls back to the original texlist and original texID
 	bool isOriginalTexlist = false;
 	
-	bool hasSkyboxTexlist = gDayNightManager.GetSkyboxTextureFileName().has_value();
+	bool hasTexlist = gDayNightManager.GetTextureFileName().has_value();
 
 	for (size_t t = 0; t < skybox.texMapCount; t++) {
 		const auto changeTexGC = [](uint32_t& data, uint32_t texID) {
@@ -911,7 +911,7 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 		auto& texMap = skybox.pTexMap[t];
 
 		bool outIsOriginalTexlist;
-		const auto texID = AL_DayNightCycle_GetSkyboxTextureForPhase(texMap.skybox, phase, outIsOriginalTexlist);
+		const auto texID = AL_DayNightCycle_GetTextureForPhase(texMap.skybox, phase, outIsOriginalTexlist);
 
 		if (outIsOriginalTexlist) {
 			isOriginalTexlist = true;
@@ -925,7 +925,7 @@ static bool AL_DayNightCycle_ChangeSkyboxTextures(DAYNIGHT_SKYBOX_TABLE& skybox,
 		}
 	}
 
-	return !hasSkyboxTexlist || isOriginalTexlist;
+	return !hasTexlist || isOriginalTexlist;
 }
 
 #pragma endregion
@@ -1005,7 +1005,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 			tinyTIDCount++;
 
 			// only bother with the error check if it has a skybox texlist (otherwise everything is original texlist anyways)
-			if (!showMixedTexlistError && gDayNightManager.GetSkyboxTextureFileName()) {
+			if (!showMixedTexlistError && gDayNightManager.GetTextureFileName()) {
 				for (size_t i = 0; i < NB_PHASE; i++) {
 					// if the original texlist requirement changes after the first entry it means we found a mixed case
 					if (tinyTIDCount > 1 && originalTexlist[i] != needsOriginalTexlist[i]) {
@@ -1182,7 +1182,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 
 		if (pTexID) {
 			// this check is needed so that a model doesn't use a combination/"hybrid" texlist setup with a material using original tex id and sky texlist tex id
-			if (!showMixedTexlistError && gDayNightManager.GetSkyboxTextureFileName()) {
+			if (!showMixedTexlistError && gDayNightManager.GetTextureFileName()) {
 				for (size_t i = 0; i < NB_PHASE; i++) {
 					// if the original texlist requirement changes after the first entry it means we found a mixed case
 					if (textureParamCount > 1 && originalTexlist[i] != needsOriginalTexlist[i]) {
@@ -1462,9 +1462,9 @@ static void AL_DayNightCycle_InitFallbackLight(task* tp) {
 static void AL_DayNightCycle_Init(task* tp) {
 	auto& work = GetWork(tp);
 
-	const auto& skyboxFilename = gDayNightManager.GetSkyboxTextureFileName();
+	const auto& skyboxFilename = gDayNightManager.GetTextureFileName();
 	if (skyboxFilename) {
-		work.pSkyboxTexlist = LoadCharTextures((char*)skyboxFilename->c_str());
+		work.pTexlist = LoadCharTextures((char*)skyboxFilename->c_str());
 	}
 
 	// for phases that don't have light specified we fallback to the original index 0 light
@@ -1736,7 +1736,7 @@ static void AL_DayNightCycle_RestoreAll(task* tp) {
 	for (size_t i = 0; i < work.skyboxCount; i++) {
 		auto& skybox = work.pSkyboxTable[i];
 
-		AL_DayNightCycle_ChangeSkyboxTextures(skybox, -1);
+		AL_DayNightCycle_ChangeTextures(skybox, -1);
 		AL_DayNightCycle_ToggleColorSourceToMaterial(skybox, false);
 	}
 }
@@ -1805,9 +1805,9 @@ static void AL_DayNightCycleDestructor(task* tp) {
 	// the texlist was created with LoadCharTextures which auto-allocates the texlist
 	// so alongside releasing the textures in the texlist, we also need to release the texlist itself
 	// note that we don't need to release the texnames because it's allocated "with" the texlist
-	if (work.pSkyboxTexlist) {
-		njReleaseTexture(work.pSkyboxTexlist);
-		FREE(work.pSkyboxTexlist);
+	if (work.pTexlist) {
+		njReleaseTexture(work.pTexlist);
+		FREE(work.pTexlist);
 	}
 
 	if (work.skyboxCount) {
@@ -1836,16 +1836,16 @@ static void AL_DayNightCycleDestructor(task* tp) {
 
 #pragma region Displayer
 
-static void AL_DayNightCycle_SetSkyboxTexturesAndTexlist(task* tp, DAYNIGHT_SKYBOX_TABLE& skybox, int phase) {
+static void AL_DayNightCycle_SetTexturesAndTexlist(task* tp, DAYNIGHT_SKYBOX_TABLE& skybox, int phase) {
 	auto& work = GetWork(tp);
 
-	bool isOriginalTexlist = AL_DayNightCycle_ChangeSkyboxTextures(skybox, phase);
+	bool isOriginalTexlist = AL_DayNightCycle_ChangeTextures(skybox, phase);
 
 	if (isOriginalTexlist) {
 		njSetTexture(work.pNewLandtable->TextureList);
 	}
 	else {
-		njSetTexture(work.pSkyboxTexlist);
+		njSetTexture(work.pTexlist);
 	}
 }
 
@@ -1859,7 +1859,7 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
 		SetMaterial(alpha, 1, 1, 1);
 		gjSetDiffuse(0xFFFFFFFF);
 
-		AL_DayNightCycle_SetSkyboxTexturesAndTexlist(tp, skybox, phase);
+		AL_DayNightCycle_SetTexturesAndTexlist(tp, skybox, phase);
 
 		if (skybox.isChunk) njCnkDrawObject(skybox.pObj);
 		else gjDrawObject(skybox.pObj);
