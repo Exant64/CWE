@@ -18,8 +18,7 @@
 #include <error/en.h>
 #include <filereadstream.h>
 #include <document.h>
-
-
+#include "al_race.h"
 #include "memory.h"
 #include <span>
 
@@ -388,6 +387,23 @@ static const char* AL_DayNightCycle_GetGardenID() {
 
 	case CHAO_STG_DARK:
 		return "dark";
+
+	case CHAO_STG_ENTRANCE:
+		return "entrance";
+
+	case CHAO_STG_KARATE:
+		return "karate";
+
+	case CHAO_STG_RACE:
+		if (RaceMainType == 3) {
+			return "race_dark";
+	}
+
+		if (RaceMainType == 4) {
+			return "race_hero";
+		}
+
+		return "race";
 	}
 
 	return "none";

@@ -46,11 +46,6 @@ FunctionPointer(RaceConfigThing*, sub_53A9B0, (), 0x53A9B0);
 FunctionPointer(void, CreateToyPresenter, (int a1, int isLToy), 0x00539F30);
 DataPointer(ObjectMaster*, pChaoObject, 0x01DCFAF0);
 
-DataPointer(Uint8, RaceMainType, 0x01A0FBD3);	//beginner,jewel,etc
-DataPointer(Uint8, RaceSubType, 0x01A0FBD4);	//like aquamarine, etc
-												//starts at 4 for jewel race
-DataPointer(Uint8, RaceLevel, 0x01A0FBD5);		//0-4, representing levels 1-5
-
 DataPointer(ObjectMaster*, dword_1A5AF18, 0x1A5AF18);
 
 void AL_EggPresenterExecutor(ObjectMaster* tp) {
