@@ -1,0 +1,32 @@
+{
+  "skyboxTextureName": "AL_KARATE_SKY",
+
+  "phases": {
+    "day": {
+      "color": "#FFFFFF"
+    },
+    "evening": {
+      "color": [ 1.000000, 0.750000, 0.750000 ],
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 1.000000, 0.750000, 0.750000 ],
+        "ambient": [ 0.417500, 0.313125, 0.313125 ]
+      }
+    },
+    "night": {
+      "color": [ 0.750000, 0.750000, 1.000000 ],
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 0.750000, 0.750000, 1.000000 ],
+        "ambient": [ 0.313125, 0.313125, 0.417500 ]
+      }
+    }
+  },
+  "skyboxMaterials": [
+    {
+      "originalTextureID": 5,
+      "eveningTextureID": 0,
+      "nightTextureID": 1
+    }
+  ]
+}

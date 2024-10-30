@@ -1,0 +1,52 @@
+{
+  "skyboxTextureName": "AL_NEUT_SKY",
+
+  "phases": {
+    "day": {
+      "color": "#FFFFFF",
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 1.000000, 1.000000, 1.000000 ],
+        "ambient": [ 0.417500, 0.417500, 0.417500 ]
+      }
+    },
+    "evening": {
+      "color": [ 1.000000, 0.750000, 0.750000 ],
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 1.000000, 0.750000, 0.750000 ],
+        "ambient": [ 0.417500, 0.313125, 0.313125 ]
+      }
+    },
+    "night": {
+      "color": [ 0.750000, 0.750000, 1.000000 ],
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 0.750000, 0.750000, 1.000000 ],
+        "ambient": [ 0.313125, 0.313125, 0.417500 ]
+      }
+    },
+    "cloudy": {
+      "color": [ 0.75, 0.75, 0.75 ],
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 1.000000, 1.000000, 1.000000 ],
+        "ambient": [ 0.292500, 0.292500, 0.292500 ]
+      }
+    }
+  },
+  "skyboxMaterials": [
+    {
+      "originalTextureID": 7,
+      "eveningTextureID": 0,
+      "nightTextureID": 2,
+      "cloudyTextureID": 4
+    },
+    {
+      "originalTextureID": 8,
+      "eveningTextureID": 1,
+      "nightTextureID": 3,
+      "cloudyTextureID": 5
+    }
+  ]
+}

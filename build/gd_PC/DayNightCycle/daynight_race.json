@@ -1,0 +1,27 @@
+{
+  "skyboxTextureName": "AL_RACE_SKY",
+
+  "phases": {
+    "day": {
+      "color": "#FFFFFF"
+    },
+    "evening": {
+      "color": [ 1.000000, 0.750000, 0.750000 ]
+    },
+    "night": {
+      "color": [ 0.750000, 0.750000, 1.000000 ]
+    }
+  },
+  "skyboxMaterials": [
+    {
+      "originalTextureID": 116,
+      "eveningTextureID": 0,
+      "nightTextureID": 2
+    },
+    {
+      "originalTextureID": 117,
+      "eveningTextureID": 1,
+      "nightTextureID": 3
+    }
+  ]
+}

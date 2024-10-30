@@ -1,0 +1,38 @@
+{
+  "skyboxTextureName": "AL_DARK_SKY",
+  "phases": {
+    "day": {
+      "color": "#FFFFFF",
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 1.000000, 1.000000, 1.000000 ],
+        "ambient": [ 0.500000, 0.500000, 0.500000 ]
+      }
+    },
+    "evening": {
+      "color": "#FFFFFF"
+    },
+    "night": {
+      "color": "#FFFFFF"
+    },
+    "cloudy": {
+      "color": [ 1.000000, 0.750000, 0.750000 ],
+      "light": {
+        "direction": [ 0.000000, -0.999544, -0.030185 ],
+        "diffuse": [ 1.000000, 0.750000, 0.750000 ],
+        "ambient": [ 0.500000, 0.375000, 0.375000 ]
+      }
+    }
+  },
+
+  "skyboxMaterials": [
+    {
+      "originalTextureID": 15,
+      "cloudyTextureID": 0
+    },
+    {
+      "originalTextureID": 17,
+      "cloudyTextureID": 1
+    }
+  ]
+  }
