@@ -74,12 +74,10 @@ static bool curprocinitialized = false;
 
 static inline BOOL WriteData(void *writeaddress, const void *data, SIZE_T datasize, SIZE_T *byteswritten)
 {
-	if (!curprocinitialized)
-	{
-		curproc = GetCurrentProcess();
-		curprocinitialized = true;
-	}
-	return WriteProcessMemory(curproc, writeaddress, data, datasize, byteswritten);
+	DWORD oldprot;
+	VirtualProtect(writeaddress, datasize, PAGE_EXECUTE_WRITECOPY, &oldprot);
+	memcpy(writeaddress, data, datasize);
+	return true;
 }
 
 static inline BOOL WriteData(void *writeaddress, const void *data, SIZE_T datasize)
