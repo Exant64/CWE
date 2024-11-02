@@ -144,183 +144,94 @@ const std::unordered_map<int, AL_DayNightConfig> gDayNightConfig = { {
 	}
 } };
 
-void AL_DayNightTexLoad(int stage)
-{
-	if (!gDayNightConfig.contains(stage)) return;
-	
-	const AL_DayNightConfig& config = gDayNightConfig.at(stage);
-
-	switch (GetTimeOfDay()) {
-	case AL_TIME_DAY:
-		//if has all three important components, if not then its not worth loading anyways
-		if (config.DayTex && config.DefaultObjTex && config.RainTex) {
-			if (GetWeather() == AL_WEATHER_RAIN) {
-				LoadTextureList((char*)config.RainTex, &timeofdayTexlistReplacer);
-			}
-			else {
-				LoadTextureList((char*)config.DayTex, &timeofdayTexlistReplacer);
-				LoadTextureList((char*)config.DefaultObjTex, (NJS_TEXLIST*)0x1366B04);
-			}
-		}
-		break;
-	case AL_TIME_EVENING:
-		if (config.EveTex) {
-			LoadTextureList((char*)config.EveTex, &timeofdayTexlistReplacer);
-		}
-		break;
-	case AL_TIME_NIGHT:
-		if (config.NightTex) {
-			LoadTextureList((char*)config.NightTex, &timeofdayTexlistReplacer);
-		}
-		break;
-	}
-}
-
-void AL_DayNightLightLoad(int stage)
-{
-	if (!gDayNightConfig.contains(stage)) return;
-
-	const AL_DayNightConfig& config = gDayNightConfig.at(stage);
-
-	//if theres no default light, theres no special light assigned to this garden
-	if (!config.DefaultLight) return;
-
-	LoadStageLight(config.DefaultLight);
-
-	switch (GetTimeOfDay()) {
-	case AL_TIME_DAY:
-		if (config.CloudLight && GetWeather() == AL_WEATHER_RAIN) {
-			LoadStageLight(config.CloudLight);
-		}
-		break;
-	case AL_TIME_EVENING:
-		if (config.EveLight) {
-			LoadStageLight(config.EveLight);
-		}
-		break;
-	case AL_TIME_NIGHT:
-		if (config.NightLight) {
-			LoadStageLight(config.NightLight);
-		}
-		break;
-	}
-}
-
-const int sub_478790Ptr = 0x478790;
-signed int sub_478790(unsigned __int8 a1, unsigned __int8 a2, unsigned __int8 a3, unsigned __int8 a4)
-{
-	int re;
-	__asm
-	{
-		mov bl, a1
-		push dword ptr[a4]
-		push dword ptr[a3]
-		push dword ptr[a2]
-		call sub_478790Ptr
-		mov re, eax
-		add esp, 12
-	}
-	return re;
-}
-
-void DayNightTransition(ObjectMaster* a1)
-{
-	switch (a1->Data1.Entity->Action)
-	{
-	case 0: //init
-		//something something store the previous time here
-		a1->Data1.Entity->Action++;
-		break;
-	case 1: //fade to black, second argument is alpha (weird argument order because usercall) (guess is order is BARG)
-		if (sub_478790(0, 255, 0, 0))
-		{
-			a1->Data1.Entity->Action++;
-		}
-		break;
-	case 2: //counter, you would render the display on this mode
-		a1->Data1.Entity->Rotation.x++;
-		if (a1->Data1.Entity->Rotation.x > 60 * 2)
-		{
-			SetTimeOfDay( a1->Data1.Entity->Rotation.y);
-			SetWeather( a1->Data1.Entity->Rotation.z); 
-
-			AL_DayNightTexLoad(AL_GetStageNumber() - 1);
-			AL_DayNightLightLoad(AL_GetStageNumber() - 1);
-
-			a1->Data1.Entity->Action++;
-		}
-		break;
-	case 3: //fade back
-		if (sub_478790(0, 0, 0, 0))
-		{
-			a1->Data1.Entity->Action++;
-		}
-		break;
-	case 4: //kill
-		a1->MainSub = DeleteObject_;
-		break;
-	}
-}
-
-void DayNightTransition_Create(int time, int weather)
-{
-	if (gConfigVal.NoDayNightTransition)
-	{
-		SetTimeOfDay(time);
-		SetWeather(weather);	
-		AL_DayNightTexLoad(AL_GetStageNumber());
-		AL_DayNightLightLoad(AL_GetStageNumber());
-	}
-	else 
-	{
-		ObjectMaster* ob = LoadObject(4, "Daynight", DayNightTransition, LoadObj_Data1);
-		ob->Data1.Entity->Rotation.y = time;
-		ob->Data1.Entity->Rotation.z = weather;
-	}
-}
-
-const int sub_486E50 = 0x486E50;
-void sub_486E50Thing()
-{
-	__asm
-	{
-		mov ecx, 0
-		mov eax, 0
-		call sub_486E50
-	}
-}
-void LightingNeut()
-{
-	AL_DayNightLightLoad(0);
-}
-void LightingHero()
-{
-	sub_486E50Thing();
-	AL_DayNightLightLoad(1);
-}
-void LightingDark()
-{
-	sub_486E50Thing();
-	AL_DayNightLightLoad(2);
-}
-
-void AL_NEUT_OBJ_TEX_HOOK()
-{
-	LoadTextureList((char*)"AL_NEUT_OBJ_TEX", (NJS_TEXLIST*)0x1366B04);
-	AL_DayNightTexLoad(AL_GetStageNumber());
-}
-void AL_HERO_OBJ_TEX_HOOK()
-{
-	LoadTextureList((char*)"AL_HERO_OBJ_TEX", (NJS_TEXLIST*)0x1366B0C);
-	AL_DayNightTexLoad(AL_GetStageNumber());
-}
-void AL_DARK_OBJ_TEX_HOOK()
-{
-	LoadTextureList((char*)"AL_DARK_OBJ_TEX", (NJS_TEXLIST*)0x1366B14);
-	AL_DayNightTexLoad(AL_GetStageNumber());
-}
-
 // this is where the code for the new one starts
+
+enum {
+	LIGHT_DEF = 0,
+	LIGHT_EVE = 1,
+	LIGHT_NGT = 2,
+	LIGHT_CLOUD = 3
+};
+
+struct DAYNIGHT_SKYBOX {
+	uint32_t origTexID; // tex ID to look for to find mesh
+	uint32_t dayTexID;
+	uint32_t eveningTexID;
+	uint32_t nightTexID;
+	uint32_t cloudyTexID;
+};
+
+struct DAYNIGHT_SKYBOX_TEXMAP_TABLE {
+	union {
+		uint16_t* pChunkTexID;
+		uint32_t* pTexID;
+	};
+
+	uint32_t* pLightingParameter;
+	uint32_t originalLightingParameter;
+
+	DAYNIGHT_SKYBOX skybox;
+};
+
+struct DAYNIGHT_SKYBOX_TABLE {
+	bool isChunk;
+	bool isCopied;
+	NJS_OBJECT* pObj;
+	DAYNIGHT_SKYBOX_TEXMAP_TABLE* pTexMap;
+	size_t texMapCount;
+};
+
+enum {
+	VERTEX_COLOR_TABLE_SRC = 0,
+	VERTEX_COLOR_TABLE_DST = 1,
+	VERTEX_COLOR_TABLE_COUNT = 2
+};
+
+enum {
+	PHASE_DAY = 0,
+	PHASE_EVE = 1,
+	PHASE_NGT = 2,
+	PHASE_CLD = 3,
+	NB_PHASE
+};
+
+struct DAYNIGHT_WORK {
+	int mode;
+
+	LandTable* pNewLandtable;
+	LandTable* pOldLandtable;
+
+	bool isChunkLandTable;
+
+	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
+	Uint32** pVertexColorTableChunk;
+
+	NJS_TEXLIST* pTexlist;
+
+	int phaseA;
+	int phaseB;
+	float lerpValue;
+
+	int timer;
+	int phase;
+	NJS_ARGB appliedColor;
+
+	// this is temporary, we only use it rn to dump them for conversion
+	// remove later
+	// 4 for the phases, 4 for the lights in the file
+	Light lights[4][4];
+
+	// for phases that don't have a specified light, it will use the one loaded by the game
+	// (converted to GC if it isn't GC)
+	LightGC fallbackLight;
+
+	// this is needed to apply the color to the landtable light in the same way we do to the vertex color
+	// if the model uses normals instead of vertex colors
+	NJS_VECTOR originalLandLightColor;
+
+	DAYNIGHT_SKYBOX_TABLE* pSkyboxTable;
+	int skyboxCount;
+};
 
 FunctionPointer(void, gjDrawObject, (NJS_OBJECT* a1), 0x0042B530);
 
@@ -404,22 +315,6 @@ static const char* AL_DayNightCycle_GetGardenID() {
 
 	return "none";
 }
-
-enum {
-	PHASE_DAY = 0,
-	PHASE_EVE = 1,
-	PHASE_NGT = 2,
-	PHASE_CLD = 3,
-	NB_PHASE
-};
-
-struct DAYNIGHT_SKYBOX {
-	uint32_t origTexID; // tex ID to look for to find mesh
-	uint32_t dayTexID;
-	uint32_t eveningTexID;
-	uint32_t nightTexID;
-	uint32_t cloudyTexID;
-};
 
 // Manages the loaded JSON data, contains vectors of said data so that I don't lose my sanity with writing memory management
 struct DAYNIGHT_DATA_MANAGER {
@@ -779,73 +674,6 @@ public:
 	}
 } static gDayNightManager;
 
-enum {
-	LIGHT_DEF = 0,
-	LIGHT_EVE = 1,
-	LIGHT_NGT = 2,
-	LIGHT_CLOUD = 3
-};
-
-struct DAYNIGHT_SKYBOX_TEXMAP_TABLE {
-	union {
-		uint16_t* pChunkTexID;
-		uint32_t* pTexID;
-	};
-
-	uint32_t* pLightingParameter;
-	uint32_t originalLightingParameter;
-
-	DAYNIGHT_SKYBOX skybox;
-};
-
-struct DAYNIGHT_SKYBOX_TABLE {
-	bool isChunk;
-	bool isCopied;
-	NJS_OBJECT* pObj;
-	DAYNIGHT_SKYBOX_TEXMAP_TABLE* pTexMap;
-	size_t texMapCount;
-};
-
-enum {
-	VERTEX_COLOR_TABLE_SRC = 0,
-	VERTEX_COLOR_TABLE_DST = 1,
-	VERTEX_COLOR_TABLE_COUNT = 2
-};
-
-struct DAYNIGHT_WORK {
-	int mode;
-
-	LandTable* pNewLandtable;
-	LandTable* pOldLandtable;
-
-	bool isChunkLandTable;
-
-	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
-	Uint32** pVertexColorTableChunk;
-
-	NJS_TEXLIST* pTexlist;
-
-	int timer;
-	int phase;
-	NJS_ARGB appliedColor;
-
-	// this is temporary, we only use it rn to dump them for conversion
-	// remove later
-	// 4 for the phases, 4 for the lights in the file
-	Light lights[4][4];
-	
-	// for phases that don't have a specified light, it will use the one loaded by the game
-	// (converted to GC if it isn't GC)
-	LightGC fallbackLight;
-
-	// this is needed to apply the color to the landtable light in the same way we do to the vertex color
-	// if the model uses normals instead of vertex colors
-	NJS_VECTOR originalLandLightColor;
-
-	DAYNIGHT_SKYBOX_TABLE* pSkyboxTable;
-	int skyboxCount;
-};
-
 static DAYNIGHT_WORK& GetWork(task* tp) {
 	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->Data2.Undefined);
 }
@@ -863,8 +691,8 @@ void AL_DayNightCycle_PreDrawSetupShinyTexture() {
 
 	if (!work.pTexlist) return;
 
-	const auto& shinyTextureIndexFrom = gDayNightManager.GetShinyTextureIndexForPhase(work.phase);
-	const auto& shinyTextureIndexTo = gDayNightManager.GetShinyTextureIndexForPhase((work.phase + 1) % 3);
+	const auto& shinyTextureIndexFrom = gDayNightManager.GetShinyTextureIndexForPhase(work.phaseA);
+	const auto& shinyTextureIndexTo = gDayNightManager.GetShinyTextureIndexForPhase(work.phaseB);
 
 	backupShinyTextureTexAddr = AL_BODY.textures[34].texaddr;
 
@@ -892,8 +720,7 @@ void AL_DayNightCycle_SetLerpShinyTexture() {
 	const auto& work = GetWork(pDayNightTask);
 	if (!work.pTexlist) return;
 
-	const float t = work.timer / float(5 * 60);
-	SetPixelShaderFloat(79, t);
+	SetPixelShaderFloat(79, work.lerpValue);
 }
 
 void AL_DayNightCycle_PostDrawSetupShinyTexture() {
@@ -1680,10 +1507,8 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 		Lights[2].color = landLightColor;
 	}
 
-	const int nextPhase = (work.phase + 1) % 3;
-
-	const auto& srcLightPhase = gDayNightManager.GetLightForPhase(work.phase);
-	const auto& dstLightPhase = gDayNightManager.GetLightForPhase(nextPhase);
+	const auto& srcLightPhase = gDayNightManager.GetLightForPhase(work.phaseA);
+	const auto& dstLightPhase = gDayNightManager.GetLightForPhase(work.phaseB);
 
 	const LightGC& pSrcLight = (!srcLightPhase) ? work.fallbackLight : srcLightPhase.value();
 	const LightGC& pDstLight = (!dstLightPhase) ? work.fallbackLight : dstLightPhase.value();
@@ -1692,9 +1517,8 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	// the fallback light is either the first GC light, or the first DC light converted to GC (lossless)
 	LightsGC[0].SomeFlag |= 1;
 
-	const float t = (work.timer / (60.f * 5));
-	LerpColor(LightsGC[0].lightColor, pSrcLight.lightColor, pDstLight.lightColor, t);
-	LerpColor(LightsGC[0].ambientReg, pSrcLight.ambientReg, pDstLight.ambientReg, t);
+	LerpColor(LightsGC[0].lightColor, pSrcLight.lightColor, pDstLight.lightColor, work.lerpValue);
+	LerpColor(LightsGC[0].ambientReg, pSrcLight.ambientReg, pDstLight.ambientReg, work.lerpValue);
 }
 
 // Main update function for the DNC
@@ -1760,12 +1584,14 @@ static void AL_DayNightCycleExecutor(task* tp) {
 		}
 
 		// placeholder
-		int nextPhase = (work.phase + 1) % 3;
+		work.phaseA = work.phase;
+		work.phaseB = (work.phase + 1) % 3;
+		work.lerpValue = work.timer / float(5 * 60);
 
-		const auto& colorA = gDayNightManager.GetColorForPhase(work.phase);
-		const auto& colorB = gDayNightManager.GetColorForPhase(nextPhase);
+		const auto& colorA = gDayNightManager.GetColorForPhase(work.phaseA);
+		const auto& colorB = gDayNightManager.GetColorForPhase(work.phaseB);
 
-		LerpColor(work.appliedColor, colorA, colorB, work.timer / (60 * 5.0f));
+		LerpColor(work.appliedColor, colorA, colorB, work.lerpValue);
 
 		AL_DayNightCycle_ApplyLightLerp(tp);
 		AL_DayNightCycle_ApplyColorToLandTable(tp);
@@ -1952,9 +1778,6 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
 static void AL_DayNightCycleDisplayer(task* tp) {
 	auto& work = GetWork(tp);
 
-	// placeholder
-	const int nextPhase = (work.phase + 1) % 3;
-
 	// landtables use this light index for some reason
 	DoLighting(2); 
 
@@ -1979,7 +1802,7 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	blendModeGinjaFunc = (int)nullsub_1;
 
 	// opaque pass
-	AL_DayNightCycleDrawSkyboxes(tp, 1.0f, work.phase);
+	AL_DayNightCycleDrawSkyboxes(tp, 1.0f, work.phaseA);
 
 	// transparent pass
 	// RF API to handle setting the Z buffer modes appropriately for alpha rendering
@@ -1993,7 +1816,7 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	OnControl3D(NJD_CONTROL_3D_CNK_BLEND_MODE);
 
 	EnableAlpha(1);
-	AL_DayNightCycleDrawSkyboxes(tp, work.timer / float(5 * 60), nextPhase);
+	AL_DayNightCycleDrawSkyboxes(tp, work.lerpValue, work.phaseB);
 
 	nj_cnk_blend_mode = backupblend;
 

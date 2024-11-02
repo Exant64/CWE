@@ -517,7 +517,7 @@ void AL_NameDisplay_Main(ObjectMaster* a1)
 		{
 			a1->Data1.Entity->field_6 = 0;
 			a1->Data1.Entity->Action = 0;
-			DayNightTransition_Create(GetTimeOfDay(), GetWeather());
+			//DayNightTransition_Create(GetTimeOfDay(), GetWeather());
 			ControlEnabled = 1;
 
 		}
