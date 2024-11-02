@@ -21,5 +21,9 @@ void AL_DayNightTexLoad(int stage);
 void DayNightTransition_Create(int time, int weather);
 void AL_DayNightLightLoad(int stage);
 
+void AL_DayNightCycle_PreDrawSetupShinyTexture();
+void AL_DayNightCycle_SetLerpShinyTexture();
+void AL_DayNightCycle_PostDrawSetupShinyTexture();
+
 void AL_DayNight_Init(const HelperFunctions& helper);
 void AL_CreateDayNightCycle();

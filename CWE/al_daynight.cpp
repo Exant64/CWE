@@ -11,6 +11,7 @@
 #include "renderfix_api.h"
 #include <api/api_util.h>
 #include "FunctionHook.h"
+#include "UsercallFunctionHandler.h"
 #include <optional>
 #include <set>
 
@@ -21,6 +22,7 @@
 #include "al_race.h"
 #include "memory.h"
 #include <span>
+#include <brightfixapi.h>
 
 //struct per level
 struct AL_DayNightConfig {
@@ -426,10 +428,16 @@ private:
 	std::vector<DAYNIGHT_SKYBOX> m_skyboxEntries;
 	NJS_ARGB m_phaseColors[NB_PHASE];
 	std::optional<LightGC> m_lights[NB_PHASE];
+	std::optional<size_t> m_shinyTextureIndices[NB_PHASE];
 
 public:
 	const std::optional<std::string>& GetTextureFileName() const {
 		return m_textureFileName;
+	}
+
+	const std::optional<size_t>& GetShinyTextureIndexForPhase(size_t phaseIndex) const {
+		assert(phaseIndex < NB_PHASE);
+		return m_shinyTextureIndices[phaseIndex];
 	}
 
 	const NJS_ARGB& GetColorForPhase(size_t phaseIndex) const {
@@ -687,6 +695,22 @@ public:
 					return false;
 				}
 
+				if (phase.HasMember("shinyTextureID")) {
+					if (!m_textureFileName.has_value()) {
+						error.print("using \"shinyTextureID\" requires a texture filename specified!");
+						return false;
+					}
+
+					const auto& shinyTextureIDMember = phase["shinyTextureID"];
+
+					if (!shinyTextureIDMember.IsNumber()) {
+						error.print("\"shinyTextureID\" in phase %s is not a number!", phaseKey);
+						return false;
+					}
+
+					m_shinyTextureIndices[i] = shinyTextureIDMember.GetUint();
+				}
+
 				// light member is optional, it will default to the loaded one if not specified
 				if (phase.HasMember("light")) {
 					const auto& lightElement = phase["light"];
@@ -825,6 +849,65 @@ struct DAYNIGHT_WORK {
 static DAYNIGHT_WORK& GetWork(task* tp) {
 	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->Data2.Undefined);
 }
+
+#pragma region Shiny Texture Lerping (used externally)
+
+static Uint32 backupShinyTextureTexAddr;
+
+UsercallFuncVoid(sub_42C5B0, (uint16_t textureID, uint16_t wrapMode, int index), (textureID, wrapMode, index), 0x42C5B0, rAX, rCX, rEBX);
+
+void AL_DayNightCycle_PreDrawSetupShinyTexture() {
+	if (!pDayNightTask) return;
+
+	auto& work = GetWork(pDayNightTask);
+
+	if (!work.pTexlist) return;
+
+	const auto& shinyTextureIndexFrom = gDayNightManager.GetShinyTextureIndexForPhase(work.phase);
+	const auto& shinyTextureIndexTo = gDayNightManager.GetShinyTextureIndexForPhase((work.phase + 1) % 3);
+
+	backupShinyTextureTexAddr = AL_BODY.textures[34].texaddr;
+
+	if (shinyTextureIndexFrom) {
+		AL_BODY.textures[34].texaddr = work.pTexlist->textures[*shinyTextureIndexFrom].texaddr;
+	}
+
+	NJS_CTX* ctx = (NJS_CTX*)Has_texlist_batadvPlayerChara_in_it;
+	NJS_TEXLIST* pTexlistBackup = ctx->texlistPtr;
+
+	if (shinyTextureIndexTo) {		
+		njSetTexture(work.pTexlist);
+		sub_42C5B0(*shinyTextureIndexTo, 1, 3);
+	}
+	else {
+		njSetTexture(&AL_BODY);
+		sub_42C5B0(34, 1, 3);
+	}
+
+	njSetTexture(pTexlistBackup);
+}
+
+void AL_DayNightCycle_SetLerpShinyTexture() {
+	if (!pDayNightTask) return;
+	const auto& work = GetWork(pDayNightTask);
+	if (!work.pTexlist) return;
+
+	const float t = work.timer / float(5 * 60);
+	SetPixelShaderFloat(79, t);
+}
+
+void AL_DayNightCycle_PostDrawSetupShinyTexture() {
+	// if there's nothing to reset to then don't
+	if (!backupShinyTextureTexAddr) return;
+
+	AL_BODY.textures[34].texaddr = backupShinyTextureTexAddr;
+	backupShinyTextureTexAddr = NULL;
+
+	// reset the lerp value
+	SetPixelShaderFloat(79, 0);
+}
+
+#pragma endregion
 
 #pragma region Skybox Utility Functions
 

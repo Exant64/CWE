@@ -347,6 +347,7 @@
     <ClInclude Include="al_race.h" />
     <ClInclude Include="data\al_seentry.h" />
     <ClInclude Include="data\ChaoShader.h" />
+    <ClInclude Include="data\ChaoShaderDayNight.h" />
     <ClInclude Include="data\cwe\object_common_cnk\ali_all.h" />
     <ClInclude Include="data\lens\LensBoxJewel.h" />
     <ClInclude Include="data\lens\LensModels.h" />

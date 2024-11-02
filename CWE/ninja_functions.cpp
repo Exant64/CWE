@@ -38,19 +38,7 @@ void sub_426CC0(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
 	a2->y = v4.y;
 	a2->z = v4.z;
 }
-struct NJS_CTX 
-{
 
-		int gap0;
-		int field_4;
-		int field_8;
-		float field_C;
-		int field_10;
-		int field_14;
-		int field_18;
-		int field_1C;
-		NJS_TEXLIST *texlistPtr;
-};
 static const void* const SetShadersPtr = (void*)0x41B1F0;
 void SetShaders(int id)
 {

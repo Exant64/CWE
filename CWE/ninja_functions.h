@@ -1,6 +1,17 @@
 #pragma once
 #include "stdafx.h"
 
+struct NJS_CTX {
+	int gap0;
+	int field_4;
+	int field_8;
+	float field_C;
+	int field_10;
+	int field_14;
+	int field_18;
+	int field_1C;
+	NJS_TEXLIST* texlistPtr;
+};
 
 struct Light
 {

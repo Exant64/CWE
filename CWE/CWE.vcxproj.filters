@@ -310,6 +310,7 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="al_chao_info.h" />
+    <ClInclude Include="data\ChaoShaderDayNight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />

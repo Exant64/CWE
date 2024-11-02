@@ -14,11 +14,15 @@
 #include "al_modelcontainer.h"
 #include "alo_obakehead.h"
 
+#include <FunctionHook.h>
+#include <UsercallFunctionHandler.h>
+
 #pragma warning(push)
 #pragma warning( disable: 4838 )
 #include "data/al_model/al_baldroot.nja"
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
+#include <al_daynight.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
@@ -189,6 +193,10 @@ void CWE_ShinyCheck(int shiny)
 
 void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewelMonotone, NJS_CNK_MODEL* model)
 {
+	if (shiny) {
+		AL_DayNightCycle_SetLerpShinyTexture();
+	}
+
 	if (shinyJewelMonotone && shiny && texture && monotone)
 	{
 		int flag = SecondTextureEnvironmentMap | HasSecondTexture | DontUseTexture;
@@ -196,6 +204,7 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 		SetChunkTexIndexPrimary(17 + texture, 1, 1);
 		SetChunkTexIndexSecondary(34, 0, 1);
 		SetPixelShaderFloat(78, 1);
+		
 		if (color)
 		{
 			flag |= UseChunkObjectColor;
@@ -916,8 +925,62 @@ LABEL_98:
 		DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.sibling);
 }
 
+static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
+static void Chao_Display_r(task* tp) {
+	if (!gConfigVal.DayNightCycle) {
+		Chao_Display_t.Original(tp);
+		return;
+	}
+
+	AL_DayNightCycle_PreDrawSetupShinyTexture();
+	Chao_Display_t.Original(tp);
+	AL_DayNightCycle_PostDrawSetupShinyTexture();
+}
+
+UsercallFuncVoid(ColorEggModel_t, (NJS_CNK_MODEL* model, int eggType), (model, eggType), 0x0056D540, rEDI, stack4);
+static void ColorEggModel_r(NJS_CNK_MODEL* model, int eggType) {
+	if (!gConfigVal.DayNightCycle) {
+		ColorEggModel_t.Original(model, eggType);
+		return;
+	}
+
+	AL_DayNightCycle_PreDrawSetupShinyTexture();
+
+	// if the egg is shiny
+	if (eggType >= SA2BEggColour_NormalShiny && eggType <= SA2BEggColour_BlackShiny_TwoTone) {
+		AL_DayNightCycle_SetLerpShinyTexture();
+	}
+
+	ColorEggModel_t.Original(model, eggType);
+	AL_DayNightCycle_PostDrawSetupShinyTexture();
+}
+
+static FunctionHook<void, task*> EggDisplayer_t(0x0057B640);
+static void EggDisplayer_r(task* tp) {
+	if (!gConfigVal.DayNightCycle) {
+		EggDisplayer_t.Original(tp);
+		return;
+	}
+
+	AL_DayNightCycle_PreDrawSetupShinyTexture();
+
+	// if the egg is shiny
+	const auto eggType = GET_CHAOPARAM(tp)->EggColor;
+	if (eggType >= SA2BEggColour_NormalShiny && eggType <= SA2BEggColour_BlackShiny_TwoTone) {
+		AL_DayNightCycle_SetLerpShinyTexture();
+	}
+
+	EggDisplayer_t.Original(tp);
+	AL_DayNightCycle_PostDrawSetupShinyTexture();
+}
+
 
 void AL_Draw_Init() {
+	// daynight cycle hooks
+	Chao_Display_t.Hook(Chao_Display_r);
+	EggDisplayer_t.Hook(EggDisplayer_r);
+	ColorEggModel_t.Hook(ColorEggModel_r);
+
 	//draw chao
 	WriteJump((void*)0x0053FCF0, DrawChao);
 
