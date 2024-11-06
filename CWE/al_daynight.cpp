@@ -153,6 +153,34 @@ enum {
 	LIGHT_CLOUD = 3
 };
 
+const size_t AL_DayNightCycle_GetTimeForEachPhase() {
+	return 5 * 60;
+}
+
+static DAYNIGHT_SAVE gDayNightSave;
+
+// if we ever change the struct for some reason we can easily reconfigure it here
+
+uint32_t& AL_DayNightCycle_GetSaveCurrentDay() {
+	return gDayNightSave.day;
+}
+
+uint32_t& AL_DayNightCycle_GetSavePhaseCount() {
+	return gDayNightSave.phaseCount;
+}
+
+float& AL_DayNightCycle_GetSaveTimeBetweenPhase() {
+	return gDayNightSave.timeBetweenPhase;
+}
+
+uint32_t& AL_DayNightCycle_GetSaveCurrentPhase() {
+	return gDayNightSave.currentPhase;
+}
+
+bool& AL_DayNightCycle_GetSaveNextDayCloudy() {
+	return gDayNightSave.nextDayCloudy;
+}
+
 struct DAYNIGHT_SKYBOX {
 	uint32_t origTexID; // tex ID to look for to find mesh
 	uint32_t dayTexID;
@@ -187,14 +215,6 @@ enum {
 	VERTEX_COLOR_TABLE_COUNT = 2
 };
 
-enum {
-	PHASE_DAY = 0,
-	PHASE_EVE = 1,
-	PHASE_NGT = 2,
-	PHASE_CLD = 3,
-	NB_PHASE
-};
-
 struct DAYNIGHT_WORK {
 	int mode;
 
@@ -208,12 +228,12 @@ struct DAYNIGHT_WORK {
 
 	NJS_TEXLIST* pTexlist;
 
-	int phaseA;
-	int phaseB;
+	uint32_t phaseA;
+	uint32_t phaseB;
 	float lerpValue;
 
-	int timer;
-	int phase;
+	DAYNIGHT_TIME_WORK timeWork;
+
 	NJS_ARGB appliedColor;
 
 	// this is temporary, we only use it rn to dump them for conversion
@@ -670,6 +690,7 @@ public:
 		
 		for (size_t i = 0; i < NB_PHASE; i++) {
 			m_lights[i] = std::nullopt;
+			m_shinyTextureIndices[i] = std::nullopt;
 		}
 	}
 } static gDayNightManager;
@@ -1521,11 +1542,57 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	LerpColor(LightsGC[0].ambientReg, pSrcLight.ambientReg, pDstLight.ambientReg, work.lerpValue);
 }
 
+// Stores the work data into the save data (it doesn't write the savefile itself, it just writes to the memory that will be saved later)
+static void AL_DayNightCycle_StoreIntoSave(task* tp) {
+	const auto& work = GetWork(tp);
+
+	AL_DayNightCycle_GetSaveCurrentPhase() = work.timeWork.phase;
+	AL_DayNightCycle_GetSaveTimeBetweenPhase() = work.timeWork.timer / float(AL_DayNightCycle_GetTimeForEachPhase());
+	AL_DayNightCycle_GetSaveCurrentDay() = work.timeWork.day;
+	AL_DayNightCycle_GetSavePhaseCount() = work.timeWork.phaseCount;
+	AL_DayNightCycle_GetSaveNextDayCloudy() = work.timeWork.nextDayCloudy;
+}
+
+static void AL_DayNightCycle_GenericGardenTimeHandler(DAYNIGHT_TIME_WORK* pTimeWork) {
+	pTimeWork->timer++;
+
+	if (pTimeWork->timer > AL_DayNightCycle_GetTimeForEachPhase()) {
+		pTimeWork->timer = 0;
+
+		pTimeWork->phaseCount++;
+		if (pTimeWork->phaseCount == 3) {
+			pTimeWork->phaseCount = 0;
+			pTimeWork->day++;
+		}
+
+		// if the current phase is evening, then the next phase will be night
+		// so let's decide whether cloudy will come after night
+		if (pTimeWork->phase == PHASE_EVE) {
+			pTimeWork->nextDayCloudy = njRandom() < 0.1f;
+		}
+
+		// if the current phase is night then the next phase is either day or cloudy
+		if (pTimeWork->phase == PHASE_NGT) {
+			pTimeWork->phase = pTimeWork->nextDayCloudy ? PHASE_CLD : PHASE_DAY;
+		}
+		else {
+			// if the current phase is cloudy then make sure it rolls over to evening not whatever comes after it
+			if (pTimeWork->phase == PHASE_CLD) {
+				pTimeWork->phase = PHASE_EVE;
+			}
+			else {
+				pTimeWork->phase = (pTimeWork->phase + 1) % 3;
+			}
+		}
+	}
+
+}
+
 // Main update function for the DNC
 static void AL_DayNightCycleExecutor(task* tp) {
 	enum {
 		MODE_INIT = 0,
-		MODE_LERP
+		MODE_IDLE
 	};
 
 	auto& work = GetWork(tp);
@@ -1533,7 +1600,7 @@ static void AL_DayNightCycleExecutor(task* tp) {
 	switch (work.mode) {
 	case MODE_INIT:
 		AL_DayNightCycle_Init(tp);
-		work.mode++;
+		work.mode = MODE_IDLE;
 
 #if 0
 		// this is temporary, enable when porting the lights, remove in final release
@@ -1572,63 +1639,31 @@ static void AL_DayNightCycleExecutor(task* tp) {
 		}
 #endif
 
-		[[fallthrough]];
-	case MODE_LERP:
-		// most of this is just temp to test the rendering and all that
-		work.timer++;
-		if (work.timer > 60 * 5) {
-			work.timer = 0;
-
-			work.phase++;
-			work.phase = work.phase % 3;
-		}
-
-		// placeholder
-		work.phaseA = work.phase;
-		work.phaseB = (work.phase + 1) % 3;
-		work.lerpValue = work.timer / float(5 * 60);
-
-		const auto& colorA = gDayNightManager.GetColorForPhase(work.phaseA);
-		const auto& colorB = gDayNightManager.GetColorForPhase(work.phaseB);
-
-		LerpColor(work.appliedColor, colorA, colorB, work.lerpValue);
-
-		AL_DayNightCycle_ApplyLightLerp(tp);
-		AL_DayNightCycle_ApplyColorToLandTable(tp);
 		break;
 	}
 
-	// old dnc
-#if 0
-	if (work->Action == 1) {
-		//AL_DayNightTexLoad(CurrentChaoArea);
-		//AL_DayNightLightLoad(CurrentChaoArea);
+	AL_DayNightCycle_StoreIntoSave(tp);
+	
+	AL_DayNightCycle_GenericGardenTimeHandler(&work.timeWork);
+
+	work.phaseA = work.timeWork.phase;
+
+	if (work.phaseA == PHASE_NGT && work.timeWork.nextDayCloudy) {
+		work.phaseB = PHASE_CLD;
+	}
+	else {
+		work.phaseB = (work.timeWork.phase + 1) % 3;
 	}
 
-	if (AL_IsGarden()) {
-		if (work->Rotation.x < 62)
-			work->Rotation.x++;
+	work.lerpValue = work.timeWork.timer / float(AL_DayNightCycle_GetTimeForEachPhase());
 
-		if (!gConfigVal.DayNightCheat && work->Rotation.x >= 60) {
-			ChaoSaveTimer++; //(timer thing)
-			if (ChaoSaveTimer >= (60 * 60 * 18))
-			{
-				ChaoSaveTimer = 0; //reset timer
-				SetTimeOfDay(AL_TIME_DAY); //reset the time to day
-				if (njRandom() < 0.4f)
-					SetWeather(AL_WEATHER_RAIN);   //set weather to rain
-				else
-					SetWeather(AL_WEATHER_NONE);
-				//DayNightTransition_Create(AL_TIME_DAY, GetWeather());
-			}
-			else if (ChaoSaveTimer % (60 * 60 * 6) == 0)
-			{
-				//DayNightTransition_Create(GetTimeOfDay() + 1, GetWeather());
-			}
-		}
+	const auto& colorA = gDayNightManager.GetColorForPhase(work.phaseA);
+	const auto& colorB = gDayNightManager.GetColorForPhase(work.phaseB);
 
-	}
-#endif
+	LerpColor(work.appliedColor, colorA, colorB, work.lerpValue);
+
+	AL_DayNightCycle_ApplyLightLerp(tp);
+	AL_DayNightCycle_ApplyColorToLandTable(tp);
 }
 
 #pragma endregion
@@ -1778,6 +1813,18 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
 static void AL_DayNightCycleDisplayer(task* tp) {
 	auto& work = GetWork(tp);
 
+	g_HelperFunctions->SetDebugFontSize(30);
+	g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 0), "==DAYNIGHT TIME==");
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 1), "PHASE %d", work.timeWork.phase);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 2), "PHASE_COUNT %d", work.timeWork.phaseCount);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 3), "DAY %d", work.timeWork.day);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 4), "NEXT_CLOUDY %d", work.timeWork.nextDayCloudy);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 5), "TIMER %d", work.timeWork.timer);
+	g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 6), "==DAYNIGHT RENDER==");
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 7), "PHASE_A %d", work.phaseA);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 8), "PHASE_B %d", work.phaseB);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 9), "LERP %f", work.lerpValue);
+
 	// landtables use this light index for some reason
 	DoLighting(2); 
 
@@ -1843,7 +1890,6 @@ static bool AL_DayNightCycle_CheckECWSafety() {
 		case CHAO_STG_NEUT:
 			if (ChaoSegments[0].Prolog != ChaoStgNeut_Prolog) return false;
 			break;
-
 		case CHAO_STG_HERO:
 			if (ChaoSegments[1].Prolog != ChaoStgHero_Prolog) return false;
 			break;
@@ -1883,6 +1929,14 @@ void AL_CreateDayNightCycle() {
 	tp->Data2.Undefined = ALLOC(DAYNIGHT_WORK);
 
 	memset(tp->Data2.Undefined, 0, sizeof(DAYNIGHT_WORK));
+
+	auto& work = GetWork(tp);
+
+	work.timeWork.timer = AL_DayNightCycle_GetSaveTimeBetweenPhase() * AL_DayNightCycle_GetTimeForEachPhase();
+	work.timeWork.phase = AL_DayNightCycle_GetSaveCurrentPhase();
+	work.timeWork.day = AL_DayNightCycle_GetSaveCurrentDay();
+	work.timeWork.phaseCount = AL_DayNightCycle_GetSavePhaseCount();
+	work.timeWork.nextDayCloudy = AL_DayNightCycle_GetSaveNextDayCloudy();
 
 	tp->DisplaySub = AL_DayNightCycleDisplayer;
 	tp->DeleteSub = AL_DayNightCycleDestructor;

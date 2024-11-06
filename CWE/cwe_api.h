@@ -71,6 +71,28 @@ struct CWE_API_CHAO_DATA {
 	Sint32 reserved[4];
 };
 
+enum {
+	PHASE_DAY = 0,
+	PHASE_EVE = 1,
+	PHASE_NGT = 2,
+	PHASE_CLD = 3,
+	NB_PHASE
+};
+
+struct DAYNIGHT_TIME_WORK {
+	uint32_t timer;
+	uint32_t phaseCount;
+	uint32_t day;
+	uint32_t phase;
+	bool nextDayCloudy;
+};
+
+struct DAYNIGHT_RENDER_WORK {
+	uint32_t phaseA;
+	uint32_t phaseB;
+	float lerpValue;
+};
+
 using OtherItemPtr = void(*)(int ID);
 using LastBiteFruitFuncPtr = void(*)(ChaoData* chaoData, ObjectMaster* fruit);
 using SpecialItemFuncPtr = void(*)(ObjectMaster* chao, ObjectMaster* item);
@@ -172,6 +194,15 @@ struct CWE_API_ODEKAKE_ENTRY {
 	float BarColorR;
 	float BarColorG;
 	float BarColorB;
+};
+
+struct CWE_API_REGISTER_DAYNIGHT {
+	Uint32 Version;
+
+	// Version >= 1
+	void(*RegisterECWSkybox)(const char* pGardenID, NJS_OBJECT* pObj); 
+	void(*RegisterOnPhaseChange)(const char* pGardenID, void(*pFunc)(DAYNIGHT_TIME_WORK* pTimeWork));
+	void(*RegisterCustomDayNightTimeManager)(const char* pGardenID, void(*pFunc)(DAYNIGHT_TIME_WORK* pTimeWork));
 };
 
 struct CWE_REGAPI {

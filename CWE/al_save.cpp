@@ -12,6 +12,7 @@
 #include <filereadstream.h>
 #include "prettywriter.h"
 #include <filewritestream.h>
+#include <al_daynight.h>
 using namespace rapidjson;
 
 std::vector< SaveFileAPIEntry> ModAPI_SaveAPI;
@@ -21,10 +22,8 @@ CWESaveFile cweSaveFile;
 // also this is like the only place in the code that uses namespace for some reason
 // (i really hate this part of the code lol)
 namespace save {
+	// todo: refactor to be static and create helper function that returns span
 	std::array<SAlItem, 10> CWE_PurchasedItems;
-
-	char readBuffer[65536];
-	char writeBuffer[65536];
 
 	// this whole json version of the savefiles is extremely redundant
 	// it should be replaced eventually (people won't be happy that a third savefile will show up for cwe
@@ -35,18 +34,40 @@ namespace save {
 
 		FILE* fp = fopen(filename, "rb");
 		if (fp) {
-			FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+			fseek(fp, 0L, SEEK_END);
+			size_t sz = ftell(fp);
+
+			// rapidjson expects a buffer with size of atleast 4
+			sz = max(sz, 4);
+			std::unique_ptr<char[]> readBuffer(new char[sz]);
+
+			fseek(fp, 0, SEEK_SET);
+
+			FileReadStream is(fp, readBuffer.get(), sz);
 
 			Document d;
 			d.ParseStream(is);
 
 			LoadMember<SAlItem, 10>(d, CWE_PurchasedItems, "PurchasedItems");
 
+			if (d.HasMember("daynight")) {
+				const auto& daynightMember = d["daynight"];
+
+				AL_DayNightCycle_GetSaveCurrentDay() = daynightMember["day"].GetUint();
+				AL_DayNightCycle_GetSaveTimeBetweenPhase() = daynightMember["timeBetweenPhase"].GetFloat();
+				AL_DayNightCycle_GetSaveCurrentPhase() = daynightMember["currentPhase"].GetUint();
+				AL_DayNightCycle_GetSaveNextDayCloudy() = daynightMember["nextDayCloudy"].GetBool();
+			}
+
 			fclose(fp);
 		}
 	}
 
 	void SaveCWESave() {
+		// FileWriteStream will flush it if it fills up, so we got nothing to worry about regarding size
+		// 1024 is just an arbitrary number i chose
+		static char writeBuffer[1024];
+
 		char filename[MAX_PATH];
 		sprintf(filename, "%s_%s", (const char*)0x136604C, "CWEV1.json");
 
@@ -59,6 +80,18 @@ namespace save {
 			writer.StartObject();
 
 			SaveMember<SAlItem, 10>(writer, CWE_PurchasedItems, "PurchasedItems");
+
+			writer.Key("daynight");
+			writer.StartObject();
+			writer.Key("day");
+			writer.Uint(AL_DayNightCycle_GetSaveCurrentDay());
+			writer.Key("timeBetweenPhase");
+			writer.Double(AL_DayNightCycle_GetSaveTimeBetweenPhase());
+			writer.Key("currentPhase");
+			writer.Uint(AL_DayNightCycle_GetSaveCurrentPhase());
+			writer.Key("nextDayCloudy");
+			writer.Bool(AL_DayNightCycle_GetSaveNextDayCloudy());
+			writer.EndObject();
 
 			writer.EndObject();
 
