@@ -4,43 +4,43 @@
 
 //ignore this, this is for our side of things
 #ifdef CWEV9
-	#include "alg_kinder_bl.h"
-	#include "alg_kinder_ortho.h"
+#include "alg_kinder_bl.h"
+#include "alg_kinder_ortho.h"
 #else
-	struct ChaoHudThingB
-	{
-		int adjust;
-		float wd;
-		float ht;
-		float s0;
-		float t0;
-		float s1;
-		float t1;
-		NJS_TEXLIST* pTexlist;
-		int TexNum;
-	};
+struct ChaoHudThingB
+{
+	int adjust;
+	float wd;
+	float ht;
+	float s0;
+	float t0;
+	float s1;
+	float t1;
+	NJS_TEXLIST* pTexlist;
+	int TexNum;
+};
 
-	struct BlackMarketItemAttributes
-	{
-		int PurchasePrice;
-		int SalePrice;
-		__int16 RequiredEmblems;
-		__int16 Name;
-		__int16 Descriptions;
-		__int16 Unknown;
-	};
+struct BlackMarketItemAttributes
+{
+	int PurchasePrice;
+	int SalePrice;
+	__int16 RequiredEmblems;
+	__int16 Name;
+	__int16 Descriptions;
+	__int16 Unknown;
+};
 
-	struct __declspec(align(4)) MotionTableAction
-	{
-		NJS_MOTION* NJS_MOTION;
-		__int16 FlagThing1;
-		__int16 field_6;
-		int TransitionToID;
-		int field_C;
-		float StartFrame;
-		float EndFrame;
-		float PlaySpeed;
-	};
+struct __declspec(align(4)) MotionTableAction
+{
+	NJS_MOTION* NJS_MOTION;
+	__int16 FlagThing1;
+	__int16 field_6;
+	int TransitionToID;
+	int field_C;
+	float StartFrame;
+	float EndFrame;
+	float PlaySpeed;
+};
 #endif
 
 #define ICON_TYPE_BALL 0
@@ -69,38 +69,6 @@ struct CWE_API_CHAO_DATA {
 	char ID[16]; //type id, HAS TO BE NULL TERMINATED, ex. "cwe_spartoi"
 
 	Sint32 reserved[4];
-};
-
-enum {
-	PHASE_DAY = 0,
-	PHASE_EVE = 1,
-	PHASE_NGT = 2,
-	PHASE_CLD = 3,
-	NB_PHASE
-};
-
-struct DAYNIGHT_TIME_INFO {
-	uint32_t timer;
-	uint32_t phase;
-	uint32_t day;
-	bool nextDayCloudy;
-
-	uint32_t(*GetHourFrameCount)();
-	uint32_t(*GetDayFrameCount)(); // = 24 * GetHourFrameCount
-	uint32_t(*GetStartHourForPhase)(uint32_t phase);
-	uint32_t(*GetTimerRelativeToPhase)(uint32_t timer, uint32_t phase);
-	uint32_t(*GetFramesBetweenPhases)(uint32_t phaseA, uint32_t phaseB);
-};
-
-struct DAYNIGHT_TIME_WORK {
-	uint32_t phase;
-	bool nextDayCloudy;
-};
-
-struct DAYNIGHT_RENDER_WORK {
-	uint32_t phaseA;
-	uint32_t phaseB;
-	float lerpValue;
 };
 
 using OtherItemPtr = void(*)(int ID);
@@ -206,30 +174,6 @@ struct CWE_API_ODEKAKE_ENTRY {
 	float BarColorB;
 };
 
-typedef void(*DAYNIGHT_TIME_MANAGER_FUNC)(const char* pGardenID, void(*pFunc)(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork));
-typedef void(*DAYNIGHT_RENDER_MANAGER_FUNC)(const char* pGardenID, void(*pFunc)(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_RENDER_WORK* pWork));
-
-struct CWE_API_DAYNIGHT_REGISTER {
-	Uint32 Version;
-
-	// Version >= 1
-	void(*RegisterECWSkybox)(const char* pGardenID, NJS_OBJECT* pObj); 
-	void(*RegisterTimeManager)(const char* pGardenID, DAYNIGHT_TIME_MANAGER_FUNC pFunc);
-	void(*RegisterRenderManager)(const char* pGardenID, DAYNIGHT_RENDER_MANAGER_FUNC pFunc);
-};
-
-struct CWE_API_DAYNIGHT_INFO {
-	Uint32 Version;
-
-	// Version >= 1
-	uint32_t(*GetCurrentDay)(); // the current day
-	uint32_t(*GetCurrentPhase)(); // the current phase
-	uint32_t(*GetPhaseCount)(); // the number of phases that have passed between a day
-	uint32_t(*GetNextDayCloudy)(); // if the next day will be cloudy
-	float(*GetTimeBetweenPhase)(); // value between 0-1 that represents the progress towards the next phase
-	uint32_t(*GetTimeForEachPhase)(); // time in frames it takes for each phase to finish
-};
-
 struct CWE_REGAPI {
 	Uint32 Version;
 
@@ -280,7 +224,4 @@ struct CWE_REGAPI {
 	void(*RegisterChaoTexlistLoad)(const char* name, NJS_TEXLIST* load); //register texlists to load/unload in chao world
 	void(*RegisterSaveLoad)(const char* suffix, void* buffer, int size); //register custom chao world savefiles like _CWE, karate mod uses this too
 	void(*AddOdekakeMenu)(const CWE_API_ODEKAKE_ENTRY& entry); //add new button to transporter main menu, and handles logic to addnew menu
-
-	const CWE_API_DAYNIGHT_REGISTER* pDayNightRegister;
-	const CWE_API_DAYNIGHT_INFO* pDayNightInfo;
 };
