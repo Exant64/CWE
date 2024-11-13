@@ -1480,7 +1480,7 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 
 // Stores the work data into the save data (it doesn't write the savefile itself, it just writes to the memory that will be saved later)
 static void AL_DayNightCycle_StoreIntoSave(task* tp) {
-	if (!gConfigVal.DayNightCheat) return;
+	if (gConfigVal.DayNightCheat) return;
 
 	const auto& work = GetWork(tp);
 
