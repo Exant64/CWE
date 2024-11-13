@@ -63,7 +63,7 @@
 
     <Group name="Advanced" display="03 - Advanced Features">
       <Property name="AdvancedChaosandCharactersChaoarelikeNormalChao" type="bool" defaultvalue="False" display= "Rare Chao act like Normal Chao">
-        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allow Chaos Chao to hav expression!</HelpText>
+        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allows Chaos Chao to have expressions!</HelpText>
       </Property>
       <Property name="AdvancedMedalChaocanmakeJewelChao" type="bool" defaultvalue="False" display= "Medals can breed Jewel Chao">
         <HelpText>When breeding, Chao with medals from races could produce a Jewel Chao corresponding with the medal they’re wearing.</HelpText>
