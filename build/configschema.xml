@@ -167,6 +167,9 @@
       <Property name="KeepAnimalParts" type="bool" defaultvalue="False" display= "Keep All Current Animal Parts">
         <HelpText>Prevents Chao from getting any new animal parts.</HelpText>
       </Property>
+      <Property name="EnergyCap" type="bool" defaultvalue="False" display = "Drowning Prevention">
+        <HelpText>Caps off Energy at 5000 for Chao that cannot swim yet to make them go swim less frequently.</HelpText>
+      </Property>
       <Property name="DisableBreed" type="bool" defaultvalue="False" display= "Disable Breeding">
         <HelpText>Prevents Chao from breeding.</HelpText>
       </Property>

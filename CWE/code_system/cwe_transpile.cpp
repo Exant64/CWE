@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\SA2ModLoader.h"
 #include <al_save.h>
+#include <ChaoMain.h>
 #define CHAO_BASE (0x019F6EC4)
 #define CHAO_SLOT(a) (CHAO_BASE + a * 0x800)
 int Regs[16];
@@ -146,7 +147,7 @@ void ChaoWorldExtendedRequired()
 			}
 
 			//swim points
-			if (ChaoSlots[i].data.StatPoints[0] <= 99)
+			if (gConfigVal.EnergyCap && ChaoSlots[i].data.StatPoints[0] <= 99)
 			{
 				//cap energy at 5000 if the chao cant swim yet
 				if (ChaoSlots[i].data.Emotion.Energy > 5000)

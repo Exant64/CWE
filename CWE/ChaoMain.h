@@ -21,6 +21,7 @@ DataArray(int, nbMaxEntry, 0x008AB838, 5);
 struct ConfigValues {
 	bool BrightFixEnabled;
 	bool KeepAnimalParts;
+	bool EnergyCap;
 	bool ForceShinyTT;
 	bool EmotionDisplay;
 	bool ChaoCounter = false;
