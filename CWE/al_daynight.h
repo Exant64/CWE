@@ -20,17 +20,17 @@ enum
 
 struct DAYNIGHT_SAVE {
 	uint32_t day;				// starting from index 0, the days that have passed (potential mechanic in the future)
-	uint32_t phaseCount;		// keeping track of the phases passed to know when to increment day (this way we can keep the rest of the phase logic separated)
-	float timeBetweenPhase;		// we store the 0-1 phase not the actual frame timer so if somebody changes the time between phases
-								// we can calculate the new frame timer easily
+	float time;					// we store the 0-24 hour cycle as a float so that it can be rescaled if its somehow reconfigured
 	uint32_t currentPhase;		// current phase
 	bool nextDayCloudy;
 };
 
+// bit hacky, but crunch moment
+extern uint32_t gDayNightCheatPhase;
+
 // save related functions
 uint32_t& AL_DayNightCycle_GetSaveCurrentDay();
-uint32_t& AL_DayNightCycle_GetSavePhaseCount();
-float& AL_DayNightCycle_GetSaveTimeBetweenPhase();
+float& AL_DayNightCycle_GetSaveTime();
 uint32_t& AL_DayNightCycle_GetSaveCurrentPhase();
 bool& AL_DayNightCycle_GetSaveNextDayCloudy();
 

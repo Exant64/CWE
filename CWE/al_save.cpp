@@ -54,7 +54,7 @@ namespace save {
 				const auto& daynightMember = d["daynight"];
 
 				AL_DayNightCycle_GetSaveCurrentDay() = daynightMember["day"].GetUint();
-				AL_DayNightCycle_GetSaveTimeBetweenPhase() = daynightMember["timeBetweenPhase"].GetFloat();
+				AL_DayNightCycle_GetSaveTime() = daynightMember["time"].GetFloat();
 				AL_DayNightCycle_GetSaveCurrentPhase() = daynightMember["currentPhase"].GetUint();
 				AL_DayNightCycle_GetSaveNextDayCloudy() = daynightMember["nextDayCloudy"].GetBool();
 			}
@@ -85,8 +85,8 @@ namespace save {
 			writer.StartObject();
 			writer.Key("day");
 			writer.Uint(AL_DayNightCycle_GetSaveCurrentDay());
-			writer.Key("timeBetweenPhase");
-			writer.Double(AL_DayNightCycle_GetSaveTimeBetweenPhase());
+			writer.Key("time");
+			writer.Double(AL_DayNightCycle_GetSaveTime());
 			writer.Key("currentPhase");
 			writer.Uint(AL_DayNightCycle_GetSaveCurrentPhase());
 			writer.Key("nextDayCloudy");

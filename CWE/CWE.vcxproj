@@ -391,6 +391,7 @@
     <ClInclude Include="patchedcolors.h" />
     <ClInclude Include="data\parts\RaccoonArms.h" />
     <ClInclude Include="register\api_register.h" />
+    <ClInclude Include="renderfix.h" />
     <ClInclude Include="renderfix_api.h" />
     <ClInclude Include="SA2Enums.h" />
     <ClInclude Include="SA2Functions.h" />
@@ -453,6 +454,7 @@
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
     <ClCompile Include="al_ode_mainmenubar.cpp" />
+    <ClCompile Include="renderfix.cpp" />
     <ClCompile Include="ui\al_tween_interp.cpp" />
     <ClInclude Include="al_chao_info.h" />
     <ClCompile Include="al_chao_counter.cpp" />

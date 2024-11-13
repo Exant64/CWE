@@ -79,10 +79,20 @@ enum {
 	NB_PHASE
 };
 
-struct DAYNIGHT_TIME_WORK {
+struct DAYNIGHT_TIME_INFO {
 	uint32_t timer;
-	uint32_t phaseCount;
+	uint32_t phase;
 	uint32_t day;
+	bool nextDayCloudy;
+
+	uint32_t(*GetHourFrameCount)();
+	uint32_t(*GetDayFrameCount)(); // = 24 * GetHourFrameCount
+	uint32_t(*GetStartHourForPhase)(uint32_t phase);
+	uint32_t(*GetTimerRelativeToPhase)(uint32_t timer, uint32_t phase);
+	uint32_t(*GetFramesBetweenPhases)(uint32_t phaseA, uint32_t phaseB);
+};
+
+struct DAYNIGHT_TIME_WORK {
 	uint32_t phase;
 	bool nextDayCloudy;
 };
@@ -196,13 +206,28 @@ struct CWE_API_ODEKAKE_ENTRY {
 	float BarColorB;
 };
 
-struct CWE_API_REGISTER_DAYNIGHT {
+typedef void(*DAYNIGHT_TIME_MANAGER_FUNC)(const char* pGardenID, void(*pFunc)(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork));
+typedef void(*DAYNIGHT_RENDER_MANAGER_FUNC)(const char* pGardenID, void(*pFunc)(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_RENDER_WORK* pWork));
+
+struct CWE_API_DAYNIGHT_REGISTER {
 	Uint32 Version;
 
 	// Version >= 1
 	void(*RegisterECWSkybox)(const char* pGardenID, NJS_OBJECT* pObj); 
-	void(*RegisterOnPhaseChange)(const char* pGardenID, void(*pFunc)(DAYNIGHT_TIME_WORK* pTimeWork));
-	void(*RegisterCustomDayNightTimeManager)(const char* pGardenID, void(*pFunc)(DAYNIGHT_TIME_WORK* pTimeWork));
+	void(*RegisterTimeManager)(const char* pGardenID, DAYNIGHT_TIME_MANAGER_FUNC pFunc);
+	void(*RegisterRenderManager)(const char* pGardenID, DAYNIGHT_RENDER_MANAGER_FUNC pFunc);
+};
+
+struct CWE_API_DAYNIGHT_INFO {
+	Uint32 Version;
+
+	// Version >= 1
+	uint32_t(*GetCurrentDay)(); // the current day
+	uint32_t(*GetCurrentPhase)(); // the current phase
+	uint32_t(*GetPhaseCount)(); // the number of phases that have passed between a day
+	uint32_t(*GetNextDayCloudy)(); // if the next day will be cloudy
+	float(*GetTimeBetweenPhase)(); // value between 0-1 that represents the progress towards the next phase
+	uint32_t(*GetTimeForEachPhase)(); // time in frames it takes for each phase to finish
 };
 
 struct CWE_REGAPI {
@@ -255,4 +280,7 @@ struct CWE_REGAPI {
 	void(*RegisterChaoTexlistLoad)(const char* name, NJS_TEXLIST* load); //register texlists to load/unload in chao world
 	void(*RegisterSaveLoad)(const char* suffix, void* buffer, int size); //register custom chao world savefiles like _CWE, karate mod uses this too
 	void(*AddOdekakeMenu)(const CWE_API_ODEKAKE_ENTRY& entry); //add new button to transporter main menu, and handles logic to addnew menu
+
+	const CWE_API_DAYNIGHT_REGISTER* pDayNightRegister;
+	const CWE_API_DAYNIGHT_INFO* pDayNightInfo;
 };

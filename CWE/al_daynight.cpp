@@ -8,7 +8,6 @@
 #include <util.h>
 #include <ninja_functions.h>
 #include <al_sandhole.h>
-#include "renderfix_api.h"
 #include <api/api_util.h>
 #include "FunctionHook.h"
 #include "UsercallFunctionHandler.h"
@@ -21,141 +20,15 @@
 #include <document.h>
 #include "al_race.h"
 #include "memory.h"
+#include "cwe_api.h"
 #include <span>
 #include <brightfixapi.h>
 
-//struct per level
-struct AL_DayNightConfig {
-	const char* const DefaultObjTex;
+#include "renderfix.h"
 
-	const char* const DayTex;
-	const char* const RainTex;
-	const char* const EveTex;
-	const char* const NightTex;
+#pragma region Save
 
-	const char* const DefaultLight;
-	const char* const CloudLight;
-	const char* const EveLight;
-	const char* const NightLight;
-};
-
-static const std::unordered_map<std::string, int> JsonNameToApi = { {
-	{"neut", CHAO_STG_NEUT},
-	{"hero", CHAO_STG_HERO},
-	{"dark", CHAO_STG_DARK}
-}};
-
-const std::unordered_map<int, AL_DayNightConfig> gDayNightConfig = { {
-	{
-		CHAO_STG_NEUT,
-		{
-			"AL_NEUT_OBJ_TEX",
-
-			"al_stg_neut_tex",
-			"al_neut_cld_tex",
-			"al_neut_eve_tex",
-			"al_neut_ngt_tex",
-
-			"stg00_light.bin",
-			"stg00_cld_light.bin",
-			"stg00_eve_light.bin",
-			"stg00_ngt_light.bin"
-		}
-	},
-	{
-		CHAO_STG_HERO,
-		{
-			"AL_HERO_OBJ_TEX",
-
-			"al_stg_hero_tex",
-			"al_hero_cld_tex",
-			"al_hero_eve_tex",
-			"al_hero_ngt_tex",
-
-			"stg01_light.bin",
-			"stg01_cld_light.bin",
-			"stg01_eve_light.bin",
-			"stg01_ngt_light.bin"
-		}
-	},
-	{
-		CHAO_STG_DARK,
-		{
-			"AL_DARK_OBJ_TEX",
-
-			"al_stg_dark_tex",
-			"al_dark_bld_tex",
-			NULL,
-			NULL,
-
-			"stg02_light.bin",
-			"stg02_cld_light.bin",
-			NULL,
-			NULL
-		}
-	},
-	{
-		CHAO_STG_RACE,
-		{
-			NULL,
-
-			NULL,
-			NULL,
-			"AL_RACE_eve_N_TEX",
-			"AL_RACE_ngt_N_TEX",
-
-			NULL,
-			NULL,
-			NULL,
-			NULL
-		}
-	},
-	{
-		CHAO_STG_ENTRANCE,
-		{
-			NULL,
-
-			NULL,
-			NULL,
-			"AL_ENTRANCE_EVE",
-			"AL_ENTRANCE_NGT",
-
-			NULL,
-			NULL,
-			NULL,
-			NULL
-		}
-	},
-	{
-		9999,
-		{
-			NULL,
-
-			NULL,
-			NULL,
-			"al_karate_eve_tex",
-			"al_karate_ngt_tex",
-
-			NULL,
-			NULL,
-			NULL,
-			NULL
-		}
-	}
-} };
-
-// this is where the code for the new one starts
-
-enum {
-	LIGHT_DEF = 0,
-	LIGHT_EVE = 1,
-	LIGHT_NGT = 2,
-	LIGHT_CLOUD = 3
-};
-
-const size_t AL_DayNightCycle_GetTimeForEachPhase() {
-	return 5 * 60;
-}
+uint32_t gDayNightCheatPhase;
 
 static DAYNIGHT_SAVE gDayNightSave;
 
@@ -165,12 +38,8 @@ uint32_t& AL_DayNightCycle_GetSaveCurrentDay() {
 	return gDayNightSave.day;
 }
 
-uint32_t& AL_DayNightCycle_GetSavePhaseCount() {
-	return gDayNightSave.phaseCount;
-}
-
-float& AL_DayNightCycle_GetSaveTimeBetweenPhase() {
-	return gDayNightSave.timeBetweenPhase;
+float& AL_DayNightCycle_GetSaveTime() {
+	return gDayNightSave.time;
 }
 
 uint32_t& AL_DayNightCycle_GetSaveCurrentPhase() {
@@ -179,6 +48,51 @@ uint32_t& AL_DayNightCycle_GetSaveCurrentPhase() {
 
 bool& AL_DayNightCycle_GetSaveNextDayCloudy() {
 	return gDayNightSave.nextDayCloudy;
+}
+
+#pragma endregion
+
+#pragma region API
+
+static std::unordered_map<std::string, std::vector<NJS_OBJECT*>> gDayNightSkyboxListMap;
+static std::unordered_map<std::string, DAYNIGHT_TIME_MANAGER_FUNC> gDayNightTimeManagerMap;
+static std::unordered_map<std::string, DAYNIGHT_RENDER_MANAGER_FUNC> gDayNightRenderManagerMap;
+
+void RegisterECWSkybox(const char* pGardenID, NJS_OBJECT* pObj) {
+	if(!gDayNightSkyboxListMap.contains(pGardenID)) {
+		gDayNightSkyboxListMap[pGardenID] = {};
+	}
+
+	gDayNightSkyboxListMap[pGardenID].push_back(pObj);
+}
+
+void RegisterTimeManager(const char* pGardenID, DAYNIGHT_TIME_MANAGER_FUNC pFunc) {
+	if (gDayNightTimeManagerMap.contains(pGardenID)) {
+		gDayNightTimeManagerMap[pGardenID] = pFunc;
+		return;
+	}
+
+	gDayNightTimeManagerMap.insert(std::make_pair(std::string(pGardenID), pFunc));
+}
+
+void RegisterRenderManager(const char* pGardenID, DAYNIGHT_RENDER_MANAGER_FUNC pFunc) {
+	if (gDayNightRenderManagerMap.contains(pGardenID)) {
+		gDayNightRenderManagerMap[pGardenID] = pFunc;
+		return;
+	}
+
+	gDayNightRenderManagerMap.insert(std::make_pair(std::string(pGardenID), pFunc ));
+}
+
+#pragma endregion
+
+// the number of frames for each hour
+static size_t AL_DayNightCycle_GetHourFrameCount() {
+	return gConfigVal.DayNightCycleHourFrame;
+}
+
+static size_t AL_DayNightCycle_GetDayFrameCount() {
+	return 24 * AL_DayNightCycle_GetHourFrameCount();
 }
 
 struct DAYNIGHT_SKYBOX {
@@ -232,7 +146,10 @@ struct DAYNIGHT_WORK {
 	uint32_t phaseB;
 	float lerpValue;
 
-	DAYNIGHT_TIME_WORK timeWork;
+	uint32_t timer;
+	uint32_t day;
+	uint32_t phase;
+	bool nextDayCloudy;
 
 	NJS_ARGB appliedColor;
 
@@ -298,8 +215,27 @@ FunctionPointer(void, EnableAlpha, (int a1), 0x4264D0);
 // NOT an official name
 FunctionPointer(void, gjSetDiffuse, (unsigned int a1), 0x42BA60);
 
-static RFAPI_CORE* rfapi_core;
 static task* pDayNightTask;
+
+// Checks if we're in an area that is intended to have daynight cycle
+static bool AL_DayNightCycle_IsValidArea() {
+	switch (AL_GetStageNumber()) {
+	case CHAO_STG_NEUT:
+		return gConfigVal.DayNightCycleNeutralGarden;
+	case CHAO_STG_HERO:
+		return gConfigVal.DayNightCycleHeroGarden;
+	case CHAO_STG_DARK:
+		return gConfigVal.DayNightCycleDarkGarden;
+	case CHAO_STG_RACE:
+	case CHAO_STG_RACE_2P:
+		return gConfigVal.DayNightCycleRace;
+	case CHAO_STG_KARATE:
+	case CHAO_STG_KARATE_2P:
+		return gConfigVal.DayNightCycleKarate;
+	}
+
+	return false;
+}
 
 static const char* AL_DayNightCycle_GetGardenID() {
 	//todo: ecw function here when it's done
@@ -307,7 +243,7 @@ static const char* AL_DayNightCycle_GetGardenID() {
 	switch (AL_GetStageNumber()) {
 	default:
 	case CHAO_STG_NEUT:
-		return "neut";
+		return "neutral";
 
 	case CHAO_STG_HERO:
 		return "hero";
@@ -1544,48 +1480,121 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 
 // Stores the work data into the save data (it doesn't write the savefile itself, it just writes to the memory that will be saved later)
 static void AL_DayNightCycle_StoreIntoSave(task* tp) {
+	if (!gConfigVal.DayNightCheat) return;
+
 	const auto& work = GetWork(tp);
 
-	AL_DayNightCycle_GetSaveCurrentPhase() = work.timeWork.phase;
-	AL_DayNightCycle_GetSaveTimeBetweenPhase() = work.timeWork.timer / float(AL_DayNightCycle_GetTimeForEachPhase());
-	AL_DayNightCycle_GetSaveCurrentDay() = work.timeWork.day;
-	AL_DayNightCycle_GetSavePhaseCount() = work.timeWork.phaseCount;
-	AL_DayNightCycle_GetSaveNextDayCloudy() = work.timeWork.nextDayCloudy;
+	AL_DayNightCycle_GetSaveCurrentPhase() = work.phase;
+	AL_DayNightCycle_GetSaveTime() = work.timer / float(AL_DayNightCycle_GetDayFrameCount());
+	AL_DayNightCycle_GetSaveCurrentDay() = work.day;
+	AL_DayNightCycle_GetSaveNextDayCloudy() = work.nextDayCloudy;
 }
 
-static void AL_DayNightCycle_GenericGardenTimeHandler(DAYNIGHT_TIME_WORK* pTimeWork) {
-	pTimeWork->timer++;
+struct DAYNIGHT_TIME_CONFIG {
+	uint32_t phase;
+	uint8_t hour;
+} static dayNightTimeConfig[] = {
+	{ PHASE_DAY, 12 },
+	{ PHASE_EVE, 21 },
+	{ PHASE_NGT, 1 }
+};
 
-	if (pTimeWork->timer > AL_DayNightCycle_GetTimeForEachPhase()) {
-		pTimeWork->timer = 0;
+static uint32_t AL_DayNightCycle_GetTimerRelativeToPhase(uint32_t timer, uint32_t phase) {
+	const auto framesForHour = dayNightTimeConfig[phase].hour * AL_DayNightCycle_GetHourFrameCount();
 
-		pTimeWork->phaseCount++;
-		if (pTimeWork->phaseCount == 3) {
-			pTimeWork->phaseCount = 0;
-			pTimeWork->day++;
-		}
+	// phase = ngt, timer = 0 (midnight), 0 - 21 * frames case
+	if (timer < framesForHour) {
+		timer += AL_DayNightCycle_GetDayFrameCount();
+		return timer - framesForHour;
+	}
 
-		// if the current phase is evening, then the next phase will be night
-		// so let's decide whether cloudy will come after night
-		if (pTimeWork->phase == PHASE_EVE) {
-			pTimeWork->nextDayCloudy = njRandom() < 0.1f;
-		}
+	return timer - framesForHour;
+}
 
-		// if the current phase is night then the next phase is either day or cloudy
-		if (pTimeWork->phase == PHASE_NGT) {
-			pTimeWork->phase = pTimeWork->nextDayCloudy ? PHASE_CLD : PHASE_DAY;
-		}
-		else {
-			// if the current phase is cloudy then make sure it rolls over to evening not whatever comes after it
-			if (pTimeWork->phase == PHASE_CLD) {
-				pTimeWork->phase = PHASE_EVE;
-			}
-			else {
-				pTimeWork->phase = (pTimeWork->phase + 1) % 3;
-			}
+static uint32_t AL_DayNightCycle_GetFramesBetweenPhases(uint32_t phaseA, uint32_t phaseB) {
+	assert(phaseA != PHASE_CLD);
+	assert(phaseB != PHASE_CLD);
+
+	auto phaseAHour = dayNightTimeConfig[phaseA].hour;
+	auto phaseBHour = dayNightTimeConfig[phaseB].hour;
+
+	// ngt -> day case, phaseA = NGT = 21, phaseB = DAY = 8
+	if (phaseBHour < phaseAHour) phaseBHour += 24;
+
+	return (phaseBHour - phaseAHour) * AL_DayNightCycle_GetHourFrameCount();
+}
+
+static uint32_t AL_DayNightCycle_GetStartHourForPhase(uint32_t phase) {
+	return dayNightTimeConfig[phase].hour;
+}
+
+static void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork) {
+	const size_t hourFrames = pInfo->GetHourFrameCount();
+	
+	size_t phase = -1;
+	for (size_t i = PHASE_DAY; i <= PHASE_NGT; i++) {
+		if (pInfo->GetStartHourForPhase(i) * hourFrames == pInfo->timer) {
+			phase = i;
+			break;
 		}
 	}
 
+	if (phase == -1) return;
+
+	pWork->phase = phase;
+
+	// if the current phase became night let's decide whether cloudy will come after night
+	if (pWork->phase == PHASE_NGT) {
+		pWork->nextDayCloudy = njRandom() < 0.5f;
+	}
+
+	// if the current phase became day then the next phase is either day or cloudy
+	if (pWork->phase == PHASE_DAY) {
+		pWork->phase = pWork->nextDayCloudy ? PHASE_CLD : PHASE_DAY;
+	}
+}
+
+static void AL_DayNightCycle_GenericGardenRenderHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_RENDER_WORK* pWork) {
+	pWork->phaseA = pInfo->phase;
+
+	if (pWork->phaseA == PHASE_NGT && pInfo->nextDayCloudy) {
+		// if we're at night time rn and the next day will be cloudy then make sure to transition to that
+		pWork->phaseB = PHASE_CLD;
+	}
+	else if (pWork->phaseA == PHASE_CLD) {
+		// if we're at cloudy time then that corresponds to day
+		pWork->phaseB = PHASE_EVE;
+	}
+	else {
+		// day -> eve -> ngt -> day -> ...
+		pWork->phaseB = (pInfo->phase + 1) % 3;
+	}
+
+	uint32_t timePhaseA = (pWork->phaseA == PHASE_CLD) ? PHASE_DAY : pWork->phaseA;
+	uint32_t timePhaseB = (pWork->phaseB == PHASE_CLD) ? PHASE_DAY : pWork->phaseB;
+	pWork->lerpValue = pInfo->GetTimerRelativeToPhase(pInfo->timer, timePhaseA)
+		/ float(pInfo->GetFramesBetweenPhases(timePhaseA, timePhaseB));
+}
+
+static void AL_DayNightCycle_DarkGardenRenderHandler(const DAYNIGHT_TIME_INFO* pTimeInfo, DAYNIGHT_RENDER_WORK* pWork) {
+	pWork->phaseA = (pTimeInfo->phase == PHASE_CLD) ? PHASE_CLD : PHASE_DAY;
+
+	if (pTimeInfo->phase == PHASE_NGT && pTimeInfo->nextDayCloudy) {
+		pWork->phaseB = PHASE_CLD;
+	}
+	else {
+		pWork->phaseB = PHASE_DAY;
+	}
+
+	if (pWork->phaseA == pWork->phaseB) {
+		pWork->lerpValue = 0.f;
+		return;
+	}
+
+	uint32_t timePhaseA = (pTimeInfo->phase == PHASE_CLD) ? PHASE_DAY : pTimeInfo->phase;
+	uint32_t timePhaseB = (pTimeInfo->phase == PHASE_CLD) ? PHASE_EVE : ((pTimeInfo->phase + 1) % 3);
+	pWork->lerpValue = pTimeInfo->GetTimerRelativeToPhase(pTimeInfo->timer, timePhaseA)
+		/ float(pTimeInfo->GetFramesBetweenPhases(timePhaseA, timePhaseB));
 }
 
 // Main update function for the DNC
@@ -1642,20 +1651,68 @@ static void AL_DayNightCycleExecutor(task* tp) {
 		break;
 	}
 
-	AL_DayNightCycle_StoreIntoSave(tp);
-	
-	AL_DayNightCycle_GenericGardenTimeHandler(&work.timeWork);
+	DAYNIGHT_TIME_INFO timeInfo = {
+		.timer = work.timer,
+		.phase = work.phase,
+		.day = work.day,
+		.nextDayCloudy = work.nextDayCloudy,
 
-	work.phaseA = work.timeWork.phase;
+		.GetHourFrameCount = AL_DayNightCycle_GetHourFrameCount,
+		.GetDayFrameCount = AL_DayNightCycle_GetDayFrameCount,
+		.GetStartHourForPhase = AL_DayNightCycle_GetStartHourForPhase,
+		.GetTimerRelativeToPhase = AL_DayNightCycle_GetTimerRelativeToPhase,
+		.GetFramesBetweenPhases = AL_DayNightCycle_GetFramesBetweenPhases,
+	};
 
-	if (work.phaseA == PHASE_NGT && work.timeWork.nextDayCloudy) {
-		work.phaseB = PHASE_CLD;
+	bool canTimePass = AL_IsGarden() && AL_DayNightCycle_IsValidArea();
+	if (!gConfigVal.DayNightCheat && canTimePass) {
+		AL_DayNightCycle_StoreIntoSave(tp);
+		
+		DAYNIGHT_TIME_WORK timeWork = {
+			.phase = work.phase,
+			.nextDayCloudy = work.nextDayCloudy
+		};
+
+		AL_DayNightCycle_GenericGardenTimeHandler(&timeInfo, &timeWork);
+
+		// copy "output" of API function
+		work.phase = timeWork.phase;
+		work.nextDayCloudy = timeWork.nextDayCloudy;
+
+		timeInfo.phase = timeWork.phase;
+		timeInfo.nextDayCloudy = timeWork.nextDayCloudy;
+
+		work.timer++;
+		if (work.timer >= AL_DayNightCycle_GetDayFrameCount()) {
+			work.timer = 0;
+
+			work.day++;
+		}
+	}
+
+	DAYNIGHT_RENDER_WORK renderWork = {
+		work.phaseA,
+		work.phaseB,
+		work.lerpValue
+	};
+
+	if (gConfigVal.DayNightCheat) {
+		renderWork.phaseA = gDayNightCheatPhase;
+		renderWork.phaseB = gDayNightCheatPhase;
+		renderWork.lerpValue = 0.f;
 	}
 	else {
-		work.phaseB = (work.timeWork.phase + 1) % 3;
+		if (AL_GetStageNumber() == CHAO_STG_DARK) {
+			AL_DayNightCycle_DarkGardenRenderHandler(&timeInfo, &renderWork);
+		}
+		else {
+			AL_DayNightCycle_GenericGardenRenderHandler(&timeInfo, &renderWork);
+		}
 	}
 
-	work.lerpValue = work.timeWork.timer / float(AL_DayNightCycle_GetTimeForEachPhase());
+	work.phaseA = renderWork.phaseA;
+	work.phaseB = renderWork.phaseB;
+	work.lerpValue = renderWork.lerpValue;
 
 	const auto& colorA = gDayNightManager.GetColorForPhase(work.phaseA);
 	const auto& colorB = gDayNightManager.GetColorForPhase(work.phaseB);
@@ -1814,12 +1871,13 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	auto& work = GetWork(tp);
 
 	g_HelperFunctions->SetDebugFontSize(30);
+	g_HelperFunctions->SetDebugFontColor(0xFFFFFFFF);
 	g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 0), "==DAYNIGHT TIME==");
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 1), "PHASE %d", work.timeWork.phase);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 2), "PHASE_COUNT %d", work.timeWork.phaseCount);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 3), "DAY %d", work.timeWork.day);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 4), "NEXT_CLOUDY %d", work.timeWork.nextDayCloudy);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 5), "TIMER %d", work.timeWork.timer);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 1), "PHASE %d", work.phase);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 2), "DAY %d", work.day);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 3), "NEXT_CLOUDY %d", work.nextDayCloudy);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 4), "TIMER %d", work.timer);
+	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 5), "HOUR %d", work.timer / AL_DayNightCycle_GetHourFrameCount());
 	g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 6), "==DAYNIGHT RENDER==");
 	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 7), "PHASE_A %d", work.phaseA);
 	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 8), "PHASE_B %d", work.phaseB);
@@ -1901,22 +1959,6 @@ static bool AL_DayNightCycle_CheckECWSafety() {
 	return true;
 }
 
-// Checks if we're in an area that is intended to have daynight cycle
-static bool AL_DayNightCycle_IsValidArea() {
-	switch (AL_GetStageNumber()) {
-		case CHAO_STG_NEUT:
-		case CHAO_STG_HERO:
-		case CHAO_STG_DARK:
-		case CHAO_STG_ENTRANCE:
-		// todo: do we also need to look for RACE_2P/KARATE_2P? come back to this when we add files for those
-		case CHAO_STG_RACE:
-		case CHAO_STG_KARATE:
-			return true;
-	}
-
-	return false;
-}
-
 void AL_CreateDayNightCycle() {
 	if (!gConfigVal.DayNightCycle) return;
 	if (!AL_DayNightCycle_IsValidArea()) return;
@@ -1932,11 +1974,16 @@ void AL_CreateDayNightCycle() {
 
 	auto& work = GetWork(tp);
 
-	work.timeWork.timer = AL_DayNightCycle_GetSaveTimeBetweenPhase() * AL_DayNightCycle_GetTimeForEachPhase();
-	work.timeWork.phase = AL_DayNightCycle_GetSaveCurrentPhase();
-	work.timeWork.day = AL_DayNightCycle_GetSaveCurrentDay();
-	work.timeWork.phaseCount = AL_DayNightCycle_GetSavePhaseCount();
-	work.timeWork.nextDayCloudy = AL_DayNightCycle_GetSaveNextDayCloudy();
+	work.timer = AL_DayNightCycle_GetSaveTime() * AL_DayNightCycle_GetDayFrameCount();
+	work.phase = AL_DayNightCycle_GetSaveCurrentPhase();
+	work.day = AL_DayNightCycle_GetSaveCurrentDay();
+	work.nextDayCloudy = AL_DayNightCycle_GetSaveNextDayCloudy();
+
+	if (work.day == 0 && work.timer == 0) {
+		// start at day for new save, 1 + to prevent the code trying to transition unnecessarily on the first frame
+		work.timer = 1 + AL_DayNightCycle_GetHourFrameCount() * AL_DayNightCycle_GetStartHourForPhase(PHASE_DAY);
+		work.phase = PHASE_DAY;
+	}
 
 	tp->DisplaySub = AL_DayNightCycleDisplayer;
 	tp->DeleteSub = AL_DayNightCycleDestructor;
@@ -1958,10 +2005,13 @@ static void DrawLandtable_r() {
 }
 
 void AL_DayNight_Init(const HelperFunctions& helper){
-	DrawLandtable_t.Hook(DrawLandtable_r);
+	if (!gConfigVal.DayNightCycle) return;
+	
+	if (!RenderFix_IsEnabled()) {
+		gConfigVal.DayNightCycle = false;
+		MessageBoxA(0, "\"SA2 Render Fix\" is not enabled, the Day Night Cycle feature will not function properly without it, please install it. Day Night Cycle will be disabled.", "Chao World Extended", 0);
+		return;
+	}
 
-	auto* rf = helper.Mods->find("sa2-render-fix");
-	if (!rf) return;
-		
-	rfapi_core = rf->GetDllExport<RFAPI_CORE*>("rfapi_core");
+	DrawLandtable_t.Hook(DrawLandtable_r);
 }

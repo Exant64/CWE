@@ -38,11 +38,26 @@
       <Property name="DayNightCycle" type="bool" defaultvalue="True" display= "Day Night Cycle">
         <HelpText>Time passes in the gardens with slight weather changes (Warning: May not be compatible with some Texture mods)</HelpText>
       </Property>
+      <Property name="DayNightCycleNeutralGarden" type="bool" defaultvalue="True" display= "Neutral Garden">
+        <HelpText>Enables/Disables the Day Night Cycle in the Neutral Garden.</HelpText>
+      </Property>
+      <Property name="DayNightCycleHeroGarden" type="bool" defaultvalue="True" display= "Hero Garden">
+        <HelpText>Enables/Disables the Day Night Cycle in the Hero Garden.</HelpText>
+      </Property>
+      <Property name="DayNightCycleDarkGarden" type="bool" defaultvalue="True" display= "Dark Garden">
+        <HelpText>Enables/Disables the Day Night Cycle in the Dark Garden.</HelpText>
+      </Property>
+      <Property name="DayNightCycleRace" type="bool" defaultvalue="True" display= "Chao Race">
+        <HelpText>Enables/Disables the Day Night Cycle in Chao Race.</HelpText>
+      </Property>
+      <Property name="DayNightCycleKarate" type="bool" defaultvalue="True" display= "Chao Karate">
+        <HelpText>Enables/Disables the Day Night Cycle in Chao Karate.</HelpText>
+      </Property>
+      <Property name="DayNightCycleHourFrame" type="int" defaultvalue="60" display= "In-Game Hour in Real-Life Seconds">
+        <HelpText>Sets the number of real life seconds an in-game hour takes. The "day" phase starts at 12:00, the evening phase starts at 21:00, and the night phase starts at 01:00.</HelpText>
+      </Property>
       <Property name="DayNightCheat" type="bool" defaultvalue="False" display= "Day Night Cheat Menu">
         <HelpText>Lets you edit the current time by pressing X+Y (Note: It pauses passing time)</HelpText>
-      </Property>
-      <Property name="NoDayNightTransition" type="bool" defaultvalue="False" display= "No Day Night Transition">
-        <HelpText>Disables the transition between time changes</HelpText>
       </Property>
     </Group>
 

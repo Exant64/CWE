@@ -451,10 +451,12 @@ void __cdecl AL_NameDisplayer(ObjectMaster* a1)
 	else if (a1->Data1.Entity->Action == 3)
 	{
 		*(char*)0x25EFFCC = 0;
-		//njDrawSprite2D(&chaoCamEdge_sprite, 1, 0, 0x60);
-		njDrawSprite2D(&dayNightUI, GetTimeOfDay(), 1, 0x60);
-		if(GetTimeOfDay() == 0)
-			njDrawSprite2D(&cloudySpr, GetWeather() == 1 ? 0 : 1, 1, 0x60);
+		
+		bool isDay = gDayNightCheatPhase == PHASE_CLD || gDayNightCheatPhase == PHASE_DAY;
+		auto phase = (gDayNightCheatPhase == PHASE_CLD) ? PHASE_DAY : gDayNightCheatPhase;
+		njDrawSprite2D(&dayNightUI, phase, 1, 0x60);
+		if(isDay)
+			njDrawSprite2D(&cloudySpr, gDayNightCheatPhase != PHASE_CLD, 1, 0x60);
 		
 		*(char*)0x25EFFCC = 1;
 	}
@@ -504,23 +506,24 @@ void AL_NameDisplay_Main(ObjectMaster* a1)
 		ControlEnabled = 0;
 
 		if (MenuButtons_Pressed[0] & Buttons_Left)
-			SetTimeOfDay(0);
+			gDayNightCheatPhase = PHASE_DAY;
 		else if (MenuButtons_Pressed[0] & Buttons_Right)
-			SetTimeOfDay(1);
+			gDayNightCheatPhase = PHASE_EVE;
 		else if (MenuButtons_Pressed[0] & Buttons_Down)
-			SetTimeOfDay(2);
+			gDayNightCheatPhase = PHASE_NGT;
 
-		if (MenuButtons_Pressed[0] & Buttons_Y)
-			SetWeather(GetWeather() == 1 ? 0 : 1);
+		bool isDay = gDayNightCheatPhase == PHASE_CLD || gDayNightCheatPhase == PHASE_DAY;
+		if (isDay && (MenuButtons_Pressed[0] & Buttons_Y))
+			gDayNightCheatPhase = (gDayNightCheatPhase == PHASE_CLD) ? PHASE_DAY : PHASE_CLD;
 
 		if (MenuButtons_Pressed[0] & Buttons_A)
 		{
 			a1->Data1.Entity->field_6 = 0;
 			a1->Data1.Entity->Action = 0;
-			//DayNightTransition_Create(GetTimeOfDay(), GetWeather());
-			ControlEnabled = 1;
 
+			ControlEnabled = 1;
 		}
+
 		break;
 	}
 }

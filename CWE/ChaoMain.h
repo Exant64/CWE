@@ -27,9 +27,16 @@ struct ConfigValues {
 	bool MoreSound;
 	bool MoreAnimation;
 	bool ClassroomTimerDisplay;
+
 	bool DayNightCycle;
+	bool DayNightCycleNeutralGarden;
+	bool DayNightCycleHeroGarden;
+	bool DayNightCycleDarkGarden;
+	bool DayNightCycleRace;
+	bool DayNightCycleKarate;
+	int DayNightCycleHourFrame;
 	bool DayNightCheat = true;
-	bool NoDayNightTransition = false;
+
 	bool OmochaoParts = false;
 	bool UnusedToys = false;
 	bool SpawnOmochao = true;

@@ -131,6 +131,7 @@
     <ClCompile Include="Trampoline.cpp" />
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="al_animation.cpp" />
+    <ClCompile Include="renderfix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -311,6 +312,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="al_chao_info.h" />
     <ClInclude Include="data\ChaoShaderDayNight.h" />
+    <ClInclude Include="renderfix.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
