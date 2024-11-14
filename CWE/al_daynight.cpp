@@ -226,6 +226,8 @@ static bool AL_DayNightCycle_IsValidArea() {
 		return gConfigVal.DayNightCycleHeroGarden;
 	case CHAO_STG_DARK:
 		return gConfigVal.DayNightCycleDarkGarden;
+	case CHAO_STG_ENTRANCE:
+		return true;
 	case CHAO_STG_RACE:
 	case CHAO_STG_RACE_2P:
 		return gConfigVal.DayNightCycleRace;
@@ -977,7 +979,7 @@ static void dumpGjParameter(const SA2B_Model* pModel) {
 static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel, std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE>& texMapTableList, bool& showMixedTexlistError) {
 	bool needsOriginalTexlist[NB_PHASE] = { false };
 	size_t textureParamCount = 0;
-
+	
 	const auto checkAndAddGeo = [&](const SA2B_GeometryData* pGeo) {
 		// since these separate "geometries" can be sorta interpreted as separate materials
 		// basically we're checking if the material's texture matches anything we're looking for
@@ -1010,6 +1012,8 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 				const auto texID = para[1] & 0xFFFF;
 				textureParamCount++;
 
+				pTexID = &para[1];
+
 				const DAYNIGHT_SKYBOX* pResultSkyboxEntry;
 				if (AL_DayNightCycle_FindSkyboxTexID(texID, &pResultSkyboxEntry)) {
 					// for testing in debug mode, let's check if there's any chance at all there are multiple texture entries per geo
@@ -1017,8 +1021,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 					assert(pSkyboxEntry == NULL);
 
 					pSkyboxEntry = pResultSkyboxEntry;
-					pTexID = &para[1];
-
+					
 					if (pResultSkyboxEntry->dayTexID == -1)		originalTexlist[PHASE_DAY] = true;
 					if (pResultSkyboxEntry->eveningTexID == -1) originalTexlist[PHASE_EVE] = true;
 					if (pResultSkyboxEntry->nightTexID == -1)	originalTexlist[PHASE_NGT] = true;
@@ -1046,7 +1049,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 
 			texMapTableList.push_back(texMap);
 		}
-
+		
 		if (pTexID) {
 			// this check is needed so that a model doesn't use a combination/"hybrid" texlist setup with a material using original tex id and sky texlist tex id
 			if (!showMixedTexlistError && gDayNightManager.GetTextureFileName()) {
