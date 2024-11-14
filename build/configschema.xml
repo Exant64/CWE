@@ -47,6 +47,15 @@
       <Property name="DayNightCycleDarkGarden" type="bool" defaultvalue="True" display= "Dark Garden">
         <HelpText>Enables/Disables the Day Night Cycle in the Dark Garden.</HelpText>
       </Property>
+      <Property name="DayNightCycleNeutralGardenSkybox" type="bool" defaultvalue="True" display= "Neutral Garden Skybox">
+        <HelpText>Enables/Disables the Day Night Cycle Skybox in the Neutral Garden. Useful for disabling it for custom gardens that have errors because of it.</HelpText>
+      </Property>
+      <Property name="DayNightCycleHeroGardenSkybox" type="bool" defaultvalue="True" display= "Hero Garden Skybox">
+        <HelpText>Enables/Disables the Day Night Cycle Skybox in the Hero Garden. Useful for disabling it for custom gardens that have errors because of it.</HelpText>
+      </Property>
+      <Property name="DayNightCycleDarkGardenSkybox" type="bool" defaultvalue="True" display= "Dark Garden Skybox">
+        <HelpText>Enables/Disables the Day Night Cycle Skybox in the Dark Garden. Useful for disabling it for custom gardens that have errors because of it.</HelpText>
+      </Property>
       <Property name="DayNightCycleRace" type="bool" defaultvalue="True" display= "Chao Race">
         <HelpText>Enables/Disables the Day Night Cycle in Chao Race.</HelpText>
       </Property>

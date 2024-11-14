@@ -217,6 +217,19 @@ FunctionPointer(void, gjSetDiffuse, (unsigned int a1), 0x42BA60);
 
 static task* pDayNightTask;
 
+static bool AL_DayNightCycle_CanCheckSkybox() {
+	switch (AL_GetStageNumber()) {
+	case CHAO_STG_NEUT:
+		return gConfigVal.DayNightCycleNeutralGardenSkybox;
+	case CHAO_STG_HERO:
+		return gConfigVal.DayNightCycleHeroGardenSkybox;
+	case CHAO_STG_DARK:
+		return gConfigVal.DayNightCycleDarkGardenSkybox;
+	}
+
+	return false;
+}
+
 // Checks if we're in an area that is intended to have daynight cycle
 static bool AL_DayNightCycle_IsValidArea() {
 	switch (AL_GetStageNumber()) {
@@ -1279,7 +1292,7 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 		auto pCOLDst = &pDst->COLList[i];
 
 		// if it's a skybox, add it to the list of skyboxes to interpolate the textures on
-		if (AL_DayNightCycle_CheckSkybox(!work.isChunkLandTable, pCOLSrc->Model, pSkyboxColList[skyboxColCount])) {
+		if (AL_DayNightCycle_CanCheckSkybox() && AL_DayNightCycle_CheckSkybox(!work.isChunkLandTable, pCOLSrc->Model, pSkyboxColList[skyboxColCount])) {
 			skyboxColCount++;
 
 			pCOLDst->Flags &= ~0x80000000; // remove visibility col flag, we'll handle rendering
