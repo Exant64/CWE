@@ -39,6 +39,7 @@ struct ConfigValues {
 	bool DayNightCycleRace;
 	bool DayNightCycleKarate;
 	int DayNightCycleHourFrame;
+	bool DayNightDebug;
 	bool DayNightCheat = true;
 
 	bool OmochaoParts = false;

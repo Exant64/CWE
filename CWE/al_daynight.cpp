@@ -1886,18 +1886,20 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
 static void AL_DayNightCycleDisplayer(task* tp) {
 	auto& work = GetWork(tp);
 
-	g_HelperFunctions->SetDebugFontSize(30);
-	g_HelperFunctions->SetDebugFontColor(0xFFFFFFFF);
-	g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 0), "==DAYNIGHT TIME==");
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 1), "PHASE %d", work.phase);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 2), "DAY %d", work.day);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 3), "NEXT_CLOUDY %d", work.nextDayCloudy);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 4), "TIMER %d", work.timer);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 5), "HOUR %d", work.timer / AL_DayNightCycle_GetHourFrameCount());
-	g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 6), "==DAYNIGHT RENDER==");
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 7), "PHASE_A %d", work.phaseA);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 8), "PHASE_B %d", work.phaseB);
-	g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 9), "LERP %f", work.lerpValue);
+	if (gConfigVal.DayNightDebug) {
+		g_HelperFunctions->SetDebugFontSize(30);
+		g_HelperFunctions->SetDebugFontColor(0xFFFFFFFF);
+		g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 0), "==DAYNIGHT TIME==");
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 1), "PHASE %d", work.phase);
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 2), "DAY %d", work.day);
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 3), "NEXT_CLOUDY %d", work.nextDayCloudy);
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 4), "TIMER %d", work.timer);
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 5), "HOUR %d", work.timer / AL_DayNightCycle_GetHourFrameCount());
+		g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 6), "==DAYNIGHT RENDER==");
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 7), "PHASE_A %d", work.phaseA);
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 8), "PHASE_B %d", work.phaseB);
+		g_HelperFunctions->DisplayDebugStringFormatted(NJM_LOCATION(0, 9), "LERP %f", work.lerpValue);
+	}
 
 	// landtables use this light index for some reason
 	DoLighting(2); 

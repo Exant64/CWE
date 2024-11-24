@@ -65,6 +65,9 @@
       <Property name="DayNightCycleHourFrame" type="int" defaultvalue="60" display= "In-Game Hour in Real-Life Seconds">
         <HelpText>Sets the number of real life seconds an in-game hour takes. The "day" phase starts at 12:00, the evening phase starts at 21:00, and the night phase starts at 01:00.</HelpText>
       </Property>
+      <Property name="DayNightDebug" type="bool" defaultvalue="False" display= "Day Night Debug Info">
+        <HelpText>Displays debug information regarding the cycle system, useful for testing.</HelpText>
+      </Property>
       <Property name="DayNightCheat" type="bool" defaultvalue="False" display= "Day Night Cheat Menu">
         <HelpText>Lets you edit the current time by pressing X+Y (Note: It pauses passing time)</HelpText>
       </Property>
