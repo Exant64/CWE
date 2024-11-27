@@ -173,6 +173,9 @@
       <Property name="SaveMultiSavefile" type="bool" defaultvalue="False" display= "Multi Savefile">
         <HelpText>Each SA2 save also includes its own Chao World file instead of using one file universally.</HelpText>
       </Property>
+      <Property name="TransporterColor" type="bool" defaultvalue="True" display= "Different Transporter Colors">
+        <HelpText>Gives a different color and texture to the transporter based on the garden you're in.</HelpText>
+      </Property>
       <Property name="BonusChaoCounter" type="bool" defaultvalue="False" display= "Chao Counter">
         <HelpText>Adds a Chao Counter on the screen when paused to see how many Chao are in the garden.</HelpText>
       </Property>

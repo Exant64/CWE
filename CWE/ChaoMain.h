@@ -24,6 +24,7 @@ struct ConfigValues {
 	bool EnergyCap;
 	bool ForceShinyTT;
 	bool EmotionDisplay;
+	bool TransporterColor;
 	bool ChaoCounter = false;
 	bool MoreSound;
 	bool MoreAnimation;

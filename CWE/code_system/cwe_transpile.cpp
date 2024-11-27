@@ -186,34 +186,35 @@ void ChaoWorldExtendedRequired()
 	}
 
 	//transporter colors
-	if (*(uint32_t*)0x0134062c == 1)
-	{
-		*(uint32_t*)0x0125715C = 0xFFFFEF50;
-		*(uint32_t*)0x01257D1C = 0xFF85E3FF;
-		*(uint32_t*)0x012567c4 = 0xFFFFEF50;
-		*(uint32_t*)0x01256424 = 0xFFFF0000;
-		*(uint32_t*)0x01257E5C = 0xFFFF0000;
-		*(uint8_t*)0x008B71C5 = 0x31;
+	if (gConfigVal.TransporterColor) {
+		if (*(uint32_t*)0x0134062c == 1)
+		{
+			*(uint32_t*)0x0125715C = 0xFFFFEF50;
+			*(uint32_t*)0x01257D1C = 0xFF85E3FF;
+			*(uint32_t*)0x012567c4 = 0xFFFFEF50;
+			*(uint32_t*)0x01256424 = 0xFFFF0000;
+			*(uint32_t*)0x01257E5C = 0xFFFF0000;
+			*(uint8_t*)0x008B71C5 = 0x31;
+		}
+		else if (*(uint32_t*)0x0134062c == 2)
+		{
+			*(uint32_t*)0x0125715C = 0xFF50C0FF;
+			*(uint32_t*)0x01257D1C = 0xFFFFFFFF;
+			*(uint32_t*)0x012567c4 = 0xFF50C0FF;
+			*(uint32_t*)0x01256424 = 0xFFFF0000;
+			*(uint32_t*)0x01257E5C = 0xFFA0FF80;
+			*(uint8_t*)0x008B71C5 = 0x32;
+		}
+		else if (*(uint32_t*)0x0134062c == 3)
+		{
+			*(uint32_t*)0x0125715C = 0xFFffa0a0;
+			*(uint32_t*)0x01257D1C = 0xFFa080a0;
+			*(uint32_t*)0x012567c4 = 0xFFffa0a0;
+			*(uint32_t*)0x01256424 = 0xFFFF0000;
+			*(uint32_t*)0x01257E5C = 0xFFFF80FF;
+			*(uint8_t*)0x008B71C5 = 0x33;
+		}
 	}
-	if (*(uint32_t*)0x0134062c == 2)
-	{
-		*(uint32_t*)0x0125715C = 0xFF50C0FF;
-		*(uint32_t*)0x01257D1C = 0xFFFFFFFF;
-		*(uint32_t*)0x012567c4 = 0xFF50C0FF;
-		*(uint32_t*)0x01256424 = 0xFFFF0000;
-		*(uint32_t*)0x01257E5C = 0xFFA0FF80;
-		*(uint8_t*)0x008B71C5 = 0x32;
-	}
-	if (*(uint32_t*)0x0134062c == 3)
-	{
-		*(uint32_t*)0x0125715C = 0xFFffa0a0;
-		*(uint32_t*)0x01257D1C = 0xFFa080a0;
-		*(uint32_t*)0x012567c4 = 0xFFffa0a0;
-		*(uint32_t*)0x01256424 = 0xFFFF0000;
-		*(uint32_t*)0x01257E5C = 0xFFFF80FF;
-		*(uint8_t*)0x008B71C5 = 0x33;
-	}
-
 	//more inventory safe guard crap
 	bool saveFull = true;
 	for (int i = 0; i < 24; i++) {
