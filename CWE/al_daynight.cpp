@@ -1316,6 +1316,25 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 	}
 }
 
+static LightGC pushPopFallbackLight;
+
+// hack to fix lighting on vertex colored objects in garden
+// we use it for alo_fruit currently
+void AL_DayNightCycle_PushFallbackLight() {
+	if (!pDayNightTask) return;
+
+	pushPopFallbackLight = LightsGC[LightIndex];
+
+	LightsGC[LightIndex] = GetWork(pDayNightTask).fallbackLight;
+	LightsGC[LightIndex].SomeFlag |= 1;
+}
+
+void AL_DayNightCycle_PopFallbackLight() {
+	if (!pDayNightTask) return;
+	
+	LightsGC[LightIndex] = pushPopFallbackLight;
+}
+
 static void AL_DayNightCycle_InitFallbackLight(task* tp) {
 	auto& work = GetWork(tp);
 

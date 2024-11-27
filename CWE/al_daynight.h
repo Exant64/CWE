@@ -87,6 +87,9 @@ struct DAYNIGHT_SAVE {
 // bit hacky, but crunch moment
 extern uint32_t gDayNightCheatPhase;
 
+void AL_DayNightCycle_PushFallbackLight();
+void AL_DayNightCycle_PopFallbackLight();
+
 // save related functions
 uint32_t& AL_DayNightCycle_GetSaveCurrentDay();
 float& AL_DayNightCycle_GetSaveTime();

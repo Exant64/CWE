@@ -10,6 +10,7 @@
 #include "al_modelcontainer.h"
 #include "al_behavior/al_intention.h"
 #include "Trampoline.h"
+#include <al_daynight.h>
 
 std::vector<ChaoItemStats> ModAPI_FruitStats;
 
@@ -38,6 +39,8 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			v13 = v13 * 0.8f;
 		}
 		a2 = 0.8f * v13;
+
+		AL_DayNightCycle_PushFallbackLight();
 		DoLighting(LightIndex);
 		
 		njPushMatrixEx();
@@ -79,6 +82,7 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			}
 		}
 		njPopMatrixEx();
+		AL_DayNightCycle_PopFallbackLight();
 		DoLighting(LightIndexBackupMaybe);
 	}
 	else if (!(v2->Status < 0)) { //if not being held by player
