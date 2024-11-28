@@ -1252,7 +1252,7 @@ static void AL_DayNightCycle_CopyCOLObject_Chunk(const COL* pSrc, COL* pDst, Uin
 // Initializes the LandTable copy, and the skybox entries
 static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 	auto& work = GetWork(tp);
-
+	
 	const LandTable* pSrc = CurrentLandTable;
 	LandTable* pDst = ALLOC(LandTable);
 	work.pNewLandtable = pDst;
@@ -1270,7 +1270,7 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 	// create the COLList and copy it
 	pDst->COLList = reinterpret_cast<COL*>(ALLOC_ARRAY(pSrc->COLCount, COL));
 	memcpy(pDst->COLList, pSrc->COLList, pSrc->COLCount * sizeof(COL));
-
+	
 	work.isChunkLandTable = LandTableSA2BModels != true;
 
 	const size_t pointerCount = pSrc->ChunkModelCount * VERTEX_COLOR_TABLE_COUNT;
@@ -1285,12 +1285,12 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 		work.pVertexColorTableChunk = ALLOC_ARRAY(pointerCount, Uint32*);
 		memset(work.pVertexColorTableChunk, NULL, sizeof(Uint32*) * pointerCount);
 	}
-
+	
 	// copy the visual COLs' models
 	for (size_t i = 0; i < pSrc->ChunkModelCount; i++) {
 		const auto pCOLSrc = &pSrc->COLList[i];
 		auto pCOLDst = &pDst->COLList[i];
-
+		
 		// if it's a skybox, add it to the list of skyboxes to interpolate the textures on
 		if (AL_DayNightCycle_CanCheckSkybox() && AL_DayNightCycle_CheckSkybox(!work.isChunkLandTable, pCOLSrc->Model, pSkyboxColList[skyboxColCount])) {
 			skyboxColCount++;
@@ -1380,7 +1380,7 @@ static void AL_DayNightCycle_Init(task* tp) {
 	else {
 		work.originalLandLightColor = Lights[2].color;
 	}
-
+	
 	// copy the landtable and make the game render our new one, and initialize the skyboxes
 	AL_DayNightCycle_InitNewLandTable(tp);
 	work.pOldLandtable = CurrentLandTable;
@@ -1724,7 +1724,7 @@ static void AL_DayNightCycleExecutor(task* tp) {
 			work.day++;
 		}
 	}
-
+	
 	DAYNIGHT_RENDER_WORK renderWork = {
 		work.phaseA,
 		work.phaseB,
@@ -1765,9 +1765,8 @@ static void AL_DayNightCycleExecutor(task* tp) {
 static void AL_DayNightCycle_RestoreAll(task* tp) {
 	auto& work = GetWork(tp);
 	
-	// restore the original landtable
-	CurrentLandTable = work.pOldLandtable;
-	CurrentLandTable->field_A = work.pNewLandtable->field_A; // this is a field to keep track of if the texlist is already loaded or not
+	// restore the original landtable's field to keep track of if the texlist is already loaded or not
+	work.pOldLandtable->field_A = work.pNewLandtable->field_A; 
 
 	for (size_t i = 0; i < work.skyboxCount; i++) {
 		auto& skybox = work.pSkyboxTable[i];
