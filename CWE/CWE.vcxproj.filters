@@ -132,6 +132,7 @@
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="al_animation.cpp" />
     <ClCompile Include="renderfix.cpp" />
+    <ClCompile Include="api\api_accessory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
