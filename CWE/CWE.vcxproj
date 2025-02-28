@@ -515,6 +515,7 @@
     <ClInclude Include="PaletteFix.h" />
     <ClInclude Include="patchedcolors.h" />
     <ClInclude Include="data\parts\RaccoonArms.h" />
+    <ClInclude Include="api\api_accessory.h" />
     <ClInclude Include="register\api_register.h" />
     <ClInclude Include="renderfix.h" />
     <ClInclude Include="renderfix_api.h" />
@@ -714,7 +715,7 @@
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="ninja_functions.cpp" />
     <ClCompile Include="PaletteFix.cpp" />
-    <ClCompile Include="register\api_accessory.cpp" />
+    <ClCompile Include="register\reg_accessory.cpp" />
     <ClCompile Include="register\api_fruit.cpp" />
     <ClCompile Include="register\api_minimal.cpp" />
     <ClCompile Include="register\api_motion.cpp" />

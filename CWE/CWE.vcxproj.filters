@@ -119,7 +119,7 @@
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="ninja_functions.cpp" />
     <ClCompile Include="PaletteFix.cpp" />
-    <ClCompile Include="register\api_accessory.cpp" />
+    <ClCompile Include="register\reg_accessory.cpp" />
     <ClCompile Include="register\api_fruit.cpp" />
     <ClCompile Include="register\api_minimal.cpp" />
     <ClCompile Include="register\api_motion.cpp" />
@@ -334,6 +334,7 @@
     <ClInclude Include="imgui_debug.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
     <ClInclude Include="imgui_debug_motionstrings.h" />
+    <ClInclude Include="api\api_accessory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
