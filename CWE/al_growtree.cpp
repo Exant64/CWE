@@ -11,7 +11,7 @@
 
 #include "al_behavior/al_intention.h"
 #include <api/api_tree.h>
-
+#include <al_daynight.h>
 
 struct FRUIT_INFO
 {
@@ -225,7 +225,12 @@ void ALO_GrowTreeExecutor_Display_(ObjectMaster* a1)
     if(v1->state != TREE_ST_LOCAL)
         v1->texlist = ModAPI_TreeEntries[v1->kind].pTexlist;
     
+    AL_DayNightCycle_PushFallbackLight();
     ALO_GrowTreeExecutor_Display(a1);
+    AL_DayNightCycle_PopFallbackLight();
+    // this call is already done in the function but we do it again after the pop to be safe
+    // since we're not "in" the function we cant do it properly before the dolighting call
+    DoLighting(LightIndexBackupMaybe); 
 }
 
 void __cdecl FixTransition(ALO_GrowTreeExecutor_Data* v2)

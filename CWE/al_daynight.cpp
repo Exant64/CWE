@@ -1972,6 +1972,8 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 
 	njColorBlendingMode(0, 8);
 	njColorBlendingMode(1, 6);
+
+	DoLighting(LightIndexBackupMaybe);
 }
 
 #pragma endregion
