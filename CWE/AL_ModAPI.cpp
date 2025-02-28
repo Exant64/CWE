@@ -422,7 +422,7 @@ void RegisterCWEData(CWE_REGAPI* cwe_api)
 	int MissingHat = cwe_api->RegisterAlItemString("Hat");
 	int MissingFruit = cwe_api->RegisterAlItemString("Fruit");
 	int MissingSeed = cwe_api->RegisterAlItemString("Seed");
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < PLACEHOLDER_ITEM_COUNT; i++)
 	{
 		BlackMarketItemAttributes missing_attrib = { 2500,500,999, (short)MissingItem,-1,0 };
 		ChaoItemStats missing_stats = { 0 };
