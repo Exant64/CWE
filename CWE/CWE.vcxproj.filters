@@ -141,6 +141,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui_debug.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
+    <ClCompile Include="api\api_accessory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
