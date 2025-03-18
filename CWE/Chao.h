@@ -36,6 +36,7 @@ enum ChaoBehaviour : __int32
 	ChaoBehaviour_HANDING = 0x005606D0,
 	ChaoBehaviour_EATING = 0x005607C0,
 	ChaoBehaviour_PICKUPFRUIT = 0x005613C0,
+	ChaoBehaviour_SELFCARE = 0x005614D0,
 	ChaoBehaviour_SWIM = 0x00561FB0,
 	ChaoBehaviour_SUPERSWIM = 0x00562040, //Chao Swim but his Swim is over 700 points
 	ChaoBehaviour_SWIMIDLE = 0x00562160,
@@ -69,8 +70,10 @@ enum ChaoBehaviour : __int32
 	ChaoBehaviour_MATEWALK = 0x0059BF30,
 	ChaoBehaviour_WATCHINGDANCE = 0x0059CDA0,
 	ChaoBehaviour_MARACAS = 0x0059D5A0,
+	ChaoBehaviour_DRUM = 0x0059DA40,
 	ChaoBehaviour_FLUTE = 0x0059DD10,
 	ChaoBehaviour_TRUMPET = 0x0059E120,
+	ChaoBehaviour_CYMBALS = 0x0059E2D0,
 	ChaoBehaviour_WATCHINGMUSIC = 0x0059E710,
 	ChaoBehaviour_WANTTHEHOLDFRUIT = 0x0059EA00, //The chao beg the player who is holding a fruit
 	ChaoBehaviour_GOTOHOLDFRUIT = 0x0059ED60, //The chao go to the player who is holding a fruit

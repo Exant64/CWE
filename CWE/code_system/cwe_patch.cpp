@@ -19,8 +19,8 @@ void CWE_Patch_Init(const IniFile* config)
 {
 	//main code
 	//other chao than dark chao can get angry
-	PatchData((unsigned char*)0x005A1279, (unsigned char)0xFE);
-	PatchData((unsigned char*)0x005A127C, (unsigned char)23);
+	PatchData((unsigned char*)0x005A1279, (unsigned char)0);
+	PatchData((unsigned char*)0x005A127C, (unsigned char)255);
 	PatchData((unsigned char*)0x005A1288, (unsigned char)1);
 
 	//stg 13 write

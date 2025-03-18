@@ -242,12 +242,12 @@ struct __declspec(align(4)) MotionTableAction
 struct __declspec(align(4)) MotionTableData
 {
 	short flag;
-	__int16 gap2;
+	__int16 gap2; //perhaps another flag?
 	int AnimID;
 	int TransitionToID;
 	float frameIncreaseSpeed_;
 	float someSpeedThing;
-	float dword14;
+	float TransitionDuration;
 	__int16 SomeFlagThingInEntry2;
 	__int16 field_1A;
 	float frame;
@@ -461,8 +461,8 @@ struct __declspec(align(4)) ChaoData1
 	char ObjectListEnd[924];
 	size_t LocalCharacterChaoType;
 	bool IsCustomChaoTypeLoaded;
-	unsigned char AnimRandomized;
-	unsigned char ExtraSound;
+	bool TransitionToIDOverwritten; //Used to overwrite TransitionToID only once, i still wish there was a better way..
+//	unsigned char ExtraSound;
 };
 #pragma pack(pop)
 

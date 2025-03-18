@@ -44,3 +44,7 @@ int __cdecl AL_IsMotionEnd(ObjectMaster* a1)
 {
 	return a1->Data1.Chao->MotionTable.flag & 1;
 };
+int __cdecl AL_IsMotionChange(ObjectMaster* a1)
+{
+	return a1->Data1.Chao->MotionTable.flag & 2;
+};

@@ -111,7 +111,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SA2_PATH)\mods\ChaoWorldExtended\!ChaoWorldExtended\</OutDir>
+    <OutDir>..\..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\Sonic Adventure 2\mods\!ChaoWorldExtended\!ChaoWorldExtended</OutDir>
     <IncludePath>$(SolutionDir)CWE;$(IncludePath)</IncludePath>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
@@ -188,6 +188,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

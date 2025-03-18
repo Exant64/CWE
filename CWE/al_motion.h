@@ -9,6 +9,8 @@ void AL_SetMotionLink(ObjectMaster* a1, int index);
 void AL_SetMotionLinkStep(ObjectMaster* a1, int index, int spd);
 void __cdecl AL_SetMotionSpd(ObjectMaster* a1, float a2);
 int __cdecl AL_IsMotionEnd(ObjectMaster* a1);
+int __cdecl AL_IsMotionChange(ObjectMaster* a1);
+
 enum
 {
 	ALM_STAND,

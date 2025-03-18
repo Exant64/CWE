@@ -9,11 +9,595 @@
 #include "al_behavior/al_behavior.h"
 #include <al_face.h>
 
-#define RandomChance (njRandom() < 0.5f)
-
 #define SOUNDBANK1(a1) 0x1000 + a1
 #define SOUNDBANK6(a1) 0x6000 + a1
 
+DataPointer(__int16, MINRUN, 0x01312D6E);
+DataPointer(__int16, MAXRUN, 0x01312D72);
+DataPointer(unsigned int, DizzyRequirement, 0x01312E24);
+DataPointer(unsigned int, AngerRequirement, 0x01312DF8);
+void Chao_ExtraAnims(ObjectMaster* a1)
+{
+	ChaoData1* v2 = a1->Data1.Chao;
+	ChaoDataBase* v3 = v2->pParamGC;
+
+	if (AL_IsMotionChange(a1) && !v2->TransitionToIDOverwritten)
+	{
+		double v5 = (double)rand() * 0.000030517578125;
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_RACEWAIT)
+		{
+			int VanillaID[] = { ALM_STAND, ALM_HIMATATI_PATA, ALM_OSYABURI_L, ALM_HIMA_SIT};
+			for (int i = 0; i < 4; ++i)
+			{
+				if (v2->MotionTable.TransitionToID == VanillaID[i])
+				{
+					int PATAID = ALM_HIMATATI_PATA;
+					if (AL_IsHero(v3->Type))
+					{
+						PATAID = ALM_HIMATATI_PATA2MOJI;
+					}
+
+					int NewID[] = { ALM_STAND, PATAID, ALM_OSYABURI_S, ALM_OSYABURI_L, ALM_HIMA_SIT };
+					AL_SetMotionLink(a1, NewID[rand() % 5]);
+				}
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SLEEP)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_SLEEP)
+			{
+				int NewID[] = { ALM_SLEEP, ALM_HIMA_SLEEP_UPDOWN };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 2], 0x28u);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TIRED)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_STAND)
+			{
+				AL_SetMotionLink(a1, ALM_FURAFURA);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MOVE)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_GENKI_TATI)
+			{
+				int NewID[] = { ALM_JUMP_UP, ALM_GENKI_TATI, ALM_STANDUP };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 3], 0x28u);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_EATING)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_EAT_TUMARU)
+			{
+				int NewID[] = { ALM_EAT_PEPPE, ALM_EAT_TUMARU };
+				AL_SetMotionLink(a1, NewID[rand() % 2]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_PICKUPFRUIT)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_HIROU_KAGAMU)
+			{
+				int NewID[] = { ALM_KUNKUN_TATI, ALM_HIROU_KAGAMU, ALM_HIROU_AGERU };
+				AL_SetMotionLink(a1, NewID[rand() % 3]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TIRE)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_GENKI_SUWARI)
+			{
+				int NewID[] = { ALM_GENKI_SUWARI, ALM_SITDOWN, ALM_SITDOWN_SLOW };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 3], 0x28u);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SWIM)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_BATAASHI_B && v2->Face.EyeCurrNum == ChaoEyes_Painful)
+			{
+				AL_SetMotionLink(a1, ALM_CRAWL_B);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SUPERSWIM)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_CRAWL && v2->Face.EyeCurrNum == ChaoEyes_Painful)
+			{
+				AL_SetMotionLink(a1, ALM_BATAASHI_IKITUGI);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TRIP)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_KOKE && v3->StatPoints[2] >= MAXRUN / 3)
+			{
+				int NewID[] = { ALM_KOKE, ALM_SHIRIKOKE_AIR };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 2], 0xFu);
+			}
+
+			if (v2->MotionTable.TransitionToID == ALM_KOKEOKI && v2->MotionTable.AnimID == ALM_SHIRIKOKR_LAND)
+			{
+				AL_SetMotionLinkStep(a1, ALM_JUMP_UP, 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_CLIMB)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_NOBORU)
+			{
+				int NewID[] = { ALM_NOBORU, ALM_CLIMB };
+				AL_SetMotionLink(a1, NewID[rand() % 2]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOPLAYER 
+			|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
+		{
+			int VanillaID[] = { ALM_RUN_BANZAI, ALM_OIKAKE, ALM_RUN};
+			for (int i = 0; i < 3; ++i)
+			{
+				if (v2->MotionTable.TransitionToID == VanillaID[i])
+				{
+					if (v3->StatPoints[2] >= MINRUN / 3)
+					{
+						int MAXRUNID = ALM_RUN;
+						if (v3->StatPoints[2] >= MAXRUN / 3)
+						{
+							MAXRUNID = ALM_DASH;
+						}
+
+						int NewID[] = { ALM_RUN_BANZAI, ALM_RUN_BANZAI_LOOP, ALM_OIKAKE, ALM_RUN, MAXRUNID };
+						AL_SetMotionLinkStep(a1, NewID[rand() % 5], 0xAu);
+					}
+					else
+					{
+						AL_SetMotionLinkStep(a1, ALM_HAIHAI, 0xAu);
+					}
+				}
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_BEINGCALLED)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_BANZAI_JUMP)
+			{
+				int NewID[] = { ALM_BANZAI_JUMP, ALM_IGAMI };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 2], 0xAu);
+			}
+
+			if (v2->MotionTable.TransitionToID == ALM_HATENA_HATE2)
+			{
+				int NewID[] = { ALM_HATENA_HATE2, ALM_LOOKUP_HAND, ALM_OSYABURI_LOOP };
+				AL_SetMotionLink(a1, NewID[rand() % 3]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK)
+		{	
+			int VanillaID[] = { ALM_STAND, ALM_OSYABURI, ALM_KYOROKYORO_UP, ALM_KYOROKYORO_DOWN };
+			for (int i = 0; i < 4; ++i)
+			{
+				if (v2->MotionTable.TransitionToID == VanillaID[i])
+				{
+					int FlyAnimID = VanillaID[rand() % 4];
+					if (v3->StatPoints[1] >= (400 / 3) && v5 <= 0.6)
+					{
+						signed int v14 = (AL_EmotionGetValue(a1, EM_PER_CURIOSITY) - AL_EmotionGetValue(a1, EM_PER_CALM) + 200) / 4;
+						unsigned int v15 = v14 * 100;
+						if (AL_EmotionGetValue(a1, EM_ST_TIRE) <= 0x7D0 + v15)
+						{
+							FlyAnimID = ALM_TOBIAGARU;
+						}
+					}
+
+					int TypeAnimID = VanillaID[rand() % 4];
+					if (AL_IsHero(v3->Type))
+					{
+						TypeAnimID = ALM_TERE_MOJIMOJI;
+					}
+					else if (AL_IsDark(v3->Type) || v3->EyeType == ChaoEyes_Mean)
+					{
+						int IRAIRAID[] = { ALM_IRAIRA_HAND, ALM_IRAIRA_FOOT, ALM_IRAIRA_B };
+						TypeAnimID = IRAIRAID[rand() % 3];
+					}
+
+					int NewID[] = { ALM_STAND, ALM_OSYABURI, ALM_LOOKUP, ALM_KYOROKYORO_UP, ALM_KYOROKYORO_DOWN, ALM_OSYABURI_UP, FlyAnimID, TypeAnimID };
+					AL_SetMotionLink(a1, NewID[rand() % 8]);
+				}
+			}
+
+			if (v2->MotionTable.TransitionToID == ALM_HATENA_HATE2)
+			{
+				int NewID[] = { ALM_HATENA_HATE2, ALM_LOOKUP_HAND};
+				AL_SetMotionLink(a1, NewID[rand() % 2]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINKSEED)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_HATENA_HATE2)
+			{
+				AL_SetMotionLinkStep(a1, ALM_HATENA_AEARE, 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_FOUNDSEEDSPOT)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_STAND)
+			{
+				AL_SetMotionLinkStep(a1, ALM_STANDUP_SHIRI, 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATERCAN)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_OSYABURI)
+			{
+				int NewID[] = { ALM_OSYABURI, ALM_OSYABURI_UP };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 2], 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATERCANDANCE)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_TREE_DANCE_NYOKI && v2->Behavior.Mode == 2)
+			{
+				AL_SetMotionLinkStep(a1, ALM_PANPAN, 0xFu);
+				AL_FaceChangeEye(a1, ChaoEyes_ClosedDown);
+				AL_FaceChangeMouth(a1, v3->MouthType);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_COMEOUTEGG)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_UMARERU_KYORO)
+			{
+				int NewID[] = { ALM_UMARERU_KYORO, ALM_UMARERU_PON };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 2], 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGTV 
+			|| AL_GetBehavior(a1) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGTV>)
+		{
+			if (v2->MotionTable.gap2 == 0)
+			{
+				if (v2->MotionTable.TransitionToID == ALM_LAUGH_SIT)
+				{
+					AL_SetMotionLink(a1, ALM_LAUGH_STAND);
+				}
+			}
+			else if (v2->MotionTable.TransitionToID == ALM_LAUGH_SIT && v5 > 0.7)
+			{
+				int NewID[] = { ALM_BAKUSYOU_ALL, ALM_BAKUSYOU, ALM_BAKUSYOU_KORAE };
+				AL_SetMotionLink(a1, NewID[rand() % 3]);
+				AL_FaceChangeEye(a1, ChaoEyes_Painful);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGRADIO 
+			|| AL_GetBehavior(a1) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGRADIO>)
+		{
+			if (v2->MotionTable.gap2 == 0)
+			{
+				if (v2->MotionTable.TransitionToID == ALM_LAUGH_SIT)
+				{
+					AL_SetMotionLink(a1, ALM_LAUGH_STAND);
+				}
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGSING 
+			|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGDANCE
+			|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGMUSIC)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_HAKUSYU_SIT)
+			{
+				int NewID[] = { ALM_HAKUSYU_SIT, ALM_KUSUKUSU_SIT_LOOP };
+				AL_SetMotionLink(a1, NewID[rand() % 2]);
+			}
+			else if (v2->MotionTable.TransitionToID == ALM_HAKUSYU_STAND)
+			{
+				int NewID[] = { ALM_HAKUSYU_STAND, ALM_KUSUKUSU_STAND_A_LOOP, ALM_KUSUKUSU_STAND_B };
+				AL_SetMotionLink(a1, NewID[rand() % 3]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_GENKI_TATI)
+			{
+				int NewID[] = { ALM_JUMP_UP, ALM_GENKI_TATI, ALM_STANDUP };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 3], 0xFu);
+			}
+
+			if (v2->MotionTable.TransitionToID == ALM_RHYTHM_WALK_A)
+			{
+				int NewID[] = { ALM_RHYTHM_WALK_A, ALM_RHYTHM_WALK_B };
+				AL_SetMotionLinkStep(a1, NewID[rand() % 2], 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_FLUTE)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_FUE_LR)
+			{
+				int NewID[] = { ALM_FUE_LR, ALM_FUE_UD };
+				AL_SetMotionLink(a1, NewID[rand() % 2]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TRUMPET)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_RAPPA_UP)
+			{
+				int NewID[] = { ALM_RAPPA_FB, ALM_RAPPA_UP, ALM_RAPPA_DOWN };
+				AL_SetMotionLink(a1, NewID[rand() % 3]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_GUTA_A)
+			{
+				int NewID[] = { ALM_GUTA_A, ALM_GUTA_B, ALM_GUTA_C, ALM_GUTA_D };
+				AL_SetMotionLink(a1, NewID[rand() % 4]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_DIZZY)
+		{
+			if (v2->MotionTable.gap2 == 0)
+			{
+				if (v2->MotionTable.TransitionToID == ALM_ITAI_PIYO)
+				{
+					AL_SetMotionLinkStep(a1, ALM_PIYO, 0x23u);
+				}
+				else if (v2->MotionTable.TransitionToID == ALM_ITAI_BURUBURU)
+				{
+					AL_SetMotionLinkStep(a1, ALM_URUSAI, 0x23u);
+				}
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_JUMP)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_HABATOBI_JUMP)
+			{
+				int NewID[] = { ALM_LOOKUP_JUMP, ALM_LOOKDOWN_JUMP, ALM_HABATOBI_JUMP, ALM_ESAJUMP };
+				AL_SetMotionLink(a1, NewID[rand() % 4]);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WALK)
+		{
+			if (v2->MotionTable.TransitionToID == ALM_ARUKU)
+			{
+				if (v2->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_URGETOCRY)
+				{
+					AL_SetMotionLink(a1, ALM_TOBOTOBO);
+					int EyeID[] = { ChaoEyes_Painful, ChaoEyes_ClosedHappy };
+					AL_FaceChangeEye(a1, EyeID[rand() % 2]);
+					int MouthID[] = { ChaoMouth_ClosedFrown, ChaoMouth_OpenFrown };
+					AL_FaceChangeMouth(a1, MouthID[rand() % 2]);
+				}
+				else if (v2->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_URGETOCRY2)
+				{
+					int NewID[] = { ALM_CRY_WALK_A, ALM_CRY_WALK_B };
+					AL_SetMotionLink(a1, NewID[rand() % 2]);
+					int EyeID[] = { ChaoEyes_Painful, ChaoEyes_ClosedHappy };
+					AL_FaceChangeEye(a1, EyeID[rand() % 2]);
+					int MouthID[] = { ChaoMouth_ClosedFrown, ChaoMouth_OpenFrown };
+					AL_FaceChangeMouth(a1, MouthID[rand() % 2]);
+				}
+				else if (v2->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_DIZZY)
+				{
+					AL_SetMotionLink(a1, ALM_YORO_WALK);
+					int EyeID[] = { ChaoEyes_Painful, ChaoEyes_Circles };
+					AL_FaceChangeEye(a1, EyeID[rand() % 2]);
+					int MouthID[] = { ChaoMouth_ClosedFrown, ChaoMouth_Squiggly };
+					AL_FaceChangeMouth(a1, MouthID[rand() % 2]);
+				}
+				else if (v2->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_ANGER)
+				{
+					int NewID[] = { ALM_ANGER_WALK, ALM_ANGER_WALK_CHIKUSYOU };
+					AL_SetMotionLink(a1, NewID[rand() % 2]);
+					AL_FaceChangeEye(a1, ChaoEyes_Mean);
+					int MouthID[] = { ChaoMouth_ClosedFrown, ChaoMouth_ToothyFrown };
+					AL_FaceChangeMouth(a1, MouthID[rand() % 2]);
+				}
+			}
+		}
+
+		v2->TransitionToIDOverwritten = true;
+	}
+	else if (v2->TransitionToIDOverwritten && v2->MotionTable.TransitionToID == -1) {
+		v2->TransitionToIDOverwritten = false;
+	}
+}
+
+void Chao_ExtendAnims(ObjectMaster* a1)
+{
+	ChaoData1* v2 = a1->Data1.Chao;
+	ChaoDataBase* v3 = v2->pParamGC;
+
+	if (AL_IsMotionEnd(a1) && v2->MotionTable.TransitionToID == -1)
+	{
+		double v5 = (double)rand() * 0.000030517578125;
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SLEEP)
+		{
+			if (v2->MotionTable.AnimID == ALM_HIMA_SLEEP_UPDOWN)
+			{
+				v2->MotionTable.flag |= 2;
+				int AnimID[] = { ALM_HIMA_SLEEP_BURABURA, ALM_HIMA_SLEEP_TWIST, ALM_HIMA_SLEEP_ALTER };
+				AL_SetMotionLink(a1, AnimID[rand() % 3]);
+			}
+
+			int HIMAID[] = { ALM_HIMA_SLEEP_BURABURA, ALM_HIMA_SLEEP_TWIST, ALM_HIMA_SLEEP_ALTER };
+			for (int i = 0; i < 3; ++i)
+			{
+				if (v2->MotionTable.AnimID == HIMAID[i])
+				{
+					v2->MotionTable.flag |= 2;
+					AL_SetMotionLink(a1, ALM_HIMA_SLEEP_BREATH);
+				}
+			}
+
+			if (v5 < 0.1)
+			{
+				if (v2->MotionTable.AnimID == ALM_SLEEP_LOOP)
+				{
+						v2->MotionTable.flag |= 2;
+						int KUBIID[] = { ALM_SLEEP_KUBI, ALM_SLEEP_KUBI_PORI };
+						AL_SetMotionLinkStep(a1, KUBIID[rand() % 2], 31);
+						v2->Behavior.Timer == 500;
+				}
+				else if (v2->MotionTable.AnimID == ALM_NEGAERI_L_UTUBUSE)
+				{
+						v2->MotionTable.flag |= 2;
+						int NAKINEIRIID[] = { ALM_NAKINEIRI_BREATH, ALM_NAKINEIRI_HIKKU, ALM_NAKINEIRI_HIKKUHIKKU, ALM_NAKINEIRI_MEOSMESO };
+						AL_SetMotionLinkStep(a1, NAKINEIRIID[rand() % 4], 34);
+						v2->Behavior.Timer == 500;
+				}
+				else if (v2->MotionTable.AnimID == ALM_UTUBUSE_SLEEP)
+				{
+					v2->MotionTable.flag |= 2;
+					AL_SetMotionLink(a1, ALM_HIMA_UTUBUSE_PATA);
+					v2->Behavior.Timer == 500;
+				}
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TRIP)
+		{
+			if (v2->MotionTable.AnimID == ALM_SHIRIKOKE_AIR)
+			{
+				v2->MotionTable.flag |= 2;
+				AL_SetMotionLinkStep(a1, ALM_SHIRIKOKR_LAND, 0xFu);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK) 
+		{
+			if (v2->MotionTable.AnimID == ALM_LOOKUP_LOOP)
+			{
+				if (v5 >= 0.6)
+					v2->MotionTable.flag |= 2;
+					int AnimID[] = { ALM_LOOKUP_KASHIGE, ALM_LOOKUP_HAND };
+					AL_SetMotionLinkStep(a1, AnimID[rand() % 2], 20);
+					v2->Behavior.Timer += (unsigned __int16)(60 - (signed int)(v5 * -121.0));
+					AL_FaceChangeMouth(a1, v3->MouthType);
+			}
+			else if (v2->MotionTable.AnimID == ALM_TERE_MOJIMOJI_LOOP)
+			{
+				if (v5 >= 0.7)
+					v2->MotionTable.flag |= 2;
+					AL_SetMotionLink(a1, ALM_TERE_MOJI2PORI);
+					v2->Behavior.Timer += (unsigned __int16)(30 - (signed int)(v5 * -60.5));
+			}
+			else if (v2->MotionTable.AnimID == ALM_TERE_PORIPORI_LOOP)
+			{
+				if (v5 >= 0.6)
+					v2->MotionTable.flag |= 2;
+					AL_SetMotionLink(a1, ALM_TERE_PORI2EHE);
+					v2->Behavior.Timer += (unsigned __int16)(30 - (signed int)(v5 * -60.5));
+					AL_FaceChangeMouth(a1, v3->MouthType);
+			}
+
+			if (v2->MotionTable.AnimID == ALM_TOBU)
+			{
+				AL_SetBehavior(a1, (BHV_FUNC)ChaoBehaviour_FLY);
+				AL_GetRandomAttrPos_0(a1);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATERCANDANCE)
+		{
+			if (v2->MotionTable.AnimID == ALM_PANPAN_LOOP)
+			{
+				v2->MotionTable.flag |= 2;
+				AL_SetMotionLink(a1, ALM_PANPAN_END);
+			}
+		}
+
+		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY 
+			|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY2
+			|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_DIZZY
+			|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_ANGER)
+		{
+			if (v5 >= 0.8)
+			{
+				Chao_BehaviourQueue(a1, ChaoBehaviour_WALK);
+				AL_GetRandomAttrPos_0(a1);
+			}
+		}
+
+	}
+}
+
+void Chao_FixAnims(ObjectMaster* a1)
+{
+	ChaoData1* v2 = a1->Data1.Chao;
+
+	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK) //Behavior check for safety...
+	{
+		if (v2->MotionTable.TransitionToID == ALM_MANPUKU_LOOP) //This Animation actually play for 1 frame after the chao finish eating, before ALM_HIMA_SIT took over
+		{
+			v2->MotionTable.AnimID = ALM_MANPUKU_LOOP; //So let's slide it here..
+		}
+		else if (v2->MotionTable.TransitionToID == ALM_HIMA_SIT && v2->MotionTable.AnimID == ALM_MANPUKU_LOOP) //Then we wait ALM_HIMA_SIT and...
+		{
+			//Gotcha!
+			v2->Behavior.Timer = (unsigned __int16)(signed int)((double)rand() * 0.000030517578125 * 200.0) + 180;
+			int ALM_MANPUKU = ALM_MANPUKU_LOOP;
+			if ((double)rand() * 0.000030517578125 < 0.6) {
+				ALM_MANPUKU = ALM_MANPUKU_SURI;
+			}
+			AL_SetMotionLinkStep(a1, ALM_MANPUKU, 0x3Cu);
+			AL_FaceChangeEye(a1, ChaoEyes_ClosedUp);
+			AL_FaceChangeMouth(a1, ChaoMouth_Open);
+		}
+	}
+
+	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOPLAYER
+		|| AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
+	{
+		if (v2->MotionTable.AnimID == ALM_HAIHAI 
+			|| v2->MotionTable.AnimID == ALM_HAIHAI_LOOP)
+		{
+			v2->Behavior.Timer = 0; 
+			v2->MotionTable.frameIncreaseSpeed_ = 2.0f;
+		}
+	}
+}
+
+void Chao_ShowEmotions(ObjectMaster* a1)
+{
+	ChaoData1* v2 = a1->Data1.Chao;
+	ChaoDataBase* v3 = v2->pParamGC;
+
+	if (AL_IsMotionChange(a1))
+	{
+		if (AL_EmotionGetValue(a1, EM_PER_AGRESSIVE) > 30 && AL_EmotionGetValue(a1, EM_MD_ANGER) > AngerRequirement)
+		{
+			v2->Face.EyeDefaultNum = ChaoEyes_Mean;
+		}
+		else
+		{
+			v2->Face.EyeDefaultNum = v3->EyeType;
+		}
+	}
+}
+
+//TODO: Delete this whole thing when it's done
+/*
 void Chao_ExtraAnimations(ObjectMaster* a1)
 {
 	ChaoData1* data = a1->Data1.Chao;
@@ -434,42 +1018,6 @@ void Chao_ExtraAnimations(ObjectMaster* a1)
 		}
 	}
 
-	//This Part is busted, might fix later.
-	/*
-	const int JumpScaredAnim[] = { 568, 161 };
-	int JumpScaredRNG = rand() % std::size(JumpScaredAnim);
-
-	if (data->MotionTable.AnimID == 161)
-	{
-		AL_SetMotionLink(a1, 162);
-	}
-
-	WriteData((unsigned int*)0x005647D0, (unsigned int)JumpScaredAnim[JumpScaredRNG]);
-
-	const int ThrowdAnim[] = { 271, 274 };
-	int ThrowdRNG = rand() % std::size(ThrowdAnim);
-
-	if (data->MotionTable.TransitionToID == 159)
-	{
-		if (data->MotionTable.AnimID == 271)
-		{
-			AL_SetMotionLinkStep(a1, 272, 0xFu);
-		}
-		else if (data->MotionTable.AnimID == 274)
-		{
-			AL_SetMotionLinkStep(a1, 275, 0xFu);
-		}
-	}
-
-	if (data->MotionTable.AnimID == 272)
-	{
-		AL_SetMotionLinkStep(a1, 273, 0xFu);
-	}
-
-	WriteData((unsigned int*)0x005644F7, (unsigned int)ThrowdAnim[ThrowdRNG]);
-	WriteData((unsigned int*)0x00563F5F, (unsigned int)ThrowdAnim[ThrowdRNG]);
-	*/
-
 	//skillful animation speed
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTANIMAL)
 	{
@@ -502,7 +1050,8 @@ void Chao_ExtraAnimations(ObjectMaster* a1)
 		a1->Data1.Chao->Face.EyeDefaultNum = a1->Data1.Chao->pParamGC->EyeType;
 	}
 }
-
+*/
+/*
 void Chao_ExtraSounds(ObjectMaster* a1)
 {
 	ChaoData1* data = a1->Data1.Chao;
@@ -684,7 +1233,8 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 		PlaySound_XYZ(SOUNDBANK6(24), &data->entity.Position, 0, 0, 110);
 	}
 }
-
+*/
+/*
 static void AL_MoreAnimData() {
 	const int ThinkAnim[] = { 3, 4, 241 };
 	int ThinkRNG = rand() % std::size(ThinkAnim);
@@ -840,7 +1390,7 @@ void AL_MoreAnimSound()
 		AL_MoreSoundData();
 	}
 }
-
+*/
 int ALBHV_PickUpLockOn_MoreAnim(ObjectMaster* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &work->Behavior;

@@ -340,11 +340,16 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 		}
 	}
 
-	if (gConfigVal.MoreAnimation)
-		Chao_ExtraAnimations(a1);
+	if (gConfigVal.MoreAnimation) {
+		Chao_ExtraAnims(a1);
+		Chao_ExtendAnims(a1);
+	}
 
-	if (gConfigVal.MoreSound)
-		Chao_ExtraSounds(a1);
+	Chao_FixAnims(a1);
+	Chao_ShowEmotions(a1);
+
+	//if (gConfigVal.MoreSound)
+		//Chao_ExtraSounds(a1);
 
 	for (auto& c : CodeManager::Instance()) {
 		c->ChaoObject(a1);
