@@ -1860,8 +1860,6 @@ static void AL_DayNightCycleDestructor(task* tp) {
 		FREE(work.pSkyboxTable);
 	}
 
-	FREE(tp->Data2.Undefined);
-
 	gDayNightManager.Clear();
 
 	pDayNightTask = nullptr;
