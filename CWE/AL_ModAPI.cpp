@@ -408,12 +408,43 @@ void Animation_Init()
 		PrintDebug("Animation_Init: Couldnt copy animations!!!\n");
 }
 
+const static uint32_t priceAdjustedCategories[] = {
+	ChaoItemCategory_Accessory,
+	ChaoItemCategory_Hat,
+	ChaoItemCategory_Fruit,
+	ChaoItemCategory_Seed,
+	ChaoItemCategory_Special
+};
+
+static void InitPriceAdjustStartIndices(size_t priceAdjustStartIndices[]) {
+	for (size_t catIndex = 0; catIndex < _countof(priceAdjustedCategories); ++catIndex) {
+		const auto categoryIndex = priceAdjustedCategories[catIndex];
+		priceAdjustStartIndices[catIndex] = BlackMarketCategories[categoryIndex].Count;
+	}
+}
+
+static void AdjustItemPrices(const size_t priceAdjustStartIndices[]) {
+	for (size_t catIndex = 0; catIndex < _countof(priceAdjustedCategories); ++catIndex) {
+		const auto categoryIndex = priceAdjustedCategories[catIndex];
+		const auto& category = BlackMarketCategories[categoryIndex];
+		size_t itemIndex = priceAdjustStartIndices[catIndex];
+		for (; itemIndex < category.Count; ++itemIndex) {
+			auto& item = category.attrib[itemIndex];
+			item.PurchasePrice = int(float(item.PurchasePrice) * gConfigVal.GlobalPriceMultiplier);
+			item.SalePrice = int(float(item.SalePrice) * gConfigVal.GlobalPriceMultiplier);
+		}
+	}
+}
+
 void RegisterCWEData(CWE_REGAPI* cwe_api)
 {
 	AL_ModAPI_Init();
 	al_minimal_Init();
 
+	size_t priceAdjustStartIndices[_countof(priceAdjustedCategories)];
+	InitPriceAdjustStartIndices(priceAdjustStartIndices);
 	CallRegisteredHooks(cwe_api);
+	AdjustItemPrices(priceAdjustStartIndices);
 
 	AL_Odekake_Finalize();
 

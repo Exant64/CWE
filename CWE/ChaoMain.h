@@ -43,6 +43,8 @@ struct ConfigValues {
 	bool DayNightDebug;
 	bool DayNightCheat = true;
 
+	float GlobalPriceMultiplier;
+
 	bool OmochaoParts = false;
 	bool UnusedToys = false;
 	bool SpawnOmochao = true;
