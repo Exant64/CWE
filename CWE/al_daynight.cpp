@@ -652,26 +652,25 @@ static DAYNIGHT_WORK& GetWork(task* tp) {
 
 #pragma region Shiny Texture Lerping (used externally)
 
-static Uint32 backupShinyTextureTexAddr;
-
 UsercallFuncVoid(sub_42C5B0, (uint16_t textureID, uint16_t wrapMode, int index), (textureID, wrapMode, index), 0x42C5B0, rAX, rCX, rEBX);
 
-void AL_DayNightCycle_PreDrawSetupShinyTexture() {
-	if (!pDayNightTask) return;
-
+Uint32 AL_DayNightCycle_PreDrawSetupShinyTexture() {
+	if (!pDayNightTask) return -1;
+	
 	auto& work = GetWork(pDayNightTask);
 
-	if (!work.pTexlist) return;
+	if (!work.pTexlist) return -1;
 
 	const auto& shinyTextureIndexFrom = gDayNightManager.GetShinyTextureIndexForPhase(work.phaseA);
 	const auto& shinyTextureIndexTo = gDayNightManager.GetShinyTextureIndexForPhase(work.phaseB);
 
-	backupShinyTextureTexAddr = AL_BODY.textures[34].texaddr;
+	const Uint32 backupShinyTextureTexAddr = AL_BODY.textures[34].texaddr;
 
 	if (shinyTextureIndexFrom) {
 		AL_BODY.textures[34].texaddr = work.pTexlist->textures[*shinyTextureIndexFrom].texaddr;
 	}
 
+	// sets texture to interpolate to into slot 3, handled in chao shader
 	NJS_CTX* ctx = (NJS_CTX*)Has_texlist_batadvPlayerChara_in_it;
 	NJS_TEXLIST* pTexlistBackup = ctx->texlistPtr;
 
@@ -685,6 +684,8 @@ void AL_DayNightCycle_PreDrawSetupShinyTexture() {
 	}
 
 	njSetTexture(pTexlistBackup);
+
+	return backupShinyTextureTexAddr;
 }
 
 void AL_DayNightCycle_SetLerpShinyTexture() {
@@ -695,12 +696,10 @@ void AL_DayNightCycle_SetLerpShinyTexture() {
 	SetPixelShaderFloat(79, work.lerpValue);
 }
 
-void AL_DayNightCycle_PostDrawSetupShinyTexture() {
-	// if there's nothing to reset to then don't
-	if (!backupShinyTextureTexAddr) return;
+void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID) {
+	if (texID == -1) return;
 
-	AL_BODY.textures[34].texaddr = backupShinyTextureTexAddr;
-	backupShinyTextureTexAddr = NULL;
+	AL_BODY.textures[34].texaddr = texID;
 
 	// reset the lerp value
 	SetPixelShaderFloat(79, 0);
@@ -2044,10 +2043,10 @@ void AL_DayNight_Init(const HelperFunctions& helper){
 	if (!gConfigVal.DayNightCycle) return;
 	
 	if (!RenderFix_IsEnabled()) {
-		gConfigVal.DayNightCycle = false;
-		MessageBoxA(0, "\"SA2 Render Fix\" is not enabled, the Day Night Cycle feature will not function properly without it, please install it. Day Night Cycle will be disabled.", "Chao World Extended", 0);
-		return;
-	}
-
+			gConfigVal.DayNightCycle = false;
+			MessageBoxA(0, "\"SA2 Render Fix\" is not enabled, the Day Night Cycle feature will not function properly without it, please install it. Day Night Cycle will be disabled.", "Chao World Extended", 0);
+			return;
+		}
+		
 	DrawLandtable_t.Hook(DrawLandtable_r);
 }

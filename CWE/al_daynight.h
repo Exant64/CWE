@@ -97,9 +97,9 @@ uint32_t& AL_DayNightCycle_GetSaveCurrentPhase();
 bool& AL_DayNightCycle_GetSaveNextDayCloudy();
 
 // shiny texture functions
-void AL_DayNightCycle_PreDrawSetupShinyTexture();
+Uint32 AL_DayNightCycle_PreDrawSetupShinyTexture();
 void AL_DayNightCycle_SetLerpShinyTexture();
-void AL_DayNightCycle_PostDrawSetupShinyTexture();
+void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID);
 
 // creating the task
 void AL_CreateDayNightCycle();
