@@ -313,6 +313,7 @@
     <ClInclude Include="al_chao_info.h" />
     <ClInclude Include="data\ChaoShaderDayNight.h" />
     <ClInclude Include="renderfix.h" />
+    <ClInclude Include="data\al_namefontspace.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
