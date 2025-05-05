@@ -416,6 +416,7 @@
     <ClInclude Include="data\al_fonames.h" />
     <ClInclude Include="al_growtree.h" />
     <ClInclude Include="al_race.h" />
+    <ClInclude Include="data\al_namefontspace.h" />
     <ClInclude Include="data\al_seentry.h" />
     <ClInclude Include="data\ChaoShader.h" />
     <ClInclude Include="data\ChaoShaderDayNight.h" />

@@ -2,6 +2,22 @@
 #include <Chao.h>
 #include <util.h>
 #include <alg_kinder_ortho.h>
+#include "data/al_namefontspace.h"
+#include <al_texlist.h>
+
+enum DrawAnchorH
+{
+	DrawAncorV_Left = 0xFFFFFFFF,
+	DrawAncorV_Center = 0x0,
+	DrawAncorV_Right = 0x1,
+};
+
+enum DrawAnchorV
+{
+	DrawAncorV_Top = 0xFFFFFFFF,
+	DrawAncorV_Middle = 0x0,
+	DrawAncorV_Bottom = 0x1,
+};
 
 VoidFunc(sub_583C60, 0x583C60);
 
@@ -45,6 +61,130 @@ void __cdecl DisplayChaoName_ScaleLength(int a1, float a2, float a3, float a4, f
 	DisplayChaoName(name, a2, a3, a4, a5, a6, 1, a8);
 	enableCharWidthMul = false;
 }
+
+// used to calculate scaling if size is above the usual chao name size
+static Float CalculateLastLetterXPos(const Float x, const float xsize, const char* name, const size_t length) {
+	Float xpos = x;
+
+	for (size_t c = 0; c < length; c++) {
+		const size_t character = name[c];
+
+		if (character != 0 && character != 95 && character != 255)
+		{
+			Uint8 index;
+			if (character >= 95)
+			{
+				index = character - 2;
+			}
+			else
+			{
+				index = character - 1;
+			}
+
+			const size_t spacing = ChaoNameFontWidth[index];
+			const float spacingRatio = float(spacing) / 44.f;
+			const float width = xsize * spacingRatio;
+			xpos += width + xsize / 22.0f;
+		}
+		else {
+			xpos += xsize / 2.f;
+		}
+	}
+
+	return xpos;
+}
+
+void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH)
+{
+	const char* pName = (const char*)(name + (offsetof(ChaoDataBase, Name) - 0x12));
+	const size_t length = strlen(pName);
+
+	SetChaoHUDThingBColor(
+		col.argb.a / 255.f, 
+		col.argb.b / 255.f,
+		col.argb.g / 255.f,
+		col.argb.r / 255.f
+	);
+
+	Float xisze_ = length * (xsize - 1.0f);
+
+	Float x;
+	switch (ancH)
+	{
+	default:
+	case DrawAncorV_Left:
+		x = xpos;
+		break;
+	case DrawAncorV_Center:
+		x = xpos - xisze_ * 0.5f;
+		break;
+	case DrawAncorV_Right:
+		x = xpos - xisze_;
+		break;
+	}
+
+	Float sizeRatio = 1;
+
+	if (length > 7) {
+		// we calculate the start position of the 8th letter, and calculate the size in a manner
+		// that the last letter ends up there
+		const float letterAtEnd = CalculateLastLetterXPos(x, xsize, pName, 8 - 1);
+		const float letterRealAtEnd = CalculateLastLetterXPos(x, xsize, pName, length - 1);
+		sizeRatio = (letterAtEnd - x) / (letterRealAtEnd - x);
+	}
+
+	ChaoHudThingB bbi;
+	bbi.pTexlist = &CWE_UI_TEXLIST;
+	bbi.TexNum = 35;
+	bbi.adjust = 1;
+
+	for (size_t c = 0; c < length; c++) {
+		const size_t character = pName[c];
+
+		if (character != 0 && character != 95 && character != 255)
+		{
+			Uint8 index;
+			if (character >= 95)
+			{
+				index = character - 2;
+			}
+			else
+			{
+				index = character - 1;
+			}
+
+			const size_t spacing = ChaoNameFontWidth[index];
+			const float spacingRatio = float(spacing) / 44.f;
+
+			bbi.wd = xsize * spacingRatio;
+			bbi.ht = ysize;
+
+			const Float loc_x = (22 * (index % 23));
+			const Float loc_y = (22 * (index / 23));
+			bbi.s0 = (loc_x + 0.1f) / 512.0f;
+			bbi.t0 = (loc_y + 0.1f) / 256.0f;
+			bbi.s1 = (loc_x + 22.0f * spacingRatio) / 512.0f;
+			bbi.t1 = (loc_y + 22.0f) / 256.0f;
+
+			DrawChaoHudThingB(
+				&bbi,
+				xpos,
+				ypos,
+				-1.2,
+				sizeRatio * xsize / 22.f,
+				sizeRatio * ysize / 22.0f,
+				DrawAncorV_Left,
+				DrawAncorV_Top
+			);
+
+			xpos += sizeRatio * bbi.wd + xsize * (1/22.f);
+		}
+		else {
+			xpos += sizeRatio * xsize / 2.f;
+		}
+	}
+}
+
 static void __declspec(naked) DisplayChaoName_Hook()
 {
 	__asm
@@ -59,7 +199,7 @@ static void __declspec(naked) DisplayChaoName_Hook()
 		push[esp + 20h] // a1
 
 		// Call your __cdecl function here:
-		call DisplayChaoName_ScaleLength
+		call DisplayChaoName_NewFont
 
 		add esp, 4 // a1
 		add esp, 4 // a2
