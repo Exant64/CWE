@@ -4,6 +4,7 @@
 #include "al_daynight.h"
 #include "al_save.h"
 #include <stdexcept>
+#include "IniFile.h"
 #include "al_stage.h"
 #include <util.h>
 #include <ninja_functions.h>
@@ -2039,14 +2040,33 @@ static void DrawLandtable_r() {
 	*(char*)0x93BEB3 = 1;
 }
 
-void AL_DayNight_Init(const HelperFunctions& helper){
+void AL_DayNight_Init(const std::string& iniPath, IniFile* pConfig, const HelperFunctions& helper) {
 	if (!gConfigVal.DayNightCycle) return;
 	
 	if (!RenderFix_IsEnabled()) {
-			gConfigVal.DayNightCycle = false;
-			MessageBoxA(0, "\"SA2 Render Fix\" is not enabled, the Day Night Cycle feature will not function properly without it, please install it. Day Night Cycle will be disabled.", "Chao World Extended", 0);
-			return;
+		gConfigVal.DayNightCycle = false;
+
+		const auto result = MessageBoxA(
+			0, 
+			"The 'SA2 Render Fix' mod is not enabled! The 'Day/Night Cycle' feature cannot function properly without it, and has been disabled for now.\n\n"
+			"Would you like to download 'SA2 Render Fix' now? Pressing 'Yes' will open the download page in your web browser.\n\n"
+			"If not, 'Day/Night Cycle' will be automatically disabled in your config file.",
+			"Chao World Extended: \"SA2 Render Fix\" missing! ", 
+			MB_YESNO
+		);
+
+		if (result == IDNO) {
+			pConfig->setBool("DayNight", "DayNightCycle", false);
+			pConfig->save(iniPath);
+			MessageBoxA(0, "The Day Night Cycle option is now disabled.", "Chao World Extended", 0);
 		}
+		else {
+			system("start https://gamebanana.com/mods/452445");
+			MessageBoxA(0, "The Day Night Cycle option is now temporarily disabled.", "Chao World Extended", 0);
+		}
+
+		return;
+	}
 		
 	DrawLandtable_t.Hook(DrawLandtable_r);
 }

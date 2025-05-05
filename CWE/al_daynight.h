@@ -1,4 +1,7 @@
 #pragma once
+
+#include "IniFile.h"
+
 enum
 {
 	AL_WEATHER_NONE = 0,
@@ -105,4 +108,4 @@ void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID);
 void AL_CreateDayNightCycle();
 
 // initializing the feature (todo move to renderfix file?)
-void AL_DayNight_Init(const HelperFunctions& helper);
+void AL_DayNight_Init(const std::string& iniPath, IniFile* pConfig, const HelperFunctions& helper);
