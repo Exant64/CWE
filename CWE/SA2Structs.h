@@ -919,7 +919,7 @@ struct ChaoDataBase
 	char MouthType;
 	char BallType;
 	char gap_D4[1];
-	char Headgear;
+	Uint8 Headgear;
 	char HideFeet;
 	char Medal;
 	unsigned char Color;
