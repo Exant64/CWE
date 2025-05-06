@@ -2,7 +2,9 @@
 #include "SA2ModLoader.h"
 #include <al_save.h>
 #include "AL_ModAPI.h"
+#include "al_parts.h"
 #include "api/api_customchao.h"
+
 
 #define CWE_VER_DEF(a,b,c,d) ((a << 12) | (b << 8) | (c << 4) | d)
 
@@ -19,6 +21,10 @@ struct KCE_HELPER {
 
 	int* pLensSpecialMap;
 	size_t LensSpecialMapSize;
+
+	const char** pCustomAnimalName;
+	Uint8* pCustomAnimalHasPartFlag;
+	size_t CustomAnimalNameCount;
 };
 
 static KCE_HELPER kce_helper;
@@ -58,6 +64,22 @@ void KCE_Update() {
 		kce_helper.pLensSpecialMap[i * 2 + 1] = entry.second;
 		i++;
 	}
+
+	kce_helper.CustomAnimalNameCount = ModAPI_MinimalNames.size();
+	kce_helper.pCustomAnimalName = new const char* [kce_helper.CustomAnimalNameCount];
+	kce_helper.pCustomAnimalHasPartFlag = new Uint8[kce_helper.CustomAnimalNameCount];
+	for (size_t i = 0; i < kce_helper.CustomAnimalNameCount; ++i) {
+		kce_helper.pCustomAnimalName[i] = ModAPI_MinimalNames[i];
+		kce_helper.pCustomAnimalHasPartFlag[i] = 0;
+
+		for (size_t j = 0; j < NB_PARTS_KIND; ++j) {
+			if (ModAPI_MiniParts[40 + i][0].objects[PartsObjectListNumber[j][0]]) {
+				kce_helper.pCustomAnimalHasPartFlag[i] |= (1 << j);
+			}
+		}
+
+		PrintDebug("%s %x", ModAPI_MinimalNames[i], kce_helper.pCustomAnimalHasPartFlag[i]);
+	}
 }
 
 void KCE_Init() {
@@ -70,5 +92,5 @@ void KCE_Init() {
 
 	WriteData((int*)0x53FF04, (int)&kce_helper);
 
-	WriteData((int*)0x53FF00, (int)CWE_VER_DEF(9, 5, 3, 4));
+	WriteData((int*)0x53FF00, (int)CWE_VER_DEF(9, 5, 3, 6));
 }
