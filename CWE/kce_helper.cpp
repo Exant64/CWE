@@ -77,8 +77,6 @@ void KCE_Update() {
 				kce_helper.pCustomAnimalHasPartFlag[i] |= (1 << j);
 			}
 		}
-
-		PrintDebug("%s %x", ModAPI_MinimalNames[i], kce_helper.pCustomAnimalHasPartFlag[i]);
 	}
 }
 
