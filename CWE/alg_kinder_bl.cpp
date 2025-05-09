@@ -1341,7 +1341,7 @@ void DrawTimer()
 	sub_5A6450((int)uibuff, 1);
 }
 
-Light BM_MenuLight = { {  0.1f, -0.7f, 0.7f },  1,  0.5f, {  1,  1,  1 } };
+Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f },  1,  0.5f, {  1,  1,  1 } };
 
 #define Translate(x,y,z) OrthoScreenTranslate(x,y,(-26.0f)/z * scl)
 extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Rotation& rot, const SAlItem& mItemDescItem) {
