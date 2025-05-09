@@ -1462,7 +1462,7 @@ static void AL_DayNightCycle_ApplyVertexColor_GC(const NJS_ARGB& mulColor, const
 static void AL_DayNightCycle_ApplyColorToLandTable(task* tp) {
 	auto& work = GetWork(tp);
 
-	for (size_t colIndex = 0; colIndex < CurrentLandTable->ChunkModelCount; colIndex++) {
+	for (size_t colIndex = 0; colIndex < work.pNewLandtable->ChunkModelCount; colIndex++) {
 		// todo: i don't like this
 		if (work.isChunkLandTable) {
 			const Uint32* pSrcVertices = work.pVertexColorTableChunk[colIndex * 2 + VERTEX_COLOR_TABLE_SRC];
@@ -1900,6 +1900,8 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
 }
 
 static void AL_DayNightCycleDisplayer(task* tp) {
+	DataPointer(int, GinjaDrawFlag, 0x25EFEE0);
+
 	auto& work = GetWork(tp);
 
 	if (gConfigVal.DayNightDebug) {
@@ -1927,6 +1929,11 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	SaveConstantAttr();
 
 	EnableAlpha(0);
+
+	// in object list 1, transparent and opaque GJ geo has to be drawn separately 
+	// so we have to reenable the normal functionality to draw both at once
+	auto backupGinjaDrawFlag = GinjaDrawFlag;
+	GinjaDrawFlag = 1 | 2;
 
 	// ignore lighting
 	OnControl3D(NJD_CONTROL_3D_CNK_CONSTANT_ATTR);
@@ -1964,12 +1971,14 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 
 	blendModeGinjaFunc = blendModeGinjaFuncBackup;
 
-	SetMaterial(1, 1, 1, 1);
+	SetMaterial(0, 0, 0, 0);
 
 	rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_END);
 
 	njColorBlendingMode(0, 8);
 	njColorBlendingMode(1, 6);
+
+	GinjaDrawFlag = backupGinjaDrawFlag;
 
 	DoLighting(LightIndexBackupMaybe);
 }
@@ -1995,14 +2004,29 @@ static bool AL_DayNightCycle_CheckECWSafety() {
 	return true;
 }
 
+static void AL_DayNightCycleManagerDestructor(task* tp) {
+	if (pDayNightTask) {
+		DeleteObject_(pDayNightTask);
+	}
+}
+
+// this serves the purpose of deleting the regular daynight cycle task, since its in object list 1
+// and those don't autodestruct on level change
+static void AL_CreateDayNightCycleManager() {
+	task* tp = LoadObject(4, "AL_DayNightCycleManager", [](task* tp){}, (LoadObj)0);
+	tp->DeleteSub = AL_DayNightCycleManagerDestructor;
+}
+
 void AL_CreateDayNightCycle() {
 	if (!gConfigVal.DayNightCycle) return;
 	if (!AL_DayNightCycle_IsValidArea()) return;
 	if (!AL_DayNightCycle_CheckECWSafety()) return;
 	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
 	
-	task* tp = LoadObject(4, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
+	task* tp = LoadObject(1, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
 	pDayNightTask = tp;
+
+	AL_CreateDayNightCycleManager();
 
 	tp->Data2.Undefined = ALLOC(DAYNIGHT_WORK);
 
