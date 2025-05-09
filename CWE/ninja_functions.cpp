@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ninja_functions.h"
 #include <math.h>
+#include <usercall.h>
 const int njColorBlendingModePtr = 0x00426420;
 void njColorBlendingMode(int a1, int a2) {
 	__asm {
@@ -49,11 +50,10 @@ void SetShaders(int id)
 	}
 }
 
-void njSetTexture(NJS_TEXLIST* texlist)
-{
-	NJS_CTX* ctx = (NJS_CTX*)Has_texlist_batadvPlayerChara_in_it;
-	ctx->texlistPtr = texlist; //Has_texlist_ = NJS_CTX from billy hatcher, edit later.
+void njSetTexture(NJS_TEXLIST* texlist) {
+	_nj_curr_ctx_->texlist = texlist;
 }
+
 void njUnitMatrix(NJS_MATRIX_PTR matrix) {
 	if (!matrix) matrix = _nj_current_matrix_ptr_;
 	if (matrix)
@@ -213,5 +213,45 @@ void DrawQuadTexture(int a1, float a2)
 		push a2
 		call DrawQuadTexturePtr
 		add esp, 4
+	}
+}
+
+void njSetTextureNum(int texid) {
+	NJS_TEXMANAGE* p_texman = (NJS_TEXMANAGE*)_nj_curr_ctx_->texlist->textures[texid].texaddr;
+	NJS_TEXSYSTEM* p_texsys = p_texman->texsys;
+
+	_nj_curr_ctx_->texsurface = &p_texsys->texsurface;
+	_nj_curr_ctx_->gbix = p_texsys->globalIndex;
+	_nj_curr_ctx_->texnum = texid;
+}
+
+auto DrawFVF_H_ = GenerateUsercallWrapper<void(*)(const NJS_TEXTURE_VTX * a1, signed int vertexCount)>(noret, 0x781370, rEAX, rECX);
+auto sub_41FDE0_ = GenerateUsercallWrapper<void(*)(float* a1, int a2)>(noret, 0x41FDE0, rECX, stack4);
+
+VoidFunc(sub_4293B0, 0x4293B0);
+VoidFunc(sub_4292E0, 0x4292E0);
+
+// all this is veeery tacky, point filtering should be handled by RF later on
+static void SetSamplerState (int a1) {
+	DataPointer(char*, rendererthing, 0x1A557C0);
+	int device = *(int*)(rendererthing + 0x38);
+	StdcallFunctionPointer(void, SetSamplerStateD3D, (int a1, int Sampler, int Type, int Value), (void*)*(int*)(*(int*)device + 0x114));
+	SetSamplerStateD3D(device, 0, 5, a1);
+	SetSamplerStateD3D(device, 0, 6, a1);
+	SetSamplerStateD3D(device, 0, 7, a1);	
+}
+
+void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered) {
+	sub_41FDE0_(_nj_current_matrix_ptr_, 0);
+	SetShaders(1);
+	sub_4293B0();
+	sub_4292E0();
+
+	if (pointFiltered) {
+		SetSamplerState(1);
+	}
+	DrawFVF_H_(a1, vertexCount);
+	if (pointFiltered) {
+		SetSamplerState(2);
 	}
 }

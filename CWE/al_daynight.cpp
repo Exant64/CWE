@@ -672,8 +672,7 @@ Uint32 AL_DayNightCycle_PreDrawSetupShinyTexture() {
 	}
 
 	// sets texture to interpolate to into slot 3, handled in chao shader
-	NJS_CTX* ctx = (NJS_CTX*)Has_texlist_batadvPlayerChara_in_it;
-	NJS_TEXLIST* pTexlistBackup = ctx->texlistPtr;
+	NJS_TEXLIST* pTexlistBackup = _nj_curr_ctx_->texlist;
 
 	if (shinyTextureIndexTo) {		
 		njSetTexture(work.pTexlist);
