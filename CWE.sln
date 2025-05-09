@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CWE", "CWE\CWE.vcxproj", "{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911} = {E72B7379-DC9F-4CD5-8A12-7F9ECD582911}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BrightFix", "BrightFix\BrightFix\BrightFix.vcxproj", "{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}"
 EndProject
