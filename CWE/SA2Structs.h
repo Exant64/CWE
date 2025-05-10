@@ -398,7 +398,7 @@ struct __declspec(align(4)) ChaoData1
 	ObjectMaster *ObjectMaster_ptr2_notreally;
 	char field_54[12];
 	int field_60;
-	int field_58;
+	int isParamCopy;
 	ChaoDataBase *pParamGC;
 	char field_70[40];
 	int field_88;

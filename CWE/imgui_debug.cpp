@@ -4,9 +4,26 @@
 #include <exception>
 #include <FunctionHook.h>
 #include <d3d9.h>
+#include <al_speechbubble.h>
 
 static void ImGuiMenu() {
-    
+    if (ImGui::Begin("speech test")) {
+        static int speechID = 0;
+        static bool onRightSide = false;
+        static int chaoID = 0;
+        ImGui::SliderInt("Type", &speechID, 0, NB_SPEECH_ENTRY);
+        ImGui::SliderInt("chao id", &chaoID, 0, 24);
+        ImGui::Checkbox("Right", &onRightSide);
+
+        if (ImGui::Button("create bubble")) {
+            task* pChao = GetChaoObject(0, 0);
+            if (pChao) {
+                task* renderedChao = GetChaoObject(0, chaoID);
+                AL_SpeechBubbleCreate(pChao, renderedChao ? (ChaoData*)renderedChao->Data1.Chao->pParamGC : NULL, speechID, onRightSide ? SPEECH_POS_RIGHT : SPEECH_POS_LEFT, 35, 120);
+            }
+        }
+        ImGui::End();
+    }
 }
 
 // imgui implementation below, keep cwe logic above here

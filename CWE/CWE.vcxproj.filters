@@ -113,7 +113,7 @@
     <ClCompile Include="cwe_fixes.cpp" />
     <ClCompile Include="cwe_func.cpp" />
     <ClCompile Include="c_colli.cpp" />
-    <ClCompile Include="experimental_rendertarget.cpp" />
+    <ClCompile Include="rendertarget.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="kce_helper.cpp" />
     <ClCompile Include="memory.cpp" />
@@ -140,6 +140,7 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui_debug.cpp" />
+    <ClCompile Include="al_speechbubble.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -321,6 +322,7 @@
     <ClInclude Include="al_chao_info.h" />
     <ClInclude Include="data\ChaoShaderDayNight.h" />
     <ClInclude Include="renderfix.h" />
+    <ClInclude Include="al_speechbubble.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
@@ -331,6 +333,7 @@
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui_debug.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
+    <ClInclude Include="rendertarget.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />

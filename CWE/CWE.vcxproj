@@ -359,6 +359,7 @@
     <ClInclude Include="al_save.h" />
     <ClInclude Include="al_shape.h" />
     <ClInclude Include="al_social.h" />
+    <ClInclude Include="al_speechbubble.h" />
     <ClInclude Include="al_stage.h" />
     <ClInclude Include="al_texlist.h" />
     <ClInclude Include="al_toy_move.h" />
@@ -517,6 +518,7 @@
     <ClInclude Include="register\api_register.h" />
     <ClInclude Include="renderfix.h" />
     <ClInclude Include="renderfix_api.h" />
+    <ClInclude Include="rendertarget.h" />
     <ClInclude Include="SA2Enums.h" />
     <ClInclude Include="SA2Functions.h" />
     <ClInclude Include="SA2ModLoader.h" />
@@ -626,6 +628,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="al_speechbubble.cpp" />
     <ClCompile Include="renderfix.cpp" />
     <ClCompile Include="ui\al_tween_interp.cpp" />
     <ClInclude Include="al_chao_info.h" />
@@ -705,7 +708,7 @@
     <ClCompile Include="cwe_fixes.cpp" />
     <ClCompile Include="cwe_func.cpp" />
     <ClCompile Include="c_colli.cpp" />
-    <ClCompile Include="experimental_rendertarget.cpp" />
+    <ClCompile Include="rendertarget.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="kce_helper.cpp" />
     <ClCompile Include="memory.cpp" />

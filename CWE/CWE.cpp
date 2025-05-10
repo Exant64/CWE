@@ -94,13 +94,6 @@ extern "C"
 	int __cdecl CreateToyHook()
 	{
 		int retval = AL_NormalCameraExecutor_Load();
-		
-#ifdef RENDERTARGET
-		LoadObject(4, "testbeginscenehook", [](ObjectMaster* a1) {
-			WriteCall((void*)0x00434011, BeginScene_Ex);
-			a1->MainSub = DeleteObject_;
-			}, (LoadObj)0);
-#endif
 
 		switch (AL_GetStageNumber()) {
 		case CHAO_STG_NEUT:
@@ -337,13 +330,6 @@ extern "C"
 		ImGui_Init();
 #endif
 
-#ifdef RENDERTARGET
-		device->CreateRenderTarget(HorizontalResolution, VerticalResolution, D3DFMT_A8R8G8B8, D3DMULTISAMPLE_TYPE::D3DMULTISAMPLE_NONE, 0, false, &RenderTarget, 0);
-		device->CreateDepthStencilSurface(HorizontalResolution, VerticalResolution, D3DFMT_D16,
-			D3DMULTISAMPLE_TYPE::D3DMULTISAMPLE_NONE, 0, false, &FStaticStencil, nullptr);
-		device->CreateTexture(HorizontalResolution, VerticalResolution, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &OutTexture, 0);
-		OutTexture->GetSurfaceLevel(0, &OutSurface);
-#endif
 		const std::string iniPath = std::string(path) + "\\config.ini";
 		IniFile* config = new IniFile(iniPath);
 

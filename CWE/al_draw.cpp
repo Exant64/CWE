@@ -701,11 +701,14 @@ void AL_SetBodyTexture(ObjectMaster* a1)
 		njSetTexture(&AL_BODY);
 }
 
+static float OnlyDrawHeadMatrix[12];
+static bool OnlyDrawHead = false;
 static bool BaldFlag = false;
 static bool CanBeBald = false;
 void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 {
 	int v36, v44;
+	bool hideHat = false;
 
 	if (Chao_NodeIndex == 0)
 	{
@@ -744,6 +747,15 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 	}
 	else
 		AL_SetMotionMatrix(a1, chunkObjectPointer);
+
+	if (OnlyDrawHead) {
+		if (Chao_NodeIndex == 14) {
+			memcpy(_nj_current_matrix_ptr_, &OnlyDrawHeadMatrix, sizeof(OnlyDrawHeadMatrix));
+		}
+
+		if (Chao_NodeIndex < 14 || Chao_NodeIndex > 33) goto LABEL_98;
+	}
+
 	//chibi chao lol
 	//if (Chao_NodeIndex == 0)
 		//njScale(0.5, 0.5, 0.5);
@@ -752,7 +764,7 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 		//njScale(1.5, 1.5, 1.5);
 	AL_DrawToy(chunkObjectPointer);
 
-	bool hideHat = false;
+	
 	if (a1->Data1.Chao->pParamGC->Headgear)
 	{
 		//REMOVE WRONG HAT
@@ -924,6 +936,20 @@ LABEL_98:
 
 	if (chunkObjectPointer->base.sibling)
 		DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.sibling);
+}
+
+void OnlyDrawHeadChao(task* tp) {
+	OnlyDrawHead = true;
+	Chao_NodeIndex = 0;
+
+	njSetTexture(&AL_BODY);
+	sub_56E9C0(tp);
+	alpalSetBank(tp, tp->Data1.Entity->Index);
+
+	memcpy(&OnlyDrawHeadMatrix, _nj_current_matrix_ptr_, sizeof(OnlyDrawHeadMatrix));
+
+	DrawChao(tp, GET_CHAOWK(tp)->field_510);
+	OnlyDrawHead = false;
 }
 
 static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
