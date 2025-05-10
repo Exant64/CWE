@@ -90,13 +90,13 @@ extern "C"
 		device->SetSamplerState(2, D3DSAMPLERSTATETYPE::D3DSAMP_ADDRESSV, addressV);
 	}
 
-	__declspec(noinline) void LoadNewShaders()
+	API __declspec(noinline) void LoadNewShaders()
 	{
-		device->SetVertexShader((IDirect3DVertexShader9*)struc_36Instance->Shaders[1]->VertexShader->shaderData);
+		device->SetVertexShader(chaoVertexSimpleShader);
 		device->SetPixelShader(chaoPixelSimpleShader);
 		SetFlag(0);
 	}
-	__declspec(noinline) void CancelNewShaders()
+	API __declspec(noinline) void CancelNewShaders()
 	{
 		SetFlag(1);//idk how pixelshaderconstantf works, is it specific to current shader?
 		device->SetVertexShader((IDirect3DVertexShader9*)struc_36Instance->Shaders[1]->VertexShader->shaderData);
@@ -581,12 +581,17 @@ extern "C"
 	IDirect3DVertexShader9* vertShader;
 
 #ifdef BRIGHTFIX_PLUS
-	API void __cdecl BrightFix_Init(const char* path, BYTE* shaderData)
+	API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData)
 #else
 	__declspec(dllexport) void __cdecl Init(const char* path)
 #endif
 	{ 
 		device = dword_1A557C0->pointerToDevice;
+
+		if ((device->CreateVertexShader((DWORD*)vertexShader, &chaoVertexSimpleShader)) != D3D_OK)//creates shaders
+		{
+			MessageBoxA(0, "BrightFix", "Cant load shader!", 0);
+		}
 
 		if ((device->CreatePixelShader((DWORD*)shaderData, &chaoPixelSimpleShader)) != D3D_OK)//creates shaders
 		{

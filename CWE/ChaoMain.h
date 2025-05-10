@@ -1,8 +1,11 @@
 #pragma once
 #include "al_texlist.h"
+#include <d3d9.h>
 
 extern const HelperFunctions* g_HelperFunctions;
 extern void(__cdecl* DrawChaoWorldShadow)();
+
+extern IDirect3DDevice9* cwe_device;
 
 void AL_CustomizationInit();
 DataArray(ChaoData*, ChaoSelectData, 0x01DBEE80, 48);
