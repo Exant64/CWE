@@ -175,42 +175,6 @@ FunctionPointer(void, gjDrawObject, (NJS_OBJECT* a1), 0x0042B530);
 
 DataPointer(int, nj_cnk_blend_mode, 0x025F0264);
 
-VoidFunc(SaveControl3D, 0x446D00);
-VoidFunc(LoadControl3D, 0x446D10);
-VoidFunc(SaveConstantAttr, 0x446CB0);
-VoidFunc(LoadConstantAttr, 0x446CD0);
-
-static const void* const OnControl3DPtr = (void*)0x446D20;
-static inline void OnControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OnControl3DPtr
-	}
-}
-
-static const void* const OffControl3DPtr = (void*)0x00446D30;
-static inline void OffControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OffControl3DPtr
-	}
-}
-
-static const void* const OnConstantAttrPtr = (void*)0x446CF0;
-static inline void OnConstantAttr(int soc_and, int soc_or)
-{
-	__asm
-	{
-		mov eax, [soc_and]
-		mov ecx, [soc_or]
-		call OnConstantAttrPtr
-	}
-}
-
 FunctionPointer(void, EnableAlpha, (int a1), 0x4264D0);
 
 // NOT an official name
