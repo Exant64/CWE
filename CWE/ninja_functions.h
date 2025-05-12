@@ -78,6 +78,7 @@ void njColorBlendingMode(int a1, int a2);
 FastcallFunctionPointer(float,  njCos, (signed int a1), 0x042AC30);
 FastcallFunctionPointer(signed int,  njPushMatrix, (NJS_MATRIX_PTR a1), 0x0077FE10);
 FastcallFunctionPointer(float,  njSin, (signed int a1), 0x0042AAB0);
+Float njInnerProduct(const NJS_VECTOR* const v1, const NJS_VECTOR* const v2);
 FunctionPointer(int, chCnkDrawModel, (NJS_CNK_MODEL *a1), 0x0056E1E0);
 static void chCnkDrawModelWrapper(NJS_CNK_MODEL* a1) {
 	chCnkDrawModel(a1);

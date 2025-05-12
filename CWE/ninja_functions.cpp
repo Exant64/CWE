@@ -288,3 +288,7 @@ void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool p
 		SetSamplerState(2);
 	}
 }
+
+Float njInnerProduct(const NJS_VECTOR* const v1, const NJS_VECTOR* const v2) {
+	return (v1->x * v2->x) + (v1->y * v2->y) + (v1->z * v2->z);
+}
