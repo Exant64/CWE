@@ -487,6 +487,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="imgui_debug_motionstrings.h" />
     <ClInclude Include="IniFile.h" />
     <ClInclude Include="data\lens\LensBoxDark.h" />
     <ClInclude Include="data\lens\LensBoxDefault.h" />

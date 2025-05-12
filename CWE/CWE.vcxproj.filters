@@ -332,6 +332,7 @@
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui_debug.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
+    <ClInclude Include="imgui_debug_motionstrings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
