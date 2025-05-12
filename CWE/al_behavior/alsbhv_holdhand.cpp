@@ -7,6 +7,7 @@
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
+#include "albhv.h"
 
 //DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 

@@ -566,6 +566,7 @@
     <ClCompile Include="al_behavior\albhv_ltoy.cpp" />
     <ClCompile Include="al_behavior\albhv_music.cpp" />
     <ClCompile Include="al_behavior\albhv_piano.cpp" />
+    <ClCompile Include="al_behavior\albhv_posture.cpp" />
     <ClCompile Include="al_behavior\albhv_stoy.cpp" />
     <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
     <ClCompile Include="al_behavior\albhv_tree.cpp" />

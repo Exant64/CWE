@@ -17,8 +17,9 @@ bool __cdecl SetPianoWaypoint(ObjectMaster* a2, NJS_VECTOR* a1)
 		EntityData1* v2 = a2->Data1.Entity;
 		Angle v4 = v2->Rotation.y;
 
-		a1->x = njSin(v4) + v2->Position.x;
-		a1->z = njCos(v4) + v2->Position.z;
+		a1->x = njSin(v4) * 1.5 *2 + v2->Position.x;
+		a1->y = v2->Position.y;
+		a1->z = njCos(v4) * 1.5 * 2 + v2->Position.z;
 	}
 	return 1;
 }
@@ -34,6 +35,9 @@ void Piano_Display(ObjectMaster * a1)
 		
 		njRotateY(NULL, a1->Data1.Entity->Rotation.y);
 
+		SaveControl3D(); 
+		OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+
 		switch (a1->Data1.Entity->Index)
 		{
 		case PIANOTYPE_PIANO:
@@ -46,6 +50,8 @@ void Piano_Display(ObjectMaster * a1)
 			njCnkDrawObject(&Organ);
 			break;
 		}
+
+		LoadControl3D();
 
 		if (a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
 		{
