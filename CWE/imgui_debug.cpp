@@ -14,12 +14,17 @@
 #include <imgui_debug_motionstrings.h>
 
 static int SelectedChaoIndex;
+static int SelectedOtherChaoIndex;
 static bool ShowChaoInfo = false;
 static bool ShowDNC = false;
 static bool ShowLight = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
+}
+
+static task* GetSelectedOtherChao() {
+    return GetChaoObject(0, SelectedOtherChaoIndex);
 }
 
 static void ChaoInfoMenu() {
@@ -59,7 +64,30 @@ static void ChaoInfoMenu() {
 
                     ImGui::TreePop();
                 }
-                ImGui::EndMenu();
+
+                if (ImGui::TreeNode("Start Social Behaviors")) {
+                    ImGui::SliderInt("Other Chao ID", &SelectedOtherChaoIndex, 0, ALW_CountEntry(0));
+
+                    task* pOtherChao = GetSelectedOtherChao();
+                    if (pOtherChao) {
+                        ALW_LockOn(pChao, pOtherChao);
+
+                        if (ImGui::Button("Talk")) {
+                            AL_SetBehavior(pChao, ALBHV_Talk);
+                        }
+                        if (ImGui::Button("Gossip")) {
+                            ALBHV_Gossip(pChao, pOtherChao);
+                        }
+                        if (ImGui::Button("Hold Hands")) {
+                            AL_SetBehavior(pChao, ALBHV_InitHoldHands);
+                        }
+                        if (ImGui::Button("Hug")) {
+                            AL_SetBehavior(pChao, ALBHV_InitHug);
+                        }
+                    }
+                    ImGui::TreePop();
+                }
+                ImGui::EndTabItem();
             }
 
             if (ImGui::BeginTabItem("Perception")) {
