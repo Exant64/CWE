@@ -10,6 +10,7 @@
 #include "al_knowledge.h"
 #include "..//AL_ModAPI.h"
 #include "al_intention.h"
+#include "albhv.h"
 
 struct FRUIT_INFO
 {

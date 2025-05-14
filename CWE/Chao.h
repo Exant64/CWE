@@ -423,7 +423,6 @@ struct LAND_ATTR_INDEX
 };
 DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
 
-#define BHVFunc(NAME, ADDRESS) FunctionPointer(int,NAME,(ObjectMaster*),ADDRESS);
 ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (ObjectMaster* a1), 0x56CFF0);
 ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1);
 
@@ -434,19 +433,25 @@ void sub_54A690(ObjectMaster* a1);
 void LoadCocoon(ObjectMaster* a1, char a2);
 void ALOField_Load(ObjectMaster* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer);
 
-BHVFunc(ALBHV_Think, 0x00565BE0);
-BHVFunc(ALBHV_PostureChangeSit, 0x0055C430);
-BHVFunc(ALBHV_GoToAim, 0x56B560);
-BHVFunc(ALBHV_TurnToAim, 0x56B500);
-BHVFunc(ALBHV_TurnToLockOn, 0x56B6C0);
-BHVFunc(ALBHV_GoToLockOn, 0x56BA80);
-BHVFunc(ALBHV_Cry, 0x59FCA0);
-BHVFunc(ALBHV_HoldThink, 0x569340);
-
 ObjectMaster* GetClosestChao(ObjectMaster* a1);
 void AL_IconSet(ObjectMaster* a4, char a2, int a3);
 
+// todo move all these to move.cpp
 ThiscallFunctionPointer(float, MOV_DistFromAim, (ObjectMaster* a1), 0x007968A0);
+
+static float MOV_DistFromAimXZ(task* tp) {
+	NJS_POINT3* pos = &tp->Data1.Entity->Position;
+	NJS_POINT3* aimPos = &tp->EntityData2->Waypoint;
+
+	NJS_VECTOR v = {
+		pos->x - aimPos->x,
+		0,
+		pos->z - aimPos->z
+	};
+
+	return njScalor(&v);
+}
+
 int MOV_TurnToAim2(ObjectMaster* a1, signed int a3);
 void MOV_SetVelo(ObjectMaster* tp, NJS_VECTOR* pVelo);
 void MOV_SetAimPos(ObjectMaster* tp, NJS_POINT3* pPos);

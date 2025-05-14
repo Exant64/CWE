@@ -140,6 +140,7 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui_debug.cpp" />
+    <ClCompile Include="al_behavior\albhv_posture.cpp" />
     <ClCompile Include="al_speechbubble.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -333,6 +334,7 @@
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui_debug.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
+    <ClInclude Include="imgui_debug_motionstrings.h" />
     <ClInclude Include="rendertarget.h" />
   </ItemGroup>
   <ItemGroup>

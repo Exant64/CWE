@@ -365,11 +365,11 @@ struct __declspec(align(4)) al_perception_link
 #pragma pack(push, 8)
 struct __declspec(align(4)) ChaoObjectListInfo
 {
-	float MinimumDistance;
-	int a2;
-	int MinimumRotation;
-	float a4;
-	float a5;
+	float SightRange;
+	int SightAngle;
+	int SightAngleHalf;
+	float HearRange;
+	float SmellRange;
 };
 #pragma pack(pop)
 

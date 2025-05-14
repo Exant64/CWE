@@ -78,6 +78,7 @@ void njColorBlendingMode(int a1, int a2);
 FastcallFunctionPointer(float,  njCos, (signed int a1), 0x042AC30);
 FastcallFunctionPointer(signed int,  njPushMatrix, (NJS_MATRIX_PTR a1), 0x0077FE10);
 FastcallFunctionPointer(float,  njSin, (signed int a1), 0x0042AAB0);
+Float njInnerProduct(const NJS_VECTOR* const v1, const NJS_VECTOR* const v2);
 FunctionPointer(int, chCnkDrawModel, (NJS_CNK_MODEL *a1), 0x0056E1E0);
 static void chCnkDrawModelWrapper(NJS_CNK_MODEL* a1) {
 	chCnkDrawModel(a1);
@@ -126,6 +127,15 @@ void DrawQuadTexture(int a1, float a2);
 
 void njSetTextureNum(int texid);
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered = false);
+
+VoidFunc(SaveControl3D, 0x446D00);
+VoidFunc(LoadControl3D, 0x446D10);
+VoidFunc(SaveConstantAttr, 0x446CB0);
+VoidFunc(LoadConstantAttr, 0x446CD0);
+
+void OnControl3D(int flag);
+void OffControl3D(int flag);
+void OnConstantAttr(int soc_and, int soc_or);
 
 FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
 FunctionPointer(void, sub_781CB0, (int a1), 0x781CB0);

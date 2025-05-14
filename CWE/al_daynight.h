@@ -1,6 +1,85 @@
 #pragma once
 
 #include "IniFile.h"
+#include <ninja_functions.h>
+
+struct DAYNIGHT_SKYBOX {
+	uint32_t origTexID; // tex ID to look for to find mesh
+	uint32_t dayTexID;
+	uint32_t eveningTexID;
+	uint32_t nightTexID;
+	uint32_t cloudyTexID;
+};
+
+struct DAYNIGHT_SKYBOX_TEXMAP_TABLE {
+	union {
+		uint16_t* pChunkTexID;
+		uint32_t* pTexID;
+	};
+
+	uint32_t* pLightingParameter;
+	uint32_t originalLightingParameter;
+
+	DAYNIGHT_SKYBOX skybox;
+};
+
+struct DAYNIGHT_SKYBOX_TABLE {
+	bool isChunk;
+	bool isCopied;
+	NJS_OBJECT* pObj;
+	DAYNIGHT_SKYBOX_TEXMAP_TABLE* pTexMap;
+	size_t texMapCount;
+};
+
+enum {
+	VERTEX_COLOR_TABLE_SRC = 0,
+	VERTEX_COLOR_TABLE_DST = 1,
+	VERTEX_COLOR_TABLE_COUNT = 2
+};
+
+struct DAYNIGHT_WORK {
+	int mode;
+
+	LandTable* pNewLandtable;
+	LandTable* pOldLandtable;
+
+	bool isChunkLandTable;
+
+	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
+	Uint32** pVertexColorTableChunk;
+
+	NJS_TEXLIST* pTexlist;
+
+	uint32_t phaseA;
+	uint32_t phaseB;
+	float lerpValue;
+
+	uint32_t timer;
+	uint32_t day;
+	uint32_t phase;
+	bool nextDayCloudy;
+
+	NJS_ARGB appliedColor;
+
+	// this is temporary, we only use it rn to dump them for conversion
+	// remove later
+	// 4 for the phases, 4 for the lights in the file
+	Light lights[4][4];
+
+	// for phases that don't have a specified light, it will use the one loaded by the game
+	// (converted to GC if it isn't GC)
+	LightGC fallbackLight;
+	LightGC originalLight;
+
+	// this is needed to apply the color to the landtable light in the same way we do to the vertex color
+	// if the model uses normals instead of vertex colors
+	NJS_VECTOR originalLandLightColor;
+
+	DAYNIGHT_SKYBOX_TABLE* pSkyboxTable;
+	int skyboxCount;
+};
+
+extern task* pDayNightTask;
 
 enum
 {
@@ -89,6 +168,8 @@ struct DAYNIGHT_SAVE {
 
 // bit hacky, but crunch moment
 extern uint32_t gDayNightCheatPhase;
+
+void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork);
 
 void AL_DayNightCycle_PushFallbackLight();
 void AL_DayNightCycle_PopFallbackLight();

@@ -96,127 +96,16 @@ static size_t AL_DayNightCycle_GetDayFrameCount() {
 	return 24 * AL_DayNightCycle_GetHourFrameCount();
 }
 
-struct DAYNIGHT_SKYBOX {
-	uint32_t origTexID; // tex ID to look for to find mesh
-	uint32_t dayTexID;
-	uint32_t eveningTexID;
-	uint32_t nightTexID;
-	uint32_t cloudyTexID;
-};
-
-struct DAYNIGHT_SKYBOX_TEXMAP_TABLE {
-	union {
-		uint16_t* pChunkTexID;
-		uint32_t* pTexID;
-	};
-
-	uint32_t* pLightingParameter;
-	uint32_t originalLightingParameter;
-
-	DAYNIGHT_SKYBOX skybox;
-};
-
-struct DAYNIGHT_SKYBOX_TABLE {
-	bool isChunk;
-	bool isCopied;
-	NJS_OBJECT* pObj;
-	DAYNIGHT_SKYBOX_TEXMAP_TABLE* pTexMap;
-	size_t texMapCount;
-};
-
-enum {
-	VERTEX_COLOR_TABLE_SRC = 0,
-	VERTEX_COLOR_TABLE_DST = 1,
-	VERTEX_COLOR_TABLE_COUNT = 2
-};
-
-struct DAYNIGHT_WORK {
-	int mode;
-
-	LandTable* pNewLandtable;
-	LandTable* pOldLandtable;
-
-	bool isChunkLandTable;
-
-	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
-	Uint32** pVertexColorTableChunk;
-
-	NJS_TEXLIST* pTexlist;
-
-	uint32_t phaseA;
-	uint32_t phaseB;
-	float lerpValue;
-
-	uint32_t timer;
-	uint32_t day;
-	uint32_t phase;
-	bool nextDayCloudy;
-
-	NJS_ARGB appliedColor;
-
-	// this is temporary, we only use it rn to dump them for conversion
-	// remove later
-	// 4 for the phases, 4 for the lights in the file
-	Light lights[4][4];
-
-	// for phases that don't have a specified light, it will use the one loaded by the game
-	// (converted to GC if it isn't GC)
-	LightGC fallbackLight;
-
-	// this is needed to apply the color to the landtable light in the same way we do to the vertex color
-	// if the model uses normals instead of vertex colors
-	NJS_VECTOR originalLandLightColor;
-
-	DAYNIGHT_SKYBOX_TABLE* pSkyboxTable;
-	int skyboxCount;
-};
-
 FunctionPointer(void, gjDrawObject, (NJS_OBJECT* a1), 0x0042B530);
 
 DataPointer(int, nj_cnk_blend_mode, 0x025F0264);
-
-VoidFunc(SaveControl3D, 0x446D00);
-VoidFunc(LoadControl3D, 0x446D10);
-VoidFunc(SaveConstantAttr, 0x446CB0);
-VoidFunc(LoadConstantAttr, 0x446CD0);
-
-static const void* const OnControl3DPtr = (void*)0x446D20;
-static inline void OnControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OnControl3DPtr
-	}
-}
-
-static const void* const OffControl3DPtr = (void*)0x00446D30;
-static inline void OffControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OffControl3DPtr
-	}
-}
-
-static const void* const OnConstantAttrPtr = (void*)0x446CF0;
-static inline void OnConstantAttr(int soc_and, int soc_or)
-{
-	__asm
-	{
-		mov eax, [soc_and]
-		mov ecx, [soc_or]
-		call OnConstantAttrPtr
-	}
-}
 
 FunctionPointer(void, EnableAlpha, (int a1), 0x4264D0);
 
 // NOT an official name
 FunctionPointer(void, gjSetDiffuse, (unsigned int a1), 0x42BA60);
 
-static task* pDayNightTask;
+task* pDayNightTask;
 
 static bool AL_DayNightCycle_CanCheckSkybox() {
 	switch (AL_GetStageNumber()) {
@@ -1340,6 +1229,8 @@ static void AL_DayNightCycle_InitFallbackLight(task* tp) {
 	// we only care about lerping light 0
 	size_t index = 0;
 
+	work.originalLight = LightsGC[index];
+
 	// if already GC don't bother converting
 	if (LightsGC[index].SomeFlag & 1) {
 		work.fallbackLight = LightsGC[index];
@@ -1508,6 +1399,9 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	// the fallback light is either the first GC light, or the first DC light converted to GC (lossless)
 	LightsGC[0].SomeFlag |= 1;
 
+	LightsGC[0].direction = slerp(pSrcLight.direction, pDstLight.direction, work.lerpValue);
+	njUnitVector(&LightsGC[0].direction);
+
 	LerpColor(LightsGC[0].lightColor, pSrcLight.lightColor, pDstLight.lightColor, work.lerpValue);
 	LerpColor(LightsGC[0].ambientReg, pSrcLight.ambientReg, pDstLight.ambientReg, work.lerpValue);
 }
@@ -1562,7 +1456,7 @@ static uint32_t AL_DayNightCycle_GetStartHourForPhase(uint32_t phase) {
 	return dayNightTimeConfig[phase].hour;
 }
 
-static void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork) {
+void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork) {
 	const size_t hourFrames = pInfo->GetHourFrameCount();
 	
 	size_t phase = -1;
@@ -1764,6 +1658,8 @@ static void AL_DayNightCycleExecutor(task* tp) {
 static void AL_DayNightCycle_RestoreAll(task* tp) {
 	auto& work = GetWork(tp);
 	
+	LightsGC[0] = work.originalLight;
+
 	// restore the original landtable's field to keep track of if the texlist is already loaded or not
 	work.pOldLandtable->field_A = work.pNewLandtable->field_A; 
 
