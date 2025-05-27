@@ -18,6 +18,7 @@ static int SelectedOtherChaoIndex;
 static bool ShowChaoInfo = false;
 static bool ShowDNC = false;
 static bool ShowLight = false;
+static bool ShowTaskList = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -336,19 +337,42 @@ static void LightMenu() {
     }
 }
 
+static void TaskListMenu() {
+    if (ShowTaskList && ImGui::Begin("Tasks", &ShowTaskList)) {
+        for (size_t i = 0; i < ObjectLists_Length; i++) {
+            char path[40];
+            sprintf_s(path, "List %d", int(i));
+
+            if (ImGui::TreeNode(path)) {
+                auto* obj = ObjectLists[i];
+                if (obj) {
+                    do {
+                        ImGui::Text(!obj->Name ? "" : obj->Name);
+                        obj = obj->NextObject;
+                    } while (obj != ObjectLists[i]);
+                }
+
+                ImGui::TreePop();
+            }
+        }
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
-    ImGui::ShowDemoWindow();
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
             ImGui::MenuItem("Light", NULL, &ShowLight);
             ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
+            ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
             ImGui::EndMenu();
         }
 
         ChaoInfoMenu();
         DayNightMenu();
         LightMenu();
+        TaskListMenu();
 
         ImGui::EndMainMenuBar();
     }
