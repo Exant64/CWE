@@ -13,6 +13,7 @@
 #include "ninja_functions.h"
 #include "../include/brightfixapi.h"
 #include <ninja_functions.h>
+#include <ALifeSDK_Functions.h>
 
 const int sub_41FA60Ptr = 0x41FA60;
 void  sub_41FA60(WeirdChunkTexIndexThing* a1, signed int a2)
@@ -92,6 +93,7 @@ extern "C"
 
 	API __declspec(noinline) void LoadNewShaders()
 	{
+		SetShaders(1);
 		device->SetVertexShader(chaoVertexSimpleShader);
 		device->SetPixelShader(chaoPixelSimpleShader);
 		SetFlag(0);
