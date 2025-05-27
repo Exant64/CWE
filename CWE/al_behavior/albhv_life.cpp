@@ -3,6 +3,7 @@
 #include <random>
 #include <AL_ModAPI.h>
 #include <ALifeSDK_Functions.h>
+#include "albhv.h"
 
 int __cdecl ALBHV_EggChao(ObjectMaster* a1)
 {

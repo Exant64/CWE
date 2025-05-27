@@ -7,5 +7,5 @@ int ALBHV_LockUp(ObjectMaster* a1);
 signed int __cdecl ALBHV_GoToSocial(ObjectMaster* a1);
 int ALBHV_Talk(ObjectMaster* a1);
 int ALBHV_InitHoldHands(ObjectMaster* a1);
-
+void ALBHV_Gossip(ObjectMaster* a1, ObjectMaster* a2);
 int ALBHV_InitHug(ObjectMaster* a1);

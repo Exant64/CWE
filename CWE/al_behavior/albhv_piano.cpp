@@ -8,82 +8,142 @@
 #include "../al_world.h"
 #include "albhv.h"
 #include <al_face.h>
+#include <util.h>
 
-signed int __cdecl ALBHV_PlayPiano(ObjectMaster* a1)
-{
-	ChaoData1* data1 = (ChaoData1*)a1->Data1.Chao;
-	UnknownData2* data2 = a1->Data2.Unknown_Chao;
-	if (data1->Behavior.Mode)
-	{
-		a1->Data1.Chao->Behavior.IntervalTimer[8] = (unsigned __int16)(1800 //INT_TIMER_LTOY
-			+ (signed int)(njRandom() * 1801.f));
+static int GetPianoType (task* pToy) {
+	return pToy->Data1.Entity->Index;
+}
 
-		return !ALO_Field_Find_((ObjectMaster*)a1, 1, 165);
-	}
-	else
-	{
-		NJS_VECTOR position;
-		ObjectMaster* toy = (ObjectMaster*)ALW_GetLockOnTask(a1);
-		SetPianoWaypoint(toy, &position);
+static int ALBHV_PlayPiano(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+	AL_BEHAVIOR* bhv = &work->Behavior;
+	UnknownData2* move = tp->Data2.Unknown_Chao;
 
-		position.y = a1->Data1.Entity->Position.y;
-		a1->Data1.Entity->Position = position;
-		a1->Data1.Entity->Rotation.y = toy->Data1.Entity->Rotation.y + 0x8000;
+	task* pToy;
+	NJS_POINT3 toyPos;
+	int timer;
 
-		switch (toy->Data1.Entity->Index)
+	switch (bhv->Mode) {
+	case 0:
+		pToy = ALW_GetLockOnTask(tp);
+		SetPianoWaypoint(pToy, &toyPos);
+
+		toyPos.y = work->entity.Position.y;
+		work->entity.Position = toyPos;
+		work->entity.Rotation.y = pToy->Data1.Entity->Rotation.y + 0x8000;
+
+		switch (GetPianoType(pToy))
 		{
 		case PIANOTYPE_PIANO:
-			AL_SetMotionLink(a1, 340);
+			AL_SetMotionLink(tp, ALM_PIANO);
 			break;
 		case PIANOTYPE_ORGAN:
-			AL_SetMotionLink(a1, 341);
+			AL_SetMotionLink(tp, ALM_ORGAN);
 			break;
 		}
 
-		AL_FaceChangeEye(a1, ChaoEyes_ClosedUp);
-		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
-		++data1->Behavior.Mode;
+		AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+		AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
 
-		int timer = (int)(1800 + (njRandom() * 800.f)) * 2;
+		++bhv->Mode;
 
-		a1->Data1.Chao->ObjectMaster_ptr1 = AL_FieldExecutor_Load(
+		timer = (int)(1800 + (njRandom() * 800.f)) * 2;
+
+		work->ObjectMaster_ptr1 = AL_FieldExecutor_Load(
 			CI_KIND_AL_RANDOM_MUSIC,
-			&a1->Data1.Entity->Position,
+			&work->entity.Position,
 			20,
 			timer);
-		a1->Data1.Chao->ObjectMaster_ptr2 = AL_FieldExecutor_Load( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
+		work->ObjectMaster_ptr2 = AL_FieldExecutor_Load( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
 			CI_KIND_AL_PIANO,
-			&a1->Data1.Entity->Position,
+			&work->entity.Position,
 			20,
 			timer);
+		break;
+	case 1:
+		if (!ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
+			bhv->IntervalTimer[INT_TIMER_LTOY] = 1800 + (njRandom() * 1801.f);
+			return BHV_RET_FINISH;
+		}
 	}
 
 	return BHV_RET_CONTINUE;
 }
 
-signed int __cdecl ALBHV_GoToPiano(ObjectMaster* a1)
-{
-	ObjectMaster* v1; // edi
-	NJS_VECTOR a2; // [esp+8h] [ebp-Ch]
+static int ALBHV_InterpolateToPiano(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+	AL_BEHAVIOR* bhv = &work->Behavior;
 
-	v1 = AL_GetFoundToyTask(a1);
+	task* pToy = ALW_GetLockOnTask(tp);
+	NJS_POINT3 pianoPos;
+
+	const int TIME_TO_LERP = 90;
+	const int ANGLE_SPD = 384;
+
+	SetPianoWaypoint(pToy, &pianoPos);
+	
+	const Angle targetAng = pToy->Data1.Entity->Rotation.y + 0x8000;
+	MOV_SetAimPos(tp, &pianoPos);
+
+	switch (bhv->Mode) {
+	case 0:
+		bhv->Timer = 0;
+		bhv->Mode++;
+		[[fallthrough]];
+	case 1:
+		MOV_TurnToAim2(tp, ANGLE_SPD);
+
+		{
+			const float speed = GET_GLOBAL()->WalkAcc * 0.8f;
+			tp->EntityData2->speed.x = njSin(work->entity.Rotation.y) * speed;
+			tp->EntityData2->speed.z = njCos(work->entity.Rotation.y) * speed;
+		}
+		
+		if (MOV_DistFromAimXZ(tp) < 0.5f) {
+			bhv->Mode++;
+		}
+		break;
+	case 2:
+		work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, targetAng, ANGLE_SPD);
+
+		if (abs(work->entity.Rotation.y - targetAng) <= ANGLE_SPD) {
+			return BHV_RET_FINISH;
+		}
+		break;
+	}
+
+	return BHV_RET_CONTINUE;
+}
+
+int ALBHV_GoToPiano(task* tp) {
+	task *pToy = AL_GetFoundToyTask(tp);
+	NJS_POINT3 toyPos;
+
 	//if theres already a piano field or if any chao is playing the piano
-	if (!v1 || ALW_IsSheAttentionOtherOne(a1, v1) || ALO_Field_Find_(a1, 1, CI_KIND_AL_PIANO))
+	if (!pToy || ALW_IsSheAttentionOtherOne(tp, pToy) || ALO_Field_Find_(tp, 1, CI_KIND_AL_PIANO))
 	{
 		return BHV_RET_FINISH;
 	}
 
-	SetPianoWaypoint(v1, &a2);
-	//a2.y = a1->Data1.Entity->Position.y;
-	ALW_LockOn(a1, v1);
-	ALW_CommunicationOn(a1, v1);
-	a1->EntityData2->Waypoint.x = a2.x;
-	a1->EntityData2->Waypoint.z = a2.z;
+	SetPianoWaypoint(pToy, &toyPos);
+	ALW_LockOn(tp, pToy);
+	ALW_CommunicationOn(tp, pToy);
 
-	AL_SetBehavior(a1, ALBHV_ToyMoveCheck<(BHV_FUNC)0x55C3C0>);
-	AL_SetNextBehavior(a1, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
-	AL_SetNextBehavior(a1, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B560>);
-	AL_SetNextBehavior(a1, ALBHV_ToyMoveCheck<ALBHV_PlayPiano>);
+	MOV_SetAimPos(tp, &toyPos);
+
+	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
+	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>); // Notice
+	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B560>); // GoToAim
+	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);
+	switch (GetPianoType(pToy)) {
+		case PIANOTYPE_PIANO:
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeSit>); // PostureChangeSit
+			break;	
+		case PIANOTYPE_ORGAN:
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
+			break;
+	}
+	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PlayPiano>);
 
 	return BHV_RET_CONTINUE;
 

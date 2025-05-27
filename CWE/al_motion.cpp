@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Chao.h>
 
 const int Chao_AnimationPtr = 0x00793C40;
 void Chao_Animation(MotionTableData* a1, int a2)
@@ -40,7 +41,17 @@ void __cdecl AL_SetMotionSpd(ObjectMaster* a1, float a2)
 {
 	a1->Data1.Chao->MotionTable.frameIncreaseSpeed_ = a2;
 }
-int __cdecl AL_IsMotionEnd(ObjectMaster* a1)
-{
+
+int AL_GetMotionNum(ObjectMaster* tp) {
+	MotionTableData* Ctrl = &GET_CHAOWK(tp)->MotionTable;
+	return Ctrl->AnimID;
+}
+
+int AL_GetMotionPosture(ObjectMaster* tp) {
+	MotionTableData* Ctrl = &GET_CHAOWK(tp)->MotionTable;
+	return Ctrl->gap2;
+}
+
+int AL_IsMotionEnd(ObjectMaster* a1) {
 	return a1->Data1.Chao->MotionTable.flag & 1;
 };

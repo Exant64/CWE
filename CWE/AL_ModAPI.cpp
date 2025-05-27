@@ -64,6 +64,7 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 
 	cweAPI.RegisterChaoTexlistLoad(pMinimal->texlistName, pMinimal->animalTexlist);
 	ModAPI_MinimalTexlists.push_back(pMinimal->animalTexlist);
+	ModAPI_MinimalNames.push_back(pMinimal->Name ? pMinimal->Name : pMinimal->texlistName);
 
 	ModAPI_MinimalMotion0.push_back(pMinimal->motions[0]);
 	ModAPI_MinimalMotion1.push_back(pMinimal->motions[1]);

@@ -1,6 +1,14 @@
 #pragma once
 #include <stdafx.h>
 
+enum eAL_PST {
+	AL_PST_STAND = 0,
+	AL_PST_SIT = 1,
+	AL_PST_LIE = 2,
+	AL_PST_FUSE = 3,
+	AL_PST_OTHERS = 4
+};
+
 void Chao_Animation(MotionTableData* a1, int a2);
 void  Chao_PlayAnimationSpeed(MotionTableData* result, int a2, unsigned __int16 a3);
 
@@ -8,6 +16,10 @@ unsigned int __cdecl AL_IsMotionStop(ObjectMaster* a1);
 void AL_SetMotionLink(ObjectMaster* a1, int index);
 void AL_SetMotionLinkStep(ObjectMaster* a1, int index, int spd);
 void __cdecl AL_SetMotionSpd(ObjectMaster* a1, float a2);
+
+int AL_GetMotionNum(ObjectMaster* tp);
+int AL_GetMotionPosture(ObjectMaster* tp);
+
 int __cdecl AL_IsMotionEnd(ObjectMaster* a1);
 enum
 {

@@ -460,10 +460,31 @@ static void __declspec(naked) AccessoryRemove2Hook()
 	}
 }
 
+static void AL_Behavior_PostureFix() {
+	// the posture behaviors don't handle transitioning from FUSE (lie face down) anims
+	// they do, but they just use the same anim as LIE which looks horrible
+	// this is an attempt to fix them
+	// PostureChangeSit now doesn't do anything for FUSE (todo: use Stand anim as base)
+	// PostureChangeStand now uses the tripping get up animation (ALM_KOKEOKE)
+
+	// PostureChangeSit is only used in garden, so we can hook it directly
+	WriteJump((void*)0x55C430, ALBHV_PostureChangeSit);
+	
+	// PostureChangeStand is used in race too, and i don't wanna affect the timings
+	// so ill manually change all garden references to it
+	// GoToTV, GoToRadicase and GoToHorse are already handled in albhv_ltoy.cpp
+	// (todo: why didn't we fix the Box?)
+	WriteData((int*)(0x00561551 - 4), int(ALBHV_PostureChangeStand)); // GoToEat
+	WriteData((int*)(0x005997DD - 4), int(ALBHV_PostureChangeStand)); // GoToBox
+	WriteData((int*)(0x005999C2 - 4), int(ALBHV_PostureChangeStand)); // ListenRadicase
+	WriteData((int*)(0x00599B12 - 4), int(ALBHV_PostureChangeStand)); // WatchTV
+	WriteData((int*)(0x005A36D2 - 4), int(ALBHV_PostureChangeStand)); // WalkSelect
+}
 
 void AL_Behavior_Init() {
-	AL_IntentionInit();
+	AL_Behavior_PostureFix();
 
+	AL_IntentionInit();
 	ALBHV_Life_Init();
 
 	//accessories

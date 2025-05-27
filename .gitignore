@@ -268,3 +268,4 @@ __pycache__/
 *.pyc
 /enc_temp_folder/a6f78ba3494ef28689c898f55de6
 /CWE/CWEV9
+/CWE/ImGuiDebug

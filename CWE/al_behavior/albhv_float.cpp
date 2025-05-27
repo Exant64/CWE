@@ -5,6 +5,7 @@
 #include "..//ninja_functions.h"
 #include "../ALifeSDK_Functions.h"
 #include <random>
+#include "albhv.h"
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 
@@ -116,7 +117,7 @@ signed int __cdecl ALBHV_GoToFloat(ObjectMaster* a1)
 	NJS_POINT3 waterWaypointMaybe = { 75, -6.5f, -60 };
 	MOV_SetAimPos(a1, &waterWaypointMaybe);
 
-	AL_SetBehavior(a1, (BHV_FUNC)0x0055C3C0);
+	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);
 	AL_SetNextBehavior(a1, ALBHV_GoToLockOn);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x5613C0);

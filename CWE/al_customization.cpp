@@ -394,7 +394,7 @@ public:
 		PlaySoundProbably(0x100A, 0, 0, 0);
 		if (m_slot == 0)
 		{
-			char& headgear = pParam->Headgear;
+			Uint8& headgear = pParam->Headgear;
 			if (headgear)
 			{
 				if(AL_Customization_CreateHat(headgear, pParam->Garden))
