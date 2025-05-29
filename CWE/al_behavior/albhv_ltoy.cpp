@@ -62,7 +62,7 @@ int __cdecl ALBHV_GoToRadicase(ObjectMaster* tp)
 		return BHV_RET_FINISH;
 	ALW_LockOn(tp, v2);
 	tp->EntityData2->Waypoint = v4;
-	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x55C3C0>);
+	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BBA0>);
@@ -82,7 +82,7 @@ int __cdecl ALBHV_GoToTV(ObjectMaster* tp)
 		return BHV_RET_FINISH;
 	ALW_LockOn(tp, v2);
 	tp->EntityData2->Waypoint = v4;
-	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x55C3C0>);
+	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BBA0>);
@@ -105,7 +105,7 @@ signed int __cdecl ALBHV_GoToHorse(ObjectMaster* a1)
 	ALW_LockOn(a1, v1);
 	ALW_CommunicationOn(a1, v1);
 
-	AL_SetBehavior(a1, ALBHV_ToyMoveCheck<(BHV_FUNC)0x55C3C0>);
+	AL_SetBehavior(a1, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(a1, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	
 	AL_SetNextBehavior(a1, ALBHV_ToyMoveCheck<(BHV_FUNC)0x056B560>);

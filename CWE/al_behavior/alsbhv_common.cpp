@@ -5,6 +5,7 @@
 #include "../al_world.h"
 #include "../ALifeSDK_Functions.h"
 #include <random>
+#include "albhv.h"
 
 int __cdecl AdjustAngle_(__int16 bams_a, unsigned __int16 bams_b, int dang)
 {

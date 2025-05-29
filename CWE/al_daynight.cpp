@@ -4,6 +4,7 @@
 #include "al_daynight.h"
 #include "al_save.h"
 #include <stdexcept>
+#include "IniFile.h"
 #include "al_stage.h"
 #include <util.h>
 #include <ninja_functions.h>
@@ -95,127 +96,16 @@ static size_t AL_DayNightCycle_GetDayFrameCount() {
 	return 24 * AL_DayNightCycle_GetHourFrameCount();
 }
 
-struct DAYNIGHT_SKYBOX {
-	uint32_t origTexID; // tex ID to look for to find mesh
-	uint32_t dayTexID;
-	uint32_t eveningTexID;
-	uint32_t nightTexID;
-	uint32_t cloudyTexID;
-};
-
-struct DAYNIGHT_SKYBOX_TEXMAP_TABLE {
-	union {
-		uint16_t* pChunkTexID;
-		uint32_t* pTexID;
-	};
-
-	uint32_t* pLightingParameter;
-	uint32_t originalLightingParameter;
-
-	DAYNIGHT_SKYBOX skybox;
-};
-
-struct DAYNIGHT_SKYBOX_TABLE {
-	bool isChunk;
-	bool isCopied;
-	NJS_OBJECT* pObj;
-	DAYNIGHT_SKYBOX_TEXMAP_TABLE* pTexMap;
-	size_t texMapCount;
-};
-
-enum {
-	VERTEX_COLOR_TABLE_SRC = 0,
-	VERTEX_COLOR_TABLE_DST = 1,
-	VERTEX_COLOR_TABLE_COUNT = 2
-};
-
-struct DAYNIGHT_WORK {
-	int mode;
-
-	LandTable* pNewLandtable;
-	LandTable* pOldLandtable;
-
-	bool isChunkLandTable;
-
-	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
-	Uint32** pVertexColorTableChunk;
-
-	NJS_TEXLIST* pTexlist;
-
-	uint32_t phaseA;
-	uint32_t phaseB;
-	float lerpValue;
-
-	uint32_t timer;
-	uint32_t day;
-	uint32_t phase;
-	bool nextDayCloudy;
-
-	NJS_ARGB appliedColor;
-
-	// this is temporary, we only use it rn to dump them for conversion
-	// remove later
-	// 4 for the phases, 4 for the lights in the file
-	Light lights[4][4];
-
-	// for phases that don't have a specified light, it will use the one loaded by the game
-	// (converted to GC if it isn't GC)
-	LightGC fallbackLight;
-
-	// this is needed to apply the color to the landtable light in the same way we do to the vertex color
-	// if the model uses normals instead of vertex colors
-	NJS_VECTOR originalLandLightColor;
-
-	DAYNIGHT_SKYBOX_TABLE* pSkyboxTable;
-	int skyboxCount;
-};
-
 FunctionPointer(void, gjDrawObject, (NJS_OBJECT* a1), 0x0042B530);
 
 DataPointer(int, nj_cnk_blend_mode, 0x025F0264);
-
-VoidFunc(SaveControl3D, 0x446D00);
-VoidFunc(LoadControl3D, 0x446D10);
-VoidFunc(SaveConstantAttr, 0x446CB0);
-VoidFunc(LoadConstantAttr, 0x446CD0);
-
-static const void* const OnControl3DPtr = (void*)0x446D20;
-static inline void OnControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OnControl3DPtr
-	}
-}
-
-static const void* const OffControl3DPtr = (void*)0x00446D30;
-static inline void OffControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OffControl3DPtr
-	}
-}
-
-static const void* const OnConstantAttrPtr = (void*)0x446CF0;
-static inline void OnConstantAttr(int soc_and, int soc_or)
-{
-	__asm
-	{
-		mov eax, [soc_and]
-		mov ecx, [soc_or]
-		call OnConstantAttrPtr
-	}
-}
 
 FunctionPointer(void, EnableAlpha, (int a1), 0x4264D0);
 
 // NOT an official name
 FunctionPointer(void, gjSetDiffuse, (unsigned int a1), 0x42BA60);
 
-static task* pDayNightTask;
+task* pDayNightTask;
 
 static bool AL_DayNightCycle_CanCheckSkybox() {
 	switch (AL_GetStageNumber()) {
@@ -652,28 +542,26 @@ static DAYNIGHT_WORK& GetWork(task* tp) {
 
 #pragma region Shiny Texture Lerping (used externally)
 
-static Uint32 backupShinyTextureTexAddr;
-
 UsercallFuncVoid(sub_42C5B0, (uint16_t textureID, uint16_t wrapMode, int index), (textureID, wrapMode, index), 0x42C5B0, rAX, rCX, rEBX);
 
-void AL_DayNightCycle_PreDrawSetupShinyTexture() {
-	if (!pDayNightTask) return;
-
+Uint32 AL_DayNightCycle_PreDrawSetupShinyTexture() {
+	if (!pDayNightTask) return -1;
+	
 	auto& work = GetWork(pDayNightTask);
 
-	if (!work.pTexlist) return;
+	if (!work.pTexlist) return -1;
 
 	const auto& shinyTextureIndexFrom = gDayNightManager.GetShinyTextureIndexForPhase(work.phaseA);
 	const auto& shinyTextureIndexTo = gDayNightManager.GetShinyTextureIndexForPhase(work.phaseB);
 
-	backupShinyTextureTexAddr = AL_BODY.textures[34].texaddr;
+	const Uint32 backupShinyTextureTexAddr = AL_BODY.textures[34].texaddr;
 
 	if (shinyTextureIndexFrom) {
 		AL_BODY.textures[34].texaddr = work.pTexlist->textures[*shinyTextureIndexFrom].texaddr;
 	}
 
-	NJS_CTX* ctx = (NJS_CTX*)Has_texlist_batadvPlayerChara_in_it;
-	NJS_TEXLIST* pTexlistBackup = ctx->texlistPtr;
+	// sets texture to interpolate to into slot 3, handled in chao shader
+	NJS_TEXLIST* pTexlistBackup = _nj_curr_ctx_->texlist;
 
 	if (shinyTextureIndexTo) {		
 		njSetTexture(work.pTexlist);
@@ -685,6 +573,8 @@ void AL_DayNightCycle_PreDrawSetupShinyTexture() {
 	}
 
 	njSetTexture(pTexlistBackup);
+
+	return backupShinyTextureTexAddr;
 }
 
 void AL_DayNightCycle_SetLerpShinyTexture() {
@@ -695,12 +585,10 @@ void AL_DayNightCycle_SetLerpShinyTexture() {
 	SetPixelShaderFloat(79, work.lerpValue);
 }
 
-void AL_DayNightCycle_PostDrawSetupShinyTexture() {
-	// if there's nothing to reset to then don't
-	if (!backupShinyTextureTexAddr) return;
+void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID) {
+	if (texID == -1) return;
 
-	AL_BODY.textures[34].texaddr = backupShinyTextureTexAddr;
-	backupShinyTextureTexAddr = NULL;
+	AL_BODY.textures[34].texaddr = texID;
 
 	// reset the lerp value
 	SetPixelShaderFloat(79, 0);
@@ -1341,6 +1229,8 @@ static void AL_DayNightCycle_InitFallbackLight(task* tp) {
 	// we only care about lerping light 0
 	size_t index = 0;
 
+	work.originalLight = LightsGC[index];
+
 	// if already GC don't bother converting
 	if (LightsGC[index].SomeFlag & 1) {
 		work.fallbackLight = LightsGC[index];
@@ -1462,7 +1352,7 @@ static void AL_DayNightCycle_ApplyVertexColor_GC(const NJS_ARGB& mulColor, const
 static void AL_DayNightCycle_ApplyColorToLandTable(task* tp) {
 	auto& work = GetWork(tp);
 
-	for (size_t colIndex = 0; colIndex < CurrentLandTable->ChunkModelCount; colIndex++) {
+	for (size_t colIndex = 0; colIndex < work.pNewLandtable->ChunkModelCount; colIndex++) {
 		// todo: i don't like this
 		if (work.isChunkLandTable) {
 			const Uint32* pSrcVertices = work.pVertexColorTableChunk[colIndex * 2 + VERTEX_COLOR_TABLE_SRC];
@@ -1508,6 +1398,9 @@ static void AL_DayNightCycle_ApplyLightLerp(task* tp) {
 	// we always use GC lights because it's what the json format uses
 	// the fallback light is either the first GC light, or the first DC light converted to GC (lossless)
 	LightsGC[0].SomeFlag |= 1;
+
+	LightsGC[0].direction = slerp(pSrcLight.direction, pDstLight.direction, work.lerpValue);
+	njUnitVector(&LightsGC[0].direction);
 
 	LerpColor(LightsGC[0].lightColor, pSrcLight.lightColor, pDstLight.lightColor, work.lerpValue);
 	LerpColor(LightsGC[0].ambientReg, pSrcLight.ambientReg, pDstLight.ambientReg, work.lerpValue);
@@ -1563,7 +1456,7 @@ static uint32_t AL_DayNightCycle_GetStartHourForPhase(uint32_t phase) {
 	return dayNightTimeConfig[phase].hour;
 }
 
-static void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork) {
+void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork) {
 	const size_t hourFrames = pInfo->GetHourFrameCount();
 	
 	size_t phase = -1;
@@ -1765,6 +1658,8 @@ static void AL_DayNightCycleExecutor(task* tp) {
 static void AL_DayNightCycle_RestoreAll(task* tp) {
 	auto& work = GetWork(tp);
 	
+	LightsGC[0] = work.originalLight;
+
 	// restore the original landtable's field to keep track of if the texlist is already loaded or not
 	work.pOldLandtable->field_A = work.pNewLandtable->field_A; 
 
@@ -1860,8 +1755,6 @@ static void AL_DayNightCycleDestructor(task* tp) {
 		FREE(work.pSkyboxTable);
 	}
 
-	FREE(tp->Data2.Undefined);
-
 	gDayNightManager.Clear();
 
 	pDayNightTask = nullptr;
@@ -1902,6 +1795,8 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
 }
 
 static void AL_DayNightCycleDisplayer(task* tp) {
+	DataPointer(int, GinjaDrawFlag, 0x25EFEE0);
+
 	auto& work = GetWork(tp);
 
 	if (gConfigVal.DayNightDebug) {
@@ -1929,6 +1824,11 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	SaveConstantAttr();
 
 	EnableAlpha(0);
+
+	// in object list 1, transparent and opaque GJ geo has to be drawn separately 
+	// so we have to reenable the normal functionality to draw both at once
+	auto backupGinjaDrawFlag = GinjaDrawFlag;
+	GinjaDrawFlag = 1 | 2;
 
 	// ignore lighting
 	OnControl3D(NJD_CONTROL_3D_CNK_CONSTANT_ATTR);
@@ -1966,12 +1866,14 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 
 	blendModeGinjaFunc = blendModeGinjaFuncBackup;
 
-	SetMaterial(1, 1, 1, 1);
+	SetMaterial(0, 0, 0, 0);
 
 	rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_END);
 
 	njColorBlendingMode(0, 8);
 	njColorBlendingMode(1, 6);
+
+	GinjaDrawFlag = backupGinjaDrawFlag;
 
 	DoLighting(LightIndexBackupMaybe);
 }
@@ -1997,14 +1899,29 @@ static bool AL_DayNightCycle_CheckECWSafety() {
 	return true;
 }
 
+static void AL_DayNightCycleManagerDestructor(task* tp) {
+	if (pDayNightTask) {
+		DeleteObject_(pDayNightTask);
+	}
+}
+
+// this serves the purpose of deleting the regular daynight cycle task, since its in object list 1
+// and those don't autodestruct on level change
+static void AL_CreateDayNightCycleManager() {
+	task* tp = LoadObject(4, "AL_DayNightCycleManager", [](task* tp){}, (LoadObj)0);
+	tp->DeleteSub = AL_DayNightCycleManagerDestructor;
+}
+
 void AL_CreateDayNightCycle() {
 	if (!gConfigVal.DayNightCycle) return;
 	if (!AL_DayNightCycle_IsValidArea()) return;
 	if (!AL_DayNightCycle_CheckECWSafety()) return;
 	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
 	
-	task* tp = LoadObject(4, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
+	task* tp = LoadObject(1, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
 	pDayNightTask = tp;
+
+	AL_CreateDayNightCycleManager();
 
 	tp->Data2.Undefined = ALLOC(DAYNIGHT_WORK);
 
@@ -2042,14 +1959,33 @@ static void DrawLandtable_r() {
 	*(char*)0x93BEB3 = 1;
 }
 
-void AL_DayNight_Init(const HelperFunctions& helper){
+void AL_DayNight_Init(const std::string& iniPath, IniFile* pConfig, const HelperFunctions& helper) {
 	if (!gConfigVal.DayNightCycle) return;
 	
 	if (!RenderFix_IsEnabled()) {
 		gConfigVal.DayNightCycle = false;
-		MessageBoxA(0, "\"SA2 Render Fix\" is not enabled, the Day Night Cycle feature will not function properly without it, please install it. Day Night Cycle will be disabled.", "Chao World Extended", 0);
+
+		const auto result = MessageBoxA(
+			0, 
+			"The 'SA2 Render Fix' mod is not enabled! The 'Day/Night Cycle' feature cannot function properly without it, and has been disabled for now.\n\n"
+			"Would you like to download 'SA2 Render Fix' now? Pressing 'Yes' will open the download page in your web browser.\n\n"
+			"If not, 'Day/Night Cycle' will be automatically disabled in your config file.",
+			"Chao World Extended: \"SA2 Render Fix\" missing! ", 
+			MB_YESNO
+		);
+
+		if (result == IDNO) {
+			pConfig->setBool("DayNight", "DayNightCycle", false);
+			pConfig->save(iniPath);
+			MessageBoxA(0, "The Day Night Cycle option is now disabled.", "Chao World Extended", 0);
+		}
+		else {
+			system("start https://gamebanana.com/mods/452445");
+			MessageBoxA(0, "The Day Night Cycle option is now temporarily disabled.", "Chao World Extended", 0);
+		}
+
 		return;
 	}
-
+		
 	DrawLandtable_t.Hook(DrawLandtable_r);
 }

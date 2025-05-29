@@ -933,9 +933,9 @@ static void Chao_Display_r(task* tp) {
 		return;
 	}
 
-	AL_DayNightCycle_PreDrawSetupShinyTexture();
+	const auto backupTex = AL_DayNightCycle_PreDrawSetupShinyTexture();
 	Chao_Display_t.Original(tp);
-	AL_DayNightCycle_PostDrawSetupShinyTexture();
+	AL_DayNightCycle_PostDrawSetupShinyTexture(backupTex);
 }
 
 UsercallFuncVoid(ColorEggModel_t, (NJS_CNK_MODEL* model, int eggType), (model, eggType), 0x0056D540, rEDI, stack4);
@@ -945,7 +945,7 @@ static void ColorEggModel_r(NJS_CNK_MODEL* model, int eggType) {
 		return;
 	}
 
-	AL_DayNightCycle_PreDrawSetupShinyTexture();
+	const auto backupTex = AL_DayNightCycle_PreDrawSetupShinyTexture();
 
 	// if the egg is shiny
 	if (eggType >= SA2BEggColour_NormalShiny && eggType <= SA2BEggColour_BlackShiny_TwoTone) {
@@ -953,7 +953,7 @@ static void ColorEggModel_r(NJS_CNK_MODEL* model, int eggType) {
 	}
 
 	ColorEggModel_t.Original(model, eggType);
-	AL_DayNightCycle_PostDrawSetupShinyTexture();
+	AL_DayNightCycle_PostDrawSetupShinyTexture(backupTex);
 }
 
 static FunctionHook<void, task*> EggDisplayer_t(0x0057B640);
@@ -963,7 +963,7 @@ static void EggDisplayer_r(task* tp) {
 		return;
 	}
 
-	AL_DayNightCycle_PreDrawSetupShinyTexture();
+	const auto backupTex = AL_DayNightCycle_PreDrawSetupShinyTexture();
 
 	// if the egg is shiny
 	const auto eggType = GET_CHAOPARAM(tp)->EggColor;
@@ -972,7 +972,7 @@ static void EggDisplayer_r(task* tp) {
 	}
 
 	EggDisplayer_t.Original(tp);
-	AL_DayNightCycle_PostDrawSetupShinyTexture();
+	AL_DayNightCycle_PostDrawSetupShinyTexture(backupTex);
 }
 
 

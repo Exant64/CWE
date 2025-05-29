@@ -1,6 +1,40 @@
 #include "stdafx.h"
 #include "ninja_functions.h"
 #include <math.h>
+#include <usercall.h>
+
+static const void* const OnControl3DPtr = (void*)0x446D20;
+void OnControl3D(int flag)
+{
+	__asm
+	{
+		mov eax, [flag]
+		call OnControl3DPtr
+	}
+}
+
+static const void* const OffControl3DPtr = (void*)0x00446D30;
+void OffControl3D(int flag)
+{
+	__asm
+	{
+		mov eax, [flag]
+		call OffControl3DPtr
+	}
+}
+
+static const void* const OnConstantAttrPtr = (void*)0x446CF0;
+void OnConstantAttr(int soc_and, int soc_or)
+{
+	__asm
+	{
+		mov eax, [soc_and]
+		mov ecx, [soc_or]
+		call OnConstantAttrPtr
+	}
+}
+
+
 const int njColorBlendingModePtr = 0x00426420;
 void njColorBlendingMode(int a1, int a2) {
 	__asm {
@@ -10,7 +44,7 @@ void njColorBlendingMode(int a1, int a2) {
 		add esp, 4
 	}
 }
-void  njCalcVector(NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_MATRIX_PTR a3)
+void  njCalcVector(NJS_VECTOR* a1, NJS_VECTOR* a2, NJS_MATRIX_PTR a3)
 {
 	Float v3; // ST00_4
 	Float v4; // ST04_4
@@ -49,11 +83,10 @@ void SetShaders(int id)
 	}
 }
 
-void njSetTexture(NJS_TEXLIST* texlist)
-{
-	NJS_CTX* ctx = (NJS_CTX*)Has_texlist_batadvPlayerChara_in_it;
-	ctx->texlistPtr = texlist; //Has_texlist_ = NJS_CTX from billy hatcher, edit later.
+void njSetTexture(NJS_TEXLIST* texlist) {
+	_nj_curr_ctx_->texlist = texlist;
 }
+
 void njUnitMatrix(NJS_MATRIX_PTR matrix) {
 	if (!matrix) matrix = _nj_current_matrix_ptr_;
 	if (matrix)
@@ -64,7 +97,7 @@ void njUnitMatrix(NJS_MATRIX_PTR matrix) {
 		matrix[10] = 1.0;
 	}
 }
-float njUnitVector(NJS_VECTOR *a1)
+float njUnitVector(NJS_VECTOR* a1)
 {
 	float v1; // st7
 	float v2; // ST04_4
@@ -122,7 +155,7 @@ void njRotateZ(NJS_MATRIX_PTR m, Angle z)
 }
 
 const int njTranslatePtr = 0x0077FD90;
-void  njTranslate(float *a1, float a2, float a3, float a4)
+void  njTranslate(float* a1, float a2, float a3, float a4)
 {
 	__asm
 	{
@@ -145,7 +178,7 @@ void  njTranslateEx(NJS_VECTOR* a1)
 	}
 }
 
-void chCnkDrawObject(NJS_OBJECT * a1)
+void chCnkDrawObject(NJS_OBJECT* a1)
 {
 	__asm
 	{
@@ -198,7 +231,7 @@ __declspec(naked) void njCalcPoint(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VE
 		mov eax, result
 		mov edx, a2
 		mov ecx, a3
-		push dword ptr [a4]
+		push dword ptr[a4]
 		call sub_426CC0Ptr
 		add esp, 4
 		retn
@@ -214,4 +247,48 @@ void DrawQuadTexture(int a1, float a2)
 		call DrawQuadTexturePtr
 		add esp, 4
 	}
+}
+
+void njSetTextureNum(int texid) {
+	NJS_TEXMANAGE* p_texman = (NJS_TEXMANAGE*)_nj_curr_ctx_->texlist->textures[texid].texaddr;
+	NJS_TEXSYSTEM* p_texsys = p_texman->texsys;
+
+	_nj_curr_ctx_->texsurface = &p_texsys->texsurface;
+	_nj_curr_ctx_->gbix = p_texsys->globalIndex;
+	_nj_curr_ctx_->texnum = texid;
+}
+
+auto DrawFVF_H_ = GenerateUsercallWrapper<void(*)(const NJS_TEXTURE_VTX * a1, signed int vertexCount)>(noret, 0x781370, rEAX, rECX);
+auto sub_41FDE0_ = GenerateUsercallWrapper<void(*)(float* a1, int a2)>(noret, 0x41FDE0, rECX, stack4);
+
+VoidFunc(sub_4293B0, 0x4293B0);
+VoidFunc(sub_4292E0, 0x4292E0);
+
+// all this is veeery tacky, point filtering should be handled by RF later on
+static void SetSamplerState(int a1) {
+	DataPointer(char*, rendererthing, 0x1A557C0);
+	int device = *(int*)(rendererthing + 0x38);
+	StdcallFunctionPointer(void, SetSamplerStateD3D, (int a1, int Sampler, int Type, int Value), (void*)*(int*)(*(int*)device + 0x114));
+	SetSamplerStateD3D(device, 0, 5, a1);
+	SetSamplerStateD3D(device, 0, 6, a1);
+	SetSamplerStateD3D(device, 0, 7, a1);
+}
+
+void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered) {
+	sub_41FDE0_(_nj_current_matrix_ptr_, 0);
+	SetShaders(1);
+	sub_4293B0();
+	sub_4292E0();
+
+	if (pointFiltered) {
+		SetSamplerState(1);
+	}
+	DrawFVF_H_(a1, vertexCount);
+	if (pointFiltered) {
+		SetSamplerState(2);
+	}
+}
+
+Float njInnerProduct(const NJS_VECTOR* const v1, const NJS_VECTOR* const v2) {
+	return (v1->x * v2->x) + (v1->y * v2->y) + (v1->z * v2->z);
 }

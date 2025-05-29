@@ -5,7 +5,7 @@
 #include "../al_world.h"
 #include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
-#include "alsbhv.h"
+#include "albhv.h"
 #include <random>
 #include "al_knowledge.h"
 #include "..//AL_ModAPI.h"

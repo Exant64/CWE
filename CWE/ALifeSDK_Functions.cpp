@@ -105,3 +105,24 @@ void SetShaders_(int result)
 		call SetShadersPtr
 	}
 }
+
+int AdjustAngle(__int16 bams_a, unsigned __int16 bams_b, int dang)
+{
+	int result; // eax
+	__int16 v4; // cx
+
+	result = bams_b;
+	v4 = bams_b - bams_a;
+	if ((signed __int16)(bams_b - bams_a) > dang || v4 < -dang)
+	{
+		if (v4 >= 0)
+		{
+			result = (unsigned __int16)(dang + bams_a);
+		}
+		else
+		{
+			result = (unsigned __int16)(bams_a - dang);
+		}
+	}
+	return result;
+}

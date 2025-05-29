@@ -21,11 +21,11 @@ extern "C" {
 	__declspec(dllexport) void OrthoInit(float orthoZoom = 100) {
 		gOrthoZoom = orthoZoom;
 		float aspect = HorizontalResolution / VerticalResolution;
-		D3DXMatrixOrthoLH(&ortho,
+		D3DXMatrixOrthoRH(&ortho,
 			aspect * gOrthoZoom,
 			gOrthoZoom,
 			0.01f,
-			10);
+			100);
 	}
 
 	__declspec(dllexport) void OrthoDrawBegin() {
@@ -66,8 +66,8 @@ extern "C" {
 		float m_offX = ((x - 320.0f) / 640.0f) * (4.0f / 3.0f);
 		float m_offY = -((y - 240) / 480.0f);
 		njUnitMatrix(0);
-		njTranslate(NULL, m_offX * gOrthoZoom, m_offY * gOrthoZoom, 2);
-		njScale(NULL, 0.025f * gOrthoZoom * mulScale, 0.025f * gOrthoZoom * mulScale, -0.25f);
+		njTranslate(NULL, m_offX * gOrthoZoom, m_offY * gOrthoZoom, -40);
+		njScale(NULL, 0.025f * gOrthoZoom * mulScale, 0.025f * gOrthoZoom * mulScale, 0.025f * gOrthoZoom * mulScale);
 	}
 
 }

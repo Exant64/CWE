@@ -10,6 +10,7 @@
 #include "al_knowledge.h"
 #include "..//AL_ModAPI.h"
 #include <al_behavior/al_intention.h>
+#include "albhv.h"
 
 int ALBHV_MayuPleasure(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;

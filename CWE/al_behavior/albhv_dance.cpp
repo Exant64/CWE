@@ -5,6 +5,7 @@
 #include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include <random>
+#include "albhv.h"
 #include "al_knowledge.h"
 #include "..//AL_ModAPI.h"
 #include "al_intention.h"
@@ -165,7 +166,7 @@ void AL_CalcIntentionScore_JoinDance(ObjectMaster* tp, float* pMaxScore) {
                     }
 
                     AL_SetBehavior(tp, ALBHV_TurnToAim);
-                    AL_SetNextBehavior(tp, (BHV_FUNC)0x0055C430);
+                    AL_SetNextBehavior(tp, ALBHV_PostureChangeSit);
 
                     if (njRandom() < 0.5f) {
                         AL_SetNextBehavior(tp, (BHV_FUNC)0x0059CDA0);
