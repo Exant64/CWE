@@ -15,6 +15,10 @@ float4 g_MaterialReg[2] : register(c66);
 float4 g_AmbientReg[2] : register(c68);
 float g_LightMask[16] : register(c70);
 float g_TexGenSrc_0 : register(c140);
+float4 g_UseBald : register(c144);
+float4 g_BaldCenterRad : register(c148);
+float g_BaldClipFace : register(c152);
+
 float g_NumTexGens : register(c155);
 float4x4 g_TexMatrix[10] : register(c160);
 
@@ -43,7 +47,22 @@ PS_IN main(VS_INPUT input)
 {
     PS_IN output;
     
-    float4 worldPos = mul(float4(input.Position, 1.0f), g_WorldMatrix);
+    float3 pos = input.Position;
+    if (g_UseBald.x > 0)
+    {
+        const float radius = g_BaldCenterRad.w;
+        
+        float keepFace = 1;
+        if (g_BaldClipFace > 0)
+            keepFace = saturate(sign(-pos.z + 0.86f));
+        
+        float3 center = pos - g_BaldCenterRad.xyz;
+        float len = length(center) - radius;
+        
+        pos = pos - g_UseBald.yzw * normalize(center) * len * keepFace;
+    }
+    
+    float4 worldPos = mul(float4(pos, 1.0f), g_WorldMatrix);
     output.ScreenPosition = mul(worldPos, g_ProjMatrix);
 
     float3 origNormal = mul(float4(normalize(input.Normal), 0), g_WorldViewITMatrix).xyz;

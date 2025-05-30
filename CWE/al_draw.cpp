@@ -168,9 +168,9 @@ void AL_SetMotionMatrix(ObjectMaster* a1, ChunkObjectPointer* ptr)
 	if (Chao_NodeIndex == 14)
 	{
 		//njRotateX(NULL, look->AngX);
-		
-		if (look->AngY != 0) 
-		{		
+
+		if (look->AngY != 0)
+		{
 			//njRotateY(NULL, -a1->Data1.Entity->Rotation.y);
 			//njRotateY(NULL, NJM_DEG_ANG(180) + look->AngY);
 			/*
@@ -185,9 +185,9 @@ void AL_SetMotionMatrix(ObjectMaster* a1, ChunkObjectPointer* ptr)
 
 void CWE_ShinyCheck(int shiny)
 {
-	if(gConfigVal.ForceShinyTT && shiny)
+	if (gConfigVal.ForceShinyTT && shiny)
 		BrightFixPlus_ShinyCheck(2);
-	else 
+	else
 		BrightFixPlus_ShinyCheck(shiny);
 }
 
@@ -205,7 +205,7 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 		SetChunkTexIndexPrimary(17 + texture, 1, 1);
 		SetChunkTexIndexSecondary(34, 0, 1);
 		SetPixelShaderFloat(78, 1);
-		
+
 		if (color)
 		{
 			flag |= UseChunkObjectColor;
@@ -291,7 +291,7 @@ void DrawAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 		NJS_VECTOR backup = chunkObjectPointer->position;
 
 		njPushMatrixEx();
-		
+
 		//????
 		//ill be completely honest, i don't remember why we do this?
 		if (AccessoryNodeIndex == AL_PART_HORN_L)
@@ -309,8 +309,8 @@ void DrawAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 		if (AccessoryNodeIndex == 33) {
 			njTranslate(NULL, 0, 0.75, 0);
 		}
-		
-		
+
+
 		if (traverseAccessory->chunkmodel)
 		{
 			traverseAccessory->chunkmodel->r = 0.0f;
@@ -323,7 +323,7 @@ void DrawAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 			DrawAccessory(a1, (ChunkObjectPointer*)chunkObjectPointer->base.child, traverseAccessory->child);
 		}
 		njPopMatrixEx();
-		
+
 		traverseAccessory = traverseAccessory->sibling;
 		chunkObjectPointer = (ChunkObjectPointer*)chunkObjectPointer->base.sibling;
 	}
@@ -354,8 +354,8 @@ bool AL_CanRenderRigAccessory(ObjectMaster* a1, EAccessoryType type)
 {
 	int id = a1->Data1.Chao->pParamGC->Accessories[type];
 	return id &&//chao has accessory
-		 AccessoryTypeMap[id - 1] == type &&//accessory matches its type
-		 ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(id - 1); //has model
+		AccessoryTypeMap[id - 1] == type &&//accessory matches its type
+		ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(id - 1); //has model
 }
 
 void AL_RenderRigAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, EAccessoryType type)
@@ -415,11 +415,11 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 	}
 	else if (IsEggChao(a1)) {
 		switch (Chao_NodeIndex) {
-			case AL_PART_FEELER_L:
-			case AL_PART_FEELER_R:
-			case AL_PART_MOUTH:
-				model->chunkmodel = nullptr;
-				break;
+		case AL_PART_FEELER_L:
+		case AL_PART_FEELER_R:
+		case AL_PART_MOUTH:
+			model->chunkmodel = nullptr;
+			break;
 		}
 	}
 
@@ -442,9 +442,9 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 		if (Chao_NodeIndex == 29 || Chao_NodeIndex == 17 || Chao_NodeIndex == 21 || Chao_NodeIndex == 20)
 		{
 			njTranslateEx((NJS_VECTOR*)model->pos);
-			RotateZ (model->ang[2]);
-			RotateY (model->ang[1]);
-			RotateX (model->ang[0]);
+			RotateZ(model->ang[2]);
+			RotateY(model->ang[1]);
+			RotateX(model->ang[0]);
 			if ((model->evalflags & NJD_EVAL_UNIT_SCL) == 0)
 				njScale(NULL, model->scl[0], model->scl[1], model->scl[2]);
 		}
@@ -473,7 +473,7 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 			}
 			AL_RenderAccessory(a1, EAccessoryType::Head);
 			AL_RenderAccessory(a1, EAccessoryType::Face);
-			njPopMatrixEx();	
+			njPopMatrixEx();
 
 			if (IsOmochao(a1) && a1->Data1.Chao->pParamGC->Headgear) {
 				njSetTexture(&AL_BODY);
@@ -528,7 +528,7 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 			if (IsOmochao(a1) && (Chao_NodeIndex == 18 || Chao_NodeIndex == 21))
 			{
 				njSetTexture(&OMO_EYE_TEXLIST);
-				
+
 				Sint16* texchunk = FindChunk(chunkObjectPointer->base.chunkmodel->plist, NJD_CT_TID);
 				model->chunkmodel->plist[7] = texchunk[1]; //copy eye ID
 			}
@@ -567,7 +567,7 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 				*(int*)((__int16*)model->chunkmodel->plist + 2) = 0xFFFFFFFF;
 		}
 
-		LABEL_98:
+	LABEL_98:
 		Chao_NodeIndex++;
 		if (model->child && chunkObjectPointer->base.child)
 		{
@@ -599,13 +599,13 @@ void __cdecl DrawEggChao(ObjectMaster* a1)
 
 	njPushMatrixEx();
 	njTranslateEx(&data1->entity.Position);
-	RotateZ (data1->entity.Rotation.z);
-	RotateX (data1->entity.Rotation.x);
-	RotateY (data1->entity.Rotation.y);
+	RotateZ(data1->entity.Rotation.z);
+	RotateX(data1->entity.Rotation.x);
+	RotateY(data1->entity.Rotation.y);
 
 	if (GameState != GameStates_Pause && a1->Data1.Chao->pParamGC->BodyType == 1)
 	{
-		if (a1->Data1.Chao->entity.Scale.y < 1.0f)	
+		if (a1->Data1.Chao->entity.Scale.y < 1.0f)
 			a1->Data1.Chao->entity.Scale.y += 0.06f;
 
 		float a1a = (1.0f - a1->Data1.Chao->entity.Scale.x) * 0.15f + a1->Data1.Chao->entity.Scale.z;
@@ -672,8 +672,8 @@ NJS_OBJECT* FirstEvoEyes[4 * 24];
 
 bool AL_CanBeBald(ObjectMaster* a1)
 {
-	return AL_IsChild(a1) || 
-		(a1->Data1.Chao->pParamGC->Type < ChaoType_Neutral_Chaos && 
+	return AL_IsChild(a1) ||
+		(a1->Data1.Chao->pParamGC->Type < ChaoType_Neutral_Chaos &&
 			a1->Data1.Chao->pParamGC->Type >= 5 &&
 			AL_BaldRoot[(a1->Data1.Chao->pParamGC->Type - 5) + 1]);
 }
@@ -700,7 +700,11 @@ void AL_SetBodyTexture(ObjectMaster* a1)
 	else
 		njSetTexture(&AL_BODY);
 }
-
+bool HeadBald;
+bool StomachBald;
+float BaldRadius = 1.3f;
+NJS_POINT3 BaldCenter = { 0,1.1f, 0 };
+NJS_POINT3 BaldVectorTest = { 1,1,1 };
 static bool BaldFlag = false;
 static bool CanBeBald = false;
 void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
@@ -827,7 +831,7 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 				Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
 			else
 #endif
-			njSetTexture((NJS_TEXLIST*)chunkObjectPointer->field_CC);
+				njSetTexture((NJS_TEXLIST*)chunkObjectPointer->field_CC);
 #ifdef COLORED_PARTS
 			AL_SetRareMaterial(a1, chunkObjectPointer->animalPart->chunkmodel);
 #endif
@@ -895,6 +899,33 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 				goto LABEL_91;
 			}
 
+			{
+				float vector[4] = { BaldCenter.x, BaldCenter.y, BaldCenter.z, BaldRadius };
+				cwe_device->SetVertexShaderConstantF(148, vector, 1);
+
+				bool canbald = false;
+				switch (Chao_NodeIndex) {
+				case 1:
+					vector[0] = 0;
+					cwe_device->SetVertexShaderConstantF(152, vector, 1);
+
+					canbald = StomachBald;
+					break;
+				case 14:
+				case 15:
+				case 16:
+					vector[0] = 1;
+					cwe_device->SetVertexShaderConstantF(152, vector, 1);
+					canbald = HeadBald;
+					break;
+				}
+
+				if (canbald) {
+					float vector[4] = { 1, BaldVectorTest.x, BaldVectorTest.y, BaldVectorTest.z };
+					cwe_device->SetVertexShaderConstantF(144, vector, 1);
+				}
+			}
+
 			if (BaldFlag && Chao_NodeIndex == 16 && CanBeBald)
 			{
 				if (AL_IsChild(a1))
@@ -915,6 +946,8 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 		}
 	}
 LABEL_98:
+	float vector[4] = { 0,0,0,0 };
+	cwe_device->SetVertexShaderConstantF(144, vector, 1);
 	Chao_NodeIndex++;
 	if (chunkObjectPointer->base.child)
 	{

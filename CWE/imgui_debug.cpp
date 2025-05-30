@@ -12,6 +12,7 @@
 #include <ChaoMain.h>
 
 #include <imgui_debug_motionstrings.h>
+#include <al_draw.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -375,6 +376,18 @@ static void ImGuiMenu() {
         TaskListMenu();
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (ImGui::Begin("receding hairline menu")) {
+        ImGui::SliderFloat3("Center", &BaldCenter.x, -2, 2);
+        ImGui::SliderFloat("Radius", &BaldRadius, 0, 10);
+        ImGui::SliderFloat("X", &BaldVectorTest.x, 0, 1);
+        ImGui::SliderFloat("Y", &BaldVectorTest.y, 0, 1);
+        ImGui::SliderFloat("Z", &BaldVectorTest.z, 0, 1);
+        ImGui::Checkbox("Head", &HeadBald);
+        ImGui::Checkbox("Body", &StomachBald);
+
+        ImGui::End();
     }
 }
 
