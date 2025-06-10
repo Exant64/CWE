@@ -4,6 +4,8 @@
 #include <alg_kinder_ortho.h>
 #include "data/al_namefontspace.h"
 #include <al_texlist.h>
+#include <FunctionHook.h>
+#include <ninja_functions.h>
 
 enum DrawAnchorH
 {
@@ -21,8 +23,8 @@ enum DrawAnchorV
 
 VoidFunc(sub_583C60, 0x583C60);
 
-const int DisplayChaoNamePtr = 0x00536BE0;
-void DisplayChaoName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8)
+static const int DisplayChaoNamePtr = 0x00536BE0;
+static void DisplayChaoName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8)
 {
 	__asm
 	{
@@ -39,31 +41,8 @@ void DisplayChaoName(const char* a1, float a2, float a3, float a4, float a5, int
 	}
 }
 
-float textSizeMul = 13;
-float charSizeMul = 1; //1.75 for right pic
-bool enableCharWidthMul = false;
-float posYOffset = 0;
-
-void __cdecl DisplayChaoName_ScaleLength(int a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8)
-{
-	const char* name = (const char*)(a1 + (offsetof(ChaoDataBase, Name) - 0x12));
-	int length = strlen(name);
-	posYOffset = 0;
-	if (length > 7)
-	{
-		enableCharWidthMul = true;
-		float t = (length - 7) / 5.0f;
-		a4 = lerp(a4 - 2, textSizeMul, t);
-		a5 = lerp(a5 - 2, textSizeMul, t);
-		charSizeMul = lerp(1, 2, t);
-		posYOffset = 3.0f * t;
-	}
-	DisplayChaoName(name, a2, a3, a4, a5, a6, 1, a8);
-	enableCharWidthMul = false;
-}
-
 // used to calculate scaling if size is above the usual chao name size
-static Float CalculateLastLetterXPos(const Float x, const float xsize, const char* name, const size_t length) {
+static Float CalculateLastLetterXPos(const Float x, const float xsize, const char* name, const size_t length, const float sizeRatio = 1.0f) {
 	Float xpos = x;
 
 	for (size_t c = 0; c < length; c++) {
@@ -84,18 +63,33 @@ static Float CalculateLastLetterXPos(const Float x, const float xsize, const cha
 			const size_t spacing = ChaoNameFontWidth[index];
 			const float spacingRatio = float(spacing) / 44.f;
 			const float width = xsize * spacingRatio;
-			xpos += width + xsize / 22.0f;
+			xpos += width * sizeRatio + xsize / 22.0f;
 		}
 		else {
-			xpos += xsize / 2.f;
+			xpos += sizeRatio * xsize / 2.f;
 		}
 	}
 
 	return xpos;
 }
 
-void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH)
-{
+// used by name menu to find the position of the cursor
+// yes, this stinks of dupe code
+static Float CalculateStringXPos(char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
+	Float sizeRatio = 1;
+
+	if (length > 7) {
+		// we calculate the start position of the 8th letter, and calculate the size in a manner
+		// that the last letter ends up there
+		const float letterAtEnd = CalculateLastLetterXPos(xpos, xsize, pName, 8 - 1);
+		const float letterRealAtEnd = CalculateLastLetterXPos(xpos, xsize, pName, length - 1);
+		sizeRatio = (letterAtEnd - xpos) / (letterRealAtEnd - xpos);
+	}
+
+	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
+}
+
+static void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
 	const char* pName = (const char*)(name + (offsetof(ChaoDataBase, Name) - 0x12));
 	const size_t length = strlen(pName);
 
@@ -108,6 +102,8 @@ void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float x
 
 	Float xisze_ = length * (xsize - 1.0f);
 
+	Float anchorMul = 1.0f;
+
 	Float x;
 	switch (ancH)
 	{
@@ -116,10 +112,10 @@ void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float x
 		x = xpos;
 		break;
 	case DrawAncorV_Center:
-		x = xpos - xisze_ * 0.5f;
-		break;
+		anchorMul = 0.5f;
+		[[fallthrough]];
 	case DrawAncorV_Right:
-		x = xpos - xisze_;
+		x = xpos - (CalculateStringXPos(name, xpos, xsize, length) - xpos) * anchorMul;
 		break;
 	}
 
@@ -131,6 +127,9 @@ void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float x
 		const float letterAtEnd = CalculateLastLetterXPos(x, xsize, pName, 8 - 1);
 		const float letterRealAtEnd = CalculateLastLetterXPos(x, xsize, pName, length - 1);
 		sizeRatio = (letterAtEnd - x) / (letterRealAtEnd - x);
+
+		// vertically center it
+		ypos += (ysize / 2.f) * (1.f - sizeRatio);
 	}
 
 	ChaoHudThingB bbi;
@@ -168,7 +167,7 @@ void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float x
 
 			DrawChaoHudThingB(
 				&bbi,
-				xpos,
+				x,
 				ypos,
 				-1.2,
 				sizeRatio * xsize / 22.f,
@@ -177,10 +176,10 @@ void __cdecl DisplayChaoName_NewFont(char* name, float xpos, float ypos, float x
 				DrawAncorV_Top
 			);
 
-			xpos += sizeRatio * bbi.wd + xsize * (1/22.f);
+			x += sizeRatio * bbi.wd + xsize * (1/22.f);
 		}
 		else {
-			xpos += sizeRatio * xsize / 2.f;
+			x += sizeRatio * xsize / 2.f;
 		}
 	}
 }
@@ -213,49 +212,8 @@ static void __declspec(naked) DisplayChaoName_Hook()
 	}
 }
 
-void __cdecl DrawChar(ChaoHudThingB* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8)
-{
-	if (enableCharWidthMul)
-	{
-		a1->wd *= charSizeMul;
-		a1->ht *= charSizeMul;
-	}
-	int fetchOriginalU = (int)((a1->s0 / 0.001953125f) - 0.1f);//(v25 + v14) * v15;
-	int fetchOriginalV = (int)((a1->t0 / 0.00390625f) - 0.1f);//(v25 + v14) * v15;
-	if (fetchOriginalU == 418 && fetchOriginalV == 66)
-		DrawChaoHudThingB(a1, a2 - 2.5f, a3 + posYOffset, a4, a5, a6, a7, a8);
-	else
-		DrawChaoHudThingB(a1, a2, a3 + posYOffset, a4, a5, a6, a7, a8);
-}
-static void __declspec(naked) DrawChar_Hook()
-{
-	__asm
-	{
-		push[esp + 1Ch] // a8
-		push[esp + 1Ch] // a7
-		push[esp + 1Ch] // a6
-		push[esp + 1Ch] // a5
-		push[esp + 1Ch] // a4
-		push[esp + 1Ch] // a3
-		push[esp + 1Ch] // a2
-		push eax // a1
-
-		// Call your __cdecl function here:
-		call DrawChar
-
-		pop eax // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		add esp, 4 // a7
-		add esp, 4 // a8
-		retn
-	}
-}
 FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
-void __cdecl sub_58DA30(int a1, int a2)
+static void __cdecl sub_58DA30(int a1, int a2)
 {
 	ChaoDataBase* v2; // eax
 	AL_NAME a1a; // [esp+0h] [ebp-1Ch] BYREF
@@ -281,7 +239,7 @@ static void __declspec(naked) sub_58DA30Hook()
 		retn
 	}
 }
-void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)
+static void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)
 {
 	char* name = (char*)((int)a1 + (offsetof(ChaoDataBase, Name) - 0x12));
 	char* menuStr = (char*)((int)a2 + (0x60 - 0x48));
@@ -289,7 +247,7 @@ void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)
 	memcpy(name, menuStr, strlen(menuStr));
 }
 
-void __cdecl OpenNameMenu(char* NazukeyaBuff)
+static void __cdecl OpenNameMenu(char* NazukeyaBuff)
 {
 	NazukeyaBuff[80] = 1;
 	NazukeyaBuff[81] = 0;
@@ -320,59 +278,16 @@ static void __declspec(naked) OpenNameMenuHook()
 	}
 }
 
-void __cdecl AlgKinderOrthoQuadDraw_Name(ChaoHudThing* a1, int a2)
-{
-	int i = (a1->x0 - 433) / 22;
-	a1->x0 = 13 * i + 433;
-	a1->x1 = 13 * i + 450;
-	a1->y0 = (short)(a1->y0 * 0.75f);
-	a1->y1 = (short)(a1->y1 * 0.75f);
-	a1->y0 += 35;
-	a1->y1 += 35;
-	//AlgKinderOrthoQuadDrawArray(a1, 1, 0xFFFFFFFF);
-	ChaoHudThingB hudreplacement;
-	hudreplacement.adjust = 1;
-	hudreplacement.pTexlist = (NJS_TEXLIST*)0x01366ABC;
-	hudreplacement.TexNum = 1;
-	hudreplacement.s0 = a1->u0 / 4096.f;
-	hudreplacement.s1 = a1->u1 / 4096.f;
-	hudreplacement.t0 = a1->v0 / 4096.f;
-	hudreplacement.t1 = a1->v1 / 4096.f;
-	hudreplacement.wd = (float)(a1->x1 - a1->x0);
-	hudreplacement.ht = (float)(a1->y1 - a1->y0);
-	if (a1->u0 == 3348 && a1->v0 == 1064)
-		DrawChaoHudThingB(&hudreplacement, a1->x0 - 2.5f, a1->y0, -1, 1, 1, -1, -1);
-	else
-		DrawChaoHudThingB(&hudreplacement, a1->x0, a1->y0, -1, 1, 1, -1, -1);
-	*(int*)(&a1->y0) = 0x990083;
-	sub_583C60();
-}
-
-static void __declspec(naked) AlgKinderOrthoQuadDraw_NameHook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
-
-		// Call your __cdecl function here:
-		call AlgKinderOrthoQuadDraw_Name
-
-		pop eax // a1
-		pop ecx // a2
-		retn
-	}
-}
 
 AL_NAME FortuneTellerNameBuffer;
 
-void __fastcall sub_57A6F0_(char* a1, int a2)
+static void __fastcall sub_57A6F0_(char* a1, int a2)
 {
 	sub_57A6F0(a1, (int)FortuneTellerNameBuffer);
 }
 
-const int WcConvFromCStrPtr = 0x0057A680;
-__declspec(naked) void FoNameWcConvFromCStrHook()
+static const int WcConvFromCStrPtr = 0x0057A680;
+static __declspec(naked) void FoNameWcConvFromCStrHook()
 {
 	__asm
 	{
@@ -380,7 +295,7 @@ __declspec(naked) void FoNameWcConvFromCStrHook()
 		jmp WcConvFromCStrPtr
 	}
 }
-void __cdecl sub_536BA0(const char* v6, float a1, float a2, float a3, float a4, int a5, int a6)
+static void __cdecl sub_536BA0(const char* v6, float a1, float a2, float a3, float a4, int a5, int a6)
 {
 	DisplayChaoName(v6, a1, a2, a3, a4, a6, 0, a5);
 }
@@ -410,8 +325,8 @@ static void __declspec(naked) sub_536BA0_Hook()
 	}
 }
 
-const int KarateOpponentNameHookTrampoline = 0x543280;
-__declspec(naked) void KarateOpponentNameHook() {
+static const int KarateOpponentNameHookTrampoline = 0x543280;
+static __declspec(naked) void KarateOpponentNameHook() {
 	__asm {
 		add edi, -0x12
 		add edi, 0x624
@@ -419,21 +334,60 @@ __declspec(naked) void KarateOpponentNameHook() {
 	}
 }
 
+static FunctionHook<void, char*> NameMenuDisplayTrampoline(0x5827A0);
+static void NameMenuDisplayHook(char* work) {
+	NameMenuDisplayTrampoline.Original(work);
+
+	if (!work[0x50]) return; // is name menu open
+
+	char* const namePointer = work + 0x60;
+	const int nameLength = work[0x53];
+
+	// blinking bar draw
+	if (work[0x5C] < 20) {
+		njSetTexture((NJS_TEXLIST*)0x011D2ACC); // al_stg_kinder_ad_tex
+		njSetTextureNum(1, 0, 0, 0);
+		ChaoHudThing bar;
+		bar.x0 = CalculateStringXPos(namePointer, 431, 22.f, nameLength, work[0x52]) + 1; // work[0x52] is the selection with the arrows
+		bar.x1 = bar.x0 + 2;
+		bar.y0 = 130;
+		bar.y1 = 156;
+		bar.u1 = 1160;
+		bar.u0 = 1160;
+		bar.v1 = 1416;
+		bar.v0 = 1416;
+		AlgKinderOrthoQuadDrawArray(&bar, 1, -1);
+	}
+
+	// name draw
+	if (nameLength <= 0) return;
+	
+	// the name menu has an arbitrary name length, so this is a hack to terminate it at the specified index
+	char backupChar = namePointer[nameLength];
+	namePointer[nameLength] = 0;
+	// the function expects a vanilla chaodata name offset as input so we undo the hack done to it using this subtraction/addition
+	DisplayChaoName_NewFont(namePointer - offsetof(ChaoDataBase, Name) + 0x12, 433, 131, 22, 22, (NJS_COLOR)-1, 0, DrawAncorV_Left);
+	namePointer[nameLength] = backupChar;
+}
 
 void AL_Name_Init() {
 	//fortune teller name conversion new buffer
 	WriteCall((void*)0x005824BF, sub_57A6F0_);
 	WriteCall((void*)0x05824D9, FoNameWcConvFromCStrHook);
+
 	//name menu name draw
-	WriteCall((void*)0x00582EAF, AlgKinderOrthoQuadDraw_NameHook);
-	WriteData((Uint8*)(0x00582EEC - 1), (Uint8)13);
-	WriteData((Uint32*)(0x00582EF1 - 4), (Uint32)435);
+	NameMenuDisplayTrampoline.Hook(NameMenuDisplayHook);
+	WriteCall((void*)0x00582EAF, nullsub_1); // kill original name sprite draw
+	WriteCall((void*)0x00582F45, nullsub_1); // kill blinking cursor bar
+
 	//fortune teller copy name to chao
 	WriteCall((void*)0x0058242E, FortuneTeller_SetName);
 	WriteJump((void*)0x00582730, OpenNameMenuHook);
+
 	//fortune teller allocation strings
 	WriteData((Uint8*)(0x00583C10 - 1), Uint8(0x60 + 4 + sizeof(AL_NAME) + 4));
 	WriteData((Uint8*)(0x00583C13), Uint8(0x60 + 4 + sizeof(AL_NAME)));
+
 	//fortune teller new name offset
 	WriteData((Uint8*)(0x005837F8 - 1), (Uint8)0x60);
 	WriteData((Uint8*)(0x005832FD - 1), (Uint8)0x60);
@@ -451,7 +405,7 @@ void AL_Name_Init() {
 	WriteData((Uint8*)(0x0058317F - 1), (Uint8)0x5F);
 	WriteData((Uint8*)(0x0058317B - 1), (Uint8)0x5F);
 
-	//new name limits
+	//new name limits in name menu
 	WriteData((Uint8*)(0x005832E6), Uint8(sizeof(AL_NAME) - 1));
 	WriteData((Uint8*)(0x00583134), Uint8(sizeof(AL_NAME) - 1));
 
@@ -462,18 +416,17 @@ void AL_Name_Init() {
 	WriteData<2>((char*)0x005719FF, (char)0x90);
 	WriteData((char*)0x00571A01, (char)0xEB);
 
-	WriteCall((void*)0x00536E33, DrawChar_Hook);
 	WriteCall((void*)0x0565986, DisplayChaoName_Hook); //stat panel
 	WriteCall((void*)0x0058832D, DisplayChaoName_Hook); //classroom
 
 	WriteCall((void*)0x00536BCF, DisplayChaoName_Hook); //multiple things (4 calls to this function)
-	//theres a single function that doesnt use Name as input and the offset hack in our hook breaks it 
-	//so we have to manually redirect that one to the original one
+
+	// this uses the race record shape element name and the offset hack in our hook breaks it
+	// we manually redirect the call to the original draw since it cannot exceed 7 characters anyways
 	WriteCall((void*)0x00556A26, sub_536BA0_Hook);
 
-
 	WriteCall((void*)0x00593122, DisplayChaoName_Hook); //entrance chaodata panel todo: test race panel
-	WriteJump((void*)0x58DA30, sub_58DA30Hook);		//health center
+	WriteJump((void*)0x58DA30, sub_58DA30Hook);			//health center
 	WriteCall((void*)0x00597C35, DisplayChaoName_Hook); //might be too small, cant test
 	WriteCall((void*)0x00571994, DisplayChaoName_Hook); //karate1
 	WriteCall((void*)0x005719A2, DisplayChaoName_Hook); //karate2
