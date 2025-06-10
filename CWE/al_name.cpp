@@ -161,9 +161,9 @@ static void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xs
 			const Float loc_x = (22 * (index % 23));
 			const Float loc_y = (22 * (index / 23));
 			bbi.s0 = (loc_x + 0.1f) / 512.0f;
-			bbi.t0 = (loc_y + 0.1f) / 256.0f;
+			bbi.t0 = (loc_y + 0.35f) / 256.0f;
 			bbi.s1 = (loc_x + 22.0f * spacingRatio) / 512.0f;
-			bbi.t1 = (loc_y + 22.0f) / 256.0f;
+			bbi.t1 = (loc_y + 22.0f - .2f) / 256.0f;
 
 			DrawChaoHudThingB(
 				&bbi,
