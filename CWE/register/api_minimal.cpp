@@ -4,6 +4,10 @@
 #include <data/minimal/minimal_all.h>
 
 void ALAPI_RegisterMinimal(CWE_REGAPI* cwe_api) {
+	bee_entry.Name = "Bee";
+	ladybird_entry.Name = "Ladybird";
+	scorpion_entry.Name = "Scorpion";
+
 	BeeID = cwe_api->AddChaoMinimal(&bee_entry);
 	cwe_api->AddChaoMinimal(&ladybird_entry);
 	cwe_api->AddChaoMinimal(&scorpion_entry);

@@ -60,6 +60,7 @@ DataArray(int, dword_174BC58, 0x1A557A8, 4);
 DataArray(int, dword_174BC5C, 0x1A557A8, 4);
 DataPointer(int, ProbablySpriteFlags, 0x01A557A4);
 
+IDirect3DVertexShader9* chaoVertexSimpleShader;
 IDirect3DPixelShader9 *chaoPixelSimpleShader;
 IDirect3DDevice9* device = NULL;
 

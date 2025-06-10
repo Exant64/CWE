@@ -9,6 +9,9 @@
 
 extern "C"
 {
+	API __declspec(noinline) void LoadNewShaders();
+	API __declspec(noinline) void CancelNewShaders();
+
 	//Resets texture with the index
 	API void __cdecl SetChunkTexIndexNull(int a1);
 	//sets primary texture
@@ -23,6 +26,6 @@ extern "C"
 	API void SetPixelShaderFloat(int reg, float val);
 	//init, only for v8
 	#ifdef BRIGHTFIX_PLUS
-		API void __cdecl BrightFix_Init(const char* path, BYTE* shaderData);
+		API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData);
 	#endif
 }

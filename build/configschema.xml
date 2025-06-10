@@ -300,6 +300,9 @@
     </Group>
 
     <Group name="Cheat" display="99 - Cheat and Debug">
+      <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display= "Black Market Global Price Percentage">
+        <HelpText>All modded item prices are multiplied with the specified percentage.</HelpText>
+      </Property>
       <Property name="ToyReset" type="bool" defaultvalue="False" display= "Toy Reset Button">
         <HelpText>Press X+A+L outside of the gardens to reset the toys to their default position.</HelpText>
       </Property>

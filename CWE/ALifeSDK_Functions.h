@@ -7,7 +7,7 @@ void sub_561740(int a1);
 
 void SetShaders(int result);
 
-
+int AdjustAngle(__int16 bams_a, unsigned __int16 bams_b, int dang);
 ObjectMaster* ALO_Field_Find_(ObjectMaster* a1, int a2, Uint8 a3);
 
 struct c_colli_hit_info

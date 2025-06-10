@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CWE", "CWE\CWE.vcxproj", "{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911} = {E72B7379-DC9F-4CD5-8A12-7F9ECD582911}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BrightFix", "BrightFix\BrightFix\BrightFix.vcxproj", "{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}"
 EndProject
@@ -13,6 +16,8 @@ Global
 		CWEV9|x86 = CWEV9|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		ImGuiDebug|x64 = ImGuiDebug|x64
+		ImGuiDebug|x86 = ImGuiDebug|x86
 		PaletteFix|x64 = PaletteFix|x64
 		PaletteFix|x86 = PaletteFix|x86
 		Release|x64 = Release|x64
@@ -27,6 +32,10 @@ Global
 		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.Debug|x64.Build.0 = Debug|x64
 		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.Debug|x86.ActiveCfg = Debug|Win32
 		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.Debug|x86.Build.0 = Debug|Win32
+		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.ImGuiDebug|x64.ActiveCfg = ImGuiDebug|x64
+		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.ImGuiDebug|x64.Build.0 = ImGuiDebug|x64
+		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.ImGuiDebug|x86.ActiveCfg = ImGuiDebug|Win32
+		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.ImGuiDebug|x86.Build.0 = ImGuiDebug|Win32
 		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.PaletteFix|x64.ActiveCfg = Release|x64
 		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.PaletteFix|x64.Build.0 = Release|x64
 		{34C06D0B-0678-47E4-B84C-CBA99FA28EC6}.PaletteFix|x86.ActiveCfg = Release|Win32
@@ -43,6 +52,10 @@ Global
 		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.Debug|x64.Build.0 = Debug|x64
 		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.Debug|x86.ActiveCfg = Debug|Win32
 		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.Debug|x86.Build.0 = Debug|Win32
+		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.ImGuiDebug|x64.ActiveCfg = Debug|x64
+		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.ImGuiDebug|x64.Build.0 = Debug|x64
+		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.ImGuiDebug|x86.ActiveCfg = Debug|Win32
+		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.ImGuiDebug|x86.Build.0 = Debug|Win32
 		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.PaletteFix|x64.ActiveCfg = PaletteFix|x64
 		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.PaletteFix|x64.Build.0 = PaletteFix|x64
 		{E72B7379-DC9F-4CD5-8A12-7F9ECD582911}.PaletteFix|x86.ActiveCfg = PaletteFix|Win32

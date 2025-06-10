@@ -5,6 +5,7 @@
 #include "..//ninja_functions.h"
 #include "../ALifeSDK_Functions.h"
 #include <random>
+#include "albhv.h"
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 
@@ -106,7 +107,7 @@ signed int __cdecl ALBHV_GoToCoffin(ObjectMaster* a1)
 
 	sub_534F80((int)& stru_1A15938[9], &a1->EntityData2->Waypoint, stru_1A15938[9].nbIndex);
 
-	AL_SetBehavior(a1, (BHV_FUNC)0x0055C3C0);
+	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);
 	AL_SetNextBehavior(a1, ALBHV_GoToLockOn);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x5613C0);

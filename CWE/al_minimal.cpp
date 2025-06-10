@@ -14,14 +14,15 @@
 #include "AL_ModAPI.h"
 
 
-std::vector< int> ModAPI_MinimalInfluence;
-std::vector< ChaoItemStats> ModAPI_MinimalStats;
-std::vector< NJS_TEXLIST*>  ModAPI_MinimalTexlists;
-std::vector< NJS_OBJECT*>   ModAPI_MinimalModels;
-std::vector< NJS_MOTION*>   ModAPI_MinimalMotion0;
-std::vector< NJS_MOTION*>   ModAPI_MinimalMotion1;
-std::vector< NJS_MOTION*>   ModAPI_MinimalMotion2;
-std::vector< NJS_MOTION*>   ModAPI_MinimalMotion3;
+std::vector<int> ModAPI_MinimalInfluence;
+std::vector<ChaoItemStats> ModAPI_MinimalStats;
+std::vector<const char*>  ModAPI_MinimalNames;
+std::vector<NJS_TEXLIST*>  ModAPI_MinimalTexlists;
+std::vector<NJS_OBJECT*>   ModAPI_MinimalModels;
+std::vector<NJS_MOTION*>   ModAPI_MinimalMotion0;
+std::vector<NJS_MOTION*>   ModAPI_MinimalMotion1;
+std::vector<NJS_MOTION*>   ModAPI_MinimalMotion2;
+std::vector<NJS_MOTION*>   ModAPI_MinimalMotion3;
 std::map<int, std::vector<CWE_MINIMAL_FRUIT>> ModAPI_MinimalFruit;
 
 NJS_TEXNAME GOMA_TEXNAME[3];
