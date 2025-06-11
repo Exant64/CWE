@@ -669,8 +669,8 @@ static bool AL_DayNightCycle_ChangeTextures(DAYNIGHT_SKYBOX_TABLE& skybox, int p
 
 	for (size_t t = 0; t < skybox.texMapCount; t++) {
 		const auto changeTexGC = [](uint32_t& data, uint32_t texID) {
-			data &= 0xFFFF0000;
-			data |= texID;
+			data &= ~0x1FFF;
+			data |= (texID & 0x1FFF);
 		};
 
 		const auto changeTexChunk = [](uint16_t& data, uint32_t texID) {
@@ -1778,19 +1778,48 @@ static void AL_DayNightCycle_SetTexturesAndTexlist(task* tp, DAYNIGHT_SKYBOX_TAB
 }
 
 
-static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
+static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phaseA, int phaseB) {
 	auto& work = GetWork(tp);
 
 	for (size_t i = 0; i < work.skyboxCount; i++) {
 		auto& skybox = work.pSkyboxTable[i];
-		
-		SetMaterial(alpha, 1, 1, 1);
+		EnableAlpha(1);
+		// transparent pass
+		// RF API to handle setting the Z buffer modes appropriately for alpha rendering
+		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_TRANSPARENT);
+		SetMaterial(1, 1, 1, 1);
 		gjSetDiffuse(0xFFFFFFFF);
 
-		AL_DayNightCycle_SetTexturesAndTexlist(tp, skybox, phase);
+		AL_DayNightCycle_SetTexturesAndTexlist(tp, skybox, phaseA);
+
+		const auto backupEval = skybox.pObj->evalflags;
+		// hack to restore hero garden skybox rotation
+		skybox.pObj->evalflags &= ~NJD_EVAL_UNIT_POS;
+		skybox.pObj->evalflags &= ~NJD_EVAL_UNIT_ANG;
+		skybox.pObj->evalflags &= ~NJD_EVAL_UNIT_SCL;
 
 		if (skybox.isChunk) njCnkDrawObject(skybox.pObj);
 		else gjDrawObject(skybox.pObj);
+
+		AL_DayNightCycle_SetTexturesAndTexlist(tp, skybox, phaseB);
+
+		OnConstantAttr(0, NJD_FST_UA);
+
+		int backupblend = nj_cnk_blend_mode;
+		nj_cnk_blend_mode = NJD_FBS_SA | NJD_FBD_ISA; // source alpha to inverse source alpha blending
+
+		OnControl3D(NJD_CONTROL_3D_CNK_BLEND_MODE);
+
+		SetMaterial(alpha, 1, 1, 1);
+		gjSetDiffuse(0xFFFFFFFF);
+
+		if (skybox.isChunk) njCnkDrawObject(skybox.pObj);
+		else gjDrawObject(skybox.pObj);
+
+		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_END);
+		nj_cnk_blend_mode = backupblend;
+
+		skybox.pObj->evalflags = backupEval;
 	}
 }
 
@@ -1823,7 +1852,7 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	SaveControl3D();
 	SaveConstantAttr();
 
-	EnableAlpha(0);
+	EnableAlpha(1);
 
 	// in object list 1, transparent and opaque GJ geo has to be drawn separately 
 	// so we have to reenable the normal functionality to draw both at once
@@ -1843,23 +1872,13 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	blendModeGinjaFunc = (int)nullsub_1;
 
 	// opaque pass
-	AL_DayNightCycleDrawSkyboxes(tp, 1.0f, work.phaseA);
+	//AL_DayNightCycleDrawSkyboxes(tp, 1.0f, work.phaseA);
 
-	// transparent pass
-	// RF API to handle setting the Z buffer modes appropriately for alpha rendering
-	rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_TRANSPARENT);
+	
+	
+	AL_DayNightCycleDrawSkyboxes(tp, work.lerpValue, work.phaseA, work.phaseB);
 
-	OnConstantAttr(0, NJD_FST_UA);
 
-	int backupblend = nj_cnk_blend_mode;
-	nj_cnk_blend_mode = NJD_FBS_SA | NJD_FBD_ISA; // source alpha to inverse source alpha blending
-
-	OnControl3D(NJD_CONTROL_3D_CNK_BLEND_MODE);
-
-	EnableAlpha(1);
-	AL_DayNightCycleDrawSkyboxes(tp, work.lerpValue, work.phaseB);
-
-	nj_cnk_blend_mode = backupblend;
 
 	LoadControl3D();
 	LoadConstantAttr();
