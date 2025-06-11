@@ -141,6 +141,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui_debug.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
+    <ClCompile Include="move.cpp" />
     <ClCompile Include="api\api_accessory.cpp" />
     <ClCompile Include="api\api_metadata.cpp" />
     <ClCompile Include="save\save_item.cpp" />
@@ -341,6 +342,7 @@
     <ClInclude Include="api\api_accessory.h" />
     <ClInclude Include="save\save_item.h" />
     <ClInclude Include="al_garden_info.h" />
+    <ClInclude Include="move.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />

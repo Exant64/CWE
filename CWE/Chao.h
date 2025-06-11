@@ -7,6 +7,7 @@
 #include "al_emotion.h"
 #include "al_parameter.h"
 #include "al_behavior/al_intention.h"
+#include "move.h"
 
 #define CHAOWK(a) (a->Data1.Chao)
 #define GET_CHAOWK(tp) ((chaowk*)tp->Data1.Chao)
@@ -434,28 +435,6 @@ void ALOField_Load(ObjectMaster* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int tim
 
 ObjectMaster* GetClosestChao(ObjectMaster* a1);
 void AL_IconSet(ObjectMaster* a4, char a2, int a3);
-
-// todo move all these to move.cpp
-ThiscallFunctionPointer(float, MOV_DistFromAim, (ObjectMaster* a1), 0x007968A0);
-
-static float MOV_DistFromAimXZ(task* tp) {
-	NJS_POINT3* pos = &tp->Data1.Entity->Position;
-	NJS_POINT3* aimPos = &tp->EntityData2->Waypoint;
-
-	NJS_VECTOR v = {
-		pos->x - aimPos->x,
-		0,
-		pos->z - aimPos->z
-	};
-
-	return njScalor(&v);
-}
-
-FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
-
-int MOV_TurnToAim2(ObjectMaster* a1, signed int a3);
-void MOV_SetVelo(ObjectMaster* tp, NJS_VECTOR* pVelo);
-void MOV_SetAimPos(ObjectMaster* tp, NJS_POINT3* pPos);
 
 void AL_GetRandomAttrPos_0(ObjectMaster* a1);	
 typedef ChaoData1 chaowk;
