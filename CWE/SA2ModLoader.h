@@ -15,6 +15,8 @@
 #include "SA2Variables.h"
 #include "SA2Functions.h"
 
+typedef ObjectMaster task;
+
 static inline void ResizeTextureList(NJS_TEXLIST* texlist, Uint32 count)
 {
 	texlist->textures = new NJS_TEXNAME[count]{};
