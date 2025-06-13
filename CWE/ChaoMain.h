@@ -61,6 +61,8 @@ struct ConfigValues {
 	bool DisableArmsLegs;
 	bool DisableAllParts;
 	bool FixMonsterEvo;
+
+	bool FixHeroSky;
 };
 extern ConfigValues gConfigVal;
 

@@ -170,6 +170,9 @@
     </Group>
 
     <Group name="Misc" display="06 - Miscellaneous Features">
+      <Property name="FixHeroSky" type="bool" defaultvalue="True" display= "Vanilla Hero Garden Skybox Fix">
+        <HelpText>Ports over the GameCube skybox model for the clouds to fix the texture.</HelpText>
+      </Property>
       <Property name="SaveMultiSavefile" type="bool" defaultvalue="False" display= "Multi Savefile">
         <HelpText>Each SA2 save also includes its own Chao World file instead of using one file universally.</HelpText>
       </Property>

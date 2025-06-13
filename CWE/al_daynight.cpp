@@ -865,8 +865,8 @@ static void dumpGjParameter(const SA2B_Model* pModel) {
 	const auto test = [](SA2B_GeometryData* geom, int count) {
 		for (size_t i = 0; i < count; i++) {
 			for (size_t j = 0; j < geom[i].ParameterCount; j++) {
-				if (geom[i].ParameterOffset[j * 2] == 8) {
-					PrintDebug("PARAM TEX %x", geom[i].ParameterOffset[j * 2 + 1]);
+				if (geom[i].ParameterOffset[j].ParameterType == 8) {
+					PrintDebug("PARAM TEX %x", geom[i].ParameterOffset[j].Data);
 				}
 			}
 		}
@@ -895,8 +895,8 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 		uint32_t* pTexID = NULL;
 
 		for (size_t i = 0; i < pGeo->ParameterCount; i++) {
-			uint32_t* para = reinterpret_cast<uint32_t*>(&pGeo->ParameterOffset[i * 2]);
-			const auto type = reinterpret_cast<const uint8_t*>(para)[0];
+			auto& para = pGeo->ParameterOffset[i];
+			const auto type = para.ParameterType;
 
 #ifndef _DEBUG
 			if (pSkyboxEntry && pLightingParameter) {
@@ -905,15 +905,15 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 #endif
 
 			if (type == 2) { //"lighting" parameter type
-				pLightingParameter = &para[1];
-				origLightingParameter = para[1];
+				pLightingParameter = &para.Data;
+				origLightingParameter = para.Data;
 			}
 
 			if (type == 8) { // "texture" parameter type
-				const auto texID = para[1] & 0xFFFF;
+				const auto texID = para.Data & 0xFFFF;
 				textureParamCount++;
 
-				pTexID = &para[1];
+				pTexID = &para.Data;
 
 				const DAYNIGHT_SKYBOX* pResultSkyboxEntry;
 				if (AL_DayNightCycle_FindSkyboxTexID(texID, &pResultSkyboxEntry)) {
