@@ -24,6 +24,21 @@ enum
 	ALW_CMD_BYE = 0x6,
 };
 
+enum {
+	ALW_CATEGORY_CHAO = 0x0,
+	ALW_CATEGORY_EGG = 0x1,
+	ALW_CATEGORY_MINIMAL = 0x2,
+	ALW_CATEGORY_FRUIT = 0x3,
+	ALW_CATEGORY_TREE = 0x4,
+	ALW_CATEGORY_GROWTREE = 0x5,
+	ALW_CATEGORY_TOY = 0x6,
+	ALW_CATEGORY_SEED = 0x7,
+	ALW_CATEGORY_ACCESSORY = 0x8,
+	ALW_CATEGORY_SOUND = 0x8, // unused
+	ALW_CATEGORY_MASK = 0x9,
+	ALW_CATEGORY_SPECIAL = 0xA,
+	NB_CATEGORY = 0xB,
+};
 
 ObjectMaster* GetChaoObject(int a1, int a2);
 ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1);

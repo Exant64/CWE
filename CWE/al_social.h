@@ -5,6 +5,7 @@ struct SOCIAL_BHVDATA
 	int Mode;
 	short Timer;
 	short SubTimer;
+	void* UserData;
 };
 
 #define SBHVCOUNT 48

@@ -8,9 +8,121 @@
 #include "../al_social.h"
 #include "../ninja_functions.h"
 #include <random>
+#include <al_speechbubble.h>
+#include <al_behavior/al_knowledge.h>
 
-void ALS_GossipFace(SOCIALDATA* data)
-{
+// gets chao he doesn't know (
+static ChaoData* GetGossipDoesntKnowSubject(task* pChao, task* pOtherChao) {
+	chaowk* work = GET_CHAOWK(pChao);
+
+	const size_t maxGossip = 25;
+	ChaoData* pGossipList[maxGossip];
+	size_t nbGossip = 0;
+
+	const size_t chaoCount = ALW_CountEntry(0);
+	for (size_t i = 0; i < chaoCount; i++) {
+		if (nbGossip >= maxGossip) break;
+
+		task* tp = GetChaoObject(0, i);
+		if (tp == pChao || tp == pOtherChao) continue;
+
+		pGossipList[nbGossip++] = (ChaoData*)GET_CHAOPARAM(tp);
+	}
+
+	if (!nbGossip) return NULL;
+
+	return pGossipList[int(njRandom() * (nbGossip - 0.0001f))];
+}
+
+// gets chao that he personally knows (met with more than once) or parents
+static ChaoData* GetGossipKnowsSubject(task* pChao) {
+	chaowk* work = GET_CHAOWK(pChao);
+
+	const size_t maxGossip = 25;
+	ChaoData* pGossipList[maxGossip];
+	size_t nbGossip = 0;
+
+	const size_t nbFriends = AL_KW_GetFriendCount(pChao);
+
+	for (size_t i = 0; i < nbFriends; i++) {
+		if (nbGossip >= maxGossip) break;
+		
+		const auto& entry = GET_CHAOPARAM(pChao)->Knowledge.chao[i];
+		if (entry.meet > 1) {
+			ChaoData* pParam = (ChaoData*)AL_KW_FindChaoBasedOnId(entry.id);
+			if (!pParam) continue;
+
+			pGossipList[nbGossip++] = pParam;
+		}
+	}
+
+	if (!nbGossip) return NULL;
+
+	return pGossipList[int(njRandom() * (nbGossip - 0.0001f))];
+}
+
+static ChaoData* GetGossipSubject(task* pChao) {
+	ChaoData* pDoesntKnow = GetGossipDoesntKnowSubject(pChao, ALW_GetLockOnTask(pChao));
+	ChaoData* pKnows = GetGossipKnowsSubject(pChao);
+
+	ChaoData* pPickedChao = NULL;
+	if (!pDoesntKnow || !pKnows) {
+		return !pDoesntKnow ? pKnows : pDoesntKnow;
+	}
+	
+	return (njRandom() < 0.5) ? pDoesntKnow : pKnows;
+}
+
+static const int GossipSpeechSpawnTimer = 45;
+static const int GossipSpeechStayTimer = 90;
+static const int GossipTotalTimer = GossipSpeechSpawnTimer * 2 + GossipSpeechStayTimer;
+
+static void PickAndSpawnTopicGossipChao(task* pChao, ChaoData* gossipData, eSpeechPos pos) {
+	auto& param = gossipData->data;
+	const size_t maxEntries = 32;
+	Uint32 registeredEntryPairs[maxEntries][2];
+	size_t nbEntries = 0;
+
+	const auto addEntry = [&](Uint32 type, Uint32 id) {
+		if (nbEntries < maxEntries) {
+			registeredEntryPairs[nbEntries][0] = type;
+			registeredEntryPairs[nbEntries++][1] = id;
+		}
+	};
+
+	for (size_t i = 0; i < _countof(param.Accessories); i++) {
+		if (!param.Accessories[i]) continue;
+
+		addEntry(SPEECH_BUBBLE_ACCESSORY, param.Accessories[i] - 1);
+	}
+
+	if (param.Headgear) {
+		addEntry(SPEECH_BUBBLE_MASK, param.Headgear);
+	}
+
+	if (param.Medal) {
+		addEntry(SPEECH_BUBBLE_MEDAL, param.Medal - 1);
+	}
+
+	for (size_t i = 0; i < NB_AL_STOY; i++) {
+		if (param.Knowledge.SToyFlag & (1 << i)) {
+			addEntry(SPEECH_BUBBLE_STOY, i);
+		}
+	}
+
+	for (size_t i = 0; i < NB_AL_MUSIC; i++) {
+		if (param.Knowledge.MusicFlag & (1 << i)) {
+			addEntry(SPEECH_BUBBLE_MUSIC, i);
+		}
+	}
+
+	if (nbEntries > 0) {
+		const auto& pickedEntry = registeredEntryPairs[int(njRandom() * (nbEntries - 0.0001f))];
+		AL_SpeechBubbleCreate(pChao, NULL, pickedEntry[0], pickedEntry[1], pos, GossipSpeechSpawnTimer, GossipSpeechStayTimer);
+	}
+}
+
+static void ALS_GossipFace(SOCIALDATA* data) {
 	data->bhvStatus.SubTimer--;
 
 	if (!data->bhvStatus.SubTimer)
@@ -22,30 +134,61 @@ void ALS_GossipFace(SOCIALDATA* data)
 	if (data->bhvStatus.SubTimer % 30 == 0)
 		AL_FaceSetMouth(data->chaoPointer, ChaoMouth_Open, 15);
 }
-int ALS_Gossip(SOCIALDATA* data)
-{
-	if (data->bhvStatus.Mode == 0)
-	{
-		data->bhvStatus.Mode++;
-		AL_SetMotionLink(data->chaoPointer, data->parameter1 + 404);
-		data->bhvStatus.Timer = 5 * 60;
-		data->bhvStatus.SubTimer = 0;
-	}
-	else
-	{
-		data->bhvStatus.Timer--;
-		if (!data->bhvStatus.Timer)
-		{
-			AL_FaceChangeEye(data->chaoPointer, ChaoEyes_Normal);
-			AL_FaceChangeMouth(data->chaoPointer, ((chaowk*)data->chaoPointer->Data1.Chao)->Face.MouthDefaultNum);
-			//AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405 + 3);
-			return 1;
-		}
-		ALS_GossipFace(data);
+
+static int ALS_Gossip(SOCIALDATA* data) {
+	task* pChao = data->chaoPointer;
+	auto& bhv = data->bhvStatus;
+	ChaoData* pGossipChaoData = (ChaoData*)bhv.UserData;
+
+	switch (bhv.Mode) {
+		case 0:
+			AL_SetMotionLink(pChao, data->parameter1 + 404 + ((njRandom() < 0.5) ? 2 : 0));
+
+			bhv.UserData = GetGossipSubject(pChao);
+
+			bhv.Timer = 2 * GossipTotalTimer + (3 + njRandom() * 4) * 60;
+			bhv.SubTimer = 0;
+
+			bhv.Mode++;
+			break;
+		// mode 1 and 2 cover talking about a chao and then talking about something related to said chao
+		default:
+			bhv.Timer--;
+
+			if ((bhv.Timer % GossipTotalTimer) == 0) {
+				if (pGossipChaoData) {
+					// first talk about the chao in mode 1
+					// then talk about some trait of chao in mode 2
+					switch (bhv.Mode) {
+					case 1:
+						AL_SpeechBubbleCreate(pChao, pGossipChaoData, -1, 0, SPEECH_POS_TOP, GossipSpeechSpawnTimer, GossipSpeechStayTimer);
+						break;
+					case 2:
+						PickAndSpawnTopicGossipChao(pChao, pGossipChaoData, SPEECH_POS_TOP);
+						break;
+					}
+					
+					bhv.Mode++;
+				}
+			}
+
+			if (!bhv.Timer)
+			{
+				AL_FaceChangeEye(pChao, ChaoEyes_Normal);
+
+				// AL_FaceReturnDefaultMouth
+				AL_FaceChangeMouth(pChao, GET_CHAOWK(pChao)->Face.MouthDefaultNum);
+				//AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405 + 3);
+				return 1;
+			}
+
+			ALS_GossipFace(data);
+			break;
 	}
 
 	return 0;
 }
+
 int ALS_GossipIdle(SOCIALDATA* data)
 {
 	if (data->bhvStatus.Mode == 0)

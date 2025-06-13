@@ -71,18 +71,21 @@ static void ChaoInfoMenu() {
 
                     task* pOtherChao = GetSelectedOtherChao();
                     if (pOtherChao) {
-                        ALW_LockOn(pChao, pOtherChao);
 
                         if (ImGui::Button("Talk")) {
+                            ALW_LockOn(pChao, pOtherChao);
                             AL_SetBehavior(pChao, ALBHV_Talk);
                         }
                         if (ImGui::Button("Gossip")) {
+                            ALW_LockOn(pChao, pOtherChao);
                             ALBHV_Gossip(pChao, pOtherChao);
                         }
                         if (ImGui::Button("Hold Hands")) {
+                            ALW_LockOn(pChao, pOtherChao);
                             AL_SetBehavior(pChao, ALBHV_InitHoldHands);
                         }
                         if (ImGui::Button("Hug")) {
+                            ALW_LockOn(pChao, pOtherChao);
                             AL_SetBehavior(pChao, ALBHV_InitHug);
                         }
                     }
@@ -338,7 +341,6 @@ static void LightMenu() {
 }
 
 static void ImGuiMenu() {
-    ImGui::ShowDemoWindow();
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
@@ -355,17 +357,22 @@ static void ImGuiMenu() {
     }
     if (ImGui::Begin("speech test")) {
         static int speechID = 0;
-        static bool onRightSide = false;
+        static int speechSubID;
         static int chaoID = 0;
-        ImGui::SliderInt("Type", &speechID, 0, NB_SPEECH_ENTRY);
+        ImGui::SliderInt("Type", &speechID, 0, NB_SPEECH_ENTRY - 1);
+        ImGui::SliderInt("SubType", &speechSubID, 0, 24);
         ImGui::SliderInt("chao id", &chaoID, 0, 24);
-        ImGui::Checkbox("Right", &onRightSide);
+        
 
         if (ImGui::Button("create bubble")) {
             task* pChao = GetChaoObject(0, 0);
             if (pChao) {
                 task* renderedChao = GetChaoObject(0, chaoID);
-                AL_SpeechBubbleCreate(pChao, renderedChao ? (ChaoData*)renderedChao->Data1.Chao->pParamGC : NULL, speechID, onRightSide ? SPEECH_POS_RIGHT : SPEECH_POS_LEFT, 35, 120);
+                ChaoData* renderedData = NULL;
+                if (renderedChao) {
+                    renderedData = (ChaoData*)renderedChao->Data1.Chao->pParamGC;
+                }
+                AL_SpeechBubbleCreate(pChao, renderedData, speechID, speechSubID, SPEECH_POS_TOP, 35, 120);
             }
         }
         ImGui::End();

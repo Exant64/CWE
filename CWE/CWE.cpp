@@ -86,6 +86,7 @@
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
+#include <rendertarget.h>
 
 const char* PathToModFolder = "";
 
@@ -325,6 +326,8 @@ extern "C"
 		RenderFix_Init(helperFunctions);
 
 		cwe_device = dword_1A557C0->pointerToDevice;
+
+		InitRenderTarget();
 
 #ifdef IMGUIDEBUG
 		ImGui_Init();
