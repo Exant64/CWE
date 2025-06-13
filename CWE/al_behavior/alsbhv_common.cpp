@@ -4,6 +4,7 @@
 #include "../al_social.h"
 #include "../al_world.h"
 #include "../ALifeSDK_Functions.h"
+#include <ninja_functions.h>
 #include <random>
 #include "albhv.h"
 
@@ -201,4 +202,56 @@ signed int __cdecl ALBHV_GoToSocial(ObjectMaster* a1)
 		AL_SetBehavior(a1, ALBHV_Think);
 	}
 	return 0;
+}
+
+
+int ALBHV_GoNextToSocialNew(task* tp) {
+	if (ALW_RecieveCommand(tp) == ALW_CMD_CHANGE) {
+		return BHV_RET_BREAK;
+	}
+
+	chaowk* work = GET_CHAOWK(tp);
+	AL_BEHAVIOR* bhv = &work->Behavior;
+
+	task* pChao = ALW_GetLockOnTask(tp);
+	
+	const int TIME_TO_LERP = 90;
+	const int ANGLE_SPD = 384;
+
+	const auto targetAng = pChao->Data1.Entity->Rotation.y;
+
+	switch (bhv->Mode) {
+	case 0:
+		AL_SetMotionLink(tp, 100);
+		bhv->LimitTimer = 60 * 30;
+		bhv->Timer = 0;
+		bhv->Mode++;
+		[[fallthrough]];
+	case 1:
+		MOV_TurnToAim2(tp, ANGLE_SPD);
+
+		{
+			const float speed = GET_GLOBAL()->WalkAcc * 0.8f;
+			tp->EntityData2->speed.x = njSin(work->entity.Rotation.y) * speed;
+			tp->EntityData2->speed.z = njCos(work->entity.Rotation.y) * speed;
+		}
+
+		if (MOV_DistFromAimXZ(tp) < 0.5f) {
+			bhv->Mode++;
+		}
+		break;
+	case 2:
+		work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, targetAng, ANGLE_SPD);
+
+		if (abs(work->entity.Rotation.y - targetAng) <= ANGLE_SPD) {
+			return BHV_RET_FINISH;
+		}
+		break;
+	}
+
+	if (bhv->LimitTimer-- <= 0) {
+		return BHV_RET_FINISH;
+	}
+
+	return BHV_RET_CONTINUE;
 }

@@ -24,7 +24,7 @@ static ChaoData* GetGossipDoesntKnowSubject(task* pChao, task* pOtherChao) {
 		if (nbGossip >= maxGossip) break;
 
 		task* tp = GetChaoObject(0, i);
-		if (tp == pChao || tp == pOtherChao) continue;
+		if (!tp || tp == pChao || tp == pOtherChao) continue;
 
 		pGossipList[nbGossip++] = (ChaoData*)GET_CHAOPARAM(tp);
 	}
@@ -142,7 +142,7 @@ static int ALS_Gossip(SOCIALDATA* data) {
 
 	switch (bhv.Mode) {
 		case 0:
-			AL_SetMotionLink(pChao, data->parameter1 + 404 + ((njRandom() < 0.5) ? 2 : 0));
+			AL_SetMotionLink(pChao, data->parameter1 + 404);
 
 			bhv.UserData = GetGossipSubject(pChao);
 
@@ -209,8 +209,8 @@ void ALS_GossipSetup(ObjectMaster* a1, ObjectMaster* a2)
 	Social_SetActor(social, SOCIAL_CHAO1, a1);
 	Social_SetActor(social, SOCIAL_CHAO2, a2);
 
-	Social_SetParameter(social, SOCIAL_CHAO1, 4);
-	Social_SetParameter(social, SOCIAL_CHAO2, 0);
+	Social_SetParameter(social, SOCIAL_CHAO1, 4 + ((njRandom() < 0.5) ? 2 : 0));
+	Social_SetParameter(social, SOCIAL_CHAO2, 0 + ((njRandom() < 0.5) ? 2 : 0));
 
 	bool flipped = false; //this value is so that the conversation goes back and forth
 	for (int i = 0; i < 4 + (njRandom() * 6.0f); i++)
@@ -282,8 +282,8 @@ void ALBHV_Gossip(ObjectMaster* a1, ObjectMaster* a2)
 	//AL_SetBehavior(otherChao, ALBHV_WaitForSocialArrive); //wait for chao to arrive
 	AL_SetBehavior(otherChao, ALBHV_LockUp);          //wait until other chao inits gossip
 
-	AL_SetBehavior(a1, ALBHV_GoNextToSocial);                 //go to selected chao and turn to it	
-	AL_SetNextBehavior(a1, ALBHV_SnapToGossip);
+	AL_SetBehavior(a1, ALBHV_GoNextToSocialNew);                 //go to selected chao and turn to it	
+	//AL_SetNextBehavior(a1, ALBHV_SnapToGossip);
 	AL_SetNextBehavior(a1, ALBHV_GossipTest);               //init talking
 
 	sub_54A690(a1);
