@@ -41,7 +41,7 @@ static void DisplayChaoName(const char* a1, float a2, float a3, float a4, float 
 	}
 }
 
-// used to calculate scaling if size is above the usual chao name size
+// finds the x position of the last letter, taking into account sizeRatio and everything
 static Float CalculateLastLetterXPos(const Float x, const float xsize, const char* name, const size_t length, const float sizeRatio = 1.0f) {
 	Float xpos = x;
 
@@ -73,19 +73,22 @@ static Float CalculateLastLetterXPos(const Float x, const float xsize, const cha
 	return xpos;
 }
 
-// used by name menu to find the position of the cursor
-// yes, this stinks of dupe code
-static Float CalculateStringXPos(char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
-	Float sizeRatio = 1;
-
+// calculates the ratio to scale down by for the string to fit into the space of 8 characters
+static Float CalculateStringSizeRatio(const char* pName, float xpos, float xsize, size_t length) {
 	if (length > 7) {
 		// we calculate the start position of the 8th letter, and calculate the size in a manner
 		// that the last letter ends up there
 		const float letterAtEnd = CalculateLastLetterXPos(xpos, xsize, pName, 8 - 1);
 		const float letterRealAtEnd = CalculateLastLetterXPos(xpos, xsize, pName, length - 1);
-		sizeRatio = (letterAtEnd - xpos) / (letterRealAtEnd - xpos);
+		return (letterAtEnd - xpos) / (letterRealAtEnd - xpos);
 	}
 
+	return 1.0f;
+}
+
+// used by name menu to find the position of the cursor, it's basically CalculateLastLetterXPos but with sizeRatio calculated
+static Float CalculateStringXPos(char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
+	Float sizeRatio = CalculateStringSizeRatio(pName, xpos, xsize, length);
 	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
 }
 
@@ -119,16 +122,10 @@ static void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xs
 		break;
 	}
 
-	Float sizeRatio = 1;
+	Float sizeRatio = CalculateStringSizeRatio(pName, xpos, xsize, length);
 
-	if (length > 7) {
-		// we calculate the start position of the 8th letter, and calculate the size in a manner
-		// that the last letter ends up there
-		const float letterAtEnd = CalculateLastLetterXPos(x, xsize, pName, 8 - 1);
-		const float letterRealAtEnd = CalculateLastLetterXPos(x, xsize, pName, length - 1);
-		sizeRatio = (letterAtEnd - x) / (letterRealAtEnd - x);
-
-		// vertically center it
+	// vertically center when scaled down by sizeRatio
+	if (sizeRatio < 1) {
 		ypos += (ysize / 2.f) * (1.f - sizeRatio);
 	}
 
@@ -158,6 +155,7 @@ static void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xs
 			bbi.wd = xsize * spacingRatio;
 			bbi.ht = ysize;
 
+			// those small floats added to it are to prevent the font from bilinear interpolating towards a letter below or above it
 			const Float loc_x = (22 * (index % 23));
 			const Float loc_y = (22 * (index / 23));
 			bbi.s0 = (loc_x + 0.1f) / 512.0f;
