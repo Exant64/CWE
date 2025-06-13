@@ -83,6 +83,9 @@
 #include <kce_helper.h>
 #include <renderfix.h>
 
+#include <data/heroskyboxfix/object_ghero_nk_kumoback_kumoback.h>
+#include <data/heroskyboxfix/object_ghero_nk_kumofront_kumofront.h>
+
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
@@ -406,6 +409,7 @@ extern "C"
 		gConfigVal.DoctorChaoInfo = config->getBool("Detail", "DetailDoctorChaogivemoreInformationEN", false);
 
 		//Misc
+		gConfigVal.FixHeroSky = config->getBool("Misc", "FixHeroSky", true);
 		gConfigVal.TransporterColor = config->getBool("Misc", "TransporterColor", true);
 		gConfigVal.ChaoCounter = config->getBool("Misc", "BonusChaoCounter", false);
 		gConfigVal.KeepAnimalParts = config->getBool("Misc", "KeepAnimalParts", false);
@@ -439,6 +443,11 @@ extern "C"
 		if (gConfigVal.DayNightCycleHourFrame <= 0) {
 			MessageBoxA(0, "Day Night Cycle's \"In-Game Hour In Real-Life Seconds\" option cannot be set to zero or lower! Temporarily resetting setting to default.", "Chao World Extended", 0);
 			gConfigVal.DayNightCycleHourFrame = 60 * 60;
+		}
+
+		if (gConfigVal.FixHeroSky) {
+			*(NJS_OBJECT*)GetDllData("object_ghero_nk_kumofront_kumofront") = object_ghero_nk_kumofront_kumofront;
+			*(NJS_OBJECT*)GetDllData("object_ghero_nk_kumoback_kumoback") = object_ghero_nk_kumoback_kumoback;
 		}
 
 		//compatbility fix for animal part texture mods that are compatible with 9.5.2.6
