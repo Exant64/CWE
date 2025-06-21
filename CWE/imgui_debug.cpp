@@ -10,7 +10,7 @@
 #include <al_behavior/alsbhv.h>
 #include <al_daynight.h>
 #include <ChaoMain.h>
-
+#include <al_draw.h>
 #include <imgui_debug_motionstrings.h>
 #include <al_draw.h>
 
@@ -20,6 +20,7 @@ static bool ShowChaoInfo = false;
 static bool ShowDNC = false;
 static bool ShowLight = false;
 static bool ShowTaskList = false;
+static bool ShowChaoSoundMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -48,6 +49,16 @@ static void ChaoInfoMenu() {
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
                 ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->entity.Position, 3);
+
+                static bool ChaoDebugDistEnabled = false;
+                ImGui::Checkbox("Distance Debug", &ChaoDebugDistEnabled);
+                if (ChaoDebugDistEnabled) {
+                    ChaoDebugDistSelected = pChao;
+                    ImGui::SliderFloat("Distance", &ChaoDebugDist, 1, 1000);
+                }
+                else {
+                    ChaoDebugDistSelected = NULL;
+                }
 
                 ImGui::EndTabItem();
             }
@@ -366,6 +377,38 @@ static void LightMenu() {
     }
 }
 
+static void ChaoSoundMenu() {
+    static int SoundID = 0x6000;
+    if (ShowChaoSoundMenu && ImGui::Begin("Sound", &ShowChaoSoundMenu)) {
+        ImGui::Text("%x", SoundID);
+        if (ImGui::Button("+")) {
+            SoundID++;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("++")) {
+            SoundID += 0x10;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("-")) {
+            SoundID--;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("--")) {
+            SoundID-= 0x10;
+        }
+
+        if (ImGui::Button("Play")) {
+            PlaySound_XYZ(SoundID, &MainCharObj1[0]->Position, 0, 0, 110);
+        }
+
+        if (ImGui::Button("Stop Music")) {
+            StopMusic();
+        }
+
+        ImGui::End();
+    }
+}
+
 static void TaskListMenu() {
     if (ShowTaskList && ImGui::Begin("Tasks", &ShowTaskList)) {
         for (size_t i = 0; i < ObjectLists_Length; i++) {
@@ -394,10 +437,12 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
             ImGui::MenuItem("Light", NULL, &ShowLight);
             ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
+            ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
             ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
             ImGui::EndMenu();
         }
 
+        ChaoSoundMenu();
         ChaoInfoMenu();
         DayNightMenu();
         LightMenu();
@@ -436,7 +481,14 @@ LRESULT __stdcall WndProcHook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
     return WndProcFunc.Original(hWnd, uMsg, wParam, lParam);
 }
 
+ImGuiKey ImGui_ImplWin32_KeyEventToImGuiKey(WPARAM wParam, LPARAM lParam);
 static void ImGuiDraw() {
+
+    ImGuiIO& io = ImGui::GetIO();
+    for (int i = 0; i < 256; i++) {
+        io.AddKeyEvent(ImGui_ImplWin32_KeyEventToImGuiKey(i, 0), GetAsyncKeyState(i) <  0);
+    }
+
     // Start the Dear ImGui frame
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -475,6 +527,6 @@ void ImGui_Init() {
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
 
-	ImGui_ImplWin32_Init(*(HWND*)0x01933EA8);
+	ImGui_ImplWin32_Init(MainWindowHandle);
 	ImGui_ImplDX9_Init(cwe_device);
 }

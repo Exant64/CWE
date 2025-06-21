@@ -345,6 +345,7 @@
     <ClInclude Include="move.h" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumoback_kumoback.h" />
+    <ClInclude Include="data\debugsphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />

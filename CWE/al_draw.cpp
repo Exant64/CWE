@@ -23,6 +23,7 @@
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
 #include <al_daynight.h>
+#include <data/debugsphere.h>
 #include <api/api_accessory.h>
 #pragma warning(pop)
 
@@ -977,8 +978,42 @@ LABEL_98:
 		DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.sibling);
 }
 
+void OnlyDrawHeadChao(task* tp) {
+	OnlyDrawHead = true;
+	Chao_NodeIndex = 0;
+
+	njSetTexture(&AL_BODY);
+	sub_56E9C0(tp);
+	alpalSetBank(tp, tp->Data1.Entity->Index);
+
+	memcpy(&OnlyDrawHeadMatrix, _nj_current_matrix_ptr_, sizeof(OnlyDrawHeadMatrix));
+
+	DrawChao(tp, GET_CHAOWK(tp)->field_510);
+	OnlyDrawHead = false;
+}
+
+#ifdef IMGUIDEBUG
+	task* ChaoDebugDistSelected = NULL;
+	float ChaoDebugDist = 1.f;
+#endif
+
 static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
 static void Chao_Display_r(task* tp) {
+#ifdef IMGUIDEBUG
+	if (ChaoDebugDistSelected == tp) {
+		njPushMatrixEx();
+		njTranslateEx(&GET_CHAOWK(tp)->entity.Position);
+		njScale(NULL, ChaoDebugDist * 0.1f, ChaoDebugDist * 0.1f, ChaoDebugDist * 0.1f);
+		SaveControl3D();
+		OnControl3D(NJD_CONTROL_3D_CONSTANT_MATERIAL);
+		SetMaterial(1, 1, 1, 1);
+		njCnkDrawObject(&DebugSphere);
+		SetMaterial(0, 0, 0, 0);
+		LoadControl3D();
+		njPopMatrixEx();
+	}
+#endif
+
 	if (!gConfigVal.DayNightCycle) {
 		Chao_Display_t.Original(tp);
 		return;
