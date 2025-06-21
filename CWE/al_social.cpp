@@ -13,6 +13,8 @@
 
 //#define SOCIALDEBUG
 
+#define GET_SOCIALWK(tp) ((socialwk*)tp->Data2.Undefined)
+
 void Social_ErrorCheck(ObjectMaster* a1)
 {
 #ifdef SOCIALDEBUG
@@ -20,96 +22,105 @@ void Social_ErrorCheck(ObjectMaster* a1)
 #endif
 }
 
-//generic "lowlevel" social behavior
-int ALBHV_Social(ObjectMaster* a1)
-{
-	//if finished
-	if (a1->Data1.Chao->Behavior.Mode == 1)//ALOField_Find(a1,1,0xB1))//)
-	{
-		//((chaowk*)a1->Data1)->pAnyTask = nullptr;
-		return 1;
+// the "real" behavior that gets run on chao while the task manages the social behavior system
+// the social task sets the mode here to 1 to finish the social action for the chao
+static int ALBHV_Social(task* tp) {
+	if (GET_CHAOWK(tp)->Behavior.Mode == 1) {
+		return BHV_RET_FINISH;
 	}
-	return 0;
+
+	return BHV_RET_CONTINUE;
 }
 
-void Social_ClearBehavior(ObjectMaster* a1)
-{
-	Social_ErrorCheck(a1);
-	memset(((socialwk*)a1->Data2.Undefined)->bhvFuncs, 0, sizeof(SBHV_FUNCDATA) * SBHVCOUNT);
+static void Social_ClearBehavior(task* tp) {
+	Social_ErrorCheck(tp);
+
+	memset(GET_SOCIALWK(tp)->bhvFuncs, 0, sizeof(SBHV_FUNCDATA) * SBHVCOUNT);
 }
 
-void Social_Clear(ObjectMaster* a1)
-{
-	Social_ErrorCheck(a1);
-	Social_ClearBehavior(a1);
+static void Social_Clear(task* tp) {
+	Social_ErrorCheck(tp);
+	Social_ClearBehavior(tp);
 }
 
-void Social_SetParameter(ObjectMaster* a1, int a2, int param)
-{
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
-	wk->data[a2].parameter1 = param;
+void Social_SetParameter(task* tp, size_t actorIndex, int param) {
+	GET_SOCIALWK(tp)->actorData[actorIndex].parameter1 = param;
 }
 
-void Social_SetActor(ObjectMaster* a1, int a2, ObjectMaster* chao)
-{
-	Social_ErrorCheck(a1);
-	AL_SetBehaviorWithTimer(chao, (int)ALBHV_Social, -1);
-	//((chaowk*)chao->Data1)->pAnyTask = a1;
-	((socialwk*)a1->Data2.Undefined)->data[a2].chaoPointer = chao;
-	((socialwk*)a1->Data2.Undefined)->data[a2].parameter1 = 0;
+void Social_SetActor(task* tp, size_t actorIndex, task* pChao) {
+	Social_ErrorCheck(tp);
+
+	AL_SetBehavior(pChao, ALBHV_Social);
+
+	auto& actorData = GET_SOCIALWK(tp)->actorData[actorIndex];
+	actorData.chaoPointer = pChao;
+	actorData.parameter1 = 0;
 }
 
-void Social_QueueBehavior(ObjectMaster* a1, int a2, SBHV_FUNC func)
-{
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
-	Social_ErrorCheck(a1);
-	if (wk->nbBhvFuncEntry < 18)
-	{
-		wk->bhvFuncs[wk->nbBhvFuncEntry++] = { (unsigned char)a2, func, (char)-1 };
+void Social_QueueBehavior(task* tp, size_t actorIndex, SBHV_FUNC func) {
+	socialwk* wk = GET_SOCIALWK(tp);
+	Social_ErrorCheck(tp);
+
+	if (wk->nbBhvFuncEntry < _countof(wk->bhvFuncs)) {
+		wk->bhvFuncs[wk->nbBhvFuncEntry++] = { actorIndex, func, MAXSIZE_T };
 	}
 }
-void Social_SetSync(ObjectMaster* a1, int a2) //syncs behavior with another actor
-{
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
-	Social_ErrorCheck(a1);
-	if (wk->bhvFuncs[wk->nbBhvFuncEntry - 1].actorindex != a2) //if index is not identical with other actor
-		wk->bhvFuncs[wk->nbBhvFuncEntry - 1].syncindex = a2;  //set sync
+
+// syncs the last set behavior to the specified actor index
+// (both run it at the same time)
+void Social_SetSync(task* tp, size_t actorIndex) {
+	socialwk* wk = GET_SOCIALWK(tp);
+	auto& func = wk->bhvFuncs[wk->nbBhvFuncEntry - 1];
+
+	Social_ErrorCheck(tp);
+
+	// check so that the last behavior's actor isn't the same one we're syncing to it
+	if (func.actorindex != actorIndex) {
+		func.syncindex = actorIndex;
+	}
 }
-void Social_Main(ObjectMaster* a1)
-{
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+
+void Social_SetIdle(task* tp, SBHV_FUNC pFunc) {
+	GET_SOCIALWK(tp)->idleFunc = pFunc;
+}
+
+task* Social_GetActor(task* tp, size_t actorIndex) {
+	return GET_SOCIALWK(tp)->actorData[actorIndex].chaoPointer;
+}
+
+static void Social_Main(task* tp) {
+	socialwk* wk = GET_SOCIALWK(tp);
 	SBHV_FUNCDATA& currFunc = wk->bhvFuncs[wk->CurrBhvFuncNum];
 	bool abort = false;
 
-	for (int i = 0; i < SOCIAL_CHAOCOUNT; i++)
-	{
-		if (wk->data[i].chaoPointer) //chao exists in actor slot
-		{
-			if (AL_GetBehavior(wk->data[i].chaoPointer) != ALBHV_Social) //if any chao changed behavior			
-			{
-				abort = true;
-				break;
-			}
+	for (size_t i = 0; i < SOCIAL_CHAOCOUNT; i++) {
+		task* pChao = wk->actorData[i].chaoPointer;
+		// if the chao changed behavior we need to stop the social
+		if (pChao && AL_GetBehavior(pChao) != ALBHV_Social) {
+			abort = true;
+			break;
 		}
 	}
 
-	//if social doesnt have functions left in queue or aborting
+	// if social doesnt have functions left in queue or aborting
 	if (!currFunc.func || abort) {
-		for (int i = 0; i < SOCIAL_CHAOCOUNT; i++){
-			ObjectMaster* pChao = wk->data[i].chaoPointer;
+		for (size_t i = 0; i < SOCIAL_CHAOCOUNT; i++){
+			task* pChao = wk->actorData[i].chaoPointer;
 
-			if (pChao && AL_GetBehavior(pChao) == ALBHV_Social) //chao exists in actor slot and still in social action
-				pChao->Data1.Chao->Behavior.Mode = 1;//exit
+			// mode 1 causes the ALBHV_Social BHV to end
+			if (pChao && AL_GetBehavior(pChao) == ALBHV_Social) {
+				GET_CHAOWK(pChao)->Behavior.Mode = 1;
+			}
 		}
 
-		//kill
-		a1->MainSub = DeleteObject_;
+		// kill
+		tp->MainSub = DeleteObject_;
 		return;
 	}
 	
-	//idle function for when an actor is not the actor in the current behavior, useful for "listening"
-	for (int i = 0; i < SOCIAL_CHAOCOUNT; i++) {
-		SOCIALDATA& data = wk->data[i];
+	// idle function for when an actor is not the actor in the current behavior, useful for "listening"
+	for (size_t i = 0; i < SOCIAL_CHAOCOUNT; i++) {
+		SOCIAL_ACTOR& data = wk->actorData[i];
 
 		//if the chao is an actor in the scene, or syncing with somebody in the scene, dont run idle
 		if (i == currFunc.actorindex || i == currFunc.syncindex) continue;
@@ -119,41 +130,38 @@ void Social_Main(ObjectMaster* a1)
 	}
 
 	//current running actions actor
-	SOCIALDATA& data = wk->data[currFunc.actorindex];
+	SOCIAL_ACTOR& data = wk->actorData[currFunc.actorindex];
 
 	data.actorIndex = currFunc.actorindex;
 
 	//if function finishes
 	if (currFunc.func(&data) == 1 ||
-		(currFunc.syncindex >= 0 && currFunc.func(&wk->data[currFunc.syncindex]) == 1))
+		(currFunc.syncindex != MAXSIZE_T && currFunc.func(&wk->actorData[currFunc.syncindex]) == 1))
 	{
-		//clear status data for everyone
-		for (int i = 0; i < SOCIAL_CHAOCOUNT; i++)
-			memset(&wk->data[i].bhvStatus, 0, sizeof(SOCIAL_BHVDATA));
+		// clear status data for everyone
+		for (size_t i = 0; i < SOCIAL_CHAOCOUNT; i++) {
+			memset(&wk->actorData[i].bhvStatus, 0, sizeof(SOCIAL_BHVDATA));
+		}
 
 		//go to next function
 		wk->CurrBhvFuncNum++;
 	}
 }
-void Social_SetIdle(ObjectMaster* a1, SBHV_FUNC a2)
-{
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
-	wk->idleFunc = a2;
-}
-ObjectMaster* Social_GetActor(ObjectMaster* a1, int a2)
-{
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
-	return wk->data[a2].chaoPointer;
-}
-ObjectMaster* Social_Create(SBHV_FUNC idleFunc)
-{
-	ObjectMaster* social = LoadObject(5, "AL_Social", Social_Main, (LoadObj)0);
 
-	social->Data2.Undefined = syMalloc(sizeof(socialwk), "al_social.cpp", __LINE__);
-	memset(social->Data2.Undefined, 0, sizeof(socialwk));
+task* Social_Create(SBHV_FUNC idleFunc) {
+	task* social = LoadObject(5, "AL_Social", Social_Main, (LoadObj)0);
 
-	socialwk* wk = (socialwk*)(social->Data2.Undefined);
+	socialwk* wk = ALLOC(socialwk);
+	memset(wk, 0, sizeof(socialwk));
+
+	social->Data2.Undefined = wk;
+
+	for (size_t i = 0; i < SOCIAL_CHAOCOUNT; i++) {
+		wk->actorData[i].socialContext = &wk->socialContext;
+	}
+
 	wk->idleFunc = idleFunc;
+
 	return social;
 }
 

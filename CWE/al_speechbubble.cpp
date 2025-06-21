@@ -25,6 +25,7 @@ enum {
 };
 
 struct speechwk {
+	Uint32 flags;
 	Uint8 mode;
 	task* pChao;
 	float scl;
@@ -336,10 +337,19 @@ static void AL_SpeechBubbleDisplayer(task* tp) {
 
 	SetTextureRenderTargetHack();
 
+	njPushMatrixEx();
 	// preserve aspect ratio of rendertarget + extra downscaling
 	const float sizeMul = 1.25f;
 	njScale(NULL, sizeMul, sizeMul * VerticalResolution / HorizontalResolution, 1);
 	njDrawTexture3DExSetData(SpeechBubbleTex, 4);
+	njPopMatrixEx();
+
+	if (work->flags & SPEECH_BUBBLE_FLAG_DISLIKE) {
+		njTranslate(NULL, 0, 0.25f, 0);
+		njScale(NULL, 0.4f, 0.4f, 1);
+		njSetTextureNum(36);
+		njDrawTexture3DExSetData(SpeechBubbleTex, 4);
+	}
 
 	njPopMatrixEx();
 }
@@ -360,11 +370,16 @@ static void AL_SpeechBubbleExecutor(task* tp) {
 	}
 }
 
-void AL_SpeechBubbleDestructor(task* tp) {
+static void AL_SpeechBubbleDestructor(task* tp) {
 	task* chao = GET_SPEECHWK(tp)->pChao;
 	if (chao) {
 		DeleteObject_(chao);
 	}
+}
+
+void AL_SpeechBubbleSetFlags(task* tp, Uint32 flags) {
+	auto work = GET_SPEECHWK(tp);
+	work->flags = flags;
 }
 
 task* AL_SpeechBubbleCreate(task* pChao, ChaoData* pChaoData, Uint32 entryType, Uint32 entry, eSpeechPos position, Uint32 spawnTimer, Uint32 aliveTimer) {
@@ -376,6 +391,7 @@ task* AL_SpeechBubbleCreate(task* pChao, ChaoData* pChaoData, Uint32 entryType, 
 	speechwk* work = ALLOC(speechwk);
 	obj->Data2.Undefined = work;
 
+	work->flags = 0;
 	work->mode = SPEECH_MD_SPAWN;
 	work->pChao = NULL;
 	work->scl = 0.f;

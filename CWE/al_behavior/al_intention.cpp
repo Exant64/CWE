@@ -35,7 +35,6 @@ float AL_CalcScoreTypeA(int value, int trigger) {
 
 extern int ALBHV_HoldHands_Left(ObjectMaster* a1);
 extern int ALBHV_HoldHands_Right(ObjectMaster* a1);
-extern void ALBHV_Gossip(ObjectMaster* a1, ObjectMaster* a2);
 
 const BHV_FUNC ALBHV_TalkAllowed[] = {
 	(BHV_FUNC)0x5A3580, (BHV_FUNC)0x5A3460, (BHV_FUNC)0x5A3380, (BHV_FUNC)0x5A3280, //walking bhavs

@@ -21,4 +21,9 @@ enum {
 	NB_SPEECH_ENTRY,
 };
 
+enum {
+	SPEECH_BUBBLE_FLAG_DISLIKE = BIT_0
+};
+
+void AL_SpeechBubbleSetFlags(task* tp, Uint32 flags);
 task* AL_SpeechBubbleCreate(task* pChao, ChaoData* pChaoData, Uint32 entryType, Uint32 entry, eSpeechPos position, Uint32 spawnTimer, Uint32 aliveTimer);
