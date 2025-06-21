@@ -419,6 +419,7 @@
     <ClInclude Include="data\ChaoShaderDayNight.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
     <ClInclude Include="data\cwe\object_common_cnk\ali_all.h" />
+    <ClInclude Include="data\debugsphere.h" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumoback_kumoback.h" />
     <ClInclude Include="data\lens\LensBoxJewel.h" />
     <ClInclude Include="data\lens\LensModels.h" />
