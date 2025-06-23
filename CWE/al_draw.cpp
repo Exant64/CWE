@@ -978,20 +978,6 @@ LABEL_98:
 		DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.sibling);
 }
 
-void OnlyDrawHeadChao(task* tp) {
-	OnlyDrawHead = true;
-	Chao_NodeIndex = 0;
-
-	njSetTexture(&AL_BODY);
-	sub_56E9C0(tp);
-	alpalSetBank(tp, tp->Data1.Entity->Index);
-
-	memcpy(&OnlyDrawHeadMatrix, _nj_current_matrix_ptr_, sizeof(OnlyDrawHeadMatrix));
-
-	DrawChao(tp, GET_CHAOWK(tp)->field_510);
-	OnlyDrawHead = false;
-}
-
 #ifdef IMGUIDEBUG
 	task* ChaoDebugDistSelected = NULL;
 	float ChaoDebugDist = 1.f;
