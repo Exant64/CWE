@@ -81,8 +81,6 @@ void AL_SetRareMaterial(ObjectMaster* a1, NJS_CNK_MODEL* model);
 void __cdecl DrawEggChao(ObjectMaster* a1);
 void AL_DrawToy(ChunkObjectPointer* chunkObjectPointer);
 
-void OnlyDrawHeadChao(task* tp);
-
 extern task* ChaoDebugDistSelected;
 extern float ChaoDebugDist;
 
