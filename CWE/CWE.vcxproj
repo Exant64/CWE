@@ -325,6 +325,7 @@
     <ClInclude Include="al_behavior\alsbhv.h" />
     <ClInclude Include="al_behavior\al_behavior.h" />
     <ClInclude Include="al_chao_counter.h" />
+    <ClInclude Include="al_daynight_rain.h" />
     <ClInclude Include="al_edit.h" />
     <ClInclude Include="al_emotion.h" />
     <ClInclude Include="al_face.h" />
@@ -582,6 +583,7 @@
     <ClCompile Include="al_behavior\alsbhv_hug.cpp" />
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
+    <ClCompile Include="al_daynight_rain.cpp" />
     <ClCompile Include="al_ode_mainmenubar.cpp" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
     <ClCompile Include="imgui\imgui.cpp">

@@ -26,6 +26,7 @@
 #include <brightfixapi.h>
 
 #include "renderfix.h"
+#include <al_daynight_rain.h>
 
 #pragma region Save
 
@@ -49,6 +50,10 @@ uint32_t& AL_DayNightCycle_GetSaveCurrentPhase() {
 
 bool& AL_DayNightCycle_GetSaveNextDayCloudy() {
 	return gDayNightSave.nextDayCloudy;
+}
+
+bool& AL_DayNightCycle_GetSaveIsRain() {
+	return gDayNightSave.isRain;
 }
 
 #pragma endregion
@@ -180,13 +185,31 @@ static const char* AL_DayNightCycle_GetGardenID() {
 // Manages the loaded JSON data, contains vectors of said data so that I don't lose my sanity with writing memory management
 struct DAYNIGHT_DATA_MANAGER {
 private:
+	const bool m_defaultRainSetting = true;
+	const NJS_ARGB m_defaultRainColor = {
+		.a = 1,
+		.r = 0.65f,
+		.g = 0.65f,
+		.b = 0.65f
+	};
+
 	std::optional<std::string> m_textureFileName = std::nullopt;
 	std::vector<DAYNIGHT_SKYBOX> m_skyboxEntries;
 	NJS_ARGB m_phaseColors[NB_PHASE];
 	std::optional<LightGC> m_lights[NB_PHASE];
 	std::optional<size_t> m_shinyTextureIndices[NB_PHASE];
+	bool m_hasRain;
+	NJS_ARGB m_rainColor;
 
 public:
+	const bool HasRain() const {
+		return m_hasRain;
+	}
+
+	const NJS_ARGB& GetRainColor() const {
+		return m_rainColor;
+	}
+
 	const std::optional<std::string>& GetTextureFileName() const {
 		return m_textureFileName;
 	}
@@ -344,6 +367,30 @@ public:
 			else {
 				m_textureFileName = std::string(member.GetString());
 			}
+		}
+
+		if (d.HasMember("hasRain")) {
+			const auto& member = d["hasRain"];
+			if (!member.IsBool()) {
+				error.print("\"hasRain\" is not a bool!");
+				return false;
+			}
+			else {
+				m_hasRain = member.GetBool();
+			}
+		}
+		else {
+			m_hasRain = m_defaultRainSetting;
+		}
+
+		if (d.HasMember("rainColor")) {
+			const auto& member = d["rainColor"];
+			if (!parseColor(member, m_rainColor)) {
+				return false;
+			}
+		}
+		else {
+			m_rainColor = m_defaultRainColor;
 		}
 
 		// parse skybox materials (if there are any
@@ -526,6 +573,9 @@ public:
 	}
 
 	void Clear() {
+		m_hasRain = m_defaultRainSetting;
+		m_rainColor = m_defaultRainColor;
+
 		m_textureFileName = std::nullopt;
 		m_skyboxEntries.clear();
 		
@@ -1415,7 +1465,9 @@ static void AL_DayNightCycle_StoreIntoSave(task* tp) {
 	AL_DayNightCycle_GetSaveCurrentPhase() = work.phase;
 	AL_DayNightCycle_GetSaveTime() = work.timer / float(AL_DayNightCycle_GetDayFrameCount());
 	AL_DayNightCycle_GetSaveCurrentDay() = work.day;
+	AL_DayNightCycle_GetSaveCurrentDay() = work.day;
 	AL_DayNightCycle_GetSaveNextDayCloudy() = work.nextDayCloudy;
+	AL_DayNightCycle_GetSaveIsRain() = work.isRain;
 }
 
 struct DAYNIGHT_TIME_CONFIG {
@@ -1456,6 +1508,24 @@ static uint32_t AL_DayNightCycle_GetStartHourForPhase(uint32_t phase) {
 	return dayNightTimeConfig[phase].hour;
 }
 
+// creates rain, with timer calculated to current time (passed in as parameter)
+// note: assumes current phase is cloudy!!!
+static void AL_DayNightCycle_CreateRain(Uint32 timer) {
+	const auto& rainColor = gDayNightManager.GetRainColor();
+	const NJS_COLOR spawnRainColor = {
+		.argb = {
+			.b = Uint8(rainColor.b * 255.f),
+			.g = Uint8(rainColor.g * 255.f),
+			.r = Uint8(rainColor.r * 255.f),
+			.a = 0xFF, // alpha (doesn't matter, rain overrides it)
+		}
+	};
+
+	// subtracts time it takes for cloudy phase to finish (psuedo day phase) by how much time has passed since the start of the phase
+	const Uint32 rainTimer = AL_DayNightCycle_GetFramesBetweenPhases(PHASE_DAY, PHASE_NGT) - AL_DayNightCycle_GetTimerRelativeToPhase(timer, PHASE_DAY);
+	AL_CreateDayNightRain(rainTimer, spawnRainColor.color);
+}
+
 void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork) {
 	const size_t hourFrames = pInfo->GetHourFrameCount();
 	
@@ -1474,11 +1544,21 @@ void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, 
 	// if the current phase became night let's decide whether cloudy will come after night
 	if (pWork->phase == PHASE_NGT) {
 		pWork->nextDayCloudy = njRandom() < 0.5f;
+		pWork->nextDayCloudy = TRUE;
 	}
 
 	// if the current phase became day then the next phase is either day or cloudy
 	if (pWork->phase == PHASE_DAY) {
 		pWork->phase = pWork->nextDayCloudy ? PHASE_CLD : PHASE_DAY;
+	}
+
+	// if the current phase became cloudy then spawn the rain on random percent chance
+	if (pWork->phase == PHASE_CLD) {
+		pWork->isRain = njRandom() < 0.5f;
+
+		if (pWork->isRain && gDayNightManager.HasRain()) {
+			AL_DayNightCycle_CreateRain(pInfo->timer);
+		}
 	}
 }
 
@@ -1529,7 +1609,7 @@ static void AL_DayNightCycle_DarkGardenRenderHandler(const DAYNIGHT_TIME_INFO* p
 static void AL_DayNightCycleExecutor(task* tp) {
 	enum {
 		MODE_INIT = 0,
-		MODE_IDLE
+		MODE_ACTIVE
 	};
 
 	auto& work = GetWork(tp);
@@ -1537,44 +1617,13 @@ static void AL_DayNightCycleExecutor(task* tp) {
 	switch (work.mode) {
 	case MODE_INIT:
 		AL_DayNightCycle_Init(tp);
-		work.mode = MODE_IDLE;
 
-#if 0
-		// this is temporary, enable when porting the lights, remove in final release
-		// load the lights we want and copy them
-		{
-			// this daynightconfig thing is temp for now too
-			const AL_DayNightConfig& config = gDayNightConfig.at(CurrentChaoArea);
-
-			LoadStageLight(config.DefaultLight);
-			memcpy(&work.lights[LIGHT_DEF], Lights, sizeof(work.lights[LIGHT_DEF]));
-			//LoadStageLight(config.EveLight);
-			//memcpy(&work.lights[LIGHT_EVE], Lights, sizeof(work.lights[LIGHT_EVE]));
-			//LoadStageLight(config.NightLight);
-			//memcpy(&work.lights[LIGHT_NGT], Lights, sizeof(work.lights[LIGHT_NGT]));
-			LoadStageLight(config.CloudLight);
-			memcpy(&work.lights[LIGHT_CLOUD], Lights, sizeof(work.lights[LIGHT_CLOUD]));
+		// if the save indicates it's supposed to be rain it, spawn it on daynight creation
+		if (work.phase == PHASE_CLD && work.isRain) {
+			AL_DayNightCycle_CreateRain(work.timer);
 		}
-		{
-			const auto dump = [&](Light& light) {
-				PrintDebug("\"light\": {");
-				PrintDebug("\t\"direction\": [%f, %f, %f]", light.direction.x, light.direction.y, light.direction.z);
-				PrintDebug("\t\"diffuse\": [%f, %f, %f]", light.color.x * light.intensity, light.color.y * light.intensity, light.color.z * light.intensity);
-				PrintDebug("\t\"ambient\": [%f, %f, %f]", light.color.x * light.ambient, light.color.y * light.ambient, light.color.z * light.ambient);
-				PrintDebug("}");
-				};
 
-			PrintDebug("JSON LIGHT DUMP STARTS HERE");
-			PrintDebug("day");
-			dump(work.lights[PHASE_DAY][0]);
-			PrintDebug("evening");
-			//dump(work.lights[PHASE_EVE][0]);
-			PrintDebug("night");
-			//dump(work.lights[PHASE_NGT][0]);
-			PrintDebug("cloudy");
-			dump(work.lights[PHASE_CLD][0]);
-		}
-#endif
+		work.mode = MODE_ACTIVE;
 
 		break;
 	}
@@ -1598,7 +1647,8 @@ static void AL_DayNightCycleExecutor(task* tp) {
 		
 		DAYNIGHT_TIME_WORK timeWork = {
 			.phase = work.phase,
-			.nextDayCloudy = work.nextDayCloudy
+			.nextDayCloudy = work.nextDayCloudy,
+			.isRain = work.isRain
 		};
 
 		AL_DayNightCycle_GenericGardenTimeHandler(&timeInfo, &timeWork);
@@ -1606,9 +1656,11 @@ static void AL_DayNightCycleExecutor(task* tp) {
 		// copy "output" of API function
 		work.phase = timeWork.phase;
 		work.nextDayCloudy = timeWork.nextDayCloudy;
+		work.isRain = timeWork.isRain;
 
 		timeInfo.phase = timeWork.phase;
 		timeInfo.nextDayCloudy = timeWork.nextDayCloudy;
+		timeInfo.isRain = timeWork.isRain;
 
 		work.timer++;
 		if (work.timer >= AL_DayNightCycle_GetDayFrameCount()) {
@@ -1952,6 +2004,7 @@ void AL_CreateDayNightCycle() {
 	work.phase = AL_DayNightCycle_GetSaveCurrentPhase();
 	work.day = AL_DayNightCycle_GetSaveCurrentDay();
 	work.nextDayCloudy = AL_DayNightCycle_GetSaveNextDayCloudy();
+	work.isRain = AL_DayNightCycle_GetSaveIsRain();
 
 	if (work.day == 0 && work.timer == 0) {
 		// start at day for new save, 1 + to prevent the code trying to transition unnecessarily on the first frame
