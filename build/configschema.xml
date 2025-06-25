@@ -173,6 +173,15 @@
       <Property name="FixHeroSky" type="bool" defaultvalue="True" display= "Vanilla Hero Garden Skybox Fix">
         <HelpText>Ports over the GameCube skybox model for the clouds to fix the texture.</HelpText>
       </Property>
+      <Property name="NeutSet" type="bool" defaultvalue="True" display= "Different Neutral Garden Object Layout">
+        <HelpText>Enables the modified Neutral Garden object layout (changes the location of plants and other miscellaneous objects).</HelpText>
+      </Property>
+      <Property name="HeroSet" type="bool" defaultvalue="True" display= "Different Hero Garden Object Layout">
+        <HelpText>Enables the modified Hero Garden object layout (changes the location of plants, pillars, etc).</HelpText>
+      </Property>
+      <Property name="DarkSet" type="bool" defaultvalue="True" display= "Different Dark Garden Object Layout">
+        <HelpText>Enables the modified Dark Garden object layout (changes the location of fences and other miscellaneous objects).</HelpText>
+      </Property>
       <Property name="SaveMultiSavefile" type="bool" defaultvalue="False" display= "Multi Savefile">
         <HelpText>Each SA2 save also includes its own Chao World file instead of using one file universally.</HelpText>
       </Property>
