@@ -136,6 +136,7 @@ VoidFunc(LoadConstantAttr, 0x446CD0);
 void OnControl3D(int flag);
 void OffControl3D(int flag);
 void OnConstantAttr(int soc_and, int soc_or);
+void OffConstantAttr(int soc_and, int soc_or);
 
 FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
 FunctionPointer(void, sub_781CB0, (int a1), 0x781CB0);
