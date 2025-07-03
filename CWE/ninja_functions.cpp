@@ -34,6 +34,10 @@ void OnConstantAttr(int soc_and, int soc_or)
 	}
 }
 
+void OffConstantAttr(int soc_and, int soc_or) {
+	*(int*)0x025F02D4 &= ~soc_and;
+	*(int*)0x025F0268 &= ~soc_or;
+}
 
 const int njColorBlendingModePtr = 0x00426420;
 void njColorBlendingMode(int a1, int a2) {
