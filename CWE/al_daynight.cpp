@@ -582,7 +582,7 @@ void AL_DayNightCycle_SetLerpShinyTexture() {
 	const auto& work = GetWork(pDayNightTask);
 	if (!work.pTexlist) return;
 
-	SetPixelShaderFloat(79, work.lerpValue);
+	SetPixelShaderFloat(82, work.lerpValue);
 }
 
 void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID) {
@@ -591,7 +591,7 @@ void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID) {
 	AL_BODY.textures[34].texaddr = texID;
 
 	// reset the lerp value
-	SetPixelShaderFloat(79, 0);
+	SetPixelShaderFloat(82, 0);
 }
 
 #pragma endregion
