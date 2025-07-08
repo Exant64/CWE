@@ -196,7 +196,7 @@ void CWE_ShinyCheck(int shiny)
 void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewelMonotone, NJS_CNK_MODEL* model)
 {
 	// if the chao is shiny twotone, or shiny monotone apply the lerp
-	if (!shinyJewelMonotone && (shiny == 2 || (shiny && monotone))) {
+	if (shiny == 2 || (shiny && monotone)) {
 		AL_DayNightCycle_SetLerpShinyTexture();
 	}
 
