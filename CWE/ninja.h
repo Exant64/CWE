@@ -1148,6 +1148,33 @@ typedef struct {
 	void            *null;
 } NJS_MODEL_SADX;
 
+struct SA2B_ParameterData
+{
+	char ParameterType;		/* Mesh parameter ID										   */
+	char null[3];
+	Uint32 Data;			/* Specific usage depends on parameter type, always four bytes */
+};
+
+struct SA2B_PositionData
+{
+	NJS_POINT3	position;
+};
+
+struct SA2B_NormalData
+{
+	NJS_VECTOR	normal;
+};
+
+struct SA2B_Color0Data
+{
+	NJS_COLOR	color;
+};
+
+struct SA2B_Tex0Data
+{
+	NJS_TEX		uv;
+};
+
 struct SA2B_VertexData
 {
 	char DataType; // 1 = Vertex, 3 = VColor?, 5 = UV?, 0xFF = end list
@@ -1160,9 +1187,9 @@ struct SA2B_VertexData
 
 struct SA2B_GeometryData
 {
-	int* ParameterOffset;
+	SA2B_ParameterData* ParameterOffset;
 	int   ParameterCount;
-	char* PrimitiveOffset;
+	Uint8* PrimitiveOffset;
 	int   PrimitiveCount;
 };
 

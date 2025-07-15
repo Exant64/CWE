@@ -145,6 +145,7 @@
     <ClCompile Include="api\api_metadata.cpp" />
     <ClCompile Include="save\save_item.cpp" />
     <ClCompile Include="al_garden_info.cpp" />
+    <ClCompile Include="move.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -337,6 +338,11 @@
     <ClInclude Include="imgui_debug.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
     <ClInclude Include="imgui_debug_motionstrings.h" />
+    <ClInclude Include="data\al_namefontspace.h" />
+    <ClInclude Include="move.h" />
+    <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
+    <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumoback_kumoback.h" />
+    <ClInclude Include="data\debugsphere.h" />
     <ClInclude Include="api\api_metadata.h" />
     <ClInclude Include="api\api_accessory.h" />
     <ClInclude Include="save\save_item.h" />

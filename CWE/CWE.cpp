@@ -83,6 +83,9 @@
 #include <kce_helper.h>
 #include <renderfix.h>
 
+#include <data/heroskyboxfix/object_ghero_nk_kumoback_kumoback.h>
+#include <data/heroskyboxfix/object_ghero_nk_kumofront_kumofront.h>
+
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
@@ -304,7 +307,7 @@ extern "C"
 		}
 	}
 	
-	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions)
+	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex)
 	{
 		if (helperFunctions.Version < ModLoaderVer) {
 			MessageBoxA(
@@ -406,6 +409,10 @@ extern "C"
 		gConfigVal.DoctorChaoInfo = config->getBool("Detail", "DetailDoctorChaogivemoreInformationEN", false);
 
 		//Misc
+		gConfigVal.FixHeroSky = config->getBool("Misc", "FixHeroSky", true);
+		gConfigVal.NeutSet = config->getBool("Misc", "NeutSet", true);
+		gConfigVal.HeroSet = config->getBool("Misc", "HeroSet", true);
+		gConfigVal.DarkSet = config->getBool("Misc", "DarkSet", true);
 		gConfigVal.TransporterColor = config->getBool("Misc", "TransporterColor", true);
 		gConfigVal.ChaoCounter = config->getBool("Misc", "BonusChaoCounter", false);
 		gConfigVal.KeepAnimalParts = config->getBool("Misc", "KeepAnimalParts", false);
@@ -439,6 +446,32 @@ extern "C"
 		if (gConfigVal.DayNightCycleHourFrame <= 0) {
 			MessageBoxA(0, "Day Night Cycle's \"In-Game Hour In Real-Life Seconds\" option cannot be set to zero or lower! Temporarily resetting setting to default.", "Chao World Extended", 0);
 			gConfigVal.DayNightCycleHourFrame = 60 * 60;
+		}
+
+		if (gConfigVal.FixHeroSky) {
+			*(NJS_OBJECT*)GetDllData("object_ghero_nk_kumofront_kumofront") = object_ghero_nk_kumofront_kumofront;
+			*(NJS_OBJECT*)GetDllData("object_ghero_nk_kumoback_kumoback") = object_ghero_nk_kumoback_kumoback;
+		}
+
+		if (gConfigVal.NeutSet) {
+			const std::string dstSetUPath = path + std::string("\\gd_PC\\set_chao_neut_u_cwe.bin");
+			const std::string dstSetSPath = path + std::string("\\gd_PC\\set_chao_neut_s_cwe.bin");
+			helperFunctions.ReplaceFileAtIndex("resource\\gd_PC\\set_chao_neut_u.bin", dstSetUPath.c_str(), modIndex);
+			helperFunctions.ReplaceFileAtIndex("resource\\gd_PC\\set_chao_neut_s.bin", dstSetSPath.c_str(), modIndex);
+		}
+
+		if (gConfigVal.HeroSet) {
+			const std::string dstSetUPath = path + std::string("\\gd_PC\\set_chao_hero_u_cwe.bin");
+			const std::string dstSetSPath = path + std::string("\\gd_PC\\set_chao_hero_s_cwe.bin");
+			helperFunctions.ReplaceFileAtIndex("resource\\gd_PC\\set_chao_hero_u.bin", dstSetUPath.c_str(), modIndex);
+			helperFunctions.ReplaceFileAtIndex("resource\\gd_PC\\set_chao_hero_s.bin", dstSetSPath.c_str(), modIndex);
+		}
+
+		if (gConfigVal.DarkSet) {
+			const std::string dstSetUPath = path + std::string("\\gd_PC\\set_chao_dark_u_cwe.bin");
+			const std::string dstSetSPath = path + std::string("\\gd_PC\\set_chao_dark_s_cwe.bin");
+			helperFunctions.ReplaceFileAtIndex("resource\\gd_PC\\set_chao_dark_u.bin", dstSetUPath.c_str(), modIndex);
+			helperFunctions.ReplaceFileAtIndex("resource\\gd_PC\\set_chao_dark_s.bin", dstSetSPath.c_str(), modIndex);
 		}
 
 		//compatbility fix for animal part texture mods that are compatible with 9.5.2.6

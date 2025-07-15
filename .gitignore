@@ -7,6 +7,7 @@ build/CWE.exp
 build/CWE.lib
 build/mod.version
 build/mod.manifest
+build/config.ini
 
 # User-specific files
 *.suo

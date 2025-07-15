@@ -23,6 +23,7 @@
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
 #include <al_daynight.h>
+#include <data/debugsphere.h>
 #include <api/api_accessory.h>
 #pragma warning(pop)
 
@@ -192,10 +193,21 @@ void CWE_ShinyCheck(int shiny)
 		BrightFixPlus_ShinyCheck(shiny);
 }
 
+// this stupid bs is a hack to fix negative chao not working properly with the daynight cycle shiny lerping
+static NJS_TEXLIST* BackupShinyTexlist = NULL;
+static void BackupAndSetShinyTexture() {
+	BackupShinyTexlist = _nj_curr_ctx_->texlist;
+	njSetTexture(&AL_BODY);
+}
+
+static void RestoreShinyTexture() {
+	njSetTexture(BackupShinyTexlist);
+}
+
 void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewelMonotone, NJS_CNK_MODEL* model)
 {
 	// if the chao is shiny twotone, or shiny monotone apply the lerp
-	if (!shinyJewelMonotone && (shiny == 2 || (shiny && monotone))) {
+	if ((gConfigVal.ForceShinyTT && shiny) || shiny == 2 || (shiny && monotone)) {
 		AL_DayNightCycle_SetLerpShinyTexture();
 	}
 
@@ -204,7 +216,11 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 		int flag = SecondTextureEnvironmentMap | HasSecondTexture | DontUseTexture;
 		ChunkMatEnable = 1;
 		SetChunkTexIndexPrimary(17 + texture, 1, 1);
+
+		BackupAndSetShinyTexture();
 		SetChunkTexIndexSecondary(34, 0, 1);
+		RestoreShinyTexture();
+
 		SetPixelShaderFloat(78, 1);
 		
 		if (color)
@@ -233,10 +249,12 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 
 		//HACK: !texture is to fix a problem regarding Shiny jewel monotones
 		//todo: check if this hack is actually still needed lol
+		BackupAndSetShinyTexture();
 		if (monotone && !texture)
 			SetChunkTexIndexPrimary(34, 1, 1);
 		else
 			SetChunkTexIndexSecondary(34, 1, 1);
+		RestoreShinyTexture();
 	}
 	else if (texture > 0)
 	{
@@ -944,8 +962,28 @@ LABEL_98:
 		DrawChao(a1, (ChunkObjectPointer*)chunkObjectPointer->base.sibling);
 }
 
+#ifdef IMGUIDEBUG
+	task* ChaoDebugDistSelected = NULL;
+	float ChaoDebugDist = 1.f;
+#endif
+
 static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
 static void Chao_Display_r(task* tp) {
+#ifdef IMGUIDEBUG
+	if (ChaoDebugDistSelected == tp) {
+		njPushMatrixEx();
+		njTranslateEx(&GET_CHAOWK(tp)->entity.Position);
+		njScale(NULL, ChaoDebugDist * 0.1f, ChaoDebugDist * 0.1f, ChaoDebugDist * 0.1f);
+		SaveControl3D();
+		OnControl3D(NJD_CONTROL_3D_CONSTANT_MATERIAL);
+		SetMaterial(1, 1, 1, 1);
+		njCnkDrawObject(&DebugSphere);
+		SetMaterial(0, 0, 0, 0);
+		LoadControl3D();
+		njPopMatrixEx();
+	}
+#endif
+
 	if (!gConfigVal.DayNightCycle) {
 		Chao_Display_t.Original(tp);
 		return;

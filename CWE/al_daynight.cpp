@@ -582,7 +582,7 @@ void AL_DayNightCycle_SetLerpShinyTexture() {
 	const auto& work = GetWork(pDayNightTask);
 	if (!work.pTexlist) return;
 
-	SetPixelShaderFloat(79, work.lerpValue);
+	SetPixelShaderFloat(82, work.lerpValue);
 }
 
 void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID) {
@@ -591,7 +591,7 @@ void AL_DayNightCycle_PostDrawSetupShinyTexture(const Uint32 texID) {
 	AL_BODY.textures[34].texaddr = texID;
 
 	// reset the lerp value
-	SetPixelShaderFloat(79, 0);
+	SetPixelShaderFloat(82, 0);
 }
 
 #pragma endregion
@@ -669,8 +669,8 @@ static bool AL_DayNightCycle_ChangeTextures(DAYNIGHT_SKYBOX_TABLE& skybox, int p
 
 	for (size_t t = 0; t < skybox.texMapCount; t++) {
 		const auto changeTexGC = [](uint32_t& data, uint32_t texID) {
-			data &= 0xFFFF0000;
-			data |= texID;
+			data &= ~0x1FFF;
+			data |= (texID & 0x1FFF);
 		};
 
 		const auto changeTexChunk = [](uint16_t& data, uint32_t texID) {
@@ -865,8 +865,8 @@ static void dumpGjParameter(const SA2B_Model* pModel) {
 	const auto test = [](SA2B_GeometryData* geom, int count) {
 		for (size_t i = 0; i < count; i++) {
 			for (size_t j = 0; j < geom[i].ParameterCount; j++) {
-				if (geom[i].ParameterOffset[j * 2] == 8) {
-					PrintDebug("PARAM TEX %x", geom[i].ParameterOffset[j * 2 + 1]);
+				if (geom[i].ParameterOffset[j].ParameterType == 8) {
+					PrintDebug("PARAM TEX %x", geom[i].ParameterOffset[j].Data);
 				}
 			}
 		}
@@ -895,8 +895,8 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 		uint32_t* pTexID = NULL;
 
 		for (size_t i = 0; i < pGeo->ParameterCount; i++) {
-			uint32_t* para = reinterpret_cast<uint32_t*>(&pGeo->ParameterOffset[i * 2]);
-			const auto type = reinterpret_cast<const uint8_t*>(para)[0];
+			auto& para = pGeo->ParameterOffset[i];
+			const auto type = para.ParameterType;
 
 #ifndef _DEBUG
 			if (pSkyboxEntry && pLightingParameter) {
@@ -905,15 +905,15 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 #endif
 
 			if (type == 2) { //"lighting" parameter type
-				pLightingParameter = &para[1];
-				origLightingParameter = para[1];
+				pLightingParameter = &para.Data;
+				origLightingParameter = para.Data;
 			}
 
 			if (type == 8) { // "texture" parameter type
-				const auto texID = para[1] & 0xFFFF;
+				const auto texID = para.Data & 0xFFFF;
 				textureParamCount++;
 
-				pTexID = &para[1];
+				pTexID = &para.Data;
 
 				const DAYNIGHT_SKYBOX* pResultSkyboxEntry;
 				if (AL_DayNightCycle_FindSkyboxTexID(texID, &pResultSkyboxEntry)) {
@@ -1777,20 +1777,44 @@ static void AL_DayNightCycle_SetTexturesAndTexlist(task* tp, DAYNIGHT_SKYBOX_TAB
 	}
 }
 
-
-static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phase) {
+static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phaseA, int phaseB) {
 	auto& work = GetWork(tp);
 
 	for (size_t i = 0; i < work.skyboxCount; i++) {
 		auto& skybox = work.pSkyboxTable[i];
 		
-		SetMaterial(alpha, 1, 1, 1);
-		gjSetDiffuse(0xFFFFFFFF);
+		const auto draw_skybox = [&](float alpha, int phase) {
+			SetMaterial(alpha, 1, 1, 1);
+			gjSetDiffuse(0xFFFFFFFF);
 
-		AL_DayNightCycle_SetTexturesAndTexlist(tp, skybox, phase);
+			AL_DayNightCycle_SetTexturesAndTexlist(tp, skybox, phase);
 
-		if (skybox.isChunk) njCnkDrawObject(skybox.pObj);
-		else gjDrawObject(skybox.pObj);
+			if (skybox.isChunk) njCnkDrawObject(skybox.pObj);
+			else gjDrawObject(skybox.pObj);
+		};
+
+		// hack to restore hero garden skybox rotation
+		const auto backupEval = skybox.pObj->evalflags;
+		skybox.pObj->evalflags &= ~NJD_EVAL_UNIT_POS;
+		skybox.pObj->evalflags &= ~NJD_EVAL_UNIT_ANG;
+		skybox.pObj->evalflags &= ~NJD_EVAL_UNIT_SCL;
+
+		// opaque pass
+		// we don't want it to be alpha tested though 
+		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_AUTO_TRANS);
+
+		draw_skybox(1.f, phaseA);
+
+		// transparent pass
+		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_TRANSPARENT);
+
+		OnConstantAttr(0, NJD_FST_UA);
+
+		draw_skybox(alpha, phaseB);
+
+		OffConstantAttr(0, NJD_FST_UA);
+		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_END);
+		skybox.pObj->evalflags = backupEval;
 	}
 }
 
@@ -1817,13 +1841,21 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 	// landtables use this light index for some reason
 	DoLighting(2); 
 
-	njColorBlendingMode(0, NJD_COLOR_BLENDING_SRCALPHA);
-	njColorBlendingMode(1, NJD_COLOR_BLENDING_INVSRCALPHA);
-
 	SaveControl3D();
 	SaveConstantAttr();
 
-	EnableAlpha(0);
+	int backupblend = nj_cnk_blend_mode;
+	nj_cnk_blend_mode = NJD_FBS_SA | NJD_FBD_ISA; // source alpha to inverse source alpha blending
+	OnControl3D(NJD_CONTROL_3D_CNK_BLEND_MODE);
+
+	// we don't reset these, as far as i know this is the default anyways
+	// but i set it incase anything does something fucky before this
+	njColorBlendingMode(NJD_SOURCE_COLOR, NJD_COLOR_BLENDING_SRCALPHA);
+	njColorBlendingMode(NJD_DESTINATION_COLOR, NJD_COLOR_BLENDING_INVSRCALPHA);
+	// this sets blending based on the values set in njColorBlendingMode
+	// this is only needed for ginja skyboxes which doesn't have the "nj_cnk_blend_mode" overrides
+	// we disable the ginja blendmode set outside of this function, and force it once here
+	EnableAlpha(1);
 
 	// in object list 1, transparent and opaque GJ geo has to be drawn separately 
 	// so we have to reenable the normal functionality to draw both at once
@@ -1839,27 +1871,18 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 
 	// HACK: we need to temporarily kill the GJ blend mode stuff so it doesn't overwrite out alpha blend
 	uint32_t& blendModeGinjaFunc = *(uint32_t*)0x0174B344;
-	uint32_t blendModeGinjaFuncBackup = blendModeGinjaFunc;
+	const uint32_t blendModeGinjaFuncBackup = blendModeGinjaFunc;
 	blendModeGinjaFunc = (int)nullsub_1;
 
-	// opaque pass
-	AL_DayNightCycleDrawSkyboxes(tp, 1.0f, work.phaseA);
-
-	// transparent pass
-	// RF API to handle setting the Z buffer modes appropriately for alpha rendering
-	rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_TRANSPARENT);
-
-	OnConstantAttr(0, NJD_FST_UA);
-
-	int backupblend = nj_cnk_blend_mode;
-	nj_cnk_blend_mode = NJD_FBS_SA | NJD_FBD_ISA; // source alpha to inverse source alpha blending
-
-	OnControl3D(NJD_CONTROL_3D_CNK_BLEND_MODE);
-
-	EnableAlpha(1);
-	AL_DayNightCycleDrawSkyboxes(tp, work.lerpValue, work.phaseB);
-
-	nj_cnk_blend_mode = backupblend;
+	// hack to sorta make the transition less obvious
+	// the only real fix for this is to use shaders, the "alpha dependent" lerping effect
+	// breaks with textures that have transparent pixels (cloud borders on hero garden)
+	if (work.lerpValue < 0.5f) {
+		AL_DayNightCycleDrawSkyboxes(tp, work.lerpValue, work.phaseA, work.phaseB);
+	}
+	else {
+		AL_DayNightCycleDrawSkyboxes(tp, 1.f - work.lerpValue, work.phaseB, work.phaseA);
+	}
 
 	LoadControl3D();
 	LoadConstantAttr();
@@ -1868,11 +1891,10 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 
 	SetMaterial(0, 0, 0, 0);
 
-	rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_END);
-
 	njColorBlendingMode(0, 8);
 	njColorBlendingMode(1, 6);
 
+	nj_cnk_blend_mode = backupblend;
 	GinjaDrawFlag = backupGinjaDrawFlag;
 
 	DoLighting(LightIndexBackupMaybe);

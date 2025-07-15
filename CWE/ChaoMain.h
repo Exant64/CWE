@@ -53,6 +53,9 @@ struct ConfigValues {
 	bool OmochaoParts = false;
 	bool UnusedToys = false;
 	bool SpawnOmochao = true;
+
+	bool NeutSet, HeroSet, DarkSet;
+
 	bool ToyMove, ToyReset;
 	bool NewInventory;
 	bool DoctorChaoInfo;
@@ -63,6 +66,8 @@ struct ConfigValues {
 	bool DisableArmsLegs;
 	bool DisableAllParts;
 	bool FixMonsterEvo;
+
+	bool FixHeroSky;
 };
 extern ConfigValues gConfigVal;
 

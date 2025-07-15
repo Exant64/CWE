@@ -7,8 +7,9 @@
 #define SA2MODLOADER_SA2MODINFO_H
 
 #include "SA2Structs.h"
+#include <string>
 
-static const int ModLoaderVer = 13;
+static const int ModLoaderVer = 16;
 
 struct PatchInfo
 {
@@ -59,7 +60,7 @@ struct LoaderSettings
 	int WindowWidth;
 	int WindowHeight;
 	bool ResizableWindow;
-	bool MaintainAspectRatio;
+	bool MaintainAspectRatio; // Deprecated, use StretchToWindow
 	bool FramerateLimiter;
 	int TestSpawnLevel;
 	int TestSpawnCharacter;
@@ -76,8 +77,12 @@ struct LoaderSettings
 	bool ScreenFadeFix;
 	bool CECarFix;
 	bool ParticlesFix;
-	bool KeepAspectWhenResizing;
-	int ScreenMode; // Window Mode (Windowed, Fullscreen, Borderless Fullscren, or Custom Window); 
+	bool KeepAspectWhenResizing; // Deprecated, use StretchToWindow
+	int ScreenMode; // Window Mode (Windowed, Fullscreen, Borderless Fullscren, or Custom Window);
+	bool DisableBorderImage; // Requires version >= 14.
+	bool StretchToWindow; // Stretch content to the window instead of respecting aspect ratio. Requires version >= 14.
+	// Paths
+	std::wstring ExtLibPath; // Location of the 'extlib' folder; requires version >= 15
 };
 
 struct ModDependency
@@ -281,16 +286,25 @@ struct HelperFunctions
 	// Disable interpolation fix for animations, use it at the end of a display function.
 	// Requires version >= 13.
 	void(__cdecl* PopInterpolationFix)();
+
+	// Retrieves the index of the mod that replaced the file specified in the path.
+	// Returns -1 if the file wasn't replaced by a mod.
+	// Requires version >= 16.
+	int(__cdecl* GetFileModIndex)(const char* path);
+
+	// Replaces the source file with the destination file, with the specified mod index being used to determine the order of replacement.
+	// Requires version >= 16.
+	void(__cdecl* ReplaceFileAtIndex)(const char* src, const char* dst, int modIndex);
 };
 
-typedef void(__cdecl* ModInitFunc)(const char* path, const HelperFunctions& helperFunctions);
+typedef void(__cdecl* ModInitFunc)(const char* path, const HelperFunctions& helperFunctions, unsigned int modIndex);
 
 typedef void(__cdecl* ModEvent)();
 
 struct ModInfo
 {
 	int Version;
-	void(__cdecl* Init)(const char* path, const HelperFunctions& helperFunctions);
+	void(__cdecl* Init)(const char* path, const HelperFunctions& helperFunctions, unsigned int modIndex);
 	const PatchInfo* Patches;
 	int PatchCount;
 	const PointerInfo* Jumps;

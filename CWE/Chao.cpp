@@ -405,37 +405,6 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 	original(a1);
 }
 
-
-const int sub_796910Ptr = 0x796910;
-int MOV_TurnToAim2(ObjectMaster* a1, signed int a3)
-{
-	int result;
-	__asm
-	{
-		mov eax, a1
-		push a3
-		call sub_796910Ptr
-		add esp, 4
-		mov result, eax
-
-	}
-	return result;
-}
-
-void MOV_SetAimPos(ObjectMaster* tp, NJS_POINT3* pPos) {
-	if (!pPos || !tp || !tp->EntityData2) {
-		PrintDebug("MOV_SetAimPos error");
-		return;
-	}
-
-	tp->EntityData2->Waypoint = *pPos;
-}
-
-void MOV_SetVelo(ObjectMaster* tp, NJS_VECTOR* pVelo) {
-	UnknownData2* pMove = tp->EntityData2;
-	pMove->velocity = *pVelo;
-}
-
 const int ALO_RakugakiExecutor_LoadPtr = 0x05AB200;
 void ALO_RakugakiExecutor_Load_(int a1, char a2, int a3)
 {

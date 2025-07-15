@@ -21,7 +21,7 @@ float g_TevMode_0 : register(c0);
 float4 g_LightAllergy : register(c70);
 
 float shinyJewelMonotone : register(c78);
-float lerpValue : register(c79);
+float lerpValue : register(c82);
 
 float4 getLerpedTexture(in float4 texA, in float2 uv) {
 	if (lerpValue <= 0) return texA;
@@ -50,7 +50,15 @@ PS_OUTPUT main(PS_IN input)
 	}
 	else if (g_TevMode_0 == 7) //shiny monotone
 	{
-		output.RGBColor = getLerpedTexture(mainTex, mainUV) + input.Color0;
+        if (shinyJewelMonotone < 0.5f)
+        {
+            output.RGBColor = getLerpedTexture(mainTex, mainUV) + input.Color0;
+        }
+        else
+        {
+            output.RGBColor = mainTex + input.Color0;
+        }
+		
 		output.RGBColor.w = input.Color0.w;
 	}
 	else {
