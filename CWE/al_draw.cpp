@@ -23,6 +23,7 @@
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
 #include <al_daynight.h>
+#include <api/api_accessory.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
@@ -329,53 +330,65 @@ void DrawAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 	}
 }
 
-bool AL_CanRenderAccessory(ObjectMaster* a1, EAccessoryType type)
-{
-	return a1->Data1.Chao->pParamGC->Accessories[type] // has accessory
-		&& a1->Data1.Chao->pParamGC->Accessories[type] - 1 < ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size(); //valid accessory
+static bool AL_HasAccessoryInSlot(const task* tp, const EAccessoryType slot) {
+	const chaowk* work = GET_CHAOWK(tp);
+	return work->AccessoryIndices[slot] != -1;
 }
 
-void AL_RenderAccessory(ObjectMaster* a1, EAccessoryType type)
-{
-	if (!AL_CanRenderAccessory(a1, type)) {
+static void AL_RenderAccessory(const task* tp, const EAccessoryType slot) {
+	const chaowk* work = GET_CHAOWK(tp);
+
+	if (!AL_HasAccessoryInSlot(tp, slot)) {
 		return;
 	}
 
-	ObjectRegistry::DrawObject(ChaoItemCategory_Accessory, a1->Data1.Chao->pParamGC->Accessories[type] - 1);
+	ObjectRegistry::DrawObject(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
 }
 
-void AL_ValidateAccessory(ObjectMaster* a1, EAccessoryType type)
-{
-	if (a1->Data1.Chao->pParamGC->Accessories[type] && AccessoryTypeMap[a1->Data1.Chao->pParamGC->Accessories[type] - 1] >= EAccessoryType::Generic1)
-		a1->Data1.Chao->pParamGC->Accessories[type] = 0;
-}
+static void AL_ValidateAccessory(task* tp, const EAccessoryType slot) {
+	chaowk* work = GET_CHAOWK(tp);
+	ChaoDataBase* param = GET_CHAOPARAM(tp);
 
-bool AL_CanRenderRigAccessory(ObjectMaster* a1, EAccessoryType type)
-{
-	int id = a1->Data1.Chao->pParamGC->Accessories[type];
-	return id &&//chao has accessory
-		AccessoryTypeMap[id - 1] == type &&//accessory matches its type
-		ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(id - 1); //has model
-}
+	auto& accessoryIndex = work->AccessoryIndices[slot];
 
-void AL_RenderRigAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, EAccessoryType type)
-{
-	if (AL_CanRenderRigAccessory(a1, type))
-	{
-		int id = a1->Data1.Chao->pParamGC->Accessories[type] - 1;
-
-		if (ModAPI_DisableJiggle.contains(id))
-			a1->Data1.Chao->field_B0 &= ~0x1000;
-		else
-			a1->Data1.Chao->field_B0 |= 0x1000;
-
-		AccessoryNodeIndex = 0;
-
-		auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
-		njSetTexture(registry->GetTex(id));
-		DrawAccessory(a1, chunkObjectPointer, registry->GetObj(id));
-		sub_56E9C0(a1);
+	if (accessoryIndex != -1 && GetAccessoryType(accessoryIndex) >= EAccessoryType::Generic1) {
+		// empty id means no accessory
+		// false id won't get cleared, just missing object
+		param->Accessories[slot].ID[0] = 0;
 	}
+}
+
+static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) {
+	const chaowk* work = GET_CHAOWK(tp);
+	const int accessoryIndex = work->AccessoryIndices[slot];
+
+	return accessoryIndex != -1 && // chao has accessory
+		   GetAccessoryType(accessoryIndex) == slot && // accessory matches its type
+		   ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
+}
+
+static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPointer, const EAccessoryType slot) {
+	if (!AL_CanRenderRigAccessory(tp, slot)) {
+		return;
+	}
+
+	chaowk* work = GET_CHAOWK(tp);
+	const int accessoryIndex = work->AccessoryIndices[slot];
+	const auto& accessory_data = GetAccessoryData(accessoryIndex);
+
+	if (accessory_data.Flags & CWE_API_ACCESSORY_FLAGS_NO_JIGGLE)
+		work->field_B0 &= ~0x1000;
+	else
+		work->field_B0 |= 0x1000;
+
+	AccessoryNodeIndex = 0;
+
+	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
+	njSetTexture(registry->GetTex(accessoryIndex));
+	DrawAccessory(tp, chunkObjectPointer, registry->GetObj(accessoryIndex));
+	
+	// reset animation state afterwards
+	sub_56E9C0(tp);
 }
 
 bool IsOmochao(ObjectMaster* a1) {
@@ -678,14 +691,19 @@ bool AL_CanBeBald(ObjectMaster* a1)
 			AL_BaldRoot[(a1->Data1.Chao->pParamGC->Type - 5) + 1]);
 }
 
-bool AL_CheckBald(ObjectMaster* a1, EAccessoryType type) {
-	int id = a1->Data1.Chao->pParamGC->Accessories[type];
-	return (id && AccessoryTypeMap[id - 1] == type && ModAPI_BaldAccessory.contains(id - 1));
+static bool AL_CheckBald(const task* tp, const EAccessoryType slot) {
+	const chaowk* work = GET_CHAOWK(tp);
+	const int id = work->AccessoryIndices[slot];
+	if (id == -1) return false;
+
+	const auto& data = GetAccessoryData(id);
+	return data.SlotType == slot && (data.Flags & CWE_API_ACCESSORY_FLAGS_FULL_BALD);
 }
 
-bool AL_CheckAllBald(ObjectMaster* a1)
-{
-	return AL_CheckBald(a1, EAccessoryType::Head) || AL_CheckBald(a1, EAccessoryType::Generic1) || AL_CheckBald(a1, EAccessoryType::Generic2);
+static bool AL_CheckAllBald(task* tp) {
+	return	AL_CheckBald(tp, EAccessoryType::Head) || 
+			AL_CheckBald(tp, EAccessoryType::Generic1) || 
+			AL_CheckBald(tp, EAccessoryType::Generic2);
 }
 
 void AL_SetBodyTexture(ObjectMaster* a1)

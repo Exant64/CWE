@@ -32,6 +32,7 @@
 #include "al_msg_font.h"
 #include "al_chao_info.h"
 #include <api/api_tree.h>
+#include <al_garden_info.h>
 
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
@@ -211,18 +212,8 @@ void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category)
 SAlItem* __cdecl sub_58B120(SAlItem* result)
 {
 	result->mCategory = HeldItemType;
+	result->mType = AL_GetHoldingItemKind();
 
-	if (HeldItemSave)
-	{
-		if (HeldItemType == 8)
-			result->mType = HeldItemSave->Type - 256;
-		else
-			result->mType = HeldItemSave->Type;
-	}
-	else
-	{
-		result->mType = -1;
-	}
 	return result;
 }
 static void __declspec(naked) sub_58B120Hook()
@@ -233,7 +224,7 @@ static void __declspec(naked) sub_58B120Hook()
 
 		// Call your __cdecl function here:
 		call sub_58B120
-
+		
 		add esp, 4 // result<eax> is also used for return value
 		retn
 	}

@@ -463,6 +463,9 @@ struct __declspec(align(4)) ChaoData1
 	bool IsCustomChaoTypeLoaded;
 	unsigned char AnimRandomized;
 	unsigned char ExtraSound;
+
+	char AccessoryCalculatedID[4][20];
+	Uint32 AccessoryIndices[4];
 };
 #pragma pack(pop)
 
@@ -881,6 +884,13 @@ struct AL_GUEST {
 	Uint16 Flags;
 };
 
+struct AL_PARAM_ACCESSORY_INFO {
+	char ID[20];
+	Uint32 Flags;
+	Uint32 ColorFlags;
+	NJS_COLOR ColorSlots[8];
+};
+
 struct ChaoDataBase
 {
 	char gap_0[18];
@@ -964,7 +974,7 @@ struct ChaoDataBase
 	char padding_cwedna[2];
 	short Birthday;
 	bool ForceReincarnate;
-	unsigned short Accessories[4];
+	unsigned short Accessories_[4];
 	int Flags;
 	int Version;
 	AL_NAME Name;
@@ -979,6 +989,7 @@ struct ChaoDataBase
 	//we can't make a knowledge struct cuz we don't really know what we'll put in it in the future, I don't want it to end up like CWEDNA
 	Uint8 MusicFlag_CWE;
 	Uint8 DanceFlag_CWE;
+	AL_PARAM_ACCESSORY_INFO Accessories[4];
 };
 
 static_assert(offsetof(ChaoDataBase, padding_cwedna) == 0x60F);

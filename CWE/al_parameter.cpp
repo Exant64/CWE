@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Chao.h"
+#include <cwe_api.h>
 
 void AL_NameSet(char* lval, char* rval) {
 	memcpy(lval, rval, sizeof(AL_NAME));
@@ -41,6 +42,12 @@ bool AL_IsNegative(ObjectMaster* a1) {
 		negative = !negative;
 	}
 	return negative;
+}
+
+void AL_ParameterClearAccessory(ObjectMaster* tp, int slot) {
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+
+	memset(&pParam->Accessories[slot], 0, sizeof(pParam->Accessories[slot]));
 }
 
 void AL_ParameterAddAPos(ObjectMaster* a1, float a2)

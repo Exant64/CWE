@@ -30,6 +30,7 @@
 #include "al_ode_guide.h"
 
 #include "al_ode_menu.h"
+#include <api/api_accessory.h>
 
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
@@ -248,10 +249,26 @@ public:
 		
 		v9->Garden = Garden;
 		v9->Type = ID;
-		int v7 = (int)(njRandom() * 15.f);
-		v9->position = ProbablyChaoSpawnPoints[v7];
+		v9->position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
 		UpdateHatAccVector();
 		
+		return true;
+	}
+	bool AL_Customization_CreateAcc(int ID, int Garden)
+	{
+		if (ID == -1) return false;
+
+		auto save = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+		if (!save) {
+			PrintDebug("HatAccRender: no hat slots left");
+			return false;
+		}
+
+		save->Garden = Garden;
+		save->IndexID = ID;
+		save->Position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
+		UpdateHatAccVector();
+
 		return true;
 	}
 	void Exec() override {
@@ -332,10 +349,10 @@ public:
 		}
 		else
 		{
-			int accType = AccessoryTypeMap[saveInfo->Type - 256];
-
+			int accType = GetAccessoryType(saveInfo->Type - 256);
+			/*
 			bool canEquip = true;
-			if (pParam->Accessories[accType])
+			if (pParam->Accessories[accType].ID[0])
 				canEquip = AL_Customization_CreateHat((pParam->Accessories[accType] - 1) + 256, pParam->Garden);
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
@@ -343,6 +360,7 @@ public:
 				AL_ClearItemSaveInfo(saveInfo);
 				UpdateHatAccVector();
 			}
+			*/
 		}
 	}
 	int GetItem() override{
@@ -364,14 +382,14 @@ private:
 		return m_slot == 0 && GBAManager_GetChaoDataPointer()->Headgear;
 	}
 	bool HasAccessory() {
-		return m_slot > 0 && GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1];
+		return m_slot > 0 && GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1].ID[0];
 	}
 public:
 	int GetItem() override {
 		if (HasHeadgear())
 			return GBAManager_GetChaoDataPointer()->Headgear;
 		else if (HasAccessory())
-			return 256 + GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1] - 1;
+			return 256; //+ GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1] - 1;
 		return -1;
 	}
 	void ColorSet() override {
@@ -403,12 +421,14 @@ public:
 		}
 		else
 		{
+			/*
 			uint16_t& accID = pParam->Accessories[m_slot - 1];
 			if (accID)
 			{
 				if(AL_Customization_CreateHat(accID + 256 - 1, pParam->Garden))
 					accID = 0;
 			}
+			*/
 		}
 	}
 	void AdditionalSpriteDraw() override {

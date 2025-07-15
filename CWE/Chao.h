@@ -8,8 +8,6 @@
 #include "al_parameter.h"
 #include "al_behavior/al_intention.h"
 
-typedef ObjectMaster task;
-
 #define CHAOWK(a) (a->Data1.Chao)
 #define GET_CHAOWK(tp) ((chaowk*)tp->Data1.Chao)
 #define GET_CHAOPARAM(tp) (GET_CHAOWK(tp)->pParamGC)
@@ -19,8 +17,9 @@ enum AL_PARAM_FLAG
 	AL_PARAM_FLAG_NAME_NEW = BIT_0,
 	AL_PARAM_FLAG_OLD_GUEST_CHECK = BIT_1,
 	AL_PARAM_FLAG_PARTS_CONVERSION = BIT_2,
+	AL_PARAM_FLAG_ACCESSORIES_NEW = BIT_3,
 
-	AL_PARAM_FLAG_NEWBORN = BIT_0 | BIT_1 | BIT_2
+	AL_PARAM_FLAG_NEWBORN = BIT_0 | BIT_1 | BIT_2 | BIT_3
 };
 
 enum ChaoBehaviour : __int32
@@ -451,6 +450,8 @@ static float MOV_DistFromAimXZ(task* tp) {
 
 	return njScalor(&v);
 }
+
+FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 
 int MOV_TurnToAim2(ObjectMaster* a1, signed int a3);
 void MOV_SetVelo(ObjectMaster* tp, NJS_VECTOR* pVelo);

@@ -19,6 +19,7 @@
 #include "api/api_msg.h"
 #include "api/api_customchao.h"
 #include "api/api_util.h"
+#include "api/api_accessory.h"
 
 #include <unordered_set>
 #include <api/api_tree.h>
@@ -41,8 +42,6 @@ std::vector<RegisterDataFuncPtr> RegisterDataHooks;
 
 std::unordered_map<int, int> ModAPI_LensColorMap;
 std::unordered_set<int> ModAPI_SpecialAction;
-std::unordered_set<int> ModAPI_DisableJiggle;
-std::unordered_set<int> ModAPI_BaldAccessory;
 
 std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 
@@ -73,10 +72,6 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 	ModAPI_MinimalStats.push_back(pMinimal->stats);
 	ModAPI_MinimalInfluence.push_back(pMinimal->color);
 	return ModAPI_MinimalInfluence.size() - 1;
-}
-
-void AccessoryDisableJiggle(int acccessory_id) {
-	ModAPI_DisableJiggle.insert(acccessory_id);
 }
 
 extern "C"
@@ -195,19 +190,6 @@ extern "C"
 		ModAPI_EyeColors.push_back(texlist);
 		ModAPI_LensColorMap.insert(std::make_pair(specialID, eyeCID));
 		return eyeCID + 1;
-	}
-	__declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description)
-	{
-		int ret = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size();
-		AccessoryTypeMap.insert(std::make_pair(ret, type));
-		ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(model, texlist);
-		BlackMarketAttributes::Get()->Add(ChaoItemCategory_Accessory, attrib, name, description);
-		return ret;
-	}
-
-	__declspec(dllexport) void AccessoryMakeBald(int acccessory_id) {
-		ModAPI_BaldAccessory.insert(acccessory_id);
-		ModAPI_DisableJiggle.insert(acccessory_id);
 	}
 
 	__declspec(dllexport) void RegisterChaoMinimalFruit(int fruitID, int minimalID, int chanceMin, int chanceMax)

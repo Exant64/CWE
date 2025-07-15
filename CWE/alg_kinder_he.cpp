@@ -15,6 +15,7 @@
 #include "al_growtree.h"
 #include "al_modelcontainer.h"
 #include <api/api_tree.h>
+#include <al_garden_info.h>
 
 DataPointer(ChaoData*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
@@ -41,14 +42,8 @@ void __cdecl sub_58F980(ObjectMaster* a1)
 	v9.Undefined = (void*)a1->Data2.Undefined;
 	if (*((char*)v9.Undefined + 40))
 	{
-		if (dword_19F6454)
-		{
-			v1 = *(signed __int16*)dword_19F6454->data.gap_0;
-		}
-		else
-		{
-			v1 = -1;
-		}
+		v1 = AL_GetHoldingItemKind();
+
 		njPushMatrixEx();
 		a3 = *((float*)v9.Undefined + 11) + 3.284631013870239f;
 		njTranslate(NULL, 0.34388199f, a3, -2.164542f);
