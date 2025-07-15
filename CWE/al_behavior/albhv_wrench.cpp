@@ -11,6 +11,7 @@
 #include "../al_omochao_build.h"
 #include "al_knowledge.h"
 #include <al_stage.h>
+#include <al_garden_info.h>
 
 int __cdecl ALBHV_Wrench(ObjectMaster* a1)
 {

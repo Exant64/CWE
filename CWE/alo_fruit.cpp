@@ -11,6 +11,7 @@
 #include "al_behavior/al_intention.h"
 #include "Trampoline.h"
 #include <al_daynight.h>
+#include <al_garden_info.h>
 
 std::vector<ChaoItemStats> ModAPI_FruitStats;
 
