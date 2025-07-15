@@ -9,6 +9,8 @@ static size_t AccessoryItemCount = 0;
 void SaveAllItems(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) {
 	writer.StartArray();
 	for (const auto& item : AccessoryItemList) {
+		if (item.IndexID == -1) continue;
+
 		writer.StartObject();
 		item.Save(writer);
 		writer.EndObject();
