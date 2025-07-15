@@ -248,6 +248,33 @@ extern "C"
 			}
 		}
 
+		// convert the "accessory hats" to the new accessory format
+		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+		for (size_t j = 0; j < 24; ++j) {
+			auto& originalItem = items[j];
+			if (originalItem.Type >= 256) {
+				const auto accessoryIndex = originalItem.Type - 256;
+
+				ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+				// if we don't have space to convert, stop the conversion checks
+				if (!pNewInfo) break;
+
+				// if it's an invalid id, don't write it
+				char id[20];
+				if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
+					memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
+					pNewInfo->IndexID = accessoryIndex;
+					pNewInfo->Garden = originalItem.Garden;
+					pNewInfo->Position = originalItem.position;
+				}
+
+				// even if it does become an invalid id, we omit the original item
+				// to not create "mystery no more garden space" issues
+				// TOOD: message box could be useful?
+				AL_ClearItemSaveInfo(&originalItem);
+			}
+		}
+
 		for (int i = 0; i < 24; i++)
 		{
 			//HYPER FRUIT CHECK, dont age hyper fruit
@@ -494,11 +521,6 @@ extern "C"
 
 		if (gConfigVal.ToyMove)
 			AL_Toy_Moveable_Init();
-
-		//accessory
-		WriteCall((void*)0x0052ED87, Accessory_Load);
-		WriteCall((void*)0x0052F404, Accessory_Load);
-		WriteCall((void*)0x00530A70, Accessory_Load);
 
 		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main);
 		
