@@ -74,6 +74,8 @@ void AL_SetCustomItemOnTheGarden() {
 			continue;
 		}
 
+		if (item.IndexID == -1) continue;
+
 		const Angle ang = NJM_DEG_ANG(njRandom() * 360.f);
 		const NJS_VECTOR velocity = { 0,0,0 };
 

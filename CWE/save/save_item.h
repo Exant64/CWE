@@ -32,6 +32,8 @@ struct ItemSaveInfoBase {
 	virtual ChaoItemCategory GetCategory() const = NULL;
 
 	virtual void Save(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) const {
+		if (IndexID == -1) return;
+
 		writer.Key("category");
 		writer.String(CategoryStrings[GetCategory()]);
 
