@@ -5,6 +5,7 @@
 #include <filewritestream.h>
 #include <chao.h>
 #include <api/api_metadata.h>
+#include <unordered_map>
 
 static constexpr const char* CategoryStrings[] = {
 	"chao", // not gonna be saving that in json anytime soon lol
@@ -18,6 +19,18 @@ static constexpr const char* CategoryStrings[] = {
 	"accessory",//"sound",
 	"hat",
 	"special"
+};
+
+static const std::unordered_map<int, std::string> IndexToIDGardenMap = {
+	{1, "neut"},
+	{2, "hero"},
+	{3, "dark"}
+};
+
+static const std::unordered_map<std::string, int> IDToIndexGardenMap = {
+	{"neut", 1},
+	{"hero", 2},
+	{"dark", 3}
 };
 
 struct ItemSaveInfoBase {
@@ -41,7 +54,7 @@ struct ItemSaveInfoBase {
 		writer.String(ID);
 
 		writer.Key("garden");
-		writer.Int(Garden);
+		writer.String(IndexToIDGardenMap.at(Garden).c_str());
 
 		writer.Key("angle");
 		writer.Int(Angle);
@@ -59,7 +72,7 @@ struct ItemSaveInfoBase {
 
 		item.IndexID = int(ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, item.ID));
 
-		item.Garden = value["garden"].GetInt();
+		item.Garden = IDToIndexGardenMap.at(value["garden"].GetString());
 		item.Angle = value["angle"].GetInt();
 
 		const auto& pos = value["position"].GetArray();
