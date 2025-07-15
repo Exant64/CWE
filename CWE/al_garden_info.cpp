@@ -35,11 +35,15 @@ DataPointer(ChaoObjectData*, dword_19F6454, 0x19F6454);
 int AL_GetHoldingItemKind() {
 	if (!dword_19F6454) return -1;
 	
-	if (HeldItemType == ChaoItemCategory_Accessory) {
+	if (CWE_IsCustomItemSaveInfoCategory(ChaoItemCategory(HeldItemType))) {
 		return ((ItemSaveInfoBase*)dword_19F6454)->IndexID;
 	}
 
 	return dword_19F6454->Type;
+}
+
+ChaoItemCategory AL_GetHoldingItemCategory() {
+	return ChaoItemCategory(HeldItemType);
 }
 
 void AL_ClearItemSaveInfo(ITEM_SAVE_INFO* pSaveInfo) {
@@ -234,7 +238,7 @@ static void AL_CreateCustomHoldingItem() {
 
 	task* tp = NULL;
 
-	switch (HeldItemType) {
+	switch (AL_GetHoldingItemCategory()) {
 		case ChaoItemCategory_Accessory:
 			tp = Accessory_Load(pSaveInfo->IndexID, &pSaveInfo->Position, pSaveInfo->Angle, &velocity, (AccessorySaveInfo*)pSaveInfo);
 			break;
@@ -256,12 +260,12 @@ static void AL_CreateHoldingItem() {
 	v1 = dword_19F6454;
 	v7 = dword_19F6454;
 
-	if (HeldItemType == ChaoItemCategory_Accessory) {
+	if (CWE_IsCustomItemSaveInfoCategory(AL_GetHoldingItemCategory())) {
 		AL_CreateCustomHoldingItem();
 		return;
 	}
 
-	switch (HeldItemType)
+	switch (AL_GetHoldingItemCategory())
 	{
 	case 2:
 	case ChaoItemCategory_Fruit:
@@ -338,10 +342,11 @@ int AL_GetLocalChaoCount(int a1)
 }
 
 static bool AL_CreatePurchasedCustomItem(const SAlItem& item, NJS_POINT3& position, NJS_VECTOR& velocity) {
-	if (item.mCategory != ChaoItemCategory_Accessory) {
+	if (!CWE_IsCustomItemSaveInfoCategory(ChaoItemCategory(item.mCategory))) {
 		return false;
 	}
 
+	// only accessory for now
 	Accessory_Load(item.mType, &position, MainCharObj1[0]->Rotation.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory));
 
 	return true;

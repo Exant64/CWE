@@ -65,3 +65,13 @@ ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const ChaoItemCategory category) {
 
 	return NULL;
 }
+
+// returns if it uses the new class-based save system or the old one
+bool CWE_IsCustomItemSaveInfoCategory(const ChaoItemCategory category) {
+	switch (category) {
+		case ChaoItemCategory_Accessory:
+			return true;
+	}
+
+	return false;
+}

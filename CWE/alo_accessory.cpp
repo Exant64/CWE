@@ -54,6 +54,8 @@ static void ALO_AccessoryDelete(task* tp) {
 	CWE_ALW_CancelEntry(tp);
 }
 
+FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
+
 task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
 	task* tp = LoadObject(4, "ALO_Accessory", ALO_ObakeHeadExecutor_Main, LoadObj_Data1);
 	EntityData1* work = tp->Data1.Entity;

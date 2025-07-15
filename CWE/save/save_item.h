@@ -93,4 +93,5 @@ void ClearAllItems();
 void SaveAllItems(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer);
 void LoadAllItems(const rapidjson::GenericArray<false, rapidjson::Value>& array);
 
+bool CWE_IsCustomItemSaveInfoCategory(const ChaoItemCategory category);
 ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const ChaoItemCategory category);

@@ -120,8 +120,6 @@ ObjectMaster* ALO_Kinder_Window_Load(ObjectMaster* result, char layer, ALK_WINDO
 	return retval;
 }
 
-DataPointer(unsigned char, HeldItemType, 0x019F6450);
-DataPointer(ITEM_SAVE_INFO*, HeldItemSave, 0x019F6454);
 #define ITEMSINBUYLIST 5
 #define DISTANCEBUYLIST 40 //46
 #define SELECTIONBOXADJUST 46 - DISTANCEBUYLIST
@@ -211,7 +209,7 @@ void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category)
 
 SAlItem* __cdecl sub_58B120(SAlItem* result)
 {
-	result->mCategory = HeldItemType;
+	result->mCategory = AL_GetHoldingItemCategory();
 	result->mType = AL_GetHoldingItemKind();
 
 	return result;
