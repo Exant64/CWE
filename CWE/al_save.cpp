@@ -9,15 +9,31 @@
 #include "rapidjson.h"
 #include <document.h>
 #include "save/save_serializable.h"
+#include "save/save_item.h"
 #include <filereadstream.h>
 #include "prettywriter.h"
 #include <filewritestream.h>
 #include <al_daynight.h>
+#include <api/api_metadata.h>
+
 using namespace rapidjson;
 
 std::vector< SaveFileAPIEntry> ModAPI_SaveAPI;
 
 CWESaveFile cweSaveFile;
+
+static struct {
+	int category;
+	const char* key;
+} CategoryKeyValuePairs[] = {
+	{ChaoItemCategory_Egg, "egg"},
+	{ChaoItemCategory_Fruit, "fruit"},
+	{ChaoItemCategory_Seed, "seed"},
+	{ChaoItemCategory_Hat, "hat"},
+	{ChaoItemCategory_Accessory, "accessory"},
+	{ChaoItemCategory_Special, "special"},
+	{ChaoItemCategory_MenuTheme, "menu_theme"}
+};
 
 // also this is like the only place in the code that uses namespace for some reason
 // (i really hate this part of the code lol)
@@ -25,10 +41,83 @@ namespace save {
 	// todo: refactor to be static and create helper function that returns span
 	std::array<SAlItem, 10> CWE_PurchasedItems;
 
+	// yes, i know that we already have an SAlItem with that terrible awful "save_serializable" stuff
+	// for now i'll keep the new one here, i don't plan to support that system
+	// with how infrequently we add stuff here, its enough to just do it the ugly way
+	static bool ReadSAlItem(const rapidjson::Value& value, SAlItem& outItem) {
+		const char* categoryStr = value["category"].GetString();
+		outItem.mCategory = -1;
+		for (size_t i = 0; i < _countof(CategoryKeyValuePairs); i++) {
+			const auto& pair = CategoryKeyValuePairs[i];
+			if (!strcmp(categoryStr, pair.key)) {
+				outItem.mCategory = pair.category;
+				break;
+			}
+		}
+
+		if (outItem.mCategory == -1) {
+			return false;
+		}
+
+		if (value.HasMember("id")) {
+			char id[20];
+			strncpy_s(id, value["id"].GetString(), sizeof(id));
+
+			outItem.mType = ItemMetadata::Get()->GetIndex(ChaoItemCategory(outItem.mCategory), id);
+			if (outItem.mType == -1) {
+				return false;
+			}
+		}
+		else {
+			outItem.mType = Uint16(value["type"].GetInt());
+		}
+
+		return true;
+	}
+
+	template <typename T>
+	static bool SaveSAlItem(rapidjson::PrettyWriter<T>& writer, const SAlItem& item) {
+		const char* categoryString = NULL;
+		for (size_t i = 0; i < _countof(CategoryKeyValuePairs); ++i) {
+			const auto& pair = CategoryKeyValuePairs[i];
+			if (item.mCategory == pair.category) {
+				categoryString = pair.key;
+				break;
+			}
+		}
+
+		if (!categoryString) {
+			return false;
+		}
+
+		writer.StartObject();
+
+		writer.Key("category");
+		writer.String(categoryString);
+
+		char id[20];
+		bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory(item.mCategory), item.mType, id);
+
+		if (foundID) {
+			writer.Key("id");
+			writer.String(id);
+		}
+		else {
+			writer.Key("type");
+			writer.Int(item.mType);
+		}
+
+		writer.EndObject();
+
+		return true;
+	}
+
 	// this whole json version of the savefiles is extremely redundant
 	// it should be replaced eventually (people won't be happy that a third savefile will show up for cwe
 	// but it would be worth it)
 	void LoadCWESave() {
+		ClearAllItems();
+
 		char filename[MAX_PATH];
 		sprintf(filename, "%s_%s", (const char*)0x136604C, "CWEV1.json");
 
@@ -59,6 +148,46 @@ namespace save {
 				AL_DayNightCycle_GetSaveNextDayCloudy() = daynightMember["nextDayCloudy"].GetBool();
 			}
 
+			if (d.HasMember("market_inventory")) {
+				const auto& market = d["market_inventory"];
+
+				for (size_t i = 0; i < _countof(CategoryKeyValuePairs); ++i) {
+					const auto& pair = CategoryKeyValuePairs[i];
+					auto& inv = cweSaveFile.marketInventory[pair.category];
+					auto& count = cweSaveFile.marketInventoryCount[pair.category];
+
+					if (market.HasMember(pair.key)) {
+						const auto& list = market[pair.key].GetArray();
+						const auto size = list.Size();
+
+						count = 0;
+
+						for (size_t j = 0; j < size; ++j) {
+							if (count >= _countof(inv)) {
+								break;
+							}
+
+							ReadSAlItem(list[j], inv[count++]);
+						}
+					}
+				}
+			}
+
+			if (d.HasMember("purchased_items")) {
+				const auto& items = d["purchased_items"].GetArray();
+
+				cweSaveFile.purchasedItemCount = 0;
+
+				for (const auto& item : items) {
+					ReadSAlItem(item, CWE_PurchasedItems[cweSaveFile.purchasedItemCount++]);
+				}
+			}
+
+			if (d.HasMember("items")) {
+				const auto& items = d["items"].GetArray();
+				LoadAllItems(items);
+			}
+
 			fclose(fp);
 		}
 	}
@@ -83,41 +212,49 @@ namespace save {
 
 			writer.Key("daynight");
 			writer.StartObject();
-			writer.Key("day");
-			writer.Uint(AL_DayNightCycle_GetSaveCurrentDay());
-			writer.Key("time");
-			writer.Double(AL_DayNightCycle_GetSaveTime());
-			writer.Key("currentPhase");
-			writer.Uint(AL_DayNightCycle_GetSaveCurrentPhase());
-			writer.Key("nextDayCloudy");
-			writer.Bool(AL_DayNightCycle_GetSaveNextDayCloudy());
+			{
+				writer.Key("day");
+				writer.Uint(AL_DayNightCycle_GetSaveCurrentDay());
+				writer.Key("time");
+				writer.Double(AL_DayNightCycle_GetSaveTime());
+				writer.Key("currentPhase");
+				writer.Uint(AL_DayNightCycle_GetSaveCurrentPhase());
+				writer.Key("nextDayCloudy");
+				writer.Bool(AL_DayNightCycle_GetSaveNextDayCloudy());
+			}
 			writer.EndObject();
+
+			writer.Key("market_inventory");
+			writer.StartObject();
+			for (size_t i = 0; i < _countof(CategoryKeyValuePairs); ++i) {
+				const auto& pair = CategoryKeyValuePairs[i];
+				const auto& inv = cweSaveFile.marketInventory[pair.category];
+				const auto& count = cweSaveFile.marketInventoryCount[pair.category];
+
+				writer.Key(pair.key);
+				writer.StartArray();
+				for (size_t j = 0; j < count; ++j) {
+					SaveSAlItem(writer, inv[j]);
+				}
+				writer.EndArray();
+			}
+			writer.EndObject();
+
+			writer.Key("purchased_items");
+			writer.StartArray();
+			for (size_t i = 0; i < cweSaveFile.purchasedItemCount; ++i) {
+				SaveSAlItem(writer, CWE_PurchasedItems[i]);
+			}
+			writer.EndArray();
+
+			writer.Key("items");
+			SaveAllItems(writer);
 
 			writer.EndObject();
 
 			fclose(fp);
 		}
 	}
-}
-
-int GetTimeOfDay() 
-{
-	return cweSaveFile.TimeOfDay;
-}
-
-void SetTimeOfDay(int time)
-{
-	cweSaveFile.TimeOfDay = time;
-}
-
-int GetWeather()
-{
-	return cweSaveFile.Weather;
-}
-
-void SetWeather(int weather)
-{
-	cweSaveFile.Weather = weather;
 }
 
 SAlItem* GetMarketInventory(int category)

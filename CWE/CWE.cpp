@@ -86,6 +86,7 @@
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
+#include <al_garden_info.h>
 
 const char* PathToModFolder = "";
 
@@ -496,6 +497,7 @@ extern "C"
 
 		al_race_Init();
 
+		AL_GardenInfo_Init();
 		ChaoMain_Init();
 
 		ALO_ObakeHead_Init();

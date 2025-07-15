@@ -51,6 +51,34 @@ static void ChaoInfoMenu() {
                 ImGui::EndTabItem();
             }
 
+            if (ImGui::BeginTabItem("Accessories")) {
+                for (size_t i = 0; i < 4; ++i) {
+                    ImGui::Text(
+                        "Slot %d: Param %s Data %s %d", 
+                        int(i),
+                        work->pParamGC->Accessories[i].ID, 
+                        work->AccessoryCalculatedID[i], 
+                        work->AccessoryIndices[i]
+                    );
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("ParamFlags")) {
+                const char* paramFlagNames[] = {
+                    "NAME_NEW",
+                    "OLD_GUEST_CHECK",
+                    "PARTS_CONVERSION",
+                    "ACCESSORIES_NEW",
+                };
+                for (size_t i = 0; i < 4; ++i) {
+                    ImGui::CheckboxFlags(paramFlagNames[i], &work->pParamGC->Flags, (1 << i));
+                }
+
+                ImGui::EndTabItem();
+            }
+
             if (ImGui::BeginTabItem("Behavior")) {
                 if (ImGui::TreeNode("Start behaviors")) {
                     if (ImGui::Button("Piano")) {

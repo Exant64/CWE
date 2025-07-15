@@ -1,133 +1,76 @@
 #include "stdafx.h"
-#include "xxhash/xxhash32.h"
+#include "api_idhash.h"
+#include <cwe_api.h>
+#include <al_modelcontainer.h>
+#include <al_marketattr.h>
+#include "api_metadata.h"
+#include "api_accessory.h"
 
-// functions borrowed from Shaddatic's SAMT, thanks shad
-#define CNK_NULLOFF_MAX    (NJD_CN        ) /* max null type                        */
-#define CNK_BITSOFF_MAX    (NJD_CB_DP     ) /* max bits type                        */
-#define CNK_TINYOFF_MAX    (NJD_CT_TID2   ) /* max bits type                        */
-#define CNK_MATOFF_MAX     (NJD_CM_DAS2   ) /* max material type                    */
-#define CNK_VERTOFF_MAX    (NJD_CV_NF_D8  ) /* max vertex type                      */
-#define CNK_VOLOFF_MAX     (NJD_CO_ST     ) /* max volume type                      */
-#define CNK_STRIPOFF_MAX   (NJD_CS_UVH2   ) /* max strip type                       */
+std::vector<CWE_API_ACCESSORY_DATA> ModAPI_AccessoryDataList;
 
-#define CNK_GET_OFFTYPE(pcnk_)      (((Uint8*)(pcnk_))[0])
+// the idea is that this is an optimization to check for already used ids faster
+static std::unordered_set<std::string> AccessoryIDLookupTable;
 
-static size_t mtCnkVListSize(const Sint32* pVList)
-{
-    const Sint32* start = pVList;
-    const Sint32* vlist = pVList;
-
-    while (CNK_GET_OFFTYPE(vlist) != 0xFF)
-    {
-        /** Next data chunk **/
-        vlist += ((uint16_t*)vlist)[1] + 1;
-    }
-
-    return ((uintptr_t)vlist - (uintptr_t)start) + 4;
+// i honestly don't remember why this is exported but i'll keep it exported for a good while i guess
+extern "C" __declspec(dllexport) EAccessoryType GetAccessoryType(int index) {
+	return ModAPI_AccessoryDataList[index].SlotType;
 }
 
-static size_t mtCnkPListSize(const Sint16* pPList)
-{
-    const Sint16* start = pPList;
-    const Sint16* plist = pPList;
-
-    for (; ; )
-    {
-        const int type = CNK_GET_OFFTYPE(plist);
-
-        if (type == NJD_CE)
-        {
-            /** NJD_ENDOFF **/
-            break;
-        }
-
-        if (type == NJD_CN)
-        {
-            /** NJD_NULLOFF **/
-
-            /** Next offset **/
-            ++plist;
-            continue;
-        }
-
-        if (type <= CNK_BITSOFF_MAX)
-        {
-            /** NJD_BITSOFF **/
-
-            /** Next offset **/
-            ++plist;
-            continue;
-        }
-
-        if (type <= CNK_TINYOFF_MAX)
-        {
-            /** NJD_TINYOFF **/
-
-            /** Next offset **/
-            plist += 2;
-            continue;
-        }
-
-        if (type <= CNK_MATOFF_MAX)
-        {
-            /** NJD_MATOFF **/
-
-            /** Next offset **/
-            plist += ((uint16_t*)plist)[1] + 2;
-            continue;
-        }
-
-        if (type <= CNK_STRIPOFF_MAX) // and volume
-        {
-            /** NJD_STRIPOFF **/
-
-            /** Next offset **/
-            plist += ((uint16_t*)plist)[1] + 2;
-            continue;
-        }
-
-        /** An error occured, stop **/
-        break;
-    }
-
-    return ((uintptr_t)plist - (uintptr_t)start) + 2;
+CWE_API_ACCESSORY_DATA& GetAccessoryData(int index) {
+	return ModAPI_AccessoryDataList[index];
 }
 
-// Finds the first vlist and plist in the object tree, expects the out variables to be NULL initialized beforehand
-static void FindFirstChunkModelLists(const NJS_OBJECT* pObj, Sint32*& outVlist, Sint16*& outPlist) {
-	while (!outVlist || !outPlist) {
-        const NJS_CNK_MODEL* pModel = pObj->chunkmodel;
+__declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
+	auto& data = GetAccessoryData(accessory_id);
 
-        if (pModel) {
-            if (!outVlist && pModel->vlist) outVlist = pModel->vlist;
-            if (!outPlist && pModel->plist) outPlist = pModel->plist;
-        }
+	data.Flags |= CWE_API_ACCESSORY_FLAGS_FULL_BALD;
+	data.Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
+}
 
-		if (pObj->child) {
-			FindFirstChunkModelLists(pObj->child, outVlist, outPlist);
-		}
+void AccessoryDisableJiggle(int accessory_id) {
+	GetAccessoryData(accessory_id).Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
+}
 
-		pObj = pObj->sibling;
+size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
+	// todo: errors
 
-        if (!pObj) break;
+	if (AccessoryIDLookupTable.contains(pAccessoryData->ID)) {
+		return -1;
 	}
+
+	// todo null pointer safety checks
+
+	ItemMetadata::Get()->Add(ChaoItemCategory_Accessory, pAccessoryData->ID);
+
+	BlackMarketAttributes::Get()->Add(
+		ChaoItemCategory_Accessory,
+		pAccessoryData->pMarketAttrib, 
+		pAccessoryData->pName,
+		pAccessoryData->pDescription
+	);
+
+	ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(pAccessoryData->pObject, pAccessoryData->pTexlist);
+
+	const size_t id = ModAPI_AccessoryDataList.size();
+	ModAPI_AccessoryDataList.push_back(*pAccessoryData);
+	return id;
 }
 
- uint32_t GenerateHashForChunkObject(const NJS_OBJECT* pObj) {
-	uint32_t myseed = 0;
-	XXHash32 myhash(myseed);
+extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+	char hash_id[ACCESSORY_ID_LENGTH];
+	auto hash = GenerateHashForChunkObject(model);
+	sprintf_s(hash_id, "acc%x", hash);
 
-    Sint32* vlist = NULL;
-    Sint16* plist = NULL;
+	CWE_API_ACCESSORY_DATA accessory_data = {
+		.pObject = model,
+		.pTexlist = texlist,
+		.SlotType = type,
+		.pMarketAttrib = attrib,
+		.pName = name,
+		.pDescription = description
+	};
 
-	FindFirstChunkModelLists(pObj, vlist, plist);
-	if (!vlist || !plist) {
-        // todo: feedback
-        return -1;
-    }
+	strcpy_s(accessory_data.ID, hash_id);
 
-    myhash.add(vlist, mtCnkVListSize(vlist));
-	myhash.add(plist, mtCnkPListSize(plist));
-
-	return myhash.hash();
+	return int(AddChaoAccessory(&accessory_data));
 }

@@ -8,18 +8,20 @@
 #include "al_modelcontainer.h"
 #include "ALifeSDK_Functions.h"
 #include "al_behavior/al_intention.h"
+#include <api/api_accessory.h>
+#include <save/save_item.h>
+#include <al_toy_move.h>
+#include <api/api_metadata.h>
 
-std::map<int, EAccessoryType> AccessoryTypeMap;
 extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
-bool ALO_IsAccessoryGeneric(int type)
-{
-	return AccessoryTypeMap[type] == EAccessoryType::Generic1 || AccessoryTypeMap[type] == EAccessoryType::Generic2;
+bool ALO_IsAccessoryGeneric(int index) {
+	const auto& type = ModAPI_AccessoryDataList[index].SlotType;
+	return type == EAccessoryType::Generic1 || type == EAccessoryType::Generic2;
 }
 
-void Accessory_Display(ObjectMaster* a1)
-{
+void Accessory_Display(ObjectMaster* a1) {
 	DoLighting(LightIndex);
 	njPushMatrixEx();
 
@@ -45,21 +47,60 @@ void Accessory_Display(ObjectMaster* a1)
 
 	njPopMatrixEx();
 }
-CollisionData ALO_Accessory_collision[3] =
-{
-  { 256, 112, 9216, {  0,  1.5f,  0 },  15,  3,  0, 0, 0, 0, 0 },
-  { 0, 3078, 0, {  0,  1.2f,  0 },  2,  0,  0, 0, 0, 0, 0 },
-  { 0x194, 3184, 0, {  0, -2,  0 },  4.2f, 5, 0, 0, 0, 0, 0 }
-};
-ObjectMaster* Accessory_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
-{
-	ObjectMaster* obj = ALO_ObakeHeadExecutor_Load(ID, position, rotY, velocity, (int)savedata);
-	if (ID >= 256) {
-		//is accessory
-		*(unsigned char*)&obj->Data1.Entity->Collision->CollisionArray[2].field_0 = CI_KIND_AL_ACCESSORY;
-		obj->Data1.Entity->Rotation.x = ID - 256;
-		obj->DisplaySub = Accessory_Display;
-		((ChaoSomeUnknownA*)obj->UnknownA_ptr)->index = ChaoItemCategory_Accessory;
+
+DataArray(CollisionData, ALO_ObakeHeadExecutor_collision, 0x008A6F68, 3);
+
+static void ALO_AccessoryDelete(task* tp) {
+	CWE_ALW_CancelEntry(tp);
+}
+
+task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
+	task* tp = LoadObject(4, "ALO_Accessory", ALO_ObakeHeadExecutor_Main, LoadObj_Data1);
+	EntityData1* work = tp->Data1.Entity;
+	UnknownData2* move = AllocateUnknownData2(tp);
+
+	work->Position = *pPos;
+	work->Rotation.y = AngY;
+
+	if (pVelo) {
+		move->velocity = *pVelo;
 	}
-	return obj;
+
+	work->Rotation.x = ID;
+
+	move->gravity = -0.05f;
+	move->field_AC = 3; // Offset.y
+	move->field_C8 = 0.8f; // BoundFloor
+	move->field_D0 = 0.7f; // BoundFriction
+
+	move->field_30 = (int)sub_57A7A0(4.0);// rad
+
+	InitCollision(tp, ALO_ObakeHeadExecutor_collision, 3, 5u);
+	ObjectMovableInitialize(work, 10);
+
+	*(unsigned char*)&work->Collision->CollisionArray[2].field_0 = CI_KIND_AL_ACCESSORY;
+
+	tp->DisplaySub = Accessory_Display;
+	tp->DeleteSub = ALO_AccessoryDelete;
+
+	work->Action = 0;
+	work->NextAction = 0;
+
+	CWE_ALW_Entry(ChaoItemCategory_Accessory, tp, 0, savedata);
+	ALW_SetHeldOffset(tp, 0.0f);
+	ALW_SetHeldRadius(tp, 1.4f);
+
+	if (savedata) {
+		savedata->IndexID = ID;
+
+		// clear ID first, so that it's invalid accessory if it doesn't exist
+		savedata->ID[0] = 0;
+
+		char id[20];
+		if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, ID, id)) {
+			memcpy(savedata->ID, id, sizeof(savedata->ID));
+		}
+	}
+
+	return tp;
 }

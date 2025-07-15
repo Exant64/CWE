@@ -71,7 +71,6 @@
     <ClCompile Include="al_parameter.cpp" />
     <ClCompile Include="al_parts.cpp" />
     <ClCompile Include="al_piano.cpp" />
-    <ClCompile Include="al_registry.cpp" />
     <ClCompile Include="al_sandhole.cpp" />
     <ClCompile Include="al_save.cpp" />
     <ClCompile Include="al_script.cpp" />
@@ -132,7 +131,7 @@
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="al_animation.cpp" />
     <ClCompile Include="renderfix.cpp" />
-    <ClCompile Include="api\api_accessory.cpp" />
+    <ClCompile Include="api\api_idhash.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -142,6 +141,10 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui_debug.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
+    <ClCompile Include="api\api_accessory.cpp" />
+    <ClCompile Include="api\api_metadata.cpp" />
+    <ClCompile Include="save\save_item.cpp" />
+    <ClCompile Include="al_garden_info.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -190,7 +193,6 @@
     <ClInclude Include="al_palette.h" />
     <ClInclude Include="al_parameter.h" />
     <ClInclude Include="al_piano.h" />
-    <ClInclude Include="al_registry.h" />
     <ClInclude Include="al_sandhole.h" />
     <ClInclude Include="al_save.h" />
     <ClInclude Include="al_shape.h" />
@@ -323,7 +325,7 @@
     <ClInclude Include="al_chao_info.h" />
     <ClInclude Include="data\ChaoShaderDayNight.h" />
     <ClInclude Include="renderfix.h" />
-    <ClInclude Include="api\api_accessory.h" />
+    <ClInclude Include="api\api_idhash.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
@@ -335,6 +337,10 @@
     <ClInclude Include="imgui_debug.h" />
     <ClInclude Include="data\ChaoVertexShader.h" />
     <ClInclude Include="imgui_debug_motionstrings.h" />
+    <ClInclude Include="api\api_metadata.h" />
+    <ClInclude Include="api\api_accessory.h" />
+    <ClInclude Include="save\save_item.h" />
+    <ClInclude Include="al_garden_info.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
