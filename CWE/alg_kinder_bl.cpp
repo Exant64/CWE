@@ -2171,6 +2171,29 @@ static void __declspec(naked) sub_589850Hook()
 	}
 }
 
+static void SellHeldItem() {
+	task* pHeld = MainCharObj2[0]->HeldObject;
+	if (pHeld)
+	{
+		pHeld->MainSub = DeleteObject_;
+		if (MainCharObj1[0]) {
+			sub_46E5E0(0, (int)MainCharObj1[0]);
+		}
+		MainCharObj2[0]->HeldObject = 0;
+	}
+
+	void* pSave = AL_GetHoldingItemSaveInfo();
+	if (pSave) {
+		if (CWE_IsCustomItemSaveInfoCategory(AL_GetHoldingItemCategory())) {
+			AL_ClearItemSaveInfo((ItemSaveInfoBase*)pSave);
+		}
+		else {
+			AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)pSave);
+		}
+	}
+
+	AL_ClearHoldingItemInfo();
+}
 float NewInvDisplayPosX = 230; //384 = original
 void alg_kinder_bl_Init()
 {
@@ -2206,6 +2229,7 @@ void alg_kinder_bl_Init()
 	WriteJump((void*)0x52F650, AL_GetMaxItemNum_hook);
 
 	//selling code
+	WriteJump((void*)0x52F470, SellHeldItem);
 	WriteCall((void*)0x0058BDF1, AlItemGetInfoHook);
 	WriteCall((void*)0x0058BE2D, FItemDescSetHook);
 	WriteCall((void*)0x0058BDEA, sub_58B120Hook);

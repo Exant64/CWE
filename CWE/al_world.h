@@ -50,7 +50,6 @@ ObjectMaster* __cdecl ALW_GetLockOnTask(ObjectMaster* a1);
 signed int __cdecl ALW_SendCommand(ObjectMaster* a1, __int16 a2);
 int ALW_TurnToLockOn(ObjectMaster* a1, int a2);
 void* __cdecl AL_GetItemSaveInfo(ObjectMaster* a1);
-void __cdecl AL_ClearItemSaveInfo(ITEM_SAVE_INFO* a1);
 void __cdecl AL_ClearItemSaveInfoPtr(ObjectMaster* a1);
 bool __cdecl ALW_IsHeld(ObjectMaster* a1);
 void ALW_CommunicationOn(ObjectMaster* a1, ObjectMaster* a2);

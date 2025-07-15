@@ -32,6 +32,15 @@ void sub_46E5B0(ObjectMaster* a1, int a2)
 DataPointer(int, HeldItemType, 0x19F6450);
 DataPointer(ChaoObjectData*, dword_19F6454, 0x19F6454);
 
+void* AL_GetHoldingItemSaveInfo() {
+	return dword_19F6454;
+}
+
+void AL_ClearHoldingItemInfo() {
+	HeldItemType = -1;
+	dword_19F6454 = NULL;
+}
+
 int AL_GetHoldingItemKind() {
 	if (!dword_19F6454) return -1;
 	
