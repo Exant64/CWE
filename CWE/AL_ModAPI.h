@@ -27,8 +27,6 @@ using RegisterDataFuncPtr = void(__cdecl*)(CWE_REGAPI* cwe_api);
 
 extern CWE_REGAPI cweAPI;
 
-extern std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
-
 extern std::unordered_set<int> ModAPI_SpecialAction;
 extern std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
 

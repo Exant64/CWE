@@ -90,6 +90,7 @@
 	#include <imgui_debug.h>
 #endif
 #include <al_garden_info.h>
+#include <api/api_json.h>
 
 const char* PathToModFolder = "";
 
@@ -361,6 +362,7 @@ extern "C"
 		g_HelperFunctions = &helperFunctions;
 
 		RenderFix_Init(helperFunctions);
+		ScanAllMods();
 
 		cwe_device = dword_1A557C0->pointerToDevice;
 

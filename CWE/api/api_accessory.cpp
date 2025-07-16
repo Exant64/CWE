@@ -5,6 +5,7 @@
 #include <al_marketattr.h>
 #include "api_metadata.h"
 #include "api_accessory.h"
+#include "api_texture.h"
 
 std::vector<CWE_API_ACCESSORY_DATA> ModAPI_AccessoryDataList;
 
@@ -31,6 +32,10 @@ void AccessoryDisableJiggle(int accessory_id) {
 	GetAccessoryData(accessory_id).Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
 }
 
+bool AccessoryCheckID(const char* ID) {
+	return !AccessoryIDLookupTable.contains(ID);
+}
+
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	// todo: errors
 
@@ -39,6 +44,11 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	}
 
 	// todo null pointer safety checks
+
+	NJS_TEXLIST* pTexlist = pAccessoryData->pTexlist;
+	if (!pTexlist && pAccessoryData->pTextureName) {
+		pTexlist = AddAutoTextureLoad(pAccessoryData->pTextureName);
+	}
 
 	ItemMetadata::Get()->Add(ChaoItemCategory_Accessory, pAccessoryData->ID);
 
@@ -49,7 +59,7 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		pAccessoryData->pDescription
 	);
 
-	ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(pAccessoryData->pObject, pAccessoryData->pTexlist);
+	ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(pAccessoryData->pObject, pTexlist);
 
 	const size_t id = ModAPI_AccessoryDataList.size();
 	ModAPI_AccessoryDataList.push_back(*pAccessoryData);

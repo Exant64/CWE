@@ -29,13 +29,14 @@
 #pragma warning( disable: 4838 )
 #include "data/alo_missing_tree.nja"
 #include <al_draw.h>
+#include <api/api_texture.h>
+#include <api/api_json.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
 
 std::vector<MotionTableAction> chaoAnimations;
 std::map<std::string, int> registeredAnimations;
-std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
 std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
 std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
 std::vector<RegisterDataFuncPtr> RegisterDataHooks;
@@ -107,23 +108,6 @@ extern "C"
 		};
 
 		return AddChaoMinimal(&legacyEntry);
-	}
-
-	__declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
-	{
-		static APIErrorUtil error("RegisterChaoTexlistLoad error:");
-
-		if (!name) { 
-			error.print("name is nullptr");
-			return; 
-		}
-
-		if (!load) {
-			error.print("\"%s\"'s texlist is nullptr", name);
-			return;
-		}
-
-		TexlistLoads.push_back(std::make_pair(name, load));
 	}
 
 	__declspec(dllexport) void SetRebuyFlag(int Category, int ID, bool rebuy)
@@ -426,7 +410,10 @@ void RegisterCWEData(CWE_REGAPI* cwe_api)
 
 	size_t priceAdjustStartIndices[_countof(priceAdjustedCategories)];
 	InitPriceAdjustStartIndices(priceAdjustStartIndices);
+
+	LoadJSONData(JSON_ACCESSORY);
 	CallRegisteredHooks(cwe_api);
+
 	AdjustItemPrices(priceAdjustStartIndices);
 
 	AL_Odekake_Finalize();

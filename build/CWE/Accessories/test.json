@@ -1,0 +1,16 @@
+{
+  "id": "testacc", 
+  "model": "test.sa2mdl", 
+  "texture": "CWE_OBJECT", 
+  "slot": "head",
+  "hide_parts": [10, 6],
+  "disable_jiggle": true,
+  "head_change": "all_bald",
+  "market_data": {  
+    "price": 1000,
+    "sale": 1000,
+    "name": "Test Acc",
+    "description": "Test Desc",
+    "emblems": 100
+  }
+}

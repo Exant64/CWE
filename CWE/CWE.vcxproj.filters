@@ -146,6 +146,9 @@
     <ClCompile Include="save\save_item.cpp" />
     <ClCompile Include="al_garden_info.cpp" />
     <ClCompile Include="move.cpp" />
+    <ClCompile Include="api\api_json.cpp" />
+    <ClCompile Include="ModelInfo.cpp" />
+    <ClCompile Include="api\api_texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -347,6 +350,9 @@
     <ClInclude Include="api\api_accessory.h" />
     <ClInclude Include="save\save_item.h" />
     <ClInclude Include="al_garden_info.h" />
+    <ClInclude Include="api\api_json.h" />
+    <ClInclude Include="ModelInfo.h" />
+    <ClInclude Include="api\api_texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
