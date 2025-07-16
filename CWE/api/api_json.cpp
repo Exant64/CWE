@@ -173,6 +173,44 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 		accessoryData.pTexlist = NULL;
 	}
 
+	// "hide_parts" (optional)
+	if (document.HasMember("hide_parts")) {
+		const auto& hide_parts = document["hide_parts"];
+		if (!hide_parts.IsArray()) {
+			error.print(MEMBER(hide_parts) "is not an array!");
+			return false;
+		}
+
+		for (const auto& element : hide_parts.GetArray()) {
+			if (!element.IsInt()) {
+				error.print("One of " MEMBER(hide_parts) " elements' is not an integer!");
+				return false;
+			}
+
+			const auto part = uint64_t(element.GetInt());
+			if (part < 0 || part >= 40) {
+				error.print("One of " MEMBER(hide_parts) " elements' is outside of the valid range ([0..39])!");
+				return false;
+			}
+
+			accessoryData.HideNodes |= uint64_t(1) << part;
+		}
+	}
+
+	// "disable_jiggle" (optional)
+	if (document.HasMember("disable_jiggle")) {
+		const auto& disable_jiggle = document["disable_jiggle"];
+		if (!disable_jiggle.IsBool()) {
+			error.print(MEMBER(disable_jiggle) "is not a boolean!");
+			return false;
+		}
+
+		if (disable_jiggle.GetBool()) {
+			accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
+		}
+	}
+
+	// "slot"
 	if (!document.HasMember("slot")) {
 		error.print("\"slot\" not found!");
 		return false;

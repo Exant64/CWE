@@ -26,13 +26,10 @@ struct CWE_API_ACCESSORY_DATA {
 	const char* pName;
 	const char* pDescription;
 
-	// ..later wink wink
-#if 0
 	uint64_t HideNodes; // bitfield
 
 	CWE_API_ACCESSORY_COLOR_ENTRY* pColorEntries;
 	Uint32 ColorEntryCount;
-#endif
 
 	Uint32 Flags;
 };
