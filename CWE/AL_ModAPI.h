@@ -34,7 +34,6 @@ extern std::vector<const char*> MsgAlItem;
 
 extern std::vector<MotionTableAction> chaoAnimations;
 extern std::map<std::string, int> registeredAnimations;
-
 extern std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
 
 extern std::unordered_map<int, int> ModAPI_LensColorMap;

@@ -64,6 +64,13 @@ enum ChunkMaterialFlagsEnum
 	UseChunkObjectColor = 0x8,
 };
 
+extern NJS_POINT3 BaldVectorTest;
+extern bool HeadBald;
+extern bool StomachBald;
+extern float BaldRadius;
+extern NJS_POINT3 BaldCenter;
+
+void AL_RenderAccessory(const task* tp, const EAccessoryType slot);
 void AL_SetMotionMatrix(ObjectMaster* a1, ChunkObjectPointer* ptr);
 void AL_ValidateAccessory(ObjectMaster* a1, EAccessoryType type);
 void AL_RenderRigAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, EAccessoryType type);

@@ -789,7 +789,6 @@
     <None Include="data\al_model\ali_medal_pal.nja" />
     <None Include="data\al_model\ali_medal_rub.nja" />
     <None Include="data\al_model\ali_model_saf.nja" />
-    <None Include="data\al_model\al_baldroot.nja" />
     <None Include="data\al_model\al_egg_chao.nja" />
     <None Include="data\al_model\al_nnz.nja" />
     <None Include="data\al_model\al_omochao.nja" />

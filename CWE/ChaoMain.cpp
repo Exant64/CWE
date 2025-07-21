@@ -9,6 +9,7 @@
 #include "al_stage.h"
 #include <save/save_item.h>
 #include <api/api_texture.h>
+#include <save/save_item.h>
 
 const HelperFunctions* g_HelperFunctions = nullptr;
 void(__cdecl* DrawChaoWorldShadow)() = nullptr;
