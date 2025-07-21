@@ -16,12 +16,9 @@
 extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
-bool ALO_IsAccessoryGeneric(int index) {
-	const auto& type = ModAPI_AccessoryDataList[index].SlotType;
-	return type == EAccessoryType::Generic1 || type == EAccessoryType::Generic2;
-}
-
 void Accessory_Display(ObjectMaster* a1) {
+	const AccessorySaveInfo* save = (const AccessorySaveInfo*)AL_GetItemSaveInfo(a1);
+
 	DoLighting(LightIndex);
 	njPushMatrixEx();
 
@@ -30,12 +27,16 @@ void Accessory_Display(ObjectMaster* a1) {
 
 	njSetTexture(&CWE_OBJECT_TEXLIST);
 
-	if (ALO_IsAccessoryGeneric(a1->Data1.Entity->Rotation.x))
+	if (IsAccessoryGeneric(a1->Data1.Entity->Rotation.x))
 		chCnkDrawObject(&object_ala_full_mannequin);
 	else
 		chCnkDrawObject(&object_alo_mannequin);
 
+	SaveControl3D();
+	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+	AccessorySetupDraw(a1->Data1.Entity->Rotation.x, save->Colors, save->UsedColors);
 	ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
+	LoadControl3D();
 
 	if (a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
 	{

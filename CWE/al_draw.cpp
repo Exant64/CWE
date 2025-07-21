@@ -24,6 +24,7 @@
 #include <al_daynight.h>
 #include <data/debugsphere.h>
 #include <api/api_accessory.h>
+#include <optional>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
@@ -354,11 +355,13 @@ static bool AL_HasAccessoryInSlot(const task* tp, const EAccessoryType slot) {
 
 static void AL_RenderAccessory(const task* tp, const EAccessoryType slot) {
 	const chaowk* work = GET_CHAOWK(tp);
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 
 	if (!AL_HasAccessoryInSlot(tp, slot)) {
 		return;
 	}
 
+	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
 	ObjectRegistry::DrawObject(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
 }
 
@@ -390,6 +393,7 @@ static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPoint
 	}
 
 	chaowk* work = GET_CHAOWK(tp);
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 	const int accessoryIndex = work->AccessoryIndices[slot];
 	const auto& accessory_data = GetAccessoryData(accessoryIndex);
 
@@ -402,6 +406,7 @@ static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPoint
 
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
 	njSetTexture(registry->GetTex(accessoryIndex));
+	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
 	DrawAccessory(tp, chunkObjectPointer, registry->GetObj(accessoryIndex));
 	
 	// reset animation state afterwards
@@ -698,21 +703,6 @@ void ColorEggModel(NJS_CNK_MODEL* a1, int a2)
 	}
 }
 
-static bool AL_CheckBald(const task* tp, const EAccessoryType slot) {
-	const chaowk* work = GET_CHAOWK(tp);
-	const int id = work->AccessoryIndices[slot];
-	if (id == -1) return false;
-
-	const auto& data = GetAccessoryData(id);
-	return data.SlotType == slot && (data.Flags & CWE_API_ACCESSORY_FLAGS_FULL_BALD);
-}
-
-static bool AL_CheckAllBald(task* tp) {
-	return	AL_CheckBald(tp, EAccessoryType::Head) || 
-			AL_CheckBald(tp, EAccessoryType::Generic1) || 
-			AL_CheckBald(tp, EAccessoryType::Generic2);
-}
-
 void AL_SetBodyTexture(ObjectMaster* a1)
 {
 	if (a1->Data1.Chao->pParamGC->Type == 26) {
@@ -725,14 +715,10 @@ void AL_SetBodyTexture(ObjectMaster* a1)
 	else
 		njSetTexture(&AL_BODY);
 }
-bool HeadBald;
-bool StomachBald;
-float BaldRadius = 1.3f;
-NJS_POINT3 BaldCenter = { 0,1.1f, 0 };
-NJS_POINT3 BaldVectorTest = { 1,1,1 };
-static bool BaldFlag = false;
 
-static bool BaldHideNodes[40] = { 0 };
+static bool BaldFlag = false;
+static CWE_API_ACCESSORY_BALD_DATA DrawBaldData;
+static uint64_t DrawHideNodes = 0;
 
 static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer) {
 	const chaowk* work = GET_CHAOWK(tp);
@@ -744,30 +730,113 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 	AL_RenderRigAccessory(tp, chunkObjectPointer, EAccessoryType::Generic1);
 	AL_RenderRigAccessory(tp, chunkObjectPointer, EAccessoryType::Generic2);
 
-	memset(BaldHideNodes, false, sizeof(BaldHideNodes));
-	HeadBald = false;
+	DrawHideNodes = 0;
+	BaldFlag = false;
+
+	DrawBaldData = {
+		.Center = {0, 1.1, -0.1},
+		.Influence = {0.9, 0.9, 0.9},
+		.Radius = 1.15f,
+		.ClipFace = true
+	};
+
+	std::optional<CWE_API_ACCESSORY_BALD_DATA> baldData;
+
+	bool presets[3] = { false, false, false };
+	bool dontKeepHeadParts = false;
 
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
 		if (work->AccessoryIndices[i] == -1) continue;
+		const auto& data = GetAccessoryData(work->AccessoryIndices[i]);
 
-		if (GetAccessoryData(work->AccessoryIndices[i]).Flags & CWE_API_ACCESSORY_FLAGS_FULL_BALD) {
-			BaldHideNodes[23] = true;
-			BaldHideNodes[25] = true;
-			HeadBald = true;
+		DrawHideNodes |= data.HideNodes;
+
+		if (data.Flags & CWE_API_ACCESSORY_FLAGS_BALD_PRESET_X) {
+			presets[0] = true;
+		}
+		if (data.Flags & CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Y) {
+			presets[1] = true;
+		}
+		if (data.Flags & CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Z) {
+			presets[2] = true;
+		}
+
+		if (!(data.Flags & CWE_API_ACCESSORY_FLAGS_BALD_KEEP_HEAD_PARTS)) {
+			dontKeepHeadParts = true;
+		}
+
+		if (!baldData) {
+			baldData = GetAccessoryBaldData(work->AccessoryIndices[i]);
+		}
+
+		if (data.Flags & CWE_API_ACCESSORY_FLAGS_LEGACY_BALD) {
+			presets[0] = true;
+			presets[1] = true;
+			presets[2] = true;
 		}
 	}
 
-	//BaldHideNodes[23] = true;
-	//BaldHideNodes[25] = true;
+	if (!baldData) {
+		for (size_t i = 0; i < 3; ++i) {
+			if (presets[i]) {
+				BaldFlag = true;
+
+				if (dontKeepHeadParts) {
+					DrawHideNodes |= uint64_t(1) << 23;
+					DrawHideNodes |= uint64_t(1) << 25;
+				}
+				continue;
+			}
+
+			switch (i) {
+			case 0:
+				DrawBaldData.Influence.x = 0.f;
+				break;
+			case 1:
+				DrawBaldData.Influence.y = 0.f;
+				break;
+			case 2:
+				DrawBaldData.Influence.z = 0.f;
+				break;
+			}
+		}
+	}
+	else {
+		if (dontKeepHeadParts) {
+			DrawHideNodes |= uint64_t(1) << 23;
+			DrawHideNodes |= uint64_t(1) << 25;
+		}
+
+		BaldFlag = true;
+		DrawBaldData = *baldData;
+	}
 }
 
+static void AL_SetupBald(task* tp) {
+	float vector[4] = { DrawBaldData.Center.x, DrawBaldData.Center.y, DrawBaldData.Center.z, DrawBaldData.Radius };
+	cwe_device->SetVertexShaderConstantF(148, vector, 1);
+
+	bool canbald = false;
+	switch (Chao_NodeIndex) {
+	case 14:
+	case 15:
+	case 16:
+		vector[0] = 1;
+		cwe_device->SetVertexShaderConstantF(152, vector, 1);
+		canbald = BaldFlag;
+		break;
+	}
+
+	if (canbald) {
+		float vector[4] = { 1, DrawBaldData.Influence.x, DrawBaldData.Influence.y, DrawBaldData.Influence.z };
+		cwe_device->SetVertexShaderConstantF(144, vector, 1);
+	}
+}
 void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 {
 	int v36, v44;
 
-	if (Chao_NodeIndex == 0)
-	{
-		BaldFlag = AL_CheckAllBald(a1);
+	if (Chao_NodeIndex == 0) {
 		AL_DrawSetupParams(a1, chunkObjectPointer);
 	}
 
@@ -925,34 +994,9 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 				goto LABEL_91;
 			}
 
-			{
-				float vector[4] = { BaldCenter.x, BaldCenter.y, BaldCenter.z, BaldRadius };
-				cwe_device->SetVertexShaderConstantF(148, vector, 1);
+			AL_SetupBald(a1);
 
-				bool canbald = false;
-				switch (Chao_NodeIndex) {
-				case 1:
-					vector[0] = 0;
-					cwe_device->SetVertexShaderConstantF(152, vector, 1);
-
-					canbald = StomachBald;
-					break;
-				case 14:
-				case 15:
-				case 16:
-					vector[0] = 1;
-					cwe_device->SetVertexShaderConstantF(152, vector, 1);
-					canbald = HeadBald;
-					break;
-				}
-
-				if (canbald) {
-					float vector[4] = { 1, BaldVectorTest.x, BaldVectorTest.y, BaldVectorTest.z };
-					cwe_device->SetVertexShaderConstantF(144, vector, 1);
-				}
-			}
-
-			if (!BaldHideNodes[Chao_NodeIndex]) {
+			if (!(DrawHideNodes & (uint64_t(1) << uint64_t(Chao_NodeIndex)))) {
 				chCnkDrawModel(chunkObjectPointer->base.chunkmodel);
 			}
 		LABEL_95:

@@ -888,7 +888,7 @@ struct AL_PARAM_ACCESSORY_INFO {
 	char ID[20];
 	Uint32 Flags;
 	Uint32 ColorFlags;
-	NJS_COLOR ColorSlots[8];
+	Uint32 ColorSlots[8];
 };
 
 struct ChaoDataBase

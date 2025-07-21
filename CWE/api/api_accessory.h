@@ -1,9 +1,23 @@
 #pragma once
 #include "cwe_api.h"
+#include <optional>
+
+struct CWE_API_ACCESSORY_BALD_DATA {
+	NJS_POINT3 Center;
+	NJS_POINT3 Influence;
+	float Radius;
+	bool ClipFace;
+};
 
 enum CWE_API_ACCESSORY_FLAGS {
-	CWE_API_ACCESSORY_FLAGS_FULL_BALD = BIT_0,
+	CWE_API_ACCESSORY_FLAGS_LEGACY_BALD = BIT_0,
 	CWE_API_ACCESSORY_FLAGS_NO_JIGGLE = BIT_1,
+	CWE_API_ACCESSORY_FLAGS_FREE_COLORS = BIT_2,
+	CWE_API_ACCESSORY_FLAGS_FREE_BALD = BIT_3,
+	CWE_API_ACCESSORY_FLAGS_BALD_KEEP_HEAD_PARTS = BIT_4,
+	CWE_API_ACCESSORY_FLAGS_BALD_PRESET_X = BIT_5,
+	CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Y = BIT_6,
+	CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Z = BIT_7,
 };
 
 struct CWE_API_ACCESSORY_COLOR_ENTRY {
@@ -30,17 +44,23 @@ struct CWE_API_ACCESSORY_DATA {
 
 	CWE_API_ACCESSORY_COLOR_ENTRY* pColorEntries;
 	Uint32 ColorEntryCount;
+	Uint32 DefaultColors[8];
+	Uint32 UsedColorSlots;
+
+	CWE_API_ACCESSORY_BALD_DATA* pBaldData;
 
 	Uint32 Flags;
 };
 
 #define ACCESSORY_ID_LENGTH sizeof(CWE_API_ACCESSORY_DATA::ID)
 
-extern std::vector<CWE_API_ACCESSORY_DATA> ModAPI_AccessoryDataList;
+void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32 usedColorFlags);
 
+bool IsAccessoryGeneric(int index);
 CWE_API_ACCESSORY_DATA& GetAccessoryData(int index);
 extern "C" __declspec(dllexport) EAccessoryType GetAccessoryType(int index);
 
+const std::optional <CWE_API_ACCESSORY_BALD_DATA>& GetAccessoryBaldData(size_t index);
 __declspec(dllexport) void AccessoryMakeBald(int accessory_id);
 void AccessoryDisableJiggle(int accessory_id);
 

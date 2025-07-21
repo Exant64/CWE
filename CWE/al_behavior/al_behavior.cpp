@@ -59,6 +59,21 @@ extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int typ
 
 	memset(&accessoryData, 0, sizeof(accessoryData));
 	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
+	memcpy(accessoryData.ColorSlots, GetAccessoryData(type).DefaultColors, sizeof(accessoryData.ColorSlots));
+	accessoryData.ColorFlags = 0;
+}
+
+static void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int type) {
+	char id[20];
+	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
+
+	const auto slotType = GetAccessoryType(type);
+	auto& accessoryData = GET_CHAOPARAM(a1)->Accessories[slotType];
+
+	memset(&accessoryData, 0, sizeof(accessoryData));
+	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
+	memcpy(accessoryData.ColorSlots, saveInfo->Colors, sizeof(accessoryData.ColorSlots));
+	accessoryData.ColorFlags = saveInfo->UsedColors;
 }
 
 extern "C" __declspec(dllexport) int AL_GetAccessory(ObjectMaster * a1, int type)
@@ -132,12 +147,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(ObjectMa
 		v8 = v6->tp;
 		if (v8)
 		{
-			AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
-			if (AL_GetItemSaveInfo(v7->tp))
-			{
-				v9 = AL_GetItemSaveInfo(v7->tp);
-				AL_ClearItemSaveInfo((ItemSaveInfoBase*)v9);
+			auto* accessorySave = (AccessorySaveInfo*)AL_GetItemSaveInfo(v7->tp);
+			if (accessorySave) {
+				AL_SetAccessory(a1, accessorySave, v8->Data1.Entity->Rotation.x);
+				AL_ClearItemSaveInfo(accessorySave);
 				AL_ClearItemSaveInfoPtr(v7->tp);
+			}
+			else {
+				AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
 			}
 			v7->tp->MainSub = DeleteObject_;
 		}
@@ -165,12 +182,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(Obj
 		v8 = v6->tp;
 		if (v8)
 		{
-			AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
-			if (AL_GetItemSaveInfo(v7->tp))
-			{
-				v9 = AL_GetItemSaveInfo(v7->tp);
-				AL_ClearItemSaveInfo((ItemSaveInfoBase*)v9);
+			auto* accessorySave = (AccessorySaveInfo*)AL_GetItemSaveInfo(v7->tp);
+			if (accessorySave) {
+				AL_SetAccessory(a1, accessorySave, v8->Data1.Entity->Rotation.x);
+				AL_ClearItemSaveInfo(accessorySave);
 				AL_ClearItemSaveInfoPtr(v7->tp);
+			}
+			else {
+				AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
 			}
 			v7->tp->MainSub = DeleteObject_;
 		}
@@ -414,9 +433,13 @@ static void AccessoryRemoveAll(task* tp) {
 		const auto index = work->AccessoryIndices[i];
 		if (index == -1) continue;
 
-		auto saveinfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+		auto saveinfo = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
 		if (saveinfo) {
-			Accessory_Load(index, &work->entity.Position, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, (AccessorySaveInfo*)saveinfo);
+			const auto& accessoryChaoData = pParam->Accessories[i];
+			saveinfo->UsedColors = accessoryChaoData.ColorFlags;
+			memcpy(saveinfo->Colors, accessoryChaoData.ColorSlots, sizeof(saveinfo->Colors));
+			
+			Accessory_Load(index, &work->entity.Position, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
 			AL_ParameterClearAccessory(tp, EAccessoryType(i));
 		}
 	}

@@ -33,6 +33,7 @@
 #include "al_chao_info.h"
 #include <api/api_tree.h>
 #include <al_garden_info.h>
+#include <api/api_accessory.h>
 
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
@@ -757,7 +758,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		njTranslate(NULL, 0, -1.4f, 0);
 
 		njSetTexture(&CWE_OBJECT_TEXLIST);
-		if (ALO_IsAccessoryGeneric(type))
+		if (IsAccessoryGeneric(type))
 		{
 			njTranslate(NULL, 0, -0.5f, 0);
 			njScale(NULL, 0.978f, 0.978f, 0.978f);
@@ -1353,7 +1354,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			njTranslate(NULL, 0, -1.4f, 0);
 
 			njSetTexture(&CWE_OBJECT_TEXLIST);
-			if (ALO_IsAccessoryGeneric(type))
+			if (IsAccessoryGeneric(type))
 			{
 				njTranslate(NULL, 0, -0.5f, 0);
 				njScale(NULL, 0.978f, 0.978f, 0.978f);

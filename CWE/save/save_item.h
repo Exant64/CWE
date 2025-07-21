@@ -88,16 +88,65 @@ struct ItemSaveInfoBase {
 };
 
 struct AccessorySaveInfo : ItemSaveInfoBase {
+	Uint32 Colors[8];
+	Uint32 UsedColors;
+
 	ChaoItemCategory GetCategory() const {
 		return ChaoItemCategory_Accessory;
 	}
 
+	void Clear() override {
+		ItemSaveInfoBase::Clear();
+		UsedColors = 0;
+	}
+
 	void Save(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) const {
 		ItemSaveInfoBase::Save(writer);
+
+		writer.Key("colors");
+		writer.StartArray();
+
+		for (size_t i = 0; i < 8; ++i) {
+			const NJS_COLOR* pColor = (NJS_COLOR*)&Colors[i];
+
+			char color[32];
+			sprintf_s(color, "#%02x%02x%02x", pColor->argb.r, pColor->argb.g, pColor->argb.b);
+			writer.String(color);
+		}
+
+		writer.EndArray();
+
+		writer.Key("used_colors");
+		writer.Uint(UsedColors);
 	}
 
 	static void Load(AccessorySaveInfo& item, const rapidjson::Value& value) {
 		ItemSaveInfoBase::Load(item, value);
+
+		if (value.HasMember("colors")) {
+			const auto& colorsArray = value["colors"].GetArray();
+			for (size_t i = 0; i < 8; ++i) {
+				if (colorsArray[i].IsString()) {
+					NJS_COLOR* pColor = (NJS_COLOR*)&item.Colors[i];
+					const auto& colorString = colorsArray[i].GetString();
+
+					int r, g, b;
+					sscanf(colorString + 1, "%02x%02x%02x", &r, &g, &b);
+
+					pColor->argb.a = 255;
+					pColor->argb.r = r;
+					pColor->argb.g = g;
+					pColor->argb.b = b;
+				}
+			}
+		}
+
+		if (value.HasMember("used_colors")) {
+			item.UsedColors = value["used_colors"].GetUint();
+		}
+		else {
+			item.UsedColors = 0;
+		}
 	}
 };
 

@@ -72,6 +72,23 @@ static void ChaoInfoMenu() {
                         work->AccessoryCalculatedID[i], 
                         work->AccessoryIndices[i]
                     );
+                    if (work->AccessoryIndices[i] == -1) continue;
+                    
+                    for (size_t j = 0; j < 8; ++j) {
+                        NJS_COLOR* pCol = (NJS_COLOR*) & work->pParamGC->Accessories[i].ColorSlots[j];
+                        ImGui::PushID(j);
+                        float col[3];
+                        col[0] = pCol->argb.r / 255.f;
+                        col[1] = pCol->argb.g / 255.f;
+                        col[2] = pCol->argb.b / 255.f;
+                        if (ImGui::ColorEdit3("color", col)) {
+                            pCol->argb.r = Uint8(col[0] * 255.f);
+                            pCol->argb.g = Uint8(col[1] * 255.f);
+                            pCol->argb.b = Uint8(col[2] * 255.f);
+                            work->pParamGC->Accessories[i].ColorFlags |= (1 << j);
+                        }
+                        ImGui::PopID();
+                    }
                 }
 
                 ImGui::EndTabItem();
@@ -449,18 +466,6 @@ static void ImGuiMenu() {
         TaskListMenu();
 
         ImGui::EndMainMenuBar();
-    }
-
-    if (ImGui::Begin("receding hairline menu")) {
-        ImGui::SliderFloat3("Center", &BaldCenter.x, -2, 2);
-        ImGui::SliderFloat("Radius", &BaldRadius, 0, 10);
-        ImGui::SliderFloat("X", &BaldVectorTest.x, 0, 1);
-        ImGui::SliderFloat("Y", &BaldVectorTest.y, 0, 1);
-        ImGui::SliderFloat("Z", &BaldVectorTest.z, 0, 1);
-        ImGui::Checkbox("Head", &HeadBald);
-        ImGui::Checkbox("Body", &StomachBald);
-
-        ImGui::End();
     }
 }
 

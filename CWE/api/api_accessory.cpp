@@ -6,25 +6,43 @@
 #include "api_metadata.h"
 #include "api_accessory.h"
 #include "api_texture.h"
+#include <optional>
 
-std::vector<CWE_API_ACCESSORY_DATA> ModAPI_AccessoryDataList;
+struct AccessoryInternalData {
+	CWE_API_ACCESSORY_DATA Data;
+	std::vector<std::pair<uint32_t*, size_t>> MaterialUpdatePointers;
+	uint32_t DefaultColor[8];
+	size_t ColorCount;
+	std::optional <CWE_API_ACCESSORY_BALD_DATA> BaldData;
+};
+
+std::vector<AccessoryInternalData> ModAPI_AccessoryDataList;
 
 // the idea is that this is an optimization to check for already used ids faster
 static std::unordered_set<std::string> AccessoryIDLookupTable;
 
 // i honestly don't remember why this is exported but i'll keep it exported for a good while i guess
 extern "C" __declspec(dllexport) EAccessoryType GetAccessoryType(int index) {
-	return ModAPI_AccessoryDataList[index].SlotType;
+	return ModAPI_AccessoryDataList[index].Data.SlotType;
+}
+
+bool IsAccessoryGeneric(int index) {
+	const auto& type = ModAPI_AccessoryDataList[index].Data.SlotType;
+	return type == EAccessoryType::Generic1 || type == EAccessoryType::Generic2;
+}
+
+const std::optional <CWE_API_ACCESSORY_BALD_DATA>& GetAccessoryBaldData(size_t index) {
+	return ModAPI_AccessoryDataList[index].BaldData;
 }
 
 CWE_API_ACCESSORY_DATA& GetAccessoryData(int index) {
-	return ModAPI_AccessoryDataList[index];
+	return ModAPI_AccessoryDataList[index].Data;
 }
 
 __declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
 	auto& data = GetAccessoryData(accessory_id);
 
-	data.Flags |= CWE_API_ACCESSORY_FLAGS_FULL_BALD;
+	data.Flags |= CWE_API_ACCESSORY_FLAGS_LEGACY_BALD;
 	data.Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
 }
 
@@ -34,6 +52,159 @@ void AccessoryDisableJiggle(int accessory_id) {
 
 bool AccessoryCheckID(const char* ID) {
 	return !AccessoryIDLookupTable.contains(ID);
+}
+
+static uint32_t* AccessoryFindMaterial(NJS_CNK_MODEL* pModel, size_t materialIndex) {
+	const Sint16* start = pModel->plist;
+	const Sint16* plist = pModel->plist;
+
+	size_t materialCount = 0;
+
+	for (; ; )
+	{
+		const int type = CNK_GET_OFFTYPE(plist);
+
+		if (type == NJD_CE)
+		{
+			/** NJD_ENDOFF **/
+			break;
+		}
+
+		if (type == NJD_CN)
+		{
+			/** NJD_NULLOFF **/
+
+			/** Next offset **/
+			++plist;
+			continue;
+		}
+
+		if (type <= CNK_BITSOFF_MAX)
+		{
+			/** NJD_BITSOFF **/
+
+			/** Next offset **/
+			++plist;
+			continue;
+		}
+
+		if (type <= CNK_TINYOFF_MAX)
+		{
+			/** NJD_TINYOFF **/
+
+			/** Next offset **/
+			plist += 2;
+			continue;
+		}
+
+		if (type <= CNK_MATOFF_MAX)
+		{
+			/** NJD_MATOFF **/
+
+			if (materialCount == materialIndex) {
+				return (uint32_t*)(plist + 2);
+			}
+			
+			materialCount++;
+
+			/** Next offset **/
+			plist += ((uint16_t*)plist)[1] + 2;
+			continue;
+		}
+
+		if (type <= CNK_STRIPOFF_MAX) // and volume
+		{
+			/** NJD_STRIPOFF **/
+
+			/** Next offset **/
+			plist += ((uint16_t*)plist)[1] + 2;
+			continue;
+		}
+
+		/** An error occured, stop **/
+		break;
+	}
+
+	return NULL;
+}
+
+static int IterateNodeCount = 0;
+static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupTable, NJS_OBJECT* pObject) {
+	while (pObject) {
+		for (size_t i = 0; i < data.Data.ColorEntryCount; ++i) {
+			const auto& entry = data.Data.pColorEntries[i];
+			if (entry.NodeIndex != IterateNodeCount) {
+				continue;
+			}
+
+			if (!pObject->chunkmodel) {
+				return false;
+			}
+
+			uint32_t* pMaterial = AccessoryFindMaterial(pObject->chunkmodel, entry.MaterialIndex);
+			if (!pMaterial) {
+				return false;
+			}
+
+			data.MaterialUpdatePointers.push_back(std::make_pair(pMaterial, lookupTable[entry.ColorSlot]));
+		}
+
+		IterateNodeCount++;
+
+		if (pObject->child) {
+			AccessoryIterateObjects(data, lookupTable, pObject->child);
+		}
+
+		pObject = pObject->sibling;
+	}
+
+	return true;
+}
+
+static bool AccessoryFindColors(AccessoryInternalData& data) {
+	if (!data.Data.pColorEntries || !data.Data.UsedColorSlots) {
+		return true;
+	}
+	
+	data.ColorCount = 0;
+
+	size_t lookupTable[8];
+
+	for (size_t i = 0; i < 8; ++i) {
+		lookupTable[i] = -1;
+
+		if (!(data.Data.UsedColorSlots & (1 << i))) {
+			continue;
+		}
+
+		data.DefaultColor[data.ColorCount] = data.Data.DefaultColors[i];
+		lookupTable[i] = data.ColorCount;
+
+		data.ColorCount++;
+	}
+
+	if (data.ColorCount <= 0) {
+		return true;
+	}
+
+	IterateNodeCount = 0;
+	return AccessoryIterateObjects(data, lookupTable, data.Data.pObject);
+}
+
+void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32 usedColorFlags) {
+	auto& data = ModAPI_AccessoryDataList[index];
+	
+	for (const auto& updatePointers : data.MaterialUpdatePointers) {
+		auto* pointer = updatePointers.first;
+		const auto slotIndex = updatePointers.second;
+
+		if (usedColorFlags & (1 << slotIndex)) {
+			*pointer = colors[slotIndex];
+		}
+		else {
+			*pointer = data.DefaultColor[slotIndex];
+		}
+	}
 }
 
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
@@ -50,11 +221,21 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		pTexlist = AddAutoTextureLoad(pAccessoryData->pTextureName);
 	}
 
+	AccessoryInternalData entry = {
+		.Data = *pAccessoryData
+	};
+
+	entry.BaldData = pAccessoryData->pBaldData ? std::optional(*pAccessoryData->pBaldData) : std::nullopt;
+
+	if (!AccessoryFindColors(entry)) {
+		return -1;
+	}
+
 	ItemMetadata::Get()->Add(ChaoItemCategory_Accessory, pAccessoryData->ID);
 
 	BlackMarketAttributes::Get()->Add(
 		ChaoItemCategory_Accessory,
-		pAccessoryData->pMarketAttrib, 
+		pAccessoryData->pMarketAttrib,
 		pAccessoryData->pName,
 		pAccessoryData->pDescription
 	);
@@ -62,7 +243,17 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(pAccessoryData->pObject, pTexlist);
 
 	const size_t id = ModAPI_AccessoryDataList.size();
-	ModAPI_AccessoryDataList.push_back(*pAccessoryData);
+
+	ModAPI_AccessoryDataList.push_back(entry);
+
+	if (pAccessoryData->Flags & CWE_API_ACCESSORY_FLAGS_FREE_BALD) {
+		free(pAccessoryData->pBaldData);
+	}
+
+	if (pAccessoryData->Flags & CWE_API_ACCESSORY_FLAGS_FREE_COLORS) {
+		free(pAccessoryData->pColorEntries);
+	}
+
 	return id;
 }
 

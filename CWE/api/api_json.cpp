@@ -7,17 +7,17 @@
 #include "ModelInfo.h"
 #include <error/en.h>
 
-#define MEMBER(asd) "\"#asd\" "
+#define MEMBER(member) "\"#member\" "
 
 static bool GenericParseID(const rapidjson::Document& document, const APIErrorUtil& error, char id[20]) {
 	if (!document.HasMember("id")) {
-		error.print("\"id\" not found!");
+		error.print(MEMBER(id) "not found!");
 	}
 	else if (!document["id"].IsString()) {
-		error.print("\"id\" isn't a string!");
+		error.print(MEMBER(id) "isn't a string!");
 	}
 	else if (document["id"].GetStringLength() > 20) {
-		error.print("\"id\" must consist of max. 20 characters!");
+		error.print(MEMBER(id) "must consist of max. 20 characters!");
 	}
 	else {
 		memcpy(id, document["id"].GetString(), 20);
@@ -31,12 +31,12 @@ static NJS_OBJECT* GenericParseChunkObj(const rapidjson::Document& document, con
 	const std::filesystem::path jsonPath = pathToJson;
 
 	if (!document.HasMember("model")) {
-		error.print("\"model\" not found!");
+		error.print(MEMBER(model) "not found!");
 		return NULL;
 	}
 
 	if (!document["model"].IsString()) {
-		error.print("\"model\" isn't a string!");
+		error.print(MEMBER(model) "isn't a string!");
 		return NULL;
 	}
 	
@@ -45,13 +45,13 @@ static NJS_OBJECT* GenericParseChunkObj(const rapidjson::Document& document, con
 
 	if (pModel->getformat() != ModelFormat_Chunk) {
 		delete pModel;
-		error.print("\"model\" is not a chunk model!");
+		error.print(MEMBER(model) "is not a chunk model!");
 		return NULL;
 	}
 
 	if (!pObj) {
 		delete pModel;
-		error.print("\"model\" does not point to a valid model!");
+		error.print(MEMBER(model) "does not point to a valid model!");
 	}
 	return pObj;
 }
@@ -150,6 +150,8 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 	APIErrorUtil error("Error loading accessory %s: ", path);
 
 	CWE_API_ACCESSORY_DATA accessoryData{};
+	std::optional<CWE_API_ACCESSORY_BALD_DATA> optionBaldData;
+	std::vector<CWE_API_ACCESSORY_COLOR_ENTRY> colorEntries;
 
 	// "id"
 	if (!GenericParseID(document, error, accessoryData.ID)) return false;
@@ -161,11 +163,11 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 
 	// "texture"
 	if (!document.HasMember("texture")) {
-		error.print("\"texture\" not found!");
+		error.print(MEMBER(texture) "not found!");
 		return false;
 	}
 	else if (!document["texture"].IsString()) {
-		error.print("\"texture\" isn't a string!");
+		error.print(MEMBER(texture) "isn't a string!");
 		return false;
 	}
 	else {
@@ -183,13 +185,13 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 
 		for (const auto& element : hide_parts.GetArray()) {
 			if (!element.IsInt()) {
-				error.print("One of " MEMBER(hide_parts) " elements' is not an integer!");
+				error.print("One of " MEMBER(hide_parts) "elements' is not an integer!");
 				return false;
 			}
 
 			const auto part = uint64_t(element.GetInt());
 			if (part < 0 || part >= 40) {
-				error.print("One of " MEMBER(hide_parts) " elements' is outside of the valid range ([0..39])!");
+				error.print("One of " MEMBER(hide_parts) "elements' is outside of the valid range ([0..39])!");
 				return false;
 			}
 
@@ -212,21 +214,263 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 
 	// "slot"
 	if (!document.HasMember("slot")) {
-		error.print("\"slot\" not found!");
+		error.print(MEMBER(slot) "not found!");
 		return false;
 	}
 	else if (!document["slot"].IsString()) {
-		error.print("\"slot\" isn't a string!");
+		error.print(MEMBER(slot) "isn't a string!");
 		return false;
 	}
 	else if (!AccessorySlotMap.contains(document["slot"].GetString())) {
-		error.print("\"slot\" isn't a valid slot name!");
+		error.print(MEMBER(slot) "isn't a valid slot name!");
 		return false;
 	}
 	else {
 		accessoryData.SlotType = AccessorySlotMap.at(document["slot"].GetString());
 	}
 
+	if (document.HasMember("bald_dont_hide_parts")) {
+		const auto& value = document["bald_dont_hide_parts"];
+		if (!value.IsBool()) {
+			error.print(MEMBER(bald_dont_hide_parts) "isn't a boolean!");
+			return false;
+		}
+
+		if (value.GetBool()) {
+			accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_BALD_KEEP_HEAD_PARTS;
+		}
+	}
+
+	if (document.HasMember("bald_mode")) {
+		const auto& bald_mode = document["bald_mode"];
+		if (bald_mode.IsArray()) {
+			const auto& array = bald_mode.GetArray();
+			if (array.Size() != 3) {
+				error.print(MEMBER(bald_mode) "array isn't a length of 3!");
+				return false;
+			}
+
+			for (size_t i = 0; i < 3; ++i) {
+				if (!array[i].IsBool()) {
+					error.print(MEMBER(bald_mode) "array element isn't a boolean!");
+					return false;
+				}
+
+				if (array[i].GetBool()) {
+					switch (i) {
+					case 0:
+						accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_BALD_PRESET_X;
+						break;
+					case 1:
+						accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Y;
+						break;
+					case 2:
+						accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Z;
+						break;
+					}
+				}
+			}
+		}
+		else if (bald_mode.IsObject()) {
+			const auto& baldModeData = bald_mode.GetObj();
+			const auto parse_point3 = [&](const char* memberName, NJS_POINT3& point, const rapidjson::Value& value) {
+				if (!value.IsArray()) {
+					error.print("%s isn't an array!", memberName);
+					return false;
+				}
+
+				const auto& array = value.GetArray();
+				if (array.Size() != 3) {
+					error.print("%s length isn't 3!", memberName);
+					return false;
+				}
+
+				for (size_t i = 0; i < 3; ++i) {
+					if (!array[i].IsFloat()) {
+						error.print("%s members' aren't floats!");
+						return false;
+					}
+				}
+
+				point.x = array[0].GetFloat();
+				point.y = array[1].GetFloat();
+				point.z = array[2].GetFloat();
+
+				return true;
+			};
+
+			CWE_API_ACCESSORY_BALD_DATA baldData;
+			if (!parse_point3("center", baldData.Center, baldModeData["center"])) return false;
+			if (!parse_point3("influence", baldData.Influence, baldModeData["influence"])) return false;
+
+			if (!baldModeData.HasMember("clip_face")) {
+				error.print(MEMBER(clip_face) "isn't there!");
+				return false;
+			}
+
+			if (!baldModeData["clip_face"].IsBool()) {
+				error.print(MEMBER(clip_face) "isn't a boolean!");
+				return false;
+			}
+
+			baldData.ClipFace = baldModeData["clip_face"].GetBool();
+
+			if (!baldModeData.HasMember("radius")) {
+				error.print(MEMBER(radius) "isn't there!");
+				return false;
+			}
+
+			if (!baldModeData["radius"].IsFloat()) {
+				error.print(MEMBER(radius) "isn't a float!");
+				return false;
+			}
+
+			baldData.Radius = baldModeData["radius"].GetFloat();
+
+			optionBaldData = baldData;
+		}
+		else {
+			error.print(MEMBER(bald_mode) "isn't an array or an object!");
+			return false;
+		}
+	}
+
+	if (document.HasMember("color_slots")) {
+		const auto parseColor = [&](const auto& colorElement, NJS_ARGB& outColor) {
+			if (colorElement.IsString()) {
+				// #AABBCC formatting
+				const auto& colorString = colorElement.GetString();
+				constexpr size_t hexFormatStringLen = std::char_traits<char>::length("#AABBCC");
+
+				if (strlen(colorString) != hexFormatStringLen) {
+					error.print("color string isn't in a valid formatting! (expected #AABBCC formatting)");
+					return false;
+				}
+
+				bool checkFormatting = true;
+				checkFormatting &= colorString[0] == '#';
+
+				//# 0 A 1 A 2 B 3 B 4 C 5 C 6
+				for (size_t strIndex = 1; checkFormatting && strIndex <= 6; strIndex++) {
+					bool validHex = (colorString[strIndex] >= '0' && colorString[strIndex] <= '9');
+					validHex |= (colorString[strIndex] >= 'A' && colorString[strIndex] <= 'F');
+					checkFormatting &= validHex;
+				}
+
+				if (!checkFormatting) {
+					error.print("phase color string isn't in a valid formatting! (expected #AABBCC formatting)");
+					return false;
+				}
+
+				int r, g, b;
+				sscanf(colorString + 1, "%02x%02x%02x", &r, &g, &b);
+
+				outColor.r = r / 255.f;
+				outColor.g = g / 255.f;
+				outColor.b = b / 255.f;
+			}
+			else {
+				error.print("color isn't in a valid formatting!");
+				return false;
+			}
+
+			return true;
+		};
+
+		const auto& color_slots = document["color_slots"];
+		if (!color_slots.IsObject()) {
+			error.print("color_slots is not an object!");
+			return false;
+		}
+
+		if (!color_slots["colors"].IsArray()) {
+			error.print("color_slots color is not an array!");
+			return false;
+		}
+
+		const auto& color_slots_colors = color_slots["colors"].GetArray();
+		if (color_slots_colors.Size() != 8) {
+			error.print("color_slots colors length isn't 8!");
+			return false;
+		}
+
+		for (size_t i = 0; i < 8; ++i) {
+			NJS_ARGB color;
+			NJS_COLOR finalColor;
+
+			if (!parseColor(color_slots_colors[i], color)) {
+				return false;
+			}
+			
+			finalColor.argb.a = 255;
+			finalColor.argb.r = Uint8(color.r * 255);
+			finalColor.argb.g = Uint8(color.g * 255);
+			finalColor.argb.b = Uint8(color.b * 255);
+
+			accessoryData.DefaultColors[i] = finalColor.color;
+		}
+
+		if (!color_slots.HasMember("used")) {
+			error.print("color_slots used is missing!");
+			return false;
+		}
+
+		if (!color_slots["used"].IsArray()) {
+			error.print("color_slots used is not an array!");
+			return false;
+		}
+
+		const auto& used = color_slots["used"].GetArray();
+		for (const auto& usedEntry : used) {
+			if (!usedEntry.IsInt()) {
+				error.print("color_slots used element isn't an integer!");
+				return false;
+			}
+
+			accessoryData.UsedColorSlots |= (1 << usedEntry.GetInt());
+		}
+
+		if (!color_slots.HasMember("entries")) {
+			error.print("color_slots entries is missing!");
+			return false;
+		}
+
+		if (!color_slots["entries"].IsArray()) {
+			error.print("color_slots entries is not an array!");
+			return false;
+		}
+
+		const auto& entries = color_slots["entries"].GetArray();
+		for (const auto& entry : entries) {
+			if (!entry.IsObject()) {
+				error.print("color_slots entries member isn't an object!");
+				return false;
+			}
+
+			if (!entry.HasMember("material_index") || !entry.HasMember("node_index") || !entry.HasMember("slot_index")) {
+				error.print("color_slots entries member missing crucial member!");
+				return false;
+			}
+
+			const auto& material_index = entry["material_index"];
+			const auto& node_index = entry["node_index"];
+			const auto& slot_index = entry["slot_index"];
+
+			if (!material_index.IsInt() || !node_index.IsInt() || !slot_index.IsInt()) {
+				error.print("color_slots entries members aren't integer!");
+				return false;
+			}
+
+			const CWE_API_ACCESSORY_COLOR_ENTRY colorEntry = {
+				node_index.GetInt(),
+				material_index.GetInt(),
+				slot_index.GetInt()
+			};
+
+			colorEntries.push_back(colorEntry);
+		}
+	}
+	
 	BlackMarketItemAttributes attrib;
 	if (!GenericMarketDataParse(document, error, accessoryData.pName, accessoryData.pDescription, attrib)) return false;
 
@@ -238,6 +482,19 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 		free((void*)accessoryData.pDescription);
 		
 		return false;
+	}
+
+	if (colorEntries.size()) {
+		accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_FREE_COLORS;
+		accessoryData.pColorEntries = (CWE_API_ACCESSORY_COLOR_ENTRY*)calloc(colorEntries.size(), sizeof(CWE_API_ACCESSORY_COLOR_ENTRY));
+		memcpy(accessoryData.pColorEntries, colorEntries.data(), sizeof(CWE_API_ACCESSORY_COLOR_ENTRY)* colorEntries.size());
+		accessoryData.ColorEntryCount = colorEntries.size();
+	}
+
+	if (optionBaldData) {
+		accessoryData.pBaldData = (CWE_API_ACCESSORY_BALD_DATA*)malloc(sizeof(CWE_API_ACCESSORY_BALD_DATA));
+		*accessoryData.pBaldData = *optionBaldData;
+		accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_FREE_BALD;
 	}
 
 	accessoryData.pTextureName = _strdup(accessoryData.pTextureName);
