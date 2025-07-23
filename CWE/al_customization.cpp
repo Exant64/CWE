@@ -33,6 +33,7 @@
 #include <api/api_accessory.h>
 #include <al_behavior/al_behavior.h>
 #include <al_garden_info.h>
+#include <ui/al_tween.h>
 
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
@@ -95,7 +96,7 @@ static void CheckHatAccVectorUpdate() {
 	}
 }
 
-class LeftBarButton : public UISelectable {
+class LeftBarButtonOld : public UISelectable {
 private:
 	const std::string m_layerEnter;
 	int m_buttonType;
@@ -125,11 +126,78 @@ public:
 		}
 	}
 	void Disp() override {
+		return;
 		if (IsSelected())
 			DrawChaoHudThingB(&MainButtons[m_buttonType + LeftBarType::Count], m_posX, m_posY, -1.2f, 1, 1, -1, -1);
 		else
 			DrawChaoHudThingB(&MainButtons[m_buttonType], m_posX, m_posY, -1.2f, 1, 1, -1, -1);
 	}
+	LeftBarButtonOld(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, SelectFlag::ForceVertical), m_layerEnter(layerEnter), m_buttonType(buttonType) {
+		m_posX = posX;
+		m_posY = posY;
+	}
+};
+
+class LeftBarButton : public UISelectable {
+private:
+	const std::string m_layerEnter;
+	int m_buttonType;
+
+	ChaoHudThingB m_leftPart = {1, 23, 46, 0.f, 41.f / 256.f, 22.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36};
+	ChaoHudThingB m_middlePart = { 1, 1, 46, 31.f / 256.f, 41.f / 256.f, 33.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_rightPart = { 1, 23, 46, 66.f / 256.f + 0.005f, 41.f / 256.f, 88.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_selectedLeftPart = { 1, 23, 46, 0.f, 97.f / 256.f, 22.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_selectedMiddlePart = { 1, 1, 46, 31.f / 256.f, 97.f / 256.f, 33.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_selectedRightPart = { 1, 23, 46, 66.f / 256.f, 97.f / 256.f, 88.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
+public:
+	enum LeftBarType : int {
+		HatAcc = 0,
+		Medal = 1,
+		Exit = 2,
+		Count
+	};
+
+	float m_sclX = 1;
+	float m_sclY = 1;
+	float m_progress = 0.f;
+	Uint32 m_timer = 0;
+	task* m_tween = NULL;
+	float GetWidth() { return m_leftPart.wd; }
+	float GetHeight() { return m_rightPart.ht; }
+
+	void Press(UIController* controller) override {
+		if (m_buttonType == Exit) {
+			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
+			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
+		}
+		else {
+			controller->SetCurrentLayer(m_layerEnter);
+		}
+	}
+
+	void Exec() override {
+	
+	}
+
+	void Disp() override {
+		if (!IsSelected()) {
+			m_progress = 0.f;
+			m_timer = 0;
+		}
+		else if (!m_timer++) {
+			CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_CUBIC, &m_progress, 1.f, 25, NULL);
+		}
+
+		SetChaoHUDThingBColor(1, 1, 1, 1);
+
+		const float middle_width = 140;
+
+		DrawChaoHudThingB(IsSelected() ? &m_selectedLeftPart : & m_leftPart, m_posX, m_posY, -1.2f, m_sclX, m_sclY, -1, -1);
+		if(m_progress > 0.f)
+		DrawChaoHudThingB(IsSelected() ? &m_selectedMiddlePart : &m_middlePart, m_posX + m_leftPart.wd, m_posY, -1.3f, middle_width * m_progress, m_sclY, -1, -1);
+		DrawChaoHudThingB(IsSelected() ? &m_selectedRightPart : &m_rightPart, m_posX + m_leftPart.wd + middle_width * m_progress - 1.f, m_posY, -1.4f, m_sclX, m_sclY, -1, -1);
+	}
+
 	LeftBarButton(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, SelectFlag::ForceVertical), m_layerEnter(layerEnter), m_buttonType(buttonType) {
 		m_posX = posX;
 		m_posY = posY;
