@@ -411,8 +411,8 @@ void RegisterCWEData(CWE_REGAPI* cwe_api)
 	size_t priceAdjustStartIndices[_countof(priceAdjustedCategories)];
 	InitPriceAdjustStartIndices(priceAdjustStartIndices);
 
-	LoadJSONData(JSON_ACCESSORY);
 	CallRegisteredHooks(cwe_api);
+	LoadJSONData(JSON_ACCESSORY);
 
 	AdjustItemPrices(priceAdjustStartIndices);
 
