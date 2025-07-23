@@ -51,7 +51,7 @@ void AL_SetNextBehavior(ObjectMaster* a1, BHV_FUNC a2)
 }
 
 extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int type) {
-	char id[20];
+	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
@@ -64,7 +64,7 @@ extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int typ
 }
 
 static void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int type) {
-	char id[20];
+	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);

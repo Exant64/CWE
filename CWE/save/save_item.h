@@ -37,7 +37,7 @@ struct ItemSaveInfoBase {
 	// we store here both index and string ID for efficiency
 	// index gets resolved on load, ID field is used for quick saving back and for storing invalid accessory
 	int IndexID;
-	char ID[20];
+	char ID[METADATA_ID_SIZE];
 	int Garden;
 	NJS_POINT3 Position;
 	Angle Angle;

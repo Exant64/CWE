@@ -275,14 +275,14 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 			for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
 				memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
 
-				char id[20];
+				char id[METADATA_ID_SIZE];
 				bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
 				if (!foundID) {
 					// TODO: error
 					continue;
 				}
 
-				strcpy(pParam->Accessories[i].ID, id);
+				strcpy_s(pParam->Accessories[i].ID, id);
 			}
 
 			pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;

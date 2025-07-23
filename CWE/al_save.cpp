@@ -60,7 +60,7 @@ namespace save {
 		}
 
 		if (value.HasMember("id")) {
-			char id[20];
+			char id[METADATA_ID_SIZE];
 			strncpy_s(id, value["id"].GetString(), sizeof(id));
 
 			outItem.mType = ItemMetadata::Get()->GetIndex(ChaoItemCategory(outItem.mCategory), id);
@@ -95,7 +95,7 @@ namespace save {
 		writer.Key("category");
 		writer.String(categoryString);
 
-		char id[20];
+		char id[METADATA_ID_SIZE];
 		bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory(item.mCategory), item.mType, id);
 
 		if (foundID) {

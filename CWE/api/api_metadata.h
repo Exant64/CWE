@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#define METADATA_ID_SIZE 21
+
 class ItemMetadata {
 protected:
 	static ItemMetadata* m_instance;
@@ -15,11 +17,11 @@ protected:
 private:
 	std::vector<std::string> m_data[ChaoItemCategory_Count];
 public:
-	void Add(const ChaoItemCategory category, const char id[20]) {
+	void Add(const ChaoItemCategory category, const char id[METADATA_ID_SIZE]) {
 		m_data[category].push_back(id);
 	}
 
-	size_t GetIndex(const ChaoItemCategory category, const char id[20]) {
+	size_t GetIndex(const ChaoItemCategory category, const char id[METADATA_ID_SIZE]) {
 		const auto& data = m_data[category];
 
 		for (size_t i = 0; i < data.size(); i++) {
@@ -31,7 +33,11 @@ public:
 		return -1;
 	}
 
-	bool GetID(const ChaoItemCategory category, size_t index, char id[20]) {
+	const std::vector<std::string>& GetIDs(const ChaoItemCategory category) const {
+		return m_data[category];
+	}
+
+	bool GetID(const ChaoItemCategory category, size_t index, char id[METADATA_ID_SIZE]) {
 		const auto& data = m_data[category];
 
 		if (index >= data.size()) {

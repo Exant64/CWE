@@ -99,7 +99,7 @@ task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const
 		// clear ID first, so that it's invalid accessory if it doesn't exist
 		savedata->ID[0] = 0;
 
-		char id[20];
+		char id[METADATA_ID_SIZE];
 		if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, ID, id)) {
 			memcpy(savedata->ID, id, sizeof(savedata->ID));
 		}

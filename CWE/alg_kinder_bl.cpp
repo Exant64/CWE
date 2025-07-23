@@ -637,7 +637,14 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
+
+				SaveControl3D();
+				OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+
+				AccessorySetupDraw(item->mType, NULL, 0);
 				ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				LoadControl3D();
+
 				break;
 			case ChaoItemCategory_Special:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
@@ -767,7 +774,19 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		else
 			chCnkDrawObject(&object_alo_mannequin);
 
+		SaveControl3D();
+		OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+
+		if (a1->mItemDescSell && AL_GetHoldingItemSaveInfo()) {
+			AccessorySaveInfo* pAccSave = (AccessorySaveInfo*)AL_GetHoldingItemSaveInfo();
+			AccessorySetupDraw(type, pAccSave->Colors, pAccSave->UsedColors);
+		}
+		else {
+			AccessorySetupDraw(type, NULL, 0);
+		}
+
 		ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
+		LoadControl3D();
 		break;
 	case ChaoItemCategory_Special:
 		ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);

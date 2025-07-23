@@ -31,6 +31,10 @@ bool IsAccessoryGeneric(int index) {
 	return type == EAccessoryType::Generic1 || type == EAccessoryType::Generic2;
 }
 
+const size_t GetAccessoryColorCount(size_t index) {
+	return ModAPI_AccessoryDataList[index].ColorCount;
+}
+
 const std::optional <CWE_API_ACCESSORY_BALD_DATA>& GetAccessoryBaldData(size_t index) {
 	return ModAPI_AccessoryDataList[index].BaldData;
 }
@@ -136,7 +140,7 @@ static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupT
 			if (entry.NodeIndex != IterateNodeCount) {
 				continue;
 			}
-
+			
 			if (!pObject->chunkmodel) {
 				return false;
 			}

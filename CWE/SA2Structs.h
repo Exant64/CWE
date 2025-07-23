@@ -464,7 +464,7 @@ struct __declspec(align(4)) ChaoData1
 	unsigned char AnimRandomized;
 	unsigned char ExtraSound;
 
-	char AccessoryCalculatedID[4][20];
+	char AccessoryCalculatedID[4][21];
 	Uint32 AccessoryIndices[4];
 };
 #pragma pack(pop)
@@ -885,7 +885,7 @@ struct AL_GUEST {
 };
 
 struct AL_PARAM_ACCESSORY_INFO {
-	char ID[20];
+	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
 	Uint32 Flags;
 	Uint32 ColorFlags;
 	Uint32 ColorSlots[8];

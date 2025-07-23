@@ -261,7 +261,7 @@ extern "C"
 				if (!pNewInfo) break;
 
 				// if it's an invalid id, don't write it
-				char id[20];
+				char id[METADATA_ID_SIZE];
 				if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
 					memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
 					pNewInfo->IndexID = accessoryIndex;
