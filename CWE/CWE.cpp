@@ -89,6 +89,7 @@
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
+#include <minimal/minimal.h>
 
 const char* PathToModFolder = "";
 
@@ -367,6 +368,7 @@ extern "C"
 		CWE_Codes_Init(path, config);
 
 		CWE_Fixes();
+		Minimal_Init();
 
 		//sfx
 		WriteData((int*)0x008A6DB8, (int)165);

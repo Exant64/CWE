@@ -142,6 +142,7 @@
     <ClCompile Include="imgui_debug.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
     <ClCompile Include="move.cpp" />
+    <ClCompile Include="minimal\minimal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -339,6 +340,7 @@
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumoback_kumoback.h" />
     <ClInclude Include="data\debugsphere.h" />
+    <ClInclude Include="minimal\minimal.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />
