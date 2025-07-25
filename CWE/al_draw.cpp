@@ -721,7 +721,7 @@ static CWE_API_ACCESSORY_BALD_DATA DrawBaldData;
 static uint64_t DrawHideNodes = 0;
 
 static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer) {
-	const chaowk* work = GET_CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	const auto* pParam = GET_CHAOPARAM(tp);
 
 	AL_ValidateAccessory(tp, EAccessoryType::Head);
@@ -776,6 +776,8 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 		}
 	}
 
+	work->BaldHideHead = false;
+
 	if (!baldData) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (presets[i]) {
@@ -784,6 +786,7 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 				if (dontKeepHeadParts) {
 					DrawHideNodes |= uint64_t(1) << 23;
 					DrawHideNodes |= uint64_t(1) << 25;
+					work->BaldHideHead = true;
 				}
 				continue;
 			}
@@ -805,6 +808,7 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 		if (dontKeepHeadParts) {
 			DrawHideNodes |= uint64_t(1) << 23;
 			DrawHideNodes |= uint64_t(1) << 25;
+			work->BaldHideHead = true;
 		}
 
 		BaldFlag = true;

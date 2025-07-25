@@ -7,6 +7,7 @@
 #include "api_accessory.h"
 #include "api_texture.h"
 #include <optional>
+#include <cnk_util.h>
 
 struct AccessoryInternalData {
 	CWE_API_ACCESSORY_DATA Data;

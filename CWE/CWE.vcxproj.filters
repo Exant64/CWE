@@ -149,6 +149,7 @@
     <ClCompile Include="api\api_json.cpp" />
     <ClCompile Include="ModelInfo.cpp" />
     <ClCompile Include="api\api_texture.cpp" />
+    <ClCompile Include="cnk_util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -353,6 +354,7 @@
     <ClInclude Include="api\api_json.h" />
     <ClInclude Include="ModelInfo.h" />
     <ClInclude Include="api\api_texture.h" />
+    <ClInclude Include="cnk_util.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />

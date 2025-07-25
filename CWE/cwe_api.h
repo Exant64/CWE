@@ -49,6 +49,7 @@ struct __declspec(align(4)) MotionTableAction
 #define ICON_TYPE_CUSTOM 3 //don't use this for now, since pIconData isnt finished
 
 #define CUSTOM_CHAO_FLAG_SECOND_EVO BIT_0 //only for advanced users for now since we don't have safety checks in place for it yet
+#define CUSTOM_CHAO_FLAG_BALD_HIDE_PARTS_NON_ADJACENT BIT_1
 
 struct CWE_API_CHAO_DATA {
 	using CanEvolve = bool(*)(ObjectMaster* tp);
