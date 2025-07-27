@@ -529,12 +529,6 @@ LRESULT __stdcall WndProcHook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 ImGuiKey ImGui_ImplWin32_KeyEventToImGuiKey(WPARAM wParam, LPARAM lParam);
 static void ImGuiDraw() {
-
-    ImGuiIO& io = ImGui::GetIO();
-    for (int i = 0; i < 256; i++) {
-        io.AddKeyEvent(ImGui_ImplWin32_KeyEventToImGuiKey(i, 0), GetAsyncKeyState(i) <  0);
-    }
-
     // Start the Dear ImGui frame
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -567,7 +561,6 @@ void ImGui_Init() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
