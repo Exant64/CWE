@@ -206,6 +206,7 @@ void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32
 
 		if (usedColorFlags & (1 << slotIndex)) {
 			*pointer = colors[slotIndex];
+			((NJS_COLOR*)pointer)->argb.a = 255;
 		}
 		else {
 			*pointer = data.DefaultColor[slotIndex];
