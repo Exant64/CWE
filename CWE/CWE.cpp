@@ -89,6 +89,7 @@
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
+#include <global_save.h>
 
 const char* PathToModFolder = "";
 
@@ -360,6 +361,8 @@ extern "C"
 
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
+
+		GlobalSave_Init();
 
 		KCE_Init();
 
