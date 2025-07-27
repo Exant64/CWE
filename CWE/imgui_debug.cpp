@@ -12,6 +12,8 @@
 #include <ChaoMain.h>
 #include <al_draw.h>
 #include <imgui_debug_motionstrings.h>
+#include <al_draw.h>
+#include <api/api_accessory.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -20,6 +22,7 @@ static bool ShowDNC = false;
 static bool ShowLight = false;
 static bool ShowTaskList = false;
 static bool ShowChaoSoundMenu = false;
+static bool ShowItemsMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -57,6 +60,67 @@ static void ChaoInfoMenu() {
                 }
                 else {
                     ChaoDebugDistSelected = NULL;
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Accessories")) {
+                for (size_t i = 0; i < 4; ++i) {
+                    ImGui::Text(
+                        "Slot %d: Param %s Data %s %d", 
+                        int(i),
+                        work->pParamGC->Accessories[i].ID, 
+                        work->AccessoryCalculatedID[i], 
+                        work->AccessoryIndices[i]
+                    );
+
+                    static int SetID = 0;
+                    const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
+
+                    static const char* AccessoryStrings[256];
+                    for (size_t id = 0; id < items.size(); ++id) {
+                        AccessoryStrings[id] = items[id].data();
+                    }
+                    AccessoryStrings[items.size()] = NULL;
+
+                    ImGui::PushID(i);
+                    if (ImGui::Combo("Set ID", &SetID, AccessoryStrings, items.size())) {
+                        strcpy_s(work->pParamGC->Accessories[i].ID, AccessoryStrings[SetID]);
+                    }
+                    ImGui::PopID();
+
+                    if (work->AccessoryIndices[i] == -1) continue;
+                    
+                    for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
+                        NJS_COLOR* pCol = (NJS_COLOR*) & work->pParamGC->Accessories[i].ColorSlots[j];
+                        ImGui::PushID(j);
+                        float col[3];
+                        col[0] = pCol->argb.r / 255.f;
+                        col[1] = pCol->argb.g / 255.f;
+                        col[2] = pCol->argb.b / 255.f;
+                        if (ImGui::ColorEdit3("color", col)) {
+                            pCol->argb.r = Uint8(col[0] * 255.f);
+                            pCol->argb.g = Uint8(col[1] * 255.f);
+                            pCol->argb.b = Uint8(col[2] * 255.f);
+                            work->pParamGC->Accessories[i].ColorFlags |= (1 << j);
+                        }
+                        ImGui::PopID();
+                    }
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("ParamFlags")) {
+                const char* paramFlagNames[] = {
+                    "NAME_NEW",
+                    "OLD_GUEST_CHECK",
+                    "PARTS_CONVERSION",
+                    "ACCESSORIES_NEW",
+                };
+                for (size_t i = 0; i < 4; ++i) {
+                    ImGui::CheckboxFlags(paramFlagNames[i], &work->pParamGC->Flags, (1 << i));
                 }
 
                 ImGui::EndTabItem();
@@ -240,6 +304,7 @@ static void ChaoInfoMenu() {
                 static int animID = 0;
                 int currentAnimID = work->MotionTable.AnimID;
                 ImGui::Text("Current Animation: %s (%d)", MotionNames[currentAnimID], currentAnimID);
+                ImGui::Text("Speed: %f %f", work->MotionTable.PlaySpeed2, work->MotionTable.PlaySpeed);
 
                 ImGui::Combo("Filter for pose: %s (%d)", &poseFilter, poseNames, IM_ARRAYSIZE(poseNames));
                 if (poseFilter > 0) {
@@ -402,6 +467,26 @@ static void TaskListMenu() {
     }
 }
 
+static void ItemsMenu() {
+    if (ShowItemsMenu && ImGui::Begin("Items", &ShowItemsMenu)) {
+        for (size_t i = 0; i < 128; ++i) {
+            ImGui::PushID(i);
+            if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
+                ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
+                ImGui::InputInt("Garden", &AccessoryItemList[i].Garden);
+                ImGui::InputText("ID", AccessoryItemList[i].ID, 20);
+                ImGui::InputFloat3("Position", &AccessoryItemList[i].Position.x);
+                ImGui::InputInt("Angle", &AccessoryItemList[i].Angle);
+
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+          
+        }
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -410,6 +495,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
             ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
             ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
+            ImGui::MenuItem("Items", NULL, &ShowItemsMenu);
             ImGui::EndMenu();
         }
 
@@ -417,6 +503,7 @@ static void ImGuiMenu() {
         ChaoInfoMenu();
         DayNightMenu();
         LightMenu();
+        ItemsMenu();
         TaskListMenu();
 
         ImGui::EndMainMenuBar();

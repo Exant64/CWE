@@ -15,13 +15,14 @@
 #include "al_growtree.h"
 #include "al_modelcontainer.h"
 #include <api/api_tree.h>
+#include <al_garden_info.h>
 
 DataPointer(ChaoData*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
 FunctionPointer(void, sub_782780, (int a1, int a2, float a3), 0x782780);
 DataArray(NJS_OBJECT*, dword_171A240, 0x171A240, 4);
 DataArray(NJS_OBJECT*, off_12E537C, 0x12E537C, 7);
-DataPointer(int, HeldItemType, 0x019F6450);
+
 const int sub_42D690Ptr = 0x42D690;
 void sub_42D690(int a1)
 {
@@ -41,18 +42,12 @@ void __cdecl sub_58F980(ObjectMaster* a1)
 	v9.Undefined = (void*)a1->Data2.Undefined;
 	if (*((char*)v9.Undefined + 40))
 	{
-		if (dword_19F6454)
-		{
-			v1 = *(signed __int16*)dword_19F6454->data.gap_0;
-		}
-		else
-		{
-			v1 = -1;
-		}
+		v1 = AL_GetHoldingItemKind();
+
 		njPushMatrixEx();
 		a3 = *((float*)v9.Undefined + 11) + 3.284631013870239f;
 		njTranslate(NULL, 0.34388199f, a3, -2.164542f);
-		switch (HeldItemType)
+		switch (AL_GetHoldingItemCategory())
 		{
 		case 2:
 			if (v1 >= 21 && v1 <= 24)

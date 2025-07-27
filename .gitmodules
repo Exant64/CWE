@@ -1,3 +1,6 @@
 [submodule "rapidjson"]
 	path = rapidjson
 	url = https://github.com/Tencent/rapidjson
+[submodule "external/xxhash"]
+	path = external/xxhash
+	url = https://github.com/stbrumme/xxhash

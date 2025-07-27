@@ -28,16 +28,13 @@ using RegisterDataFuncPtr = void(__cdecl*)(CWE_REGAPI* cwe_api);
 extern CWE_REGAPI cweAPI;
 
 extern std::unordered_set<int> ModAPI_SpecialAction;
-
-extern std::unordered_set<int> ModAPI_DisableJiggle;
-extern std::unordered_set<int> ModAPI_BaldAccessory;
+extern std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
 
 extern std::vector<const char*> MsgAlItem;
+
 extern std::vector<MotionTableAction> chaoAnimations;
 extern std::map<std::string, int> registeredAnimations;
 extern std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
-extern std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
-extern std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
 
 extern std::unordered_map<int, int> ModAPI_LensColorMap;
 extern std::vector<NJS_TEXLIST*> ModAPI_EyeColors;

@@ -19,6 +19,7 @@
 #include "api/api_msg.h"
 #include "api/api_customchao.h"
 #include "api/api_util.h"
+#include "api/api_accessory.h"
 
 #include <unordered_set>
 #include <api/api_tree.h>
@@ -28,21 +29,20 @@
 #pragma warning( disable: 4838 )
 #include "data/alo_missing_tree.nja"
 #include <al_draw.h>
+#include <api/api_texture.h>
+#include <api/api_json.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
 
 std::vector<MotionTableAction> chaoAnimations;
 std::map<std::string, int> registeredAnimations;
-std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
 std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
 std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
 std::vector<RegisterDataFuncPtr> RegisterDataHooks;
 
 std::unordered_map<int, int> ModAPI_LensColorMap;
 std::unordered_set<int> ModAPI_SpecialAction;
-std::unordered_set<int> ModAPI_DisableJiggle;
-std::unordered_set<int> ModAPI_BaldAccessory;
 
 std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 
@@ -73,10 +73,6 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 	ModAPI_MinimalStats.push_back(pMinimal->stats);
 	ModAPI_MinimalInfluence.push_back(pMinimal->color);
 	return ModAPI_MinimalInfluence.size() - 1;
-}
-
-void AccessoryDisableJiggle(int acccessory_id) {
-	ModAPI_DisableJiggle.insert(acccessory_id);
 }
 
 extern "C"
@@ -112,23 +108,6 @@ extern "C"
 		};
 
 		return AddChaoMinimal(&legacyEntry);
-	}
-
-	__declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
-	{
-		static APIErrorUtil error("RegisterChaoTexlistLoad error:");
-
-		if (!name) { 
-			error.print("name is nullptr");
-			return; 
-		}
-
-		if (!load) {
-			error.print("\"%s\"'s texlist is nullptr", name);
-			return;
-		}
-
-		TexlistLoads.push_back(std::make_pair(name, load));
 	}
 
 	__declspec(dllexport) void SetRebuyFlag(int Category, int ID, bool rebuy)
@@ -195,19 +174,6 @@ extern "C"
 		ModAPI_EyeColors.push_back(texlist);
 		ModAPI_LensColorMap.insert(std::make_pair(specialID, eyeCID));
 		return eyeCID + 1;
-	}
-	__declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description)
-	{
-		int ret = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size();
-		AccessoryTypeMap.insert(std::make_pair(ret, type));
-		ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(model, texlist);
-		BlackMarketAttributes::Get()->Add(ChaoItemCategory_Accessory, attrib, name, description);
-		return ret;
-	}
-
-	__declspec(dllexport) void AccessoryMakeBald(int acccessory_id) {
-		ModAPI_BaldAccessory.insert(acccessory_id);
-		ModAPI_DisableJiggle.insert(acccessory_id);
 	}
 
 	__declspec(dllexport) void RegisterChaoMinimalFruit(int fruitID, int minimalID, int chanceMin, int chanceMax)
@@ -444,7 +410,10 @@ void RegisterCWEData(CWE_REGAPI* cwe_api)
 
 	size_t priceAdjustStartIndices[_countof(priceAdjustedCategories)];
 	InitPriceAdjustStartIndices(priceAdjustStartIndices);
+
 	CallRegisteredHooks(cwe_api);
+	LoadJSONData(JSON_ACCESSORY);
+
 	AdjustItemPrices(priceAdjustStartIndices);
 
 	AL_Odekake_Finalize();

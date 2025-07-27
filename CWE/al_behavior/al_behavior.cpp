@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include <Chao.h>
+#include <al_garden_info.h>
 #include <al_behavior/al_intention.h>
 #include <al_behavior/albhv.h>
 #include <alo_accessory.h>
 #include <ChaoMain.h>
 #include <ALifeSDK_Functions.h>
 #include <AL_ModAPI.h>
+#include <api/api_accessory.h>
+#include <api/api_metadata.h>
 
 extern void ALBHV_Life_Init();
 
@@ -47,16 +50,35 @@ void AL_SetNextBehavior(ObjectMaster* a1, BHV_FUNC a2)
 	Chao_BehaviourQueue(a1, (int)a2);
 }
 
-extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int type)
-{
-	a1->Data1.Chao->pParamGC->Accessories[AccessoryTypeMap[type]] = type + 1;
+extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int type) {
+	char id[METADATA_ID_SIZE];
+	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
+
+	const auto slotType = GetAccessoryType(type);
+	auto& accessoryData = GET_CHAOPARAM(a1)->Accessories[slotType];
+
+	memset(&accessoryData, 0, sizeof(accessoryData));
+	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
+	memcpy(accessoryData.ColorSlots, GetAccessoryData(type).DefaultColors, sizeof(accessoryData.ColorSlots));
+	accessoryData.ColorFlags = 0;
 }
+
+static void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int type) {
+	char id[METADATA_ID_SIZE];
+	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
+
+	const auto slotType = GetAccessoryType(type);
+	auto& accessoryData = GET_CHAOPARAM(a1)->Accessories[slotType];
+
+	memset(&accessoryData, 0, sizeof(accessoryData));
+	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
+	memcpy(accessoryData.ColorSlots, saveInfo->Colors, sizeof(accessoryData.ColorSlots));
+	accessoryData.ColorFlags = saveInfo->UsedColors;
+}
+
 extern "C" __declspec(dllexport) int AL_GetAccessory(ObjectMaster * a1, int type)
 {
-	return a1->Data1.Chao->pParamGC->Accessories[type];
-}
-extern "C" __declspec(dllexport) int GetAccessoryType(int ID) {
-	return AccessoryTypeMap[ID];
+	return GET_CHAOWK(a1)->AccessoryIndices[type];
 }
 
 const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
@@ -125,12 +147,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(ObjectMa
 		v8 = v6->tp;
 		if (v8)
 		{
-			AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
-			if (AL_GetItemSaveInfo(v7->tp))
-			{
-				v9 = AL_GetItemSaveInfo(v7->tp);
-				AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)v9);
+			auto* accessorySave = (AccessorySaveInfo*)AL_GetItemSaveInfo(v7->tp);
+			if (accessorySave) {
+				AL_SetAccessory(a1, accessorySave, v8->Data1.Entity->Rotation.x);
+				AL_ClearItemSaveInfo(accessorySave);
 				AL_ClearItemSaveInfoPtr(v7->tp);
+			}
+			else {
+				AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
 			}
 			v7->tp->MainSub = DeleteObject_;
 		}
@@ -158,12 +182,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(Obj
 		v8 = v6->tp;
 		if (v8)
 		{
-			AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
-			if (AL_GetItemSaveInfo(v7->tp))
-			{
-				v9 = AL_GetItemSaveInfo(v7->tp);
-				AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)v9);
+			auto* accessorySave = (AccessorySaveInfo*)AL_GetItemSaveInfo(v7->tp);
+			if (accessorySave) {
+				AL_SetAccessory(a1, accessorySave, v8->Data1.Entity->Rotation.x);
+				AL_ClearItemSaveInfo(accessorySave);
 				AL_ClearItemSaveInfoPtr(v7->tp);
+			}
+			else {
+				AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
 			}
 			v7->tp->MainSub = DeleteObject_;
 		}
@@ -204,7 +230,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(Object
 		AL_GrabObjectBothHands(a1, v3);
 		AL_SetBehaviorWithTimer(a1, 0x569340, -1);
 		v5 = a1->Data1.Chao->pParamGC;
-		if (!AL_GetAccessory(a1, AccessoryTypeMap[v3->Data1.Entity->Rotation.x]))
+		if (AL_GetAccessory(a1, GetAccessoryType(v3->Data1.Entity->Rotation.x)) == -1)
 			Chao_BehaviourQueue(a1, (int)ALBHV_PutOnAccessoryTemp);
 		else
 			Chao_BehaviourQueue(a1, (int)0x569550);
@@ -399,23 +425,33 @@ static void __declspec(naked) sub_5691B0Hook()
 	}
 }
 
+static void AccessoryRemoveAll(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	
+	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
+		const auto index = work->AccessoryIndices[i];
+		if (index == -1) continue;
+
+		auto saveinfo = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+		if (saveinfo) {
+			const auto& accessoryChaoData = pParam->Accessories[i];
+			saveinfo->UsedColors = accessoryChaoData.ColorFlags;
+			memcpy(saveinfo->Colors, accessoryChaoData.ColorSlots, sizeof(saveinfo->Colors));
+			
+			Accessory_Load(index, &work->entity.Position, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
+			AL_ParameterClearAccessory(tp, EAccessoryType(i));
+		}
+	}
+}
+
 //removing accessory
 void __cdecl AccessoryRemove1(ObjectMaster* a1)
 {
 	AL_SetBehaviorWithTimer(a1, (int)0x563EB0, -1);
-	for (int i = 0; i < 4; i++) //todo: remove hardcoded accessory count
-	{
-		if (a1->Data1.Chao->pParamGC->Accessories[i])
-		{
-			void* saveinfo = AL_GetNewItemSaveInfo(9);
-			if (saveinfo)
-			{
-				Accessory_Load((a1->Data1.Chao->pParamGC->Accessories[i] - 1) + 256, &a1->Data1.Entity->Position, NJM_DEG_ANG(njRandom() * 360.0), &a1->EntityData2->velocity, (short*)saveinfo);
-				a1->Data1.Chao->pParamGC->Accessories[i] = 0;
-			}
-		}
-	}
+	AccessoryRemoveAll(a1);
 }
+
 static void __declspec(naked) AccessoryRemoveHook()
 {
 	__asm
@@ -430,22 +466,11 @@ static void __declspec(naked) AccessoryRemoveHook()
 	}
 }
 
-void __cdecl AccessoryRemove2(ObjectMaster* a1, int a2, int a3)
-{
-	AL_SetBehavior(a1, (BHV_FUNC)0x564320);
-	for (int i = 0; i < 4; i++) //todo: remove hardcoded accessory count
-	{
-		if (a1->Data1.Chao->pParamGC->Accessories[i])
-		{
-			void* saveinfo = AL_GetNewItemSaveInfo(9);
-			if (saveinfo)
-			{
-				Accessory_Load((a1->Data1.Chao->pParamGC->Accessories[i] - 1) + 256, &a1->Data1.Entity->Position, NJM_DEG_ANG(njRandom() * 360.f), &a1->EntityData2->velocity, (short*)saveinfo);
-				a1->Data1.Chao->pParamGC->Accessories[i] = 0;
-			}
-		}
-	}
+void __cdecl AccessoryRemove2(task* tp, int a2, int a3) {
+	AL_SetBehavior(tp, (BHV_FUNC)0x564320);
+	AccessoryRemoveAll(tp);
 }
+
 static void __declspec(naked) AccessoryRemove2Hook()
 {
 	__asm

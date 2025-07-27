@@ -71,7 +71,6 @@
     <ClCompile Include="al_parameter.cpp" />
     <ClCompile Include="al_parts.cpp" />
     <ClCompile Include="al_piano.cpp" />
-    <ClCompile Include="al_registry.cpp" />
     <ClCompile Include="al_sandhole.cpp" />
     <ClCompile Include="al_save.cpp" />
     <ClCompile Include="al_script.cpp" />
@@ -119,7 +118,7 @@
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="ninja_functions.cpp" />
     <ClCompile Include="PaletteFix.cpp" />
-    <ClCompile Include="register\api_accessory.cpp" />
+    <ClCompile Include="register\reg_accessory.cpp" />
     <ClCompile Include="register\api_fruit.cpp" />
     <ClCompile Include="register\api_minimal.cpp" />
     <ClCompile Include="register\api_motion.cpp" />
@@ -132,6 +131,7 @@
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="al_animation.cpp" />
     <ClCompile Include="renderfix.cpp" />
+    <ClCompile Include="api\api_idhash.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -141,7 +141,15 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui_debug.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
+    <ClCompile Include="api\api_accessory.cpp" />
+    <ClCompile Include="api\api_metadata.cpp" />
+    <ClCompile Include="save\save_item.cpp" />
+    <ClCompile Include="al_garden_info.cpp" />
     <ClCompile Include="move.cpp" />
+    <ClCompile Include="api\api_json.cpp" />
+    <ClCompile Include="ModelInfo.cpp" />
+    <ClCompile Include="api\api_texture.cpp" />
+    <ClCompile Include="cnk_util.cpp" />
     <ClCompile Include="global_save.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -191,7 +199,6 @@
     <ClInclude Include="al_palette.h" />
     <ClInclude Include="al_parameter.h" />
     <ClInclude Include="al_piano.h" />
-    <ClInclude Include="al_registry.h" />
     <ClInclude Include="al_sandhole.h" />
     <ClInclude Include="al_save.h" />
     <ClInclude Include="al_shape.h" />
@@ -324,6 +331,7 @@
     <ClInclude Include="al_chao_info.h" />
     <ClInclude Include="data\ChaoShaderDayNight.h" />
     <ClInclude Include="renderfix.h" />
+    <ClInclude Include="api\api_idhash.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
@@ -340,6 +348,14 @@
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumoback_kumoback.h" />
     <ClInclude Include="data\debugsphere.h" />
+    <ClInclude Include="api\api_metadata.h" />
+    <ClInclude Include="api\api_accessory.h" />
+    <ClInclude Include="save\save_item.h" />
+    <ClInclude Include="al_garden_info.h" />
+    <ClInclude Include="api\api_json.h" />
+    <ClInclude Include="ModelInfo.h" />
+    <ClInclude Include="api\api_texture.h" />
+    <ClInclude Include="cnk_util.h" />
     <ClInclude Include="global_save.h" />
   </ItemGroup>
   <ItemGroup>
@@ -376,7 +392,6 @@
     <None Include="data\al_model\ali_medal_pal.nja" />
     <None Include="data\al_model\ali_medal_rub.nja" />
     <None Include="data\al_model\ali_model_saf.nja" />
-    <None Include="data\al_model\al_baldroot.nja" />
     <None Include="data\al_model\al_egg_chao.nja" />
     <None Include="data\al_model\al_nnz.nja" />
     <None Include="data\al_model\al_omochao.nja" />

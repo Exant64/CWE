@@ -30,6 +30,9 @@
 #include "al_ode_guide.h"
 
 #include "al_ode_menu.h"
+#include <api/api_accessory.h>
+#include <al_behavior/al_behavior.h>
+#include <al_garden_info.h>
 
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
@@ -57,8 +60,11 @@ DataArray(NJS_OBJECT*, BigMedals, 0x012E58F8, 16);
 extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
+static ObjectMaster* pChao = NULL;
+
 static int vectorInitFlag = 0;
-static std::vector<ITEM_SAVE_INFO*> currItemList;
+static std::vector<ITEM_SAVE_INFO*> HatList;
+static std::vector<ItemSaveInfoBase*> AccessoryList;
 static void UpdateHatAccVector() {
 	vectorInitFlag = 0;
 }
@@ -68,14 +74,23 @@ static void SubMenuUpdate() {
 static void CheckHatAccVectorUpdate() {
 	if (!vectorInitFlag)
 	{
-		currItemList.clear();
+		HatList.clear();
+		AccessoryList.clear();
+
 		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
 		for (int j = 0; j < 24; j++)
 		{
 			if (items[j].Type > 0) {
-				currItemList.push_back(&items[j]);
+				HatList.push_back(&items[j]);
 			}
 		}
+
+		for (auto& item : AccessoryItemList) {
+			if (item.IndexID == -1) continue;
+
+			AccessoryList.push_back(&item);
+		}
+
 		vectorInitFlag = 1;
 	}
 }
@@ -230,11 +245,14 @@ public:
 class HatAccRender : public BaseCustomizeBox {
 private:
 	bool m_useNullItem = false;
-	
 	float m_offX = 0;
 	float m_offY = 0;
 public:
 	int m_rotY = 0;
+	virtual bool IsAccessorySlot() const {
+		return false;
+	}
+
 	bool AL_Customization_CreateHat(int ID, int Garden)
 	{
 		if (ID < 1) return false;
@@ -248,10 +266,26 @@ public:
 		
 		v9->Garden = Garden;
 		v9->Type = ID;
-		int v7 = (int)(njRandom() * 15.f);
-		v9->position = ProbablyChaoSpawnPoints[v7];
+		v9->position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
 		UpdateHatAccVector();
 		
+		return true;
+	}
+	bool AL_Customization_CreateAcc(int ID, int Garden)
+	{
+		if (ID == -1) return false;
+
+		auto save = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+		if (!save) {
+			PrintDebug("HatAccRender: no hat slots left");
+			return false;
+		}
+
+		save->Garden = Garden;
+		save->IndexID = ID;
+		save->Position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
+		UpdateHatAccVector();
+
 		return true;
 	}
 	void Exec() override {
@@ -287,13 +321,11 @@ public:
 		}
 		else {
 			Rotation rot = { 0, IsSelected() ? m_rotY : 0, 0 };
-			SAlItem _item = { ChaoItemCategory_Hat, (Uint16)item };
 
-			if (_item.mType >= 256)
-			{
-				_item.mCategory = ChaoItemCategory_Accessory;
-				_item.mType -= 256;
-			}
+			SAlItem _item = { 
+				IsAccessorySlot() ? ChaoItemCategory_Accessory : ChaoItemCategory_Hat,
+				(Uint16)item 
+			};
 
 			DrawItem(m_offX, m_offY, 1, rot, _item);
 		}
@@ -312,14 +344,18 @@ class HatAccCustomizeBox : public HatAccRender {
 private:
 	const size_t m_index;
 public:
+	bool IsAccessorySlot() const override {
+		return m_index >= HatList.size();
+	}
+
 	void Press(UIController* controller) override {
-		if (m_index >= currItemList.size()) return;
+		if (m_index >= HatList.size() + AccessoryList.size()) return;
 
 		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
-		ITEM_SAVE_INFO* saveInfo = currItemList[m_index];
 
-		if (saveInfo->Type < 256)
-		{
+		if (!IsAccessorySlot()) {
+			ITEM_SAVE_INFO* saveInfo = HatList[m_index];
+
 			bool canEquip = true;
 			if (pParam->Headgear > 0)
 				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->Garden);
@@ -330,25 +366,30 @@ public:
 				UpdateHatAccVector();
 			}
 		}
-		else
-		{
-			int accType = AccessoryTypeMap[saveInfo->Type - 256];
-
+		else {
+			auto* pSaveInfo = AccessoryList[m_index - HatList.size()];
+			const int accType = GetAccessoryType(pSaveInfo->IndexID);
+			
 			bool canEquip = true;
-			if (pParam->Accessories[accType])
-				canEquip = AL_Customization_CreateHat((pParam->Accessories[accType] - 1) + 256, pParam->Garden);
+			if (pParam->Accessories[accType].ID[0])
+				canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], pParam->Garden);
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
-				pParam->Accessories[accType] = (saveInfo->Type - 256) + 1;
-				AL_ClearItemSaveInfo(saveInfo);
+				AL_SetAccessory(pChao, pSaveInfo->IndexID);
+				AL_ClearItemSaveInfo(pSaveInfo);
 				UpdateHatAccVector();
 			}
+			
 		}
 	}
 	int GetItem() override{
-		if (m_index >= currItemList.size()) return -1;
+		if (m_index >= HatList.size() + AccessoryList.size()) return -1;
 
-		return currItemList[m_index]->Type;
+		if (!IsAccessorySlot()) {
+			return HatList[m_index]->Type;
+		}
+
+		return AccessoryList[m_index - HatList.size()]->IndexID;
 	}
 	HatAccCustomizeBox(size_t index, float posX, float posY, int flags = 0) 
 		: HatAccRender(posX, posY, false,1,1, flags), 
@@ -364,14 +405,18 @@ private:
 		return m_slot == 0 && GBAManager_GetChaoDataPointer()->Headgear;
 	}
 	bool HasAccessory() {
-		return m_slot > 0 && GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1];
+		return m_slot > 0 && GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1].ID[0];
 	}
 public:
+	bool IsAccessorySlot() const override {
+		return m_slot > 0;
+	}
+
 	int GetItem() override {
 		if (HasHeadgear())
 			return GBAManager_GetChaoDataPointer()->Headgear;
 		else if (HasAccessory())
-			return 256 + GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1] - 1;
+			return GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
 		return -1;
 	}
 	void ColorSet() override {
@@ -392,22 +437,17 @@ public:
 	void Press(UIController* controller) override {
 		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
 		PlaySoundProbably(0x100A, 0, 0, 0);
-		if (m_slot == 0)
+		if (!IsAccessorySlot())
 		{
 			Uint8& headgear = pParam->Headgear;
-			if (headgear)
-			{
-				if(AL_Customization_CreateHat(headgear, pParam->Garden))
-					headgear = 0;
+			if (headgear && AL_Customization_CreateHat(headgear, pParam->Garden)) {
+				headgear = 0;
 			}
 		}
-		else
-		{
-			uint16_t& accID = pParam->Accessories[m_slot - 1];
-			if (accID)
-			{
-				if(AL_Customization_CreateHat(accID + 256 - 1, pParam->Garden))
-					accID = 0;
+		else {
+			const auto accessoryIndex = AL_GetAccessory(pChao, m_slot - 1);
+			if (accessoryIndex != -1 && AL_Customization_CreateAcc(accessoryIndex, pParam->Garden)) {
+				AL_ParameterClearAccessory(pChao, m_slot - 1);
 			}
 		}
 	}
@@ -442,7 +482,6 @@ void someUIProjectionCode(NJS_VECTOR* a1, NJS_VECTOR* a2)
 	}
 }
 
-ObjectMaster* pChao;
 UIController* customizationController = nullptr;
 ObjectMaster* largeBar = 0;
 

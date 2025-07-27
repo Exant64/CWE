@@ -19,7 +19,6 @@
 // and call ALW_Entry there
 static ObjectMaster* pLastToyTask = NULL;
 
-FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 const int MOV_ControlPtr = 0x00796780;
 void MOV_Control(ObjectMaster* eax0)
 {
@@ -493,7 +492,6 @@ void ALO_Ball_Hook() {
 	}
 }
 
-FunctionPointer(void, sub_52E710, (int a1), 0x52E710);
 DataArray(int, dword_1DC0F80, 0x1DC0F80, 1);
 const int sub_530470Ptr = 0x530470;
 al_entry_work* sub_530470(int a1, int a2)
@@ -508,10 +506,8 @@ al_entry_work* sub_530470(int a1, int a2)
 	}
 	return result;
 }
-void SaveToyPos()
-{
-	sub_52E710(3);
 
+void SaveToyPos() {
 	ITEM_SAVE_INFO* v5;
 	ObjectMaster* v6;
 	al_entry_work* v4 = 0;
@@ -591,10 +587,6 @@ static void HookToyLoad() {
 
 void AL_Toy_Moveable_Init()
 {
-	// we hook the fruit state saving function call to also save the toy's positions (and handle edge cases)
-	// code is super ugly because i used the other save functions decompiled as a base
-	WriteCall((void*)0x0052F09F, SaveToyPos);
-
 	// description of what we do here
 	// 1. the nullsub_1 writecalls kill the ALW_Entry2 call, so we can then call it in the trampolines (in the future)
 	// we nullsub it because we handle the ALW_Entry2 specially inside AL_Toy_Move_Register, and call it ourselves in 2.

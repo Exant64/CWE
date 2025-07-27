@@ -43,6 +43,7 @@
 #include "al_behavior/al_behavior.h"
 #include "al_shape.h"
 #include "code_system/code_manager.h"
+#include <api/api_metadata.h>
 
 const int AL_IconSetPtr = 0x53D660;
 void AL_IconSet(ObjectMaster* a4, char a2, int a3)
@@ -252,6 +253,7 @@ static void Chao_Main_r(ObjectMaster* a1);
 static Trampoline Chao_Main_Tramp(0x0054FE20, 0x0054FE28, Chao_Main_r);
 static void __cdecl Chao_Main_r(ObjectMaster* a1)
 {
+	chaowk* work = GET_CHAOWK(a1);
 	ChaoDataBase* pParam = a1->Data1.Chao->pParamGC;
 	if (!pParam) return;
 
@@ -260,6 +262,31 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 	{
 		if (pParam->field_19 == 2)
 			pParam->field_19 = 0;
+
+		//upgrade to 9.4
+		if (pParam->IsInitializedAccessory == 0)
+		{
+			for (int i = 0; i < 4; i++)
+				pParam->Accessories_[i] = pParam->Accessories_old[i];
+			pParam->IsInitializedAccessory = 1;
+		}
+
+		if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
+			for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
+				memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
+
+				char id[METADATA_ID_SIZE];
+				bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
+				if (!foundID) {
+					// TODO: error
+					continue;
+				}
+
+				strcpy_s(pParam->Accessories[i].ID, id);
+			}
+
+			pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
+		}
 
 		if (!(pParam->Flags & AL_PARAM_FLAG_NAME_NEW))
 		{
@@ -276,13 +303,6 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 			pParam->Flags |= AL_PARAM_FLAG_NAME_NEW;
 		}
 
-		//upgrade to 9.4
-		if (pParam->IsInitializedAccessory == 0)
-		{
-			for(int i = 0; i < 4; i ++)
-				pParam->Accessories[i] = pParam->Accessories_old[i];
-			pParam->IsInitializedAccessory = 1;
-		}
 
 		if (!pParam->Birthday)
 		{
@@ -293,6 +313,36 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 		{
 			//give em one
 			pParam->ChaoID.id[0] = GenerateRandomSeed();
+		}
+	}
+
+	// new accessory stuff
+	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
+		auto& data = pParam->Accessories[i];
+
+		// if it's an empty string, set no index, check next accessory
+		if (!data.ID[0]) {
+			work->AccessoryCalculatedID[i][0] = 0;
+			work->AccessoryIndices[i] = -1;
+			continue;
+		}
+
+		// first off, check if the id changed since spawn
+		// we wouldn't need to handle this but KCE is a thing
+		// if there was something non-empty set already and it didn't change then skip
+		if (work->AccessoryCalculatedID[i][0] && !strcmp(data.ID, work->AccessoryCalculatedID[i])) {
+			continue;
+		}
+
+		strcpy_s(work->AccessoryCalculatedID[i], data.ID);
+
+		const size_t index = ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, data.ID);
+		if (index == -1) {
+			// error object (should be the last registered i think)
+			work->AccessoryIndices[i] = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size() - 1;
+		}
+		else {
+			work->AccessoryIndices[i] = index;
 		}
 	}
 

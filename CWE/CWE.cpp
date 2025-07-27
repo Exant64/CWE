@@ -89,6 +89,8 @@
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
+#include <al_garden_info.h>
+#include <api/api_json.h>
 #include <global_save.h>
 
 const char* PathToModFolder = "";
@@ -225,6 +227,10 @@ extern "C"
 			c->OnALControl(a1);
 		}
 
+		if (GetAsyncKeyState(VK_F11)) {
+			LoadChaoTexlist("CWE_UI", &CWE_UI_TEXLIST, 0);
+		}
+
 		//compatibility layer for old purchased item inventory
 		if (PurchasedItemCount > 0)
 		{
@@ -241,6 +247,33 @@ extern "C"
 			if (cweSaveFile.PurchasedItems[i].mCategory > 0) {
 				save::CWE_PurchasedItems[i] = cweSaveFile.PurchasedItems[i];
 				cweSaveFile.PurchasedItems[i] = { -1,0 };
+			}
+		}
+
+		// convert the "accessory hats" to the new accessory format
+		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+		for (size_t j = 0; j < 24; ++j) {
+			auto& originalItem = items[j];
+			if (originalItem.Type >= 256) {
+				const auto accessoryIndex = originalItem.Type - 256;
+
+				ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+				// if we don't have space to convert, stop the conversion checks
+				if (!pNewInfo) break;
+
+				// if it's an invalid id, don't write it
+				char id[METADATA_ID_SIZE];
+				if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
+					memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
+					pNewInfo->IndexID = accessoryIndex;
+					pNewInfo->Garden = originalItem.Garden;
+					pNewInfo->Position = originalItem.position;
+				}
+
+				// even if it does become an invalid id, we omit the original item
+				// to not create "mystery no more garden space" issues
+				// TOOD: message box could be useful?
+				AL_ClearItemSaveInfo(&originalItem);
 			}
 		}
 
@@ -311,7 +344,7 @@ extern "C"
 	{
 		if (helperFunctions.Version < ModLoaderVer) {
 			char textbuf[128];
-			sprintf_s(textbuf, "The current Mod Loader version (%s) is too old, CWE requires at least version %d. Please update the Mod Loader!", helperFunctions.Version, ModLoaderVer);
+			sprintf_s(textbuf, "The current Mod Loader version (%d) is too old, CWE requires at least version %d. Please update the Mod Loader!", helperFunctions.Version, ModLoaderVer);
 
 			MessageBoxA(
 				NULL, 
@@ -337,6 +370,7 @@ extern "C"
 		g_HelperFunctions = &helperFunctions;
 
 		RenderFix_Init(helperFunctions);
+		ScanAllMods();
 
 		cwe_device = dword_1A557C0->pointerToDevice;
 
@@ -496,11 +530,6 @@ extern "C"
 		if (gConfigVal.ToyMove)
 			AL_Toy_Moveable_Init();
 
-		//accessory
-		WriteCall((void*)0x0052ED87, Accessory_Load);
-		WriteCall((void*)0x0052F404, Accessory_Load);
-		WriteCall((void*)0x00530A70, Accessory_Load);
-
 		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main);
 		
 		PaletteFix_Init(cwe_device);
@@ -535,6 +564,7 @@ extern "C"
 
 		al_race_Init();
 
+		AL_GardenInfo_Init();
 		ChaoMain_Init();
 
 		ALO_ObakeHead_Init();

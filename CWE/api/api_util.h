@@ -13,7 +13,7 @@ struct APIErrorUtil {
 		va_end(argptr);
 	}
 
-	void print(const char* format, ...) {
+	void print(const char* format, ...) const {
 		char formatBuff[255], buff[255];
 
 		va_list argptr;
