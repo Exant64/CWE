@@ -7,7 +7,7 @@
 #include "ModelInfo.h"
 #include <error/en.h>
 
-#define MEMBER(member) "\"#member\" "
+#define MEMBER(member) "\"" #member "\" "
 
 static bool GenericParseID(const rapidjson::Document& document, const APIErrorUtil& error, char id[20]) {
 	if (!document.HasMember("id")) {
@@ -328,10 +328,6 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 			baldData.Radius = baldModeData["radius"].GetFloat();
 
 			optionBaldData = baldData;
-		}
-		else {
-			error.print(MEMBER(bald_mode) "isn't an array or an object!");
-			return false;
 		}
 	}
 
