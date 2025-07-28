@@ -78,6 +78,78 @@ void njDrawPolygon(int alpha, int count, NJS_POLYGON_VTX* a4) {
     }
 }
 
+static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, const size_t type) {
+    if (type <= SA2BAnimal_PurpleChaosDrive) {
+        njDrawTexture(4, dword_8AC788[type], (int)vtx, 1);
+        return;
+    }
+
+    NJS_COLOR insidePanelColor;
+
+    switch (ModAPI_MinimalInfluence[type]) {
+        case COLOR_SWIM:
+            insidePanelColor = {
+               .argb = {
+                   .b = 115,
+                   .g = 255,
+                   .r = 246,
+                   .a = 255,
+               }
+            };
+            break;    
+        case COLOR_FLY:
+            insidePanelColor = {
+               .argb = {
+                   .b = 255,
+                   .g = 155,
+                   .r = 172,
+                   .a = 255,
+               }
+            };
+            break;
+        case COLOR_RUN:
+            insidePanelColor = {
+               .argb = {
+                   .b = 164,
+                   .g = 255,
+                   .r = 32,
+                   .a = 255,
+               }
+            };
+            break;
+        case COLOR_POWER:
+            insidePanelColor = {
+               .argb = {
+                   .b = 180,
+                   .g = 180,
+                   .r = 255,
+                   .a = 255,
+               }
+            };
+            break;
+        default:
+            insidePanelColor = {
+                .argb = {
+                    .b = 255,
+                    .g = 255,
+                    .r = 0,
+                    .a = 255,
+                }
+            };
+            break;
+    }
+
+    for (size_t i = 0; i < 4; ++i) {
+        vtx[i].col = insidePanelColor.color;
+    }
+
+    njDrawTexture(4, 44657587, (int)vtx, 1);
+    Rotation none = { 0, -4000, 0 };
+    SAlItem item = { 2, type };
+    
+    DrawItem(0.5f * (vtx[0].x + vtx[3].x), vtx[0].y + 5, 0.7f, none, item);
+}
+
 void sub_4874F0(int a1, float a1a, float a2, float a3)
 {
     AnimalInv* v4; // eax
@@ -178,11 +250,7 @@ void sub_4874F0(int a1, float a1a, float a2, float a3)
                 a3a[2].u = 1.0;
                 a3a[3].u = 1.0;
                 a3a[3].v = 1.0;
-                //njDrawTexture(4, v9, (int)a3a, 1);
-                Rotation none = {};
-                SAlItem item = { 2, v7->type };
-                SetShaders(1);
-                DrawItem(a3a[0].x, a3a[0].y, 1, none, item);
+                njDrawTextureHook(a3a, v7->type);
                 --v6;
                 --v7;
                 --v32;
@@ -234,7 +302,7 @@ void sub_4874F0(int a1, float a1a, float a2, float a3)
                     a4[0].y = a4[2].y;
                     a4[3].y = v34 + v16;
                     a4[1].y = a4[3].y;
-                    v52 = (double)v37 * 0.001000000047497451 + 0.8999999761581421;
+                    v52 = (double)v37 * 0.001000000047497451 + 0.9899999761581421;
                     a4[3].z = v52;
                     a4[2].z = v52;
                     a4[1].z = v52;
@@ -267,7 +335,7 @@ void sub_4874F0(int a1, float a1a, float a2, float a3)
                     a3a[3].u = 1.0;
                     a3a[3].v = 1.0;
                     a3a[2].v = 0.0;
-                   // njDrawTexture(4, v23, (int)a3a, 1);
+                    njDrawTextureHook(a3a, v42->type);
                     v14 = a3;
                     v16 = a2;
                     v17 = 320.0;
@@ -343,7 +411,7 @@ void sub_4874F0(int a1, float a1a, float a2, float a3)
             a3a[0].col = -1;
             a3a[3].v = 1.0;
             a3a[2].v = 0.0;
-            //njDrawTexture(4, v31, (int)a3a, 1);
+            njDrawTextureHook(a3a, v30);
             if (--v36 < 0)
             {
                 break;

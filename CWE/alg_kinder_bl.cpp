@@ -1354,7 +1354,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 
 	OrthoDrawBegin();
 	int type = mItemDescItem.mType;
-	if (type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
+	if (true || type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
 		switch (mItemDescItem.mCategory)
 		{
 		case ChaoItemCategory_Accessory:
