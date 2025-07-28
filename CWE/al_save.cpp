@@ -116,8 +116,8 @@ namespace save {
 	// it should be replaced eventually (people won't be happy that a third savefile will show up for cwe
 	// but it would be worth it)
 	void LoadCWESave() {
-		ClearAllItems();
-
+		ClearAllItemSave();
+		
 		char filename[MAX_PATH];
 		sprintf(filename, "%s_%s", (const char*)0x136604C, "CWEV1.json");
 

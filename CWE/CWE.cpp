@@ -396,6 +396,7 @@ extern "C"
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
 
+		ClearAllItemSave();
 		GlobalSave_Init();
 
 		KCE_Init();
