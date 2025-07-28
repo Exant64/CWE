@@ -396,6 +396,8 @@ extern "C"
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
 
+		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
+
 		ClearAllItemSave();
 		GlobalSave_Init();
 
