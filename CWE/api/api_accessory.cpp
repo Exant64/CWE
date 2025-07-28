@@ -45,14 +45,14 @@ CWE_API_ACCESSORY_DATA& GetAccessoryData(int index) {
 	return ModAPI_AccessoryDataList[index].Data;
 }
 
-__declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
+extern "C" __declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
 	auto& data = GetAccessoryData(accessory_id);
 
 	data.Flags |= CWE_API_ACCESSORY_FLAGS_LEGACY_BALD;
 	data.Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
 }
 
-void AccessoryDisableJiggle(int accessory_id) {
+extern "C" __declspec(dllexport) void AccessoryDisableJiggle(int accessory_id) {
 	GetAccessoryData(accessory_id).Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
 }
 
