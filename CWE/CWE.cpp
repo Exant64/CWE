@@ -306,6 +306,16 @@ extern "C"
 			}
 		}
 	}
+
+	static bool IsModAPILoaded = false;
+	__declspec(dllexport) void OnFrame() {
+		if (!IsModAPILoaded) {
+			RegisterCWEData(&cweAPI);
+			IsModAPILoaded = true;
+		}
+
+		CWE_Codes_OnFrame();
+	}
 	
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex)
 	{
@@ -358,6 +368,7 @@ extern "C"
 
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
+		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
 
 		KCE_Init();
 

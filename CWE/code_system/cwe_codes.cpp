@@ -66,8 +66,7 @@ static Config codeConfig[] = {
 
 //one day this will be moved out to cwe.cpp once we stop needing codeparser
 int ToyResetTimer = 0;
-extern "C" __declspec(dllexport) void OnFrame()
-{
+void CWE_Codes_OnFrame() {
 	ChaoWorldExtendedRequired();
 	codeParser.processCodeList();
 
