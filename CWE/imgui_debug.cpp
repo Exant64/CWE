@@ -78,7 +78,7 @@ static void ChaoInfoMenu() {
                     static int SetID = 0;
                     const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
 
-                    static const char* AccessoryStrings[256];
+                    static const char* AccessoryStrings[3000];
                     for (size_t id = 0; id < items.size(); ++id) {
                         AccessoryStrings[id] = items[id].data();
                     }
