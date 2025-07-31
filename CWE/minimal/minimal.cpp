@@ -20,16 +20,6 @@ struct __declspec(align(8)) MinimalData2
 
 UsercallFuncVoid(RenderAnimal, (task* tp), (tp), 0x0048A2D0, rEAX);
 
-const int sub_7808B0Ptr = 0x7808B0;
-void sub_7808B0(int a1, float a2, NJS_MOTION* a3) {
-	__asm {
-		mov ecx, a3
-		push a2
-		push a1
-		call sub_7808B0Ptr
-		add esp, 8
-	}
-}
 FunctionPointer(void, njCnkMotion, (NJS_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
 
 #pragma pack(push, 8)
@@ -357,7 +347,7 @@ static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4,
 }
 
 const int sub_48ACD0Ptr = 0x48ACD0;
-void sub_48ACD0(int a1, float a2, float a3, float a4) {
+static void sub_48ACD0(int a1, float a2, float a3, float a4) {
     __asm {
         mov esi, a1
         push a4
@@ -404,8 +394,8 @@ static void __declspec(naked) sub_48ACD0_hook()
 // hooks stolen from chao partner
 static void LoadLevelInit_r();
 static void LoadLevelDestroy_r();
-FunctionHook<void> LoadLevelInit_hook(0x43CB10, LoadLevelInit_r);
-FunctionHook<void> LoadLevelDestroy_hook(0x454CC0, LoadLevelDestroy_r);
+static FunctionHook<void> LoadLevelInit_hook(0x43CB10);
+static FunctionHook<void> LoadLevelDestroy_hook(0x454CC0);
 
 static void LoadLevelInit_r() {
     for (const auto& load : TexlistLoads) {
@@ -432,6 +422,9 @@ static void LoadLevelDestroy_r() {
 }
 
 void Minimal_Init() {
+    LoadLevelInit_hook.Hook(LoadLevelInit_r);
+    LoadLevelDestroy_hook.Hook(LoadLevelDestroy_r);
+
     // minimalcreatemanager hooks to remove safety check
     WriteData<5>((char*)0x0054942F, (char)0x90);
     WriteCall((void*)0x0054944E, AL_MinimalExecutor_Load_r);
