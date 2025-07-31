@@ -1341,16 +1341,17 @@ void DrawTimer()
 	sub_5A6450((int)uibuff, 1);
 }
 
-Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f },  1,  0.5f, {  1,  1,  1 } };
+Light BM_MenuLight = { {  0.1f, -0.7f, 0.7f },  1,  0.5f, {  1,  1,  1 } };
 
 #define Translate(x,y,z) OrthoScreenTranslate(x,y,(-26.0f)/z * scl)
 extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Rotation& rot, const SAlItem& mItemDescItem) {
 	njPushMatrixEx();
 	njUnitMatrix(0);
 
-	Light backupLight = Lights[10];
-	Lights[10] = BM_MenuLight;
-	DoLighting(10);
+	const size_t itemLightIndex = 11;
+	Light backupLight = Lights[itemLightIndex];
+	Lights[itemLightIndex] = BM_MenuLight;
+	DoLighting(itemLightIndex);
 
 	OrthoDrawBegin();
 	int type = mItemDescItem.mType;
@@ -1488,7 +1489,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	}
 	OrthoDrawEnd();
 	njPopMatrixEx();
-	Lights[10] = backupLight;
+	Lights[itemLightIndex] = backupLight;
 }
 
 void DrawPurchasedItem() {
