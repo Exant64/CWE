@@ -397,11 +397,6 @@ static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPoint
 	const int accessoryIndex = work->AccessoryIndices[slot];
 	const auto& accessory_data = GetAccessoryData(accessoryIndex);
 
-	if (accessory_data.Flags & CWE_API_ACCESSORY_FLAGS_NO_JIGGLE)
-		work->field_B0 &= ~0x1000;
-	else
-		work->field_B0 |= 0x1000;
-
 	AccessoryNodeIndex = 0;
 
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
@@ -744,12 +739,15 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 
 	bool presets[3] = { false, false, false };
 	bool dontKeepHeadParts = false;
+	bool disableJiggle = false;
 
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
 		if (work->AccessoryIndices[i] == -1) continue;
 		const auto& data = GetAccessoryData(work->AccessoryIndices[i]);
 
 		DrawHideNodes |= data.HideNodes;
+
+		if (data.Flags & CWE_API_ACCESSORY_FLAGS_NO_JIGGLE) disableJiggle = true;
 
 		if (data.Flags & CWE_API_ACCESSORY_FLAGS_BALD_PRESET_X) {
 			presets[0] = true;
@@ -774,6 +772,13 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 			presets[1] = true;
 			presets[2] = true;
 		}
+	}
+
+	if (disableJiggle) {
+		work->field_B0 &= ~0x1000;
+	}
+	else {
+		work->field_B0 |= 0x1000;
 	}
 
 	work->BaldHideHead = false;
