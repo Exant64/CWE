@@ -34,6 +34,8 @@
 #include <al_behavior/al_behavior.h>
 #include <al_garden_info.h>
 #include <ui/al_tween.h>
+#include <al_name.h>
+#include <set>
 
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
@@ -63,9 +65,21 @@ extern NJS_OBJECT object_alo_mannequin;
 
 static ObjectMaster* pChao = NULL;
 
+static NJS_POINT2 HatAccMenuOffset;
 static int vectorInitFlag = 0;
 static std::vector<ITEM_SAVE_INFO*> HatList;
-static std::vector<ItemSaveInfoBase*> AccessoryList;
+
+struct AccessorySaveComparator {
+	bool operator()(const AccessorySaveInfo* a, const AccessorySaveInfo* b) const {
+		return a->IndexID < b->IndexID || 
+			(a->IndexID == b->IndexID && a->UsedColors < b->UsedColors) || 
+			(a->IndexID == b->IndexID && a->UsedColors == b->UsedColors && memcmp(a->Colors, b->Colors, sizeof(a->Colors)) < 0);
+	}
+};
+
+static std::map<AccessorySaveInfo*, size_t, AccessorySaveComparator> AccessoryListCount;
+static std::vector<AccessorySaveInfo*> AccessoryList;
+
 static void UpdateHatAccVector() {
 	vectorInitFlag = 0;
 }
@@ -77,6 +91,7 @@ static void CheckHatAccVectorUpdate() {
 	{
 		HatList.clear();
 		AccessoryList.clear();
+		AccessoryListCount.clear();
 
 		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
 		for (int j = 0; j < 24; j++)
@@ -89,11 +104,32 @@ static void CheckHatAccVectorUpdate() {
 		for (auto& item : AccessoryItemList) {
 			if (item.IndexID == -1) continue;
 
-			AccessoryList.push_back(&item);
+			AccessoryListCount[&item]++;
+		}
+
+		for (auto& item : AccessoryListCount) {
+			AccessoryList.push_back(item.first);
 		}
 
 		vectorInitFlag = 1;
 	}
+}
+bool AL_Customization_CreateAcc(int ID, int Garden)
+{
+	if (ID == -1) return false;
+
+	auto save = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+	if (!save) {
+		PrintDebug("HatAccRender: no hat slots left");
+		return false;
+	}
+
+	save->Garden = Garden;
+	save->IndexID = ID;
+	save->Position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
+	UpdateHatAccVector();
+
+	return true;
 }
 
 class LeftBarButtonOld : public UISelectable {
@@ -140,15 +176,28 @@ public:
 
 class LeftBarButton : public UISelectable {
 private:
+	enum class ButtonMode {
+		Unselected,
+		Selected,
+		ToUnselected,
+		ToSelected
+	};
+
+	ButtonMode m_mode;
+
 	const std::string m_layerEnter;
 	int m_buttonType;
-
+	task* m_gbaTween = NULL;
 	ChaoHudThingB m_leftPart = {1, 23, 46, 0.f, 41.f / 256.f, 22.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36};
 	ChaoHudThingB m_middlePart = { 1, 1, 46, 31.f / 256.f, 41.f / 256.f, 33.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36 };
 	ChaoHudThingB m_rightPart = { 1, 23, 46, 66.f / 256.f + 0.005f, 41.f / 256.f, 88.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36 };
 	ChaoHudThingB m_selectedLeftPart = { 1, 23, 46, 0.f, 97.f / 256.f, 22.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
 	ChaoHudThingB m_selectedMiddlePart = { 1, 1, 46, 31.f / 256.f, 97.f / 256.f, 33.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
 	ChaoHudThingB m_selectedRightPart = { 1, 23, 46, 66.f / 256.f, 97.f / 256.f, 88.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_text = { 1, 83, 27, 0, 0, 83 / 256.f, 27 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_icon = { 1, 46, 46, 0, 155.f / 256.f, 46 / 256.f, (155 + 46) / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_selectedIcon = { 1, 46, 46, 54 / 256.f, 155.f / 256.f, (54 + 46) / 256.f, (155 + 46) / 256.f, &CWE_UI_TEXLIST, 36 };
 public:
 	enum LeftBarType : int {
 		HatAcc = 0,
@@ -157,11 +206,15 @@ public:
 		Count
 	};
 
+	Angle m_ang = 0;
+	float m_iconX = 0.f;
 	float m_sclX = 1;
 	float m_sclY = 1;
 	float m_progress = 0.f;
+	float m_textProgress = 0.f;
 	Uint32 m_timer = 0;
 	task* m_tween = NULL;
+	task* m_textTween = NULL;
 	float GetWidth() { return m_leftPart.wd; }
 	float GetHeight() { return m_rightPart.ht; }
 
@@ -179,53 +232,184 @@ public:
 	
 	}
 
+	static void DrawAsSprite(ChaoHudThingB& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z) {
+		NJS_TEXANIM texanim = {
+			pHud.wd,
+			pHud.ht,
+			pHud.wd / 2.f,
+			pHud.ht / 2.f,
+			Sint16(pHud.s0 * 256.f), Sint16(pHud.t0 * 256.f),
+			Sint16(pHud.s1 * 256.f), Sint16(pHud.t1 * 256.f),
+			pHud.TexNum,
+			NJD_SPRITE_ALPHA
+		};
+
+		NJS_SPRITE sprite = {
+			.p = {posX + pHud.wd / 2.f, posY + pHud.ht / 2.f, 0},
+			.sx = sclX,
+			.sy = sclY,
+			.ang = angle,
+			.tlist = pHud.pTexlist,
+			.tanim = &texanim
+		};
+
+		njDrawSprite2D(&sprite, 0, z, NJD_SPRITE_ANGLE | NJD_SPRITE_ALPHA);
+	}
+
 	void Disp() override {
-		if (!IsSelected()) {
-			m_progress = 0.f;
-			m_timer = 0;
+		switch (m_mode) {
+			case ButtonMode::Unselected:
+				if (!IsSelected()) {
+					m_timer = 0;
+					m_ang = 0;
+					if (!m_gbaTween && m_progress > 0.f)
+					{
+						m_gbaTween = CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_QUAD, &m_progress, 0.f, 15, NULL);
+						TweenSetTaskPointer<float>(m_gbaTween, &m_gbaTween);
+					}
+					if (!m_textTween && m_textProgress > 0.f)
+					{
+						m_textTween = CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_CIRC, &m_textProgress, 0.f, 15, NULL);
+						TweenSetTaskPointer<float>(m_textTween, &m_textTween);
+					}
+				}
+				else {
+					m_mode = ButtonMode::ToSelected;
+				}
+				break;
+			case ButtonMode::ToSelected:
+				if (m_gbaTween) {
+					DeleteObject_(m_gbaTween);
+					m_gbaTween = NULL;
+				}
+
+				if (m_textTween) {
+					DeleteObject_(m_textTween);
+					m_textTween = NULL;
+				}
+				
+				m_mode = ButtonMode::Selected;
+				break;
+			case ButtonMode::Selected:
+				if (!IsSelected()) {
+					m_mode = ButtonMode::ToUnselected;
+				}
+				else {
+					if (!m_timer++) {
+						if (!m_gbaTween && m_progress < 1.f)
+						{
+							m_gbaTween = CreateTween(NULL, EASE_TYPE::EASE_OUT, INTERP_TYPE::INTERP_QUAD, &m_progress, 1.f, 25, NULL);
+							TweenSetTaskPointer<float>(m_gbaTween, &m_gbaTween);
+						}
+						if (!m_textTween && m_textProgress < 1.f)
+						{
+							m_textTween = CreateTween(NULL, EASE_TYPE::EASE_OUT, INTERP_TYPE::INTERP_CIRC, &m_textProgress, 1.f, 40, NULL);
+							TweenSetTaskPointer<float>(m_textTween, &m_textTween);
+						}
+					}
+					m_ang += 256;
+				}
+				break;
+			case ButtonMode::ToUnselected:
+				if (m_gbaTween) {
+					DeleteObject_(m_gbaTween);
+					m_gbaTween = NULL;
+				}
+
+				if (m_textTween) {
+					DeleteObject_(m_textTween);
+					m_textTween = NULL;
+				}
+
+				m_mode = ButtonMode::Unselected;
+				break;
+			
 		}
-		else if (!m_timer++) {
-			CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_CUBIC, &m_progress, 1.f, 25, NULL);
-		}
+		
 
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 
 		const float middle_width = 140;
+		auto& originalIconSprite = IsSelected() ? m_selectedIcon : m_icon;
 
-		DrawChaoHudThingB(IsSelected() ? &m_selectedLeftPart : & m_leftPart, m_posX, m_posY, -1.2f, m_sclX, m_sclY, -1, -1);
-		if(m_progress > 0.f)
-		DrawChaoHudThingB(IsSelected() ? &m_selectedMiddlePart : &m_middlePart, m_posX + m_leftPart.wd, m_posY, -1.3f, middle_width * m_progress, m_sclY, -1, -1);
-		DrawChaoHudThingB(IsSelected() ? &m_selectedRightPart : &m_rightPart, m_posX + m_leftPart.wd + middle_width * m_progress - 1.f, m_posY, -1.4f, m_sclX, m_sclY, -1, -1);
+		NJS_TEXANIM texanim = {
+			originalIconSprite.wd,
+			originalIconSprite.ht,
+			originalIconSprite.wd / 2.f,
+			originalIconSprite.ht / 2.f,
+			Sint16(originalIconSprite.s0 * 256.f), Sint16(originalIconSprite.t0 * 256.f),
+			Sint16(originalIconSprite.s1 * 256.f), Sint16(originalIconSprite.t1 * 256.f),
+			originalIconSprite.TexNum,
+			NJD_SPRITE_ALPHA
+		};
+
+		NJS_SPRITE sprite = {
+			.p = {m_posX + originalIconSprite.wd / 2.f, m_posY + originalIconSprite.ht / 2.f, 0},
+			.sx = m_sclX,
+			.sy = m_sclY,
+			.ang = m_ang,
+			.tlist = originalIconSprite.pTexlist,
+			.tanim = &texanim
+		};
+
+		njDrawSprite2D(&sprite, 0, -2, NJD_SPRITE_ANGLE | NJD_SPRITE_ALPHA);
+
+		DrawAsSprite(
+			m_gba, 
+			m_posX - m_progress * 20, 
+			(1 - m_progress) * -7.f + m_posY, 
+			m_sclX,
+			m_sclY,
+			m_progress * NJM_DEG_ANG(-10 + njSin(m_ang * 2) * 5), 
+			-0.5f
+		);
+
+		m_text.s1 = m_text.s0 + m_textProgress * (m_text.wd / 256.f);
+		DrawAsSprite(
+			m_text, 
+			m_posX + 13.f, 
+			m_posY + 7.f, 
+			m_sclX * m_textProgress,
+			m_sclY,
+			m_textProgress * NJM_DEG_ANG(25), 
+			-0.5f
+		);
 	}
 
-	LeftBarButton(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, SelectFlag::ForceVertical), m_layerEnter(layerEnter), m_buttonType(buttonType) {
+	LeftBarButton(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, 0), m_layerEnter(layerEnter), m_buttonType(buttonType) {
 		m_posX = posX;
 		m_posY = posY;
+		m_mode = ButtonMode::Unselected;
 	}
 };
 
 class BaseCustomizeBox : public UISelectable {
 private:
-	ChaoHudThingB m_sprite = { 1, 0x40 ,0x40, 0, 0, 0.5 ,0.5, &AL_OSAMENU, 1 };
+	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+	std::optional<ChaoHudThingB> m_additionalSprite;
 public:
 	float m_sclX = 1;
 	float m_sclY = 1;
 	float GetWidth() { return m_sprite.wd; }
 	float GetHeight() { return m_sprite.ht; }
 	void OverrideSprite(ChaoHudThingB& hud) {
-		m_sprite = hud;
+		m_additionalSprite = hud;
 	}
 	virtual void BoxContentDisp() {}
 	virtual void ColorSet() {}
 	void ColorSetSelected() {
-		if (!IsSelected())
-			SetChaoHUDThingBColor(1, 0x58 / 255.0f, 0xB0 / 255.0f, 0xC0 / 255.0f); //yellow, selected
+		//if (!IsSelected())
+		//	SetChaoHUDThingBColor(1, 0x58 / 255.0f, 0xB0 / 255.0f, 0xC0 / 255.0f); //yellow, selected
 	}
 	void Disp() override {
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 		ColorSet();
 
-		DrawChaoHudThingB(&m_sprite, m_posX, m_posY, -1.2f, m_sclX, m_sclY, -1, -1);
+		DrawChaoHudThingB(IsSelected() ? &m_selectedSprite : & m_sprite, m_posX, m_posY, -2.2f, m_sclX, m_sclY, -1, -1);
+		if (m_additionalSprite) {
+			DrawChaoHudThingB(&*m_additionalSprite, m_posX, m_posY, -2.0f, m_sclX, m_sclY, -1, -1);
+		}
 
 		BoxContentDisp();
 	}
@@ -311,10 +495,11 @@ public:
 };
 
 class HatAccRender : public BaseCustomizeBox {
-private:
-	bool m_useNullItem = false;
+protected:
 	float m_offX = 0;
 	float m_offY = 0;
+private:
+	bool m_useNullItem = false;
 public:
 	int m_rotY = 0;
 	virtual bool IsAccessorySlot() const {
@@ -339,23 +524,7 @@ public:
 		
 		return true;
 	}
-	bool AL_Customization_CreateAcc(int ID, int Garden)
-	{
-		if (ID == -1) return false;
-
-		auto save = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
-		if (!save) {
-			PrintDebug("HatAccRender: no hat slots left");
-			return false;
-		}
-
-		save->Garden = Garden;
-		save->IndexID = ID;
-		save->Position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
-		UpdateHatAccVector();
-
-		return true;
-	}
+	
 	void Exec() override {
 		m_rotY += 256;
 	}
@@ -395,7 +564,7 @@ public:
 				(Uint16)item 
 			};
 
-			DrawItem(m_offX, m_offY, 1, rot, _item);
+			DrawItem(m_offX - 2, m_offY, 0.75f, rot, _item);
 		}
 
 		SetChaoHUDThingBColor(1, 1, 1, 1);
@@ -435,19 +604,29 @@ public:
 			}
 		}
 		else {
-			auto* pSaveInfo = AccessoryList[m_index - HatList.size()];
+			auto* pSaveInfo = (AccessorySaveInfo*)AccessoryList[m_index - HatList.size()];
 			const int accType = GetAccessoryType(pSaveInfo->IndexID);
 			
 			bool canEquip = true;
-			if (pParam->Accessories[accType].ID[0])
+			if (pParam->Accessories[accType].ID[0]) {
 				canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], pParam->Garden);
+			}
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
-				AL_SetAccessory(pChao, pSaveInfo->IndexID);
+				//AL_SetAccessory(pChao, pSaveInfo->IndexID);
+
+				char id[METADATA_ID_SIZE];
+				if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pSaveInfo->IndexID, id)) return;
+
+				auto& accessoryData = pParam->Accessories[accType];
+				memset(&accessoryData, 0, sizeof(accessoryData));
+				memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
+				memcpy(accessoryData.ColorSlots, pSaveInfo->Colors, sizeof(accessoryData.ColorSlots));
+				accessoryData.ColorFlags = pSaveInfo->UsedColors;
+
 				AL_ClearItemSaveInfo(pSaveInfo);
 				UpdateHatAccVector();
 			}
-			
 		}
 	}
 	int GetItem() override{
@@ -467,6 +646,8 @@ public:
 
 class HatAccSlot : public HatAccRender {
 private:
+	const float m_basePosX, m_basePosY;
+
 	int colorSine = 0;
 	const int m_slot;
 	bool HasHeadgear() {
@@ -488,16 +669,7 @@ public:
 		return -1;
 	}
 	void ColorSet() override {
-		float c = (njSin(colorSine) + 1) / 2.0f;
-		if (colorSine == 0) c = 1;
-
-		if(IsSelected())
-			SetChaoHUDThingBColor(1, 
-				(120 + c * (255 - 120)) / 255.0f,
-				1, 
-				(120 + c * (255 - 120)) / 255.0f
-				);
-		else if(!HasHeadgear() && !HasAccessory())
+		if(!HasHeadgear() && !HasAccessory())
 			SetChaoHUDThingBColor(1, 0.5f, 0.5f, 0.5f);
 		else
 			SetChaoHUDThingBColor(1, 1, 1, 1);
@@ -523,6 +695,11 @@ public:
 
 	}
 	void Exec() override {
+		m_offX = m_posX = m_basePosX + HatAccMenuOffset.x;
+		m_offY = m_posY = m_basePosY + HatAccMenuOffset.y;
+		m_offX += 20;
+		m_offY += 20;
+
 		SetSelectable(HasHeadgear() || HasAccessory());
 
 		m_rotY += 256;
@@ -533,9 +710,240 @@ public:
 		else 
 			colorSine = 0;
 	}
-	HatAccSlot(int slot, float posX, float posY) : HatAccRender(posX,posY,false, 0.85f,0.85f, ForceHorizontal), m_slot(slot) {
-		ChaoHudThingB element = { 1, 0x40 ,0x40, 0, 0, 1 ,1, &CWE_UI_TEXLIST, 28 + m_slot };
+	HatAccSlot(int slot, float posX, float posY) : HatAccRender(posX,posY,false, 0.70f,0.70f, 0), m_slot(slot), m_basePosX(posX), m_basePosY(posY) {
+		ChaoHudThingB element = { 1, 0x40 / 1.25f ,0x40 / 1.25f, 0, 0, 1 ,1, &CWE_UI_TEXLIST, 28 + m_slot };
 		OverrideSprite(element);
+	}
+};
+
+class ScrollArea : public UISelectable {
+private:
+	const size_t m_horizItemCount = 4;
+	const size_t m_verticalItemCount = 3;
+	const size_t m_scrollAt = 2;
+
+	float m_scrollOffsetY = 0.f;
+	float m_scrollAlpha = 1.f;
+
+	int m_uiSelectX = 0;
+	int m_uiSelectY = 0;
+
+	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+
+	ChaoHudThingB m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 36 };
+
+	const size_t GetItemCount() const {
+		return 128; // AccessoryList.size();
+	}
+
+	void ScrollDisp(float posX, float posY, float length){
+		DrawChaoHudThingB(
+			&m_scrollTop,
+			posX,
+			posY,
+			-2.2f,
+			1,
+			1,
+			-1,
+			-1
+		);
+
+		auto scrollMiddle = m_scrollMiddle;
+		scrollMiddle.ht = length;
+
+		DrawChaoHudThingB(
+			&scrollMiddle,
+			posX,
+			posY + m_scrollTop.ht,
+			-2.3f,
+			1,
+			1,
+			-1,
+			-1
+		);
+
+		DrawChaoHudThingB(
+			&m_scrollBottom,
+			posX,
+			posY + m_scrollTop.ht + scrollMiddle.ht,
+			-2.2f,
+			1,
+			1,
+			-1,
+			-1
+		);
+
+	}
+
+public:
+	float m_alpha = 1;
+	float m_visualPosX, m_visualPosY;
+
+	bool CanUnselect(Direction direction) const override {
+		switch (direction) {
+		case Direction::Left:
+			return m_uiSelectX == 0;
+		case Direction::Right:
+		case Direction::Up:
+		case Direction::Down:
+			return false;
+		}
+	}
+
+	void Press(UIController* controller) override {
+		if (!IsSelected()) return;
+
+		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
+		const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
+		auto* pSaveInfo = AccessoryList[index];
+		const int accType = GetAccessoryType(pSaveInfo->IndexID);
+
+		bool canEquip = true;
+		if (pParam->Accessories[accType].ID[0])
+			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], pParam->Garden);
+
+		if (canEquip) {
+			PlaySoundProbably(0x1007, 0, 0, 0);
+			AL_SetAccessory(pChao, pSaveInfo->IndexID);
+			AL_ClearItemSaveInfo(pSaveInfo);
+			UpdateHatAccVector();
+		}
+	}
+
+	void Disp() override {
+		if (IsSelected()) {
+			bool doTween = false;
+			if (MenuButtons_Pressed[0] & Buttons_Up) {
+				if (m_uiSelectY >= 1) {
+					m_uiSelectY--;
+					doTween = true;
+				}
+			}
+			if (MenuButtons_Pressed[0] & Buttons_Down) {
+				if (m_uiSelectY < GetItemCount() - 1) {
+					m_uiSelectY++;
+					doTween = true;
+				}
+			}
+
+			if (MenuButtons_Pressed[0] & Buttons_Left) {
+				if (m_uiSelectX >= 1) m_uiSelectX--;
+			}
+			if (MenuButtons_Pressed[0] & Buttons_Right) {
+				if (m_uiSelectX < m_horizItemCount - 1) m_uiSelectX++;
+			}
+
+			const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
+			if (index >= GetItemCount()) {
+				const size_t lastItemIndex = GetItemCount() - 1;
+				m_uiSelectX = lastItemIndex % m_horizItemCount;
+				m_uiSelectY = lastItemIndex / m_horizItemCount;
+			}
+
+			if (doTween) {
+				if (m_uiSelectY >= m_scrollAt) {
+					CreateTween(NULL, EASE_OUT, INTERP_EXPO, &m_scrollOffsetY, float(m_scrollAt) - float(m_uiSelectY), 15, NULL);
+				}
+			}
+		}
+
+		const auto setColor = [this](float a, float r, float g, float b) {
+			SetChaoHUDThingBColor(a * m_alpha, r, g, b);
+		};
+
+		setColor(1, 1, 1, 1);
+
+		const float horizSpacing = m_sprite.wd + 15;
+		const float verticalSpacing = m_sprite.ht + 15;
+		const float scrollBarLength = verticalSpacing * (m_verticalItemCount + 1) - 25;
+		const size_t verticalItemCount = (GetItemCount() - 1) / m_horizItemCount;
+
+		if (verticalItemCount >= 4) {
+			setColor(0.3f, 0, 0, 0);
+			ScrollDisp(m_visualPosX + horizSpacing * m_horizItemCount, m_visualPosY, scrollBarLength);
+
+			setColor(1, 1, 1, 1);
+			ScrollDisp(m_visualPosX + horizSpacing * m_horizItemCount, m_visualPosY + m_uiSelectY * scrollBarLength / (verticalItemCount + 1), scrollBarLength / verticalItemCount);
+		}
+
+		for (size_t y = 0; y < 1 + GetItemCount() / m_horizItemCount; ++y) {
+			for (size_t x = 0; x < m_horizItemCount; ++x) {
+				const size_t index = x + y * m_horizItemCount;
+				if (index >= GetItemCount()) break;
+
+				const bool selected = IsSelected() && m_uiSelectX == x && m_uiSelectY == y;
+				const auto& sprite = selected ? &m_selectedSprite : &m_sprite;
+
+				const float scrolledY = float(y) + m_scrollOffsetY;
+
+				if (scrolledY < -1.f) 
+					continue;
+				if (scrolledY - m_verticalItemCount > 1.f) 
+					continue;
+
+				float alpha = 1;
+				if (scrolledY - m_verticalItemCount > 0) {
+					alpha = 1 - (scrolledY - float(m_verticalItemCount));
+				}
+				else if (scrolledY < 0) {
+					alpha = 1 + scrolledY;
+				}
+
+				if (alpha < 1)
+					setColor(alpha, 1, 1, 1);
+				else 
+					setColor(1, 1, 1, 1);
+
+				DrawChaoHudThingB(sprite, m_visualPosX + x * horizSpacing, m_visualPosY + (float(y) + m_scrollOffsetY) * verticalSpacing, -2.2f, 1, 1, -1, -1);
+
+				if (index >= AccessoryList.size()) continue;
+
+				char nums[6];
+				sprintf_s(nums, "%d", int(AccessoryListCount[AccessoryList[index]]));
+
+				for (size_t str = 0; str < strlen(nums); str++) {
+					if (!nums[str]) break;
+
+					nums[str] -= '0';
+					nums[str] += 0x10;
+				}
+				
+				NJS_COLOR nameColor = (NJS_COLOR)0xFFFFFFFF;
+				nameColor.argb.a = m_alpha * 255;
+				if(alpha < 1) nameColor.argb.a = m_alpha * alpha * 255;
+				
+				DisplayChaoName_NewFont((char*)(nums - offsetof(ChaoDataBase, Name) + 0x12), m_visualPosX + x * horizSpacing + sprite->wd, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + sprite->ht - 15, 22, 22, nameColor, 0, DrawAncorV_Center);
+
+				Rotation rot = { 0, 0, 0 };
+
+				SAlItem _item = {
+					ChaoItemCategory_Accessory,
+					AccessoryList[index]->IndexID
+				};
+				
+				float scl = 0.9f * m_alpha;
+				if (alpha < 1) {
+					scl *= alpha;
+				}
+
+				DrawItem(m_visualPosX + x * horizSpacing + (sprite->wd) / 2.f, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + (sprite->ht) / 2.f, scl, rot, _item);
+			}
+		}
+	}
+
+	void Exec() override {
+		SetSelectable(m_alpha == 1);
+	}
+
+	ScrollArea(const std::string& name, float posX, float posY) : UISelectable(name, 0) {
+		m_visualPosX = posX;
+		m_visualPosY = posY;
+
+		m_posX = 400;
+		m_posY = m_visualPosY;
 	}
 };
 
@@ -554,7 +962,7 @@ UIController* customizationController = nullptr;
 ObjectMaster* largeBar = 0;
 
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {	
-	NJS_VECTOR posIn = { 130, 190, -30 }, posOut;
+	NJS_VECTOR posIn = { 260, 300 + 50, -12 }, posOut;
 	switch (a1->mode)
 	{
 	case 0:
@@ -577,25 +985,32 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		pChao->Data1.Chao->field_B0 &= ~0x10u;
 
 		customizationController = new UIController();
+
 		customizationController->AddLayer(baseLayerName,
 			[]() {
 				if (!(MenuButtons_Pressed[0] & Buttons_B)) {
 					return;
 				}
 				
-				auto& exitButton = customizationController->GetButton("exit");
-				if (exitButton->IsSelected()) {
-					exitButton->Press(customizationController);
+				auto exitButton = customizationController->GetButton("exit");
+
+				if (!exitButton) return;
+
+				if ((*exitButton)->IsSelected()) {
+					(*exitButton)->Press(customizationController);
 				}
 				else {
 					customizationController->SelectButton("exit");
 				}
 				PlaySelectSound();
-			});
-		customizationController->AddElement<LeftBarButton>(baseLayerName, hataccLayerName, 100.f, 200.f, LeftBarButton::LeftBarType::HatAcc);
-		customizationController->AddElement<LeftBarButton>(baseLayerName, medalLayerName, 100.f, 250.f, LeftBarButton::LeftBarType::Medal);
-		customizationController->AddElement<LeftBarButton>(baseLayerName, "exit", 100.f, 300.f, LeftBarButton::LeftBarType::Exit);
-		customizationController->AddElement<BaseCustomizeBox>(baseLayerName, "chaobox", 100.f, 125.f, UISelectable::CantSelect);
+			}
+		);
+
+		#define spread 100.f
+		customizationController->AddElement<LeftBarButton>(baseLayerName, hataccLayerName, 295 - spread, 385, LeftBarButton::LeftBarType::HatAcc);
+		customizationController->AddElement<LeftBarButton>(baseLayerName, medalLayerName, 295, 385, LeftBarButton::LeftBarType::Medal);
+		customizationController->AddElement<LeftBarButton>(baseLayerName, "exit", 295 + spread, 385, LeftBarButton::LeftBarType::Exit);
+		//customizationController->AddElement<BaseCustomizeBox>(baseLayerName, "chaobox", 100.f, 125.f, UISelectable::CantSelect);
 
 		customizationController->AddLayer(medalLayerName);
 		for (int i = 0; i < 16; i++) {
@@ -604,10 +1019,52 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 			customizationController->AddElement<MedalCustomizeBox>(medalLayerName, i, (float)posX, (float)posY);
 		}
 
-		customizationController->AddLayer(hataccLayerName, CheckHatAccVectorUpdate);
+		customizationController->AddLayer(hataccLayerName, []() {
+			CheckHatAccVectorUpdate();
+
+			static bool colorSelect = false;
+
+			bool beforeColorSelect = colorSelect;
+			if (MenuButtons_Pressed[0] & Buttons_L) {
+				colorSelect = true;
+			}
+			else if (MenuButtons_Pressed[0] & Buttons_R) {
+				colorSelect = false;
+			}
+
+			if (beforeColorSelect != colorSelect) {
+				NJS_VECTOR posIn, posOut;
+				NJS_POINT2 targetMenuOffset;
+				float targetAlpha;
+
+				if (colorSelect) {
+					targetAlpha = 0;
+					posIn = { 460, 300 + 50, -12 };
+					targetMenuOffset = { 190, 0 };
+				}
+				else {
+					targetAlpha = 1;
+					posIn = { 260, 300 + 50, -12 };
+					targetMenuOffset = { 0, 0 };
+				}
+				someUIProjectionCode(&posIn, &posOut);
+				
+				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->Data1.Entity->Position, posOut, 30, NULL);
+				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &HatAccMenuOffset, targetMenuOffset, 30, NULL);
+
+				auto scrollAreaElement = customizationController->GetButton("scrollarea");
+				if (scrollAreaElement) {
+					auto scroll = std::dynamic_pointer_cast<ScrollArea, UISelectable>(*scrollAreaElement);
+					CreateTween(NULL, EASE_OUT, INTERP_EXPO, &scroll->m_alpha, targetAlpha, 25, NULL);
+					//CreateTween(NULL, EASE_OUT, INTERP_CIRC, &(*scrollArea)->m_posY, targetMenuOffset, 20, NULL);
+				}
+			}
+		});
+
+		customizationController->AddElement<ScrollArea>(hataccLayerName, "scrollarea", 340, 100);
 
 		for (int i = 0; i < HatsSubMenuCount; i++) {
-			customizationController->AddElement<HatAccSlot>(hataccLayerName, i,  220.f + (float)i * 75, 380.f);
+			customizationController->AddElement<HatAccSlot>(hataccLayerName, i, 240 - spread, 100 + (float)i * 55);
 		}
 
 		for (int i = 0; i < 24; i++) {
@@ -616,7 +1073,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 			int flags = 0;
 			if (i >= 18)
 				flags = UISelectable::SelectFlag::ForceHorizontal;
-			customizationController->AddElement<HatAccCustomizeBox>(hataccLayerName, i, posX, posY, flags);
+			//customizationController->AddElement<HatAccCustomizeBox>(hataccLayerName, i, posX, posY, flags);
 		}
 
 		customizationController->SelectButton(hataccLayerName);

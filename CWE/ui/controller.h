@@ -7,6 +7,7 @@
 #include <vector>
 #include <functional>
 #include <array>
+#include <optional>
 
 static void PlaySelectSound() {
 	PlaySoundProbably(0x8000, 0, 0, 0);
@@ -74,21 +75,21 @@ public:
 		return m_layers[m_layer];
 	}
 
-	auto& GetButton(const std::string& button) {
+	std::optional<std::shared_ptr<UISelectable>> GetButton(const std::string& button) {
 		for (auto& layer : m_layers) {
-			for (const auto& element : layer) {
+			for (auto& element : layer) {
 				if (element->m_name == button)
 					return element;
 			}
 		}
 
-		throw std::runtime_error("UISelectable::GetButton, specified button not found!");
+		return std::nullopt;
 	}
 
 	void SelectButton(const std::string& button) {
 		//this code assumes that theres only one button with that name
 		//if theres more, it will select the last button it finds
-		SelectButton(GetButton(button));
+		SelectButton(*GetButton(button));
 	}
 
 	void SetCurrentLayer(const std::string& layer) {
@@ -124,12 +125,6 @@ public:
 		*(char*)0x25EFFCC = 1;
 	}
 
-	enum class Direction {
-		Left,
-		Right,
-		Up,
-		Down
-	};
 	//the reason this is not precalculated is because some objects can change their "selectability" 
 	//so they would need to call UIController to update it, which i dont wanna do if i dont have to
 	bool DirectionPositionCheck(Direction direction, float aPosX, float aPosY, float bPosX, float bPosY) {
@@ -154,6 +149,8 @@ public:
 	void UpdateSelection(Direction direction) {
 		//if theres nothing selected already, it wont know where to go
 		if (!m_selected) return;
+
+		if (!m_selected->CanUnselect(direction)) return;
 
 		if (direction == Direction::Right && m_selected->m_selectForceRight) {
 			SelectButton(m_selected->m_selectForceRight);

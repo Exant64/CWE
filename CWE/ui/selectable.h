@@ -4,6 +4,13 @@
 #include <string>
 #include <memory>
 
+enum class Direction {
+	Left,
+	Right,
+	Up,
+	Down
+};
+
 class UIController;
 class UISelectable {
 
@@ -47,7 +54,7 @@ public:
 	bool IsSelected() { 
 		return m_selected; 
 	}
-
+	virtual bool CanUnselect(Direction direction) const { return true; }
 	virtual void Press(UIController* controller) {}
 	virtual void Exec() {}
 	virtual void Disp() {}

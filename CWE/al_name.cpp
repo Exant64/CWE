@@ -6,20 +6,8 @@
 #include <al_texlist.h>
 #include <FunctionHook.h>
 #include <ninja_functions.h>
+#include <al_name.h>
 
-enum DrawAnchorH
-{
-	DrawAncorV_Left = 0xFFFFFFFF,
-	DrawAncorV_Center = 0x0,
-	DrawAncorV_Right = 0x1,
-};
-
-enum DrawAnchorV
-{
-	DrawAncorV_Top = 0xFFFFFFFF,
-	DrawAncorV_Middle = 0x0,
-	DrawAncorV_Bottom = 0x1,
-};
 
 VoidFunc(sub_583C60, 0x583C60);
 
@@ -92,7 +80,7 @@ static Float CalculateStringXPos(char* pName, float xpos, float xsize, size_t le
 	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
 }
 
-static void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
+void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
 	const char* pName = (const char*)(name + (offsetof(ChaoDataBase, Name) - 0x12));
 	const size_t length = strlen(pName);
 
