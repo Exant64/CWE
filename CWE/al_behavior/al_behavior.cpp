@@ -63,7 +63,7 @@ extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int typ
 	accessoryData.ColorFlags = 0;
 }
 
-static void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int type) {
+void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int type) {
 	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 

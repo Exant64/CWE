@@ -60,6 +60,7 @@ bool IsAccessoryGeneric(int index);
 CWE_API_ACCESSORY_DATA& GetAccessoryData(int index);
 extern "C" __declspec(dllexport) EAccessoryType GetAccessoryType(int index);
 
+const uint32_t* GetAccessoryDefaultColors(size_t index);
 const size_t GetAccessoryColorCount(size_t index);
 const std::optional <CWE_API_ACCESSORY_BALD_DATA>& GetAccessoryBaldData(size_t index);
 __declspec(dllexport) void AccessoryMakeBald(int accessory_id);
