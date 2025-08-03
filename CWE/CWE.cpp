@@ -91,6 +91,7 @@
 #endif
 #include <al_garden_info.h>
 #include <api/api_json.h>
+#include <global_save.h>
 
 const char* PathToModFolder = "";
 
@@ -342,9 +343,12 @@ extern "C"
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex)
 	{
 		if (helperFunctions.Version < ModLoaderVer) {
+			char textbuf[128];
+			sprintf_s(textbuf, "The current Mod Loader version (%d) is too old, CWE requires at least version %d. Please update the Mod Loader!", helperFunctions.Version, ModLoaderVer);
+
 			MessageBoxA(
 				NULL, 
-				"The modloader version is smaller than the required version for CWE, please update your modloader.", 
+				textbuf,
 				"CWE - Modloader version error", 
 				MB_ICONWARNING
 			);
@@ -391,6 +395,11 @@ extern "C"
 
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
+
+		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
+
+		ClearAllItemSave();
+		GlobalSave_Init();
 
 		KCE_Init();
 

@@ -28,7 +28,7 @@ static void LoadItem(const ChaoItemCategory category, const rapidjson::Value& va
 	}
 }
 
-void ClearAllItems() {
+void ClearAllItemSave() {
 	AccessoryItemCount = 0;
 	for (auto& item : AccessoryItemList) {
 		item.IndexID = -1;

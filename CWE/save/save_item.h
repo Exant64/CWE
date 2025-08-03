@@ -153,7 +153,7 @@ struct AccessorySaveInfo : ItemSaveInfoBase {
 static const size_t AccessoryItemMax = 128;
 extern std::array<AccessorySaveInfo, AccessoryItemMax> AccessoryItemList;
 
-void ClearAllItems();
+void ClearAllItemSave();
 void SaveAllItems(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer);
 void LoadAllItems(const rapidjson::GenericArray<false, rapidjson::Value>& array);
 

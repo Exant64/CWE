@@ -397,11 +397,6 @@ static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPoint
 	const int accessoryIndex = work->AccessoryIndices[slot];
 	const auto& accessory_data = GetAccessoryData(accessoryIndex);
 
-	if (accessory_data.Flags & CWE_API_ACCESSORY_FLAGS_NO_JIGGLE)
-		work->field_B0 &= ~0x1000;
-	else
-		work->field_B0 |= 0x1000;
-
 	AccessoryNodeIndex = 0;
 
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
@@ -721,7 +716,7 @@ static CWE_API_ACCESSORY_BALD_DATA DrawBaldData;
 static uint64_t DrawHideNodes = 0;
 
 static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer) {
-	const chaowk* work = GET_CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	const auto* pParam = GET_CHAOPARAM(tp);
 
 	AL_ValidateAccessory(tp, EAccessoryType::Head);
@@ -744,12 +739,15 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 
 	bool presets[3] = { false, false, false };
 	bool dontKeepHeadParts = false;
+	bool disableJiggle = false;
 
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
 		if (work->AccessoryIndices[i] == -1) continue;
 		const auto& data = GetAccessoryData(work->AccessoryIndices[i]);
 
 		DrawHideNodes |= data.HideNodes;
+
+		if (data.Flags & CWE_API_ACCESSORY_FLAGS_NO_JIGGLE) disableJiggle = true;
 
 		if (data.Flags & CWE_API_ACCESSORY_FLAGS_BALD_PRESET_X) {
 			presets[0] = true;
@@ -776,6 +774,15 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 		}
 	}
 
+	if (disableJiggle) {
+		work->field_B0 &= ~0x1000;
+	}
+	else {
+		work->field_B0 |= 0x1000;
+	}
+
+	work->BaldHideHead = false;
+
 	if (!baldData) {
 		for (size_t i = 0; i < 3; ++i) {
 			if (presets[i]) {
@@ -784,6 +791,7 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 				if (dontKeepHeadParts) {
 					DrawHideNodes |= uint64_t(1) << 23;
 					DrawHideNodes |= uint64_t(1) << 25;
+					work->BaldHideHead = true;
 				}
 				continue;
 			}
@@ -805,6 +813,7 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 		if (dontKeepHeadParts) {
 			DrawHideNodes |= uint64_t(1) << 23;
 			DrawHideNodes |= uint64_t(1) << 25;
+			work->BaldHideHead = true;
 		}
 
 		BaldFlag = true;

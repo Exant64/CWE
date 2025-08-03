@@ -466,6 +466,10 @@ struct __declspec(align(4)) ChaoData1
 
 	char AccessoryCalculatedID[4][21];
 	Uint32 AccessoryIndices[4];
+
+	bool BaldHideHead;
+	Uint16* pBaldAdjacencyIndices;
+	size_t BaldAdjacencyIndexCount;
 };
 #pragma pack(pop)
 

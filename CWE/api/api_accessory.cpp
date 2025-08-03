@@ -7,6 +7,8 @@
 #include "api_accessory.h"
 #include "api_texture.h"
 #include <optional>
+#include <cnk_util.h>
+#include "api_util.h"
 
 struct AccessoryInternalData {
 	CWE_API_ACCESSORY_DATA Data;
@@ -47,14 +49,14 @@ CWE_API_ACCESSORY_DATA& GetAccessoryData(int index) {
 	return ModAPI_AccessoryDataList[index].Data;
 }
 
-__declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
+extern "C" __declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
 	auto& data = GetAccessoryData(accessory_id);
 
 	data.Flags |= CWE_API_ACCESSORY_FLAGS_LEGACY_BALD;
 	data.Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
 }
 
-void AccessoryDisableJiggle(int accessory_id) {
+extern "C" __declspec(dllexport) void AccessoryDisableJiggle(int accessory_id) {
 	GetAccessoryData(accessory_id).Flags |= CWE_API_ACCESSORY_FLAGS_NO_JIGGLE;
 }
 
@@ -208,6 +210,7 @@ void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32
 
 		if (usedColorFlags & (1 << slotIndex)) {
 			*pointer = colors[slotIndex];
+			((NJS_COLOR*)pointer)->argb.a = 255;
 		}
 		else {
 			*pointer = data.DefaultColor[slotIndex];
@@ -216,17 +219,34 @@ void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32
 }
 
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
-	// todo: errors
+	APIErrorUtil error("Error in AddChaoAccessory: ");
 
-	if (AccessoryIDLookupTable.contains(pAccessoryData->ID)) {
+	if (!pAccessoryData) {
+		error.print("pAccessoryData is NULL!");
 		return -1;
 	}
 
-	// todo null pointer safety checks
+	if (!pAccessoryData->ID) {
+		error.print("ID is NULL!");
+		return -1;
+	}
+
+	error = { "Error in AddChaoAccessory (id: %s): ", pAccessoryData->ID };
+
+	if (AccessoryIDLookupTable.contains(pAccessoryData->ID)) {
+		error.print("ID is already taken!", pAccessoryData->ID);
+		return -1;
+	}
 
 	NJS_TEXLIST* pTexlist = pAccessoryData->pTexlist;
-	if (!pTexlist && pAccessoryData->pTextureName) {
-		pTexlist = AddAutoTextureLoad(pAccessoryData->pTextureName);
+	if (!pTexlist) {
+		if (pAccessoryData->pTextureName) {
+			pTexlist = AddAutoTextureLoad(pAccessoryData->pTextureName);
+		}
+		else {
+			error.print("no texture loading source specified (no texlist or texturename)!");
+			return -1;
+		}
 	}
 
 	AccessoryInternalData entry = {
@@ -236,6 +256,17 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	entry.BaldData = pAccessoryData->pBaldData ? std::optional(*pAccessoryData->pBaldData) : std::nullopt;
 
 	if (!AccessoryFindColors(entry)) {
+		error.print("failed to parse color data! mismatched node/material entries to model?");
+		return -1;
+	}
+
+	if (!pAccessoryData->pMarketAttrib) {
+		error.print("no market attributes specified!");
+		return -1;
+	}
+
+	if (!pAccessoryData->pObject) {
+		error.print("no object specified!");
 		return -1;
 	}
 

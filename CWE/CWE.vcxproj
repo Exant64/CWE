@@ -375,6 +375,7 @@
     <ClInclude Include="chao\al_motion\alm_accordion.nam" />
     <ClInclude Include="chao\al_motion\alm_all.h" />
     <ClInclude Include="chao\al_motion\alm_duck.h" />
+    <ClInclude Include="cnk_util.h" />
     <ClInclude Include="code_system\CodeParser.hpp" />
     <ClInclude Include="code_system\codes\include\advanced\code_gc_shinyjewel.h" />
     <ClInclude Include="code_system\codes\include\bonus\code_babychaolevel.h" />
@@ -440,6 +441,7 @@
     <ClInclude Include="data\special\als_all.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="FunctionHook.h" />
+    <ClInclude Include="global_save.h" />
     <ClInclude Include="imgui\imconfig.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
@@ -597,6 +599,8 @@
     <ClCompile Include="api\api_metadata.cpp" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
     <ClCompile Include="api\api_texture.cpp" />
+    <ClCompile Include="cnk_util.cpp" />
+    <ClCompile Include="global_save.cpp" />
     <ClCompile Include="imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
