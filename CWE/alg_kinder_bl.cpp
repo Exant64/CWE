@@ -949,6 +949,7 @@ const char* BlackMarket_GetBlMsg(BlackMarketData const* data, int const msgID)
 #pragma optimize("gty", off)
 void __cdecl FBuyListDispText(BlackMarketData const* a1)
 {
+	SetShaders(1);
 	MessageFontThing messageBuffer;
 	for (int i = 0; i < ITEMSINBUYLIST; i++)
 	{
