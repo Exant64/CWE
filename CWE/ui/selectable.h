@@ -51,7 +51,7 @@ public:
 	void Unselect() {
 		m_selected = false;
 	}
-	bool IsSelected() { 
+	bool IsSelected() const { 
 		return m_selected; 
 	}
 	virtual bool CanUnselect(Direction direction) const { return true; }

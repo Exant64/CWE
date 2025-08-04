@@ -399,6 +399,7 @@ static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPoint
 
 	AccessoryNodeIndex = 0;
 
+	OffControl3D(NJD_CONTROL_3D_OFFSET_MATERIAL);
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
 	njSetTexture(registry->GetTex(accessoryIndex));
 	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);

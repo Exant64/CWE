@@ -1382,7 +1382,10 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			else
 				chCnkDrawObject(&object_alo_mannequin);
 
+			SaveControl3D();
+			OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
+			LoadControl3D();
 			break;
 		case ChaoItemCategory_Special:
 			Translate(x, y, -26.0f);
