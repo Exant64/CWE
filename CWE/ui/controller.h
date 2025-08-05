@@ -200,16 +200,6 @@ public:
 		std::make_pair(Buttons_Right, Direction::Right)
 	};
 	void Exec() {
-		for (auto& pair : m_buttonDirectionPair) {
-			if (MenuButtons_Pressed[0] & pair.first) {
-				UpdateSelection(pair.second);
-				PlaySelectSound();
-			}
-		}
-
-		if (MenuButtons_Pressed[0] & Buttons_A && m_selected)
-			m_selected->Press(this);
-
 		//the first added layer will always run
 		if (m_layers[m_alwaysDrawLayer].m_func)
 			m_layers[m_alwaysDrawLayer].m_func();
@@ -220,6 +210,16 @@ public:
 		for (auto selectable : GetCurrentLayer()) {
 			selectable->Exec();
 		}
+
+		for (auto& pair : m_buttonDirectionPair) {
+			if (MenuButtons_Pressed[0] & pair.first) {
+				UpdateSelection(pair.second);
+				PlaySelectSound();
+			}
+		}
+
+		if (MenuButtons_Pressed[0] & Buttons_A && m_selected)
+			m_selected->Press(this);
 	}
 
 	template<typename T, typename... Args>
