@@ -14,6 +14,7 @@
 #include <imgui_debug_motionstrings.h>
 #include <al_draw.h>
 #include <api/api_accessory.h>
+#include <al_behavior/al_behavior.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -66,27 +67,40 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Accessories")) {
+                const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
+
+                static const char* AccessoryStrings[3000];
+                static size_t AccessoryIndices[3000];
+                int setID[4] = { -1, -1, -1, -1 };
+
+                const char* slotNames[] = {
+                    "Head",
+                    "Face",
+                    "Generic1",
+                    "Generic2"
+                };
+
                 for (size_t i = 0; i < 4; ++i) {
                     ImGui::Text(
-                        "Slot %d: Param %s Data %s %d", 
-                        int(i),
+                        "%s (internal data ParamID:%s Data1ID:%s Index: %d)", 
+                        slotNames[i],
                         work->pParamGC->Accessories[i].ID, 
                         work->AccessoryCalculatedID[i], 
                         work->AccessoryIndices[i]
                     );
 
-                    static int SetID = 0;
-                    const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
-
-                    static const char* AccessoryStrings[3000];
+                    size_t count = 0;
                     for (size_t id = 0; id < items.size(); ++id) {
-                        AccessoryStrings[id] = items[id].data();
+                        if (GetAccessoryData(id).SlotType != i) continue;
+                        AccessoryIndices[count] = id;
+                        AccessoryStrings[count++] = items[id].data();
                     }
-                    AccessoryStrings[items.size()] = NULL;
+                    AccessoryStrings[count] = NULL;
 
                     ImGui::PushID(i);
-                    if (ImGui::Combo("Set ID", &SetID, AccessoryStrings, items.size())) {
-                        strcpy_s(work->pParamGC->Accessories[i].ID, AccessoryStrings[SetID]);
+                    if (ImGui::Combo("Set ID", &setID[i], AccessoryStrings, count)) {
+                        strcpy_s(work->pParamGC->Accessories[i].ID, AccessoryStrings[setID[i]]);
+                        AL_SetAccessory(pChao, AccessoryIndices[setID[i]]);
                     }
                     ImGui::PopID();
 
@@ -94,7 +108,7 @@ static void ChaoInfoMenu() {
                     
                     for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
                         NJS_COLOR* pCol = (NJS_COLOR*) & work->pParamGC->Accessories[i].ColorSlots[j];
-                        ImGui::PushID(j);
+                        ImGui::PushID(i * 10 + j);
                         float col[3];
                         col[0] = pCol->argb.r / 255.f;
                         col[1] = pCol->argb.g / 255.f;
