@@ -37,6 +37,7 @@
 #include <al_name.h>
 #include <set>
 #include <bit>
+#include <util.h>
 
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
@@ -59,6 +60,10 @@ const std::string baseLayerName = "base";
 const std::string medalLayerName = "medal";
 const std::string hataccLayerName = "hatacc";
 
+static const NJS_POINT3 ChaoHatPosition = { 150, 300 + 50, -12 };
+static const NJS_POINT3 ChaoColorEditPosition = { 400, 300 + 50, -12 };
+static const NJS_POINT3 ChaoMedalsPosition = { 110, 300 + 50, -12 };
+
 //models
 DataArray(NJS_OBJECT*, BigMedals, 0x012E58F8, 16);
 extern NJS_OBJECT object_ala_full_mannequin;
@@ -69,10 +74,9 @@ static ObjectMaster* pChao = NULL;
 static bool ColorMenuLastFrame = false;
 static bool ColorMenuOpened = false;
 static NJS_POINT2 HatAccMenuOffset;
-static std::vector<ITEM_SAVE_INFO*> HatList;
 
 static UIController* customizationController = nullptr;
-static ObjectMaster* largeBar = 0;
+static ObjectMaster* pCustomizationControllerTask = 0;
 
 struct AccessorySaveComparator {
 	bool operator()(const AccessorySaveInfo* a, const AccessorySaveInfo* b) const {
@@ -82,20 +86,44 @@ struct AccessorySaveComparator {
 	}
 };
 
+struct ItemSaveComparator {
+	bool operator()(const ITEM_SAVE_INFO* a, const ITEM_SAVE_INFO* b) const {
+		return a->Type < b->Type;
+	}
+};
+
 static std::map<AccessorySaveInfo*, size_t, AccessorySaveComparator> AccessoryListCount;
+static std::map<ITEM_SAVE_INFO*, size_t, ItemSaveComparator> HatListCount;
 static std::vector<AccessorySaveInfo*> AccessoryList;
+static std::vector<ITEM_SAVE_INFO*> HatList;
+
+const int someUIProjectionCodePtr = 0x0055A060;
+void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2)
+{
+	__asm
+	{
+		mov edi, a1
+		mov esi, a2
+		call someUIProjectionCodePtr
+	}
+}
 
 static void UpdateHatAccVector() {
 	HatList.clear();
 	AccessoryList.clear();
 	AccessoryListCount.clear();
+	HatListCount.clear();
 
 	ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
 	for (int j = 0; j < 24; j++)
 	{
 		if (items[j].Type > 0) {
-			HatList.push_back(&items[j]);
+			HatListCount[& items[j]]++;
 		}
+	}
+
+	for (auto& item : HatListCount) {
+		HatList.push_back(item.first);
 	}
 
 	for (auto& item : AccessoryItemList) {
@@ -107,6 +135,25 @@ static void UpdateHatAccVector() {
 	for (auto& item : AccessoryListCount) {
 		AccessoryList.push_back(item.first);
 	}
+}
+
+bool AL_Customization_CreateHat(int ID, int Garden)
+{
+	if (ID < 1) return false;
+
+	ITEM_SAVE_INFO* v9 = (ITEM_SAVE_INFO*)AL_GetNewItemSaveInfo(9);
+	if (v9 == nullptr)
+	{
+		PrintDebug("HatAccRender: no hat slots left");
+		return false;
+	}
+
+	v9->Garden = Garden;
+	v9->Type = ID;
+	v9->position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
+	UpdateHatAccVector();
+
+	return true;
 }
 
 bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Garden) {
@@ -143,49 +190,7 @@ static void njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans
 	}
 }
 
-class LeftBarButtonOld : public UISelectable {
-private:
-	const std::string m_layerEnter;
-	int m_buttonType;
-public:
-	enum LeftBarType : int {
-		HatAcc = 0,
-		Medal = 1,
-		Exit = 2,
-		Count
-	};
-	ChaoHudThingB MainButtons[LeftBarType::Count * 2] = {
-		{1,59,25,0,   0,   0.3333333333f, 0.5f,  &CWE_UI_TEXLIST, 5},
-		{1,59,25,0.3333333333f,0,   0.666666666f, 0.5f,  &CWE_UI_TEXLIST, 5},
-		{1,59,25,0.666666666f,0,   1,    0.5f, &CWE_UI_TEXLIST, 5},
-		{1,59,25,0,   0.5f, 0.3333333333f, 1,  &CWE_UI_TEXLIST, 5},
-		{1,59,25,0.3333333333f,0.5f, 0.666666666f, 1,  &CWE_UI_TEXLIST, 5},
-		{1,59,25,0.666666666f,0.5f, 1,    1, &CWE_UI_TEXLIST, 5},
-	};
-
-	void Press(UIController* controller) override {
-		if (m_buttonType == Exit) {
-			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
-			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
-		}
-		else {
-			controller->SetCurrentLayer(m_layerEnter);
-		}
-	}
-	void Disp() override {
-		return;
-		if (IsSelected())
-			DrawChaoHudThingB(&MainButtons[m_buttonType + LeftBarType::Count], m_posX, m_posY, -1.2f, 1, 1, -1, -1);
-		else
-			DrawChaoHudThingB(&MainButtons[m_buttonType], m_posX, m_posY, -1.2f, 1, 1, -1, -1);
-	}
-	LeftBarButtonOld(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, SelectFlag::ForceVertical), m_layerEnter(layerEnter), m_buttonType(buttonType) {
-		m_posX = posX;
-		m_posY = posY;
-	}
-};
-
-class LeftBarButton : public UISelectable {
+class MainMenuButton : public UISelectable {
 private:
 	enum class ButtonMode {
 		Unselected,
@@ -198,15 +203,22 @@ private:
 
 	const std::string m_layerEnter;
 	int m_buttonType;
-	task* m_gbaTween = NULL;
-	ChaoHudThingB m_leftPart = {1, 23, 46, 0.f, 41.f / 256.f, 22.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36};
-	ChaoHudThingB m_middlePart = { 1, 1, 46, 31.f / 256.f, 41.f / 256.f, 33.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_rightPart = { 1, 23, 46, 66.f / 256.f + 0.005f, 41.f / 256.f, 88.f / 256.f, 88 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedLeftPart = { 1, 23, 46, 0.f, 97.f / 256.f, 22.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedMiddlePart = { 1, 1, 46, 31.f / 256.f, 97.f / 256.f, 33.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedRightPart = { 1, 23, 46, 66.f / 256.f, 97.f / 256.f, 88.f / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
+
+	task* m_iconTween = NULL;
+	float m_iconProgress = 0.f;
+
+	task* m_textTween = NULL;
+	float m_textProgress = 0.f;
+
+	// slight rotation of the icon
+	Angle m_ang = 0;
+
+	float m_sclX = 1;
+	float m_sclY = 1;
+
+	Uint32 m_timer = 0; // this is only used to track to only create tween once
+
 	ChaoHudThingB m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_text = { 1, 83, 27, 0, 0, 83 / 256.f, 27 / 256.f, &CWE_UI_TEXLIST, 36 };
 	ChaoHudThingB m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 36 };
 	ChaoHudThingB m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 36 };
 public:
@@ -217,126 +229,153 @@ public:
 		Count
 	};
 
-	Angle m_ang = 0;
-	float m_iconX = 0.f;
-	float m_sclX = 1;
-	float m_sclY = 1;
-	float m_progress = 0.f;
-	float m_textProgress = 0.f;
-	Uint32 m_timer = 0;
-	task* m_tween = NULL;
-	task* m_textTween = NULL;
-	float GetWidth() { return m_leftPart.wd; }
-	float GetHeight() { return m_rightPart.ht; }
-
 	void Press(UIController* controller) override {
 		if (m_buttonType == Exit) {
 			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
+			PlaySoundProbably(0x100E, 0, 0, 0);
 		}
 		else {
-			controller->SetCurrentLayer(m_layerEnter);
+			if (!controller->IsCurrentLayer(m_layerEnter)) {
+				PlaySoundProbably(0x1007, 0, 0, 0);
+
+				controller->SetCurrentLayer(m_layerEnter);
+
+				NJS_POINT3 posIn, posOut;
+				switch (m_buttonType) {
+				case LeftBarType::HatAcc:
+					posIn = ChaoHatPosition;
+					break;
+				case LeftBarType::Medal:
+					posIn = ChaoMedalsPosition;
+					break;
+				}
+
+				someUIProjectionCode(&posIn, &posOut);
+				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->Data1.Entity->Position, posOut, 15, NULL);
+			}
 		}
+	}
+
+	static void DrawAsSprite(ChaoHudThingB& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z, const NJS_COLOR rightColor = (NJS_COLOR)-1) {
+		const float x1 = -sclX * pHud.wd / 2.f;
+		const float y1 = -sclY * pHud.ht / 2.f;
+		const float x2 = -x1;
+		const float y2 = -y1;
+
+		NJS_TEXTURE_VTX vertices[4] = {};
+		vertices[0] = { 0,0, 0.99f, pHud.s0, pHud.t0, 0xFFFFFFFF };
+		vertices[1] = { 0,0, 0.99f, pHud.s0, pHud.t1, 0xFFFFFFFF };
+		vertices[2] = { 0,0, 0.99f, pHud.s1, pHud.t0, rightColor.color };
+		vertices[3] = { 0,0, 0.99f, pHud.s1, pHud.t1, rightColor.color };
+
+		const float a_sin = njSin(angle);
+		const float a_cos = njCos(angle);
+
+		vertices[0].x = ((x1 * a_cos) - (y1 * a_sin));
+		vertices[0].y = ((y1 * a_cos) + (x1 * a_sin));
+
+		vertices[1].x = ((x1 * a_cos) - (y2 * a_sin));
+		vertices[1].y = ((y2 * a_cos) + (x1 * a_sin));
+
+		vertices[2].x = ((x2 * a_cos) - (y1 * a_sin));
+		vertices[2].y = ((y1 * a_cos) + (x2 * a_sin));
+
+		vertices[3].x = ((x2 * a_cos) - (y2 * a_sin));
+		vertices[3].y = ((y2 * a_cos) + (x2 * a_sin));
+
+		for (size_t i = 0; i < 4; i++) {
+			vertices[i].x += posX + pHud.wd / 2.f;
+			vertices[i].y += posY + pHud.ht / 2.f;
+		}
+
+		njSetTexture(&CWE_UI_TEXLIST);
+		njSetTextureNum(36);
+		njDrawTextureEx(vertices, 4, 1);
 	}
 
 	void Exec() override {
-	
-	}
-
-	static void DrawAsSprite(ChaoHudThingB& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z) {
-		NJS_TEXANIM texanim = {
-			pHud.wd,
-			pHud.ht,
-			pHud.wd / 2.f,
-			pHud.ht / 2.f,
-			Sint16(pHud.s0 * 256.f), Sint16(pHud.t0 * 256.f),
-			Sint16(pHud.s1 * 256.f), Sint16(pHud.t1 * 256.f),
-			pHud.TexNum,
-			NJD_SPRITE_ALPHA
-		};
-
-		NJS_SPRITE sprite = {
-			.p = {posX + pHud.wd / 2.f, posY + pHud.ht / 2.f, 0},
-			.sx = sclX,
-			.sy = sclY,
-			.ang = angle,
-			.tlist = pHud.pTexlist,
-			.tanim = &texanim
-		};
-
-		njDrawSprite2D(&sprite, 0, z, NJD_SPRITE_ANGLE | NJD_SPRITE_ALPHA);
-	}
-
-	void Disp() override {
 		switch (m_mode) {
-			case ButtonMode::Unselected:
-				if (!IsSelected()) {
-					m_timer = 0;
-					m_ang = 0;
-					if (!m_gbaTween && m_progress > 0.f)
+		case ButtonMode::Unselected:
+			if (!IsSelected()) {
+				m_timer = 0;
+				m_ang = 0;
+				if (!m_iconTween && m_iconProgress > 0.f)
+				{
+					m_iconTween = CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_QUAD, &m_iconProgress, 0.f, 15, NULL);
+					TweenSetTaskPointer<float>(m_iconTween, &m_iconTween);
+				}
+				if (!m_textTween && m_textProgress > 0.f)
+				{
+					m_textTween = CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_CIRC, &m_textProgress, 0.f, 15, NULL);
+					TweenSetTaskPointer<float>(m_textTween, &m_textTween);
+				}
+			}
+			else {
+				m_mode = ButtonMode::ToSelected;
+			}
+			break;
+		case ButtonMode::ToSelected:
+			if (m_iconTween) {
+				DeleteObject_(m_iconTween);
+				m_iconTween = NULL;
+			}
+
+			if (m_textTween) {
+				DeleteObject_(m_textTween);
+				m_textTween = NULL;
+			}
+
+			m_mode = ButtonMode::Selected;
+			break;
+		case ButtonMode::Selected:
+			if (!IsSelected()) {
+				m_mode = ButtonMode::ToUnselected;
+			}
+			else {
+				if (!m_timer++) {
+					if (!m_iconTween && m_iconProgress < 1.f)
 					{
-						m_gbaTween = CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_QUAD, &m_progress, 0.f, 15, NULL);
-						TweenSetTaskPointer<float>(m_gbaTween, &m_gbaTween);
+						m_iconTween = CreateTween(NULL, EASE_TYPE::EASE_OUT, INTERP_TYPE::INTERP_QUAD, &m_iconProgress, 1.f, 25, NULL);
+						TweenSetTaskPointer<float>(m_iconTween, &m_iconTween);
 					}
-					if (!m_textTween && m_textProgress > 0.f)
+					if (!m_textTween && m_textProgress < 1.f)
 					{
-						m_textTween = CreateTween(NULL, EASE_TYPE::EASE_IN, INTERP_TYPE::INTERP_CIRC, &m_textProgress, 0.f, 15, NULL);
+						m_textTween = CreateTween(NULL, EASE_TYPE::EASE_OUT, INTERP_TYPE::INTERP_CIRC, &m_textProgress, 1.f, 40, NULL);
 						TweenSetTaskPointer<float>(m_textTween, &m_textTween);
 					}
 				}
-				else {
-					m_mode = ButtonMode::ToSelected;
-				}
-				break;
-			case ButtonMode::ToSelected:
-				if (m_gbaTween) {
-					DeleteObject_(m_gbaTween);
-					m_gbaTween = NULL;
-				}
+				m_ang += 256;
+			}
+			break;
+		case ButtonMode::ToUnselected:
+			if (m_iconTween) {
+				DeleteObject_(m_iconTween);
+				m_iconTween = NULL;
+			}
 
-				if (m_textTween) {
-					DeleteObject_(m_textTween);
-					m_textTween = NULL;
-				}
-				
-				m_mode = ButtonMode::Selected;
-				break;
-			case ButtonMode::Selected:
-				if (!IsSelected()) {
-					m_mode = ButtonMode::ToUnselected;
-				}
-				else {
-					if (!m_timer++) {
-						if (!m_gbaTween && m_progress < 1.f)
-						{
-							m_gbaTween = CreateTween(NULL, EASE_TYPE::EASE_OUT, INTERP_TYPE::INTERP_QUAD, &m_progress, 1.f, 25, NULL);
-							TweenSetTaskPointer<float>(m_gbaTween, &m_gbaTween);
-						}
-						if (!m_textTween && m_textProgress < 1.f)
-						{
-							m_textTween = CreateTween(NULL, EASE_TYPE::EASE_OUT, INTERP_TYPE::INTERP_CIRC, &m_textProgress, 1.f, 40, NULL);
-							TweenSetTaskPointer<float>(m_textTween, &m_textTween);
-						}
-					}
-					m_ang += 256;
-				}
-				break;
-			case ButtonMode::ToUnselected:
-				if (m_gbaTween) {
-					DeleteObject_(m_gbaTween);
-					m_gbaTween = NULL;
-				}
+			if (m_textTween) {
+				DeleteObject_(m_textTween);
+				m_textTween = NULL;
+			}
 
-				if (m_textTween) {
-					DeleteObject_(m_textTween);
-					m_textTween = NULL;
-				}
-
-				m_mode = ButtonMode::Unselected;
-				break;
-			
+			m_mode = ButtonMode::Unselected;
+			break;
 		}
+	}
 
+	const ChaoHudThingB GetTextSprite() {
+		switch (m_buttonType) {
+			case LeftBarType::HatAcc:
+				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 36 };
+			case LeftBarType::Medal:
+				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, &CWE_UI_TEXLIST, 36 };
+			case LeftBarType::Exit:
+				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, &CWE_UI_TEXLIST, 36 };
+		}
+	}
+
+	void Disp() override {
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 
 		const float middle_width = 140;
@@ -366,27 +405,34 @@ public:
 
 		DrawAsSprite(
 			m_gba, 
-			m_posX - m_progress * 20, 
-			(1 - m_progress) * -7.f + m_posY, 
+			m_posX - m_iconProgress * 20, 
+			(1 - m_iconProgress) * -7.f + m_posY, 
 			m_sclX,
 			m_sclY,
-			m_progress * NJM_DEG_ANG(-10 + njSin(m_ang * 2) * 5), 
+			m_iconProgress * NJM_DEG_ANG(-10 + njSin(m_ang * 2) * 5), 
 			-0.5f
 		);
 
-		m_text.s1 = m_text.s0 + m_textProgress * (m_text.wd / 256.f);
+		float progress = (max(0, m_textProgress - 0.5f) / 0.5f);
+
+		NJS_COLOR rightSideColor = (NJS_COLOR)-1;
+		rightSideColor.argb.a = progress * 255.f;
+
+		ChaoHudThingB text = GetTextSprite();
+		text.s1 = text.s0 + m_textProgress * (text.wd / 256.f);
 		DrawAsSprite(
-			m_text, 
+			text,
 			m_posX + 13.f, 
 			m_posY + 7.f, 
 			m_sclX * m_textProgress,
 			m_sclY,
 			m_textProgress * NJM_DEG_ANG(25), 
-			-0.5f
+			-0.5f,
+			rightSideColor
 		);
 	}
 
-	LeftBarButton(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, 0), m_layerEnter(layerEnter), m_buttonType(buttonType) {
+	MainMenuButton(const std::string& layerEnter, float posX, float posY, int buttonType) : UISelectable(layerEnter, 0), m_layerEnter(layerEnter), m_buttonType(buttonType) {
 		m_posX = posX;
 		m_posY = posY;
 		m_mode = ButtonMode::Unselected;
@@ -402,10 +448,13 @@ public:
 	float m_sclY = 1;
 	float GetWidth() { return m_sprite.wd; }
 	float GetHeight() { return m_sprite.ht; }
+	virtual void BeforeBoxDisp() {} // due to no Z write on ChaoHudThingB, we need a "before" func to draw behind the box
 	virtual void BoxContentDisp() {}
 	virtual void ColorSet() {}
 	virtual bool IsBoxSelected() const { return IsSelected(); }
 	void Disp() override {
+		BeforeBoxDisp();
+
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 		ColorSet();
 
@@ -424,8 +473,7 @@ private:
 	int m_index;
 	int m_rotY = 0;
 
-	bool AL_Customization_MedalUnlocked(int index)
-	{
+	bool AL_Customization_MedalUnlocked(int index) {
 		int medal = GBAManager_GetChaoDataPointer()->DoctorMedal;
 		int karateInfo = GBAManager_GetChaoDataPointer()->KarateInfo;
 		switch (index)
@@ -474,17 +522,12 @@ public:
 		DoLighting(0);
 
 		njPushMatrixEx();
-		//njUnitMatrix(0);
-
-		ProjectToScreen(m_posX + 30, m_posY + 30, -32);
-//njTranslate(NULL, m_posX + 30, m_posY + 50 , 0.2);
-		//OrthoTranslate(m_posX + 30, m_posY, 1);
+		
+		ProjectToScreen(m_posX + 25, m_posY + 25, -32);
 		if (IsSelected())
 			RotateY(m_rotY);
 
-
 		njSetTexture((NJS_TEXLIST*)0x1366AD4);
-		//OrthoDraw(BigMedals[m_index]);
 		chCnkDrawObject(BigMedals[m_index]);
 		njPopMatrixEx();
 	}
@@ -513,7 +556,7 @@ private:
 	ChaoHudThingB m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 36 };
 
 	const size_t GetItemCount() const {
-		return AccessoryList.size();
+		return HatList.size() + AccessoryList.size();
 	}
 
 	void ScrollDisp(float posX, float posY, float length){
@@ -575,9 +618,23 @@ public:
 
 		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
 		const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
-		if (index >= AccessoryList.size()) return;
+		if (index < HatList.size()) {
+			bool canEquip = true;
+			if (pParam->Headgear)
+				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->Garden);
 
-		auto* pSaveInfo = AccessoryList[index];
+			if (canEquip) {
+				PlaySoundProbably(0x1007, 0, 0, 0);
+				pParam->Headgear = HatList[index]->Type;
+				AL_ClearItemSaveInfo(HatList[index]);
+				UpdateHatAccVector();
+			}
+			return;
+		}
+
+		if (index >= HatList.size() + AccessoryList.size()) return;
+
+		auto* pSaveInfo = AccessoryList[index - HatList.size()];
 		const int accType = GetAccessoryType(pSaveInfo->IndexID);
 
 		bool canEquip = true;
@@ -684,10 +741,15 @@ public:
 
 				DrawChaoHudThingB(sprite, m_visualPosX + x * horizSpacing, m_visualPosY + (float(y) + m_scrollOffsetY) * verticalSpacing, -2.2f, 1, 1, -1, -1);
 
-				if (index >= AccessoryList.size()) continue;
+				if (index >= GetItemCount()) continue;
 
 				char nums[6];
-				sprintf_s(nums, "%d", int(AccessoryListCount[AccessoryList[index]]));
+				if (index < HatList.size()) {
+					sprintf_s(nums, "%d", int(HatListCount[HatList[index]]));
+				}
+				else {
+					sprintf_s(nums, "%d", int(AccessoryListCount[AccessoryList[index - HatList.size()]]));
+				}
 
 				for (size_t str = 0; str < strlen(nums); str++) {
 					if (!nums[str]) break;
@@ -704,24 +766,35 @@ public:
 
 				Rotation rot = { 0, 0, 0 };
 
-				SAlItem _item = {
-					ChaoItemCategory_Accessory,
-					AccessoryList[index]->IndexID
-				};
+				SAlItem _item;
+
+				if (index < HatList.size()) {
+					_item = {
+						ChaoItemCategory_Hat,
+						Uint16(HatList[index]->Type)
+					};
+				}
+				else {
+					const auto& accSave = AccessoryList[index - HatList.size()];
+					_item = {
+						ChaoItemCategory_Accessory,
+						Uint16(accSave->IndexID)
+					};
+					AccessorySetupDraw(accSave->IndexID, accSave->Colors, accSave->UsedColors);
+				}
 				
 				float scl = 0.9f * m_alpha;
 				if (alpha < 1) {
 					scl *= alpha;
 				}
-
-				AccessorySetupDraw(AccessoryList[index]->IndexID, AccessoryList[index]->Colors, AccessoryList[index]->UsedColors);
+				
 				DrawItem(m_visualPosX + x * horizSpacing + (sprite->wd) / 2.f, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + (sprite->ht) / 2.f, scl, rot, _item);
 			}
 		}
 	}
 
 	void Exec() override {
-		SetSelectable(m_alpha == 1);
+		SetSelectable(GetItemCount() > 0 && m_alpha == 1);
 	}
 
 	ScrollArea(const std::string& name, float posX, float posY) : UISelectable(name, 0) {
@@ -752,16 +825,17 @@ private:
 
 	ChaoHudThingB m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 36 };
 
-	ChaoHudThingB m_hueText = { 1, 137, 29, 0, 0, 1, 29 / 130.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_satText = { 1, 137, 29, 0, 29 / 130.f, 1, 58 / 130.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_ligText = { 1, 137, 29, 0, 63 / 130.f, 1, 90 / 130.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_colorsText = { 1, 137, 29, 0, 99 / 130.f, 1, 1, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 36 };
 
-	int m_colorSlotIndex = 0;
+	std::optional<int> m_colorSlotIndex = std::nullopt;
+	bool m_inSliderMenu = false;
 
 	int m_selectionX = 0;
 	int m_selectionY = 0;
 
+	const float m_initialColorSlotScale = 0.9f;
+	const float m_selectedColorSlotScale = 1.1f;
+	float m_colorSlotScaleAnim = 0.f;
 	int m_sineAng = 0;
 
 	float m_hsl[3] = {0, 0, 0};
@@ -775,6 +849,7 @@ private:
 		return GetAccessoryColorCount(index);
 	}
 
+	// gets slot color if set, gets default color if not
 	NJS_COLOR GetSlotColor(size_t slot) const {
 		if (!m_accessoryType) return NJS_COLOR(0xFFFFFFFF);
 
@@ -787,18 +862,24 @@ private:
 		return NJS_COLOR(GetAccessoryDefaultColors(accIndex)[slot]);
 	}
 
+	// selects the slot, entering the slider menu and updating the sliders
 	void SelectColorSlot(size_t slot) {
 		m_colorSlotIndex = slot;
 		
 		NJS_COLOR color = GetSlotColor(slot);
-		RGBtoHSL(color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
+		SetHSLSliders(color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
+
+		m_inSliderMenu = true;
+		m_selectionY = GetVerticalSlotCount();
 	}
 
+	// sets color slot in chaodata based on sliders
 	void UpdateColorSlot() const {
 		if (!m_accessoryType) return;
+		if (!m_colorSlotIndex) return;
 
 		auto& accData = GET_CHAOPARAM(pChao)->Accessories[*m_accessoryType];
-		NJS_COLOR& accessoryColor = *(NJS_COLOR*)&accData.ColorSlots[m_colorSlotIndex];
+		NJS_COLOR& accessoryColor = *(NJS_COLOR*)&accData.ColorSlots[*m_colorSlotIndex];
 
 		const NJS_ARGB hslColor = HSLtoRGB(m_hsl[0], m_hsl[1], m_hsl[2]);
 
@@ -807,7 +888,7 @@ private:
 		accessoryColor.argb.g = Uint8(hslColor.g * 255.f);
 		accessoryColor.argb.b = Uint8(hslColor.b * 255.f);
 
-		accData.ColorFlags |= (1 << m_colorSlotIndex);
+		accData.ColorFlags |= (1 << *m_colorSlotIndex);
 	}
 
 	size_t GetVerticalSlotCount() const {
@@ -822,7 +903,8 @@ private:
 		float posX, 
 		float posY, 
 		float sliderVal, 
-		bool selected, 
+		bool selected,
+		float gray,
 		const NJS_ARGB& overlayColors, 
 		const NJS_ARGB& rightColors,
 		ChaoHudThingB& overlaySprite
@@ -842,11 +924,12 @@ private:
 			SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
 		}
 		else {
-			SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
+			SetChaoHUDThingBColor(m_alpha, gray, gray, gray);
 		}
 		const float sliderPos = m_genericSliderLeft.wd + sliderLength + m_genericSliderRight.wd - m_sliderPicker.wd;
 		DrawChaoHudThingB(&m_sliderPicker, posX + sliderPos * sliderVal, posY - 2, -0.5f, 1, 1, -1, -1);
 	}
+
 	void SliderShadowDisp(
 		float posX,
 		float posY
@@ -858,7 +941,8 @@ private:
 		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.4f, 1, 1, -1, -1);
 	}
 
-	void RGBtoHSL(float r, float g, float b) {
+	// sets sliders based on input rgb
+	void SetHSLSliders(float r, float g, float b) {
 		const float cMax = max(max(r, g), b);
 		const float cMin = min(min(r, g), b);
 
@@ -887,6 +971,7 @@ private:
 		}
 	}
 
+	// conversion function from hsl to rgb (from internet, sorry uncredited person)
 	NJS_ARGB HSLtoRGB(float h, float s, float l) const {
 		NJS_ARGB result;
 
@@ -920,23 +1005,18 @@ private:
 		return result;
 	}
 
-	void DrawColorSlots() {
+	void DrawColorSlots(float panelMiddleX) {
 		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
 
 		const auto slotCount = GetColorSlotCount();
 
+		// max 4 in one row
 		const auto index = m_selectionY * min(slotCount, 4) + m_selectionX;
 
-		const float slotPosY1 = 45;
-		const float slotPosY2 = 85;
+		// hacky repositioning based on the row count of slots
+		const float slotPosY1 = (GetVerticalSlotCount() > 1) ? 45 : 40;
+		const float slotPosY2 = (GetVerticalSlotCount() > 1) ? 85 : 40;
 
-		const float slotPosX1 = 0;
-		const float slotPosX2 = m_colorPanel.wd;
-		const auto calcSlotX = [&](size_t slotCount, size_t index) {
-			return float(index + 1) * (slotPosX2 - slotPosX1) / float(slotCount + 1);
-		};
-
-		const float colorSlotPad = m_colorSlot.wd + 10;
 		for (size_t i = 0; i < slotCount; ++i) {
 			float y;
 			if (slotCount <= 4) {
@@ -949,142 +1029,230 @@ private:
 				y = slotPosY2;
 			}
 
-			float x;
-			if (i >= 4) {
-				x = calcSlotX(slotCount - 4, i - 4);
-			}
-			else {
-				x = calcSlotX(min(slotCount, 4), i);
-			}
+			const float x = GetColorSlotX(i) + panelMiddleX;
 
-			float scl = 1.f;
-			if (m_selectionY < GetVerticalSlotCount() && index == i) {
+			float scl = m_initialColorSlotScale;
+			if (m_inSliderMenu && i == m_colorSlotIndex) {
+				// if slot was pressed
+				scl = lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
+			}
+			else if (m_selectionY < GetVerticalSlotCount() && index == i) {
+				// if slot is highlighted but not pressed
+				// this logic also tries to take into account the "comeback" animation when you exit the sliders
 				scl = (0.5 * njSin(m_sineAng) + 0.5f) * 0.3f + 0.7f;
+				if (i == m_colorSlotIndex) {
+					scl *= lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
+				}
 			}
 
 			// shadow
 			SetChaoHUDThingBColor(m_alpha * 0.3f, 0, 0, 0);
-			DrawChaoHudThingB((i == m_colorSlotIndex) ? &m_editedColorSlot : &m_colorSlot, m_posX + x + 5, m_posY + y + 5, -2.5f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
+			DrawChaoHudThingB(&m_colorSlot, x + GetShadowOffset(), m_posY + y + GetShadowOffset(), -2.5f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
 
-			if (m_selectionY < GetVerticalSlotCount() && index == i) {
-				SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
-				const float scl = (i == m_colorSlotIndex) ? 1.2f : 1.05f;
-				//DrawChaoHudThingB(&m_selectedColorSlot, m_posX + x + m_colorSlot.wd / 2.f, m_posY + y + m_colorSlot.ht / 2.f, -2.0f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
-			}
-
-			if (i == m_colorSlotIndex) {
-				SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
-				DrawChaoHudThingB(&m_editedColorSlot, m_posX + x, m_posY + y, -2.0f, scl * 1.05f, scl * 1.05f, DrawAncorV_Center, DrawAncorV_Center);
-			}
-
+			// color slot
 			NJS_COLOR color = GetSlotColor(i);
 			SetChaoHUDThingBColor(m_alpha, color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
-			DrawChaoHudThingB(&m_colorSlot, m_posX + x, m_posY + y, -2.1f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
+			DrawChaoHudThingB(&m_colorSlot, x, m_posY + y, -2.1f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
 		}
 	}
+	
+	// offset on X and Y axis for shadow
+	float GetShadowOffset() const {
+		return 5;
+	}
+
+	float GetColorSlotPadding() const {
+		return m_colorSlot.wd + 5;
+	}
+
+	float GetColorSlotX(size_t index) const {
+		const size_t count = min(4, GetColorSlotCount());
+		if (index >= 4) index -= 4;
+
+		const float start = (count - 1) * -0.5f;
+		return (start + index) * GetColorSlotPadding();
+	}
+
+	float GetPanelWidth() const {
+		const float slotPosX1 = 0;
+		const float slotPosX2 = m_colorPanel.wd + 10;
+		return max(GetSliderLength() + 30, 100 + GetColorSlotX(min(GetColorSlotCount() - 1, 3)));
+	}
+
+	float GetSliderSpeed() const {
+		if (MenuButtons_Pressed[0] & Buttons_L) {
+			return 0.1f;
+		}
+		
+		return 0.05f;
+	}
+
 public:
 	float m_alpha = 0.f;
 
+	// inits the editor's state with picked accessory type
 	void InitEditorSelectSlot(const EAccessoryType accType) {
 		m_accessoryType = accType;
-
-		SelectColorSlot(0);
+		m_colorSlotIndex = std::nullopt;
+		m_inSliderMenu = false;
 		m_selectionX = 0;
 		m_selectionY = 0;
+		m_colorSlotScaleAnim = 0.f;
 	}
 
 	void Disp() override {
 		if (!m_alpha) return;
 
+		// panel sprites
+		ChaoHudThingB lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 36 };
+
+		ChaoHudThingB lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 36 };
+
+		ChaoHudThingB lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+
 		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
-		DrawChaoHudThingB(&m_colorPanel, m_posX, m_posY, -2.4f, 1, 1, -1, -1);
-		DrawChaoHudThingB(&m_colorsText, m_posX + m_colorPanel.wd / 2.f, m_posY, -2.3f, 1, 1, DrawAncorV_Center, DrawAncorV_Center);
-		DrawColorSlots();
+
+		const float panelWidth = GetPanelWidth();
+		const float panelBasePosX = m_posX + lu.wd / 2.f + 4;
+		const float panelBasePosY = m_posY + lu.ht;
+		const size_t heightPanelCount = (GetVerticalSlotCount() > 1) ? 15 : 11;
+
+		DrawChaoHudThingB(&lu, panelBasePosX + 0.5f, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Right);
+		DrawChaoHudThingB(&cu, panelBasePosX + panelWidth / 2.f, panelBasePosY, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Right);
+		DrawChaoHudThingB(&ru, panelBasePosX + panelWidth, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Right);
+
+		DrawChaoHudThingB(&lb, panelBasePosX + 0.5f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Left);
+		DrawChaoHudThingB(&cb, panelBasePosX + panelWidth / 2.f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Left);
+		DrawChaoHudThingB(&rb, panelBasePosX + panelWidth, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Left);
+
+		for (size_t i = 0; i < heightPanelCount; ++i) {
+			const float py = panelBasePosY + float(i) * lm.ht;
+
+			DrawChaoHudThingB(&lm, panelBasePosX + 0.5f, py, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Top);
+			DrawChaoHudThingB(&cm, panelBasePosX + panelWidth / 2.f, py, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Top);
+			DrawChaoHudThingB(&rm, panelBasePosX + panelWidth, py, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Top);
+		}
+
+		DrawChaoHudThingB(&m_colorsText, panelBasePosX + panelWidth / 2.f, m_posY, -2.3f, 1, 1, DrawAncorV_Center, DrawAncorV_Center);
+		DrawColorSlots(panelBasePosX + panelWidth / 2.f);
 
 		const size_t sliderSelectionStart = GetVerticalSlotCount();
-		const float sliderTextStartY = 85;
-		const float sliderX = m_posX + m_colorPanel.wd / 2.f - 2 * GetSliderLength() / 3.f;
-		const float sliderStartY = sliderTextStartY + 35;
+		const float sliderX = panelBasePosX + panelWidth / 2.f - 3 * GetSliderLength() / 5.f;
+		const float sliderStartY = ((GetVerticalSlotCount() > 1) ? 85 : 40) + 35;
 		const float sliderPad = 30.f;
+		const float grayOut = m_inSliderMenu ? 1.f : 0.2f; // this is a hack to grey out the sliders
 
-		SliderShadowDisp(sliderX + 5, m_posY + sliderStartY + 5);
-
-		SetChaoHUDThingBColor(m_alpha, 1, 0, 0);
-		SliderDisp(sliderX, m_posY + sliderStartY, m_hsl[0], m_selectionY == sliderSelectionStart, {m_alpha,1,1,1}, {m_alpha,1,0,0}, m_hueColors);
-		
-		const NJS_ARGB satSliderStartColor = HSLtoRGB(m_hsl[0], 0, m_hsl[2]);
-		const NJS_ARGB satSliderEndColor = HSLtoRGB(m_hsl[0], 1, m_hsl[2]);
-
-		const auto argbToColor = [this](const NJS_ARGB& argb) {
-			NJS_COLOR color;
-			color.argb.a = Uint8(m_alpha * argb.a * 255.f);
-			color.argb.r = Uint8(argb.r * 255.f);
-			color.argb.g = Uint8(argb.g * 255.f);
-			color.argb.b = Uint8(argb.b * 255.f);
-			return color;
-		};
-
-		const auto lightSliderStartColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 0));
-		const auto lightSliderMiddleColor = argbToColor (HSLtoRGB(m_hsl[0], m_hsl[1], 0.5f));
-		const auto lightSliderEndColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 1));
-
-		SliderShadowDisp(sliderX + 5, m_posY + sliderStartY + sliderPad + 5);
-		SetChaoHUDThingBColor(m_alpha, satSliderStartColor.r, satSliderStartColor.g, satSliderStartColor.b);
-		SliderDisp(sliderX, m_posY + sliderStartY + sliderPad, m_hsl[1], m_selectionY == sliderSelectionStart + 1, satSliderEndColor, satSliderEndColor, m_overlayColor);
-
-		SliderShadowDisp(sliderX + 5, m_posY + sliderStartY + sliderPad * 2 + 5);
-		SetChaoHUDThingBColor(m_alpha, lightSliderStartColor.argb.r / 255.f, lightSliderStartColor.argb.g / 255.f, lightSliderStartColor.argb.b / 255.f);
-		DrawChaoHudThingB(&m_genericSliderLeft, sliderX, m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
-		SetChaoHUDThingBColor(m_alpha, lightSliderEndColor.argb.r / 255.f, lightSliderEndColor.argb.g / 255.f, lightSliderEndColor.argb.b / 255.f);
-		DrawChaoHudThingB(&m_genericSliderRight, sliderX + m_genericSliderLeft.wd + GetSliderLength(), m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
-
-		const float u0 = 117 / 256.f;
-		const float v0 = 91 / 256.f;
-		const float u1 = 117 / 256.f;
-		const float v1 = 108 / 256.f;
-
-		NJS_TEXTURE_VTX vertices[4];
-		vertices[0] = {sliderX + m_genericSliderLeft.wd, m_posY + sliderStartY + sliderPad * 2, 0.99f, u0, v0, lightSliderStartColor.color };
-		vertices[1] = {vertices[0].x + GetSliderLength() / 2.f, vertices[0].y, 0.99f, u1, v0, lightSliderMiddleColor.color };
-		vertices[2] = {vertices[0].x, vertices[0].y + m_genericSliderMiddle.ht, 0.99f, u0, v1, vertices[0].col };
-		vertices[3] = {vertices[1].x, vertices[2].y, 0.99f, u1, v1, vertices[1].col };
-
-		njSetTexture(&CWE_UI_TEXLIST);
-		njSetTextureNum(36);
-		njDrawTextureEx(vertices, 4, 1);
-
-		for (size_t i = 0; i < 4; ++i) {
-			vertices[i].x += GetSliderLength() / 2.f;
+		// hue slider
+		{
+			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + GetShadowOffset());
+			SetChaoHUDThingBColor(m_alpha, grayOut, 0, 0);
+			SliderDisp(sliderX, m_posY + sliderStartY, m_hsl[0], m_selectionY == sliderSelectionStart, grayOut, { m_alpha,grayOut ,grayOut ,grayOut }, { m_alpha,grayOut,0,0 }, m_hueColors);
 		}
-		vertices[0].col = vertices[2].col = lightSliderMiddleColor.color;
-		vertices[1].col = vertices[3].col = lightSliderEndColor.color;
-		njDrawTextureEx(vertices, 4, 1);
 
-		if (m_selectionY == sliderSelectionStart + 2) {
-			SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
+		// saturation slider
+		{
+			NJS_ARGB satSliderStartColor = HSLtoRGB(m_hsl[0], 0, m_hsl[2]);
+			NJS_ARGB satSliderEndColor = HSLtoRGB(m_hsl[0], 1, m_hsl[2]);
+
+			satSliderStartColor.r *= grayOut;
+			satSliderStartColor.g *= grayOut;
+			satSliderStartColor.b *= grayOut;
+
+			satSliderEndColor.r *= grayOut;
+			satSliderEndColor.g *= grayOut;
+			satSliderEndColor.b *= grayOut;
+
+			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + sliderPad + GetShadowOffset());
+			SetChaoHUDThingBColor(m_alpha, satSliderStartColor.r, satSliderStartColor.g, satSliderStartColor.b);
+			SliderDisp(sliderX, m_posY + sliderStartY + sliderPad, m_hsl[1], m_selectionY == sliderSelectionStart + 1, grayOut, satSliderEndColor, satSliderEndColor, m_overlayColor);
 		}
-		else {
-			SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
+
+		// lightness slider, with a disgusting amount of dupe code
+		// we switched to njDrawTexture cuz this is a slider with 3 color gradient
+		{
+			const auto argbToColor = [this, grayOut](const NJS_ARGB& argb) {
+				NJS_COLOR color;
+				color.argb.a = Uint8(m_alpha * argb.a * 255.f);
+				color.argb.r = Uint8(grayOut * argb.r * 255.f);
+				color.argb.g = Uint8(grayOut * argb.g * 255.f);
+				color.argb.b = Uint8(grayOut * argb.b * 255.f);
+				return color;
+				};
+
+			const auto lightSliderStartColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 0));
+			const auto lightSliderMiddleColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 0.5f));
+			const auto lightSliderEndColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 1));
+
+			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + sliderPad * 2 + GetShadowOffset());
+			SetChaoHUDThingBColor(m_alpha, lightSliderStartColor.argb.r / 255.f, lightSliderStartColor.argb.g / 255.f, lightSliderStartColor.argb.b / 255.f);
+			DrawChaoHudThingB(&m_genericSliderLeft, sliderX, m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
+			SetChaoHUDThingBColor(m_alpha, lightSliderEndColor.argb.r / 255.f, lightSliderEndColor.argb.g / 255.f, lightSliderEndColor.argb.b / 255.f);
+			DrawChaoHudThingB(&m_genericSliderRight, sliderX + m_genericSliderLeft.wd + GetSliderLength(), m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
+
+			const float u0 = 117 / 256.f;
+			const float v0 = 91 / 256.f;
+			const float u1 = 117 / 256.f;
+			const float v1 = 108 / 256.f;
+
+			NJS_TEXTURE_VTX vertices[4];
+			vertices[0] = { sliderX + m_genericSliderLeft.wd, m_posY + sliderStartY + sliderPad * 2, 0.99f, u0, v0, lightSliderStartColor.color };
+			vertices[1] = { vertices[0].x + GetSliderLength() / 2.f, vertices[0].y, 0.99f, u1, v0, lightSliderMiddleColor.color };
+			vertices[2] = { vertices[0].x, vertices[0].y + m_genericSliderMiddle.ht, 0.99f, u0, v1, vertices[0].col };
+			vertices[3] = { vertices[1].x, vertices[2].y, 0.99f, u1, v1, vertices[1].col };
+
+			njSetTexture(&CWE_UI_TEXLIST);
+			njSetTextureNum(36);
+			njDrawTextureEx(vertices, 4, 1);
+
+			for (size_t i = 0; i < 4; ++i) {
+				vertices[i].x += GetSliderLength() / 2.f;
+			}
+			vertices[0].col = vertices[2].col = lightSliderMiddleColor.color;
+			vertices[1].col = vertices[3].col = lightSliderEndColor.color;
+			njDrawTextureEx(vertices, 4, 1);
+
+			if (m_selectionY == sliderSelectionStart + 2) {
+				SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
+			}
+			else {
+				SetChaoHUDThingBColor(m_alpha, grayOut, grayOut, grayOut);
+			}
+			const float sliderPos = m_genericSliderLeft.wd + GetSliderLength() + m_genericSliderRight.wd - m_sliderPicker.wd;
+			DrawChaoHudThingB(&m_sliderPicker, sliderX + sliderPos * m_hsl[2], m_posY + sliderStartY + sliderPad * 2 - 2, -0.5f, 1, 1, -1, -1);
 		}
-		const float sliderPos = m_genericSliderLeft.wd + GetSliderLength() + m_genericSliderRight.wd - m_sliderPicker.wd;
-		DrawChaoHudThingB(&m_sliderPicker, sliderX + sliderPos * m_hsl[2], m_posY + sliderStartY + sliderPad * 2 - 2, -0.5f, 1, 1, -1, -1);
 	}
 
 	void Exec() override {
 		if (!ColorMenuOpened) return;
 
-		m_sineAng += 512;
+		// sorta try and center it based on how large the panel is vertically
+		// which we know based on the vertical slot count
+		m_posY = (GetVerticalSlotCount() > 1) ? 125 : 150;
 
-		if (MenuButtons_Pressed[0] & Buttons_B) {
+		// only animate the sine scaling if the elastic scaling from clicking on the slot finished
+		if(m_colorSlotScaleAnim <= 0.f) m_sineAng += 512;
+
+		if (!m_inSliderMenu && (MenuButtons_Pressed[0] & Buttons_B)) {
+			// exits the color menu
+			PlaySoundProbably(0x100A, 0, 0, 0);
 			ColorMenuOpened = false;
 			return;
 		}
 
+		// if you're in the slider menu, you can only "stay" on the sliders
+		// if you're in the slots menu, you can only stay on the slots
 		const size_t sliderSelectionStart = GetVerticalSlotCount();
-		const size_t maxSelectionY = sliderSelectionStart + 3 - 1; // color slots + 3 sliders - 1 (max not count)
+		const int minSelectionY = m_inSliderMenu ? sliderSelectionStart : 0;
+		const int maxSelectionY = !m_inSliderMenu ? (sliderSelectionStart - 1) : (sliderSelectionStart + 2); // color slots + 3 sliders - 1 (max not count)
 
 		if (MenuButtons_Pressed[0] & Buttons_Up) {
-			if (--m_selectionY < 0) m_selectionY = 0;
+			if (--m_selectionY < minSelectionY) m_selectionY = minSelectionY;
 			m_selectionX = 0;
 		}
 
@@ -1096,8 +1264,10 @@ public:
 		if (MenuButtons_Pressed[0] & Buttons_Left) {
 			if (m_selectionY >= sliderSelectionStart) {
 				float& val = m_hsl[m_selectionY - sliderSelectionStart];
-				val -= 0.05f;
+				val -= GetSliderSpeed();
+
 				if (val < 0) val = 0;
+
 				UpdateColorSlot();
 			}
 			else {
@@ -1108,8 +1278,10 @@ public:
 		if (MenuButtons_Pressed[0] & Buttons_Right) {
 			if (m_selectionY >= sliderSelectionStart) {
 				float& val = m_hsl[m_selectionY - sliderSelectionStart];
-				val += 0.05f;
+				val += GetSliderSpeed();
+
 				if (val > 1) val = 1;
+
 				UpdateColorSlot();
 			}
 			else {
@@ -1123,11 +1295,25 @@ public:
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_A) {
-			if (m_selectionY < sliderSelectionStart) {
-				const auto slotCount = GetColorSlotCount();
-				SelectColorSlot(m_selectionY * min(slotCount, 4) + m_selectionX);
-			}
+		if (MenuButtons_Pressed[0] & Buttons_A && m_selectionY < sliderSelectionStart) {
+			PlaySoundProbably(0x1007, 0, 0, 0);
+
+			const auto slotCount = GetColorSlotCount();
+			SelectColorSlot(m_selectionY * min(slotCount, 4) + m_selectionX);
+
+			// scale up selected slot
+			CreateTween(NULL, EASE_OUT, INTERP_ELASTIC, &m_colorSlotScaleAnim, 1.f, 15, NULL);
+		}
+
+		if (MenuButtons_Pressed[0] & Buttons_B && m_inSliderMenu) {
+			PlaySoundProbably(0x100A, 0, 0, 0);
+
+			m_inSliderMenu = false;
+			m_sineAng = 0;
+
+			m_selectionX = *m_colorSlotIndex % min(4,GetColorSlotCount());
+			m_selectionY = *m_colorSlotIndex / min(4, GetColorSlotCount());
+			CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_colorSlotScaleAnim, 0.f, 15, NULL);
 		}
 	}
 
@@ -1144,8 +1330,11 @@ private:
 
 	float m_editAnim = 0.f;
 
+	int m_rotY = 0;
+
 	const int m_slot;
 	bool m_editSelected = false;
+	// unfortunate hack due to execution order reasons, this is equivalent to editSelected
 	bool m_preventRightSelect = false;
 
 	int GetItem() {
@@ -1163,35 +1352,28 @@ private:
 		return m_slot > 0 && GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1].ID[0];
 	}
 public:
-	int m_rotY = 0;
+	void BeforeBoxDisp() override {
+		ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
 
-	bool AL_Customization_CreateHat(int ID, int Garden)
-	{
-		if (ID < 1) return false;
-
-		ITEM_SAVE_INFO* v9 = (ITEM_SAVE_INFO*)AL_GetNewItemSaveInfo(9);
-		if (v9 == nullptr)
-		{
-			PrintDebug("HatAccRender: no hat slots left");
-			return false;
+		const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+		const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
+		if (!hasColorSlots) {
+			sprite = m_greySprite;
 		}
 
-		v9->Garden = Garden;
-		v9->Type = ID;
-		v9->position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
-		UpdateHatAccVector();
+		DrawChaoHudThingB(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
 
-		return true;
+		SetChaoHUDThingBColor(1, 1, 1, 1);
+		ChaoHudThingB greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+		DrawChaoHudThingB(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
 	}
 
 	void BoxContentDisp() override {
 		DrawChaoHudThingB(&m_slotSprite, m_posX, m_posY, -2.f, m_sclX, m_sclY, -1, -1);
-
-		ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
-		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
-		SetChaoHUDThingBColor(m_editAnim, 1, 1, 1);
-		DrawChaoHudThingB(&sprite, m_posX - sprite.wd * m_editAnim, m_posY, -2.2f, .75f, .75f, -1, -1);
 
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 
@@ -1219,11 +1401,20 @@ public:
 	}
 
 	bool CanUnselect(Direction direction) const override {
-		if (ColorMenuOpened) return false;
+		// if we're in the color edit, make sure we're stayed highlighted on the edit button
+		if (ColorMenuOpened) return false; 
+
+		// pressing left should either go on the edit button or the "error" sound with nothing happening
+		// so no unselect on left
 		if (direction == Direction::Left) return false;
+
+		// if we're pressing right while on the edit button, don't unselect
+		// however, due to "order of execution" reasons, we need this preventRightSelected flag to be set
+		// so that it lasts one more frame
 		if (direction == Direction::Right && m_preventRightSelect) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -1274,18 +1465,28 @@ public:
 		const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
 		const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
 		if (IsSelected() && slotAccIndex != -1) {
-			if (hasColorSlots && !ColorMenuOpened) {
-				if (MenuButtons_Pressed[0] & Buttons_Left) {
-					m_editSelected = true;
+			if (!ColorMenuOpened) {
+				if (hasColorSlots) {
+					if (MenuButtons_Pressed[0] & Buttons_Left) {
+						m_editSelected = true;
+					}
+					if (MenuButtons_Pressed[0] & Buttons_Right) {
+						m_editSelected = false;
+						m_preventRightSelect = true;
+					}
 				}
-				if (MenuButtons_Pressed[0] & Buttons_Right) {
-					m_editSelected = false;
-					m_preventRightSelect = true;
+				else {
+					if (MenuButtons_Pressed[0] & Buttons_Left) {
+						PlaySoundProbably(0x8009, 0, 0, 0);
+					}
 				}
 
 				if (m_editSelected) {
 					if (!ColorMenuOpened && MenuButtons_Pressed[0] & Buttons_A) {
 						ColorMenuOpened = true;
+
+						PlaySoundProbably(0x1007, 0, 0, 0);
+
 						auto colorEditElement = customizationController->GetButton("coloredit");
 						if (colorEditElement) {
 							auto colorEditor = std::dynamic_pointer_cast<ColorEditor, UISelectable>(*colorEditElement);
@@ -1295,6 +1496,7 @@ public:
 				}
 
 				if (!m_editAnim) {
+					// so that i don't need to introduce an "only run once" flag i do this tacky shit to prevent it from running every frame
 					m_editAnim += 0.00001f;
 					CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_editAnim, 1.f, 15, NULL);
 				}
@@ -1309,26 +1511,16 @@ public:
 			}
 		}
 	}
+
 	HatAccSlot(int slot, float posX, float posY) : BaseCustomizeBox("hatacc", posX, posY, 0), m_slot(slot), m_basePosX(posX), m_basePosY(posY) {
-		m_slotSprite = { 1, 0x40 / 1.25f ,0x40 / 1.25f, 0, 0, 1 ,1, &CWE_UI_TEXLIST, 28 + m_slot };
+		m_slotSprite = { 1, 0x40 / 1.25f, 0x40 / 1.25f, 0, 0, 1 ,1, &CWE_UI_TEXLIST, 28 + m_slot };
 		m_sclX = m_sclY = .75f;
 	}
 };
 
-
-const int someUIProjectionCodePtr = 0x0055A060;
-void someUIProjectionCode(NJS_VECTOR* a1, NJS_VECTOR* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		mov esi, a2
-		call someUIProjectionCodePtr
-	}
-}
-
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {	
-	NJS_VECTOR posIn = { 150, 300 + 50, -12 }, posOut;
+	NJS_POINT3 posOut;
+
 	switch (a1->mode)
 	{
 	case 0:
@@ -1346,17 +1538,19 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 			while (1) PrintDebug("customizationController not 0, what happened?");
 		}
 
-		someUIProjectionCode(&posIn, &posOut);
+		someUIProjectionCode(&ChaoHatPosition, &posOut);
 		pChao = CreateChao((ChaoData*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
 		pChao->Data1.Chao->field_B0 &= ~8u;
 		pChao->Data1.Chao->field_B0 &= ~2u;
 		pChao->Data1.Chao->field_B0 &= ~0x10u;
+		pChao->Data1.Chao->field_B0 &= ~BIT_5; // buyo
 
 		customizationController = new UIController();
 
 		customizationController->AddLayer(baseLayerName,
 			[]() {
-				if (!(MenuButtons_Pressed[0] & Buttons_B)) {
+				// if we're in the color menu we can't exit until we're out
+				if (ColorMenuOpened || !(MenuButtons_Pressed[0] & Buttons_B)) {
 					return;
 				}
 				
@@ -1369,16 +1563,15 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 				}
 				else {
 					customizationController->SelectButton("exit");
+					PlaySelectSound();
 				}
-				PlaySelectSound();
+				
 			}
 		);
 
-		#define spread 100.f
-		customizationController->AddElement<LeftBarButton>(baseLayerName, hataccLayerName, 295 - spread, 385, LeftBarButton::LeftBarType::HatAcc);
-		customizationController->AddElement<LeftBarButton>(baseLayerName, medalLayerName, 295, 385, LeftBarButton::LeftBarType::Medal);
-		customizationController->AddElement<LeftBarButton>(baseLayerName, "exit", 295 + spread, 385, LeftBarButton::LeftBarType::Exit);
-		//customizationController->AddElement<BaseCustomizeBox>(baseLayerName, "chaobox", 100.f, 125.f, UISelectable::CantSelect);
+		customizationController->AddElement<MainMenuButton>(baseLayerName, hataccLayerName, 195, 385, MainMenuButton::LeftBarType::HatAcc);
+		customizationController->AddElement<MainMenuButton>(baseLayerName, medalLayerName, 295, 385, MainMenuButton::LeftBarType::Medal);
+		customizationController->AddElement<MainMenuButton>(baseLayerName, "exit", 395, 385, MainMenuButton::LeftBarType::Exit);
 
 		customizationController->AddLayer(medalLayerName);
 		for (int i = 0; i < 16; i++) {
@@ -1389,6 +1582,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 		ColorMenuOpened = ColorMenuLastFrame = false;
 		customizationController->AddLayer(hataccLayerName, []() {
+			// this last frame hack is so that it can tell it changed
 			if (ColorMenuLastFrame != ColorMenuOpened) {
 				NJS_VECTOR posIn, posOut;
 				NJS_POINT2 targetMenuOffset;
@@ -1396,12 +1590,12 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 				if (ColorMenuOpened) {
 					targetAlpha = 0;
-					posIn = { 400, 300 + 50, -12 };
+					posIn = ChaoColorEditPosition;
 					targetMenuOffset = { 400 - 140, 0 };
 				}
 				else {
 					targetAlpha = 1;
-					posIn = { 150, 300 + 50, -12 };
+					posIn = ChaoHatPosition;
 					targetMenuOffset = { 0, 0 };
 				}
 				someUIProjectionCode(&posIn, &posOut);
@@ -1429,7 +1623,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		customizationController->AddElement<ScrollArea>(hataccLayerName, "scrollarea", 340, 100);
 
 		for (int i = 0; i < HatsSubMenuCount; i++) {
-			customizationController->AddElement<HatAccSlot>(hataccLayerName, i, 240 - spread + 140, 100 + (float)i * 55);
+			customizationController->AddElement<HatAccSlot>(hataccLayerName, i, 280, 100 + (float)i * 55);
 		}
 
 		customizationController->SelectButton(hataccLayerName);
@@ -1438,13 +1632,13 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		CreateButtonGuide(SELECT | CONFIRM | BACK);
 		LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 
-		largeBar = LoadObject(3,
+		pCustomizationControllerTask = LoadObject(3,
 			"CustomizeUIController",
 			[](ObjectMaster*) {
 				customizationController->Exec();
 			},
 			LoadObj_Data1);
-		largeBar->DisplaySub = [](ObjectMaster*) {
+		pCustomizationControllerTask->DisplaySub = [](ObjectMaster*) {
 			customizationController->Disp();
 		};
 
@@ -1467,11 +1661,11 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		}
 		break;
 	case 4:
-		DeleteObject_(pChao); pChao = 0;
-		DeleteObject_(largeBar); largeBar = 0;
+		DeleteObject_(pChao); pChao = NULL;
+		DeleteObject_(pCustomizationControllerTask); pCustomizationControllerTask = NULL;
 
 		delete customizationController;
-		customizationController = 0;
+		customizationController = NULL;
 
 		AL_OdeMenuSetNextStage(0);
 		AL_OdeMenuChangeStage();

@@ -99,6 +99,10 @@ public:
 		m_layer = layerSearch;
 	}
 
+	bool IsCurrentLayer(const std::string& layer) const {
+		return m_layers[m_layer].m_id == layer;
+	}
+
 	void AddLayer(const std::string& layer, UpdateFunc func = {}) {
 		if (m_layerCount >= m_layers.size()) return;
 
@@ -146,15 +150,15 @@ public:
 	bool IsDirectionVertical(Direction direction) {
 		return direction == Direction::Up || direction == Direction::Down;
 	}
-	void UpdateSelection(Direction direction) {
+	bool UpdateSelection(Direction direction) {
 		//if theres nothing selected already, it wont know where to go
-		if (!m_selected) return;
+		if (!m_selected) return false;
 
-		if (!m_selected->CanUnselect(direction)) return;
+		if (!m_selected->CanUnselect(direction)) return false;
 
 		if (direction == Direction::Right && m_selected->m_selectForceRight) {
 			SelectButton(m_selected->m_selectForceRight);
-			return;
+			return true;
 		}
 
 		float minDistance = 10000;
@@ -189,8 +193,12 @@ public:
 				}
 			}
 		}
-		if (selected)
+		if (selected) {
 			SelectButton(selected);
+			return true;
+		}
+
+		return false;
 	}
 
 	const std::array<std::pair<Buttons, Direction>, 4> m_buttonDirectionPair = {
@@ -207,14 +215,21 @@ public:
 		if (m_layer != m_alwaysDrawLayer && m_layers[m_layer].m_func)
 			m_layers[m_layer].m_func();
 
+		if (m_layer != m_alwaysDrawLayer) {
+			for (auto selectable : m_layers[m_alwaysDrawLayer]) {
+				selectable->Exec();
+			}
+		}
+
 		for (auto selectable : GetCurrentLayer()) {
 			selectable->Exec();
 		}
 
 		for (auto& pair : m_buttonDirectionPair) {
 			if (MenuButtons_Pressed[0] & pair.first) {
-				UpdateSelection(pair.second);
-				PlaySelectSound();
+				if (UpdateSelection(pair.second)) {
+					PlaySelectSound();
+				}
 			}
 		}
 

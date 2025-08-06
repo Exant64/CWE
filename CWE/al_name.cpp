@@ -75,7 +75,7 @@ static Float CalculateStringSizeRatio(const char* pName, float xpos, float xsize
 }
 
 // used by name menu to find the position of the cursor, it's basically CalculateLastLetterXPos but with sizeRatio calculated
-static Float CalculateStringXPos(char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
+static Float CalculateStringXPos(const char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
 	Float sizeRatio = CalculateStringSizeRatio(pName, xpos, xsize, length);
 	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
 }
@@ -106,7 +106,7 @@ void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, fl
 		anchorMul = 0.5f;
 		[[fallthrough]];
 	case DrawAncorV_Right:
-		x = xpos - (CalculateStringXPos(name, xpos, xsize, length) - xpos) * anchorMul;
+		x = xpos - (CalculateStringXPos(pName, xpos, xsize, length) - xpos) * anchorMul;
 		break;
 	}
 
