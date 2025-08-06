@@ -71,6 +71,10 @@ public:
 	~UIController() {
 	}
 
+	bool IsNoneSelected() const {
+		return !m_selected || !m_selected->IsSelected();
+	}
+
 	Layer& GetCurrentLayer() {
 		return m_layers[m_layer];
 	}

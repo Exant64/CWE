@@ -218,9 +218,9 @@ private:
 
 	Uint32 m_timer = 0; // this is only used to track to only create tween once
 
-	ChaoHudThingB m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
 public:
 	enum LeftBarType : int {
 		HatAcc = 0,
@@ -233,27 +233,28 @@ public:
 		if (m_buttonType == Exit) {
 			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
+
 			PlaySoundProbably(0x100E, 0, 0, 0);
+			return;
 		}
-		else {
-			if (!controller->IsCurrentLayer(m_layerEnter)) {
-				PlaySoundProbably(0x1007, 0, 0, 0);
 
-				controller->SetCurrentLayer(m_layerEnter);
+		if (!controller->IsCurrentLayer(m_layerEnter)) {
+			PlaySoundProbably(0x1007, 0, 0, 0);
 
-				NJS_POINT3 posIn, posOut;
-				switch (m_buttonType) {
-				case LeftBarType::HatAcc:
-					posIn = ChaoHatPosition;
-					break;
-				case LeftBarType::Medal:
-					posIn = ChaoMedalsPosition;
-					break;
-				}
+			controller->SetCurrentLayer(m_layerEnter);
 
-				someUIProjectionCode(&posIn, &posOut);
-				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->Data1.Entity->Position, posOut, 15, NULL);
+			NJS_POINT3 posIn, posOut;
+			switch (m_buttonType) {
+			case LeftBarType::HatAcc:
+				posIn = ChaoHatPosition;
+				break;
+			case LeftBarType::Medal:
+				posIn = ChaoMedalsPosition;
+				break;
 			}
+
+			someUIProjectionCode(&posIn, &posOut);
+			CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->Data1.Entity->Position, posOut, 15, NULL);
 		}
 	}
 
@@ -290,7 +291,7 @@ public:
 		}
 
 		njSetTexture(&CWE_UI_TEXLIST);
-		njSetTextureNum(36);
+		njSetTextureNum(5);
 		njDrawTextureEx(vertices, 4, 1);
 	}
 
@@ -367,11 +368,11 @@ public:
 	const ChaoHudThingB GetTextSprite() {
 		switch (m_buttonType) {
 			case LeftBarType::HatAcc:
-				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 36 };
+				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 5 };
 			case LeftBarType::Medal:
-				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, &CWE_UI_TEXLIST, 36 };
+				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, &CWE_UI_TEXLIST, 5 };
 			case LeftBarType::Exit:
-				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, &CWE_UI_TEXLIST, 36 };
+				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, &CWE_UI_TEXLIST, 5 };
 		}
 	}
 
@@ -441,8 +442,8 @@ public:
 
 class BaseCustomizeBox : public UISelectable {
 private:
-	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 public:
 	float m_sclX = 1;
 	float m_sclY = 1;
@@ -545,15 +546,20 @@ private:
 	float m_scrollOffsetY = 0.f;
 	float m_scrollAlpha = 1.f;
 
+	// this is again another "order of execution hack"
+	// this is equivalent to m_uiSelectX == 0
+	// but should stay alive for one more frame
+	bool m_canUnselect = true;
+
 	int m_uiSelectX = 0;
 	int m_uiSelectY = 0;
 
-	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 5 };
 
 	const size_t GetItemCount() const {
 		return HatList.size() + AccessoryList.size();
@@ -605,7 +611,7 @@ public:
 	bool CanUnselect(Direction direction) const override {
 		switch (direction) {
 		case Direction::Left:
-			return m_uiSelectX == 0;
+			return m_canUnselect && !m_uiSelectX;
 		case Direction::Right:
 		case Direction::Up:
 		case Direction::Down:
@@ -650,47 +656,6 @@ public:
 	}
 
 	void Disp() override {
-		if (IsSelected()) {
-			bool doTween = false;
-			if (MenuButtons_Pressed[0] & Buttons_Up) {
-				if (m_uiSelectY >= 1) {
-					m_uiSelectY--;
-					doTween = true;
-				}
-			}
-			if (MenuButtons_Pressed[0] & Buttons_Down) {
-				if (m_uiSelectY < GetItemCount() - 1) {
-					m_uiSelectY++;
-					doTween = true;
-				}
-			}
-
-			if (MenuButtons_Pressed[0] & Buttons_Left) {
-				if (m_uiSelectX >= 1) m_uiSelectX--;
-			}
-			if (MenuButtons_Pressed[0] & Buttons_Right) {
-				if (m_uiSelectX < m_horizItemCount - 1) m_uiSelectX++;
-			}
-
-			if (GetItemCount() > 0) {
-				const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
-				if (index >= GetItemCount()) {
-					const size_t lastItemIndex = GetItemCount() - 1;
-					m_uiSelectX = lastItemIndex % m_horizItemCount;
-					m_uiSelectY = lastItemIndex / m_horizItemCount;
-				}
-			}
-			else {
-				m_uiSelectX = m_uiSelectY = 0;
-			}
-
-			if (doTween) {
-				if (m_uiSelectY >= m_scrollAt) {
-					CreateTween(NULL, EASE_OUT, INTERP_EXPO, &m_scrollOffsetY, float(m_scrollAt) - float(m_uiSelectY), 15, NULL);
-				}
-			}
-		}
-
 		const auto setColor = [this](float a, float r, float g, float b) {
 			SetChaoHUDThingBColor(a * m_alpha, r, g, b);
 		};
@@ -702,6 +667,7 @@ public:
 		const float scrollBarLength = verticalSpacing * (m_verticalItemCount + 1) - 25;
 		const int verticalItemCount = (Sint32(GetItemCount()) - 1) / Sint32(m_horizItemCount);
 
+		// if there are enough items that the scroll bar is needed, display it
 		if (verticalItemCount > m_scrollAt) {
 			setColor(0.3f, 0, 0, 0);
 			ScrollDisp(m_visualPosX + horizSpacing * m_horizItemCount, m_visualPosY, scrollBarLength);
@@ -711,7 +677,10 @@ public:
 			ScrollDisp(m_visualPosX + horizSpacing * m_horizItemCount, m_visualPosY + m_uiSelectY * scrollCursorLength, scrollCursorLength);
 		}
 
-		for (size_t y = 0; y < 1 + GetItemCount() / m_horizItemCount; ++y) {
+		// the min/max stuff is there to not draw literally all items and let them break
+		// somewhat "narrows it down" to what can render
+		// the reason for the massive range is because of the animations, though ill be honest, didnt think much about the amounts
+		for (size_t y = max(0, m_uiSelectY - 3); y < min(1 + GetItemCount() / m_horizItemCount, m_uiSelectY + 4); ++y) {
 			for (size_t x = 0; x < m_horizItemCount; ++x) {
 				const size_t index = x + y * m_horizItemCount;
 				if (index >= GetItemCount()) break;
@@ -795,6 +764,57 @@ public:
 
 	void Exec() override {
 		SetSelectable(GetItemCount() > 0 && m_alpha == 1);
+
+		if (!GetItemCount()) {
+			Unselect();
+		}
+
+		m_canUnselect = true;
+
+		if (IsSelected()) {
+			bool doTween = false;
+			if (MenuButtons_Pressed[0] & Buttons_Up) {
+				if (m_uiSelectY >= 1) {
+					m_uiSelectY--;
+					doTween = true;
+				}
+			}
+			if (MenuButtons_Pressed[0] & Buttons_Down) {
+				if (m_uiSelectY < GetItemCount() - 1) {
+					m_uiSelectY++;
+					doTween = true;
+				}
+			}
+
+			if (MenuButtons_Pressed[0] & Buttons_Left) {
+				if (m_uiSelectX >= 1) {
+					m_uiSelectX--;
+					if (!m_uiSelectX) m_canUnselect = false;
+				}
+			}
+			if (MenuButtons_Pressed[0] & Buttons_Right) {
+				if (m_uiSelectX < m_horizItemCount - 1) m_uiSelectX++;
+			}
+
+			if (GetItemCount() > 0) {
+				const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
+				if (index >= GetItemCount()) {
+					// jump to last item if we're past it
+					const size_t lastItemIndex = GetItemCount() - 1;
+					m_uiSelectX = lastItemIndex % m_horizItemCount;
+					m_uiSelectY = lastItemIndex / m_horizItemCount;
+				}
+			}
+			else {
+				// if there are no items, stay on the "first item"
+				m_uiSelectX = m_uiSelectY = 0;
+			}
+
+			// if we were instructed to tween and we're at the point that scrolling is needed
+			if (doTween && m_uiSelectY >= m_scrollAt) {
+				CreateTween(NULL, EASE_OUT, INTERP_EXPO, &m_scrollOffsetY, float(m_scrollAt) - float(m_uiSelectY), 15, NULL);
+			}
+		}
 	}
 
 	ScrollArea(const std::string& name, float posX, float posY) : UISelectable(name, 0) {
@@ -812,20 +832,20 @@ private:
 
 	ChaoHudThingB m_colorPanel = { 1, 211, 213, 0, 0, 1, 1, &CWE_UI_TEXLIST, 37 };
 
-	ChaoHudThingB m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 36 };
-	ChaoHudThingB m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 5 };
+	ChaoHudThingB m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 36 };
+	ChaoHudThingB m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 5 };
 
 	std::optional<int> m_colorSlotIndex = std::nullopt;
 	bool m_inSliderMenu = false;
@@ -1080,10 +1100,14 @@ private:
 	}
 
 	float GetSliderSpeed() const {
-		if (MenuButtons_Pressed[0] & Buttons_L) {
+		if (MenuButtons_Held[0] & Buttons_L) {
+			return 0.005f;
+		}
+
+		if (MenuButtons_Held[0] & Buttons_R) {
 			return 0.1f;
 		}
-		
+
 		return 0.05f;
 	}
 
@@ -1104,17 +1128,17 @@ public:
 		if (!m_alpha) return;
 
 		// panel sprites
-		ChaoHudThingB lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-		ChaoHudThingB lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
 
-		ChaoHudThingB lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
 
 		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
 
@@ -1207,7 +1231,7 @@ public:
 			vertices[3] = { vertices[1].x, vertices[2].y, 0.99f, u1, v1, vertices[1].col };
 
 			njSetTexture(&CWE_UI_TEXLIST);
-			njSetTextureNum(36);
+			njSetTextureNum(5);
 			njDrawTextureEx(vertices, 4, 1);
 
 			for (size_t i = 0; i < 4; ++i) {
@@ -1353,9 +1377,9 @@ private:
 	}
 public:
 	void BeforeBoxDisp() override {
-		ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
 
 		const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
@@ -1367,8 +1391,8 @@ public:
 		DrawChaoHudThingB(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
 
 		SetChaoHUDThingBColor(1, 1, 1, 1);
-		ChaoHudThingB greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
-		ChaoHudThingB nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 36 };
+		ChaoHudThingB greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		ChaoHudThingB nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
 		DrawChaoHudThingB(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
 	}
 
@@ -1445,6 +1469,8 @@ public:
 				AL_ParameterClearAccessory(pChao, m_slot - 1);
 			}
 		}
+
+		Unselect();
 	}
 
 	bool IsBoxSelected() const override {
@@ -1549,6 +1575,10 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 		customizationController->AddLayer(baseLayerName,
 			[]() {
+				if (customizationController->IsNoneSelected()) {
+					customizationController->SelectButton(hataccLayerName);
+				}
+
 				// if we're in the color menu we can't exit until we're out
 				if (ColorMenuOpened || !(MenuButtons_Pressed[0] & Buttons_B)) {
 					return;
