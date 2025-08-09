@@ -376,6 +376,17 @@ public:
 		}
 	}
 
+	const ChaoHudThingB GetIconSprite() {
+		switch (m_buttonType) {
+		case LeftBarType::HatAcc:
+			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
+		case LeftBarType::Medal:
+			return { 1, 44, 63, 213 / 256.f, 153 / 256.f, 1, 215 / 256.f, &CWE_UI_TEXLIST, 5 };
+		case LeftBarType::Exit:
+			return { 1, 29 * 1.25f, 31 * 1.25f, 133 / 256.f, 225 / 256.f, 161 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		}
+	}
+
 	void Disp() override {
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 
@@ -404,13 +415,30 @@ public:
 
 		njDrawSprite2D(&sprite, 0, -2, NJD_SPRITE_ANGLE | NJD_SPRITE_ALPHA);
 
+		float offsetX, offsetY;
+		switch (m_buttonType) {
+		case LeftBarType::HatAcc:
+			offsetX = 1;
+			offsetY = -11;
+			break;
+		case LeftBarType::Medal:
+			offsetX = 2;
+			offsetY = -6;
+			break;
+		case LeftBarType::Exit:
+			offsetX = 5;
+			offsetY = -4;
+			break;
+		}
+
+		auto icon = GetIconSprite();
 		DrawAsSprite(
-			m_gba, 
-			m_posX - m_iconProgress * 20, 
-			(1 - m_iconProgress) * -7.f + m_posY, 
-			m_sclX,
-			m_sclY,
-			m_iconProgress * NJM_DEG_ANG(-10 + njSin(m_ang * 2) * 5), 
+			icon,
+			m_posX + offsetX - m_iconProgress * 20,
+			m_posY + offsetY + (1 - m_iconProgress) * -7.f,
+			m_sclX * 0.85f + (m_iconProgress) * 0.15f,
+			m_sclY * 0.85f + (m_iconProgress) * 0.15f,
+			NJM_DEG_ANG(-10 * m_iconProgress + njSin(m_ang * 2) * 5),
 			-0.5f
 		);
 
@@ -1397,7 +1425,26 @@ public:
 	}
 
 	void BoxContentDisp() override {
-		DrawChaoHudThingB(&m_slotSprite, m_posX, m_posY, -2.f, m_sclX, m_sclY, -1, -1);
+		ChaoHudThingB slotSprite;
+		switch (m_slot) {
+			case 0: // hat
+				slotSprite = { 1, 56 * .65f, 65 * .65f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
+				break;
+			case 1:
+				slotSprite = { 1, 60 * .65f, 39 * .65f, 139 / 256.f, 159 / 256.f, 198 / 256.f, 197 / 256.f, &CWE_UI_TEXLIST, 5 };
+				break;
+			case 2:
+				slotSprite = { 1, 67 * .65f, 28 * .65f, 177 / 256.f, 223 / 256.f, 243 / 256.f, 250 / 256.f, &CWE_UI_TEXLIST, 5 };
+				break;
+			case 3:
+				slotSprite = { 1, 28 * 1.25f, 28 * 1.25f, 58 / 256.f, 1 / 256.f, 85 / 256.f, 28 / 256.f, &CWE_UI_TEXLIST, 5 };
+				break;
+			case 4:
+				slotSprite = { 1, 28 * 1.25f, 25 * 1.25f, 58 / 256.f, 31 / 256.f, 85 / 256.f, 55 / 256.f, &CWE_UI_TEXLIST, 5 };
+				break;
+		}
+
+		DrawChaoHudThingB(&slotSprite, m_posX + GetWidth() * m_sclX / 2.f, m_posY + GetHeight() * m_sclY / 2.f, -2.f, m_sclX, m_sclY, 0, 0);
 
 		SetChaoHUDThingBColor(1, 1, 1, 1);
 
@@ -1539,7 +1586,6 @@ public:
 	}
 
 	HatAccSlot(int slot, float posX, float posY) : BaseCustomizeBox("hatacc", posX, posY, 0), m_slot(slot), m_basePosX(posX), m_basePosY(posY) {
-		m_slotSprite = { 1, 0x40 / 1.25f, 0x40 / 1.25f, 0, 0, 1 ,1, &CWE_UI_TEXLIST, 28 + m_slot };
 		m_sclX = m_sclY = .75f;
 	}
 };
