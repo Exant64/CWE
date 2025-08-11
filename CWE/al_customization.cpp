@@ -425,6 +425,7 @@ public:
 			offsetX = 2;
 			offsetY = -6;
 			break;
+		default:
 		case LeftBarType::Exit:
 			offsetX = 5;
 			offsetY = -4;
@@ -445,7 +446,7 @@ public:
 		float progress = (max(0, m_textProgress - 0.5f) / 0.5f);
 
 		NJS_COLOR rightSideColor = (NJS_COLOR)-1;
-		rightSideColor.argb.a = progress * 255.f;
+		rightSideColor.argb.a = Uint8(progress * 255.f);
 
 		ChaoHudThingB text = GetTextSprite();
 		text.s1 = text.s0 + m_textProgress * (text.wd / 256.f);
@@ -455,7 +456,7 @@ public:
 			m_posY + 7.f, 
 			m_sclX * m_textProgress,
 			m_sclY,
-			m_textProgress * NJM_DEG_ANG(25), 
+			Angle(m_textProgress * NJM_DEG_ANG(25)), 
 			-0.5f,
 			rightSideColor
 		);
@@ -659,7 +660,7 @@ public:
 
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
-				pParam->Headgear = HatList[index]->Type;
+				pParam->Headgear = Uint8(HatList[index]->Type);
 				AL_ClearItemSaveInfo(HatList[index]);
 				UpdateHatAccVector();
 			}
@@ -756,8 +757,8 @@ public:
 				}
 				
 				NJS_COLOR nameColor = (NJS_COLOR)0xFFFFFFFF;
-				nameColor.argb.a = m_alpha * 255;
-				if(alpha < 1) nameColor.argb.a = m_alpha * alpha * 255;
+				nameColor.argb.a = Uint8(m_alpha * 255);
+				if(alpha < 1) nameColor.argb.a = Uint8(m_alpha * alpha * 255);
 				
 				DisplayChaoName_NewFont((char*)(nums - offsetof(ChaoDataBase, Name) + 0x12), m_visualPosX + x * horizSpacing + sprite->wd, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + sprite->ht - 15, 22, 22, nameColor, 0, DrawAncorV_Center);
 
@@ -958,15 +959,15 @@ private:
 		ChaoHudThingB& overlaySprite
 	) {
 		const float sliderLength = GetSliderLength();
-		DrawChaoHudThingB(&m_genericSliderLeft, posX, posY, -2.2, 1, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.2, sliderLength, 1, -1, -1);
+		DrawChaoHudThingB(&m_genericSliderLeft, posX, posY, -2.2f, 1, 1, -1, -1);
+		DrawChaoHudThingB(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.2f, sliderLength, 1, -1, -1);
 
 		SetChaoHUDThingBColor(rightColors.a, rightColors.r, rightColors.g, rightColors.b);
-		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.2, 1, 1, -1, -1);
+		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.2f, 1, 1, -1, -1);
 
 		SetChaoHUDThingBColor(overlayColors.a, overlayColors.r, overlayColors.g, overlayColors.b);
 		overlaySprite.wd = 1;
-		DrawChaoHudThingB(&overlaySprite, posX + m_genericSliderLeft.wd, posY + 1.5f, -2.1, sliderLength, 1, -1, -1);
+		DrawChaoHudThingB(&overlaySprite, posX + m_genericSliderLeft.wd, posY + 1.5f, -2.1f, sliderLength, 1, -1, -1);
 
 		if (selected) {
 			SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
@@ -1003,7 +1004,7 @@ private:
 			m_hsl[1] = 0;
 		}
 		else {
-			m_hsl[1] = (m_hsl[2] > 0.5) ? delta / (2 - cMax - cMin) : delta / (cMax + cMin);
+			m_hsl[1] = (m_hsl[2] > 0.5f) ? delta / (2 - cMax - cMin) : delta / (cMax + cMin);
 
 			if (cMax == r) {
 				m_hsl[0] = (g - b) / delta + (g < b ? 6 : 0);
@@ -1087,7 +1088,7 @@ private:
 			else if (m_selectionY < GetVerticalSlotCount() && index == i) {
 				// if slot is highlighted but not pressed
 				// this logic also tries to take into account the "comeback" animation when you exit the sliders
-				scl = (0.5 * njSin(m_sineAng) + 0.5f) * 0.3f + 0.7f;
+				scl = (0.5f * njSin(m_sineAng) + 0.5f) * 0.3f + 0.7f;
 				if (i == m_colorSlotIndex) {
 					scl *= lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
 				}
@@ -1285,7 +1286,7 @@ public:
 
 		// sorta try and center it based on how large the panel is vertically
 		// which we know based on the vertical slot count
-		m_posY = (GetVerticalSlotCount() > 1) ? 125 : 150;
+		m_posY = (GetVerticalSlotCount() > 1) ? 125.f : 150.f;
 
 		// only animate the sine scaling if the elastic scaling from clicking on the slot finished
 		if(m_colorSlotScaleAnim <= 0.f) m_sineAng += 512;
@@ -1378,7 +1379,6 @@ public:
 class HatAccSlot : public BaseCustomizeBox {
 private:
 	const float m_basePosX, m_basePosY;
-	ChaoHudThingB m_slotSprite;
 
 	float m_editAnim = 0.f;
 
