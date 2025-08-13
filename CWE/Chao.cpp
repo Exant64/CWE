@@ -271,39 +271,6 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 			pParam->IsInitializedAccessory = 1;
 		}
 
-		if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
-			for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
-				memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
-
-				char id[METADATA_ID_SIZE];
-				bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
-				if (!foundID) {
-					// TODO: error
-					continue;
-				}
-
-				// hacky way to patch the old pink hoodie and force it to blue hoodie, then recolor it to resemble the pink one
-				if (!strcmp(id, "accdummhoodie")) {
-					strcpy_s(pParam->Accessories[i].ID, "acc96a6abf7");
-
-					pParam->Accessories[i].ColorFlags |= BIT_0;
-
-					// pink color
-					NJS_COLOR* colorSlot = (NJS_COLOR*) & pParam->Accessories[i].ColorSlots[0];
-					colorSlot->argb.a = 255;
-					colorSlot->argb.r = 255;
-					colorSlot->argb.g = 121;
-					colorSlot->argb.b = 213;
-
-					continue;
-				}
-
-				strcpy_s(pParam->Accessories[i].ID, id);
-			}
-
-			pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
-		}
-
 		if (!(pParam->Flags & AL_PARAM_FLAG_NAME_NEW))
 		{
 			AL_GENE& Gene = pParam->Gene;
