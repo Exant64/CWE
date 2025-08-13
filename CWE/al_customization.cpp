@@ -1410,10 +1410,13 @@ public:
 		ChaoHudThingB m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
 
-		const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
-		const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
-		if (!hasColorSlots) {
-			sprite = m_greySprite;
+		bool hasColorSlots = false;
+		if (m_slot) {
+			const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
+			if (!hasColorSlots) {
+				sprite = m_greySprite;
+			}
 		}
 
 		DrawChaoHudThingB(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
@@ -1535,52 +1538,54 @@ public:
 	
 		SetSelectable(HasHeadgear() || HasAccessory());
 
-		const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
-		const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
-		if (IsSelected() && slotAccIndex != -1) {
-			if (!ColorMenuOpened) {
-				if (hasColorSlots) {
-					if (MenuButtons_Pressed[0] & Buttons_Left) {
-						m_editSelected = true;
-					}
-					if (MenuButtons_Pressed[0] & Buttons_Right) {
-						m_editSelected = false;
-						m_preventRightSelect = true;
-					}
-				}
-				else {
-					if (MenuButtons_Pressed[0] & Buttons_Left) {
-						PlaySoundProbably(0x8009, 0, 0, 0);
-					}
-				}
-
-				if (m_editSelected) {
-					if (!ColorMenuOpened && MenuButtons_Pressed[0] & Buttons_A) {
-						ColorMenuOpened = true;
-
-						PlaySoundProbably(0x1007, 0, 0, 0);
-
-						auto colorEditElement = customizationController->GetButton("coloredit");
-						if (colorEditElement) {
-							auto colorEditor = std::dynamic_pointer_cast<ColorEditor, UISelectable>(*colorEditElement);
-							colorEditor->InitEditorSelectSlot(EAccessoryType(m_slot - 1));
+		if (m_slot) {
+			const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
+			if (IsSelected() && slotAccIndex != -1) {
+				if (!ColorMenuOpened) {
+					if (hasColorSlots) {
+						if (MenuButtons_Pressed[0] & Buttons_Left) {
+							m_editSelected = true;
+						}
+						if (MenuButtons_Pressed[0] & Buttons_Right) {
+							m_editSelected = false;
+							m_preventRightSelect = true;
 						}
 					}
-				}
+					else {
+						if (MenuButtons_Pressed[0] & Buttons_Left) {
+							PlaySoundProbably(0x8009, 0, 0, 0);
+						}
+					}
 
-				if (!m_editAnim) {
-					// so that i don't need to introduce an "only run once" flag i do this tacky shit to prevent it from running every frame
-					m_editAnim += 0.00001f;
-					CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_editAnim, 1.f, 15, NULL);
+					if (m_editSelected) {
+						if (!ColorMenuOpened && MenuButtons_Pressed[0] & Buttons_A) {
+							ColorMenuOpened = true;
+
+							PlaySoundProbably(0x1007, 0, 0, 0);
+
+							auto colorEditElement = customizationController->GetButton("coloredit");
+							if (colorEditElement) {
+								auto colorEditor = std::dynamic_pointer_cast<ColorEditor, UISelectable>(*colorEditElement);
+								colorEditor->InitEditorSelectSlot(EAccessoryType(m_slot - 1));
+							}
+						}
+					}
+
+					if (!m_editAnim) {
+						// so that i don't need to introduce an "only run once" flag i do this tacky shit to prevent it from running every frame
+						m_editAnim += 0.00001f;
+						CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_editAnim, 1.f, 15, NULL);
+					}
 				}
 			}
-		}
-		else {
-			m_editSelected = false;
+			else {
+				m_editSelected = false;
 
-			if (m_editAnim >= 1.f) {
-				m_editAnim -= 0.00001f;
-				CreateTween(NULL, EASE_IN, INTERP_CIRC, &m_editAnim, 0.f, 15, NULL);
+				if (m_editAnim >= 1.f) {
+					m_editAnim -= 0.00001f;
+					CreateTween(NULL, EASE_IN, INTERP_CIRC, &m_editAnim, 0.f, 15, NULL);
+				}
 			}
 		}
 	}
