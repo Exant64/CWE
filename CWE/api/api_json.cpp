@@ -503,7 +503,7 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 
 struct JSONItemCollection {
 	size_t ModIndex;
-	std::vector<std::string> Paths;
+	std::vector<std::filesystem::path> Paths;
 };
 
 struct JSONItemEntry {
@@ -516,40 +516,61 @@ static JSONItemEntry ItemEntries[] = {
 	{"Accessories", {}, AccessoryParse}
 };
 
+static void ParseJSONEntry(const JSONItemEntry& entry, const JSONItemCollection& modEntry) {
+	for (const auto& path : modEntry.Paths) {
+		const auto pathString = path.generic_string();
+
+		FILE* fp = fopen(pathString.c_str(), "rb");
+		if (fp) {
+			fseek(fp, 0L, SEEK_END);
+			size_t sz = ftell(fp);
+
+			// rapidjson expects a buffer with size of atleast 4
+			sz = max(sz, 4);
+			std::unique_ptr<char[]> readBuffer(new char[sz]);
+
+			fseek(fp, 0, SEEK_SET);
+
+			rapidjson::FileReadStream is(fp, readBuffer.get(), sz);
+
+			rapidjson::Document d;
+			d.ParseStream(is);
+
+			APIErrorUtil error("Error reading API JSON %s: ", pathString.c_str());
+
+			if (d.HasParseError()) {
+				error.print("error parsing at %u: %s\n",
+					(unsigned)d.GetErrorOffset(),
+					GetParseError_En(d.GetParseError())
+				);
+
+				continue;
+			}
+
+			entry.Parse(pathString.c_str(), d);
+		}
+	}
+}
+
+void LoadCWEJSONData(size_t index) {
+	const auto& entry = ItemEntries[index];
+	for (const auto& modEntry : entry.ModEntries) {
+		if (modEntry.ModIndex != CWE_ModIndex) {
+			continue;
+		}
+
+		ParseJSONEntry(entry, modEntry);
+	}
+}
+
 void LoadJSONData(size_t index) {
 	const auto& entry = ItemEntries[index];
 	for (const auto& modEntry : entry.ModEntries) {
-		for (const auto& path : modEntry.Paths) {
-			FILE* fp = fopen(path.c_str(), "rb");
-			if (fp) {
-				fseek(fp, 0L, SEEK_END);
-				size_t sz = ftell(fp);
-
-				// rapidjson expects a buffer with size of atleast 4
-				sz = max(sz, 4);
-				std::unique_ptr<char[]> readBuffer(new char[sz]);
-
-				fseek(fp, 0, SEEK_SET);
-
-				rapidjson::FileReadStream is(fp, readBuffer.get(), sz);
-
-				rapidjson::Document d;
-				d.ParseStream(is);
-
-				APIErrorUtil error("Error reading API JSON %s: ", path.c_str());
-
-				if (d.HasParseError()) {
-					error.print("error parsing at %u: %s\n",
-						(unsigned)d.GetErrorOffset(),
-						GetParseError_En(d.GetParseError())
-					);
-
-					continue;
-				}
-
-				entry.Parse(path.c_str(), d);
-			}
+		if (modEntry.ModIndex == CWE_ModIndex) {
+			continue;
 		}
+
+		ParseJSONEntry(entry, modEntry);
 	}
 }
 
@@ -586,10 +607,12 @@ void ScanAllMods() {
 			{
 				do
 				{
-					collection.Paths.push_back(folder.generic_string() + "\\" + newdata.cFileName);
+					collection.Paths.push_back(folder / newdata.cFileName);
 				} while (FindNextFileA(newhfind, &newdata) != 0);
 				FindClose(newhfind);
 			}
+
+			std::sort(collection.Paths.begin(), collection.Paths.end());
 
 			item.ModEntries.push_back(collection);
 		}

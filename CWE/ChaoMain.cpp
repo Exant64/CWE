@@ -16,6 +16,8 @@ void(__cdecl* DrawChaoWorldShadow)() = nullptr;
 
 IDirect3DDevice9* cwe_device;
 
+uint32_t CWE_ModIndex;
+
 ConfigValues gConfigVal;
 
 int HyperSwimFruitID;

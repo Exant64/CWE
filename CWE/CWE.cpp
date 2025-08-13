@@ -340,8 +340,9 @@ extern "C"
 		}
 	}
 	
-	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex)
-	{
+	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex) {
+		CWE_ModIndex = modIndex;
+
 		if (helperFunctions.Version < ModLoaderVer) {
 			char textbuf[128];
 			sprintf_s(textbuf, "The current Mod Loader version (%d) is too old, CWE requires at least version %d. Please update the Mod Loader!", helperFunctions.Version, ModLoaderVer);
