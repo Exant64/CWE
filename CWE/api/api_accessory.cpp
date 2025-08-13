@@ -33,6 +33,10 @@ bool IsAccessoryGeneric(int index) {
 	return type == EAccessoryType::Generic1 || type == EAccessoryType::Generic2;
 }
 
+const uint32_t* GetAccessoryDefaultColors(size_t index) {
+	return ModAPI_AccessoryDataList[index].DefaultColor;
+}
+
 const size_t GetAccessoryColorCount(size_t index) {
 	return ModAPI_AccessoryDataList[index].ColorCount;
 }
