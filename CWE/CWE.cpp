@@ -495,7 +495,7 @@ extern "C"
 		WriteCall((void*)0x0052F404, Accessory_Load);
 		WriteCall((void*)0x00530A70, Accessory_Load);
 
-		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main);
+		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main, rfapi_core);
 		
 		PaletteFix_Init(cwe_device);
 

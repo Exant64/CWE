@@ -295,7 +295,6 @@
     <ClInclude Include="patchedcolors.h" />
     <ClInclude Include="data\parts\RaccoonArms.h" />
     <ClInclude Include="register\api_register.h" />
-    <ClInclude Include="renderfix_api.h" />
     <ClInclude Include="SA2Enums.h" />
     <ClInclude Include="SA2Functions.h" />
     <ClInclude Include="SA2ModLoader.h" />

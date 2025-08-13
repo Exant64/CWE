@@ -1,3 +1,5 @@
+#include "rfapi.h"
+
 #ifdef BRIGHTFIX_API
 #define API //__declspec(dllexport)
 #else
@@ -26,6 +28,6 @@ extern "C"
 	API void SetPixelShaderFloat(int reg, float val);
 	//init, only for v8
 	#ifdef BRIGHTFIX_PLUS
-		API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData);
+		API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData, RFAPI_CORE* rfapi_core);
 	#endif
 }

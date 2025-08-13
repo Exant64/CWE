@@ -15,6 +15,8 @@
 #include <ninja_functions.h>
 #include <ALifeSDK_Functions.h>
 
+RFAPI_CORE* RenderFixAPI;
+
 const int sub_41FA60Ptr = 0x41FA60;
 void  sub_41FA60(WeirdChunkTexIndexThing* a1, signed int a2)
 {
@@ -91,8 +93,31 @@ extern "C"
 		device->SetSamplerState(2, D3DSAMPLERSTATETYPE::D3DSAMP_ADDRESSV, addressV);
 	}
 
+	static RFS_VSHADER* pBackupVertexShader;
+	static RFS_VSHADER* pBackupFogVertexShader;
+	static RFS_PSHADER* pBackupPixelShader;
+	static RFS_PSHADER* pBackupFogPixelShader;
+
 	API __declspec(noinline) void LoadNewShaders()
 	{
+		if (RenderFixAPI && RFD_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			pBackupVertexShader = RenderFixAPI->pApiShader->GetGameVShader(RFE_SHADERIX_MDL_NONE);
+			pBackupFogVertexShader = RenderFixAPI->pApiShader->GetGameVShader(RFE_SHADERIX_MDL_F);
+			pBackupPixelShader = RenderFixAPI->pApiShader->GetGamePShader(RFE_SHADERIX_MDL_NONE);
+			pBackupFogPixelShader = RenderFixAPI->pApiShader->GetGamePShader(RFE_SHADERIX_MDL_F);
+
+			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, (RFS_VSHADER*)chaoVertexSimpleShader);
+			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_F, (RFS_VSHADER*)chaoVertexSimpleShader);
+
+			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, (RFS_PSHADER*)chaoPixelSimpleShader);
+			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_F, (RFS_PSHADER*)chaoPixelSimpleShader);
+
+			SetShaders(1);
+			SetFlag(0);
+
+			return;
+		}
+
 		SetShaders(1);
 		device->SetVertexShader(chaoVertexSimpleShader);
 		device->SetPixelShader(chaoPixelSimpleShader);
@@ -100,6 +125,19 @@ extern "C"
 	}
 	API __declspec(noinline) void CancelNewShaders()
 	{
+		if (RenderFixAPI && RFD_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, pBackupVertexShader);
+			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_F, pBackupFogVertexShader);
+			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
+			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_F, pBackupFogPixelShader);
+
+			SetShaders(1);
+
+			SetFlag(1);
+			SetChunkTexIndexNull(2);
+			return;
+		}
+
 		SetFlag(1);//idk how pixelshaderconstantf works, is it specific to current shader?
 		device->SetVertexShader((IDirect3DVertexShader9*)struc_36Instance->Shaders[1]->VertexShader->shaderData);
 		device->SetPixelShader((IDirect3DPixelShader9*)struc_36Instance->Shaders[1]->PixelShader->shaderData);
@@ -107,6 +145,7 @@ extern "C"
 		//SetShaders(1);
 		//SetShaders(ShaderBackup);
 	}
+
 	const int DoLightingPtr = 0x00487060;
 	void DoLighting(int a1)
 	{
@@ -583,11 +622,13 @@ extern "C"
 	IDirect3DVertexShader9* vertShader;
 
 #ifdef BRIGHTFIX_PLUS
-	API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData)
+	API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData, RFAPI_CORE* rfapi_core)
 #else
 	__declspec(dllexport) void __cdecl Init(const char* path)
 #endif
 	{ 
+		RenderFixAPI = rfapi_core;
+
 		device = dword_1A557C0->pointerToDevice;
 
 		if ((device->CreateVertexShader((DWORD*)vertexShader, &chaoVertexSimpleShader)) != D3D_OK)//creates shaders
