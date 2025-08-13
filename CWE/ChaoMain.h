@@ -158,6 +158,8 @@ struct  ALFSave
 
 DataArray(ALFSave, ChaoSave, 0x019F6460, 2);
 
+extern uint32_t CWE_ModIndex;
+
 extern int HyperSwimFruitID;
 extern int HyperFlyFruitID;
 extern int HyperRunFruitID;

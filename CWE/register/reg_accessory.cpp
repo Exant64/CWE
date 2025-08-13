@@ -4,6 +4,8 @@
 #include <data/accessory/ala_all.h>
 
 void ALAPI_RegisterAccessory(CWE_REGAPI* cwe_api) {
+	return;
+
 	BlackMarketItemAttributes accessoryAttrib = { 2500,500,0,-1,-1,0 };
 	cwe_api->RegisterChaoAccessory(EAccessoryType::Head, &object_ala_baseball, &CWE_OBJECT_TEXLIST, &accessoryAttrib, "Baseball Cap", "");
 	cwe_api->RegisterChaoAccessory(EAccessoryType::Head, &object_ala_bowtie_red, &CWE_OBJECT_TEXLIST, &accessoryAttrib, "Bowtie", "");
