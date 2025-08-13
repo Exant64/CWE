@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "renderfix.h"
 
-RFAPI_CORE* rfapi_core;
+RFAPI_CORE* rfapi_core = NULL;
 
 bool RenderFix_IsEnabled() {
 	return rfapi_core != NULL;

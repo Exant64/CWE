@@ -534,7 +534,7 @@ extern "C"
 		if (gConfigVal.ToyMove)
 			AL_Toy_Moveable_Init();
 
-		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main);
+		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main, rfapi_core);
 		
 		PaletteFix_Init(cwe_device);
 
