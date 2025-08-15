@@ -162,6 +162,14 @@ void AL_DrawToy(ChunkObjectPointer* chunkObjectPointer)
 	}
 }
 
+static bool IsOmochao(const task* tp) {
+	return GET_CHAOPARAM(tp)->BodyType == 2;
+}
+
+static bool IsEggChao(const task* tp) {
+	return GET_CHAOPARAM(tp)->BodyType == 1;
+}
+
 void AL_SetMotionMatrix(ObjectMaster* a1, ChunkObjectPointer* ptr)
 {
 	AnimateChao((int)ptr);
@@ -301,68 +309,118 @@ void AL_SetRareMaterial(ObjectMaster* a1, NJS_CNK_MODEL* model)
 		a1->Data1.Chao->pParamGC->ShinyJewelMonotone,
 		model);
 }
-int AccessoryNodeIndex = 0;
-FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
-void DrawAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT* traverseAccessory)
-{
-	while (chunkObjectPointer)
-	{
-		NJS_VECTOR backup = chunkObjectPointer->position;
 
-		njPushMatrixEx();
-
-		//????
-		//ill be completely honest, i don't remember why we do this?
-		if (AccessoryNodeIndex == AL_PART_HORN_L)
-		{
-			njTranslate(NULL, 0.016813f, 1.55422f, -1.506664f);
-			RotateZ(chunkObjectPointer->base.ang[2]);
-			RotateY(chunkObjectPointer->base.ang[1]);
-			RotateX(chunkObjectPointer->base.ang[0]);
-			if ((chunkObjectPointer->base.evalflags & 4) == 0)
-				njScale(NULL, chunkObjectPointer->base.scl[0], chunkObjectPointer->base.scl[1], chunkObjectPointer->base.scl[2]);
-		}
-		else
-			AnimateChao((int)chunkObjectPointer);
-
-		if (AccessoryNodeIndex == 33) {
-			njTranslate(NULL, 0, 0.75, 0);
-		}
-
-
-		if (traverseAccessory->chunkmodel)
-		{
-			traverseAccessory->chunkmodel->r = 0.0f;
-			sub_42E660(traverseAccessory->chunkmodel);
-		}
-		chunkObjectPointer->position = backup;
-		AccessoryNodeIndex++;
-		if (chunkObjectPointer->base.child)
-		{
-			DrawAccessory(a1, (ChunkObjectPointer*)chunkObjectPointer->base.child, traverseAccessory->child);
-		}
-		njPopMatrixEx();
-
-		traverseAccessory = traverseAccessory->sibling;
-		chunkObjectPointer = (ChunkObjectPointer*)chunkObjectPointer->base.sibling;
+static const int C_MTXConcatPtr = 0x00426E40;
+static void C_MTXConcat(float* a1, float* a2, float* a3) {
+	__asm {
+		mov eax, a1
+		mov edx, a2
+		mov ecx, a3
+		call C_MTXConcatPtr
 	}
 }
+
+static float StartViewMatrix[12];
+static float DrawMatrices[40][12];
+static size_t DrawMatrixNodeCount = 0;
+static void AL_DrawGetChaoNodeMatricesSub(task* tp, ChunkObjectPointer* chunkObjectPointer) {
+	njPushMatrixEx();
+
+	AL_SetMotionMatrix(tp, chunkObjectPointer);
+	memcpy(DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
+
+	DrawMatrixNodeCount++;
+
+	if (chunkObjectPointer->base.child) {
+		AL_DrawGetChaoNodeMatricesSub(tp, (ChunkObjectPointer*)chunkObjectPointer->base.child);
+	}
+
+	njPopMatrixEx();
+
+	if (chunkObjectPointer->base.sibling) {
+		AL_DrawGetChaoNodeMatricesSub(tp, (ChunkObjectPointer*)chunkObjectPointer->base.sibling);
+	}
+}
+
+static void AL_DrawGetOtherChaoNodeMatricesSub(task* tp, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT* pObj) {
+	njPushMatrixEx();
+
+	if (DrawMatrixNodeCount == 34) {
+		pObj->ang[1] = 0;
+	}
+	else if (DrawMatrixNodeCount == 35) {
+		pObj->ang[1] = 0;
+		pObj->pos[0] = -0.028161f;
+		pObj->pos[1] = 0.1f;
+		pObj->pos[2] = 1.10046f;
+	}
+
+	chunkObjectPointer->differenceOrigOther = { 0,0,0 };
+	*(NJS_VECTOR*)chunkObjectPointer->base.pos = *(NJS_VECTOR*)pObj->pos;
+
+	//propeller and eyes
+	if (DrawMatrixNodeCount == 29 || DrawMatrixNodeCount == 17 || DrawMatrixNodeCount == 21 || DrawMatrixNodeCount == 20)
+	{
+		njTranslateEx((NJS_VECTOR*)pObj->pos);
+		RotateZ(pObj->ang[2]);
+		RotateY(pObj->ang[1]);
+		RotateX(pObj->ang[0]);
+		if ((pObj->evalflags & NJD_EVAL_UNIT_SCL) == 0)
+			njScale(NULL, pObj->scl[0], pObj->scl[1], pObj->scl[2]);
+	}
+	else {
+		AL_SetMotionMatrix(tp, chunkObjectPointer);
+	}
+	
+	memcpy(DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
+
+	DrawMatrixNodeCount++;
+
+	if (chunkObjectPointer->base.child && pObj->child) {
+		AL_DrawGetOtherChaoNodeMatricesSub(tp, (ChunkObjectPointer*)chunkObjectPointer->base.child, pObj->child);
+	}
+
+	njPopMatrixEx();
+
+	if (chunkObjectPointer->base.sibling && pObj->sibling) {
+		AL_DrawGetOtherChaoNodeMatricesSub(tp, (ChunkObjectPointer*)chunkObjectPointer->base.sibling, pObj->sibling);
+	}
+}
+
+static void AL_DrawGetChaoNodeMatrices(task* tp, ChunkObjectPointer* chunkObjectPointer) {
+	memcpy(StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
+
+	DrawMatrixNodeCount = 0;
+	njPushUnitMatrix();
+	AL_DrawGetChaoNodeMatricesSub(tp, chunkObjectPointer);
+	njPopMatrixEx();
+}
+
+static void AL_DrawGetOtherChaoNodeMatrices(task* tp, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT* pObj) {
+	memcpy(StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
+
+	DrawMatrixNodeCount = 0;
+	njPushUnitMatrix();
+	AL_DrawGetOtherChaoNodeMatricesSub(tp, chunkObjectPointer, pObj);
+	njPopMatrixEx();
+}
+
+static void AL_PushChaoNodeMatrix(size_t nodeIndex) {
+	DataPointer(float*, MaxMatrixStackPointer, 0x02670588);
+
+	float* pNextMatrix = _nj_current_matrix_ptr_ + 12;
+	if (pNextMatrix > MaxMatrixStackPointer) {
+		return;
+	}
+
+	_nj_current_matrix_ptr_ = pNextMatrix;
+	C_MTXConcat(StartViewMatrix, _nj_current_matrix_ptr_, DrawMatrices[nodeIndex]);
+}
+
 
 static bool AL_HasAccessoryInSlot(const task* tp, const EAccessoryType slot) {
 	const chaowk* work = GET_CHAOWK(tp);
 	return work->AccessoryIndices[slot] != -1;
-}
-
-static void AL_RenderAccessory(const task* tp, const EAccessoryType slot) {
-	const chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
-
-	if (!AL_HasAccessoryInSlot(tp, slot)) {
-		return;
-	}
-
-	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
-	ObjectRegistry::DrawObject(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
 }
 
 static void AL_ValidateAccessory(task* tp, const EAccessoryType slot) {
@@ -387,7 +445,39 @@ static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) 
 		   ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
 }
 
-static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPointer, const EAccessoryType slot) {
+FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
+
+static size_t AccessoryNodeIndex = 0;
+static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao) {
+	if (pObject->chunkmodel) {
+		pObject->chunkmodel->r = 0.0f;
+
+		// hack i added, if its an omochao it needs scaling
+		// matrix multiplication is associative, so in theory this is equivalent to the scale + SetMotionMatrix-ing
+		if (isOmoChao) {
+			njPushMatrix(StartViewMatrix);
+			njScale(NULL, 1.1f, 1.1f, 1.1f);
+			C_MTXConcat(_nj_current_matrix_ptr_, _nj_current_matrix_ptr_, DrawMatrices[AccessoryNodeIndex]);
+		}
+		else {
+			AL_PushChaoNodeMatrix(AccessoryNodeIndex);
+		}
+		sub_42E660(pObject->chunkmodel);
+		njPopMatrixEx();
+	}
+
+	AccessoryNodeIndex++;
+
+	if (pObject->child) {
+		AL_DrawRigAccessorySub(pObject->child, isOmoChao);
+	}
+
+	if (pObject->sibling) {
+		AL_DrawRigAccessorySub(pObject->sibling, isOmoChao);
+	}
+}
+
+static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 	if (!AL_CanRenderRigAccessory(tp, slot)) {
 		return;
 	}
@@ -403,18 +493,41 @@ static void AL_RenderRigAccessory(task* tp, ChunkObjectPointer* chunkObjectPoint
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
 	njSetTexture(registry->GetTex(accessoryIndex));
 	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
-	DrawAccessory(tp, chunkObjectPointer, registry->GetObj(accessoryIndex));
-	
-	// reset animation state afterwards
-	sub_56E9C0(tp);
+	AL_DrawRigAccessorySub(registry->GetObj(accessoryIndex), IsOmochao(tp));
 }
 
-bool IsOmochao(ObjectMaster* a1) {
-	return a1->Data1.Chao->pParamGC->BodyType == 2;
+static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
+	const chaowk* work = GET_CHAOWK(tp);
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+
+	if (!AL_HasAccessoryInSlot(tp, slot)) {
+		return;
+	}
+
+	// for egg chao the hats are on the body, otherwise on the head
+	AL_PushChaoNodeMatrix(IsEggChao(tp) ? 1 : 16);
+
+	if (IsEggChao(tp)) {
+		njTranslate(NULL, 0, 0.6f, 0);
+		njScale(NULL, 1.2f, 1.2f, 1.2f);
+	}
+
+	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
+	ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
+	njPopMatrixEx();
 }
 
-bool IsEggChao(ObjectMaster* a1) {
-	return a1->Data1.Chao->pParamGC->BodyType == 1;
+static void AL_DrawAccessories(task* tp) {
+	AL_ValidateAccessory(tp, EAccessoryType::Head);
+	AL_ValidateAccessory(tp, EAccessoryType::Face);
+
+	if (!IsEggChao(tp)) {
+		AL_DrawRigAccessory(tp, EAccessoryType::Generic1);
+		AL_DrawRigAccessory(tp, EAccessoryType::Generic2);
+	}
+
+	AL_DrawAccessory(tp, EAccessoryType::Head);
+	AL_DrawAccessory(tp, EAccessoryType::Face);
 }
 
 bool EggChaoFeetCheck(ObjectMaster* a1) {
@@ -430,21 +543,14 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 	signed int v36; // esi
 	int v44; // [esp+28h] [ebp-38h]
 
-	if (IsOmochao(a1))
-	{
-		if (Chao_NodeIndex == 0)
-		{
-			AL_ValidateAccessory(a1, EAccessoryType::Head);
-			AL_ValidateAccessory(a1, EAccessoryType::Face);
+	if (Chao_NodeIndex == 0) {
+		DrawMatrixNodeCount = 0;
+		AL_DrawGetOtherChaoNodeMatrices(a1, chunkObjectPointer, model);
 
-			njPushMatrixEx();
-			njScale(NULL, 1.1f, 1.1f, 1.1f);
-			AL_RenderRigAccessory(a1, chunkObjectPointer, EAccessoryType::Generic1);
-			AL_RenderRigAccessory(a1, chunkObjectPointer, EAccessoryType::Generic2);
-			njPopMatrixEx();
-		}
+		AL_DrawAccessories(a1);
 	}
-	else if (IsEggChao(a1)) {
+
+	if (IsEggChao(a1)) {
 		switch (Chao_NodeIndex) {
 		case AL_PART_FEELER_L:
 		case AL_PART_FEELER_R:
@@ -454,33 +560,8 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 		}
 	}
 
-	while (1)
-	{
-		if (Chao_NodeIndex == 34) {
-			model->ang[1] = 0;
-		}
-		else if (Chao_NodeIndex == 35) {
-			model->ang[1] = 0;
-			model->pos[0] = -0.028161f;
-			model->pos[1] = 0.1f;
-			model->pos[2] = 1.10046f;
-		}
-
-		njPushMatrixEx();
-		chunkObjectPointer->differenceOrigOther = { 0,0,0 };
-		*(NJS_VECTOR*)chunkObjectPointer->base.pos = *(NJS_VECTOR*)model->pos;
-		//propeller and eyes
-		if (Chao_NodeIndex == 29 || Chao_NodeIndex == 17 || Chao_NodeIndex == 21 || Chao_NodeIndex == 20)
-		{
-			njTranslateEx((NJS_VECTOR*)model->pos);
-			RotateZ(model->ang[2]);
-			RotateY(model->ang[1]);
-			RotateX(model->ang[0]);
-			if ((model->evalflags & NJD_EVAL_UNIT_SCL) == 0)
-				njScale(NULL, model->scl[0], model->scl[1], model->scl[2]);
-		}
-		else
-			AnimateChao((int)chunkObjectPointer);
+	while (1) {
+		AL_PushChaoNodeMatrix(Chao_NodeIndex);
 
 		AL_DrawToy(chunkObjectPointer);
 
@@ -492,20 +573,8 @@ void DrawOtherChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS
 		if (IsOmochao(a1) && a1->Data1.Chao->pParamGC->Headgear && (Chao_NodeIndex == 29 || Chao_NodeIndex == 18 || Chao_NodeIndex == 21))
 			goto LABEL_98;
 
-		//render accessory to head on omochao
-		//and to the body on egg chao
 		if ((Chao_NodeIndex == 16 && IsOmochao(a1)) || (Chao_NodeIndex == 1 && IsEggChao(a1)))
 		{
-			njPushMatrixEx();
-			if (IsEggChao(a1))
-			{
-				njTranslate(NULL, 0, 0.6f, 0);
-				njScale(NULL, 1.2f, 1.2f, 1.2f);
-			}
-			AL_RenderAccessory(a1, EAccessoryType::Head);
-			AL_RenderAccessory(a1, EAccessoryType::Face);
-			njPopMatrixEx();
-
 			if (IsOmochao(a1) && a1->Data1.Chao->pParamGC->Headgear) {
 				njSetTexture(&AL_BODY);
 				AL_DrawMask(a1->Data1.Chao->pParamGC->Headgear);
@@ -647,11 +716,22 @@ void __cdecl DrawEggChao(ObjectMaster* a1)
 	njSetTexture(&AL_BODY);
 	sub_56E9C0(a1);
 	alpalSetBank(a1, a1->Data1.Entity->Index);
+	SaveControl3D();
+
+	OffControl3D(NJD_CONTROL_3D_CONSTANT_ATTR);
+	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+
 	Chao_NodeIndex = 0;
 	if (a1->Data1.Chao->pParamGC->BodyType == 1)
 		DrawOtherChao(a1, data1->field_510, &object_0023CC1C);
 	else if (a1->Data1.Chao->pParamGC->BodyType == 2)
+
+
+
 		DrawOtherChao(a1, data1->field_510, &object_00254A0C);
+
+	LoadControl3D();
+
 	njPopMatrixEx();
 	if (data1->pLeftHandItemObject)
 	{
@@ -719,12 +799,6 @@ static uint64_t DrawHideNodes = 0;
 static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer) {
 	chaowk* work = GET_CHAOWK(tp);
 	const auto* pParam = GET_CHAOPARAM(tp);
-
-	AL_ValidateAccessory(tp, EAccessoryType::Head);
-	AL_ValidateAccessory(tp, EAccessoryType::Face);
-
-	AL_RenderRigAccessory(tp, chunkObjectPointer, EAccessoryType::Generic1);
-	AL_RenderRigAccessory(tp, chunkObjectPointer, EAccessoryType::Generic2);
 
 	DrawHideNodes = 0;
 	BaldFlag = false;
@@ -847,18 +921,15 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 	int v36, v44;
 
 	if (Chao_NodeIndex == 0) {
+		DrawMatrixNodeCount = 0;
+		AL_DrawGetChaoNodeMatrices(a1, chunkObjectPointer);
+
+		AL_DrawAccessories(a1);
 		AL_DrawSetupParams(a1, chunkObjectPointer);
 	}
 
-	njPushMatrixEx();
+	AL_PushChaoNodeMatrix(Chao_NodeIndex);
 
-	AL_SetMotionMatrix(a1, chunkObjectPointer);
-	//chibi chao lol
-	//if (Chao_NodeIndex == 0)
-		//njScale(0.5, 0.5, 0.5);
-	//if (Chao_NodeIndex == 17 ||
-		//Chao_NodeIndex == 20)
-		//njScale(1.5, 1.5, 1.5);
 	AL_DrawToy(chunkObjectPointer);
 
 	bool hideHat = false;
@@ -875,11 +946,7 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 		hideHat = true;
 	}
 
-	if (Chao_NodeIndex == 16)
-	{
-		AL_RenderAccessory(a1, EAccessoryType::Head);
-		AL_RenderAccessory(a1, EAccessoryType::Face);
-
+	if (Chao_NodeIndex == 16) {
 		if (a1->Data1.Chao->pParamGC->Headgear)
 		{
 			njSetTexture(&AL_BODY);

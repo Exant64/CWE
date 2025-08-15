@@ -37,12 +37,15 @@ public:
 		return m_data[category];
 	}
 
-	bool GetID(const ChaoItemCategory category, size_t index, char id[METADATA_ID_SIZE]) {
+	bool GetID(const ChaoItemCategory category, int index, char id[METADATA_ID_SIZE]) {
 		const auto& data = m_data[category];
+
+		if (index < 0) return false;
 
 		if (index >= data.size()) {
 			return false;
 		}
+
 
 		strcpy(id, data[index].c_str());
 

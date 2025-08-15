@@ -219,6 +219,10 @@ extern "C"
 		const auto original = reinterpret_cast<decltype(ALW_Control_Main_Hook)*>(ALW_Control_t.Target());
 		original(a1);
 
+		for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
+			AL_ChaoAccessoryConversion(&ChaoInfo::Instance()[i]);
+		}
+
 		for (auto& c : CodeManager::Instance()) {
 			for (size_t chaoIndex = 0; chaoIndex < ChaoInfo::Instance().Count(); chaoIndex++) {
 				c->OnChaoData(ChaoInfo::Instance()[chaoIndex]);
@@ -277,38 +281,42 @@ extern "C"
 			PurchasedItemCount = 0;
 		}
 
-		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
-			if (cweSaveFile.PurchasedItems[i].mCategory > 0) {
-				save::CWE_PurchasedItems[i] = cweSaveFile.PurchasedItems[i];
-				cweSaveFile.PurchasedItems[i] = { -1,0 };
+		for (size_t i = 0; i < cweSaveFile.purchasedItemCount; ++i) {
+			if (cweSaveFile.PurchasedItems[i].mCategory <= 0) {
+				continue;
 			}
+
+			save::CWE_PurchasedItems[i] = cweSaveFile.PurchasedItems[i];
+			cweSaveFile.PurchasedItems[i] = { -1,0 };		
 		}
 
 		// convert the "accessory hats" to the new accessory format
 		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
 		for (size_t j = 0; j < 24; ++j) {
 			auto& originalItem = items[j];
-			if (originalItem.Type >= 256) {
-				const auto accessoryIndex = originalItem.Type - 256;
-
-				ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
-				// if we don't have space to convert, stop the conversion checks
-				if (!pNewInfo) break;
-
-				// if it's an invalid id, don't write it
-				char id[METADATA_ID_SIZE];
-				if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
-					memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
-					pNewInfo->IndexID = accessoryIndex;
-					pNewInfo->Garden = originalItem.Garden;
-					pNewInfo->Position = originalItem.position;
-				}
-
-				// even if it does become an invalid id, we omit the original item
-				// to not create "mystery no more garden space" issues
-				// TOOD: message box could be useful?
-				AL_ClearItemSaveInfo(&originalItem);
+			if (originalItem.Type < 256) {
+				continue;
 			}
+
+			const auto accessoryIndex = originalItem.Type - 256;
+
+			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+			// if we don't have space to convert, stop the conversion checks
+			if (!pNewInfo) break;
+
+			// if it's an invalid id, don't write it
+			char id[METADATA_ID_SIZE];
+			if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
+				memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
+				pNewInfo->IndexID = accessoryIndex;
+				pNewInfo->Garden = originalItem.Garden;
+				pNewInfo->Position = originalItem.position;
+			}
+
+			// even if it does become an invalid id, we omit the original item
+			// to not create "mystery no more garden space" issues
+			// TOOD: message box could be useful?
+			AL_ClearItemSaveInfo(&originalItem);
 		}
 
 		for (int i = 0; i < 24; i++)

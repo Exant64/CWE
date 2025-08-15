@@ -425,7 +425,7 @@ DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
 
 ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (ObjectMaster* a1), 0x56CFF0);
 ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1);
-
+void AL_ChaoAccessoryConversion(ChaoDataBase* pParam);
 void __cdecl AL_SetItem(ObjectMaster* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist);
 FastcallFunctionPointer(signed int, AL_TraceHoldingPosition, (int a1, ObjectMaster* a2), 0x56D170);
 ObjectMaster* sub_55A920(int a1, NJS_VECTOR* a2, ObjectMaster* parent, Uint8 a4, float a5);

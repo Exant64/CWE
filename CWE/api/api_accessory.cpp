@@ -218,6 +218,10 @@ void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32
 	}
 }
 
+size_t GetAccessoryID(const char* pID) {
+	return ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, pID);
+}
+
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	APIErrorUtil error("Error in AddChaoAccessory: ");
 

@@ -67,5 +67,6 @@ extern "C" __declspec(dllexport) void AccessoryMakeBald(int accessory_id);
 extern "C" __declspec(dllexport) void AccessoryDisableJiggle(int accessory_id);
 
 bool AccessoryCheckID(const char* ID);
+size_t GetAccessoryID(const char* pID);
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData);
 extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);

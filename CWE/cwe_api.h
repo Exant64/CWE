@@ -225,4 +225,6 @@ struct CWE_REGAPI {
 	void(*RegisterChaoTexlistLoad)(const char* name, NJS_TEXLIST* load); //register texlists to load/unload in chao world
 	void(*RegisterSaveLoad)(const char* suffix, void* buffer, int size); //register custom chao world savefiles like _CWE, karate mod uses this too
 	void(*AddOdekakeMenu)(const CWE_API_ODEKAKE_ENTRY& entry); //add new button to transporter main menu, and handles logic to addnew menu
+
+	size_t(*GetAccessoryID)(const char* pID);
 };
