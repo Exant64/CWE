@@ -69,7 +69,6 @@ void AL_SetMotionMatrix(ObjectMaster* a1, ChunkObjectPointer* ptr);
 void AL_ValidateAccessory(ObjectMaster* a1, EAccessoryType type);
 void AL_RenderRigAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, EAccessoryType type);
 void AL_Draw_Init();
-extern int AccessoryNodeIndex;
 void AnimateChao(int a1);
 void sub_56E9C0(ObjectMaster* a1);
 void DrawAccessory(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT* traverseAccessory);

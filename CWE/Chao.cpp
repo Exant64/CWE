@@ -249,6 +249,93 @@ Uint32 __cdecl GenerateRandomSeed()
 	return dist(e);
 }
 
+// to handle KCE being able to change accessory ids in param at will
+// and to not have to match up the id to the index every frame
+// we store the rendered accessory index in AccessoryIndices,
+// and the "approved" id in AccessoryCalculatedID to not check needlessly if it didnt change
+// we also store the index back in the old slots, to provide compatibility checks
+static void AL_ChaoAccessoryMainCheck(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+
+	// new accessory stuff
+	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
+		auto& data = pParam->Accessories[i];
+
+		// if it's an empty string, set no index, check next accessory
+		if (!data.ID[0]) {
+			work->AccessoryCalculatedID[i][0] = 0;
+			work->AccessoryIndices[i] = -1;
+			pParam->Accessories_[i] = 0;
+			continue;
+		}
+
+		// first off, check if the id changed since spawn
+		// we wouldn't need to handle this but KCE is a thing
+		// if there was something non-empty set already and it didn't change then skip
+		if (work->AccessoryCalculatedID[i][0] && !strcmp(data.ID, work->AccessoryCalculatedID[i])) {
+			continue;
+		}
+
+		strcpy_s(work->AccessoryCalculatedID[i], data.ID);
+
+		const size_t index = ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, data.ID);
+		if (index == -1) {
+			// error object (should be the last registered i think)
+			work->AccessoryIndices[i] = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size() - 1;
+		}
+		else {
+			work->AccessoryIndices[i] = index;
+		}
+
+		// compatibility with old evolution checks
+		pParam->Accessories_[i] = work->AccessoryIndices[i] + 1;
+	}
+}
+
+// handles converting the old index-based accessories to the new structs
+// this is called per chaodata in alw_control (to handle all in-garden chao as soon as possible)
+// and in the race chao main function to fix them using index 0 in work->AccessoryIndices
+void AL_ChaoAccessoryConversion(ChaoDataBase* pParam) {
+	if (!pParam) return;
+
+	if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
+		for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
+			memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
+
+			int accIndex = int(pParam->Accessories_[i]) - 1;
+			const bool pinkHoodiePatch = accIndex == 8; // was pink hoodie
+			
+			// shift everything from pink hoodie backwards, pink hoodie id was deleted
+			// so its just a regular hoodie now, and using "pinkHoodiePatch" we set the color
+			if (accIndex >= 8) accIndex -= 1;
+
+			char id[METADATA_ID_SIZE];
+			bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accIndex, id);
+			if (!foundID) {
+				// TODO: error
+				continue;
+			}
+
+			// hacky way to make pink hoodie a regular hoodie and recolor it to resemble the pink one
+			if (pinkHoodiePatch) {
+				pParam->Accessories[i].ColorFlags |= BIT_0;
+
+				// pink color
+				NJS_COLOR* colorSlot = (NJS_COLOR*)&pParam->Accessories[i].ColorSlots[0];
+				colorSlot->argb.a = 255;
+				colorSlot->argb.r = 255;
+				colorSlot->argb.g = 121;
+				colorSlot->argb.b = 213;
+			}
+
+			strcpy_s(pParam->Accessories[i].ID, id);
+		}
+
+		pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
+	}
+}
+
 static void Chao_Main_r(ObjectMaster* a1);
 static Trampoline Chao_Main_Tramp(0x0054FE20, 0x0054FE28, Chao_Main_r);
 static void __cdecl Chao_Main_r(ObjectMaster* a1)
@@ -271,39 +358,7 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 			pParam->IsInitializedAccessory = 1;
 		}
 
-		if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
-			for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
-				memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
-
-				char id[METADATA_ID_SIZE];
-				bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
-				if (!foundID) {
-					// TODO: error
-					continue;
-				}
-
-				// hacky way to patch the old pink hoodie and force it to blue hoodie, then recolor it to resemble the pink one
-				if (!strcmp(id, "accdummhoodie")) {
-					strcpy_s(pParam->Accessories[i].ID, "acc96a6abf7");
-
-					pParam->Accessories[i].ColorFlags |= BIT_0;
-
-					// pink color
-					NJS_COLOR* colorSlot = (NJS_COLOR*) & pParam->Accessories[i].ColorSlots[0];
-					colorSlot->argb.a = 255;
-					colorSlot->argb.r = 255;
-					colorSlot->argb.g = 121;
-					colorSlot->argb.b = 213;
-
-					continue;
-				}
-
-				strcpy_s(pParam->Accessories[i].ID, id);
-			}
-
-			pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
-		}
-
+		
 		if (!(pParam->Flags & AL_PARAM_FLAG_NAME_NEW))
 		{
 			AL_GENE& Gene = pParam->Gene;
@@ -332,35 +387,7 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 		}
 	}
 
-	// new accessory stuff
-	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
-		auto& data = pParam->Accessories[i];
-
-		// if it's an empty string, set no index, check next accessory
-		if (!data.ID[0]) {
-			work->AccessoryCalculatedID[i][0] = 0;
-			work->AccessoryIndices[i] = -1;
-			continue;
-		}
-
-		// first off, check if the id changed since spawn
-		// we wouldn't need to handle this but KCE is a thing
-		// if there was something non-empty set already and it didn't change then skip
-		if (work->AccessoryCalculatedID[i][0] && !strcmp(data.ID, work->AccessoryCalculatedID[i])) {
-			continue;
-		}
-
-		strcpy_s(work->AccessoryCalculatedID[i], data.ID);
-
-		const size_t index = ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, data.ID);
-		if (index == -1) {
-			// error object (should be the last registered i think)
-			work->AccessoryIndices[i] = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size() - 1;
-		}
-		else {
-			work->AccessoryIndices[i] = index;
-		}
-	}
+	AL_ChaoAccessoryMainCheck(a1);
 
 	*(int*)pParam->Name_ = *(int*)pParam->Name;
 	*(short*)(&pParam->Name_[4]) = *(short*)(&pParam->Name[4]);
@@ -419,6 +446,16 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 	//trampoline
 	auto original = reinterpret_cast<decltype(Chao_Main_r)*>(Chao_Main_Tramp.Target());
 	original(a1);
+}
+
+static void RaceChaoExecutor(task* tp);
+static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, RaceChaoExecutor);
+static void RaceChaoExecutor(task* tp) {
+	AL_ChaoAccessoryConversion(GET_CHAOPARAM(tp));
+	AL_ChaoAccessoryMainCheck(tp);
+
+	auto original = reinterpret_cast<decltype(RaceChaoExecutor)*>(RaceChaoExecutor_t.Target());
+	original(tp);
 }
 
 const int ALO_RakugakiExecutor_LoadPtr = 0x05AB200;

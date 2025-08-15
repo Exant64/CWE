@@ -328,7 +328,9 @@ CWE_REGAPI cweAPI {
 
 	.RegisterChaoTexlistLoad = RegisterChaoTexlistLoad,
 	.RegisterSaveLoad = RegisterSaveLoad,
-	.AddOdekakeMenu = AddOdekakeMenu
+	.AddOdekakeMenu = AddOdekakeMenu,
+
+	.GetAccessoryID = GetAccessoryID
 };
 
 void AL_ModAPI_UpdatePtr()
