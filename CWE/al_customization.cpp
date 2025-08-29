@@ -1364,9 +1364,12 @@ public:
 			m_inSliderMenu = false;
 			m_sineAng = 0;
 
-			m_selectionX = *m_colorSlotIndex % min(4,GetColorSlotCount());
-			m_selectionY = *m_colorSlotIndex / min(4, GetColorSlotCount());
-			CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_colorSlotScaleAnim, 0.f, 15, NULL);
+			const auto slotCount = GetColorSlotCount();
+			if (slotCount) {
+				m_selectionX = *m_colorSlotIndex % min(4, slotCount);
+				m_selectionY = *m_colorSlotIndex / min(4, slotCount);
+				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_colorSlotScaleAnim, 0.f, 15, NULL);
+			}
 		}
 	}
 
