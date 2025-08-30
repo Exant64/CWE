@@ -12,6 +12,7 @@ struct KCE_ACCESSORY_INFO {
 	char ID[METADATA_ID_SIZE];
 	Uint8 ColorCount; // simple "array size" thing, 8 is max obv
 	Uint32 Colors[8];
+	EAccessoryType AccessoryType;
 };
 
 struct KCE_HELPER {
@@ -49,6 +50,8 @@ static void KCE_UpdateAccessories() {
 	KCE_ACCESSORY_INFO* info = new KCE_ACCESSORY_INFO[ids.size()];
 	for (size_t i = 0; i < ids.size(); ++i) {
 		info[i].ColorCount = GetAccessoryColorCount(i);
+
+		info[i].AccessoryType = GetAccessoryType(i);
 
 		strcpy_s(info[i].ID, ids[i].c_str());
 		memcpy(info[i].Colors, GetAccessoryDefaultColors(i), sizeof(info[i].Colors));

@@ -311,7 +311,8 @@ extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, 
 		.SlotType = type,
 		.pMarketAttrib = attrib,
 		.pName = name,
-		.pDescription = description
+		.pDescription = description,
+		.ColorEntryCount = 0
 	};
 
 	strcpy_s(accessory_data.ID, hash_id);
