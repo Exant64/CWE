@@ -32,6 +32,8 @@
 #include "al_msg_font.h"
 #include "al_chao_info.h"
 #include <api/api_tree.h>
+#include <al_garden_info.h>
+#include <api/api_accessory.h>
 
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
@@ -119,8 +121,6 @@ ObjectMaster* ALO_Kinder_Window_Load(ObjectMaster* result, char layer, ALK_WINDO
 	return retval;
 }
 
-DataPointer(unsigned char, HeldItemType, 0x019F6450);
-DataPointer(ITEM_SAVE_INFO*, HeldItemSave, 0x019F6454);
 #define ITEMSINBUYLIST 5
 #define DISTANCEBUYLIST 40 //46
 #define SELECTIONBOXADJUST 46 - DISTANCEBUYLIST
@@ -210,19 +210,9 @@ void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category)
 
 SAlItem* __cdecl sub_58B120(SAlItem* result)
 {
-	result->mCategory = HeldItemType;
+	result->mCategory = AL_GetHoldingItemCategory();
+	result->mType = AL_GetHoldingItemKind();
 
-	if (HeldItemSave)
-	{
-		if (HeldItemType == 8)
-			result->mType = HeldItemSave->Type - 256;
-		else
-			result->mType = HeldItemSave->Type;
-	}
-	else
-	{
-		result->mType = -1;
-	}
 	return result;
 }
 static void __declspec(naked) sub_58B120Hook()
@@ -233,7 +223,7 @@ static void __declspec(naked) sub_58B120Hook()
 
 		// Call your __cdecl function here:
 		call sub_58B120
-
+		
 		add esp, 4 // result<eax> is also used for return value
 		retn
 	}
@@ -647,7 +637,14 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
+
+				SaveControl3D();
+				OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+
+				AccessorySetupDraw(item->mType, NULL, 0);
 				ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				LoadControl3D();
+
 				break;
 			case ChaoItemCategory_Special:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
@@ -768,7 +765,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		njTranslate(NULL, 0, -1.4f, 0);
 
 		njSetTexture(&CWE_OBJECT_TEXLIST);
-		if (ALO_IsAccessoryGeneric(type))
+		if (IsAccessoryGeneric(type))
 		{
 			njTranslate(NULL, 0, -0.5f, 0);
 			njScale(NULL, 0.978f, 0.978f, 0.978f);
@@ -777,7 +774,19 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		else
 			chCnkDrawObject(&object_alo_mannequin);
 
+		SaveControl3D();
+		OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+
+		if (a1->mItemDescSell && AL_GetHoldingItemSaveInfo()) {
+			AccessorySaveInfo* pAccSave = (AccessorySaveInfo*)AL_GetHoldingItemSaveInfo();
+			AccessorySetupDraw(type, pAccSave->Colors, pAccSave->UsedColors);
+		}
+		else {
+			AccessorySetupDraw(type, NULL, 0);
+		}
+
 		ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
+		LoadControl3D();
 		break;
 	case ChaoItemCategory_Special:
 		ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
@@ -1365,7 +1374,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			njTranslate(NULL, 0, -1.4f, 0);
 
 			njSetTexture(&CWE_OBJECT_TEXLIST);
-			if (ALO_IsAccessoryGeneric(type))
+			if (IsAccessoryGeneric(type))
 			{
 				njTranslate(NULL, 0, -0.5f, 0);
 				njScale(NULL, 0.978f, 0.978f, 0.978f);
@@ -1374,7 +1383,10 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			else
 				chCnkDrawObject(&object_alo_mannequin);
 
+			SaveControl3D();
+			OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
+			LoadControl3D();
 			break;
 		case ChaoItemCategory_Special:
 			Translate(x, y, -26.0f);
@@ -2183,6 +2195,29 @@ static void __declspec(naked) sub_589850Hook()
 	}
 }
 
+static void SellHeldItem() {
+	task* pHeld = MainCharObj2[0]->HeldObject;
+	if (pHeld)
+	{
+		pHeld->MainSub = DeleteObject_;
+		if (MainCharObj1[0]) {
+			sub_46E5E0(0, (int)MainCharObj1[0]);
+		}
+		MainCharObj2[0]->HeldObject = 0;
+	}
+
+	void* pSave = AL_GetHoldingItemSaveInfo();
+	if (pSave) {
+		if (CWE_IsCustomItemSaveInfoCategory(AL_GetHoldingItemCategory())) {
+			AL_ClearItemSaveInfo((ItemSaveInfoBase*)pSave);
+		}
+		else {
+			AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)pSave);
+		}
+	}
+
+	AL_ClearHoldingItemInfo();
+}
 float NewInvDisplayPosX = 230; //384 = original
 void alg_kinder_bl_Init()
 {
@@ -2218,6 +2253,7 @@ void alg_kinder_bl_Init()
 	WriteJump((void*)0x52F650, AL_GetMaxItemNum_hook);
 
 	//selling code
+	WriteJump((void*)0x52F470, SellHeldItem);
 	WriteCall((void*)0x0058BDF1, AlItemGetInfoHook);
 	WriteCall((void*)0x0058BE2D, FItemDescSetHook);
 	WriteCall((void*)0x0058BDEA, sub_58B120Hook);

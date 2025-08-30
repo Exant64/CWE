@@ -17,6 +17,10 @@ struct AL_TOY_MOVE
 	int flag;
 };
 
+void ObjectMovableInitialize(EntityData1* a1, int a2);
+
+void SaveToyPos();
+
 extern CCL_INFO pickupableColli;
 void AL_Toy_Move_Update(ObjectMaster* a1);
 void AL_Toy_Move_Init(ObjectMaster* p, CCL_INFO* col);

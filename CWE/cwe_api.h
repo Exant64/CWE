@@ -49,6 +49,7 @@ struct __declspec(align(4)) MotionTableAction
 #define ICON_TYPE_CUSTOM 3 //don't use this for now, since pIconData isnt finished
 
 #define CUSTOM_CHAO_FLAG_SECOND_EVO BIT_0 //only for advanced users for now since we don't have safety checks in place for it yet
+#define CUSTOM_CHAO_FLAG_BALD_HIDE_PARTS_NON_ADJACENT BIT_1
 
 struct CWE_API_CHAO_DATA {
 	using CanEvolve = bool(*)(ObjectMaster* tp);
@@ -224,4 +225,6 @@ struct CWE_REGAPI {
 	void(*RegisterChaoTexlistLoad)(const char* name, NJS_TEXLIST* load); //register texlists to load/unload in chao world
 	void(*RegisterSaveLoad)(const char* suffix, void* buffer, int size); //register custom chao world savefiles like _CWE, karate mod uses this too
 	void(*AddOdekakeMenu)(const CWE_API_ODEKAKE_ENTRY& entry); //add new button to transporter main menu, and handles logic to addnew menu
+
+	size_t(*GetAccessoryID)(const char* pID);
 };

@@ -1,5 +1,10 @@
 #pragma once
 
+enum {
+	CWE_ALW_CATEGORY_ACCESSORY,
+	NB_CWE_ALW_CATEGORY
+};
+
 
 #pragma pack(push, 8)
 struct ITEM_SAVE_INFO
@@ -24,9 +29,17 @@ enum
 	ALW_CMD_BYE = 0x6,
 };
 
+Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSaveInfo);
+Bool CWE_ALW_CancelEntry(task* tp);
+task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count);
+int CWE_ALW_CountEntry(ChaoItemCategory category);
+void CWE_ALW_ClearEntry(void);
 
 ObjectMaster* GetChaoObject(int a1, int a2);
 ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1);
+
+Bool ALW_SetHeldOffset(task* tp, float offset);
+Bool ALW_SetHeldRadius(task* tp, float radius);
 
 ThiscallFunctionPointer(float, ALW_CalcDistFromLockOn, (ObjectMaster* a1), 0x00530580);
 signed int __cdecl ALW_LockOn(ObjectMaster* a1, ObjectMaster* a2);
@@ -37,7 +50,6 @@ ObjectMaster* __cdecl ALW_GetLockOnTask(ObjectMaster* a1);
 signed int __cdecl ALW_SendCommand(ObjectMaster* a1, __int16 a2);
 int ALW_TurnToLockOn(ObjectMaster* a1, int a2);
 void* __cdecl AL_GetItemSaveInfo(ObjectMaster* a1);
-void __cdecl AL_ClearItemSaveInfo(ITEM_SAVE_INFO* a1);
 void __cdecl AL_ClearItemSaveInfoPtr(ObjectMaster* a1);
 bool __cdecl ALW_IsHeld(ObjectMaster* a1);
 void ALW_CommunicationOn(ObjectMaster* a1, ObjectMaster* a2);

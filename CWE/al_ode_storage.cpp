@@ -12,7 +12,7 @@
 
 #include <fstream>
 
-void someUIProjectionCode(NJS_VECTOR* a1, NJS_VECTOR* a2);
+void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2);
 
 //split this into another file
 struct AL_ChaoSelect {

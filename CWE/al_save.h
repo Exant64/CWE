@@ -75,11 +75,6 @@ void SaveCWESaveFiles();
 SAlItem* GetMarketInventory(int category);
 int GetMarketInvSize(int category);
 
-int GetTimeOfDay();
-void SetTimeOfDay(int time);
-int GetWeather();
-void SetWeather(int weather);
-
 extern CWESaveFile cweSaveFile;
 void *AL_GetSpecialItemSave();
 void AL_SaveInit();

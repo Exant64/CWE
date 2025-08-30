@@ -7,6 +7,7 @@
 #include <vector>
 #include <functional>
 #include <array>
+#include <optional>
 
 static void PlaySelectSound() {
 	PlaySoundProbably(0x8000, 0, 0, 0);
@@ -70,25 +71,29 @@ public:
 	~UIController() {
 	}
 
+	bool IsNoneSelected() const {
+		return !m_selected || !m_selected->IsSelected();
+	}
+
 	Layer& GetCurrentLayer() {
 		return m_layers[m_layer];
 	}
 
-	auto& GetButton(const std::string& button) {
+	std::optional<std::shared_ptr<UISelectable>> GetButton(const std::string& button) {
 		for (auto& layer : m_layers) {
-			for (const auto& element : layer) {
+			for (auto& element : layer) {
 				if (element->m_name == button)
 					return element;
 			}
 		}
 
-		throw std::runtime_error("UISelectable::GetButton, specified button not found!");
+		return std::nullopt;
 	}
 
 	void SelectButton(const std::string& button) {
 		//this code assumes that theres only one button with that name
 		//if theres more, it will select the last button it finds
-		SelectButton(GetButton(button));
+		SelectButton(*GetButton(button));
 	}
 
 	void SetCurrentLayer(const std::string& layer) {
@@ -96,6 +101,10 @@ public:
 		if (layerSearch < 0) return;
 
 		m_layer = layerSearch;
+	}
+
+	bool IsCurrentLayer(const std::string& layer) const {
+		return m_layers[m_layer].m_id == layer;
 	}
 
 	void AddLayer(const std::string& layer, UpdateFunc func = {}) {
@@ -124,12 +133,6 @@ public:
 		*(char*)0x25EFFCC = 1;
 	}
 
-	enum class Direction {
-		Left,
-		Right,
-		Up,
-		Down
-	};
 	//the reason this is not precalculated is because some objects can change their "selectability" 
 	//so they would need to call UIController to update it, which i dont wanna do if i dont have to
 	bool DirectionPositionCheck(Direction direction, float aPosX, float aPosY, float bPosX, float bPosY) {
@@ -151,13 +154,15 @@ public:
 	bool IsDirectionVertical(Direction direction) {
 		return direction == Direction::Up || direction == Direction::Down;
 	}
-	void UpdateSelection(Direction direction) {
+	bool UpdateSelection(Direction direction) {
 		//if theres nothing selected already, it wont know where to go
-		if (!m_selected) return;
+		if (!m_selected) return false;
+
+		if (!m_selected->CanUnselect(direction)) return false;
 
 		if (direction == Direction::Right && m_selected->m_selectForceRight) {
 			SelectButton(m_selected->m_selectForceRight);
-			return;
+			return true;
 		}
 
 		float minDistance = 10000;
@@ -192,8 +197,12 @@ public:
 				}
 			}
 		}
-		if (selected)
+		if (selected) {
 			SelectButton(selected);
+			return true;
+		}
+
+		return false;
 	}
 
 	const std::array<std::pair<Buttons, Direction>, 4> m_buttonDirectionPair = {
@@ -203,16 +212,6 @@ public:
 		std::make_pair(Buttons_Right, Direction::Right)
 	};
 	void Exec() {
-		for (auto& pair : m_buttonDirectionPair) {
-			if (MenuButtons_Pressed[0] & pair.first) {
-				UpdateSelection(pair.second);
-				PlaySelectSound();
-			}
-		}
-
-		if (MenuButtons_Pressed[0] & Buttons_A && m_selected)
-			m_selected->Press(this);
-
 		//the first added layer will always run
 		if (m_layers[m_alwaysDrawLayer].m_func)
 			m_layers[m_alwaysDrawLayer].m_func();
@@ -220,9 +219,26 @@ public:
 		if (m_layer != m_alwaysDrawLayer && m_layers[m_layer].m_func)
 			m_layers[m_layer].m_func();
 
+		if (m_layer != m_alwaysDrawLayer) {
+			for (auto selectable : m_layers[m_alwaysDrawLayer]) {
+				selectable->Exec();
+			}
+		}
+
 		for (auto selectable : GetCurrentLayer()) {
 			selectable->Exec();
 		}
+
+		for (auto& pair : m_buttonDirectionPair) {
+			if (MenuButtons_Pressed[0] & pair.first) {
+				if (UpdateSelection(pair.second)) {
+					PlaySelectSound();
+				}
+			}
+		}
+
+		if (MenuButtons_Pressed[0] & Buttons_A && m_selected)
+			m_selected->Press(this);
 	}
 
 	template<typename T, typename... Args>

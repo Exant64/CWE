@@ -1,3 +1,9 @@
 [submodule "rapidjson"]
 	path = rapidjson
 	url = https://github.com/Tencent/rapidjson
+[submodule "external/sa2b-render-fix"]
+	path = external/sa2b-render-fix
+	url = https://github.com/shaddatic/sa2b-render-fix
+[submodule "external/xxhash"]
+	path = external/xxhash
+	url = https://github.com/stbrumme/xxhash

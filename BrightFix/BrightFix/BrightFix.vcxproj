@@ -126,7 +126,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;BRIGHTFIX_API;_WINDOWS;_USRDLL;BRIGHTFIX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Coding\VSRepos\CWENew\CWE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Coding\VSRepos\CWENew\CWE;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,7 +152,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;BRIGHTFIX_API;NDEBUG;_WINDOWS;_USRDLL;BRIGHTFIX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Coding\VSRepos\CWENew\CWE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Coding\VSRepos\CWENew\CWE;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,7 +170,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;BRIGHTFIX_EXPORTS;PALETTE_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Exant\Downloads\sa2-mod-loader-master\sa2-mod-loader-master\SA2ModLoader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Exant\Downloads\sa2-mod-loader-master\sa2-mod-loader-master\SA2ModLoader\include;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

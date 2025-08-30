@@ -4,13 +4,10 @@
 #include "Chao.h"
 #include "ChaoMain.h"
 #include "alo_special.h"
-#include "al_registry.h"
 #include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_modelcontainer.h"
 #include "al_behavior/al_intention.h"
-
-ItemRegistry SpecialRegistry;
 
 extern NJS_OBJECT object_alo_mannequin;
 void __cdecl ALO_Special_Display(ObjectMaster* a1)
@@ -43,15 +40,4 @@ extern "C" __declspec(dllexport) ObjectMaster* ALO_Special_Load(int ID, NJS_VECT
 	obj->DisplaySub = ALO_Special_Display;
 	((ChaoSomeUnknownA*)obj->UnknownA_ptr)->index = ChaoItemCategory_Special;
 	return obj;
-}
-
-ObjectMaster* ALO_Special_Load(const char* name, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
-{
-	ObjectMaster* obj = ALO_ObakeHeadExecutor_Load(SpecialRegistry.GetID(name), position, rotY, velocity, (int)savedata);
-	*(unsigned char*)&obj->Data1.Entity->Collision->CollisionArray[2].field_0 = CI_KIND_AL_SPECIAL;
-	obj->Data1.Entity->Rotation.x = SpecialRegistry.GetID(name);
-	obj->DisplaySub = ALO_Special_Display;
-	((ChaoSomeUnknownA*)obj->UnknownA_ptr)->index = ChaoItemCategory_Special;
-	return obj;
-
 }

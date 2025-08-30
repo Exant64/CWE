@@ -11,6 +11,7 @@
 #include "al_behavior/al_intention.h"
 #include "Trampoline.h"
 #include <al_daynight.h>
+#include <al_garden_info.h>
 
 std::vector<ChaoItemStats> ModAPI_FruitStats;
 
@@ -123,7 +124,7 @@ void ALO_FruitExecutor_Main_r(ObjectMaster *a1)
 			ChaoSomeUnknownA *v23 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
 			if (v23 && v23->saveData)
 			{
-				ResetChaoObjectData((ChaoObjectData*)v23->saveData);
+				AL_ClearItemSaveInfo((ChaoObjectData*)v23->saveData);
 				v23->saveData = 0;
 			}
 
@@ -342,7 +343,7 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 				v23 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
 				if (v23 && v23->saveData)
 				{
-					ResetChaoObjectData((ChaoObjectData*)v23->saveData);
+					AL_ClearItemSaveInfo((ChaoObjectData*)v23->saveData);
 					v25 = a1->UnknownA_ptr;
 					if (v25)
 					{
