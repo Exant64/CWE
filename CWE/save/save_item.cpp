@@ -23,6 +23,8 @@ static void LoadItem(const ChaoItemCategory category, const rapidjson::Value& va
 
 	switch (category) {
 	case ChaoItemCategory_Accessory:
+		if (AccessoryItemCount >= AccessoryItemMax) return;
+
 		AccessorySaveInfo::Load(saveInfo, value);
 		AccessoryItemList[AccessoryItemCount++] = saveInfo;
 	}

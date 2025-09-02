@@ -150,7 +150,7 @@ struct AccessorySaveInfo : ItemSaveInfoBase {
 	}
 };
 
-static const size_t AccessoryItemMax = 128;
+static const size_t AccessoryItemMax = 64;
 extern std::array<AccessorySaveInfo, AccessoryItemMax> AccessoryItemList;
 
 void ClearAllItemSave();

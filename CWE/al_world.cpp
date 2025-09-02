@@ -293,7 +293,7 @@ ObjectMaster* GetChaoObject(int a1, int a2)
 	return val;
 }
 
-#define NB_MAX_WORLD_ENTRY 128
+#define NB_MAX_WORLD_ENTRY 64
 int nbWorldEntry[NB_CWE_ALW_CATEGORY] = { 0 };
 al_entry_work WorldEntryList[NB_CWE_ALW_CATEGORY][NB_MAX_WORLD_ENTRY];
 
