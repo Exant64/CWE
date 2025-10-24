@@ -406,6 +406,12 @@ extern "C"
 		gConfigVal.ToyMove = config->getBool("Chao World Extended", "ToyMove", true);
 		gConfigVal.NewInventory = config->getBool("Chao World Extended", "NewInventory", true);
 
+		gConfigVal.StageAnimals = config->getBool("Chao World Extended", "StageAnimals", true);
+		gConfigVal.StageAnimalIncludeSADX = config->getBool("Chao World Extended", "StageAnimalIncludeSADX", true);
+		gConfigVal.StageAnimalChance = config->getInt("Chao World Extended", "StageAnimalChance", 50) / 100.f;
+		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
+		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
+
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
 

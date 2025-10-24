@@ -360,11 +360,14 @@ static void sub_48ACD0(int a1, float a2, float a3, float a4) {
 
 FunctionPointer(ObjectMaster*, sub_48AAD0, (float posX, float posY, float posZ, int a4, int mode), 0x48AAD0);
 static void sub_48ACD0_r(int a1, float a2, float a3, float a4) {
-    if (true || njRandom() < 0.5f) {
-        for (size_t i = 0; i < 4; ++i) {
+    if (njRandom() < gConfigVal.StageAnimalChance) {
+        const size_t animalCount = gConfigVal.StageAnimalMinCount + size_t(njRandom() * (gConfigVal.StageAnimalMaxCount - gConfigVal.StageAnimalMinCount + 0.99999f));
+        for (size_t i = 0; i < animalCount; ++i) {
             task* pMinimal = sub_48AAD0(a2, a3, a4, 0, 4);
             auto* work = (MinimalData2*)pMinimal->Data2.Undefined;
-            work->table = SA2BAnimal_PurpleChaosDrive + 1 + njRandom() * (ModAPI_MinimalInfluence.size() - SA2BAnimal_PurpleChaosDrive - 1);
+            
+            const int startIndex = gConfigVal.StageAnimalIncludeSADX ? (SA2BAnimal_PurpleChaosDrive + 1) : 40;
+            work->table = startIndex + int(njRandom() * (ModAPI_MinimalInfluence.size() - startIndex));
         }
         return;
     }
@@ -422,6 +425,8 @@ static void LoadLevelDestroy_r() {
 }
 
 void Minimal_Init() {
+    if (!gConfigVal.StageAnimals) return;
+        
     LoadLevelInit_hook.Hook(LoadLevelInit_r);
     LoadLevelDestroy_hook.Hook(LoadLevelDestroy_r);
 
