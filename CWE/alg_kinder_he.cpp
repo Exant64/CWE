@@ -787,7 +787,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				DrawChaoHudThing((ChaoHudThing*)&bar2, -1);
 
 				DataArray(ChaoHudThingB, stru_13128B0, 0x13128B0, 10);
-				ChaoHudThingB lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,1,1, &CWE_UI_TEXLIST, 4 };
+				ChaoHudThingB lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
 				//ChaoHudThing lifespan = { {0x132, (264 + 32 * 5.25f)}, {}, {0,0}, {4096, 4096} };
 				sub_536770(
 					(Uint32)((TextLocation->field_8->Data1.Chao->pParamGC->Lifespan / 3900.0f) * 1000),
