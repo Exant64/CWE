@@ -92,6 +92,7 @@
 #include <al_garden_info.h>
 #include <api/api_json.h>
 #include <global_save.h>
+#include <hd_texture.h>
 
 const char* PathToModFolder = "";
 
@@ -567,6 +568,8 @@ extern "C"
 		if (gConfigVal.KeepAnimalParts) {
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
+
+		HDTexture_Init(path, config);
 
 		AL_DayNight_Init(iniPath, config, helperFunctions);
 		AL_MoreAnimSound_Init();

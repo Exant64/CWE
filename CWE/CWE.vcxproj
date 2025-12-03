@@ -442,6 +442,7 @@
     <ClInclude Include="define.h" />
     <ClInclude Include="FunctionHook.h" />
     <ClInclude Include="global_save.h" />
+    <ClInclude Include="hd_texture.h" />
     <ClInclude Include="imgui\imconfig.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
