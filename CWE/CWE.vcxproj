@@ -600,6 +600,7 @@
     <ClCompile Include="api\api_texture.cpp" />
     <ClCompile Include="cnk_util.cpp" />
     <ClCompile Include="global_save.cpp" />
+    <ClCompile Include="hd_texture.cpp" />
     <ClCompile Include="imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
