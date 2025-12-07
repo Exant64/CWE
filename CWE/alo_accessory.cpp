@@ -57,8 +57,24 @@ static void ALO_AccessoryDelete(task* tp) {
 
 FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 
+// hack to not have all accessories registering collision at once
+// status check to atleast register collision while held
+void ALO_AccessoryExecutor(task* tp) {
+	EntityData1* work = tp->Data1.Entity;
+	al_entry_work* pEntry = ((al_entry_work*)tp->UnknownA_ptr);
+
+	const auto backupColli = work->Collision;
+	if (!(work->Status & 0x8000) && (FrameCount % 2) == (pEntry->num % 2)) {
+		work->Collision = NULL;
+	}
+
+	ALO_ObakeHeadExecutor_Main(tp);
+
+	work->Collision = backupColli;
+}
+
 task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
-	task* tp = LoadObject(4, "ALO_Accessory", ALO_ObakeHeadExecutor_Main, LoadObj_Data1);
+	task* tp = LoadObject(4, "ALO_Accessory", ALO_AccessoryExecutor, LoadObj_Data1);
 	EntityData1* work = tp->Data1.Entity;
 	UnknownData2* move = AllocateUnknownData2(tp);
 
