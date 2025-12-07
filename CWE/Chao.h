@@ -263,6 +263,10 @@ enum eAL_STOY
 	AL_STOY_JYOURO = 0xB,
 	NB_AL_STOY = 0xC,
 };
+enum {
+	AL_STOY_CWE_WRENCH = NB_AL_STOY,
+	AL_STOY_CWE_UMBRELLA
+};
 enum eAL_LTOY
 {
 	AL_LTOY_TV = 0x0,

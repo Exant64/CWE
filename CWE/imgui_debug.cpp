@@ -22,6 +22,8 @@ static bool ShowLight = false;
 static bool ShowTaskList = false;
 static bool ShowChaoSoundMenu = false;
 
+int ALBHV_Umbrella(task* tp);
+
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
 }
@@ -65,6 +67,10 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Behavior")) {
                 if (ImGui::TreeNode("Start behaviors")) {
+                    if (ImGui::Button("Umbrella")) {
+                        AL_SetBehavior(pChao, ALBHV_Umbrella);
+                    }
+
                     if (ImGui::Button("Piano")) {
                         AL_SetBehavior(pChao, ALBHV_GoToPiano);
                     }

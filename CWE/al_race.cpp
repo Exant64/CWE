@@ -13,32 +13,32 @@
 
 int off_1361888[] =
 {
-  20286292,
-  0,
-  20304612,
-  0,
-  20271988,
-  0,
-  20316628,
-  0,
-  20278692,
-  0,
-  20296012,
-  0,
-  19885396,
-  0,
-  20291036,
-  0,
-  20273372,
-  0,
-  20318316,
-  0,
-  20316628,
-  0,
-  20302156,
-  0,
-  (int)&object_8D9005D83DB4F504F30,
-  0,
+	20286292,
+	0,
+	20304612,
+	0,
+	20271988,
+	0,
+	20316628,
+	0,
+	20278692,
+	0,
+	20296012,
+	0,
+	19885396,
+	0,
+	20291036,
+	0,
+	20273372,
+	0,
+	20318316,
+	0,
+	20316628,
+	0,
+	20302156,
+	0,
+	(int)&object_8D9005D83DB4F504F30,
+	0,
 };
 
 DataPointer(ObjectMaster*, pWinnerChao, 0x019F6418);
@@ -187,10 +187,10 @@ void RaceNewPrize()
 	case 1:
 		if (pWinnerChao == pChaoObject)
 		{
-			if (v5->toyUnlock != -1 && !(pChaoObject->Data1.Chao->pParamGC->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
+			if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
 			{
 				CreateToyPresenter(v5->toyUnlock, 0);
-				pChaoObject->Data1.Chao->pParamGC->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
+				GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
 			}
 		}
 		break;
@@ -201,10 +201,10 @@ void RaceNewPrize()
 		{
 			if (pWinnerChao == pChaoObject)
 			{
-				if (v5->toyUnlock != -1 && !(pChaoObject->Data1.Chao->pParamGC->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
+				if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
 				{
 					CreateToyPresenter(v5->toyUnlock, 0);
-					pChaoObject->Data1.Chao->pParamGC->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
+					GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
 				}
 			}
 		}
@@ -228,7 +228,9 @@ void al_race_Init() {
 
 	HeroRaceConfigs[0].toyUnlock = AL_LTOY_PIANO;
 	DarkRaceConfigs[0].toyUnlock = AL_LTOY_ORGAN;
-	ChallengeRaceConfigs[2].toyUnlock = AL_STOY_JYOURO + 1; //WRENCH
+
+	//ChallengeRaceConfigs[1].toyUnlock = AL_STOY_CWE_UMBRELLA; 
+	ChallengeRaceConfigs[2].toyUnlock = AL_STOY_CWE_WRENCH;
 
 	//prize
 	WriteData((int*)0x539EA1, (int)off_1361888);

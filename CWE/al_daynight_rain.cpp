@@ -39,7 +39,6 @@ static void AL_DayNightRainExecutor(task* tp) {
 	size_t maxRainSpawnCount = 32;
 
 	SA2CAMERADATA* cameraData = (SA2CAMERADATA*)0x1DCFF00;
-
 	const auto& cameraPos = cameraData->Position;
 	NJS_VECTOR targetVec = {
 		.x = cameraData->Target.x - cameraData->Position.x,
@@ -47,6 +46,14 @@ static void AL_DayNightRainExecutor(task* tp) {
 		.z = cameraData->Target.z - cameraData->Position.z
 	};
 	njUnitVector(&targetVec);
+
+	for (size_t i = 0; i < _countof(work->splashes); ++i) {
+		auto& splash = work->splashes[i];
+		
+		if (!(splash.scl--)) {
+			splash.scl = 0;
+		}
+	}
 
 	for (size_t i = 0; i < DROP_COUNT && maxRainSpawnCount; i++) {
 		auto& drop = work->drops[i];
@@ -56,6 +63,20 @@ static void AL_DayNightRainExecutor(task* tp) {
 			drop.progress += fallSpeed / float(FALL_FRAMES);
 
 			if (drop.progress >= 1) {
+				for (size_t j = 0; j < _countof(work->splashes); ++j) {
+					auto& splash = work->splashes[j];
+					if (splash.scl) continue;
+
+					splash.pos = drop.startPos;
+					splash.pos.y = drop.collisionY + 0.1f;
+					splash.ang[0] = drop.ang[0];
+					splash.ang[1] = drop.ang[1] + NJM_DEG_ANG(180 - njRandom() * 90);
+					splash.ang[2] = drop.ang[2];
+					splash.scl = 3 + Uint16(njRandom() * 10.f);
+
+					break;
+				}
+
 				drop.lifeCount--;
 				drop.progress = 0;
 			}
@@ -74,15 +95,62 @@ static void AL_DayNightRainExecutor(task* tp) {
 		drop.scale = njRandom() * 100.f;
 
 		{
-			Rotation dummyReturnRot;
-			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->Position.y + 65.f, drop.startPos.z, &dummyReturnRot);
+			Rotation returnAng;
+			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->Position.y + 65.f, drop.startPos.z, &returnAng);
+
+			drop.ang[0] = returnAng.x;
+			drop.ang[1] = returnAng.y;
+			drop.ang[2] = returnAng.z;
 		}
 
 		drop.lifeCount = Uint8(5 + njRandom() * 10);
 	}
 }
 
+static void DrawDrops(task* tp) {
+	auto* work = GET_WORK(tp);
+
+	njSetTexture(&CWE_OBJECT_TEXLIST);
+	njSetTextureNum(68);
+	
+	njColorBlendingMode(0, NJD_COLOR_BLENDING_ONE);
+	njColorBlendingMode(1, NJD_COLOR_BLENDING_ONE);
+
+	for (size_t i = 0; i < _countof(work->splashes); ++i) {
+		const auto& splash = work->splashes[i];
+		if (!splash.scl) continue;
+
+		NJS_TEXTURE_VTX verts[4];
+
+		const auto col = (work->color & 0x00FFFFFF) | (0xFF << 24);
+		const float scl = 3 * splash.scl / 10.f;
+
+		verts[0] = { 0, 0, 0, 0, 0, col };
+		verts[1] = { 0 + scl, 0, 0, 1, 0, col };
+		verts[2] = { 0, 0, 0 + scl, 0, 1, col };
+		verts[3] = { 0 + scl, 0, 0 + scl, 1, 1, col };
+
+		for (size_t v = 0; v < 4; ++v) {
+			verts[v].x -= scl / 2.f;
+			verts[v].z -= scl / 2.f;
+		}
+
+		njPushMatrixEx();
+		njTranslateEx((NJS_VECTOR*) & splash.pos);
+		RotateZ(splash.ang[2]);
+		RotateY(splash.ang[1]);
+		RotateX(splash.ang[0]);
+		njDrawTexture3DExSetData(verts, 4, 0);
+		njPopMatrixEx();
+	}
+}
+
 static void AL_DayNightRainDisplayer(task* tp) {
+	DrawDrops(tp);
+
+	njColorBlendingMode(0, 8);
+	njColorBlendingMode(1, 10);
+
 	static NJS_TEXTURE_VTX drops[DROP_COUNT * 7];
 	size_t dropCount = 0;
 

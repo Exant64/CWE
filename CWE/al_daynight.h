@@ -172,6 +172,8 @@ struct DAYNIGHT_SAVE {
 // bit hacky, but crunch moment
 extern uint32_t gDayNightCheatPhase;
 
+bool AL_DayNightCycle_IsRain();
+
 void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork);
 
 void AL_DayNightCycle_PushFallbackLight();

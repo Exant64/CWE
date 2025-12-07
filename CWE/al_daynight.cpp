@@ -590,6 +590,13 @@ static DAYNIGHT_WORK& GetWork(task* tp) {
 	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->Data2.Undefined);
 }
 
+bool AL_DayNightCycle_IsRain() {
+	if (!pDayNightTask || !pDayNightTask->Data2.Undefined) return false;
+
+	auto& work = GetWork(pDayNightTask);
+	return work.isRain;
+}
+
 #pragma region Shiny Texture Lerping (used externally)
 
 UsercallFuncVoid(sub_42C5B0, (uint16_t textureID, uint16_t wrapMode, int index), (textureID, wrapMode, index), 0x42C5B0, rAX, rCX, rEBX);
@@ -1540,6 +1547,9 @@ void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, 
 	if (phase == -1) return;
 
 	pWork->phase = phase;
+	if (pWork->phase == PHASE_EVE) {
+		pWork->isRain = false;
+	}
 
 	// if the current phase became night let's decide whether cloudy will come after night
 	if (pWork->phase == PHASE_NGT) {
@@ -1555,6 +1565,7 @@ void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, 
 	// if the current phase became cloudy then spawn the rain on random percent chance
 	if (pWork->phase == PHASE_CLD) {
 		pWork->isRain = njRandom() < 0.5f;
+		pWork->isRain = true;
 
 		if (pWork->isRain && gDayNightManager.HasRain()) {
 			AL_DayNightCycle_CreateRain(pInfo->timer);

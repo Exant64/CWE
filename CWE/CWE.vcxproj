@@ -434,6 +434,7 @@
     <ClInclude Include="data\omochao\omobuild_all.h" />
     <ClInclude Include="data\ShinyJewelColors.h" />
     <ClInclude Include="data\special\als_all.h" />
+    <ClInclude Include="data\toy\al_toy_umbrella.nja" />
     <ClInclude Include="define.h" />
     <ClInclude Include="FunctionHook.h" />
     <ClInclude Include="imgui\imconfig.h">
@@ -516,6 +517,7 @@
     <ClInclude Include="move.h" />
     <ClInclude Include="ninja.h" />
     <ClInclude Include="ninja_functions.h" />
+    <ClInclude Include="njdef.h" />
     <ClInclude Include="PaletteFix.h" />
     <ClInclude Include="patchedcolors.h" />
     <ClInclude Include="data\parts\RaccoonArms.h" />
@@ -572,6 +574,7 @@
     <ClCompile Include="al_behavior\albhv_music.cpp" />
     <ClCompile Include="al_behavior\albhv_piano.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
+    <ClCompile Include="al_behavior\albhv_rain.cpp" />
     <ClCompile Include="al_behavior\albhv_stoy.cpp" />
     <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
     <ClCompile Include="al_behavior\albhv_tree.cpp" />
