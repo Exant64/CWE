@@ -368,8 +368,8 @@ extern "C"
 
 		CWE_Fixes();
 
-		//sfx
-		WriteData((int*)0x008A6DB8, (int)165);
+		// sfx
+		WriteData((int*)0x008A6DB8, (int)_countof(stru_8A68B0));
 		WriteData((int*)0x008A6DBC, (int)stru_8A68B0);
 
 		OrthoInit();

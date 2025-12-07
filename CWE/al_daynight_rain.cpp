@@ -25,8 +25,40 @@ struct SA2CAMERADATA
 
 #define GET_WORK(tp) ((RAIN_WORK*)tp->Data2.Undefined)
 
+static char
+SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
+{
+	static const void* const ___fptr = ((void*)0x004374D0);
+
+	char result;
+
+	__asm
+	{
+		push[timer]
+			push[volofs]
+				push[pri]
+					push[id]
+						mov edi, [tone]
+							call[___fptr]
+								add esp, 16
+									mov[result], al
+	}
+
+	return result;
+}
+
+enum CWE_SOUND {
+	CWE_SOUND_ACCORDION = 161,
+	CWE_SOUND_GUITAR = 162,
+	CWE_SOUND_TRIANGLE = 163,
+	CWE_SOUND_SAND = 164,
+	CWE_SOUND_RAIN = 165
+};
+
 static void AL_DayNightRainExecutor(task* tp) {
 	auto* work = GET_WORK(tp);
+
+	SE_Call_Timer(0x6000 + CWE_SOUND_RAIN, tp, 0, 0, 2);
 
 	// slightly change angle overtime
 	work->angle = lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));

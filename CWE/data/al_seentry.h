@@ -12,7 +12,6 @@ struct SoundEffectEntry
 };
 #pragma pack(pop)
 
-
 SoundEffectEntry stru_8A68B0[] =
 {
   { 8, 0, 0, 0, 0, 0 },
@@ -180,5 +179,5 @@ SoundEffectEntry stru_8A68B0[] =
   { 11, 12, 0, 0, 0, 0 },
   { 11, 13, 0, 0, 0, 0 },
   { 11, 14, 0, 0, 0, 0 },
+  { 11, 15, 0, 0, 0, 0 },
 };
-
