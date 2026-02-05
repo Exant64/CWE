@@ -255,7 +255,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -265,7 +265,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
