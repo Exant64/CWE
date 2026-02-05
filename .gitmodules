@@ -7,3 +7,6 @@
 [submodule "external/xxhash"]
 	path = external/xxhash
 	url = https://github.com/stbrumme/xxhash
+[submodule "external/minidx9"]
+	path = external/minidx9
+	url = https://github.com/hrydgard/minidx9
