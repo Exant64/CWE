@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C++ Launch (Windows)",
+            "name": "ImGuiDebug launch",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${env:SA2_PATH}\\sonic2app.exe",
@@ -15,7 +15,8 @@
             "logging": {
                 "moduleLoad": false,
                 "trace": true
-            }
+            },
+            "preLaunchTask": "ImGuiBuild"
         }
     ]
 }
