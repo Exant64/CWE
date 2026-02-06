@@ -21,11 +21,13 @@
 #pragma warning( disable: 4838 )
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
-#include <al_daynight.h>
 #include <data/debugsphere.h>
+#pragma warning(pop)
+
+#include <al_daynight.h>
 #include <api/api_accessory.h>
 #include <optional>
-#pragma warning(pop)
+#include <renderfix.h>
 
 extern NJS_OBJECT object_alo_missing;
 
@@ -441,17 +443,18 @@ static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) 
 	const int accessoryIndex = work->AccessoryIndices[slot];
 
 	return accessoryIndex != -1 && // chao has accessory
-		   GetAccessoryType(accessoryIndex) == slot && // accessory matches its type
-		   ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
+		GetAccessoryType(accessoryIndex) == slot && // accessory matches its type
+		ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
 }
 
-FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
+static bool AL_CanRenderRFNormalDrawAccessory(const int id) {
+	return RenderFix_IsEnabled() && !(GetAccessoryData(id).Flags & CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT);
+}
 
 static size_t AccessoryNodeIndex = 0;
-static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao) {
+static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao, bool rfNormalDraw) {
 	if (pObject->chunkmodel) {
 		pObject->chunkmodel->r = 0.0f;
-
 		// hack i added, if its an omochao it needs scaling
 		// matrix multiplication is associative, so in theory this is equivalent to the scale + SetMotionMatrix-ing
 		if (isOmoChao) {
@@ -462,18 +465,24 @@ static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao) {
 		else {
 			AL_PushChaoNodeMatrix(AccessoryNodeIndex);
 		}
-		sub_42E660(pObject->chunkmodel);
+
+		if(!rfNormalDraw) {
+			RenderFixBackwardsCompatibilityDrawModel(pObject->chunkmodel);
+		}
+		else {
+			rfCnkNormalDrawModel(pObject->chunkmodel);
+		}
 		njPopMatrixEx();
 	}
 
 	AccessoryNodeIndex++;
 
 	if (pObject->child) {
-		AL_DrawRigAccessorySub(pObject->child, isOmoChao);
+		AL_DrawRigAccessorySub(pObject->child, isOmoChao, rfNormalDraw);
 	}
 
 	if (pObject->sibling) {
-		AL_DrawRigAccessorySub(pObject->sibling, isOmoChao);
+		AL_DrawRigAccessorySub(pObject->sibling, isOmoChao, rfNormalDraw);
 	}
 }
 
@@ -493,7 +502,7 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
 	njSetTexture(registry->GetTex(accessoryIndex));
 	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
-	AL_DrawRigAccessorySub(registry->GetObj(accessoryIndex), IsOmochao(tp));
+	AL_DrawRigAccessorySub(registry->GetObj(accessoryIndex), IsOmochao(tp), AL_CanRenderRFNormalDrawAccessory(accessoryIndex));
 }
 
 static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
@@ -513,7 +522,12 @@ static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
 	}
 
 	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
-	ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
+	if(!AL_CanRenderRFNormalDrawAccessory(work->AccessoryIndices[slot])) {
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
+	}
+	else {
+		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
+	}
 	njPopMatrixEx();
 }
 
@@ -725,9 +739,6 @@ void __cdecl DrawEggChao(ObjectMaster* a1)
 	if (a1->Data1.Chao->pParamGC->BodyType == 1)
 		DrawOtherChao(a1, data1->field_510, &object_0023CC1C);
 	else if (a1->Data1.Chao->pParamGC->BodyType == 2)
-
-
-
 		DrawOtherChao(a1, data1->field_510, &object_00254A0C);
 
 	LoadControl3D();

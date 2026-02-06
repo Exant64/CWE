@@ -90,6 +90,8 @@ FunctionPointer(void, njCnkDrawObjectOrig, (NJS_OBJECT *a1), 0x42E730);
 static void njCnkDrawObject(NJS_OBJECT* a1) {
 	njCnkDrawObjectOrig(a1);
 }
+FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
+
 DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 FunctionPointer(int, njPushUnitMatrix, (), 0x44B210);
 

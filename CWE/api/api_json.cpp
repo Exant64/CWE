@@ -175,6 +175,17 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 		accessoryData.pTexlist = NULL;
 	}
 
+	if (document.HasMember("renderfix")) {
+		if (!document["renderfix"].IsBool()) {
+			error.print(MEMBER(renderfix) "isn't a bool!");
+			return false;
+		}
+
+		if (!document["renderfix"].GetBool()) {
+			accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+		}
+	}
+
 	// "hide_parts" (optional)
 	if (document.HasMember("hide_parts")) {
 		const auto& hide_parts = document["hide_parts"];
