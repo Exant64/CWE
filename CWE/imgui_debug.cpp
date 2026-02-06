@@ -483,7 +483,7 @@ static void TaskListMenu() {
 
 static void ItemsMenu() {
     if (ShowItemsMenu && ImGui::Begin("Items", &ShowItemsMenu)) {
-        for (size_t i = 0; i < 128; ++i) {
+        for (size_t i = 0; i < AccessoryItemList.size(); ++i) {
             ImGui::PushID(i);
             if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
                 ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
@@ -578,8 +578,21 @@ void ImGui_Init() {
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    ImGui_ImplWin32_EnableDpiAwareness();
+
+    float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
+    
+    // m_renderDevice->m_initInfo.BackBufferWidth/Height
+	DataPointer(void*, dword_1A557C0, 0x1A557C0);
+    io.DisplaySize = { (float)*(int*)((int)dword_1A557C0 + 0x1C), (float)*(int*)((int)dword_1A557C0 + 0x1C + 4) };
+    io.DisplayFramebufferScale = {1, 1};
+
+    // Setup scaling
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again
+    style.FontScaleDpi = main_scale;        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
 
 	ImGui_ImplWin32_Init(MainWindowHandle);
 	ImGui_ImplDX9_Init(cwe_device);
+
 }
