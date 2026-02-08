@@ -66,6 +66,7 @@ const size_t GetAccessoryColorCount(size_t index);
 const std::optional <CWE_API_ACCESSORY_BALD_DATA>& GetAccessoryBaldData(size_t index);
 extern "C" __declspec(dllexport) void AccessoryMakeBald(int accessory_id);
 extern "C" __declspec(dllexport) void AccessoryDisableJiggle(int accessory_id);
+const size_t GetAccessoryCount();
 
 bool AccessoryCheckID(const char* ID);
 size_t GetAccessoryID(const char* pID);

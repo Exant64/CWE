@@ -1801,19 +1801,19 @@ static void AL_DayNightCycleDrawSkyboxes(task* tp, float alpha, int phaseA, int 
 
 		// opaque pass
 		// we don't want it to be alpha tested though 
-		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_AUTO_TRANS);
+		rfapi_core->pRenderState->SetTransMode(RFRS_TRANSMD_AUTO_TRANS);
 
 		draw_skybox(1.f, phaseA);
 
 		// transparent pass
-		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_TRANSPARENT);
+		rfapi_core->pRenderState->SetTransMode(RFRS_TRANSMD_TRANSPARENT);
 
 		OnConstantAttr(0, NJD_FST_UA);
 
 		draw_skybox(alpha, phaseB);
 
 		OffConstantAttr(0, NJD_FST_UA);
-		rfapi_core->pApiRenderState->SetTransMode(RFRS_TRANSMD_END);
+		rfapi_core->pRenderState->SetTransMode(RFRS_TRANSMD_END);
 		skybox.pObj->evalflags = backupEval;
 	}
 }

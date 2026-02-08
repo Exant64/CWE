@@ -9,17 +9,21 @@ bool RenderFix_IsEnabled() {
 	return rfapi_core != NULL;
 }
 
-static void PreRenderFixBackwardsCompatibilityDraw() {
-	rfapi_core->pApiRenderState->SetCnkSpecMode(RFRS_CNKSPECMD_NONE);
-
+static void SetRenderFixBackwardsCompatibilityConstantAttr() {
 	SaveConstantAttr();
-	OnConstantAttr(~NJD_FST_IA, 0);
+	SaveControl3D();
+
+	OnControl3D(NJD_CONTROL_3D_CNK_CONSTANT_ATTR);
+
+	rfapi_core->pChunk->CnkSetControl(~RJD_CNK_CTRL_DBLIGHT, 0);
+	OnConstantAttr(0, NJD_FST_IS | NJD_FST_DB);
+	OffConstantAttr(NJD_FST_IA, 0);
 }
 
-static void PostRenderFixBackwardsCompatibilityDraw() {
+static void RestoreRenderFixBackwardsCompatibilityAttr() {
+	rfapi_core->pChunk->CnkSetControl(-1, RJD_CNK_CTRL_DBLIGHT);
 	LoadConstantAttr();
-
-	rfapi_core->pApiRenderState->SetCnkSpecMode(RFRS_CNKSPECMD_END);
+	LoadControl3D();
 }
 
 void RenderFixBackwardsCompatibilityDrawObject(NJS_OBJECT* pObject) {
@@ -28,10 +32,9 @@ void RenderFixBackwardsCompatibilityDrawObject(NJS_OBJECT* pObject) {
 		return;
 	}
 
-	PreRenderFixBackwardsCompatibilityDraw();
-	// todo: what even is the difference between this and njCnkDrawObject?
-	rfapi_core->pApiDraw->CnkDrawObject(pObject);
-	PostRenderFixBackwardsCompatibilityDraw();
+	SetRenderFixBackwardsCompatibilityConstantAttr();
+	rfapi_core->pChunk->CnkTransformObject(pObject, rfapi_core->pChunk->CnkNormalDrawModel);
+	RestoreRenderFixBackwardsCompatibilityAttr();
 }
 
 void RenderFixBackwardsCompatibilityDrawModel(NJS_CNK_MODEL* pModel) {
@@ -40,26 +43,21 @@ void RenderFixBackwardsCompatibilityDrawModel(NJS_CNK_MODEL* pModel) {
 		return;
 	}
 
-	PreRenderFixBackwardsCompatibilityDraw();
-	// todo: what even is the difference between this and njCnkDrawObject?
-	rfapi_core->pApiDraw->CnkDrawModel(pModel);
-	PostRenderFixBackwardsCompatibilityDraw();
+	SetRenderFixBackwardsCompatibilityConstantAttr();
+	rfapi_core->pChunk->CnkNormalDrawModel(pModel);
+	RestoreRenderFixBackwardsCompatibilityAttr();
 }
 
 void rfCnkNormalDrawObject(NJS_OBJECT* pObject) {
 	assert(RenderFix_IsEnabled());
 
-	rfapi_core->pApiRenderState->SetCnkFuncMode(RFRS_CNKFUNCMD_NORMAL);
-	rfapi_core->pApiDraw->CnkDrawObject(pObject);
-	rfapi_core->pApiRenderState->SetCnkFuncMode(RFRS_CNKFUNCMD_END);
+	rfapi_core->pChunk->CnkTransformObject(pObject, rfapi_core->pChunk->CnkNormalDrawModel);
 }
 
 void rfCnkNormalDrawModel(NJS_CNK_MODEL* pModel) {
 	assert(RenderFix_IsEnabled());
 
-	rfapi_core->pApiRenderState->SetCnkFuncMode(RFRS_CNKFUNCMD_NORMAL);
-	rfapi_core->pApiDraw->CnkDrawModel(pModel);
-	rfapi_core->pApiRenderState->SetCnkFuncMode(RFRS_CNKFUNCMD_END);
+	rfapi_core->pChunk->CnkNormalDrawModel(pModel);
 }
 
 void RenderFix_Init(const HelperFunctions& helper) {

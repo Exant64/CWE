@@ -24,6 +24,7 @@ static bool ShowLight = false;
 static bool ShowTaskList = false;
 static bool ShowChaoSoundMenu = false;
 static bool ShowItemsMenu = false;
+static bool ShowAccessoryMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -501,6 +502,29 @@ static void ItemsMenu() {
     }
 }
 
+static void AccessoryInternals() {
+    if(ShowAccessoryMenu && ImGui::Begin("Accessory Internals", &ShowAccessoryMenu)) {
+        for(size_t i = 0; i < GetAccessoryCount(); ++i) {
+            auto& data = GetAccessoryData(i);
+            
+            if(ImGui::TreeNode(data.ID)) {
+                bool isNoRf = data.Flags & CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+                if(ImGui::Checkbox("NoRFNormalDraw", &isNoRf)) {
+                    if(!isNoRf) {
+                        data.Flags &= ~CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+                    }
+                    else {
+                        data.Flags |= CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+                    }
+                }
+                
+                ImGui::TreePop();
+            }
+        }
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -510,6 +534,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
             ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
             ImGui::MenuItem("Items", NULL, &ShowItemsMenu);
+            ImGui::MenuItem("Accessory Internals", NULL, &ShowAccessoryMenu);
             ImGui::EndMenu();
         }
 
@@ -519,6 +544,7 @@ static void ImGuiMenu() {
         LightMenu();
         ItemsMenu();
         TaskListMenu();
+        AccessoryInternals();
 
         ImGui::EndMainMenuBar();
     }

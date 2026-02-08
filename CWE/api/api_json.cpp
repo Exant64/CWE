@@ -185,6 +185,9 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 			accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
 		}
 	}
+	else {
+		accessoryData.Flags |= CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+	}
 
 	// "hide_parts" (optional)
 	if (document.HasMember("hide_parts")) {

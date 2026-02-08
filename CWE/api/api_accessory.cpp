@@ -49,6 +49,10 @@ CWE_API_ACCESSORY_DATA& GetAccessoryData(int index) {
 	return ModAPI_AccessoryDataList[index].Data;
 }
 
+const size_t GetAccessoryCount() {
+	return ModAPI_AccessoryDataList.size();
+}
+
 extern "C" __declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
 	auto& data = GetAccessoryData(accessory_id);
 

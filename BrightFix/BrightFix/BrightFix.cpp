@@ -100,17 +100,17 @@ extern "C"
 
 	API __declspec(noinline) void LoadNewShaders()
 	{
-		if (RenderFixAPI && RFD_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
-			pBackupVertexShader = RenderFixAPI->pApiShader->GetGameVShader(RFE_SHADERIX_MDL_NONE);
-			pBackupFogVertexShader = RenderFixAPI->pApiShader->GetGameVShader(RFE_SHADERIX_MDL_F);
-			pBackupPixelShader = RenderFixAPI->pApiShader->GetGamePShader(RFE_SHADERIX_MDL_NONE);
-			pBackupFogPixelShader = RenderFixAPI->pApiShader->GetGamePShader(RFE_SHADERIX_MDL_F);
+		if (RenderFixAPI && RFAPI_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			pBackupVertexShader = RenderFixAPI->pShader->GetGameVShader(RFE_SHADERIX_MDL_NONE);
+			pBackupFogVertexShader = RenderFixAPI->pShader->GetGameVShader(RFE_SHADERIX_MDL_F);
+			pBackupPixelShader = RenderFixAPI->pShader->GetGamePShader(RFE_SHADERIX_MDL_NONE);
+			pBackupFogPixelShader = RenderFixAPI->pShader->GetGamePShader(RFE_SHADERIX_MDL_F);
 
-			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, (RFS_VSHADER*)chaoVertexSimpleShader);
-			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_F, (RFS_VSHADER*)chaoVertexSimpleShader);
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, (RFS_VSHADER*)chaoVertexSimpleShader);
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_F, (RFS_VSHADER*)chaoVertexSimpleShader);
 
-			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, (RFS_PSHADER*)chaoPixelSimpleShader);
-			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_F, (RFS_PSHADER*)chaoPixelSimpleShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, (RFS_PSHADER*)chaoPixelSimpleShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, (RFS_PSHADER*)chaoPixelSimpleShader);
 
 			SetShaders(1);
 			SetFlag(0);
@@ -125,11 +125,11 @@ extern "C"
 	}
 	API __declspec(noinline) void CancelNewShaders()
 	{
-		if (RenderFixAPI && RFD_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
-			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, pBackupVertexShader);
-			RenderFixAPI->pApiShader->SetGameVShader(RFE_SHADERIX_MDL_F, pBackupFogVertexShader);
-			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
-			RenderFixAPI->pApiShader->SetGamePShader(RFE_SHADERIX_MDL_F, pBackupFogPixelShader);
+		if (RenderFixAPI && RFAPI_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, pBackupVertexShader);
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_F, pBackupFogVertexShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, pBackupFogPixelShader);
 
 			SetShaders(1);
 
