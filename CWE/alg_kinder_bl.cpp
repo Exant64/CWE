@@ -35,6 +35,8 @@
 #include <al_garden_info.h>
 #include <api/api_accessory.h>
 
+#include <renderfix.h>
+
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
 	ChaoItemCategory_Egg,
@@ -1374,19 +1376,22 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			njTranslate(NULL, 0, -1.4f, 0);
 
 			njSetTexture(&CWE_OBJECT_TEXLIST);
-			if (IsAccessoryGeneric(type))
-			{
+			if (IsAccessoryGeneric(type)) {
 				njTranslate(NULL, 0, -0.5f, 0);
 				njScale(NULL, 0.978f, 0.978f, 0.978f);
 				chCnkDrawObject(&object_ala_full_mannequin);
 			}
-			else
+			else {
 				chCnkDrawObject(&object_alo_mannequin);
+			}
 
-			SaveControl3D();
-			OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
-			LoadControl3D();
+			if(!IsAccessoryRFSupported(type)) {
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+			}
+			else {
+				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+			}
+			
 			break;
 		case ChaoItemCategory_Special:
 			Translate(x, y, -26.0f);

@@ -14,6 +14,7 @@ static void SetRenderFixBackwardsCompatibilityConstantAttr() {
 	SaveControl3D();
 
 	OnControl3D(NJD_CONTROL_3D_CNK_CONSTANT_ATTR);
+	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 
 	rfapi_core->pChunk->CnkSetControl(~RJD_CNK_CTRL_DBLIGHT, 0);
 	OnConstantAttr(0, NJD_FST_IS | NJD_FST_DB);

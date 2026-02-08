@@ -447,10 +447,6 @@ static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) 
 		ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
 }
 
-static bool AL_CanRenderRFNormalDrawAccessory(const int id) {
-	return RenderFix_IsEnabled() && !(GetAccessoryData(id).Flags & CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT);
-}
-
 static size_t AccessoryNodeIndex = 0;
 static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao, bool rfNormalDraw) {
 	if (pObject->chunkmodel) {
@@ -502,7 +498,7 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
 	njSetTexture(registry->GetTex(accessoryIndex));
 	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
-	AL_DrawRigAccessorySub(registry->GetObj(accessoryIndex), IsOmochao(tp), AL_CanRenderRFNormalDrawAccessory(accessoryIndex));
+	AL_DrawRigAccessorySub(registry->GetObj(accessoryIndex), IsOmochao(tp), IsAccessoryRFSupported(accessoryIndex));
 }
 
 static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
@@ -522,7 +518,7 @@ static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
 	}
 
 	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
-	if(!AL_CanRenderRFNormalDrawAccessory(work->AccessoryIndices[slot])) {
+	if(!IsAccessoryRFSupported(work->AccessoryIndices[slot])) {
 		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
 	}
 	else {

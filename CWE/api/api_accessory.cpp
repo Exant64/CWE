@@ -9,6 +9,7 @@
 #include <optional>
 #include <cnk_util.h>
 #include "api_util.h"
+#include <renderfix.h>
 
 struct AccessoryInternalData {
 	CWE_API_ACCESSORY_DATA Data;
@@ -51,6 +52,10 @@ CWE_API_ACCESSORY_DATA& GetAccessoryData(int index) {
 
 const size_t GetAccessoryCount() {
 	return ModAPI_AccessoryDataList.size();
+}
+
+const bool IsAccessoryRFSupported(const int id) {
+	return RenderFix_IsEnabled() && !(GetAccessoryData(id).Flags & CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT);
 }
 
 extern "C" __declspec(dllexport) void AccessoryMakeBald(int accessory_id) {
