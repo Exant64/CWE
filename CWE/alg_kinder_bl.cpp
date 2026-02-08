@@ -640,12 +640,14 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 
-				SaveControl3D();
-				OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-
 				AccessorySetupDraw(item->mType, NULL, 0);
-				ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, item->mType);
-				LoadControl3D();
+
+				if(!IsAccessoryRFSupported(item->mType)) {
+					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				}
+				else {
+					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				}
 
 				break;
 			case ChaoItemCategory_Special:
@@ -776,9 +778,6 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		else
 			chCnkDrawObject(&object_alo_mannequin);
 
-		SaveControl3D();
-		OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-
 		if (a1->mItemDescSell && AL_GetHoldingItemSaveInfo()) {
 			AccessorySaveInfo* pAccSave = (AccessorySaveInfo*)AL_GetHoldingItemSaveInfo();
 			AccessorySetupDraw(type, pAccSave->Colors, pAccSave->UsedColors);
@@ -787,9 +786,15 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			AccessorySetupDraw(type, NULL, 0);
 		}
 
-		ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
-		LoadControl3D();
+		if(!IsAccessoryRFSupported(type)) {
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+		}
+		else {
+			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+		}
+		
 		break;
+
 	case ChaoItemCategory_Special:
 		ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
@@ -1391,7 +1396,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			else {
 				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
 			}
-			
+
 			break;
 		case ChaoItemCategory_Special:
 			Translate(x, y, -26.0f);
