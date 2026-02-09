@@ -1358,17 +1358,25 @@ void DrawTimer()
 	sub_5A6450((int)uibuff, 1);
 }
 
-Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f },  1,  0.5f, {  1,  1,  1 } };
+Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1, 0.5f, {  1,  1,  1 } };
+#define Translate(x,y,z) OrthoScreenTranslate(x, y, (-26.0f) / z * scl)
 
-#define Translate(x,y,z) OrthoScreenTranslate(x,y,(-26.0f)/z * scl)
 extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Rotation& rot, const SAlItem& mItemDescItem) {
 	njPushMatrixEx();
 	njUnitMatrix(0);
 
-	Light backupLight = Lights[10];
-	Lights[10] = BM_MenuLight;
-	DoLighting(10);
+	const size_t index = 11;
+	const Light backupLight = Lights[index];
+	Lights[index] = BM_MenuLight;
+	njUnitVector(&Lights[index].direction);
 
+	// HOPEFULLY temporary hack to fix normals not being normalized in new RF
+	if(RenderFix_IsEnabled()) {
+		Lights[index].intensity /= scl * 0.025f * 100.f;
+	}
+
+	DoLighting(index);
+	
 	OrthoDrawBegin();
 	int type = mItemDescItem.mType;
 	if (type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
@@ -1511,7 +1519,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	}
 	OrthoDrawEnd();
 	njPopMatrixEx();
-	Lights[10] = backupLight;
+	Lights[index] = backupLight;
 }
 
 void DrawPurchasedItem() {
