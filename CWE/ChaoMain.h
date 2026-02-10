@@ -75,6 +75,10 @@ struct ConfigValues {
 	size_t StageAnimalMinCount;
 	size_t StageAnimalMaxCount;
 	bool StageAnimalIncludeSADX;
+
+	bool NeutGrayscale;
+	bool HeroGrayscale;
+	bool DarkGrayscale;
 };
 extern ConfigValues gConfigVal;
 

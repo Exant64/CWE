@@ -95,6 +95,8 @@
 #include <minimal/minimal.h>
 #include <hd_texture.h>
 
+#include "land_grayscale.h"
+
 const char* PathToModFolder = "";
 
 extern "C"
@@ -215,6 +217,15 @@ extern "C"
 	void __cdecl ALW_Control_Main_Hook(ObjectMaster* a1)
 	{
 		if (a1->Data1.Entity->Action == 0) {
+			const bool checkIfNeedToGreyscale = 
+				(AL_GetStageNumber() == CHAO_STG_NEUT && gConfigVal.NeutGrayscale) ||
+				(AL_GetStageNumber() == CHAO_STG_HERO && gConfigVal.HeroGrayscale) ||
+				(AL_GetStageNumber() == CHAO_STG_DARK && gConfigVal.DarkGrayscale);
+
+			if(checkIfNeedToGreyscale) {
+				GrayscalifyCurrentLandtable();
+			}
+
 			AL_CreateDayNightCycle();
 		}
 
@@ -546,6 +557,10 @@ extern "C"
 		gConfigVal.DayNightCycleHourFrame = 60 * config->getInt("DayNight", "DayNightCycleHourFrame", 60);
 		gConfigVal.DayNightDebug = config->getBool("DayNight", "DayNightDebug", false);
 		gConfigVal.DayNightCheat = config->getBool("DayNight", "DayNightCheat", false);
+
+		gConfigVal.NeutGrayscale = config->getBool("Misc", "NeutGrayscale", false);
+		gConfigVal.HeroGrayscale = config->getBool("Misc", "HeroGrayscale", false);
+		gConfigVal.DarkGrayscale = config->getBool("Misc", "DarkGrayscale", false);
 
 		if (gConfigVal.DayNightCycleHourFrame <= 0) {
 			MessageBoxA(0, "Day Night Cycle's \"In-Game Hour In Real-Life Seconds\" option cannot be set to zero or lower! Temporarily resetting setting to default.", "Chao World Extended", 0);

@@ -765,6 +765,7 @@
     <ClCompile Include="TextConv.cpp" />
     <ClCompile Include="Trampoline.cpp" />
     <ClCompile Include="ui\al_ortho.cpp" />
+    <ClCompile Include="land_grayscale.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="al_animation.cpp" />

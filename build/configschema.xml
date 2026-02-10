@@ -258,6 +258,15 @@
       <Property name="BlackMarketShort" type="bool" defaultvalue="False" display="Shorten Black Market Dialog">
         <HelpText>Less dialog in Black Market.</HelpText>
       </Property>
+      <Property name="NeutGrayscale" type="bool" defaultvalue="False" display="Neutral Garden Vertex Color Grayscale">
+        <HelpText>Turns the vertex colors in the Neutral Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
+      </Property>
+      <Property name="HeroGrayscale" type="bool" defaultvalue="False" display="Hero Garden Vertex Color Grayscale">
+        <HelpText>Turns the vertex colors in the Hero Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
+      </Property>
+      <Property name="DarkGrayscale" type="bool" defaultvalue="False" display="Dark Garden Vertex Color Grayscale">
+        <HelpText>Turns the vertex colors in the Dark Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
+      </Property>
     </Group>
     <Group name="Detail" display="07 - Detail Settings">
       <Property name="DetailFittingPersonality" type="bool" defaultvalue="False" display="Fitting Personality">
