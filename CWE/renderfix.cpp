@@ -11,11 +11,6 @@ bool RenderFix_IsEnabled() {
 
 static void SetRenderFixBackwardsCompatibilityConstantAttr() {
 	SaveConstantAttr();
-	SaveControl3D();
-
-	OnControl3D(NJD_CONTROL_3D_CNK_CONSTANT_ATTR);
-	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-
 	rfapi_core->pChunk->CnkSetControl(~RJD_CNK_CTRL_DBLIGHT, 0);
 	OnConstantAttr(0, NJD_FST_IS | NJD_FST_DB);
 	OffConstantAttr(NJD_FST_IA, 0);
@@ -24,7 +19,6 @@ static void SetRenderFixBackwardsCompatibilityConstantAttr() {
 static void RestoreRenderFixBackwardsCompatibilityAttr() {
 	rfapi_core->pChunk->CnkSetControl(-1, RJD_CNK_CTRL_DBLIGHT);
 	LoadConstantAttr();
-	LoadControl3D();
 }
 
 void RenderFixBackwardsCompatibilityDrawObject(NJS_OBJECT* pObject) {
@@ -33,6 +27,7 @@ void RenderFixBackwardsCompatibilityDrawObject(NJS_OBJECT* pObject) {
 		return;
 	}
 
+	Control3D ctrl(NJD_CONTROL_3D_CNK_CONSTANT_ATTR, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 	SetRenderFixBackwardsCompatibilityConstantAttr();
 	rfapi_core->pChunk->CnkTransformObject(pObject, rfapi_core->pChunk->CnkNormalDrawModel);
 	RestoreRenderFixBackwardsCompatibilityAttr();
@@ -44,6 +39,7 @@ void RenderFixBackwardsCompatibilityDrawModel(NJS_CNK_MODEL* pModel) {
 		return;
 	}
 
+	Control3D ctrl(NJD_CONTROL_3D_CNK_CONSTANT_ATTR, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 	SetRenderFixBackwardsCompatibilityConstantAttr();
 	rfapi_core->pChunk->CnkNormalDrawModel(pModel);
 	RestoreRenderFixBackwardsCompatibilityAttr();

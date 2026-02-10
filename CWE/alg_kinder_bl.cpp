@@ -646,6 +646,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, item->mType);
 				}
 				else {
+					Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, item->mType);
 				}
 
@@ -790,6 +791,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
 		}
 		else {
+			Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
 		}
 		
@@ -1402,6 +1404,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
 			}
 			else {
+				Control3D ctrl (0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
 			}
 

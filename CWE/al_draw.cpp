@@ -494,10 +494,11 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 
 	AccessoryNodeIndex = 0;
 
-	OffControl3D(NJD_CONTROL_3D_OFFSET_MATERIAL);
 	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
 	njSetTexture(registry->GetTex(accessoryIndex));
 	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
+
+	Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL | NJD_CONTROL_3D_OFFSET_MATERIAL);
 	AL_DrawRigAccessorySub(registry->GetObj(accessoryIndex), IsOmochao(tp), IsAccessoryRFSupported(accessoryIndex));
 }
 
@@ -517,7 +518,9 @@ static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
 		njScale(NULL, 1.2f, 1.2f, 1.2f);
 	}
 
+	Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL | NJD_CONTROL_3D_OFFSET_MATERIAL);
 	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
+
 	if(!IsAccessoryRFSupported(work->AccessoryIndices[slot])) {
 		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
 	}

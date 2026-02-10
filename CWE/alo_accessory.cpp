@@ -13,6 +13,8 @@
 #include <al_toy_move.h>
 #include <api/api_metadata.h>
 
+#include <renderfix.h>
+
 extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
@@ -32,11 +34,15 @@ void Accessory_Display(ObjectMaster* a1) {
 	else
 		chCnkDrawObject(&object_alo_mannequin);
 
-	SaveControl3D();
-	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+	Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 	AccessorySetupDraw(a1->Data1.Entity->Rotation.x, save->Colors, save->UsedColors);
-	ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
-	LoadControl3D();
+	
+	if(!IsAccessoryRFSupported(a1->Data1.Entity->Rotation.x)) {
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
+	}
+	else {
+		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
+	}
 
 	if (a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
 	{

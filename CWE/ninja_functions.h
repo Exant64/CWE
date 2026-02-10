@@ -149,3 +149,18 @@ DataArray(LightGC, LightsGC, 0x01DE4420, 12);
 #define RotateX(a) if(a) njRotateX(NULL, a)
 #define RotateY(a) if(a) njRotateY(NULL, a)
 #define RotateZ(a) if(a) njRotateZ(NULL, a)
+
+struct Control3D {
+	Control3D(uint32_t on, uint32_t off)  {
+		m_backup = njControl3D;
+
+		njControl3D |= on;
+		njControl3D &= ~off;
+	}
+
+	~Control3D() {
+		njControl3D = m_backup;
+	}
+private:
+	uint32_t m_backup;
+};
