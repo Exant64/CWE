@@ -52,6 +52,9 @@
       <Property name="DayNightCycle" type="bool" defaultvalue="True" display="Day Night Cycle">
         <HelpText>Time passes in the gardens with slight weather changes (Warning: May not be compatible with some Texture mods)</HelpText>
       </Property>
+      <Property name="DayNightRainSounds" type="bool" defaultvalue="True" display="Rain Sounds">
+        <HelpText>Enables the rain sound effects.</HelpText>
+      </Property>
       <Property name="DayNightCycleNeutralGarden" type="bool" defaultvalue="True" display="Neutral Garden">
         <HelpText>Enables/Disables the Day Night Cycle in the Neutral Garden.</HelpText>
       </Property>

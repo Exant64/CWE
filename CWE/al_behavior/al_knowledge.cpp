@@ -9,6 +9,15 @@
 #include "al_knowledge.h"
 #include <al_chao_info.h>
 
+Bool AL_KW_IsSToyFlagOn(task* pChaoTask, int Kind) {
+	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+
+	if (kwlg->SToyFlag & (1 << Kind))
+		return TRUE;
+
+	return FALSE;
+}
+
 void AL_KW_SongFlagOn(task* pChaoTask, int Kind) {
 	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
 	kwlg->SongFlag |= 1 << Kind;

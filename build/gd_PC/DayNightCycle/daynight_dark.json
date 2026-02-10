@@ -1,5 +1,6 @@
 {
   "textureFileName": "AL_DARK_SKY",
+  "rainColor": "#FF0000",
   "phases": {
     "day": {
       "color": "#FFFFFF",

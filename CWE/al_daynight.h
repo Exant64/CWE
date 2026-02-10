@@ -57,6 +57,7 @@ struct DAYNIGHT_WORK {
 	uint32_t timer;
 	uint32_t day;
 	uint32_t phase;
+	bool isRain;
 	bool nextDayCloudy;
 
 	NJS_ARGB appliedColor;
@@ -115,6 +116,7 @@ struct DAYNIGHT_TIME_INFO {
 	uint32_t phase;
 	uint32_t day;
 	bool nextDayCloudy;
+	bool isRain;
 
 	uint32_t(*GetHourFrameCount)();
 	uint32_t(*GetDayFrameCount)(); // = 24 * GetHourFrameCount
@@ -126,6 +128,7 @@ struct DAYNIGHT_TIME_INFO {
 struct DAYNIGHT_TIME_WORK {
 	uint32_t phase;
 	bool nextDayCloudy;
+	bool isRain;
 };
 
 struct DAYNIGHT_RENDER_WORK {
@@ -158,16 +161,18 @@ struct CWE_API_DAYNIGHT_INFO {
 	uint32_t(*GetTimeForEachPhase)(); // time in frames it takes for each phase to finish
 };
 
-
 struct DAYNIGHT_SAVE {
 	uint32_t day;				// starting from index 0, the days that have passed (potential mechanic in the future)
 	float time;					// we store the 0-24 hour cycle as a float so that it can be rescaled if its somehow reconfigured
 	uint32_t currentPhase;		// current phase
 	bool nextDayCloudy;
+	bool isRain;
 };
 
 // bit hacky, but crunch moment
 extern uint32_t gDayNightCheatPhase;
+
+bool AL_DayNightCycle_IsRain();
 
 void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, DAYNIGHT_TIME_WORK* pWork);
 
@@ -179,6 +184,7 @@ uint32_t& AL_DayNightCycle_GetSaveCurrentDay();
 float& AL_DayNightCycle_GetSaveTime();
 uint32_t& AL_DayNightCycle_GetSaveCurrentPhase();
 bool& AL_DayNightCycle_GetSaveNextDayCloudy();
+bool& AL_DayNightCycle_GetSaveIsRain();
 
 // shiny texture functions
 Uint32 AL_DayNightCycle_PreDrawSetupShinyTexture();

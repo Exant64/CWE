@@ -15,6 +15,7 @@
 #include <al_draw.h>
 #include <api/api_accessory.h>
 #include <al_behavior/al_behavior.h>
+#include <al_daynight_rain.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -525,6 +526,11 @@ static void AccessoryInternals() {
     }
 }
 
+static task* raintp = NULL;
+static void RainDelete(task* tp) {
+    raintp = NULL;
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -547,6 +553,44 @@ static void ImGuiMenu() {
         AccessoryInternals();
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (false && ImGui::Begin("rain test")) {
+        static int timer = 4000;
+        ImGui::SliderInt("timer", &timer, 0, 10000);
+
+        if (ImGui::Button("spawn")) {
+            raintp = AL_CreateDayNightRain(timer, 0xA0A0A0FF);
+            raintp->DeleteSub = RainDelete;
+        }
+
+        if (raintp) {
+            auto* work = (RAIN_WORK*)raintp->Data2.Undefined;
+            
+            for (size_t i = 0; i < DROP_COUNT; i++) {
+                if (!work->drops[i].lifeCount) {
+                    char num[20];
+                    sprintf_s(num, "inactive %d", int(i));
+                    if (ImGui::TreeNode(num)) {
+                        ImGui::TreePop();
+                    }
+                    continue;
+                }
+
+                char num[10];
+                sprintf_s(num, "drop %d", int(i));
+
+                if (ImGui::TreeNode(num)) {
+                    ImGui::Text("pos %f %f %f", work->drops[i].startPos.x, work->drops[i].startPos.y, work->drops[i].startPos.z);
+                    ImGui::Text("scale %d", int(work->drops[i].scale));
+                    ImGui::Text("progress %f", work->drops[i].progress);
+                    ImGui::TreePop();
+                }
+                
+            }
+        }
+
+        ImGui::End();
     }
 }
 
