@@ -203,7 +203,7 @@ private:
 
 public:
 	const bool HasRain() const {
-		return m_hasRain;
+		return gConfigVal.DayNightRain && m_hasRain;
 	}
 
 	const NJS_ARGB& GetRainColor() const {

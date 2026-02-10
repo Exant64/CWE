@@ -259,6 +259,10 @@ static void AL_DayNightRainDisplayer(task* tp) {
 }
 
 task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
+	if(!gConfigVal.DayNightRain) {
+		return NULL;
+	}
+	
 	task* tp = LoadObject(4, "AL_DayNightRain", AL_DayNightRainExecutor, LoadObj(0));
 
 	tp->DisplaySub = AL_DayNightRainDisplayer;

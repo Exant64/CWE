@@ -545,6 +545,7 @@ extern "C"
 
 		//day night cycle
 		gConfigVal.DayNightCycle = config->getBool("DayNight", "DayNightCycle", true);
+		gConfigVal.DayNightRain = config->getBool("DayNight", "Rain", true);
 		gConfigVal.DayNightRainSounds = config->getBool("DayNight", "DayNightRainSounds", true);
 		gConfigVal.DayNightCycleNeutralGardenSkybox = config->getBool("DayNight", "DayNightCycleNeutralGardenSkybox", true);
 		gConfigVal.DayNightCycleHeroGardenSkybox = config->getBool("DayNight", "DayNightCycleHeroGardenSkybox", true);
