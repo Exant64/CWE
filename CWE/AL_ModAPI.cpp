@@ -29,6 +29,7 @@
 #include <unordered_set>
 #include <kce_helper.h>
 #include <al_draw.h>
+#include "api/api_main.h"
 
 #pragma warning(push)
 #pragma warning( disable: 4838 )
@@ -355,8 +356,10 @@ void AL_ModAPI_Init() {
 	InitPriceAdjustStartIndices(priceAdjustStartIndices);
 
 	LoadCWEJSONData(JSON_ACCESSORY);
+	CWE_API_EarlyLoad();
 	CallRegisteredHooks();
 	LoadJSONData(JSON_ACCESSORY);
+	CWE_API_Load();
 
 	AdjustItemPrices(priceAdjustStartIndices);
 

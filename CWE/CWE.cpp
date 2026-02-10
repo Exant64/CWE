@@ -96,6 +96,7 @@
 #include <hd_texture.h>
 
 #include "land_grayscale.h"
+#include "api/api_main.h"
 
 const char* PathToModFolder = "";
 
@@ -422,6 +423,12 @@ extern "C"
 			return;
 		}
 
+		g_HelperFunctions = &helperFunctions;
+
+		CWE_API_FindMods();
+
+		CWE_API_EarlyInit();
+
 		njRandomSeed(time(0));
 
 		DrawChaoWorldShadow = []() {};
@@ -433,7 +440,6 @@ extern "C"
 			}
 		}
 
-		g_HelperFunctions = &helperFunctions;
 
 		RenderFix_Init(helperFunctions);
 		ScanAllMods();
@@ -655,6 +661,8 @@ extern "C"
 		ALO_GrowTree_Init();
 
 		delete config;
+
+		CWE_API_LateInit();
 	}
 	__declspec(dllexport) ModInfo SA2ModInfo = { ModLoaderVer };
 }
