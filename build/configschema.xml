@@ -316,6 +316,26 @@
         <HelpText>Chao will ignore the intelligence minigame.</HelpText>
       </Property>
     </Group>
+    <Group name="HDTex" display="10 - HD Texture">
+      <Property name="ChaoTex" type="bool" defaultvalue="False" display="Chao Textures">
+        <HelpText>HD Chao textures (except Child and Hero chao), including vanilla wearables (medals and hats). (ECW texture support included!)</HelpText>
+      </Property>
+      <Property name="ObjectTex" type="bool" defaultvalue="False" display="Object Textures">
+        <HelpText>HD Chao World Object textures (mostly fruits, seeds, and some miscellaneous textures).</HelpText>
+      </Property>
+      <Property name="ToyTex" type="bool" defaultvalue="False" display="Toy Textures">
+        <HelpText>HD Chao toy textures. (replaces al_toy)</HelpText>
+      </Property>
+      <Property name="FaceTex" type="bool" defaultvalue="False" display="Face Textures">
+        <HelpText>HD Chao eye and mouth textures.</HelpText>
+      </Property>
+      <Property name="IconTex" type="bool" defaultvalue="False" display="Emotion Ball Textures">
+        <HelpText>HD Chao emotion ball textures.</HelpText>
+      </Property>
+      <Property name="LensTex" type="bool" defaultvalue="False" display="Lens Textures">
+        <HelpText>HD Chao CWE lens textures (only the regular color lenses!) </HelpText>
+      </Property>
+    </Group>
     <Group name="Cheat" display="99 - Cheat and Debug">
       <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display="Black Market Global Price Percentage" minvalue="0" maxvalue="100">
         <HelpText>All modded item prices are multiplied with the specified percentage.</HelpText>
