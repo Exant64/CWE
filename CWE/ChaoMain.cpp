@@ -12,7 +12,6 @@
 #include <save/save_item.h>
 
 const HelperFunctions* g_HelperFunctions = nullptr;
-void(__cdecl* DrawChaoWorldShadow)() = nullptr;
 
 IDirect3DDevice9* cwe_device;
 

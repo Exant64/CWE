@@ -44,12 +44,12 @@ void Accessory_Display(ObjectMaster* a1) {
 		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
 	}
 
-	if (a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
+	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
 	{
 		njTranslate(NULL, 0, 0.4f, 0);
 	
 		njScale(NULL, 1.5f, 0.7f, 1.5f);
-		DrawChaoWorldShadow();
+		rfapi_core->pDraw->AL_ShadowDraw();
 	}
 
 	njPopMatrixEx();

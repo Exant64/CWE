@@ -5,7 +5,6 @@
 typedef ITEM_SAVE_INFO ChaoObjectData;
 
 extern const HelperFunctions* g_HelperFunctions;
-extern void(__cdecl* DrawChaoWorldShadow)();
 
 extern IDirect3DDevice9* cwe_device;
 

@@ -325,7 +325,7 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 
 		if (!v1->UnknownA_ptr) PrintDebug("unknown_a == 0, problem incoming");
 
-		if (v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
 		{
 			if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
 			{
@@ -335,7 +335,7 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 			{
 				njTranslate(NULL, 0, 0.5f, 0);
 			}
-			DrawChaoWorldShadow();
+			rfapi_core->pDraw->AL_ShadowDraw();
 		}
 		njPopMatrixEx();
 		DoLighting(LightIndexBackupMaybe);

@@ -12,6 +12,7 @@
 #include "al_behavior/al_intention.h"
 #include <api/api_tree.h>
 #include <al_daynight.h>
+#include "renderfix.h"
 
 struct FRUIT_INFO
 {
@@ -207,11 +208,12 @@ void __cdecl ALO_SeedExecutor_Display_(ObjectMaster* eax0)
         chCnkDrawModel(ModAPI_SeedModels[v1->Rotation.x]->chunkmodel);
         njControl3D &= ~0x2400;
 
-        if (eax0->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev1 > *(float*)&eax0->UnknownA_ptr->field_30)
-        {
-            njScale(NULL, 0.38f, 0.7f, 0.38f);
-            njTranslate(NULL, 0, 0.1f, 0);
-            DrawChaoWorldShadow();
+        if(RenderFix_IsEnabled()) {
+            if (eax0->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev1 > *(float*)&eax0->UnknownA_ptr->field_30) {
+                njScale(NULL, 0.38f, 0.7f, 0.38f);
+                njTranslate(NULL, 0, 0.1f, 0);
+                rfapi_core->pDraw->AL_ShadowDraw();
+            }
         }
 
         njPopMatrixEx();

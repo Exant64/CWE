@@ -426,22 +426,13 @@ extern "C"
 		g_HelperFunctions = &helperFunctions;
 
 		CWE_API_FindMods();
-
 		CWE_API_EarlyInit();
 
 		njRandomSeed(time(0));
 
-		DrawChaoWorldShadow = []() {};
-		HMODULE DCShadows = GetModuleHandleA("sa2-dc-lighting");
-		if (DCShadows) {
-			auto ptr = (decltype(DrawChaoWorldShadow))GetProcAddress(DCShadows, "DrawChaoWorldShadow");
-			if (ptr) {
-				DrawChaoWorldShadow = ptr;
-			}
-		}
-
-
 		RenderFix_Init(helperFunctions);
+
+		// todo: integrate this into CWE_API_FindMods or prefix with CWE_APIJSON_ or something
 		ScanAllMods();
 
 		cwe_device = dword_1A557C0->pointerToDevice;

@@ -8,6 +8,7 @@
 #include "al_sandhole.h"
 #include "al_modelcontainer.h"
 #include "al_behavior/al_intention.h"
+#include "renderfix.h"
 
 extern NJS_OBJECT object_alo_mannequin;
 void __cdecl ALO_Special_Display(ObjectMaster* a1)
@@ -21,12 +22,11 @@ void __cdecl ALO_Special_Display(ObjectMaster* a1)
 	//ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Special, a1->Data1.Entity->Rotation.x);
 	ObjectRegistry::DrawObject(ChaoItemCategory_Special, a1->Data1.Entity->Rotation.x);
 
-	if (a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
-	{
+	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
 		njTranslate(NULL, 0, 0.4f, 0);
-
 		njScale(NULL, 1, 0.7f, 1);
-		DrawChaoWorldShadow();
+
+		rfapi_core->pDraw->AL_ShadowDraw();
 	}
 	njPopMatrixEx();
 
