@@ -1554,7 +1554,6 @@ void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, 
 	// if the current phase became night let's decide whether cloudy will come after night
 	if (pWork->phase == PHASE_NGT) {
 		pWork->nextDayCloudy = njRandom() < 0.5f;
-		pWork->nextDayCloudy = TRUE;
 	}
 
 	// if the current phase became day then the next phase is either day or cloudy
@@ -1565,7 +1564,6 @@ void AL_DayNightCycle_GenericGardenTimeHandler(const DAYNIGHT_TIME_INFO* pInfo, 
 	// if the current phase became cloudy then spawn the rain on random percent chance
 	if (pWork->phase == PHASE_CLD) {
 		pWork->isRain = njRandom() < 0.5f;
-		pWork->isRain = true;
 
 		if (pWork->isRain && gDayNightManager.HasRain()) {
 			AL_DayNightCycle_CreateRain(pInfo->timer);

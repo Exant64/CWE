@@ -278,10 +278,6 @@ extern "C"
 			c->OnALControl(a1);
 		}
 
-		if (GetAsyncKeyState(VK_F11)) {
-			LoadChaoTexlist("CWE_UI", &CWE_UI_TEXLIST, 0);
-		}
-
 		//compatibility layer for old purchased item inventory
 		if (PurchasedItemCount > 0)
 		{
