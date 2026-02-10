@@ -68,6 +68,12 @@ struct ConfigValues {
 	bool FixMonsterEvo;
 
 	bool FixHeroSky;
+
+	bool StageAnimals;
+	float StageAnimalChance;
+	size_t StageAnimalMinCount;
+	size_t StageAnimalMaxCount;
+	bool StageAnimalIncludeSADX;
 };
 extern ConfigValues gConfigVal;
 

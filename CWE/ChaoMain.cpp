@@ -45,18 +45,6 @@ void LoadChaoTexlist(const char* a2, NJS_TEXLIST* texlist, int a1)
 
 VoidFunc(Load_al_palette, 0x00534350);
 
-int CWE_Loaded = 0;
-void HookRegisterCWEData()
-{
-	PrintDebug("ChaoMain Prolog\n");
-	if (!CWE_Loaded)
-	{
-
-		RegisterCWEData(&cweAPI);
-		CWE_Loaded = 1;
-	}
-}
-
 //i hooked the print call before, now i hook the first loadtexlist call
 extern "C" __declspec(dllexport) void ChaoMain_Constructor_Hook()
 {
@@ -77,6 +65,5 @@ void ChaoMain_subprgmanager_Hook()  //use this to do something on ChaoWorld load
 void ChaoMain_Init() {	
 	WriteCall((void*)0x0052B2DA, ChaoMain_subprgmanager_Hook);
 
-	WriteCall((void*)0x052AB15, HookRegisterCWEData);
 	WriteCall((void*)0x0052ABEE, ChaoMain_Constructor_Hook);
 }

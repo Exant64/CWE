@@ -130,6 +130,8 @@ void DrawQuadTexture(int a1, float a2);
 void njSetTextureNum(int texid);
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered = false);
 
+FunctionPointer(void, njCnkMotion, (NJS_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
+
 VoidFunc(SaveControl3D, 0x446D00);
 VoidFunc(LoadControl3D, 0x446D10);
 VoidFunc(SaveConstantAttr, 0x446CB0);

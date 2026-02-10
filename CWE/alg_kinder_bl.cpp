@@ -476,7 +476,6 @@ void FBuyListUpdate()
 }
 
 FunctionPointer(int, sub_42D500, (NJS_CNK_MODEL* a1), 0x42D500);
-FunctionPointer(void, njCnkMotion, (NJS_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
 
 #define SELECTION_BOX_SX 257 //280 orig
 #define SELECTION_BOX_SY 46  //46 orig
@@ -1381,7 +1380,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	
 	OrthoDrawBegin();
 	int type = mItemDescItem.mType;
-	if (type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
+	if (true || type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
 		switch (mItemDescItem.mCategory)
 		{
 		case ChaoItemCategory_Accessory:

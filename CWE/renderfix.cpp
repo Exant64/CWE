@@ -21,16 +21,32 @@ static void RestoreRenderFixBackwardsCompatibilityAttr() {
 	LoadConstantAttr();
 }
 
+RenderFixBackwardsCompatibilityGuard::RenderFixBackwardsCompatibilityGuard() {
+	SetRenderFixBackwardsCompatibilityConstantAttr();
+}
+
+RenderFixBackwardsCompatibilityGuard::~RenderFixBackwardsCompatibilityGuard() {
+	RestoreRenderFixBackwardsCompatibilityAttr();
+}
+
+void RenderFixBackwardsCompatibilityDrawMotion(NJS_OBJECT* pObject, NJS_MOTION* pMotion, float frame) {
+	if (!RenderFix_IsEnabled()) {
+		njCnkMotion(pObject, pMotion, frame);
+		return;
+	}
+
+	RF_BACKWARDS_COMPAT_GUARD();
+	rfapi_core->pChunk->CnkTransformMotion(pObject, pMotion, frame, rfapi_core->pChunk->CnkSimpleDrawModel);
+}
+
 void RenderFixBackwardsCompatibilityDrawObject(NJS_OBJECT* pObject) {
 	if (!RenderFix_IsEnabled()) {
 		njCnkDrawObject(pObject);
 		return;
 	}
 
-	Control3D ctrl(NJD_CONTROL_3D_CNK_CONSTANT_ATTR, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-	SetRenderFixBackwardsCompatibilityConstantAttr();
+	RF_BACKWARDS_COMPAT_GUARD();
 	rfapi_core->pChunk->CnkTransformObject(pObject, rfapi_core->pChunk->CnkNormalDrawModel);
-	RestoreRenderFixBackwardsCompatibilityAttr();
 }
 
 void RenderFixBackwardsCompatibilityDrawModel(NJS_CNK_MODEL* pModel) {
@@ -39,10 +55,8 @@ void RenderFixBackwardsCompatibilityDrawModel(NJS_CNK_MODEL* pModel) {
 		return;
 	}
 
-	Control3D ctrl(NJD_CONTROL_3D_CNK_CONSTANT_ATTR, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-	SetRenderFixBackwardsCompatibilityConstantAttr();
+	RF_BACKWARDS_COMPAT_GUARD();
 	rfapi_core->pChunk->CnkNormalDrawModel(pModel);
-	RestoreRenderFixBackwardsCompatibilityAttr();
 }
 
 void rfCnkNormalDrawObject(NJS_OBJECT* pObject) {

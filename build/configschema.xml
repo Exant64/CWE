@@ -2,6 +2,21 @@
 <ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
   <Groups>
     <Group name="Chao World Extended" display="01 - Main Features">
+      <Property name="StageAnimals" type="bool" defaultvalue="True" display="Obtain Custom Animals in Stages">
+        <HelpText>Makes the second Chao Box spawn custom animals.</HelpText>
+      </Property>
+      <Property name="StageAnimalIncludeSADX" type="bool" defaultvalue="True" display="Include SADX Animals in Stage Custom Animal Spawn Pool">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this adds the SADX animals to that setting's spawn pool.</HelpText>
+      </Property>
+      <Property name="StageAnimalChance" type="int" defaultvalue="50" minvalue="0" maxvalue="100" display="Percentage Chance of Custom Animals spawning in Stages">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this specifies the percentage chance for the custom animals to spawn from the chao box.</HelpText>
+      </Property>
+      <Property name="StageAnimalMinCount" type="int" defaultvalue="1" minvalue="0" display="Minimum Number of Custom Animals in Stages">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this specifies the minimum number of animals that can spawn from the chao box.</HelpText>
+      </Property>
+      <Property name="StageAnimalMaxCount" type="int" defaultvalue="4" minvalue="1" display="Maximum Number of Custom Animals in Stages">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this specifies the maximum number of animals that can spawn from the chao box.</HelpText>
+      </Property>
       <Property name="UnusedToys" type="bool" defaultvalue="True" display="Bring Unused Toys">
         <HelpText>Brings back the toys Piano and Organ for Hero Garden and Dark Garden. Along with Rattles alignment!</HelpText>
       </Property>

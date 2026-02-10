@@ -151,6 +151,7 @@
     <ClCompile Include="api\api_texture.cpp" />
     <ClCompile Include="cnk_util.cpp" />
     <ClCompile Include="global_save.cpp" />
+    <ClCompile Include="minimal\minimal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
@@ -356,6 +357,7 @@
     <ClInclude Include="api\api_texture.h" />
     <ClInclude Include="cnk_util.h" />
     <ClInclude Include="global_save.h" />
+    <ClInclude Include="minimal\minimal.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BrightFix\BrightFix.sln" />

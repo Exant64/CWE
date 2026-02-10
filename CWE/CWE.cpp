@@ -92,6 +92,7 @@
 #include <al_garden_info.h>
 #include <api/api_json.h>
 #include <global_save.h>
+#include <minimal/minimal.h>
 
 const char* PathToModFolder = "";
 
@@ -382,6 +383,16 @@ extern "C"
 		}
 	}
 	
+	static bool IsModAPILoaded = false;
+	__declspec(dllexport) void OnFrame() {
+		if (!IsModAPILoaded) {
+			RegisterCWEData(&cweAPI);
+			IsModAPILoaded = true;
+		}
+
+		CWE_Codes_OnFrame();
+	}
+	
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex) {
 		CWE_ModIndex = modIndex;
 
@@ -479,6 +490,12 @@ extern "C"
 		gConfigVal.ToyMove = config->getBool("Chao World Extended", "ToyMove", true);
 		gConfigVal.NewInventory = config->getBool("Chao World Extended", "NewInventory", true);
 
+		gConfigVal.StageAnimals = config->getBool("Chao World Extended", "StageAnimals", true);
+		gConfigVal.StageAnimalIncludeSADX = config->getBool("Chao World Extended", "StageAnimalIncludeSADX", true);
+		gConfigVal.StageAnimalChance = config->getInt("Chao World Extended", "StageAnimalChance", 50) / 100.f;
+		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
+		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
+
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
 
@@ -571,6 +588,7 @@ extern "C"
 		AL_DayNight_Init(iniPath, config, helperFunctions);
 		AL_MoreAnimSound_Init();
 
+		Minimal_Init();
 		Animation_Init();
 
 		if (gConfigVal.ToyMove)
