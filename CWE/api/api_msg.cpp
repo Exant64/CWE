@@ -2,6 +2,7 @@
 #include <sa2modloader.h>
 #include <vector>
 #include <memory.h>
+#include <cwe_api.h>
 
 std::vector<const char*> MsgAlItem;
 
@@ -43,6 +44,14 @@ size_t RegisterFoName(char* str) {
 	MsgFoName.push_back(buffer);
 	return MsgFoName.size() - 1;
 }
+
+CWE_API_REGISTER_MSG AL_ModAPI_Msg = {
+	.Version = CWE_API_REGISTER_MSG_VER,
+
+	.AddFortuneTellerName = RegisterFoName,
+	.AddAlItemString = RegisterAlItemString,
+	.SetAlItemString = OverwriteAlItemString
+};
 
 const int sub_57A5D0Ptr = 0x57A5D0;
 int* sub_57A5D0(int a1, const char* a2)

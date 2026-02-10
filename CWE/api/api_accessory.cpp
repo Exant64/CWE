@@ -309,6 +309,13 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	return id;
 }
 
+CWE_API_REGISTER_ACCESSORY AL_ModAPI_Accessory = {
+	.Version = CWE_API_REGISTER_ACCESSORY_VER,
+	
+	.AddChaoAccessory = AddChaoAccessory,
+	.GetAccessoryIndex = GetAccessoryID
+};
+
 extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	char hash_id[ACCESSORY_ID_LENGTH];
 	auto hash = GenerateHashForChunkObject(model);

@@ -1,6 +1,9 @@
 #include "stdafx.h"
+
 #include <unordered_map>
-#include "api_util.h"
+
+#include <cwe_api.h>
+#include <api/api_util.h>
 
 static std::unordered_map<std::string, NJS_TEXLIST*> TextureLoadPairs;
 std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
@@ -24,7 +27,6 @@ extern "C" __declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, 
 	TexlistLoads.push_back(std::make_pair(name, load));
 }
 
-
 NJS_TEXLIST* AddAutoTextureLoad(const char* pTextureName) {
 	if (TextureLoadPairs.contains(pTextureName)) {
 		return TextureLoadPairs[pTextureName];
@@ -39,3 +41,10 @@ NJS_TEXLIST* AddAutoTextureLoad(const char* pTextureName) {
 
 	return pTexlist;
 }
+
+CWE_API_REGISTER_TEXTURE AL_ModAPI_Texture = {
+	.Version = CWE_API_REGISTER_TEXTURE_VER,
+
+	.AddChaoTexlistLoad = RegisterChaoTexlistLoad,
+	.AddAutoTextureLoad = AddAutoTextureLoad 
+};

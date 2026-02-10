@@ -603,8 +603,10 @@
     <ClCompile Include="api\api_accessory.cpp" />
     <ClCompile Include="api\api_json.cpp" />
     <ClCompile Include="api\api_metadata.cpp" />
+    <ClCompile Include="api\api_motion.cpp" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
     <ClCompile Include="api\api_texture.cpp" />
+    <ClCompile Include="api\api_main.cpp" />
     <ClCompile Include="cnk_util.cpp" />
     <ClCompile Include="global_save.cpp" />
     <ClCompile Include="hd_texture.cpp" />
@@ -748,7 +750,7 @@
     <ClCompile Include="register\reg_accessory.cpp" />
     <ClCompile Include="register\api_fruit.cpp" />
     <ClCompile Include="register\api_minimal.cpp" />
-    <ClCompile Include="register\api_motion.cpp" />
+    <ClCompile Include="register\reg_motion.cpp" />
     <ClCompile Include="register\api_register.cpp" />
     <ClCompile Include="register\api_special.cpp" />
     <ClCompile Include="save\save_serializable.cpp" />

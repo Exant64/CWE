@@ -6,7 +6,10 @@
 #ifdef CWEV9
 #include "alg_kinder_bl.h"
 #include "alg_kinder_ortho.h"
+#include "api/api_metadata.h"
 #else
+#define METADATA_ID_SIZE 21
+
 struct ChaoHudThingB
 {
 	int adjust;
@@ -28,18 +31,6 @@ struct BlackMarketItemAttributes
 	__int16 Name;
 	__int16 Descriptions;
 	__int16 Unknown;
-};
-
-struct __declspec(align(4)) MotionTableAction
-{
-	NJS_MOTION* NJS_MOTION;
-	__int16 FlagThing1;
-	__int16 field_6;
-	int TransitionToID;
-	int field_C;
-	float StartFrame;
-	float EndFrame;
-	float PlaySpeed;
 };
 #endif
 
@@ -175,7 +166,7 @@ struct CWE_API_ODEKAKE_ENTRY {
 	float BarColorB;
 };
 
-struct CWE_REGAPI {
+struct CWE_REGAPI_LEGACY {
 	Uint32 Version;
 
 	//"msg" functions
@@ -216,10 +207,10 @@ struct CWE_REGAPI {
 	void(*RegisterChaoMinimalFruit)(int fruitID, int minimalID, int chanceMin, int chanceMax);
 
 	//animation
-	int(*RegisterChaoAnimation)(std::string name, MotionTableAction* action);
-	int (*RegisterChaoAnimTransition) (const std::string& from, const std::string& to);
-	int(*GetChaoAnimationIndex)(const std::string& name);
-	MotionTableAction* (*GetChaoAnimation) (size_t index);
+	int(*RegisterChaoAnimation)(std::string name, MOTION_TABLE* action);
+	bool(*RegisterChaoAnimTransition) (const std::string& from, const std::string& to);
+	size_t (*GetChaoAnimationIndex)(const std::string& name);
+	MOTION_TABLE* (*GetChaoAnimation) (size_t index);
 
 	//misc
 	void(*RegisterChaoTexlistLoad)(const char* name, NJS_TEXLIST* load); //register texlists to load/unload in chao world
@@ -227,4 +218,125 @@ struct CWE_REGAPI {
 	void(*AddOdekakeMenu)(const CWE_API_ODEKAKE_ENTRY& entry); //add new button to transporter main menu, and handles logic to addnew menu
 
 	size_t(*GetAccessoryID)(const char* pID);
+};
+
+struct CWE_API_ACCESSORY_BALD_DATA {
+	NJS_POINT3 Center;
+	NJS_POINT3 Influence;
+	float Radius;
+	bool ClipFace;
+};
+
+enum CWE_API_ACCESSORY_FLAGS {
+	CWE_API_ACCESSORY_FLAGS_LEGACY_BALD = BIT_0,
+	CWE_API_ACCESSORY_FLAGS_NO_JIGGLE = BIT_1,
+	CWE_API_ACCESSORY_FLAGS_FREE_COLORS = BIT_2,
+	CWE_API_ACCESSORY_FLAGS_FREE_BALD = BIT_3,
+	CWE_API_ACCESSORY_FLAGS_BALD_KEEP_HEAD_PARTS = BIT_4,
+	CWE_API_ACCESSORY_FLAGS_BALD_PRESET_X = BIT_5,
+	CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Y = BIT_6,
+	CWE_API_ACCESSORY_FLAGS_BALD_PRESET_Z = BIT_7,
+	CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT = BIT_8,
+};
+
+struct CWE_API_ACCESSORY_COLOR_ENTRY {
+	Uint32 NodeIndex;
+	Uint32 MaterialIndex;
+	Uint32 ColorSlot;
+};
+
+struct CWE_API_ACCESSORY_DATA {
+	char ID[METADATA_ID_SIZE];
+
+	NJS_OBJECT* pObject;
+
+	const char* pTextureName;
+	NJS_TEXLIST* pTexlist;
+
+	EAccessoryType SlotType;
+
+	BlackMarketItemAttributes* pMarketAttrib;
+	const char* pName;
+	const char* pDescription;
+
+	uint64_t HideNodes; // bitfield
+
+	CWE_API_ACCESSORY_COLOR_ENTRY* pColorEntries;
+	Uint32 ColorEntryCount;
+	Uint32 DefaultColors[8];
+	Uint32 UsedColorSlots;
+
+	CWE_API_ACCESSORY_BALD_DATA* pBaldData;
+
+	Uint32 Flags;
+};
+
+#define CWE_API_VER 1
+#define CWE_API_REGISTER_VER 1
+#define CWE_API_REGISTER_ACCESSORY_VER 1
+#define CWE_API_REGISTER_MOTION_VER 1
+#define CWE_API_REGISTER_CHAO_VER 1
+#define CWE_API_REGISTER_TEXTURE_VER 1
+#define CWE_API_REGISTER_MSG_VER 1
+
+struct CWE_API_REGISTER_ACCESSORY {
+	int Version;
+
+	size_t (*AddChaoAccessory)(const CWE_API_ACCESSORY_DATA* pAccessoryData);
+	size_t (*GetAccessoryIndex)(const char* pID);
+};
+
+struct CWE_API_REGISTER_TEXTURE {
+	int Version;
+
+	void (*AddChaoTexlistLoad) (const char* pTextureName, NJS_TEXLIST* pTexList);
+	NJS_TEXLIST* (*AddAutoTextureLoad) (const char* pTextureName);
+};
+
+struct CWE_API_REGISTER_CHAO {
+	int Version;
+
+	size_t(*AddChaoType)(CWE_API_CHAO_DATA const* pData);
+};
+
+struct CWE_API_REGISTER_MOTION {
+	int Version;
+
+	size_t (*AddChaoMotion)(const char* pID, MOTION_TABLE* pMotionTable);
+	size_t (*GetChaoMotionIndex) (const char* pID);
+	MOTION_TABLE* (*GetChaoMotionTable) (size_t index);
+	bool (*SetChaoMotionTransition) (const char* pFromID, const char* pToID);
+};
+
+struct CWE_API_REGISTER_MSG {
+	int Version;
+
+	size_t (*AddFortuneTellerName)(char* pStr);
+	size_t (*AddAlItemString)(const char* pStr);
+	void (*SetAlItemString)(size_t index, const char* pStr);
+};
+
+struct CWE_API_REGISTER_MARKET {
+	int Version;
+
+	BlackMarketItemAttributes* (*GetItemAttr)(ChaoItemCategory category, size_t index);
+};
+
+struct CWE_API_REGISTER {
+	int Version;
+
+	CWE_API_REGISTER_CHAO* pChao;
+	CWE_API_REGISTER_ACCESSORY* pAccessory;
+	CWE_API_REGISTER_TEXTURE* pTexture;
+	CWE_API_REGISTER_MSG* pMsg;
+};
+
+struct CWE_API {
+	int Version;
+
+	// this is only included to let you port more complex API mods more easily
+	// if there's any non-legacy equivalent for something you're trying to use, please use that
+	CWE_REGAPI_LEGACY* pLegacy;
+
+	CWE_API_REGISTER* pRegister;
 };

@@ -11,6 +11,8 @@ struct CustomChaoEntry {
 
 extern std::vector<CustomChaoEntry> CustomChaoTypeEntries;
 
+extern CWE_API_REGISTER_CHAO AL_ModAPI_Chao;
+
 void AL_ModAPI_CharacterChao_Init();
 void AL_ModAPI_CharacterChao_Update();
 

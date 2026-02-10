@@ -237,6 +237,17 @@ struct __declspec(align(4)) MotionTableAction
 };
 #pragma pack(pop)
 
+struct MOTION_TABLE
+{
+	NJS_MOTION* pMotion;
+	short mode;
+	short posture;
+	int next;
+	int link_step;
+	float start;
+	float end;
+	float spd;
+};
 
 #pragma pack(push, 8)
 struct __declspec(align(4)) MotionTableData
@@ -262,7 +273,7 @@ struct __declspec(align(4)) MotionTableData
 	float EndFrame;
 	float PlaySpeed;
 	NJS_MOTION *NJS_MOTION;
-	MotionTableAction *PointerToAnimations;
+	MOTION_TABLE *PointerToAnimations;
 };
 #pragma pack(pop)
 

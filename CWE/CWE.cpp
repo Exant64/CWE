@@ -383,6 +383,9 @@ extern "C"
 			else if (!strcmp(mod.Name, "Dreamcast Cocoon Color")) {
 				MessageBoxA(0, "Please delete/disable \"Dreamcast Cocoon Color\" and use the one provided in the configuration menu for CWE.", "Chao World Extended", 0);
 			}
+			else if (!strcmp(mod.Name, "HD Chao Texture")) {
+				MessageBoxA(0, "Please delete/disable \"HD Chao Texture\" and use the one provided in the configuration menu for CWE.", "Chao World Extended", 0);
+			}
 			else if (!strcmp(mod.Name, "SADX Gardens")) {
 				std::string sadxinipath = std::string(mod.Folder);
 				sadxinipath += "\\mod.ini";
@@ -397,8 +400,9 @@ extern "C"
 	
 	static bool IsModAPILoaded = false;
 	__declspec(dllexport) void OnFrame() {
+		// we do it here instead of on init to delay it by one frame
 		if (!IsModAPILoaded) {
-			RegisterCWEData(&cweAPI);
+			AL_ModAPI_Init();
 			IsModAPILoaded = true;
 		}
 
@@ -608,7 +612,6 @@ extern "C"
 		AL_MoreAnimSound_Init();
 
 		Minimal_Init();
-		Animation_Init();
 
 		if (gConfigVal.ToyMove)
 			AL_Toy_Moveable_Init();

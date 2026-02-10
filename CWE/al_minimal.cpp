@@ -405,7 +405,7 @@ void al_minimal_Init()
 		ModAPI_MinimalMotion3.push_back(AnimalAnims3[i]);
 		ModAPI_MinimalStats.push_back(AnimalStats[i]);
 		ModAPI_MinimalTexlists.push_back(AnimalTexLists[i]);
-		cweAPI.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
+		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
 	WriteJump(AL_MinimalExecutor_Display, AL_MinimalExecutor_Display_);

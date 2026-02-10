@@ -121,7 +121,7 @@
     <ClCompile Include="register\reg_accessory.cpp" />
     <ClCompile Include="register\api_fruit.cpp" />
     <ClCompile Include="register\api_minimal.cpp" />
-    <ClCompile Include="register\api_motion.cpp" />
+    <ClCompile Include="register\reg_motion.cpp" />
     <ClCompile Include="register\api_register.cpp" />
     <ClCompile Include="register\api_special.cpp" />
     <ClCompile Include="save\save_serializable.cpp" />
@@ -143,6 +143,7 @@
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
     <ClCompile Include="api\api_accessory.cpp" />
     <ClCompile Include="api\api_metadata.cpp" />
+    <ClCompile Include="api\api_motion.cpp" />
     <ClCompile Include="save\save_item.cpp" />
     <ClCompile Include="al_garden_info.cpp" />
     <ClCompile Include="move.cpp" />

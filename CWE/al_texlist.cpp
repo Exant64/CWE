@@ -62,7 +62,7 @@ NEWLENSTEX(CWE_LENS_JEWEL_PURPLE)
 NEWLENSTEX(CWE_LENS_JEWEL_RED)
 NEWLENSTEX(CWE_LENS_JEWEL_SILVER)
 
-void CWE_RegisterTexlists(const CWE_REGAPI* cwe_api) {
+void CWE_RegisterTexlists(const CWE_REGAPI_LEGACY* cwe_api) {
 	cwe_api->RegisterChaoTexlistLoad("al_minda", &AL_SANDHOLE_TEXLIST);
 	cwe_api->RegisterChaoTexlistLoad("birthdayhat", &BIRTHDAYHAT_TEXLIST);
 	cwe_api->RegisterChaoTexlistLoad("CWE_OBJECT", &CWE_OBJECT_TEXLIST);

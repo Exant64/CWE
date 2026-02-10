@@ -263,6 +263,11 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	return newChaoType;
 }
 
+CWE_API_REGISTER_CHAO AL_ModAPI_Chao = {
+	.Version = CWE_API_REGISTER_CHAO_VER,
+	.AddChaoType = AddChaoType
+};
+
 void AL_ModAPI_CharacterChao_Update() {
 	AL_BODY.textures = AL_BODY_TEXNAMES.data();
 
@@ -273,7 +278,7 @@ void AL_ModAPI_CharacterChao_Update() {
 		tex.nbTexture = entry.Data.TextureCount;
 		tex.textures = AL_BODY_TEXNAMES.data() + entry.StartIndex;
 
-		cweAPI.RegisterChaoTexlistLoad(entry.Data.TextureName, &tex);
+		CWE_API_Legacy.RegisterChaoTexlistLoad(entry.Data.TextureName, &tex);
 	}
 
 	g_HelperFunctions->HookExport("AL_RootObject", AL_RootObject.data());

@@ -43,4 +43,4 @@ extern NJS_TEXLIST AL_OSAMENU;
 extern NJS_TEXLIST AL_ITEM_TEXLIST;
 extern NJS_TEXLIST AL_DX_PARTS_TEX_TEXLIST;
 
-void CWE_RegisterTexlists(const CWE_REGAPI* cwe_api);
+void CWE_RegisterTexlists(const CWE_REGAPI_LEGACY* cwe_api);
