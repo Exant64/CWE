@@ -140,6 +140,10 @@ static void GreyscaleLandtable(LandTable* pLandTable) {
 }
 
 void GrayscalifyCurrentLandtable() {
+    if(!LandTableSA2BModels) {
+        return;
+    }
+
     static uint32_t GreyscaledAlreadyFlag = 0;
 
     const uint32_t flag = (1 << AL_GetStageNumber());
