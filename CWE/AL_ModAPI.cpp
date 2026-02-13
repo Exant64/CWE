@@ -219,7 +219,7 @@ BlackMarketItemAttributes* GetItemAttr(ChaoItemCategory cat, int index) {
 	return BlackMarketAttributes::Get()->Attrib(cat, index);
 }
 
-CWE_REGAPI_LEGACY CWE_API_Legacy {
+CWE_REGAPI CWE_API_Legacy {
 	.Version = 1,
 
 	.RegisterFoName = RegisterFoName,
@@ -365,7 +365,7 @@ void AL_ModAPI_Init() {
 
 	AL_Odekake_Finalize();
 
-	CWE_REGAPI_LEGACY* cwe_api = &CWE_API_Legacy;
+	CWE_REGAPI* cwe_api = &CWE_API_Legacy;
 
 	int MissingItem = cwe_api->RegisterAlItemString("Missing Item");
 	int MissingAcc = cwe_api->RegisterAlItemString("Accessory");

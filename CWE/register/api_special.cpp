@@ -91,7 +91,7 @@ void ALS_Reincarn(ObjectMaster* chao, ObjectMaster* item)
 	chao->Data1.Chao->pParamGC->ForceReincarnate = true;
 }
 
-void ALAPI_RegisterSpecial(CWE_REGAPI_LEGACY* cwe_api) {
+void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 	int LensDefault = cwe_api->RegisterChaoSpecial(&LensBoxDefault, &CWE_OBJECT_TEXLIST, &LensBoxDefaultAttr, ALS_LensSpecial, nullptr, "Default Lens", LensDefaultDescription, false);
 	int lensGenericDescription = cwe_api->RegisterAlItemString(LensGenericDescription);
 	LensBoxAligAttr.Descriptions = lensGenericDescription;

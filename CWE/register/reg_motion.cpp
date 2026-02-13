@@ -3,7 +3,7 @@
 #include <ChaoMain.h>
 #include <chao/al_motion/alm_all.h>
 
-void ALAPI_RegisterMotion(CWE_REGAPI_LEGACY* cwe_api) {
+void ALAPI_RegisterMotion(CWE_REGAPI* cwe_api) {
 	//animation fix for ALS_SassyBye
 	NJS_MDATA2* mdata = (NJS_MDATA2*)cwe_api->GetChaoAnimation(450)->pMotion->mdata;
 	mdata[1].p[1] = 0;

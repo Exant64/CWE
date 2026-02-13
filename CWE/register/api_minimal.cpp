@@ -3,7 +3,7 @@
 #include <ChaoMain.h>
 #include <data/minimal/minimal_all.h>
 
-void ALAPI_RegisterMinimal(CWE_REGAPI_LEGACY* cwe_api) {
+void ALAPI_RegisterMinimal(CWE_REGAPI* cwe_api) {
 	bee_entry.Name = "Bee";
 	ladybird_entry.Name = "Ladybird";
 	scorpion_entry.Name = "Scorpion";

@@ -67,7 +67,7 @@ struct CWE_MINIMAL {
 	Sint32 reserved[4];
 };
 
-struct CWE_REGAPI_LEGACY {
+struct CWE_REGAPI {
 	Uint32 Version;
 
 	//"msg" functions
@@ -166,7 +166,7 @@ struct CWE_API {
 
 	// this is only included to let you port more complex API mods more easily
 	// if there's any non-legacy equivalent for something you're trying to use, please use that
-	CWE_REGAPI_LEGACY* pLegacy;
+	CWE_REGAPI* pLegacy;
 
 	CWE_API_REGISTER* pRegister;
 };
