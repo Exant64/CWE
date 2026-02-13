@@ -328,7 +328,8 @@ extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, 
 		.pMarketAttrib = attrib,
 		.pName = name,
 		.pDescription = description,
-		.ColorEntryCount = 0
+		.ColorEntryCount = 0,
+		.Flags = CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT
 	};
 
 	strcpy_s(accessory_data.ID, hash_id);
