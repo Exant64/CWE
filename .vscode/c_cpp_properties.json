@@ -3,6 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
+                "${workspaceFolder}/api",
                 "${workspaceFolder}/CWE",
                 "${workspaceFolder}/BrightFix/include",
                 "${workspaceFolder}/external/minidx9/include",
