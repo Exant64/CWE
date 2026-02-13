@@ -164,7 +164,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -183,7 +183,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;IMGUIDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -255,7 +255,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

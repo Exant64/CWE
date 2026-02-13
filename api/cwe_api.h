@@ -4,9 +4,9 @@
 
 //ignore this, this is for our side of things
 #ifdef CWEV9
-#include "alg_kinder_bl.h"
-#include "alg_kinder_ortho.h"
-#include "api/api_metadata.h"
+#include <alg_kinder_bl.h>
+#include <alg_kinder_ortho.h>
+#include <api/api_metadata.h>
 #else
 #define METADATA_ID_SIZE 21
 
