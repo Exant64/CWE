@@ -2,11 +2,13 @@
 
 #include <cwe_api.h>
 
+#include <ChaoMain.h>
+
 #include <api/api_customchao.h>
 #include <api/api_accessory.h>
 #include <api/api_texture.h>
 #include <api/api_msg.h>
-#include <ChaoMain.h>
+#include <api/api_motion.h>
 
 static CWE_API_REGISTER CWE_API_Register = {
     .Version = CWE_API_REGISTER_VER,
@@ -14,7 +16,8 @@ static CWE_API_REGISTER CWE_API_Register = {
     .pChao = &AL_ModAPI_Chao,
     .pAccessory = &AL_ModAPI_Accessory,
     .pTexture = &AL_ModAPI_Texture,
-    .pMsg = &AL_ModAPI_Msg
+    .pMsg = &AL_ModAPI_Msg,
+    .pMotion = &AL_ModAPI_Motion
 };
 
 CWE_API CWE_API_Main = {
@@ -81,24 +84,32 @@ void CWE_API_FindMods() {
 
 void CWE_API_EarlyInit() {
     for(const auto& mod : ModEntries) {
-        mod.m_earlyInit();
+        if(mod.m_earlyInit) {
+            mod.m_earlyInit();
+        }
     }
 }
 
 void CWE_API_LateInit() {
     for(const auto& mod : ModEntries) {
-        mod.m_lateInit();
+        if(mod.m_lateInit) {
+            mod.m_lateInit();
+        }
     }
 }
 
 void CWE_API_EarlyLoad() {
     for(const auto& mod : ModEntries) {
-        mod.m_earlyLoad(&CWE_API_Main);
+        if(mod.m_earlyLoad) {
+            mod.m_earlyLoad(&CWE_API_Main);
+        }
     }
 }
 
 void CWE_API_Load() {
     for(const auto& mod : ModEntries) {
-        mod.m_load(&CWE_API_Main);
+        if(mod.m_load) {
+            mod.m_load(&CWE_API_Main);
+        }
     }
 }
