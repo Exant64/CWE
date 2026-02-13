@@ -2,6 +2,7 @@
 
 #include "cwe_api_common.h"
 
+#ifndef CWEV9
 struct ChaoHudThingB {
 	int adjust;
 	float wd;
@@ -13,6 +14,7 @@ struct ChaoHudThingB {
 	NJS_TEXLIST* pTexlist;
 	int TexNum;
 };
+#endif
 
 #define ODE_FLAGS_NONE (0)
 #define ODE_FLAGS_REQUIRE_CHAO BIT_0 // holding chao required to enter the menu (button greyed out if otherwise)
