@@ -13,18 +13,16 @@
 #define CUSTOM_CHAO_FLAG_BALD_HIDE_PARTS_NON_ADJACENT BIT_1
 
 struct CWE_API_CHAO_DATA {
-	using CanEvolve = bool(*)(ObjectMaster* tp);
-
 	NJS_OBJECT* pObject; //chunk model format (sa2mdl)
 	NJS_OBJECT* pSecondEvoList[5];
 
 	const char* TextureName; //we don't support texlists because we need to "inject" the loaded textures into al_body
 	int TextureCount;
-	Uint32 IconColor; //emotion ball color
-	Uint32 IconType; //0 - ball, 1 - halo, 2 - spiky, 3 - custom emote ball
+	Uint32 IconColor; // emotion ball color
+	Uint32 IconType; // use the ICON_TYPE defines for setting this
 	void* pIconData; //placeholder for custom emotion balls in the future
 
-	CanEvolve pEvolveFunc; //if function returns true during evolution, chao will evolve into this type
+	bool (*pEvolveFunc) (ObjectMaster* tp); //if function returns true during evolution, chao will evolve into this type
 
 	Uint32 Flags;
 	const char* Name; //we use it for the health center for now, also useful for KCE, ex. "Spartoi"
