@@ -65,7 +65,9 @@ FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 
 // hack to not have all accessories registering collision at once
 // status check to atleast register collision while held
+// we killed the hack for now, we need a more elegant fix, new colli list would be best
 void ALO_AccessoryExecutor(task* tp) {
+#if 0
 	EntityData1* work = tp->Data1.Entity;
 	al_entry_work* pEntry = ((al_entry_work*)tp->UnknownA_ptr);
 
@@ -73,10 +75,13 @@ void ALO_AccessoryExecutor(task* tp) {
 	if (!(work->Status & 0x8000) && !ALW_IsHeld(tp) && (FrameCount % 2) == (pEntry->num % 2)) {
 		work->Collision = NULL;
 	}
+#endif
 
 	ALO_ObakeHeadExecutor_Main(tp);
 
+#if 0
 	work->Collision = backupColli;
+#endif
 }
 
 task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
