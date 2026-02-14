@@ -70,7 +70,7 @@ void ALO_AccessoryExecutor(task* tp) {
 	al_entry_work* pEntry = ((al_entry_work*)tp->UnknownA_ptr);
 
 	const auto backupColli = work->Collision;
-	if (!(work->Status & 0x8000) && (FrameCount % 2) == (pEntry->num % 2)) {
+	if (!(work->Status & 0x8000) && !ALW_IsHeld(tp) && (FrameCount % 2) == (pEntry->num % 2)) {
 		work->Collision = NULL;
 	}
 
