@@ -32,7 +32,6 @@ uint32_t GenerateHashForChunkObject(const NJS_OBJECT* pObj) {
 
 	FindFirstChunkModelLists(pObj, vlist, plist);
 	if (!vlist || !plist) {
-        // todo: feedback
         return -1;
     }
 
