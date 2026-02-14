@@ -55,6 +55,7 @@ int AL_KW_GetMeetChao(ObjectMaster* a1, ObjectMaster* a2);
 bool AL_KW_IDExists(const CHAO_ID& id);
 ChaoDataBase* AL_KW_FindChaoBasedOnId(const CHAO_ID& id);
 
+Bool AL_KW_IsSToyFlagOn(task* pChaoTask, int Kind);
 Bool AL_KW_IsSongFlagOn(task* pChaoTask, int Kind);
 Bool AL_KW_IsArtFlagOn(task* pChaoTask, int Kind);
 Bool AL_KW_IsMusicFlagOn(task* pChaoTask, int Kind);

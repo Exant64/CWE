@@ -12,6 +12,10 @@
 #include <ChaoMain.h>
 #include <al_draw.h>
 #include <imgui_debug_motionstrings.h>
+#include <al_draw.h>
+#include <api/api_accessory.h>
+#include <al_behavior/al_behavior.h>
+#include <al_daynight_rain.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -20,6 +24,8 @@ static bool ShowDNC = false;
 static bool ShowLight = false;
 static bool ShowTaskList = false;
 static bool ShowChaoSoundMenu = false;
+static bool ShowItemsMenu = false;
+static bool ShowAccessoryMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -57,6 +63,80 @@ static void ChaoInfoMenu() {
                 }
                 else {
                     ChaoDebugDistSelected = NULL;
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Accessories")) {
+                const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
+
+                static const char* AccessoryStrings[3000];
+                static size_t AccessoryIndices[3000];
+                int setID[4] = { -1, -1, -1, -1 };
+
+                const char* slotNames[] = {
+                    "Head",
+                    "Face",
+                    "Generic1",
+                    "Generic2"
+                };
+
+                for (size_t i = 0; i < 4; ++i) {
+                    ImGui::Text(
+                        "%s (internal data ParamID:%s Data1ID:%s Index: %d)", 
+                        slotNames[i],
+                        work->pParamGC->Accessories[i].ID, 
+                        work->AccessoryCalculatedID[i], 
+                        work->AccessoryIndices[i]
+                    );
+
+                    size_t count = 0;
+                    for (size_t id = 0; id < items.size(); ++id) {
+                        if (GetAccessoryData(id).SlotType != i) continue;
+                        AccessoryIndices[count] = id;
+                        AccessoryStrings[count++] = items[id].data();
+                    }
+                    AccessoryStrings[count] = NULL;
+
+                    ImGui::PushID(i);
+                    if (ImGui::Combo("Set ID", &setID[i], AccessoryStrings, count)) {
+                        strcpy_s(work->pParamGC->Accessories[i].ID, AccessoryStrings[setID[i]]);
+                        AL_SetAccessory(pChao, AccessoryIndices[setID[i]]);
+                    }
+                    ImGui::PopID();
+
+                    if (work->AccessoryIndices[i] == -1) continue;
+                    
+                    for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
+                        NJS_COLOR* pCol = (NJS_COLOR*) & work->pParamGC->Accessories[i].ColorSlots[j];
+                        ImGui::PushID(i * 10 + j);
+                        float col[3];
+                        col[0] = pCol->argb.r / 255.f;
+                        col[1] = pCol->argb.g / 255.f;
+                        col[2] = pCol->argb.b / 255.f;
+                        if (ImGui::ColorEdit3("color", col)) {
+                            pCol->argb.r = Uint8(col[0] * 255.f);
+                            pCol->argb.g = Uint8(col[1] * 255.f);
+                            pCol->argb.b = Uint8(col[2] * 255.f);
+                            work->pParamGC->Accessories[i].ColorFlags |= (1 << j);
+                        }
+                        ImGui::PopID();
+                    }
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("ParamFlags")) {
+                const char* paramFlagNames[] = {
+                    "NAME_NEW",
+                    "OLD_GUEST_CHECK",
+                    "PARTS_CONVERSION",
+                    "ACCESSORIES_NEW",
+                };
+                for (size_t i = 0; i < 4; ++i) {
+                    ImGui::CheckboxFlags(paramFlagNames[i], &work->pParamGC->Flags, (1 << i));
                 }
 
                 ImGui::EndTabItem();
@@ -240,6 +320,7 @@ static void ChaoInfoMenu() {
                 static int animID = 0;
                 int currentAnimID = work->MotionTable.AnimID;
                 ImGui::Text("Current Animation: %s (%d)", MotionNames[currentAnimID], currentAnimID);
+                ImGui::Text("Speed: %f %f", work->MotionTable.PlaySpeed2, work->MotionTable.PlaySpeed);
 
                 ImGui::Combo("Filter for pose: %s (%d)", &poseFilter, poseNames, IM_ARRAYSIZE(poseNames));
                 if (poseFilter > 0) {
@@ -402,6 +483,54 @@ static void TaskListMenu() {
     }
 }
 
+static void ItemsMenu() {
+    if (ShowItemsMenu && ImGui::Begin("Items", &ShowItemsMenu)) {
+        for (size_t i = 0; i < AccessoryItemList.size(); ++i) {
+            ImGui::PushID(i);
+            if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
+                ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
+                ImGui::InputInt("Garden", &AccessoryItemList[i].Garden);
+                ImGui::InputText("ID", AccessoryItemList[i].ID, 20);
+                ImGui::InputFloat3("Position", &AccessoryItemList[i].Position.x);
+                ImGui::InputInt("Angle", &AccessoryItemList[i].Angle);
+
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+          
+        }
+        ImGui::End();
+    }
+}
+
+static void AccessoryInternals() {
+    if(ShowAccessoryMenu && ImGui::Begin("Accessory Internals", &ShowAccessoryMenu)) {
+        for(size_t i = 0; i < GetAccessoryCount(); ++i) {
+            auto& data = GetAccessoryData(i);
+            
+            if(ImGui::TreeNode(data.ID)) {
+                bool isNoRf = data.Flags & CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+                if(ImGui::Checkbox("NoRFNormalDraw", &isNoRf)) {
+                    if(!isNoRf) {
+                        data.Flags &= ~CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+                    }
+                    else {
+                        data.Flags |= CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT;
+                    }
+                }
+                
+                ImGui::TreePop();
+            }
+        }
+        ImGui::End();
+    }
+}
+
+static task* raintp = NULL;
+static void RainDelete(task* tp) {
+    raintp = NULL;
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -410,6 +539,8 @@ static void ImGuiMenu() {
             ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
             ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
             ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
+            ImGui::MenuItem("Items", NULL, &ShowItemsMenu);
+            ImGui::MenuItem("Accessory Internals", NULL, &ShowAccessoryMenu);
             ImGui::EndMenu();
         }
 
@@ -417,9 +548,49 @@ static void ImGuiMenu() {
         ChaoInfoMenu();
         DayNightMenu();
         LightMenu();
+        ItemsMenu();
         TaskListMenu();
+        AccessoryInternals();
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (false && ImGui::Begin("rain test")) {
+        static int timer = 4000;
+        ImGui::SliderInt("timer", &timer, 0, 10000);
+
+        if (ImGui::Button("spawn")) {
+            raintp = AL_CreateDayNightRain(timer, 0xA0A0A0FF);
+            raintp->DeleteSub = RainDelete;
+        }
+
+        if (raintp) {
+            auto* work = (RAIN_WORK*)raintp->Data2.Undefined;
+            
+            for (size_t i = 0; i < DROP_COUNT; i++) {
+                if (!work->drops[i].lifeCount) {
+                    char num[20];
+                    sprintf_s(num, "inactive %d", int(i));
+                    if (ImGui::TreeNode(num)) {
+                        ImGui::TreePop();
+                    }
+                    continue;
+                }
+
+                char num[10];
+                sprintf_s(num, "drop %d", int(i));
+
+                if (ImGui::TreeNode(num)) {
+                    ImGui::Text("pos %f %f %f", work->drops[i].startPos.x, work->drops[i].startPos.y, work->drops[i].startPos.z);
+                    ImGui::Text("scale %d", int(work->drops[i].scale));
+                    ImGui::Text("progress %f", work->drops[i].progress);
+                    ImGui::TreePop();
+                }
+                
+            }
+        }
+
+        ImGui::End();
     }
 }
 
@@ -442,12 +613,6 @@ LRESULT __stdcall WndProcHook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 ImGuiKey ImGui_ImplWin32_KeyEventToImGuiKey(WPARAM wParam, LPARAM lParam);
 static void ImGuiDraw() {
-
-    ImGuiIO& io = ImGui::GetIO();
-    for (int i = 0; i < 256; i++) {
-        io.AddKeyEvent(ImGui_ImplWin32_KeyEventToImGuiKey(i, 0), GetAsyncKeyState(i) <  0);
-    }
-
     // Start the Dear ImGui frame
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -480,12 +645,24 @@ void ImGui_Init() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    ImGui_ImplWin32_EnableDpiAwareness();
+
+    float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
+    
+    // m_renderDevice->m_initInfo.BackBufferWidth/Height
+	DataPointer(void*, dword_1A557C0, 0x1A557C0);
+    io.DisplaySize = { (float)*(int*)((int)dword_1A557C0 + 0x1C), (float)*(int*)((int)dword_1A557C0 + 0x1C + 4) };
+    io.DisplayFramebufferScale = {1, 1};
+
+    // Setup scaling
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again
+    style.FontScaleDpi = main_scale;        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
 
 	ImGui_ImplWin32_Init(MainWindowHandle);
 	ImGui_ImplDX9_Init(cwe_device);
+
 }

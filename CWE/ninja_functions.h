@@ -90,6 +90,8 @@ FunctionPointer(void, njCnkDrawObjectOrig, (NJS_OBJECT *a1), 0x42E730);
 static void njCnkDrawObject(NJS_OBJECT* a1) {
 	njCnkDrawObjectOrig(a1);
 }
+FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
+
 DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 FunctionPointer(int, njPushUnitMatrix, (), 0x44B210);
 
@@ -128,6 +130,8 @@ void DrawQuadTexture(int a1, float a2);
 void njSetTextureNum(int texid);
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered = false);
 
+FunctionPointer(void, njCnkMotion, (NJS_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
+
 VoidFunc(SaveControl3D, 0x446D00);
 VoidFunc(LoadControl3D, 0x446D10);
 VoidFunc(SaveConstantAttr, 0x446CB0);
@@ -147,3 +151,18 @@ DataArray(LightGC, LightsGC, 0x01DE4420, 12);
 #define RotateX(a) if(a) njRotateX(NULL, a)
 #define RotateY(a) if(a) njRotateY(NULL, a)
 #define RotateZ(a) if(a) njRotateZ(NULL, a)
+
+struct Control3D {
+	Control3D(uint32_t on, uint32_t off)  {
+		m_backup = njControl3D;
+
+		njControl3D |= on;
+		njControl3D &= ~off;
+	}
+
+	~Control3D() {
+		njControl3D = m_backup;
+	}
+private:
+	uint32_t m_backup;
+};

@@ -32,6 +32,10 @@
 #include "al_msg_font.h"
 #include "al_chao_info.h"
 #include <api/api_tree.h>
+#include <al_garden_info.h>
+#include <api/api_accessory.h>
+
+#include <renderfix.h>
 
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
@@ -119,8 +123,6 @@ ObjectMaster* ALO_Kinder_Window_Load(ObjectMaster* result, char layer, ALK_WINDO
 	return retval;
 }
 
-DataPointer(unsigned char, HeldItemType, 0x019F6450);
-DataPointer(ITEM_SAVE_INFO*, HeldItemSave, 0x019F6454);
 #define ITEMSINBUYLIST 5
 #define DISTANCEBUYLIST 40 //46
 #define SELECTIONBOXADJUST 46 - DISTANCEBUYLIST
@@ -210,19 +212,9 @@ void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category)
 
 SAlItem* __cdecl sub_58B120(SAlItem* result)
 {
-	result->mCategory = HeldItemType;
+	result->mCategory = AL_GetHoldingItemCategory();
+	result->mType = AL_GetHoldingItemKind();
 
-	if (HeldItemSave)
-	{
-		if (HeldItemType == 8)
-			result->mType = HeldItemSave->Type - 256;
-		else
-			result->mType = HeldItemSave->Type;
-	}
-	else
-	{
-		result->mType = -1;
-	}
 	return result;
 }
 static void __declspec(naked) sub_58B120Hook()
@@ -233,7 +225,7 @@ static void __declspec(naked) sub_58B120Hook()
 
 		// Call your __cdecl function here:
 		call sub_58B120
-
+		
 		add esp, 4 // result<eax> is also used for return value
 		retn
 	}
@@ -484,7 +476,6 @@ void FBuyListUpdate()
 }
 
 FunctionPointer(int, sub_42D500, (NJS_CNK_MODEL* a1), 0x42D500);
-FunctionPointer(void, njCnkMotion, (NJS_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
 
 #define SELECTION_BOX_SX 257 //280 orig
 #define SELECTION_BOX_SY 46  //46 orig
@@ -647,7 +638,17 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
-				ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, item->mType);
+
+				AccessorySetupDraw(item->mType, NULL, 0);
+
+				if(!IsAccessoryRFSupported(item->mType)) {
+					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				}
+				else {
+					Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				}
+
 				break;
 			case ChaoItemCategory_Special:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
@@ -768,7 +769,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		njTranslate(NULL, 0, -1.4f, 0);
 
 		njSetTexture(&CWE_OBJECT_TEXLIST);
-		if (ALO_IsAccessoryGeneric(type))
+		if (IsAccessoryGeneric(type))
 		{
 			njTranslate(NULL, 0, -0.5f, 0);
 			njScale(NULL, 0.978f, 0.978f, 0.978f);
@@ -777,8 +778,24 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		else
 			chCnkDrawObject(&object_alo_mannequin);
 
-		ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
+		if (a1->mItemDescSell && AL_GetHoldingItemSaveInfo()) {
+			AccessorySaveInfo* pAccSave = (AccessorySaveInfo*)AL_GetHoldingItemSaveInfo();
+			AccessorySetupDraw(type, pAccSave->Colors, pAccSave->UsedColors);
+		}
+		else {
+			AccessorySetupDraw(type, NULL, 0);
+		}
+
+		if(!IsAccessoryRFSupported(type)) {
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+		}
+		else {
+			Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+		}
+		
 		break;
+
 	case ChaoItemCategory_Special:
 		ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
@@ -949,6 +966,7 @@ const char* BlackMarket_GetBlMsg(BlackMarketData const* data, int const msgID)
 #pragma optimize("gty", off)
 void __cdecl FBuyListDispText(BlackMarketData const* a1)
 {
+	SetShaders(1);
 	MessageFontThing messageBuffer;
 	for (int i = 0; i < ITEMSINBUYLIST; i++)
 	{
@@ -1341,20 +1359,28 @@ void DrawTimer()
 	sub_5A6450((int)uibuff, 1);
 }
 
-Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f },  1,  0.5f, {  1,  1,  1 } };
+Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1, 0.5f, {  1,  1,  1 } };
+#define Translate(x,y,z) OrthoScreenTranslate(x, y, (-26.0f) / z * scl)
 
-#define Translate(x,y,z) OrthoScreenTranslate(x,y,(-26.0f)/z * scl)
 extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Rotation& rot, const SAlItem& mItemDescItem) {
 	njPushMatrixEx();
 	njUnitMatrix(0);
 
-	Light backupLight = Lights[10];
-	Lights[10] = BM_MenuLight;
-	DoLighting(10);
+	const size_t index = 11;
+	const Light backupLight = Lights[index];
+	Lights[index] = BM_MenuLight;
+	njUnitVector(&Lights[index].direction);
 
+	// HOPEFULLY temporary hack to fix normals not being normalized in new RF
+	if(RenderFix_IsEnabled()) {
+		Lights[index].intensity /= scl * 0.025f * 100.f;
+	}
+
+	DoLighting(index);
+	
 	OrthoDrawBegin();
 	int type = mItemDescItem.mType;
-	if (type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
+	if (true || type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
 		switch (mItemDescItem.mCategory)
 		{
 		case ChaoItemCategory_Accessory:
@@ -1364,16 +1390,23 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			njTranslate(NULL, 0, -1.4f, 0);
 
 			njSetTexture(&CWE_OBJECT_TEXLIST);
-			if (ALO_IsAccessoryGeneric(type))
-			{
+			if (IsAccessoryGeneric(type)) {
 				njTranslate(NULL, 0, -0.5f, 0);
 				njScale(NULL, 0.978f, 0.978f, 0.978f);
 				chCnkDrawObject(&object_ala_full_mannequin);
 			}
-			else
+			else {
 				chCnkDrawObject(&object_alo_mannequin);
+			}
 
-			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Accessory, type);
+			if(!IsAccessoryRFSupported(type)) {
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+			}
+			else {
+				Control3D ctrl (0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+			}
+
 			break;
 		case ChaoItemCategory_Special:
 			Translate(x, y, -26.0f);
@@ -1488,7 +1521,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	}
 	OrthoDrawEnd();
 	njPopMatrixEx();
-	Lights[10] = backupLight;
+	Lights[index] = backupLight;
 }
 
 void DrawPurchasedItem() {
@@ -2182,6 +2215,29 @@ static void __declspec(naked) sub_589850Hook()
 	}
 }
 
+static void SellHeldItem() {
+	task* pHeld = MainCharObj2[0]->HeldObject;
+	if (pHeld)
+	{
+		pHeld->MainSub = DeleteObject_;
+		if (MainCharObj1[0]) {
+			sub_46E5E0(0, (int)MainCharObj1[0]);
+		}
+		MainCharObj2[0]->HeldObject = 0;
+	}
+
+	void* pSave = AL_GetHoldingItemSaveInfo();
+	if (pSave) {
+		if (CWE_IsCustomItemSaveInfoCategory(AL_GetHoldingItemCategory())) {
+			AL_ClearItemSaveInfo((ItemSaveInfoBase*)pSave);
+		}
+		else {
+			AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)pSave);
+		}
+	}
+
+	AL_ClearHoldingItemInfo();
+}
 float NewInvDisplayPosX = 230; //384 = original
 void alg_kinder_bl_Init()
 {
@@ -2217,6 +2273,7 @@ void alg_kinder_bl_Init()
 	WriteJump((void*)0x52F650, AL_GetMaxItemNum_hook);
 
 	//selling code
+	WriteJump((void*)0x52F470, SellHeldItem);
 	WriteCall((void*)0x0058BDF1, AlItemGetInfoHook);
 	WriteCall((void*)0x0058BE2D, FItemDescSetHook);
 	WriteCall((void*)0x0058BDEA, sub_58B120Hook);

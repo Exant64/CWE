@@ -2,8 +2,9 @@
 #include "al_texlist.h"
 #include <d3d9.h>
 
+typedef ITEM_SAVE_INFO ChaoObjectData;
+
 extern const HelperFunctions* g_HelperFunctions;
-extern void(__cdecl* DrawChaoWorldShadow)();
 
 extern IDirect3DDevice9* cwe_device;
 
@@ -34,6 +35,8 @@ struct ConfigValues {
 	bool ClassroomTimerDisplay;
 
 	bool DayNightCycle;
+	bool DayNightRain;
+	bool DayNightRainSounds;
 	bool DayNightCycleNeutralGardenSkybox;
 	bool DayNightCycleHeroGardenSkybox;
 	bool DayNightCycleDarkGardenSkybox;
@@ -66,6 +69,16 @@ struct ConfigValues {
 	bool FixMonsterEvo;
 
 	bool FixHeroSky;
+
+	bool StageAnimals;
+	float StageAnimalChance;
+	size_t StageAnimalMinCount;
+	size_t StageAnimalMaxCount;
+	bool StageAnimalIncludeSADX;
+
+	bool NeutGrayscale;
+	bool HeroGrayscale;
+	bool DarkGrayscale;
 };
 extern ConfigValues gConfigVal;
 
@@ -131,15 +144,6 @@ struct __declspec(align(4)) BlackMarketSaveData
 #pragma pack(pop)
 void JoyCarry_Init();
 
-struct  ChaoObjectData
-{
-	__int16 Type;
-	__int16 Garden;
-	__int16 Size;
-	__int16 Age;
-	NJS_VECTOR position;
-};
-
 struct  ALFSave
 {
 	int ChaoSaveStart;
@@ -165,6 +169,8 @@ struct  ALFSave
 
 DataArray(ALFSave, ChaoSave, 0x019F6460, 2);
 
+extern uint32_t CWE_ModIndex;
+
 extern int HyperSwimFruitID;
 extern int HyperFlyFruitID;
 extern int HyperRunFruitID;
@@ -174,10 +180,8 @@ extern int CakeSliceID;
 extern int OrangeID;
 extern int BeeID;
 extern int MirrorID;
-void ApplyWSwitch(int a1);
-bool GetWSwitch(int a1);
+
 void ShinyJewelSpace_Init();
-void ResetChaoObjectData(ChaoObjectData *result);
 VoidFunc(AL_PlayerControlManager_Load, 0x0052BA00);
 void ChaoMain_Init();
 void LoadChaoTexlist(const char* a2, NJS_TEXLIST* texlist, int a1);

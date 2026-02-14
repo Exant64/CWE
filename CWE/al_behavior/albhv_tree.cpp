@@ -113,29 +113,22 @@ int ALBHV_TreeShake(ObjectMaster* a1)
 	}
 	return BHV_RET_CONTINUE;
 }
-signed int __cdecl ALBHV_GoToAimTree(ObjectMaster* a1)
-{
-	ChaoData1* v1; // esi
-	int v2; // eax
-	AL_BEHAVIOR* v3; // esi
-	float a2; // ST08_4
-	double v5; // st7
-	int v7; // eax
 
-	v1 = a1->Data1.Chao;
-	v2 = v1->Behavior.Mode;
-	v3 = &v1->Behavior;
+int ALBHV_GoToAimTree(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+	AL_BEHAVIOR* bhv = &work->Behavior;
+	int v2 = bhv->Mode;
 
-	((UnknownData2*)a1->EntityData2)->Waypoint.y = a1->Data1.Entity->Position.y; //DISGUSTING hack
+	((UnknownData2*)tp->EntityData2)->Waypoint.y = tp->Data1.Entity->Position.y; //DISGUSTING hack
 
 	if (v2)
 	{
 		if (v2 == 1)
 		{
-			MOV_TurnToAim2(a1, 384);
-			a2 = ChaoGlobal.WalkAcc * 0.8f;
-			AL_ForwardAcc(a1, a2);
-			v5 = MOV_DistFromAim(a1);
+			MOV_TurnToAim2(tp, 384);
+			float a2 = ChaoGlobal.WalkAcc * 0.8f;
+			AL_ForwardAcc(tp, a2);
+			float v5 = MOV_DistFromAim(tp);
 			if (v5 >= 0.0)
 			{
 				if (v5 < 4.0)
@@ -145,27 +138,25 @@ signed int __cdecl ALBHV_GoToAimTree(ObjectMaster* a1)
 			}
 			else
 			{
-				AL_SetBehavior(a1, ALBHV_Think);
+				AL_SetBehavior(tp, ALBHV_Think);
 			}
 		}
 	}
 	else
 	{
 		//AL_FaceChangeEye(a1, 4);
-		v7 = v3->Timer;
-		v3->LimitTimer = 1800;
-		v3->Timer = v7 + 1;
-		if (v7 > 30)
+		bhv->LimitTimer = 1800;
+		if (bhv->Timer++ > 30)
 		{
-			AL_SetMotionLink(a1, 100);
-			++v3->Mode;
+			AL_SetMotionLink(tp, 100);
+			++bhv->Mode;
 		}
 	}
-	AL_SetMotionSpd(a1, 1.5);
-	v3->LimitTimer--;
-	if (!v3->LimitTimer)
+	AL_SetMotionSpd(tp, 1.5);
+	bhv->LimitTimer--;
+	if (!bhv->LimitTimer)
 	{
-		AL_SetBehavior(a1, ALBHV_Think);
+		AL_SetBehavior(tp, ALBHV_Think);
 	}
 	return BHV_RET_CONTINUE;
 }

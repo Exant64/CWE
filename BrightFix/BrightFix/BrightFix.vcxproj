@@ -126,7 +126,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;BRIGHTFIX_API;_WINDOWS;_USRDLL;BRIGHTFIX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Coding\VSRepos\CWENew\CWE;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\CWE;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,7 +152,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;BRIGHTFIX_API;NDEBUG;_WINDOWS;_USRDLL;BRIGHTFIX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Coding\VSRepos\CWENew\CWE;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)CWE;%(AdditionalIncludeDirectories);$(SolutionDir)external/sa2b-render-fix/api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -89,6 +89,14 @@
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
 #endif
+#include <al_garden_info.h>
+#include <api/api_json.h>
+#include <global_save.h>
+#include <minimal/minimal.h>
+#include <hd_texture.h>
+
+#include "land_grayscale.h"
+#include "api/api_main.h"
 
 const char* PathToModFolder = "";
 
@@ -210,15 +218,62 @@ extern "C"
 	void __cdecl ALW_Control_Main_Hook(ObjectMaster* a1)
 	{
 		if (a1->Data1.Entity->Action == 0) {
+			const bool checkIfNeedToGreyscale = 
+				(AL_GetStageNumber() == CHAO_STG_NEUT && gConfigVal.NeutGrayscale) ||
+				(AL_GetStageNumber() == CHAO_STG_HERO && gConfigVal.HeroGrayscale) ||
+				(AL_GetStageNumber() == CHAO_STG_DARK && gConfigVal.DarkGrayscale);
+
+			if(checkIfNeedToGreyscale) {
+				GrayscalifyCurrentLandtable();
+			}
+
 			AL_CreateDayNightCycle();
 		}
 
 		const auto original = reinterpret_cast<decltype(ALW_Control_Main_Hook)*>(ALW_Control_t.Target());
 		original(a1);
 
+		for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
+			AL_ChaoAccessoryConversion(&ChaoInfo::Instance()[i]);
+		}
+
 		for (auto& c : CodeManager::Instance()) {
-			for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
-				c->OnChaoData(ChaoInfo::Instance()[i]);
+			for (size_t chaoIndex = 0; chaoIndex < ChaoInfo::Instance().Count(); chaoIndex++) {
+				c->OnChaoData(ChaoInfo::Instance()[chaoIndex]);
+
+				ChaoDataBase* pParam = &ChaoInfo::Instance()[chaoIndex];
+				if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
+					for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
+						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
+
+						char id[METADATA_ID_SIZE];
+						bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
+						if (!foundID) {
+							// TODO: error
+							continue;
+						}
+
+						// hacky way to patch the old pink hoodie and force it to blue hoodie, then recolor it to resemble the pink one
+						if (!strcmp(id, "accdummhoodie")) {
+							strcpy_s(pParam->Accessories[i].ID, "acc96a6abf7");
+
+							pParam->Accessories[i].ColorFlags |= BIT_0;
+
+							// pink color
+							NJS_COLOR* colorSlot = (NJS_COLOR*)&pParam->Accessories[i].ColorSlots[0];
+							colorSlot->argb.a = 255;
+							colorSlot->argb.r = 255;
+							colorSlot->argb.g = 121;
+							colorSlot->argb.b = 213;
+
+							continue;
+						}
+
+						strcpy_s(pParam->Accessories[i].ID, id);
+					}
+
+					pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
+				}
 			}
 
 			c->OnALControl(a1);
@@ -236,11 +291,42 @@ extern "C"
 			PurchasedItemCount = 0;
 		}
 
-		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
-			if (cweSaveFile.PurchasedItems[i].mCategory > 0) {
-				save::CWE_PurchasedItems[i] = cweSaveFile.PurchasedItems[i];
-				cweSaveFile.PurchasedItems[i] = { -1,0 };
+		for (size_t i = 0; i < cweSaveFile.purchasedItemCount; ++i) {
+			if (cweSaveFile.PurchasedItems[i].mCategory <= 0) {
+				continue;
 			}
+
+			save::CWE_PurchasedItems[i] = cweSaveFile.PurchasedItems[i];
+			cweSaveFile.PurchasedItems[i] = { -1,0 };		
+		}
+
+		// convert the "accessory hats" to the new accessory format
+		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+		for (size_t j = 0; j < 24; ++j) {
+			auto& originalItem = items[j];
+			if (originalItem.Type < 256) {
+				continue;
+			}
+
+			const auto accessoryIndex = originalItem.Type - 256;
+
+			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+			// if we don't have space to convert, stop the conversion checks
+			if (!pNewInfo) break;
+
+			// if it's an invalid id, don't write it
+			char id[METADATA_ID_SIZE];
+			if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
+				memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
+				pNewInfo->IndexID = accessoryIndex;
+				pNewInfo->Garden = originalItem.Garden;
+				pNewInfo->Position = originalItem.position;
+			}
+
+			// even if it does become an invalid id, we omit the original item
+			// to not create "mystery no more garden space" issues
+			// TOOD: message box could be useful?
+			AL_ClearItemSaveInfo(&originalItem);
 		}
 
 		for (int i = 0; i < 24; i++)
@@ -294,6 +380,9 @@ extern "C"
 			else if (!strcmp(mod.Name, "Dreamcast Cocoon Color")) {
 				MessageBoxA(0, "Please delete/disable \"Dreamcast Cocoon Color\" and use the one provided in the configuration menu for CWE.", "Chao World Extended", 0);
 			}
+			else if (!strcmp(mod.Name, "HD Chao Texture")) {
+				MessageBoxA(0, "Please delete/disable \"HD Chao Texture\" and use the one provided in the configuration menu for CWE.", "Chao World Extended", 0);
+			}
 			else if (!strcmp(mod.Name, "SADX Gardens")) {
 				std::string sadxinipath = std::string(mod.Folder);
 				sadxinipath += "\\mod.ini";
@@ -306,12 +395,27 @@ extern "C"
 		}
 	}
 	
-	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex)
-	{
+	static bool IsModAPILoaded = false;
+	__declspec(dllexport) void OnFrame() {
+		// we do it here instead of on init to delay it by one frame
+		if (!IsModAPILoaded) {
+			AL_ModAPI_Init();
+			IsModAPILoaded = true;
+		}
+
+		CWE_Codes_OnFrame();
+	}
+	
+	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex) {
+		CWE_ModIndex = modIndex;
+
 		if (helperFunctions.Version < ModLoaderVer) {
+			char textbuf[128];
+			sprintf_s(textbuf, "The current Mod Loader version (%d) is too old, CWE requires at least version %d. Please update the Mod Loader!", helperFunctions.Version, ModLoaderVer);
+
 			MessageBoxA(
 				NULL, 
-				"The modloader version is smaller than the required version for CWE, please update your modloader.", 
+				textbuf,
 				"CWE - Modloader version error", 
 				MB_ICONWARNING
 			);
@@ -319,20 +423,17 @@ extern "C"
 			return;
 		}
 
-		njRandomSeed(time(0));
-
-		DrawChaoWorldShadow = []() {};
-		HMODULE DCShadows = GetModuleHandleA("sa2-dc-lighting");
-		if (DCShadows) {
-			auto ptr = (decltype(DrawChaoWorldShadow))GetProcAddress(DCShadows, "DrawChaoWorldShadow");
-			if (ptr) {
-				DrawChaoWorldShadow = ptr;
-			}
-		}
-
 		g_HelperFunctions = &helperFunctions;
 
+		CWE_API_FindMods();
+		CWE_API_EarlyInit();
+
+		njRandomSeed(time(0));
+
 		RenderFix_Init(helperFunctions);
+
+		// todo: integrate this into CWE_API_FindMods or prefix with CWE_APIJSON_ or something
+		ScanAllMods();
 
 		cwe_device = dword_1A557C0->pointerToDevice;
 
@@ -358,6 +459,11 @@ extern "C"
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
 
+		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
+
+		ClearAllItemSave();
+		GlobalSave_Init();
+
 		KCE_Init();
 
 		//DEBUG LENS THING
@@ -368,8 +474,8 @@ extern "C"
 
 		CWE_Fixes();
 
-		//sfx
-		WriteData((int*)0x008A6DB8, (int)165);
+		// sfx
+		WriteData((int*)0x008A6DB8, (int)_countof(stru_8A68B0));
 		WriteData((int*)0x008A6DBC, (int)stru_8A68B0);
 
 		OrthoInit();
@@ -392,6 +498,12 @@ extern "C"
 		gConfigVal.OmochaoParts = config->getBool("Chao World Extended", "OmochaoParts", false);
 		gConfigVal.ToyMove = config->getBool("Chao World Extended", "ToyMove", true);
 		gConfigVal.NewInventory = config->getBool("Chao World Extended", "NewInventory", true);
+
+		gConfigVal.StageAnimals = config->getBool("Chao World Extended", "StageAnimals", true);
+		gConfigVal.StageAnimalIncludeSADX = config->getBool("Chao World Extended", "StageAnimalIncludeSADX", true);
+		gConfigVal.StageAnimalChance = config->getInt("Chao World Extended", "StageAnimalChance", 50) / 100.f;
+		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
+		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
 
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
@@ -430,6 +542,8 @@ extern "C"
 
 		//day night cycle
 		gConfigVal.DayNightCycle = config->getBool("DayNight", "DayNightCycle", true);
+		gConfigVal.DayNightRain = config->getBool("DayNight", "Rain", true);
+		gConfigVal.DayNightRainSounds = config->getBool("DayNight", "DayNightRainSounds", true);
 		gConfigVal.DayNightCycleNeutralGardenSkybox = config->getBool("DayNight", "DayNightCycleNeutralGardenSkybox", true);
 		gConfigVal.DayNightCycleHeroGardenSkybox = config->getBool("DayNight", "DayNightCycleHeroGardenSkybox", true);
 		gConfigVal.DayNightCycleDarkGardenSkybox = config->getBool("DayNight", "DayNightCycleDarkGardenSkybox", true);
@@ -441,6 +555,10 @@ extern "C"
 		gConfigVal.DayNightCycleHourFrame = 60 * config->getInt("DayNight", "DayNightCycleHourFrame", 60);
 		gConfigVal.DayNightDebug = config->getBool("DayNight", "DayNightDebug", false);
 		gConfigVal.DayNightCheat = config->getBool("DayNight", "DayNightCheat", false);
+
+		gConfigVal.NeutGrayscale = config->getBool("Misc", "NeutGrayscale", false);
+		gConfigVal.HeroGrayscale = config->getBool("Misc", "HeroGrayscale", false);
+		gConfigVal.DarkGrayscale = config->getBool("Misc", "DarkGrayscale", false);
 
 		if (gConfigVal.DayNightCycleHourFrame <= 0) {
 			MessageBoxA(0, "Day Night Cycle's \"In-Game Hour In Real-Life Seconds\" option cannot be set to zero or lower! Temporarily resetting setting to default.", "Chao World Extended", 0);
@@ -482,18 +600,15 @@ extern "C"
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
 
+		HDTexture_Init(path, config);
+
 		AL_DayNight_Init(iniPath, config, helperFunctions);
 		AL_MoreAnimSound_Init();
 
-		Animation_Init();
+		Minimal_Init();
 
 		if (gConfigVal.ToyMove)
 			AL_Toy_Moveable_Init();
-
-		//accessory
-		WriteCall((void*)0x0052ED87, Accessory_Load);
-		WriteCall((void*)0x0052F404, Accessory_Load);
-		WriteCall((void*)0x00530A70, Accessory_Load);
 
 		BrightFix_Init(path, (BYTE*)g_vs30_main, gConfigVal.DayNightCycle ? (BYTE*)g_ps30_main_daynight : (BYTE*)g_ps30_main, rfapi_core);
 		
@@ -529,6 +644,7 @@ extern "C"
 
 		al_race_Init();
 
+		AL_GardenInfo_Init();
 		ChaoMain_Init();
 
 		ALO_ObakeHead_Init();
@@ -536,6 +652,8 @@ extern "C"
 		ALO_GrowTree_Init();
 
 		delete config;
+
+		CWE_API_LateInit();
 	}
 	__declspec(dllexport) ModInfo SA2ModInfo = { ModLoaderVer };
 }

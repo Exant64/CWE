@@ -5,6 +5,8 @@
 int ALBHV_PostureChangeStand(task* tp);
 int ALBHV_PostureChangeSit(task* tp);
 
+int ALBHV_GoToAimTree(task* tp);
+
 void ALBHV_GoToConsole(ObjectMaster* a1);
 int __cdecl ALBHV_Accordion(ObjectMaster* a1);
 int __cdecl ALBHV_Garagara(ObjectMaster* a1);

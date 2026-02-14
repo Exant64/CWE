@@ -16,33 +16,34 @@
 #include "al_modelcontainer.h"
 #include "al_marketattr.h"
 #include "al_odekake.h"
+
 #include "api/api_msg.h"
 #include "api/api_customchao.h"
 #include "api/api_util.h"
+#include "api/api_accessory.h"
+#include <api/api_texture.h>
+#include <api/api_json.h>
+#include <api/api_tree.h>
+#include <api/api_motion.h>
 
 #include <unordered_set>
-#include <api/api_tree.h>
 #include <kce_helper.h>
+#include <al_draw.h>
+#include "api/api_main.h"
 
 #pragma warning(push)
 #pragma warning( disable: 4838 )
 #include "data/alo_missing_tree.nja"
-#include <al_draw.h>
 #pragma warning(pop)
 
 extern NJS_OBJECT object_alo_missing;
 
-std::vector<MotionTableAction> chaoAnimations;
-std::map<std::string, int> registeredAnimations;
-std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
 std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
 std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
 std::vector<RegisterDataFuncPtr> RegisterDataHooks;
 
 std::unordered_map<int, int> ModAPI_LensColorMap;
 std::unordered_set<int> ModAPI_SpecialAction;
-std::unordered_set<int> ModAPI_DisableJiggle;
-std::unordered_set<int> ModAPI_BaldAccessory;
 
 std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 
@@ -62,7 +63,7 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 
 	ModAPI_MinimalModels.push_back(pMinimal->animalObject);
 
-	cweAPI.RegisterChaoTexlistLoad(pMinimal->texlistName, pMinimal->animalTexlist);
+	CWE_API_Legacy.RegisterChaoTexlistLoad(pMinimal->texlistName, pMinimal->animalTexlist);
 	ModAPI_MinimalTexlists.push_back(pMinimal->animalTexlist);
 	ModAPI_MinimalNames.push_back(pMinimal->Name ? pMinimal->Name : pMinimal->texlistName);
 
@@ -75,16 +76,12 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 	return ModAPI_MinimalInfluence.size() - 1;
 }
 
-void AccessoryDisableJiggle(int acccessory_id) {
-	ModAPI_DisableJiggle.insert(acccessory_id);
-}
-
 extern "C"
 {
 	//COMPATBILITY LAYER
 	__declspec(dllexport) int RegisterChaoHat(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description, bool hideHead) {
 		if (!hideHead) {
-			return cweAPI.RegisterChaoAccessory(EAccessoryType::Head, model, texlist, attrib, name, description);
+			return CWE_API_Legacy.RegisterChaoAccessory(EAccessoryType::Head, model, texlist, attrib, name, description);
 		}
 		
 		return AddChaoHat(model, texlist, attrib, name, description);
@@ -112,23 +109,6 @@ extern "C"
 		};
 
 		return AddChaoMinimal(&legacyEntry);
-	}
-
-	__declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
-	{
-		static APIErrorUtil error("RegisterChaoTexlistLoad error:");
-
-		if (!name) { 
-			error.print("name is nullptr");
-			return; 
-		}
-
-		if (!load) {
-			error.print("\"%s\"'s texlist is nullptr", name);
-			return;
-		}
-
-		TexlistLoads.push_back(std::make_pair(name, load));
 	}
 
 	__declspec(dllexport) void SetRebuyFlag(int Category, int ID, bool rebuy)
@@ -196,19 +176,6 @@ extern "C"
 		ModAPI_LensColorMap.insert(std::make_pair(specialID, eyeCID));
 		return eyeCID + 1;
 	}
-	__declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description)
-	{
-		int ret = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size();
-		AccessoryTypeMap.insert(std::make_pair(ret, type));
-		ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(model, texlist);
-		BlackMarketAttributes::Get()->Add(ChaoItemCategory_Accessory, attrib, name, description);
-		return ret;
-	}
-
-	__declspec(dllexport) void AccessoryMakeBald(int acccessory_id) {
-		ModAPI_BaldAccessory.insert(acccessory_id);
-		ModAPI_DisableJiggle.insert(acccessory_id);
-	}
 
 	__declspec(dllexport) void RegisterChaoMinimalFruit(int fruitID, int minimalID, int chanceMin, int chanceMax)
 	{
@@ -246,84 +213,13 @@ extern "C"
 		ItemChance itemChance = { (Uint16)ID, (Sint8)chance };
 		RareFruitMarket.push_back(itemChance);
 	}
-
-	__declspec(dllexport) int RegisterChaoAnimation(std::string name, MotionTableAction* action)
-	{
-		APIErrorUtil error("RegisterChaoAnimation error for animation \"%s\": ", name.c_str());
-
-		if (!action) {
-			error.print("action is null!");
-			return -1;
-		}
-
-		if (!action->NJS_MOTION) {
-			error.print("the action's animation is null! (missing file?)");
-			return -1;
-		}
-
-		if (action->NJS_MOTION->type != (NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1)) {
-			error.print("the animation's type is invalid! (scale keyframes in animation?)");
-			return -1;
-		}
-
-		const NJS_MDATA2* mdata = reinterpret_cast<NJS_MDATA2*>(action->NJS_MOTION->mdata);
-		for (size_t i = 0; i < AL_PART_END; i++) {
-			for (size_t j = 0; j < 2; j++) {
-				if (mdata[i].nb[j] && mdata[i].nb[j] > action->NJS_MOTION->nbFrame) {
-					error.print("the animation's model count is invalid!");
-					return -1;
-				}
-			}
-		}
-
-		int index = chaoAnimations.size();
-		registeredAnimations.insert(std::make_pair(name, index));
-		chaoAnimations.push_back(*action);
-		return index;
-	}
-
-	int RegisterChaoAnimTransition(const std::string& from, const std::string& to) {
-		APIErrorUtil error("RegisterChaoAnimTransition error (\"%s\"->\"%s\"): ", from.c_str(), to.c_str());
-		
-		if (!registeredAnimations.contains(from)) {
-			error.print("the \"from\" animation is not registered!");
-			return 0;
-		}
-
-		if (!registeredAnimations.contains(to)) {
-			error.print("the \"to\" animation is not registered!");
-			return 0;
-		}
-
-		chaoAnimations[registeredAnimations[from]].TransitionToID = registeredAnimations[to];
-		return 1;
-	}
-
-	__declspec(dllexport) void Chao_RegAnimation(ObjectMaster* a1, const std::string& name) {
-		AL_SetMotionLink(a1, registeredAnimations[name]);
-	}
-
-	void Chao_RegAnimationTbl(MotionTableData* a1, const std::string& name) {
-		Chao_Animation(a1, registeredAnimations[name]);
-	}
-
-	__declspec(dllexport) int GetChaoAnimationIndex(const std::string& name) {
-		return registeredAnimations[name];
-	}
 }
 
 BlackMarketItemAttributes* GetItemAttr(ChaoItemCategory cat, int index) {
 	return BlackMarketAttributes::Get()->Attrib(cat, index);
 }
 
-MotionTableAction* GetChaoAnimation(size_t index)
-{
-	if (index >= chaoAnimations.size()) return nullptr;
-
-	return &chaoAnimations[index];
-}
-
-CWE_REGAPI cweAPI {
+CWE_REGAPI CWE_API_Legacy {
 	.Version = 1,
 
 	.RegisterFoName = RegisterFoName,
@@ -356,27 +252,24 @@ CWE_REGAPI cweAPI {
 	.RegisterChaoMinimalFruit = RegisterChaoMinimalFruit,
 
 	.RegisterChaoAnimation = RegisterChaoAnimation,
-	.RegisterChaoAnimTransition = RegisterChaoAnimTransition,
-	.GetChaoAnimationIndex = GetChaoAnimationIndex,
-	.GetChaoAnimation = GetChaoAnimation,
+	.RegisterChaoAnimTransition = SetChaoMotionTransition,
+	.GetChaoAnimationIndex = GetChaoMotionIndex,
+	.GetChaoAnimation = GetChaoMotionTable,
 
 	.RegisterChaoTexlistLoad = RegisterChaoTexlistLoad,
 	.RegisterSaveLoad = RegisterSaveLoad,
-	.AddOdekakeMenu = AddOdekakeMenu
+	.AddOdekakeMenu = AddOdekakeMenu,
+
+	.GetAccessoryID = GetAccessoryID
 };
 
-void AL_ModAPI_UpdatePtr()
-{
-	//BlackMarketAttributes::Get()->Finalize(); //also shrinks to fit
-	//ObjectRegistry::FinalizeAll();
-
-	for (size_t i = 0; i < ModAPI_SaveAPI.size(); i++)
+static void AL_ModAPI_UpdatePtr() {
+	for (size_t i = 0; i < ModAPI_SaveAPI.size(); i++) {
 		memset(ModAPI_SaveAPI[i].pointer, 0, ModAPI_SaveAPI[i].fileSize);
+	}
 
-	//custom anims
-	g_HelperFunctions->HookExport("al_motion_table", chaoAnimations.data());
-	
 	AL_ModAPI_CharacterChao_Update();
+	AL_ModAPI_Motion_Update();
 
 	AL_Odekake_Update();
 
@@ -394,19 +287,10 @@ void AL_ModAPI_UpdatePtr()
 	WriteData((int*)0x548dba, (int)ModAPI_MinimalMotion3.data());
 }
 
-void CallRegisteredHooks(CWE_REGAPI* cwe_api)
-{
-	for (size_t i = 0; i < RegisterDataHooks.size(); i++)
-		RegisterDataHooks[i](cwe_api);
-}
-
-void Animation_Init()
-{
-	//Animation
-	MotionTableAction* actions = (MotionTableAction*)GetDllData("al_motion_table");
-	chaoAnimations.insert(chaoAnimations.end(), actions, &actions[622]);
-	if (chaoAnimations.size() < 622)
-		PrintDebug("Animation_Init: Couldnt copy animations!!!\n");
+static void CallRegisteredHooks() {
+	for (size_t i = 0; i < RegisterDataHooks.size(); i++) {
+		RegisterDataHooks[i](&CWE_API_Legacy);
+	}
 }
 
 const static uint32_t priceAdjustedCategories[] = {
@@ -437,17 +321,51 @@ static void AdjustItemPrices(const size_t priceAdjustStartIndices[]) {
 	}
 }
 
-void RegisterCWEData(CWE_REGAPI* cwe_api)
-{
-	AL_ModAPI_Init();
+static void AL_ModAPI_InitSubsystems() {
+	AL_ModAPI_Msg_Init();
+
+	//Fruit
+	for (int i = SA2BFruit_ChaoGardenFruit; i < 24; i++)
+	{
+		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Add(FruitModels[i], &AL_OBJECT_TEXLIST);
+		ModAPI_FruitStats.push_back(ChaoFruitStatArray[i]);
+		lastBiteFruit.push_back(nullptr);
+	}
+	
+	AL_ModAPI_Tree_Init();
+
+	//Black Market
+	for (int i = 0; i < 4; i++)
+	{
+		ItemChance chance = { (Uint16)GeneralFruitChances[i].item , GeneralFruitChances[i].chance };
+		GeneralFruitMarket.push_back(chance);
+	}
+
+	AL_ModAPI_CharacterChao_Init();
+	AL_ModAPI_Motion_Init();
+
+	AL_Odekake_Init();
+	
 	al_minimal_Init();
+}
+
+void AL_ModAPI_Init() {
+	AL_ModAPI_InitSubsystems();
 
 	size_t priceAdjustStartIndices[_countof(priceAdjustedCategories)];
 	InitPriceAdjustStartIndices(priceAdjustStartIndices);
-	CallRegisteredHooks(cwe_api);
+
+	LoadCWEJSONData(JSON_ACCESSORY);
+	CWE_API_EarlyLoad();
+	CallRegisteredHooks();
+	LoadJSONData(JSON_ACCESSORY);
+	CWE_API_Load();
+
 	AdjustItemPrices(priceAdjustStartIndices);
 
 	AL_Odekake_Finalize();
+
+	CWE_REGAPI* cwe_api = &CWE_API_Legacy;
 
 	int MissingItem = cwe_api->RegisterAlItemString("Missing Item");
 	int MissingAcc = cwe_api->RegisterAlItemString("Accessory");
@@ -487,33 +405,4 @@ void RegisterCWEData(CWE_REGAPI* cwe_api)
 	//HatBMAttributesMod[SADXHat_PearlEggShell].PurchasePrice = 1350;
 
 	AL_ModAPI_UpdatePtr();
-}
-
-void AL_ModAPI_Init()
-{
-	AL_ModAPI_Msg_Init();
-
-	//Fruit
-	for (int i = SA2BFruit_ChaoGardenFruit; i < 24; i++)
-	{
-		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Add(FruitModels[i], &AL_OBJECT_TEXLIST);
-		ModAPI_FruitStats.push_back(ChaoFruitStatArray[i]);
-		lastBiteFruit.push_back(nullptr);
-	}
-	
-	AL_ModAPI_Tree_Init();
-
-	//Black Market
-	for (int i = 0; i < 4; i++)
-	{
-		ItemChance chance = { (Uint16)GeneralFruitChances[i].item , GeneralFruitChances[i].chance };
-		GeneralFruitMarket.push_back(chance);
-	}
-
-	//custom chao
-	AL_ModAPI_CharacterChao_Init();
-
-	AL_Odekake_Init();
-
-	//AL_ModAPI_UpdatePtr();
 }

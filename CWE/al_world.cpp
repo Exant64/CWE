@@ -1,5 +1,10 @@
 #include "stdafx.h"
 #include "al_world.h"
+#include <Chao.h>
+#include <unordered_map>
+#include <FunctionHook.h>
+
+#define ALW_ENTRY_WORK(tp) ((al_entry_work*)tp->UnknownA_ptr)
 
 al_entry_work* __cdecl ALW_IsCommunication(ObjectMaster* a1)
 {
@@ -89,16 +94,7 @@ void __cdecl AL_ClearItemSaveInfoPtr(ObjectMaster* a1)
 		v1->pSaveInfo = 0;
 	}
 }
-void __cdecl AL_ClearItemSaveInfo(ITEM_SAVE_INFO* a1)
-{
-	a1->Type = -1;
-	a1->position.x = 0;
-	a1->position.y = 0;
-	a1->position.z = 0;
-	a1->Garden = -1;
-	a1->Age = 0;
-	a1->Size = 0;
-}
+
 bool __cdecl ALW_IsHeld(ObjectMaster* a1)
 {
 	al_entry_work* v1; // eax
@@ -220,6 +216,28 @@ al_entry_work* ALW_IsAttention(ObjectMaster* tp)
 	return result;
 }
 
+Bool ALW_SetHeldOffset(task* tp, float offset) {
+	al_entry_work* pEntry = ALW_ENTRY_WORK(tp);
+
+	if (pEntry) {
+		pEntry->offset = offset;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+Bool ALW_SetHeldRadius(task* tp, float radius) {
+	al_entry_work* pEntry = ALW_ENTRY_WORK(tp);
+
+	if (pEntry) {
+		pEntry->radius = radius;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 bool ALW_LockOnPickedUp(ObjectMaster* a1)
 {
 	return (ALW_GetLockOnTask(a1) && ALW_GetLockOnTask(a1)->Data1.Entity->Status < 0);
@@ -273,4 +291,138 @@ ObjectMaster* GetChaoObject(int a1, int a2)
 		mov val, eax
 	}
 	return val;
+}
+
+#define NB_MAX_WORLD_ENTRY 64
+int nbWorldEntry[NB_CWE_ALW_CATEGORY] = { 0 };
+al_entry_work WorldEntryList[NB_CWE_ALW_CATEGORY][NB_MAX_WORLD_ENTRY];
+
+static const std::unordered_map<ChaoItemCategory, size_t> MapRealCategoryToCWEWorld = {
+	{ChaoItemCategory_Accessory, CWE_ALW_CATEGORY_ACCESSORY}
+};
+
+Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSaveInfo) {
+	if (!MapRealCategoryToCWEWorld.contains(category)) {
+		return FALSE;
+	}
+
+	const auto categoryIndex = MapRealCategoryToCWEWorld.at(category);
+
+	int i = 0;
+	do {
+		if (!WorldEntryList[categoryIndex][i].tp) {
+			WorldEntryList[categoryIndex][i].tp = tp;
+			WorldEntryList[categoryIndex][i].kind = kind;
+			WorldEntryList[categoryIndex][i].pSaveInfo = pSaveInfo;
+			WorldEntryList[categoryIndex][i].category = category;
+
+			nbWorldEntry[categoryIndex]++;
+			tp->UnknownA_ptr = (ObjUnknownA*) & WorldEntryList[categoryIndex][i];
+
+			return TRUE;
+		}
+
+		i++;
+	} while (i <= NB_MAX_WORLD_ENTRY - 1);
+
+	return FALSE;
+}
+
+static void ALW_ResetEntry(al_entry_work* pEntry) {
+	if (!pEntry)
+		return;
+
+	pEntry->kind = 0;
+	pEntry->flag = 0;
+	pEntry->command = 0;
+	pEntry->command_value = -1;
+	pEntry->state = 0;
+
+	pEntry->tp = NULL;
+	pEntry->pCommu = NULL;
+	pEntry->CommuID = -1;
+
+	pEntry->pSaveInfo = 0;
+}
+
+int CWE_ALW_CountEntry(ChaoItemCategory category) {
+	if (!MapRealCategoryToCWEWorld.contains(category)) {
+		return NULL;
+	}
+
+	const auto categoryIndex = MapRealCategoryToCWEWorld.at(category);
+
+	return nbWorldEntry[categoryIndex];
+}
+
+task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count) {
+	if (!MapRealCategoryToCWEWorld.contains(category)) {
+		return NULL;
+	}
+
+	const auto categoryIndex = MapRealCategoryToCWEWorld.at(category);
+
+	int i;
+	int j = 0;
+
+	if (count > NB_MAX_WORLD_ENTRY - 1)
+		return NULL;
+
+	for (i = 0; i < nbWorldEntry[categoryIndex]; i++) {
+		if (WorldEntryList[categoryIndex][i].tp) {
+			if (count == j)
+				return WorldEntryList[categoryIndex][i].tp;
+
+			j++;
+		}
+	}
+
+	return NULL;
+}
+
+Bool CWE_ALW_CancelEntry(task* tp) {
+	auto* pEntry = ALW_ENTRY_WORK(tp);
+
+	if (!pEntry) return FALSE;
+
+	// this is a hack to prevent the real ALW_CancelEntry code to try and remove it
+	// incase any code was tacked on or will be tacked onto it later on or something
+	task* pBackup = pEntry->tp;
+	pEntry->tp = NULL;
+
+	ALO_Delete(tp);
+
+	pEntry->tp = pBackup;
+
+	if (pEntry->tp == tp) {
+		ALW_ResetEntry(pEntry);
+		nbWorldEntry[pEntry->category]--;
+	}
+
+	return TRUE;
+}
+
+void CWE_ALW_ClearEntry(void) {
+	int i;
+
+	for (i = 0; i < NB_CWE_ALW_CATEGORY; i++) {
+		int j;
+
+		nbWorldEntry[i] = 0;
+
+		for (j = 0; j < NB_MAX_WORLD_ENTRY; j++) {
+			al_entry_work* pEntry = &WorldEntryList[i][j];
+			pEntry->category = i;
+			pEntry->num = j;
+			ALW_ResetEntry(pEntry);
+		}
+	}
+}
+
+static void CWE_ALW_Create();
+static FunctionHook<void> ALW_Create_Hook(0x530B80, CWE_ALW_Create);
+static void CWE_ALW_Create() {
+	ALW_Create_Hook.Original();
+
+	CWE_ALW_ClearEntry();
 }

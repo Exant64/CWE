@@ -41,7 +41,7 @@ public:
 		return m_attributes[cat].size();
 	}
 
-	void Add(ChaoItemCategory category, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+	void Add(ChaoItemCategory category, const BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 		BlackMarketItemAttributes newAttrib = { 0,0,999,0,0,0 };
 		if (attrib)
 		{

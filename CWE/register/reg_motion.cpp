@@ -5,7 +5,7 @@
 
 void ALAPI_RegisterMotion(CWE_REGAPI* cwe_api) {
 	//animation fix for ALS_SassyBye
-	NJS_MDATA2* mdata = (NJS_MDATA2*)cwe_api->GetChaoAnimation(450)->NJS_MOTION->mdata;
+	NJS_MDATA2* mdata = (NJS_MDATA2*)cwe_api->GetChaoAnimation(450)->pMotion->mdata;
 	mdata[1].p[1] = 0;
 	mdata[1].nb[1] = 0;
 

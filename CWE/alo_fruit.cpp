@@ -11,6 +11,8 @@
 #include "al_behavior/al_intention.h"
 #include "Trampoline.h"
 #include <al_daynight.h>
+#include <al_garden_info.h>
+#include "renderfix.h"
 
 std::vector<ChaoItemStats> ModAPI_FruitStats;
 
@@ -66,8 +68,8 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
 			njControl3D &= ~0x2400u;
 			njPopMatrixEx();
-			if (v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float *)&v1->UnknownA_ptr->field_30)
-			{
+
+			if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float *)&v1->UnknownA_ptr->field_30) {
 				if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
 				{
 					njTranslate(NULL, 0, -1.85f, 0);
@@ -78,7 +80,8 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 				}
 
 				njScale(NULL, a2, 0.7f, a2);
-				DrawChaoWorldShadow();
+				
+				rfapi_core->pDraw->AL_ShadowDraw();
 			}
 		}
 		njPopMatrixEx();
@@ -123,7 +126,7 @@ void ALO_FruitExecutor_Main_r(ObjectMaster *a1)
 			ChaoSomeUnknownA *v23 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
 			if (v23 && v23->saveData)
 			{
-				ResetChaoObjectData((ChaoObjectData*)v23->saveData);
+				AL_ClearItemSaveInfo((ChaoObjectData*)v23->saveData);
 				v23->saveData = 0;
 			}
 
@@ -342,7 +345,7 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 				v23 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
 				if (v23 && v23->saveData)
 				{
-					ResetChaoObjectData((ChaoObjectData*)v23->saveData);
+					AL_ClearItemSaveInfo((ChaoObjectData*)v23->saveData);
 					v25 = a1->UnknownA_ptr;
 					if (v25)
 					{

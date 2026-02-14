@@ -7,6 +7,9 @@ bool AL_IsHero(unsigned __int8 a1);
 bool AL_IsDark(unsigned __int8 a1);
 bool AL_IsNegative(ObjectMaster* a1);
 bool AL_IsCustomChao(ObjectMaster* tp);
+
+void AL_ParameterClearAccessory(ObjectMaster* tp, int slot);
+
 void AL_ParameterAddAPos(ObjectMaster* a1, float a2);
 
 void AL_ParameterAddUserLike(ObjectMaster* tp, int add, float AddAttr);

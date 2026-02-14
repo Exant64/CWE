@@ -237,6 +237,17 @@ struct __declspec(align(4)) MotionTableAction
 };
 #pragma pack(pop)
 
+struct MOTION_TABLE
+{
+	NJS_MOTION* pMotion;
+	short mode;
+	short posture;
+	int next;
+	int link_step;
+	float start;
+	float end;
+	float spd;
+};
 
 #pragma pack(push, 8)
 struct __declspec(align(4)) MotionTableData
@@ -262,7 +273,7 @@ struct __declspec(align(4)) MotionTableData
 	float EndFrame;
 	float PlaySpeed;
 	NJS_MOTION *NJS_MOTION;
-	MotionTableAction *PointerToAnimations;
+	MOTION_TABLE *PointerToAnimations;
 };
 #pragma pack(pop)
 
@@ -463,6 +474,13 @@ struct __declspec(align(4)) ChaoData1
 	bool IsCustomChaoTypeLoaded;
 	unsigned char AnimRandomized;
 	unsigned char ExtraSound;
+
+	char AccessoryCalculatedID[4][21];
+	Uint32 AccessoryIndices[4];
+
+	bool BaldHideHead;
+	Uint16* pBaldAdjacencyIndices;
+	size_t BaldAdjacencyIndexCount;
 };
 #pragma pack(pop)
 
@@ -881,6 +899,13 @@ struct AL_GUEST {
 	Uint16 Flags;
 };
 
+struct AL_PARAM_ACCESSORY_INFO {
+	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
+	Uint32 Flags;
+	Uint32 ColorFlags;
+	Uint32 ColorSlots[8];
+};
+
 struct ChaoDataBase
 {
 	char gap_0[18];
@@ -964,7 +989,7 @@ struct ChaoDataBase
 	char padding_cwedna[2];
 	short Birthday;
 	bool ForceReincarnate;
-	unsigned short Accessories[4];
+	unsigned short Accessories_[4];
 	int Flags;
 	int Version;
 	AL_NAME Name;
@@ -979,6 +1004,7 @@ struct ChaoDataBase
 	//we can't make a knowledge struct cuz we don't really know what we'll put in it in the future, I don't want it to end up like CWEDNA
 	Uint8 MusicFlag_CWE;
 	Uint8 DanceFlag_CWE;
+	AL_PARAM_ACCESSORY_INFO Accessories[4];
 };
 
 static_assert(offsetof(ChaoDataBase, padding_cwedna) == 0x60F);

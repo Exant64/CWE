@@ -13,6 +13,7 @@
 #include "al_motion.h"
 #include "AL_ModAPI.h"
 
+#include <renderfix.h>
 
 std::vector<int> ModAPI_MinimalInfluence;
 std::vector<ChaoItemStats> ModAPI_MinimalStats;
@@ -311,9 +312,12 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 			njControl3D |= 0x2400u;
 		}
 
-		g_HelperFunctions->PushInterpolationFix();
-		sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.Index], &v2->field_38);
-		g_HelperFunctions->PopInterpolationFix();
+		{
+			RF_BACKWARDS_COMPAT_GUARD();
+			g_HelperFunctions->PushInterpolationFix();
+			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.Index], &v2->field_38);
+			g_HelperFunctions->PopInterpolationFix();
+		}
 
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
@@ -321,7 +325,7 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 
 		if (!v1->UnknownA_ptr) PrintDebug("unknown_a == 0, problem incoming");
 
-		if (v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
 		{
 			if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
 			{
@@ -331,7 +335,7 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 			{
 				njTranslate(NULL, 0, 0.5f, 0);
 			}
-			DrawChaoWorldShadow();
+			rfapi_core->pDraw->AL_ShadowDraw();
 		}
 		njPopMatrixEx();
 		DoLighting(LightIndexBackupMaybe);
@@ -401,7 +405,7 @@ void al_minimal_Init()
 		ModAPI_MinimalMotion3.push_back(AnimalAnims3[i]);
 		ModAPI_MinimalStats.push_back(AnimalStats[i]);
 		ModAPI_MinimalTexlists.push_back(AnimalTexLists[i]);
-		cweAPI.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
+		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
 	WriteJump(AL_MinimalExecutor_Display, AL_MinimalExecutor_Display_);

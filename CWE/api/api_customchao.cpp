@@ -9,6 +9,10 @@
 #include "api_customchao.h"
 #include <al_draw.h>
 #include <alg_kinder_he.h>
+#include <cnk_util.h>
+#include <FunctionHook.h>
+#include <memory.h>
+#include <set>
 
 //default character chao, maybe change later to some "cwe_placehold" thing
 static const char* DefaultCustomChao = "cwe_spartoi";
@@ -259,6 +263,11 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	return newChaoType;
 }
 
+CWE_API_REGISTER_CHAO AL_ModAPI_Chao = {
+	.Version = CWE_API_REGISTER_CHAO_VER,
+	.AddChaoType = AddChaoType
+};
+
 void AL_ModAPI_CharacterChao_Update() {
 	AL_BODY.textures = AL_BODY_TEXNAMES.data();
 
@@ -269,7 +278,7 @@ void AL_ModAPI_CharacterChao_Update() {
 		tex.nbTexture = entry.Data.TextureCount;
 		tex.textures = AL_BODY_TEXNAMES.data() + entry.StartIndex;
 
-		cweAPI.RegisterChaoTexlistLoad(entry.Data.TextureName, &tex);
+		CWE_API_Legacy.RegisterChaoTexlistLoad(entry.Data.TextureName, &tex);
 	}
 
 	g_HelperFunctions->HookExport("AL_RootObject", AL_RootObject.data());
@@ -293,6 +302,8 @@ static int __cdecl AL_ShapeInit_r(ObjectMaster* tp) {
 
 	work->IsCustomChaoTypeLoaded = false;
 
+	bool checkIfAdjacencyNeeded = false;
+
 	if (AL_IsCustomChao(tp)) {
 		int id = AL_CustomChao_SearchID(pParam->TypeID);
 		if (id == -1) {
@@ -304,6 +315,8 @@ static int __cdecl AL_ShapeInit_r(ObjectMaster* tp) {
 		work->IsCustomChaoTypeLoaded = true;
 
 		const auto& entry = CustomChaoTypeEntries[work->LocalCharacterChaoType];
+
+		checkIfAdjacencyNeeded = entry.Data.Flags & CUSTOM_CHAO_FLAG_BALD_HIDE_PARTS_NON_ADJACENT;
 
 		//in our AL_RootObject vector we have a reserved space for type 26 that the original AL_ShapeInit will load here
 		for (size_t i = 144; i < 150; i++) {
@@ -318,7 +331,86 @@ static int __cdecl AL_ShapeInit_r(ObjectMaster* tp) {
 	}
 
 	auto original = reinterpret_cast<decltype(AL_ShapeInit_r)*>(AL_ShapeInit_Tramp.Target());
-	return original(tp);
+	int result = original(tp);
+
+	work->pBaldAdjacencyIndices = NULL;
+	work->BaldAdjacencyIndexCount = 0;
+	
+	switch (pParam->Type) {
+		case ChaoType_Tails:
+		case ChaoType_Amy:
+			checkIfAdjacencyNeeded = true;
+			break;
+	}
+
+	// basically, for some chao the "head parts" that bald would hide is inside of the head mesh
+	// but not connected to the main head
+	// we need to identify the indices belonging to those to kill those verts
+	// we do that by finding the lowest vertex index, which is part of the head usually
+	// then finding all indices that don't belong to the same "connected mesh" as that vertex
+	if (checkIfAdjacencyNeeded) {
+		const NJS_CNK_MODEL* pModel = work->field_524[16]->base.chunkmodel;
+		const Sint32* pVertex = pModel->vlist;
+		const Sint32 nbVertex = pModel->vlist[1] >> 16;
+
+		const NJS_POINT3* pos = (NJS_POINT3*)(pModel->vlist + 2);
+		float minVertex = 100000.f;
+		size_t index = 0;
+		for (size_t i = 0; i < nbVertex; ++i) {
+			if (pos->y < minVertex) {
+				minVertex = pos->y;
+				index = i;
+			}
+			pos += 2;
+		}
+		
+		const auto& nonAdjacent = GetNonAdjacentIndices(pModel, index);
+		if (nonAdjacent.has_value()) {
+			const auto& vec = *nonAdjacent;
+			// sort and merge duplicate indices 
+			const std::set<Uint16> set(vec.begin(), vec.end());
+			work->pBaldAdjacencyIndices = (Uint16*)syMalloc(sizeof(Uint16) * set.size(), __FILE__, __LINE__);
+			work->BaldAdjacencyIndexCount = set.size();
+
+			size_t i = 0; 
+			for (const auto& index : set) {
+				work->pBaldAdjacencyIndices[i++] = index;
+			}
+		}
+	}
+
+	return result;
+}
+
+static void Chao_Delete_r(task* tp);
+static FunctionHook<void, task*> Chao_Delete_hook(0x0054FF30, Chao_Delete_r);
+static void Chao_Delete_r(task* tp) {
+	Chao_Delete_hook.Original(tp);
+
+	auto* work = GET_CHAOWK(tp);
+	if (work->pBaldAdjacencyIndices) {
+		syFree(work->pBaldAdjacencyIndices, __FILE__, __LINE__);
+	}
+}
+
+static void AL_BuyoBuyoControl_r(task* tp);
+static FunctionHook<void, task*> AL_BuyoBuyoControl(0x56FC20, AL_BuyoBuyoControl_r);
+static void AL_BuyoBuyoControl_r(task* tp) {
+	AL_BuyoBuyoControl.Original(tp);
+
+	auto* work = GET_CHAOWK(tp);
+	if (!work->BaldHideHead || !work->pBaldAdjacencyIndices) {
+		return;
+	}
+
+	for (size_t i = 0; i < work->BaldAdjacencyIndexCount; ++i) {
+		const auto index = work->pBaldAdjacencyIndices[i];
+
+		auto* model = work->field_524[16]->base.chunkmodel;
+		auto* points = (NJS_POINT3*)(model->vlist + 2);
+
+		points[index * 2] = { 0,0,0 };
+	}
 }
 
 void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5, float a6, float a7) {

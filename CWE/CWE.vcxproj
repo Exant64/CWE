@@ -131,7 +131,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\..\SA2\mods\ChaoWorldExtended\!ChaoWorldExtended</OutDir>
+    <OutDir>$(SolutionDir)\build</OutDir>
     <IncludePath>$(SolutionDir)CWE;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -164,7 +164,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)external\sa2b-renderfix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -183,14 +183,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;IMGUIDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(SolutionDir)\external\minidx9\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BrightFixDebug.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -232,7 +232,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Coding\SAModding\BrightFix\BrightFix\include;F:\Coding\VSRepos\SA2ModLoaderNew\libmodutils;%(AdditionalIncludeDirectories);$(SolutionDir)external\sa2b-renderfix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Coding\SAModding\BrightFix\BrightFix\include;F:\Coding\VSRepos\SA2ModLoaderNew\libmodutils;$(SolutionDir)external\xxhash;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -255,7 +255,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)external\sa2b-renderfix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -265,7 +265,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
@@ -325,6 +325,7 @@
     <ClInclude Include="al_behavior\alsbhv.h" />
     <ClInclude Include="al_behavior\al_behavior.h" />
     <ClInclude Include="al_chao_counter.h" />
+    <ClInclude Include="al_daynight_rain.h" />
     <ClInclude Include="al_edit.h" />
     <ClInclude Include="al_emotion.h" />
     <ClInclude Include="al_face.h" />
@@ -334,6 +335,7 @@
     <ClInclude Include="al_console.h" />
     <ClInclude Include="al_daynight.h" />
     <ClInclude Include="al_draw.h" />
+    <ClInclude Include="al_garden_info.h" />
     <ClInclude Include="al_gene.h" />
     <ClInclude Include="al_look.h" />
     <ClInclude Include="al_marketattr.h" />
@@ -354,7 +356,6 @@
     <ClInclude Include="al_palette.h" />
     <ClInclude Include="al_parameter.h" />
     <ClInclude Include="al_piano.h" />
-    <ClInclude Include="al_registry.h" />
     <ClInclude Include="al_sandhole.h" />
     <ClInclude Include="al_save.h" />
     <ClInclude Include="al_shape.h" />
@@ -364,13 +365,18 @@
     <ClInclude Include="al_toy_move.h" />
     <ClInclude Include="al_tv.h" />
     <ClInclude Include="al_world.h" />
+    <ClInclude Include="api\api_accessory.h" />
     <ClInclude Include="api\api_customchao.h" />
+    <ClInclude Include="api\api_json.h" />
+    <ClInclude Include="api\api_metadata.h" />
     <ClInclude Include="api\api_msg.h" />
+    <ClInclude Include="api\api_texture.h" />
     <ClInclude Include="api\api_tree.h" />
     <ClInclude Include="api\api_util.h" />
     <ClInclude Include="chao\al_motion\alm_accordion.nam" />
     <ClInclude Include="chao\al_motion\alm_all.h" />
     <ClInclude Include="chao\al_motion\alm_duck.h" />
+    <ClInclude Include="cnk_util.h" />
     <ClInclude Include="code_system\CodeParser.hpp" />
     <ClInclude Include="code_system\codes\include\advanced\code_gc_shinyjewel.h" />
     <ClInclude Include="code_system\codes\include\bonus\code_babychaolevel.h" />
@@ -434,8 +440,11 @@
     <ClInclude Include="data\omochao\omobuild_all.h" />
     <ClInclude Include="data\ShinyJewelColors.h" />
     <ClInclude Include="data\special\als_all.h" />
+    <ClInclude Include="data\toy\al_toy_umbrella.nja" />
     <ClInclude Include="define.h" />
     <ClInclude Include="FunctionHook.h" />
+    <ClInclude Include="global_save.h" />
+    <ClInclude Include="hd_texture.h" />
     <ClInclude Include="imgui\imconfig.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
@@ -513,12 +522,16 @@
     <ClInclude Include="data\cwe\object_common_cnk\Mushroom2x.h" />
     <ClInclude Include="data\toy\NeutralSandCastleModel.h" />
     <ClInclude Include="memory.h" />
+    <ClInclude Include="ModelInfo.h" />
+    <ClInclude Include="minimal\minimal.h" />
     <ClInclude Include="move.h" />
     <ClInclude Include="ninja.h" />
     <ClInclude Include="ninja_functions.h" />
+    <ClInclude Include="njdef.h" />
     <ClInclude Include="PaletteFix.h" />
     <ClInclude Include="patchedcolors.h" />
     <ClInclude Include="data\parts\RaccoonArms.h" />
+    <ClInclude Include="api\api_idhash.h" />
     <ClInclude Include="register\api_register.h" />
     <ClInclude Include="renderfix.h" />
     <ClInclude Include="SA2Enums.h" />
@@ -529,6 +542,7 @@
     <ClInclude Include="data\parts\SADXParts.h" />
     <ClInclude Include="data\toy\SandHoleModel.h" />
     <ClInclude Include="data\cwe\object_common_cnk\ShinyFruit.h" />
+    <ClInclude Include="save\save_item.h" />
     <ClInclude Include="save\save_serializable.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -571,6 +585,7 @@
     <ClCompile Include="al_behavior\albhv_music.cpp" />
     <ClCompile Include="al_behavior\albhv_piano.cpp" />
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
+    <ClCompile Include="al_behavior\albhv_rain.cpp" />
     <ClCompile Include="al_behavior\albhv_stoy.cpp" />
     <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
     <ClCompile Include="al_behavior\albhv_tree.cpp" />
@@ -582,8 +597,19 @@
     <ClCompile Include="al_behavior\alsbhv_hug.cpp" />
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
+    <ClCompile Include="al_garden_info.cpp" />
+    <ClCompile Include="al_daynight_rain.cpp" />
     <ClCompile Include="al_ode_mainmenubar.cpp" />
+    <ClCompile Include="api\api_accessory.cpp" />
+    <ClCompile Include="api\api_json.cpp" />
+    <ClCompile Include="api\api_metadata.cpp" />
+    <ClCompile Include="api\api_motion.cpp" />
     <ClInclude Include="data\heroskyboxfix\object_ghero_nk_kumofront_kumofront.h" />
+    <ClCompile Include="api\api_texture.cpp" />
+    <ClCompile Include="api\api_main.cpp" />
+    <ClCompile Include="cnk_util.cpp" />
+    <ClCompile Include="global_save.cpp" />
+    <ClCompile Include="hd_texture.cpp" />
     <ClCompile Include="imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
@@ -632,8 +658,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="ModelInfo.cpp" />
+    <ClCompile Include="minimal\minimal.cpp" />
     <ClCompile Include="move.cpp" />
+    <ClCompile Include="api\api_idhash.cpp" />
     <ClCompile Include="renderfix.cpp" />
+    <ClCompile Include="save\save_item.cpp" />
     <ClCompile Include="ui\al_tween_interp.cpp" />
     <ClInclude Include="al_chao_info.h" />
     <ClCompile Include="al_chao_counter.cpp" />
@@ -670,7 +700,6 @@
     <ClCompile Include="al_parameter.cpp" />
     <ClCompile Include="al_parts.cpp" />
     <ClCompile Include="al_piano.cpp" />
-    <ClCompile Include="al_registry.cpp" />
     <ClCompile Include="al_sandhole.cpp" />
     <ClCompile Include="al_save.cpp" />
     <ClCompile Include="al_script.cpp" />
@@ -718,10 +747,10 @@
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="ninja_functions.cpp" />
     <ClCompile Include="PaletteFix.cpp" />
-    <ClCompile Include="register\api_accessory.cpp" />
+    <ClCompile Include="register\reg_accessory.cpp" />
     <ClCompile Include="register\api_fruit.cpp" />
     <ClCompile Include="register\api_minimal.cpp" />
-    <ClCompile Include="register\api_motion.cpp" />
+    <ClCompile Include="register\reg_motion.cpp" />
     <ClCompile Include="register\api_register.cpp" />
     <ClCompile Include="register\api_special.cpp" />
     <ClCompile Include="save\save_serializable.cpp" />
@@ -738,6 +767,7 @@
     <ClCompile Include="TextConv.cpp" />
     <ClCompile Include="Trampoline.cpp" />
     <ClCompile Include="ui\al_ortho.cpp" />
+    <ClCompile Include="land_grayscale.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="al_animation.cpp" />
@@ -774,7 +804,6 @@
     <None Include="data\al_model\ali_medal_pal.nja" />
     <None Include="data\al_model\ali_medal_rub.nja" />
     <None Include="data\al_model\ali_model_saf.nja" />
-    <None Include="data\al_model\al_baldroot.nja" />
     <None Include="data\al_model\al_egg_chao.nja" />
     <None Include="data\al_model\al_nnz.nja" />
     <None Include="data\al_model\al_omochao.nja" />

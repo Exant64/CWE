@@ -2,6 +2,21 @@
 <ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
   <Groups>
     <Group name="Chao World Extended" display="01 - Main Features">
+      <Property name="StageAnimals" type="bool" defaultvalue="True" display="Obtain Custom Animals in Stages">
+        <HelpText>Makes the second Chao Box spawn custom animals.</HelpText>
+      </Property>
+      <Property name="StageAnimalIncludeSADX" type="bool" defaultvalue="True" display="Include SADX Animals in Stage Custom Animal Spawn Pool">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this adds the SADX animals to that setting's spawn pool.</HelpText>
+      </Property>
+      <Property name="StageAnimalChance" type="int" defaultvalue="50" minvalue="0" maxvalue="100" display="Percentage Chance of Custom Animals spawning in Stages">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this specifies the percentage chance for the custom animals to spawn from the chao box.</HelpText>
+      </Property>
+      <Property name="StageAnimalMinCount" type="int" defaultvalue="1" minvalue="0" display="Minimum Number of Custom Animals in Stages">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this specifies the minimum number of animals that can spawn from the chao box.</HelpText>
+      </Property>
+      <Property name="StageAnimalMaxCount" type="int" defaultvalue="4" minvalue="1" display="Maximum Number of Custom Animals in Stages">
+        <HelpText>If "Obtain Custom Animals in Stages" is enabled, this specifies the maximum number of animals that can spawn from the chao box.</HelpText>
+      </Property>
       <Property name="UnusedToys" type="bool" defaultvalue="True" display="Bring Unused Toys">
         <HelpText>Brings back the toys Piano and Organ for Hero Garden and Dark Garden. Along with Rattles alignment!</HelpText>
       </Property>
@@ -36,6 +51,12 @@
     <Group name="DayNight" display="02 - DayNight System">
       <Property name="DayNightCycle" type="bool" defaultvalue="True" display="Day Night Cycle">
         <HelpText>Time passes in the gardens with slight weather changes (Warning: May not be compatible with some Texture mods)</HelpText>
+      </Property>
+      <Property name="Rain" type="bool" defaultvalue="True" display="Rain">
+        <HelpText>Enables rain weather event that can occur during the cloudy phase. (note that it's disabled in the Hero Garden)</HelpText>
+      </Property>
+      <Property name="DayNightRainSounds" type="bool" defaultvalue="True" display="Rain Sounds">
+        <HelpText>Enables the rain sound effects.</HelpText>
       </Property>
       <Property name="DayNightCycleNeutralGarden" type="bool" defaultvalue="True" display="Neutral Garden">
         <HelpText>Enables/Disables the Day Night Cycle in the Neutral Garden.</HelpText>
@@ -240,6 +261,15 @@
       <Property name="BlackMarketShort" type="bool" defaultvalue="False" display="Shorten Black Market Dialog">
         <HelpText>Less dialog in Black Market.</HelpText>
       </Property>
+      <Property name="NeutGrayscale" type="bool" defaultvalue="False" display="Neutral Garden Vertex Color Grayscale">
+        <HelpText>Turns the vertex colors in the Neutral Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
+      </Property>
+      <Property name="HeroGrayscale" type="bool" defaultvalue="False" display="Hero Garden Vertex Color Grayscale">
+        <HelpText>Turns the vertex colors in the Hero Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
+      </Property>
+      <Property name="DarkGrayscale" type="bool" defaultvalue="False" display="Dark Garden Vertex Color Grayscale">
+        <HelpText>Turns the vertex colors in the Dark Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
+      </Property>
     </Group>
     <Group name="Detail" display="07 - Detail Settings">
       <Property name="DetailFittingPersonality" type="bool" defaultvalue="False" display="Fitting Personality">
@@ -299,6 +329,26 @@
       </Property>
       <Property name="IgnoreMinigameIntel" type="bool" defaultvalue="False" display="Ignore the Minigame Intel">
         <HelpText>Chao will ignore the intelligence minigame.</HelpText>
+      </Property>
+    </Group>
+    <Group name="HDTex" display="10 - HD Texture">
+      <Property name="ChaoTex" type="bool" defaultvalue="False" display="Chao Textures">
+        <HelpText>HD Chao textures (except Child and Hero chao), including vanilla wearables (medals and hats). (ECW texture support included!)</HelpText>
+      </Property>
+      <Property name="ObjectTex" type="bool" defaultvalue="False" display="Object Textures">
+        <HelpText>HD Chao World Object textures (mostly fruits, seeds, and some miscellaneous textures).</HelpText>
+      </Property>
+      <Property name="ToyTex" type="bool" defaultvalue="False" display="Toy Textures">
+        <HelpText>HD Chao toy textures. (replaces al_toy)</HelpText>
+      </Property>
+      <Property name="FaceTex" type="bool" defaultvalue="False" display="Face Textures">
+        <HelpText>HD Chao eye and mouth textures.</HelpText>
+      </Property>
+      <Property name="IconTex" type="bool" defaultvalue="False" display="Emotion Ball Textures">
+        <HelpText>HD Chao emotion ball textures.</HelpText>
+      </Property>
+      <Property name="LensTex" type="bool" defaultvalue="False" display="Lens Textures">
+        <HelpText>HD Chao CWE lens textures (only the regular color lenses!) </HelpText>
       </Property>
     </Group>
     <Group name="Cheat" display="99 - Cheat and Debug">

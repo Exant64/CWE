@@ -9,6 +9,7 @@
 
 #include "al_behavior/al_intention.h"
 #include "ChaoMain.h"
+#include "renderfix.h"
 
 bool __cdecl SetPianoWaypoint(ObjectMaster* a2, NJS_VECTOR* a1)
 {
@@ -53,7 +54,7 @@ void Piano_Display(ObjectMaster * a1)
 
 		LoadControl3D();
 
-		if (a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
 		{
 			njTranslate(NULL, 0, 0.4f, 0);
 
@@ -68,7 +69,7 @@ void Piano_Display(ObjectMaster * a1)
 				break;
 			}
 			
-			DrawChaoWorldShadow();
+			rfapi_core->pDraw->AL_ShadowDraw();
 		}
 
 		njPopMatrixEx();
