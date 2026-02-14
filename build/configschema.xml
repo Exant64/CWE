@@ -53,7 +53,10 @@
         <HelpText>Time passes in the gardens with slight weather changes (Warning: May not be compatible with some Texture mods)</HelpText>
       </Property>
       <Property name="Rain" type="bool" defaultvalue="True" display="Rain">
-        <HelpText>Enables rain weather event that can occur during the cloudy phase. (note that it's disabled in the Hero Garden)</HelpText>
+        <HelpText>Enables rain weather event that can occur during the cloudy phase. (note that it's disabled in the Hero Garden by default)</HelpText>
+      </Property>
+      <Property name="RainHero" type="bool" defaultvalue="False" display="Rain in Hero Garden">
+        <HelpText>Rain is disabled in the Hero Garden by default (because the garden is above the clouds) but you can reenable it using this option.</HelpText>
       </Property>
       <Property name="DayNightRainSounds" type="bool" defaultvalue="True" display="Rain Sounds">
         <HelpText>Enables the rain sound effects.</HelpText>

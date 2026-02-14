@@ -36,6 +36,7 @@ struct ConfigValues {
 
 	bool DayNightCycle;
 	bool DayNightRain;
+	bool DayNightHeroRain;
 	bool DayNightRainSounds;
 	bool DayNightCycleNeutralGardenSkybox;
 	bool DayNightCycleHeroGardenSkybox;

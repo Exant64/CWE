@@ -203,7 +203,7 @@ private:
 
 public:
 	const bool HasRain() const {
-		return gConfigVal.DayNightRain && m_hasRain;
+		return gConfigVal.DayNightRain && m_hasRain && (AL_GetStageNumber() != CHAO_STG_HERO || gConfigVal.DayNightHeroRain);
 	}
 
 	const NJS_ARGB& GetRainColor() const {
