@@ -23,7 +23,6 @@ static CWE_API_REGISTER CWE_API_Register = {
 CWE_API CWE_API_Main = {
     .Version = CWE_API_VER,
 
-    .pLegacy = &CWE_API_Legacy,
     .pRegister = &CWE_API_Register
 };
 

@@ -164,9 +164,5 @@ struct CWE_API_REGISTER {
 struct CWE_API {
 	int Version;
 
-	// this is only included to let you port more complex API mods more easily
-	// if there's any non-legacy equivalent for something you're trying to use, please use that
-	CWE_REGAPI* pLegacy;
-
 	CWE_API_REGISTER* pRegister;
 };
