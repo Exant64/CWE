@@ -176,6 +176,7 @@ bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Ga
 	return true;
 }
 
+#pragma optimize("", off)
 static const void* const njDrawTextureEx_p = (void*)0x0077F6B0;
 static void njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans)
 {
@@ -189,6 +190,7 @@ static void njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans
 		add esp, 4
 	}
 }
+#pragma optimize("", on)
 
 class MainMenuButton : public UISelectable {
 private:
