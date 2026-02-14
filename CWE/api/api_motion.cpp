@@ -54,7 +54,7 @@ size_t AddChaoMotion(const std::string& name, MOTION_TABLE* pMotionTable) {
 }
 
 size_t AddChaoMotion(const char* pID, MOTION_TABLE* pMotionTable) {
-    return AddChaoMotion({pID}, pMotionTable);
+    return AddChaoMotion(std::string{pID}, pMotionTable);
 }
 
 // LEGACY
@@ -80,7 +80,7 @@ bool SetChaoMotionTransition(const std::string& from, const std::string& to) {
 }
 
 bool SetChaoMotionTransition(const char* pFromID, const char* pToID) {
-    return SetChaoMotionTransition({pFromID}, {pToID});
+    return SetChaoMotionTransition(std::string{pFromID}, std::string{pToID});
 }
 
 void Chao_RegAnimation(ObjectMaster* a1, const std::string& name) {
@@ -96,7 +96,7 @@ size_t GetChaoMotionIndex(const std::string& name) {
 }
 
 size_t GetChaoMotionIndex(const char* pID) {
-    return GetChaoMotionIndex({pID});
+    return GetChaoMotionIndex(std::string{pID});
 }
 
 CWE_API_REGISTER_MOTION AL_ModAPI_Motion = {
