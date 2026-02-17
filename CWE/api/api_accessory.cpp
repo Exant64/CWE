@@ -319,6 +319,12 @@ CWE_API_REGISTER_ACCESSORY AL_ModAPI_Accessory = {
 extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	char hash_id[ACCESSORY_ID_LENGTH];
 	auto hash = GenerateHashForChunkObject(model);
+	if(hash == -1) {
+		APIErrorUtil error("Error in legacy AddChaoAccessory: ");
+		error.print("hash could not be generated, object has no mesh data at all, aborting register");
+		return -1;
+	}
+
 	sprintf_s(hash_id, "acc%x", hash);
 
 	CWE_API_ACCESSORY_DATA accessory_data = {
@@ -328,7 +334,8 @@ extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, 
 		.pMarketAttrib = attrib,
 		.pName = name,
 		.pDescription = description,
-		.ColorEntryCount = 0
+		.ColorEntryCount = 0,
+		.Flags = CWE_API_ACCESSORY_FLAGS_NO_RF_NORMALDRAW_SUPPORT
 	};
 
 	strcpy_s(accessory_data.ID, hash_id);

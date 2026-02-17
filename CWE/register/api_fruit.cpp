@@ -51,7 +51,7 @@ void CWEFruit_Shiny(ChaoData* chaoData, ObjectMaster* fruit) {
 	}
 }
 
-void ALAPI_RegisterFruit(CWE_REGAPI_LEGACY* cwe_api) {
+void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 	BlackMarketItemAttributes Spoiled = { 0,0,999,-1,-1,0 };
 	cwe_api->RegisterChaoFruit(FruitModels[24], &AL_OBJECT_TEXLIST, &SpoiledFruitStats, &Spoiled, 0, "Spoiled Fruit", "");
 	cwe_api->RegisterChaoFruit(FruitModels[25], &AL_OBJECT_TEXLIST, &SpoiledFruitStats, &Spoiled, 0, "Spoiled Fruit", "");

@@ -3,7 +3,7 @@
 #include <ChaoMain.h>
 #include <data/accessory/ala_all.h>
 
-void ALAPI_RegisterAccessory(CWE_REGAPI_LEGACY* cwe_api) {
+void ALAPI_RegisterAccessory(CWE_REGAPI* cwe_api) {
 	return;
 
 	BlackMarketItemAttributes accessoryAttrib = { 2500,500,0,-1,-1,0 };

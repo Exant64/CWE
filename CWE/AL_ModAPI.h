@@ -23,9 +23,9 @@ struct IconData {
 	Uint32 SwirlIndex;
 };
 
-using RegisterDataFuncPtr = void(__cdecl*)(CWE_REGAPI_LEGACY* cwe_api);
+using RegisterDataFuncPtr = void(__cdecl*)(CWE_REGAPI* cwe_api);
 
-extern CWE_REGAPI_LEGACY CWE_API_Legacy;
+extern CWE_REGAPI CWE_API_Legacy;
 
 extern std::unordered_set<int> ModAPI_SpecialAction;
 extern std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;

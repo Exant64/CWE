@@ -80,13 +80,13 @@ void ThemeUnlockFunc(int ID)
 
 //todo: nasty
 extern size_t SpartoiLensID;
-extern void ALAPI_RegisterFruit(CWE_REGAPI_LEGACY* cwe_api);
-extern void ALAPI_RegisterAccessory(CWE_REGAPI_LEGACY* cwe_api);
-extern void ALAPI_RegisterMinimal(CWE_REGAPI_LEGACY* cwe_api);
-extern void ALAPI_RegisterMotion(CWE_REGAPI_LEGACY* cwe_api);
-extern void ALAPI_RegisterSpecial(CWE_REGAPI_LEGACY* cwe_api);
+extern void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api);
+extern void ALAPI_RegisterAccessory(CWE_REGAPI* cwe_api);
+extern void ALAPI_RegisterMinimal(CWE_REGAPI* cwe_api);
+extern void ALAPI_RegisterMotion(CWE_REGAPI* cwe_api);
+extern void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api);
 
-void ALAPI_Register(CWE_REGAPI_LEGACY* cwe_api) {
+void ALAPI_Register(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterSaveLoad("CWE", &cweSaveFile, sizeof(cweSaveFile));
 
 	CWE_RegisterTexlists(cwe_api);

@@ -411,7 +411,7 @@ void AL_Name_Init() {
 	// we manually redirect the call to the original draw since it cannot exceed 7 characters anyways
 	WriteCall((void*)0x00556A26, sub_536BA0_Hook);
 
-	WriteCall((void*)0x00593122, DisplayChaoName_Hook); //entrance chaodata panel todo: test race panel
+	WriteCall((void*)0x00593122, DisplayChaoName_Hook); //entrance chaodata panel
 	WriteJump((void*)0x58DA30, sub_58DA30Hook);			//health center
 	WriteCall((void*)0x00597C35, DisplayChaoName_Hook); //might be too small, cant test
 	WriteCall((void*)0x00571994, DisplayChaoName_Hook); //karate1
