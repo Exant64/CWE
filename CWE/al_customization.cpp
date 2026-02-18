@@ -150,7 +150,7 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 
 	v9->Garden = Garden;
 	v9->Type = ID;
-	v9->position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
+	v9->position = ProbablyChaoSpawnPoints[(Garden - 1) * 16 + (int)(njRandom() * 15.f)];
 	UpdateHatAccVector();
 
 	return true;
@@ -170,7 +170,7 @@ bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Ga
 
 	save->Garden = Garden;
 	save->IndexID = ID;
-	save->Position = ProbablyChaoSpawnPoints[Garden * 16 + (int)(njRandom() * 15.f)];
+	save->Position = ProbablyChaoSpawnPoints[(Garden - 1) * 16 + (int)(njRandom() * 15.f)];
 	UpdateHatAccVector();
 
 	return true;
