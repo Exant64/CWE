@@ -98,9 +98,18 @@ extern "C"
 	static RFS_PSHADER* pBackupPixelShader;
 	static RFS_PSHADER* pBackupFogPixelShader;
 
+	// this bool is a quick hack to not backup multiple times if we already replaced the shader
+	static int InLoadNewShaders = 0;
+
 	API __declspec(noinline) void LoadNewShaders()
 	{
 		if (RenderFixAPI && RFAPI_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			// if InLoadNewShaders was already > 0 by the time we entered here, dont do anything
+			// just note down that this was called through the increment
+			if (InLoadNewShaders++) {
+				return;
+			}
+
 			pBackupVertexShader = RenderFixAPI->pShader->GetGameVShader(RFE_SHADERIX_MDL_NONE);
 			pBackupFogVertexShader = RenderFixAPI->pShader->GetGameVShader(RFE_SHADERIX_MDL_F);
 			pBackupPixelShader = RenderFixAPI->pShader->GetGamePShader(RFE_SHADERIX_MDL_NONE);
@@ -126,6 +135,12 @@ extern "C"
 	API __declspec(noinline) void CancelNewShaders()
 	{
 		if (RenderFixAPI && RFAPI_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			// if prefix decrementing results in non 0 value (aka InLoadNewShaders was > 1 before this was entered)
+			// dont do nothing
+			if (--InLoadNewShaders) {
+				return;
+			}
+
 			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, pBackupVertexShader);
 			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_F, pBackupFogVertexShader);
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
