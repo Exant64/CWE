@@ -317,10 +317,23 @@ CWE_API_REGISTER_ACCESSORY AL_ModAPI_Accessory = {
 };
 
 extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+	APIErrorUtil error("Error in legacy RegisterChaoAccessory: ");
+
+	#define SHIFT_MSG "If this is your first 9.6 bootup, you may experience the accessories being shifted. Note that this is a onetime process."
+
+	if(!model) {
+		error.print("accessory %s doesn't have a model specified, this accessory will not be registered. " SHIFT_MSG, name);
+		return -1;
+	}
+
+	if(!texlist) {
+		error.print("accessory %s doesn't have a texture specified, this accessory will not be registered. " SHIFT_MSG, name);
+		return -1;
+	}
+
 	char hash_id[ACCESSORY_ID_LENGTH];
 	auto hash = GenerateHashForChunkObject(model);
 	if(hash == -1) {
-		APIErrorUtil error("Error in legacy AddChaoAccessory: ");
 		error.print("hash could not be generated, object has no mesh data at all, aborting register");
 		return -1;
 	}
