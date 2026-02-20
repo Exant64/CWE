@@ -13,7 +13,10 @@ static void SetRenderFixBackwardsCompatibilityConstantAttr() {
 	SaveConstantAttr();
 	rfapi_core->pChunk->CnkSetControl(~RJD_CNK_CTRL_DBLIGHT, 0);
 	OnConstantAttr(0, NJD_FST_IS | NJD_FST_DB);
-	OffConstantAttr(NJD_FST_IA, 0);
+	// 0xFF hack added to temporarily fix RF bug
+	// this will be fixed soon after this commit most likely,
+	// but let's keep the workaround to be safe for now
+	OffConstantAttr(0xFF | NJD_FST_IA, 0);
 }
 
 static void RestoreRenderFixBackwardsCompatibilityAttr() {
