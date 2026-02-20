@@ -443,7 +443,7 @@ static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) 
 	const int accessoryIndex = work->AccessoryIndices[slot];
 
 	return accessoryIndex != -1 && // chao has accessory
-		GetAccessoryType(accessoryIndex) == slot && // accessory matches its type
+		GetAccessoryType(accessoryIndex) >= EAccessoryType::Generic1 && // is of rigged accessory type (we dont enforce it to be the same type as the slot intentionally)
 		ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
 }
 
