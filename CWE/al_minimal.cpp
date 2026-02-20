@@ -312,8 +312,14 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 			njControl3D |= 0x2400u;
 		}
 
-		{
+		// mega jank, im in a rush rn
+		if (RenderFix_IsEnabled()) {
 			RF_BACKWARDS_COMPAT_GUARD();
+			g_HelperFunctions->PushInterpolationFix();
+			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.Index], &v2->field_38);
+			g_HelperFunctions->PopInterpolationFix();
+		}
+		else {
 			g_HelperFunctions->PushInterpolationFix();
 			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.Index], &v2->field_38);
 			g_HelperFunctions->PopInterpolationFix();
