@@ -32,6 +32,7 @@
 #include "al_msg_font.h"
 #include "al_chao_info.h"
 #include <api/api_tree.h>
+#include <set>
 #include <al_garden_info.h>
 #include <api/api_accessory.h>
 
@@ -198,15 +199,37 @@ void BlackMarketAddInventory(int cat, int item)
 		cweSaveFile.marketInventoryCount[cat]++;
 	}
 }
-void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category)
-{
-	for (size_t i = 0; i < set.size(); i++)
-	{
-		if (set[i])
-		{
+
+void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category) {
+	for (size_t i = 0; i < set.size(); i++) {
+		if (set[i]) {
 			BlackMarketAddInventory(category, i);
 			set[i] = false;
 		}
+	}
+}
+
+static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const size_t minItems = 3, const size_t maxItems = BlackMarketInventorySize) {
+	static std::random_device random_dev;
+	static std::mt19937 generator(random_dev());
+
+	const auto& itemAttribs = BlackMarketCategories[category];
+	const size_t maxItemCount = itemAttribs.Count - PLACEHOLDER_ITEM_COUNT;
+	std::uniform_int_distribution<int> distr(0, maxItemCount - 1);
+
+	const size_t randomItemCount = minItems + size_t(njRandom() * (maxItems - minItems - 0.1f));
+	const size_t itemCount = min(maxItemCount, randomItemCount);
+	std::set<size_t> items; 
+
+	while (items.size() < itemCount) {
+		const size_t id = distr(generator);
+		if (EmblemCount < itemAttribs.attrib[id].RequiredEmblems) continue;
+
+		items.insert(id);
+	}
+
+	for (const auto& item : items) {
+		BlackMarketAddInventory(category, item);
 	}
 }
 
@@ -450,7 +473,7 @@ void FBuyListUpdate()
 
 	FBuyListGenericUpdateSeed();
 
-	FBuyListGenericUpdate(ChaoItemCategory_Accessory);
+	FBuyListUniformDistributionUpdate(ChaoItemCategory_Accessory);
 	FBuyListGenericUpdate(ChaoItemCategory_Special);
 
 	RareFruit();

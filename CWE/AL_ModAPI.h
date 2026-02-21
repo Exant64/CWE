@@ -11,6 +11,8 @@
 
 #include "cwe_api.h"
 
+#define PLACEHOLDER_ITEM_COUNT 50
+
 #define ICON_FLAG_HALO BIT_0
 
 struct IconData {
