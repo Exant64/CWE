@@ -214,11 +214,17 @@ static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const s
 	static std::mt19937 generator(random_dev());
 
 	const auto& itemAttribs = BlackMarketCategories[category];
-	const size_t maxItemCount = itemAttribs.Count - PLACEHOLDER_ITEM_COUNT;
-	std::uniform_int_distribution<int> distr(0, maxItemCount - 1);
+	size_t totalObtainableItem = 0;
+	for(size_t i = 0; i < itemAttribs.Count; ++i) {
+		if (EmblemCount < itemAttribs.attrib[i].RequiredEmblems) continue;
+
+		totalObtainableItem++;
+	}
+	
+	std::uniform_int_distribution<int> distr(0, totalObtainableItem - 1);
 
 	const size_t randomItemCount = minItems + size_t(njRandom() * (maxItems - minItems - 0.1f));
-	const size_t itemCount = min(maxItemCount, randomItemCount);
+	const size_t itemCount = min(totalObtainableItem, randomItemCount);
 	std::set<size_t> items; 
 
 	while (items.size() < itemCount) {
@@ -473,7 +479,7 @@ void FBuyListUpdate()
 
 	FBuyListGenericUpdateSeed();
 
-	FBuyListUniformDistributionUpdate(ChaoItemCategory_Accessory);
+	FBuyListGenericUpdate(ChaoItemCategory_Accessory);
 	FBuyListGenericUpdate(ChaoItemCategory_Special);
 
 	RareFruit();
