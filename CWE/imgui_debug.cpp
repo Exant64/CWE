@@ -26,6 +26,7 @@ static bool ShowTaskList = false;
 static bool ShowChaoSoundMenu = false;
 static bool ShowItemsMenu = false;
 static bool ShowAccessoryMenu = false;
+static bool ShowMarketMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -531,6 +532,35 @@ static void RainDelete(task* tp) {
     raintp = NULL;
 }
 
+static void MarketMenu() {
+    if(ShowMarketMenu && ImGui::Begin("Market", &ShowMarketMenu)) {
+        for(size_t i = 0; i < BlackMarketCategories_Length; ++i) {
+            if(!BlackMarketCategories[i].Count) {
+                continue;
+            }
+
+            if(ImGui::TreeNode(&BlackMarketCategories[i].attrib, "Category %d", int(i))) {
+                for(size_t j = 0; j < BlackMarketCategories[i].Count; ++j) {
+                    const auto& entry = BlackMarketCategories[i].attrib[j];
+
+                    if(ImGui::TreeNode(&entry, "Entry %d", int(j))) {
+                        ImGui::Text("Name: %s", MsgAlItem[entry.Name]);
+                        ImGui::Text("Description: %s", MsgAlItem[entry.Descriptions]);
+                        ImGui::Text("Purchase/Sale: %d %d", entry.PurchasePrice, entry.SalePrice);
+                        ImGui::Text("Emblems: %d", entry.RequiredEmblems);
+
+                        ImGui::TreePop();
+                    }
+                }
+
+                ImGui::TreePop();
+            }
+        }
+
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -541,6 +571,8 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
             ImGui::MenuItem("Items", NULL, &ShowItemsMenu);
             ImGui::MenuItem("Accessory Internals", NULL, &ShowAccessoryMenu);
+            ImGui::MenuItem("Market", NULL, &ShowMarketMenu);
+            
             ImGui::EndMenu();
         }
 
@@ -551,6 +583,7 @@ static void ImGuiMenu() {
         ItemsMenu();
         TaskListMenu();
         AccessoryInternals();
+        MarketMenu();
 
         ImGui::EndMainMenuBar();
     }
