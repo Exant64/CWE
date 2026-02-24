@@ -542,6 +542,7 @@ extern "C"
 
 		//day night cycle
 		gConfigVal.DayNightCycle = config->getBool("DayNight", "DayNightCycle", true);
+		gConfigVal.DayNightShinyTex = config->getBool("DayNight", "ShinyTex", true);
 		gConfigVal.DayNightRain = config->getBool("DayNight", "Rain", true);
 		gConfigVal.DayNightHeroRain = config->getBool("DayNight", "RainHero", false);
 		gConfigVal.DayNightRainSounds = config->getBool("DayNight", "DayNightRainSounds", true);

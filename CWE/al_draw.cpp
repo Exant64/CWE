@@ -1116,7 +1116,7 @@ static void Chao_Display_r(task* tp) {
 	}
 #endif
 
-	if (!gConfigVal.DayNightCycle) {
+	if (!gConfigVal.DayNightCycle || !gConfigVal.DayNightShinyTex) {
 		Chao_Display_t.Original(tp);
 		return;
 	}
@@ -1128,7 +1128,7 @@ static void Chao_Display_r(task* tp) {
 
 UsercallFuncVoid(ColorEggModel_t, (NJS_CNK_MODEL* model, int eggType), (model, eggType), 0x0056D540, rEDI, stack4);
 static void ColorEggModel_r(NJS_CNK_MODEL* model, int eggType) {
-	if (!gConfigVal.DayNightCycle) {
+	if (!gConfigVal.DayNightCycle || !gConfigVal.DayNightShinyTex) {
 		ColorEggModel_t.Original(model, eggType);
 		return;
 	}
@@ -1146,7 +1146,7 @@ static void ColorEggModel_r(NJS_CNK_MODEL* model, int eggType) {
 
 static FunctionHook<void, task*> EggDisplayer_t(0x0057B640);
 static void EggDisplayer_r(task* tp) {
-	if (!gConfigVal.DayNightCycle) {
+	if (!gConfigVal.DayNightCycle || !gConfigVal.DayNightShinyTex) {
 		EggDisplayer_t.Original(tp);
 		return;
 	}

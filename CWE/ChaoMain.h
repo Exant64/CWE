@@ -35,6 +35,7 @@ struct ConfigValues {
 	bool ClassroomTimerDisplay;
 
 	bool DayNightCycle;
+	bool DayNightShinyTex;
 	bool DayNightRain;
 	bool DayNightHeroRain;
 	bool DayNightRainSounds;
