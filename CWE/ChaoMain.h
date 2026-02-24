@@ -59,6 +59,7 @@ struct ConfigValues {
 
 	bool NeutSet, HeroSet, DarkSet;
 
+	bool LegacyBaldYOnly;
 	bool ToyMove, ToyReset;
 	bool NewInventory;
 	bool DoctorChaoInfo;

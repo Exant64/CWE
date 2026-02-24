@@ -520,6 +520,7 @@ extern "C"
 		gConfigVal.DoctorChaoInfo = config->getBool("Detail", "DetailDoctorChaogivemoreInformationEN", false);
 
 		//Misc
+		gConfigVal.LegacyBaldYOnly = config->getBool("Misc", "LegacyBald", true);
 		gConfigVal.FixHeroSky = config->getBool("Misc", "FixHeroSky", true);
 		gConfigVal.NeutSet = config->getBool("Misc", "NeutSet", true);
 		gConfigVal.HeroSet = config->getBool("Misc", "HeroSet", true);

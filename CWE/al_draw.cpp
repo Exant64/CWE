@@ -853,9 +853,12 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 		}
 
 		if (data.Flags & CWE_API_ACCESSORY_FLAGS_LEGACY_BALD) {
-			presets[0] = true;
 			presets[1] = true;
-			presets[2] = true;
+
+			if(!gConfigVal.LegacyBaldYOnly) {
+				presets[0] = true;
+				presets[2] = true;
+			}
 		}
 	}
 
