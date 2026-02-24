@@ -458,24 +458,48 @@ static void RaceChaoExecutor(task* tp) {
 	original(tp);
 }
 
+enum {
+    RAKUGAKI_SONIC,
+    RAKUGAKI_SHADOW,
+    RAKUGAKI_TAILS,
+    RAKUGAKI_EGGMAN,
+    RAKUGAKI_KNUCKLES,
+    RAKUGAKI_ROUGE,
+    RAKUGAKI_N_CHAO,
+    RAKUGAKI_H_CHAO,
+    RAKUGAKI_D_CHAO,
+    RAKUGAKI_CAKE,
+    RAKUGAKI_CAR,
+    RAKUGAKI_FLOWER,
+    RAKUGAKI_BONE,
+    RAKUGAKI_AMY,
+    RAKUGAKI_TIKAL,
+    RAKUGAKI_BIG,
+	RAKUGAKI_CWE_START,
+	RAKUGAKI_CWE_COCO = RAKUGAKI_CWE_START,
+	RAKUGAKI_CWE_PUYO,
+	RAKUGAKI_CWE_NIGHTS,
+	RAKUGAKI_CWE_AMIGO, // this is unused atm
+};
+
 const int ALO_RakugakiExecutor_LoadPtr = 0x05AB200;
-void ALO_RakugakiExecutor_Load_(int a1, char a2, int a3)
+void ALO_RakugakiExecutor_Load_(int a1, int a2, int a3)
 {
 	__asm
 	{
 		mov ebx, a1
 		push a3
-		push dword ptr [a2]
+		push a2
 		call ALO_RakugakiExecutor_LoadPtr
 		add esp, 8 
 	}
 }
 
-void __cdecl NewDrawings(int a1, char a2, int a3)
+void __cdecl NewDrawings(int a1, int ID, int a3)
 {
-	char ID = a2;
-	if (ID >= 13 && ID <= 15 && njRandom() > 0.5f)
-		ID += 3;
+	if (ID >= RAKUGAKI_AMY && ID <= RAKUGAKI_BIG && njRandom() > 0.5f)
+		ID += RAKUGAKI_CWE_START - RAKUGAKI_AMY;
+
 	ALO_RakugakiExecutor_Load_(a1, ID, a3);
 }
 
@@ -527,7 +551,9 @@ void Chao_Init()
 
 	AL_FaceInit();
 
-	//new drawings
+	// new drawings
+	// note: there's an extra texture at texture 0 because that's how it is in AL_OBJECT too
+	// i used an aiai texture which managed to mislead me earlier, hence this comment lol
 	WriteCall((void*)0x005AB3D2, NewDrawingsHook);
 	WriteData((int*)0x5AB091, (int)&AL_DRAWING_TEXLIST);
 	WriteData((int*)0x5AB0D8, (int)&AL_DRAWING_TEXLIST);
