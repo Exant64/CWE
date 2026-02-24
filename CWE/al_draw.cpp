@@ -1006,21 +1006,11 @@ void DrawChao(ObjectMaster* a1, ChunkObjectPointer* chunkObjectPointer)
 			|| a1->Data1.Chao->pParamGC->Type >= (unsigned __int8)CharacterIndex
 			|| (a1->Data1.Chao->pParamGC->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39)) && Chao_NodeIndex != 6 && Chao_NodeIndex != 13 && Chao_NodeIndex != 8))
 	{
-		if (chunkObjectPointer->animalPart && a1->Data1.Chao->pParamGC->Type < CharacterIndex)
-		{
-#ifdef COLORED_PARTS
-			if (a1->Data1.Chao->pParamGC->Texture)
-				Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
-			else
-#endif
+		if (chunkObjectPointer->animalPart && a1->Data1.Chao->pParamGC->Type < CharacterIndex) {
+			if (!(DrawHideNodes & (uint64_t(1) << uint64_t(Chao_NodeIndex)))) {
 				njSetTexture((NJS_TEXLIST*)chunkObjectPointer->field_CC);
-#ifdef COLORED_PARTS
-			AL_SetRareMaterial(a1, chunkObjectPointer->animalPart->chunkmodel);
-#endif
-			chCnkDrawObject(chunkObjectPointer->animalPart);
-#ifdef COLORED_PARTS
-			goto LABEL_96;
-#endif
+				chCnkDrawObject(chunkObjectPointer->animalPart);
+			}
 		}
 		else if (chunkObjectPointer->base.chunkmodel)
 		{
