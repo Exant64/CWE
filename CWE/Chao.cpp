@@ -44,6 +44,7 @@
 #include "al_shape.h"
 #include "code_system/code_manager.h"
 #include <api/api_metadata.h>
+#include "FunctionHook.h"
 
 const int AL_IconSetPtr = 0x53D660;
 void AL_IconSet(ObjectMaster* a4, char a2, int a3)
@@ -337,8 +338,8 @@ void AL_ChaoAccessoryConversion(ChaoDataBase* pParam) {
 }
 
 static void Chao_Main_r(ObjectMaster* a1);
-static Trampoline Chao_Main_Tramp(0x0054FE20, 0x0054FE28, Chao_Main_r);
-static void __cdecl Chao_Main_r(ObjectMaster* a1)
+static FunctionHook<void, task*> Chao_Main_hook(0x0054FE20, Chao_Main_r);
+static void Chao_Main_r(ObjectMaster* a1)
 {
 	chaowk* work = GET_CHAOWK(a1);
 	ChaoDataBase* pParam = a1->Data1.Chao->pParamGC;
@@ -443,9 +444,7 @@ static void __cdecl Chao_Main_r(ObjectMaster* a1)
 		c->ChaoObject(a1);
 	}
 
-	//trampoline
-	auto original = reinterpret_cast<decltype(Chao_Main_r)*>(Chao_Main_Tramp.Target());
-	original(a1);
+	Chao_Main_hook.Original(a1);
 }
 
 static void RaceChaoExecutor(task* tp);
