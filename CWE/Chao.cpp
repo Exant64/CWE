@@ -337,6 +337,13 @@ void AL_ChaoAccessoryConversion(ChaoDataBase* pParam) {
 	}
 }
 
+// I wanted the call to this logic to stay in this file, but the buyobuyocontrol hook is in api_customchao
+// look there to see where this is called
+// we had to move this out of chao_main hook so that it runs in chao-partner too
+void AL_BuyoBuyo_AccessoryHandling(task* tp) {
+	AL_ChaoAccessoryMainCheck(tp);
+}
+
 static void Chao_Main_r(ObjectMaster* a1);
 static FunctionHook<void, task*> Chao_Main_hook(0x0054FE20, Chao_Main_r);
 static void Chao_Main_r(ObjectMaster* a1)
@@ -387,8 +394,6 @@ static void Chao_Main_r(ObjectMaster* a1)
 			pParam->ChaoID.id[0] = GenerateRandomSeed();
 		}
 	}
-
-	AL_ChaoAccessoryMainCheck(a1);
 
 	*(int*)pParam->Name_ = *(int*)pParam->Name;
 	*(short*)(&pParam->Name_[4]) = *(short*)(&pParam->Name[4]);
@@ -451,7 +456,6 @@ static void RaceChaoExecutor(task* tp);
 static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, RaceChaoExecutor);
 static void RaceChaoExecutor(task* tp) {
 	AL_ChaoAccessoryConversion(GET_CHAOPARAM(tp));
-	AL_ChaoAccessoryMainCheck(tp);
 
 	auto original = reinterpret_cast<decltype(RaceChaoExecutor)*>(RaceChaoExecutor_t.Target());
 	original(tp);

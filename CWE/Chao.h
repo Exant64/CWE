@@ -452,6 +452,8 @@ void __cdecl AL_ForwardAcc(ObjectMaster* a1, float a2);
 BHV_FUNC AL_GetBehavior(ObjectMaster* a1);
 void Chao_Init();
 
+void AL_BuyoBuyo_AccessoryHandling(task* tp);
+
 void ColorEggModel(NJS_CNK_MODEL* a1, int a2);
 
 //todo: move this and al_global struct to its own header someday

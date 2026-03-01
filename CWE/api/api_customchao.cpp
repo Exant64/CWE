@@ -396,6 +396,8 @@ static void Chao_Delete_r(task* tp) {
 static void AL_BuyoBuyoControl_r(task* tp);
 static FunctionHook<void, task*> AL_BuyoBuyoControl(0x56FC20, AL_BuyoBuyoControl_r);
 static void AL_BuyoBuyoControl_r(task* tp) {
+	AL_BuyoBuyo_AccessoryHandling(tp);
+	
 	AL_BuyoBuyoControl.Original(tp);
 
 	auto* work = GET_CHAOWK(tp);
