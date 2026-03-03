@@ -27,6 +27,7 @@ static bool ShowChaoSoundMenu = false;
 static bool ShowItemsMenu = false;
 static bool ShowAccessoryMenu = false;
 static bool ShowMarketMenu = false;
+static bool ShowSoundsMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -561,6 +562,140 @@ static void MarketMenu() {
     }
 }
 
+static void SoundsMenu() {
+    typedef struct {
+        int8_t      mbank;
+        int8_t      index;
+
+        int8_t      pri;            /* priority */
+        int8_t      angle;          /* sound panning */
+
+        int8_t      volcur;
+        int8_t      vol;
+        int8_t      volmax;
+
+        uint8_t      bflag;
+        uint16_t    mode;
+
+        int16_t     pitch;
+        int16_t     timer;
+        uint16_t    sctimer;
+
+        void*       idp;            /* play id              */
+        uint16_t    tone;           /* sound number         */
+
+        NJS_VECTOR* pPos;
+        NJS_VECTOR  pos;
+
+        float       distmax;
+        float       distcur;
+    } SEENTRY;
+
+    #define SEWK_FXFLAG_ON       (1<<0) /* enable forced reverb value                   */
+    #define SEWK_FXFLAG_GAME     (1<<1) /* set reverb value on sound pause/resume       */
+
+    typedef struct {
+        uint8_t          fxflag;
+        uint8_t          fxlev_stop;         /* reverb level when paused          [-127~127] */
+        uint8_t          fxlev_game;         /* reverb level when playing         [-127~127] */
+
+        uint8_t          next_snd;           /* next sound buffer entry               [0~38] */
+        uint8_t          next_seq;           /* next seq buffer entry                [39~42] */
+
+        uint8_t          unk1[3];
+
+        float            unkBankVal;         /* unknown, always -1                           */
+
+        uint8_t           unk2[4];
+
+        SEENTRY             sebuf[43];           /* sound call buffer                            */
+
+        uint8_t          unk3[32];
+
+        void*   bank[8];            /* bank lists                                   */
+    } SEWORK;
+
+    DataPointer(SEWORK*, sework, 0x01A55874);
+    if (ShowSoundsMenu && ImGui::Begin("SoundSystem", &ShowSoundsMenu)) {
+        if(ImGui::BeginTable("sndtbl", 16, ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter)) {
+            ImGui::TableSetupColumn("mbank");
+            ImGui::TableSetupColumn("index");
+            ImGui::TableSetupColumn("pri");
+            ImGui::TableSetupColumn("angle");
+            ImGui::TableSetupColumn("volcur");
+            ImGui::TableSetupColumn("vol");
+            ImGui::TableSetupColumn("volmax");
+            ImGui::TableSetupColumn("bflag");
+            ImGui::TableSetupColumn("mode");
+            ImGui::TableSetupColumn("pitch");
+            ImGui::TableSetupColumn("timer");
+            ImGui::TableSetupColumn("sctimer");
+            ImGui::TableSetupColumn("idp");
+            ImGui::TableSetupColumn("tone");
+            ImGui::TableSetupColumn("distmax");
+            ImGui::TableSetupColumn("distcur");
+            ImGui::TableHeadersRow();
+
+            for(size_t i = 0; i < _countof(sework->sebuf); ++i) {
+                const auto& entry = sework->sebuf[i];
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.mbank);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.index);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.pri);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.angle);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.volcur);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.vol);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.volmax);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%x", uint32_t(entry.bflag));
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.mode);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.pitch);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.timer);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.sctimer);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%x", entry.idp);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%d", entry.tone);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%f", entry.distmax);
+                ImGui::TableNextColumn();
+
+                ImGui::Text("%f", entry.distcur);
+            }
+            ImGui::EndTable();
+        }
+    
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -572,6 +707,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Items", NULL, &ShowItemsMenu);
             ImGui::MenuItem("Accessory Internals", NULL, &ShowAccessoryMenu);
             ImGui::MenuItem("Market", NULL, &ShowMarketMenu);
+            ImGui::MenuItem("Sound System", NULL, &ShowSoundsMenu);
             
             ImGui::EndMenu();
         }
@@ -584,11 +720,12 @@ static void ImGuiMenu() {
         TaskListMenu();
         AccessoryInternals();
         MarketMenu();
+        SoundsMenu();
 
         ImGui::EndMainMenuBar();
     }
 
-    if (false && ImGui::Begin("rain test")) {
+    if (true && ImGui::Begin("rain test")) {
         static int timer = 4000;
         ImGui::SliderInt("timer", &timer, 0, 10000);
 
