@@ -437,11 +437,47 @@ static void LoadLevelDestroy_r() {
     LoadLevelDestroy_hook.Original();
 }
 
+static void AnimalPickupSoundHook_r(int a1, NJS_VECTOR *a2, int a3, int a4, int a5, int animalID) {
+    if (animalID >= 21 && animalID < 25) {
+        PlaySound_XYZ(0x8011, a2, a3, a4, a5);
+        return;
+    }
+    
+    PlaySound_XYZ(0x800F, a2, a3, a4, a5);
+}
+
+static void __declspec(naked) AnimalPickupSoundHook()
+{
+        __asm
+        {
+                push ebx
+                push [esp + 0Ch] // a5
+                push [esp + 0Ch] // a4
+                push [esp + 0Ch] // a3
+                push esi // a2
+                push edi // a1
+
+                // Call your __cdecl function here:
+                call AnimalPickupSoundHook_r
+
+                pop edi // a1
+                pop esi // a2
+                add esp, 4 // a3
+                add esp, 4 // a4
+                add esp, 4 // a5
+                add esp, 4 
+                retn
+        }
+}
+
 void Minimal_Init() {
     if (!gConfigVal.StageAnimals) return;
         
     InitLevelThings_hook.Hook(InitLevelThings_r);
     LoadLevelDestroy_hook.Hook(LoadLevelDestroy_r);
+
+    // sound hook to make custom animals not emit chaos drive sound
+    WriteCall((void*)0x00487375, AnimalPickupSoundHook);
 
     // minimalcreatemanager hooks to remove safety check
     WriteData<5>((char*)0x0054942F, (char)0x90);
