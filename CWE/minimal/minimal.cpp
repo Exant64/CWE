@@ -404,31 +404,35 @@ static void __declspec(naked) sub_48ACD0_hook()
 }
 
 // hooks stolen from chao partner
-static void LoadLevelInit_r();
+static void InitLevelThings_r();
 static void LoadLevelDestroy_r();
-static FunctionHook<void> LoadLevelInit_hook(0x43CB10);
+static FunctionHook<void> InitLevelThings_hook(0x439610);
 static FunctionHook<void> LoadLevelDestroy_hook(0x454CC0);
 
-static void LoadLevelInit_r() {
-    for (const auto& load : TexlistLoads) {
-        if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
+static void InitLevelThings_r() {
+    if(CurrentLevel != LevelIDs_ChaoWorld) {
+        for (const auto& load : TexlistLoads) {
+            if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 
-        LoadTextureList((char*)load.first, load.second);
+            LoadTextureList((char*)load.first, load.second);
+        }
+
+        LoadTextureList((char*)"CWE_UI", &CWE_UI_TEXLIST);
     }
 
-    LoadTextureList((char*)"CWE_UI", &CWE_UI_TEXLIST);
-
-    LoadLevelInit_hook.Original();
+    InitLevelThings_hook.Original();
 }
 
 static void LoadLevelDestroy_r() {
-    for (const auto& load : TexlistLoads) {
-        if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
+    if(CurrentLevel != LevelIDs_ChaoWorld) {
+        for (const auto& load : TexlistLoads) {
+            if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 
-        njReleaseTexture(load.second);
+            njReleaseTexture(load.second);
+        }
+
+        njReleaseTexture(&CWE_UI_TEXLIST);
     }
-
-    njReleaseTexture(&CWE_UI_TEXLIST);
 
     LoadLevelDestroy_hook.Original();
 }
@@ -436,7 +440,7 @@ static void LoadLevelDestroy_r() {
 void Minimal_Init() {
     if (!gConfigVal.StageAnimals) return;
         
-    LoadLevelInit_hook.Hook(LoadLevelInit_r);
+    InitLevelThings_hook.Hook(InitLevelThings_r);
     LoadLevelDestroy_hook.Hook(LoadLevelDestroy_r);
 
     // minimalcreatemanager hooks to remove safety check
