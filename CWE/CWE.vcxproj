@@ -768,6 +768,7 @@
     <ClCompile Include="Trampoline.cpp" />
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="land_grayscale.cpp" />
+    <ClCompile Include="cwe_c_colli.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="al_animation.cpp" />

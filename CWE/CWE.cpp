@@ -97,6 +97,7 @@
 
 #include "land_grayscale.h"
 #include "api/api_main.h"
+#include "cwe_c_colli.h"
 
 const char* PathToModFolder = "";
 
@@ -430,6 +431,7 @@ extern "C"
 
 		njRandomSeed(time(0));
 
+		CWE_CCL_Init();
 		RenderFix_Init(helperFunctions);
 
 		// todo: integrate this into CWE_API_FindMods or prefix with CWE_APIJSON_ or something
