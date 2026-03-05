@@ -1661,8 +1661,8 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 		customizationController->AddLayer(medalLayerName);
 		for (int i = 0; i < 16; i++) {
-			int posX = (75 * (i % 6)) + 180;
-			int posY = (75 * (i / 6)) + 100;
+			int posX = (75 * (i % 4)) + 180 + 75 + 75/2.f;
+			int posY = (71.5f * (i / 4)) + 100;
 			customizationController->AddElement<MedalCustomizeBox>(medalLayerName, i, (float)posX, (float)posY);
 		}
 
