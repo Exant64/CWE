@@ -513,6 +513,7 @@ extern "C"
 		//Advanced
 		gConfigVal.MedalChaoCanMakeColorChao = config->getBool("Advanced", "AdvancedMedalChaocanmakeJewelChao", false);
 		gConfigVal.FixMonsterEvo = config->getBool("Advanced", "FixMonsterEvo", false);
+		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
 
 		//Detail
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);

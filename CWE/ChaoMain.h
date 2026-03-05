@@ -70,6 +70,7 @@ struct ConfigValues {
 	bool DisableArmsLegs;
 	bool DisableAllParts;
 	bool FixMonsterEvo;
+	bool AccUpdateDraw;
 
 	bool FixHeroSky;
 

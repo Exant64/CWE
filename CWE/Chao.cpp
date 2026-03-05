@@ -255,7 +255,7 @@ Uint32 __cdecl GenerateRandomSeed()
 // we store the rendered accessory index in AccessoryIndices,
 // and the "approved" id in AccessoryCalculatedID to not check needlessly if it didnt change
 // we also store the index back in the old slots, to provide compatibility checks
-static void AL_ChaoAccessoryMainCheck(task* tp) {
+void AL_ChaoAccessoryMainCheck(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 
@@ -448,7 +448,7 @@ static void Chao_Main_r(ObjectMaster* a1)
 	for (auto& c : CodeManager::Instance()) {
 		c->ChaoObject(a1);
 	}
-	
+
 	// we backup the Shape flag before buyo
 	// once the jiggle and everything has been ran
 	// we normalize all normals if jiggle is disabled, to hopefully fix

@@ -1104,6 +1104,10 @@ LABEL_98:
 
 static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
 static void Chao_Display_r(task* tp) {
+	if(gConfigVal.AccUpdateDraw) {
+		AL_ChaoAccessoryMainCheck(tp);
+	}
+
 #ifdef IMGUIDEBUG
 	if (ChaoDebugDistSelected == tp) {
 		njPushMatrixEx();
