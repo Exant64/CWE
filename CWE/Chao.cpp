@@ -448,8 +448,19 @@ static void Chao_Main_r(ObjectMaster* a1)
 	for (auto& c : CodeManager::Instance()) {
 		c->ChaoObject(a1);
 	}
+	
+	// we backup the Shape flag before buyo
+	// once the jiggle and everything has been ran
+	// we normalize all normals if jiggle is disabled, to hopefully fix
+	// disablejiggle'd accessories causing normals to progressively get messed up
+	// 2 is deform flag, 0x20 is jiggle flag
+	const auto before_shape_flag = work->Flag;
 
 	Chao_Main_hook.Original(a1);
+
+	if((before_shape_flag & 2) && !(work->field_B0 & 0x20)) {
+		AL_FitToBaseObject(a1, work->field_510);
+	}
 }
 
 static void RaceChaoExecutor(task* tp);

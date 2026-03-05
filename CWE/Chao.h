@@ -427,6 +427,22 @@ struct LAND_ATTR_INDEX
 };
 DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
 
+struct CNK_VN_VERTEX {
+	NJS_POINT3 Pos;
+	NJS_POINT3 Normal;
+};
+
+struct al_model {
+	int* VList;
+	__int16* PList;
+	NJS_POINT3 Center;
+	float Radius;
+	__int16 OrgTexId[4];
+	int PListSize;
+	int nbVertex;
+	CNK_VN_VERTEX* pVertex;
+};
+
 ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (ObjectMaster* a1), 0x56CFF0);
 ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1);
 void AL_ChaoAccessoryConversion(ChaoDataBase* pParam);

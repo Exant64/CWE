@@ -863,10 +863,10 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 	}
 
 	if (disableJiggle) {
-		work->field_B0 &= ~0x1000;
+		work->field_B0 &= ~0x20;
 	}
 	else {
-		work->field_B0 |= 0x1000;
+		work->field_B0 |= 0x20;
 	}
 
 	work->BaldHideHead = false;
