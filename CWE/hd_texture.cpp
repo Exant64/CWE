@@ -5,20 +5,20 @@
 void HDTexture_Init(const char* const path , const IniFile* const pConfig) {
 	const std::string pathStr{ path + std::string("\\gd_PC\\HDTexture\\")};
 
-	if (pConfig->getBool("HDTex", "ChaoTex", false)) {
-		// to prevent ECW from replacing this if it's below CWE, we use ECW's mod index if it's found
-		uint32_t ecwOrCweIndex = CWE_ModIndex;
-		for(int i = 0; i < g_HelperFunctions->Mods->size(); ++i) {
-			const auto& mod = g_HelperFunctions->Mods->at(i);
+	// to prevent ECW from replacing some textures if it's below CWE, we use ECW's mod index if it's found
+	uint32_t ecwOrCweIndex = CWE_ModIndex;
+	for(int i = 0; i < g_HelperFunctions->Mods->size(); ++i) {
+		const auto& mod = g_HelperFunctions->Mods->at(i);
 
-			if(!strcmp("sa2.247966240", mod.ID)) {
-				ecwOrCweIndex = i;
-				break;
-			}
+		if(!strcmp("sa2.247966240", mod.ID)) {
+			ecwOrCweIndex = i;
+			break;
 		}
+	}
 
+	if (pConfig->getBool("HDTex", "ChaoTex", false)) {
 		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_body.prs", (pathStr + "al_body.prs").c_str(), CWE_ModIndex);
-		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_jewel.prs", (pathStr + "al_jewel.prs").c_str(), CWE_ModIndex);
+		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_jewel.prs", (pathStr + "al_jewel.prs").c_str(), ecwOrCweIndex);
 		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\xl_body.prs", (pathStr + "xl_body.prs").c_str(), CWE_ModIndex);
 		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\ecw_al_body.prs", (pathStr + "ecw_al_body.pak").c_str(), ecwOrCweIndex);
 		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\ecw_al_jewels.prs", (pathStr + "ecw_al_jewels.pak").c_str(), ecwOrCweIndex);
@@ -27,20 +27,20 @@ void HDTexture_Init(const char* const path , const IniFile* const pConfig) {
 	}
 
 	if (pConfig->getBool("HDTex", "ObjectTex", false)) {
-		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_object.prs", (pathStr + "al_object.pak").c_str(), CWE_ModIndex);
+		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_object.prs", (pathStr + "al_object.pak").c_str(), ecwOrCweIndex);
 	}
 
 	if (pConfig->getBool("HDTex", "ToyTex", false)) {
-		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_toy.prs", (pathStr + "al_toy.pak").c_str(), CWE_ModIndex);
+		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_toy.prs", (pathStr + "al_toy.pak").c_str(), ecwOrCweIndex);
 	}
 
 	if (pConfig->getBool("HDTex", "FaceTex", false)) {
-		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_eye.prs", (pathStr + "al_eye.pak").c_str(), CWE_ModIndex);
-		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_mouth.prs", (pathStr + "al_mouth.pak").c_str(), CWE_ModIndex);
+		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_eye.prs", (pathStr + "al_eye.pak").c_str(), ecwOrCweIndex);
+		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_mouth.prs", (pathStr + "al_mouth.pak").c_str(), ecwOrCweIndex);
 	}
 
 	if (pConfig->getBool("HDTex", "IconTex", false)) {
-		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_icon.prs", (pathStr + "al_icon.pak").c_str(), CWE_ModIndex);
+		g_HelperFunctions->ReplaceFileAtIndex("resource\\gd_PC\\al_icon.prs", (pathStr + "al_icon.pak").c_str(), ecwOrCweIndex);
 	}
 
 	if (pConfig->getBool("HDTex", "LensTex", false)) {
