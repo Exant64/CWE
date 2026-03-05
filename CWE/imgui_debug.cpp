@@ -263,6 +263,15 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Flags")) {
+                {
+                    bool flagEnabled = (work->Flag & 2);
+                    if(ImGui::Checkbox("Shape Deform", &flagEnabled)) {
+                        if(flagEnabled) {
+                            work->Flag |= 2;
+                        }
+                    }
+                }
+                
                 const Uint32 bits[] = {
                     BIT_1,
                     BIT_2,
@@ -358,6 +367,26 @@ static void ChaoInfoMenu() {
                 ImGui::Text("Aim: %f %f %f", move_work->Waypoint.x, move_work->Waypoint.y, move_work->Waypoint.z);
                 ImGui::Text("DistFromAim: %f", MOV_DistFromAim(pChao));
                 ImGui::Text("DistFromAimXZ: %f", MOV_DistFromAimXZ(pChao));
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Vertices")) {
+                ChunkObjectPointer* pHead = work->field_524[1];
+                if(pHead) {
+                    al_model* pModel = (al_model*)pHead->base.model;
+
+                    for(size_t i = 0; i < pModel->nbVertex; ++i) {
+                        CNK_VN_VERTEX* pVert = (CNK_VN_VERTEX*)(pModel->VList + 2) + i;
+                        ImGui::Text(
+                            "%d: Pos %f %f %f Nrm %f %f %f Mag %f",
+                            int(i),
+                            pVert->Pos.x, pVert->Pos.y, pVert->Pos.z,
+                            pVert->Normal.x, pVert->Normal.y, pVert->Normal.z,
+                            njScalor(&pVert->Normal)
+                        );
+                    }
+                }
 
                 ImGui::EndTabItem();
             }
