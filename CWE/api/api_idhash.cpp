@@ -40,3 +40,33 @@ uint32_t GenerateHashForChunkObject(const NJS_OBJECT* pObj) {
 
 	return myhash.hash();
 }
+
+uint32_t GenerateHashForLandTable(const LandTable* pLandtable) {
+	XXHash32 xhash(0);
+
+	const COL* cols = pLandtable->ChunkModelCount + pLandtable->COLList;
+
+	if(pLandtable->TextureName) {
+		xhash.add(pLandtable->TextureName, strlen(pLandtable->TextureName));
+	}
+
+	int cap = 0;
+	int tcap = 0;
+	for (short i = 0; i < pLandtable->COLCount - pLandtable->ChunkModelCount; i++) {
+		const auto* pObj = cols->Model;
+		const auto* pMdl = cols->Model->basicmodel;
+
+		xhash.add(&pObj->evalflags, sizeof(pObj->evalflags));
+		xhash.add(pObj->pos, sizeof(pObj->pos));
+		xhash.add(pObj->ang, sizeof(pObj->ang));
+		xhash.add(pObj->scl, sizeof(pObj->scl));
+
+		if(pMdl) {
+			if(pMdl->points) {
+				xhash.add(pMdl->points, pMdl->nbPoint * sizeof(NJS_POINT3));
+			}
+		}
+	}
+
+	return xhash.hash();
+}

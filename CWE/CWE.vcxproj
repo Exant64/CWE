@@ -164,7 +164,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)navigation\external\Detour\Include;$(ProjectDir)navigation\external\Recast\Include;$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -183,7 +183,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;IMGUIDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)navigation\external\Detour\Include;$(ProjectDir)navigation\external\Recast\Include;$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -255,7 +255,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)navigation\external\Detour\Include;$(ProjectDir)navigation\external\Recast\Include;$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -769,6 +769,33 @@
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="land_grayscale.cpp" />
     <ClCompile Include="cwe_c_colli.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\Recast.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastAlloc.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastArea.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastAssert.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastContour.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastFilter.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastLayers.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastMesh.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastMeshDetail.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastRasterization.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastRegion.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourAlloc.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourAssert.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourCommon.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNavMesh.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNavMeshBuilder.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNavMeshQuery.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNode.cpp" />
+    <ClCompile Include="navigation\navsys_gjloader.cpp" />
+    <ClCompile Include="navigation\navsys_generator.cpp" />
+    <ClCompile Include="navigation\navsys.cpp" />
+    <ClCompile Include="navigation\navsys_debug.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="al_animation.cpp" />

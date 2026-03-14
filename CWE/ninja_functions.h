@@ -102,7 +102,7 @@ void  njCalcVector(NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_MATRIX_PTR a3);
 void  njSetTexture(NJS_TEXLIST* texlist);
 float njUnitVector(NJS_VECTOR *a1);
 
-void njCalcPoint(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4);
+void njCalcPoint(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, int a4);
 
 DataPointer(NJS_ARGB, _nj_constant_material_, 0x025EFFD0);
 FunctionPointer(void, SetMaterial, (float a, float r, float g, float b), 0x44B2E0);

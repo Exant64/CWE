@@ -12,6 +12,7 @@
                 "${workspaceFolder}/rapidjson/include/rapidjson"
             ],
             "defines": [
+                "IMGUIDEBUG",
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
