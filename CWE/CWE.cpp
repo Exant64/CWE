@@ -96,6 +96,8 @@
 #include "api/api_main.h"
 #include "cwe_c_colli.h"
 
+#include "navigation/navsys.h"
+
 const char* PathToModFolder = "";
 
 extern "C"
@@ -219,6 +221,7 @@ extern "C"
 				GrayscalifyCurrentLandtable();
 			}
 
+			NavSysCreate();
 			AL_CreateDayNightCycle();
 		}
 

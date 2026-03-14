@@ -17,7 +17,11 @@
 #include <al_behavior/al_behavior.h>
 #include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
+
 #include <data/more_faces.h>
+#include "navigation/navsys.h"
+#include "navigation/navsys_generator.h"
+#include "navigation/navsys_internal.h"
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -31,6 +35,7 @@ static bool ShowAccessoryMenu = false;
 static bool ShowMarketMenu = false;
 static bool ShowSoundsMenu = false;
 static bool ShowMoreFacesMenu = false;
+static bool ShowNavSysMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -794,6 +799,27 @@ static void SoundsMenu() {
     }
 }
 
+static void NavSysMenu() {
+    if(ShowNavSysMenu && ImGui::Begin("NavSys", &ShowNavSysMenu)) {
+        if(ImGui::BeginTabBar("NavSysTabs")) {
+            task* pNavSys = GetNavSysTask();
+            if(ImGui::BeginTabItem("Generator")) {
+                gNavSysGenerator.ImGuiDebug();
+                ImGui::EndTabItem();
+            }
+
+            if(pNavSys && ImGui::BeginTabItem("Task")) {
+                GET_NAV_SYS(pNavSys)->ImGuiDebug();
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
+
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -807,6 +833,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Market", NULL, &ShowMarketMenu);
             ImGui::MenuItem("Sound System", NULL, &ShowSoundsMenu);
             ImGui::MenuItem("More Chao Faces", NULL, &ShowMoreFacesMenu);
+            ImGui::MenuItem("Navi System", NULL, &ShowNavSysMenu);
             
             ImGui::EndMenu();
         }
@@ -821,6 +848,7 @@ static void ImGuiMenu() {
         MarketMenu();
         SoundsMenu();
         MoreFacesMenu();
+        NavSysMenu();
 
         ImGui::EndMainMenuBar();
     }
