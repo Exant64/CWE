@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "navsys_internal.h"
-#include "navsys_gjloader.h"
+#include "navsys_generator.h"
 
 #include "ninja_functions.h"
 #include "data/debugsphere.h"
@@ -14,7 +14,6 @@
 
 #include <chrono>
 #include <assert.h>
-#include "navsys_generator.h"
 
 std::optional<NavSys::PathResult> NavSys::GetResult(const uint32_t queryIndex) {
     std::lock_guard<std::mutex> lock(m_resultMutex);

@@ -19,7 +19,7 @@
 #include "stdafx.h"
 
 #include "ninja_functions.h"
-#include "navsys_gjloader.h"
+#include "navsys_meshconvert.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,66 +27,23 @@
 #include <math.h>
 #include <cassert>
 
-rcMeshLoaderLvl::rcMeshLoaderLvl() :
-	m_scale(1.0f),
-	m_verts(0),
-	m_tris(0),
-	m_normals(0),
-	m_vertCount(0),
-	m_triCount(0)
-{
-}
+NavSysMeshConvert::NavSysMeshConvert() {
+	const auto addTriangle = [this](uint32_t a, uint32_t b, uint32_t c, uint8_t area) {
+		// todo: inefficient
+		m_tris.push_back(a);
+		m_tris.push_back(b);
+		m_tris.push_back(c);
 
-rcMeshLoaderLvl::~rcMeshLoaderLvl()
-{
-	// delete[] m_verts;
-	// delete[] m_normals;
-	// delete[] m_tris;
-}
+		m_areas.push_back(area);
+	};
 
-void rcMeshLoaderLvl::addVertex(float x, float y, float z, int& cap)
-{
-	if (m_vertCount + 1 > cap)
-	{
-		cap = !cap ? 8 : cap * 2;
-		float* nv = new float[cap * 3];
-		if (m_vertCount)
-			memcpy(nv, m_verts, m_vertCount * 3 * sizeof(float));
-		delete[] m_verts;
-		m_verts = nv;
-	}
-	float* dst = &m_verts[m_vertCount * 3];
-	*dst++ = x * m_scale;
-	*dst++ = y * m_scale;
-	*dst++ = z * m_scale;
-	m_vertCount++;
-}
-
-void rcMeshLoaderLvl::addTriangle(int a, int b, int c, int& cap)
-{
-	if (m_triCount + 1 > cap)
-	{
-		cap = !cap ? 8 : cap * 2;
-		int* nv = new int[cap * 3];
-		if (m_triCount)
-			memcpy(nv, m_tris, m_triCount * 3 * sizeof(int));
-		delete[] m_tris;
-		m_tris = nv;
-	}
-	int* dst = &m_tris[m_triCount * 3];
-	*dst++ = a;
-	*dst++ = b;
-	*dst++ = c;
-	m_triCount++;
-}
-
-bool rcMeshLoaderLvl::load()
-{
 	const auto* landtable = CurrentLandTable;
 	const COL* cols = landtable->ChunkModelCount + landtable->COLList;
-	int cap = 0;
 	int tcap = 0;
+
 	for (short i = 0; i < landtable->COLCount - landtable->ChunkModelCount; i++) {
+		const uint8_t area = (cols->Flags & (1<<1)) ? NAV_AREA_WATER : NAV_AREA_GROUND;
+
 		const auto* pObj = cols->Model;
 		const auto* pMdl = cols->Model->basicmodel;
 
@@ -98,11 +55,14 @@ bool rcMeshLoaderLvl::load()
 		njRotateY(NULL, pObj->ang[1]);
 		njRotateX(NULL, pObj->ang[0]);
 
-		const auto vertexStart = m_vertCount;
+		const auto vertexStart = m_verts.size();
+
+		m_verts.reserve(vertexStart + pMdl->nbPoint);
+
 		for (int p = 0; p < pMdl->nbPoint; p++) {
 			NJS_POINT3 point = pMdl->points[p];
 			sub_426CC0(_nj_current_matrix_ptr_, &point, &point, 0);
-			addVertex(point.x, point.y, point.z, cap);
+			m_verts.push_back(point);
 		}
 
 		njPopMatrixEx();
@@ -119,7 +79,7 @@ bool rcMeshLoaderLvl::load()
 						vertexStart + meshset.meshes[ind],
 						vertexStart + meshset.meshes[ind + 1],
 						vertexStart + meshset.meshes[ind + 2],
-						tcap
+						area
 					);
 				}
 			}
@@ -139,7 +99,7 @@ bool rcMeshLoaderLvl::load()
 								vertexStart + strips[k],
 								vertexStart + strips[k + 1],
 								vertexStart + strips[k + 2],
-								tcap
+								area
 							);
 						}
 						else {
@@ -147,7 +107,7 @@ bool rcMeshLoaderLvl::load()
 								vertexStart + strips[k + 1],
 								vertexStart + strips[k],
 								vertexStart + strips[k + 2],
-								tcap
+								area
 							);
 						}
 					}
@@ -161,30 +121,26 @@ bool rcMeshLoaderLvl::load()
 	}
 
 	// Calculate normals.
-	m_normals = new float[m_triCount * 3];
-	for (int i = 0; i < m_triCount * 3; i += 3)
+	m_normals.reserve(m_tris.size() / 3);
+	for (size_t i = 0; i < m_tris.size(); i += 3)
 	{
-		const float* v0 = &m_verts[m_tris[i] * 3];
-		const float* v1 = &m_verts[m_tris[i + 1] * 3];
-		const float* v2 = &m_verts[m_tris[i + 2] * 3];
+		const float* v0 = &m_verts[m_tris[i]].x;
+		const float* v1 = &m_verts[m_tris[i + 1]].x;
+		const float* v2 = &m_verts[m_tris[i + 2]].x;
 		float e0[3], e1[3];
 		for (int j = 0; j < 3; ++j)
 		{
 			e0[j] = v1[j] - v0[j];
 			e1[j] = v2[j] - v0[j];
 		}
-		float* n = &m_normals[i];
-		n[0] = e0[1] * e1[2] - e0[2] * e1[1];
-		n[1] = e0[2] * e1[0] - e0[0] * e1[2];
-		n[2] = e0[0] * e1[1] - e0[1] * e1[0];
-		float d = sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
-		if (d > 0)
-		{
-			d = 1.0f / d;
-			n[0] *= d;
-			n[1] *= d;
-			n[2] *= d;
-		}
+
+		NJS_VECTOR n;
+		// cross vector
+		n.x = e0[1] * e1[2] - e0[2] * e1[1];
+		n.y = e0[2] * e1[0] - e0[0] * e1[2];
+		n.z = e0[0] * e1[1] - e0[1] * e1[0];
+		njUnitVector(&n);
+
+		m_normals.push_back(n);
 	}
-	return true;
 }
