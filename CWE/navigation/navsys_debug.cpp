@@ -83,8 +83,7 @@ void NavSys::ImGuiDebug() {
     if(ImGui::Button("Set End")) {
         epos = MainCharObj1[0]->Position;
     }
-    if(ImGui::Button("Query")) {
-        // CreatePathAtPos(spos, epos);
-        AddPath(spos, epos);
+    if(ImGui::Button("Query and Display")) {
+        GetNavSysTask()->Data1.Entity->Rotation.x = AddPath(spos, epos);
     }
 }
