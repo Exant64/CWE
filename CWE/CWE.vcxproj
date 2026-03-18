@@ -787,7 +787,7 @@
     <ClCompile Include="navigation\external\Detour\Source\DetourNavMeshBuilder.cpp" />
     <ClCompile Include="navigation\external\Detour\Source\DetourNavMeshQuery.cpp" />
     <ClCompile Include="navigation\external\Detour\Source\DetourNode.cpp" />
-    <ClCompile Include="navigation\navsys_gjloader.cpp" />
+    <ClCompile Include="navigation\navsys_meshconvert.cpp" />
     <ClCompile Include="navigation\navsys_generator.cpp" />
     <ClCompile Include="navigation\navsys.cpp" />
     <ClCompile Include="navigation\navsys_debug.cpp">

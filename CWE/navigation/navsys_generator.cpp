@@ -1,9 +1,11 @@
 #include "stdafx.h"
 
 #include "navsys_generator.h"
+#include "navsys_meshconvert.h"
+
 #include "external/Detour/Include/DetourNavMeshBuilder.h"
 #include "external/Detour/Include/DetourNavMeshQuery.h"
-#include "navsys_gjloader.h"
+#include <assert.h>
 
 NavSysGenerator gNavSysGenerator;
 
@@ -164,13 +166,10 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         }
     }
 
-    // there seems to be something going wrong when reading landtable in mesh
-    // I'll rather load it here
-    // MEMLEAK !!!!!!
-    rcMeshLoaderLvl mesh;
-    mesh.load();
+    // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
+    NavSysMeshConvert mesh;
 
-    return std::async(std::launch::async, [this, m_mesh{mesh}, hash]{
+    return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash]{
         char land_navmesh_path[40];
         sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
 
@@ -179,14 +178,14 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         std::unique_ptr<dtNavMesh> result = NULL;
 
         // cleanup();
-        const float* verts = m_mesh.getVerts();
+        const float* verts = &m_mesh.getVerts().data()->x;
         const int nverts = m_mesh.getVertCount();
-        const int* tris = m_mesh.getTris();
+        const int* tris = m_mesh.getTris().data();
         const int ntris = m_mesh.getTriCount();
 
         float bmin[3];
         float bmax[3];
-        rcCalcBounds(m_mesh.getVerts(), m_mesh.getVertCount(), bmin, bmax);
+        rcCalcBounds(verts, nverts, bmin, bmax);
 
         NJS_POINT3 extent = {
             .x = bmax[0] - bmin[0],
@@ -251,7 +250,10 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         // Find triangles which are walkable based on their slope and rasterize them.
         // If your input data is multiple meshes, you can transform them here, calculate
         // the are type for each of the meshes and rasterize them.
-        memset(m_triareas, 0, ntris*sizeof(unsigned char));
+
+        assert(m_mesh.getAreas().size() == ntris);
+        memcpy(m_triareas, m_mesh.getAreas().data(), sizeof(unsigned char) * ntris);
+
         rcMarkWalkableTriangles(&m_recastContext, m_config.m_agentMaxSlope, verts, nverts, tris, ntris, m_triareas);
         if (!rcRasterizeTriangles(&m_recastContext, verts, nverts, tris, m_triareas, ntris, *m_solid, walkableClimb))
         {
@@ -261,6 +263,35 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
 
         delete [] m_triareas;
         m_triareas = NULL;
+
+        // water logic
+        // set ground below water to water aswell to prevent walking "below water"
+        {
+            std::vector<rcSpan*> spansToSet;
+
+            for (int z = 0; z < m_solid->height; ++z) {
+                for (int x = 0; x < m_solid->width; ++x) {
+                    rcSpan* span = m_solid->spans[x + z * m_solid->width];
+                    rcSpan* prev = nullptr;
+
+                    // spans are like lists of a cell at a given XZ pos
+                    // each element is a cell from bottom to top
+                    // so if we detect water, the previous cell was the ground below it
+                    while (span) {
+                        if (span->area == NAV_AREA_WATER && prev) {
+                            spansToSet.push_back(prev);
+                        }
+
+                        prev = span;
+                        span = span->next;
+                    }
+                }
+            }
+
+            for (const auto& span : spansToSet) {
+                span->area = NAV_AREA_WATER;
+            }
+        }
 
         //
         // Step 3. Filter walkable surfaces.
@@ -427,31 +458,21 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
             int navDataSize = 0;
 
             // Update poly flags from areas.
-            for (int i = 0; i < m_pmesh->npolys; ++i)
-            {
+            for (int i = 0; i < m_pmesh->npolys; ++i) {
                 m_pmesh->areas[i] = 0;
-                m_pmesh->flags[i] = 1;
-                #if 0
-                if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
-                    m_pmesh->areas[i] = SAMPLE_POLYAREA_GROUND;
-                    
-                if (m_pmesh->areas[i] == SAMPLE_POLYAREA_GROUND ||
-                    m_pmesh->areas[i] == SAMPLE_POLYAREA_GRASS ||
-                    m_pmesh->areas[i] == SAMPLE_POLYAREA_ROAD)
-                {
-                    m_pmesh->flags[i] = SAMPLE_POLYFLAGS_WALK;
-                }
-                else if (m_pmesh->areas[i] == SAMPLE_POLYAREA_WATER)
-                {
-                    m_pmesh->flags[i] = SAMPLE_POLYFLAGS_SWIM;
-                }
-                else if (m_pmesh->areas[i] == SAMPLE_POLYAREA_DOOR)
-                {
-                    m_pmesh->flags[i] = SAMPLE_POLYFLAGS_WALK | SAMPLE_POLYFLAGS_DOOR;
-                }
-                #endif
-            }
+                m_pmesh->flags[i] = NAV_FLAGS_WALK;
 
+                if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
+                    m_pmesh->areas[i] = NAV_AREA_GROUND;
+                
+                if (m_pmesh->areas[i] == NAV_AREA_GROUND) {
+                    m_pmesh->flags[i] = NAV_FLAGS_WALK;
+                }
+                else if (m_pmesh->areas[i] == NAV_AREA_WATER) {
+                    m_pmesh->flags[i] = NAV_FLAGS_SWIM;
+                }
+            }
+                
             dtNavMeshCreateParams params;
             memset(&params, 0, sizeof(params));
             params.verts = m_pmesh->verts;
