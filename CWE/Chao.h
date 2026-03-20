@@ -25,6 +25,8 @@ struct chaowk_cwe {
 	size_t BaldAdjacencyIndexCount;
 
 	void* BhvUserData[16];
+
+	NJS_POINT3* pNaviPoints;
 };
 
 #define GET_CHAOWK_CWE(tp) ((chaowk_cwe*)(GET_CHAOWK(tp) + 1))

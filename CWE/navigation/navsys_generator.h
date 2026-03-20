@@ -42,11 +42,11 @@ struct NavGenConfig {
     float m_detailSampleMaxError;
 
     NavGenConfig() {
-        m_cellSize = 2.25f; //0.5f;
+        m_cellSize = 1.2f; //0.5f;
         m_cellHeight = 0.2f;
         m_agentHeight = 5.f;
-        m_agentRadius = 3.f;
-        m_agentMaxClimb = 0.9f;
+        m_agentRadius = 3.5f;
+        m_agentMaxClimb = 1.3f; // high enough climb to still be able to navigate climbing out of pools and stuff
         m_agentMaxSlope = 45.f;
         m_regionMinSize = 8.f;
         m_regionMergeSize = 20.f;

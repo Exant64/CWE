@@ -4,13 +4,19 @@
 
 #include "navsys_internal.h"
 #include "navsys_generator.h"
+#include "navsys.h"
+
+#include <al_behavior/albhv_navigation.h>
 
 #ifdef IMGUIDEBUG
     #include "imgui/imgui.h"
 #endif
-#include "navsys.h"
 
 void NavSysGenerator::ImGuiDebug() {
+    if(GetNavSysTask()) {
+        GetNavSysTask()->Data1.Entity->Position.y = m_config.m_agentMaxClimb;
+    }
+    
     ImGui::Checkbox("Use Cache", &m_useCache);
     ImGui::SliderFloat("Cell Size", &m_config.m_cellSize, 0.1f, 10.f);
     ImGui::SliderFloat("Cell Height", &m_config.m_cellHeight, 0.1f, 10.f);
@@ -80,10 +86,16 @@ void NavSys::ImGuiDebug() {
     if(ImGui::Button("Set Start")) {
         spos = MainCharObj1[0]->Position;
     }
+
     if(ImGui::Button("Set End")) {
         epos = MainCharObj1[0]->Position;
     }
+
     if(ImGui::Button("Query and Display")) {
         GetNavSysTask()->Data1.Entity->Rotation.x = AddPath(spos, epos);
+    }
+
+    if(ImGui::Button("Query and Run BHV")) {
+        CreatePathAtPos(0, epos);
     }
 }
