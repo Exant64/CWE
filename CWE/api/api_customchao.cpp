@@ -382,17 +382,6 @@ static int __cdecl AL_ShapeInit_r(ObjectMaster* tp) {
 	return result;
 }
 
-static void Chao_Delete_r(task* tp);
-static FunctionHook<void, task*> Chao_Delete_hook(0x0054FF30, Chao_Delete_r);
-static void Chao_Delete_r(task* tp) {
-	Chao_Delete_hook.Original(tp);
-
-	auto* work = GET_CHAOWK(tp);
-	if (work->pBaldAdjacencyIndices) {
-		syFree(work->pBaldAdjacencyIndices, __FILE__, __LINE__);
-	}
-}
-
 static void AL_BuyoBuyoControl_r(task* tp);
 static FunctionHook<void, task*> AL_BuyoBuyoControl(0x56FC20, AL_BuyoBuyoControl_r);
 static void AL_BuyoBuyoControl_r(task* tp) {

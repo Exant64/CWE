@@ -790,6 +790,7 @@
     <ClCompile Include="navigation\navsys_meshconvert.cpp" />
     <ClCompile Include="navigation\navsys_generator.cpp" />
     <ClCompile Include="navigation\navsys.cpp" />
+    <ClCompile Include="al_behavior\albhv_navigation.cpp" />
     <ClCompile Include="navigation\navsys_debug.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">true</ExcludedFromBuild>

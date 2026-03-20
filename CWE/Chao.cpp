@@ -45,6 +45,7 @@
 #include "code_system/code_manager.h"
 #include <api/api_metadata.h>
 #include "FunctionHook.h"
+#include "memory.h"
 
 const int AL_IconSetPtr = 0x53D660;
 void AL_IconSet(ObjectMaster* a4, char a2, int a3)
@@ -532,6 +533,24 @@ static void __declspec(naked) NewDrawingsHook()
 		add esp, 4 // a2
 		add esp, 4 // a3
 		retn
+	}
+}
+
+static void Chao_Delete_r(task* tp);
+static FunctionHook<void, task*> Chao_Delete_hook(0x0054FF30, Chao_Delete_r);
+static void Chao_Delete_r(task* tp) {
+	Chao_Delete_hook.Original(tp);
+
+	auto* work = GET_CHAOWK(tp);
+
+	if (work->pBaldAdjacencyIndices) {
+		FREE(work->pBaldAdjacencyIndices);
+		work->pBaldAdjacencyIndices = NULL;
+	}
+
+	if (work->pNaviPoints) {
+		FREE(work->pNaviPoints);
+		work->pNaviPoints = NULL;
 	}
 }
 

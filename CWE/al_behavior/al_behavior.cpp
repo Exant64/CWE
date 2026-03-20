@@ -3,12 +3,14 @@
 #include <al_garden_info.h>
 #include <al_behavior/al_intention.h>
 #include <al_behavior/albhv.h>
+#include <al_behavior/albhv_navigation.h>
 #include <alo_accessory.h>
 #include <ChaoMain.h>
 #include <ALifeSDK_Functions.h>
 #include <AL_ModAPI.h>
 #include <api/api_accessory.h>
 #include <api/api_metadata.h>
+#include <FunctionHook.h>
 
 extern void ALBHV_Life_Init();
 
@@ -504,6 +506,18 @@ static void AL_Behavior_PostureFix() {
 	WriteData((int*)(0x005999C2 - 4), int(ALBHV_PostureChangeStand)); // ListenRadicase
 	WriteData((int*)(0x00599B12 - 4), int(ALBHV_PostureChangeStand)); // WatchTV
 	WriteData((int*)(0x005A36D2 - 4), int(ALBHV_PostureChangeStand)); // WalkSelect
+}
+
+// we hook checkwater since ALBHV_Navigation is supposed to handle water by itself
+// so we don't want it interrupted by the real swimming actions
+static int AL_CheckWater_r(task* tp);
+FunctionHook<int, task*> AL_CheckWater_t(0x00561630, AL_CheckWater_r);
+static int AL_CheckWater_r(task* tp) {
+	if (AL_GetBehavior(tp) == ALBHV_Navigation) {
+		return FALSE;
+	}
+
+	return AL_CheckWater_t.Original(tp);
 }
 
 void AL_Behavior_Init() {

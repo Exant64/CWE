@@ -16,6 +16,7 @@
 #include "SA2Functions.h"
 
 typedef ObjectMaster task;
+typedef Rotation Angle3;
 
 static inline void ResizeTextureList(NJS_TEXLIST* texlist, Uint32 count)
 {

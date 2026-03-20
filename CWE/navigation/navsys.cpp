@@ -11,11 +11,12 @@
 #include <api/api_idhash.h>
 #include <al_msg_font.h>
 #include <ALifeSDK_Functions.h>
+#include "memory.h"
 
 #include <chrono>
 #include <assert.h>
 
-std::optional<NavSys::PathResult> NavSys::GetResult(const uint32_t queryIndex) {
+std::optional<NavSysPathResult> NavSys::GetResult(const uint32_t queryIndex) {
     std::lock_guard<std::mutex> lock(m_resultMutex);
     if(!m_results.contains(queryIndex)) {
         return std::nullopt;
@@ -120,8 +121,8 @@ void NavSys::Generate() {
     m_loadingNavMeshResult = gNavSysGenerator.TryLoadGenerate(land_hash);
 }
 
-NavSys::PathResult NavSys::CalcStraightPath(const PathEntry& entry) {
-    PathResult result;
+NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
+    NavSysPathResult result;
 
     float m_polyPickExt[3];
     m_polyPickExt[0] = 5;
@@ -163,50 +164,13 @@ NavSys::PathResult NavSys::CalcStraightPath(const PathEntry& entry) {
     return result;
 }
 
-#if 0
-int ALBHV_PathTest(task* tp) {
-    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
-
-    switch(bhv->Mode) {
-        case 0:
-        	AL_SetMotionLink(tp, 100);
-            MOV_SetAimPos(tp, &straightPath[0]);
-			++bhv->Mode;
-            break;
-        case 1: {
-            MOV_TurnToAim2(tp, 384/2);
-			float a2 = ChaoGlobal.WalkAcc * 0.8f;
-			AL_ForwardAcc(tp, a2);
-			float v5 = MOV_DistFromAim(tp);
-			if (v5 > 0.0 && v5 < 4) {
-                if(bhv->SubMode == pathCount - 1) {
-                    return BHV_RET_FINISH;
-                }
-
-                MOV_SetAimPos(tp, &straightPath[++bhv->SubMode]);
-			}
-            break;
-        }
-    }
-
-    return BHV_RET_CONTINUE;
-}
-
-void CreatePathAtPos(NJS_POINT3& spos, NJS_POINT3& epos) {
-    mesh.GetPathTest(spos, epos);
-    PathDisplay();
-
-    AL_SetBehavior(GetChaoObject(0,0), ALBHV_PathTest);
-}
-#endif
-
 static task* pNavSysTask;
 
-static uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos) {
+uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos) {
     return GET_NAV_SYS(pNavSysTask)->AddPath(*pStartPos, *pEndPos);
 }
 
-static std::optional<NavSys::PathResult> NavSysGetResult(const uint32_t queryIndex) {
+std::optional<NavSysPathResult> NavSysGetResult(const uint32_t queryIndex) {
     auto sys = GET_NAV_SYS(pNavSysTask);
     return sys->GetResult(queryIndex);
 }
@@ -262,6 +226,25 @@ static void NavSysDisplayer(task* tp) {
     }
 
     #ifdef IMGUIDEBUG
+        // display max climb
+        {
+            // debug menu stores the current maxclimb in pos.y
+            NJS_POINT3 pos[2];
+            pos[0] = pos[1] = {
+                MainCharObj1[0]->Position.x + 3,
+                MainCharObj1[0]->Position.y,
+                MainCharObj1[0]->Position.z + 3
+            };
+
+            pos[1].y += tp->Data1.Entity->Position.y;
+
+            rfapi_core->pDraw->DrawLineStrip3D(
+                pos, 
+                _countof(pos), 
+                5.f, 
+                0xFFFFFFFF
+            );
+        }
         // debug menu sets Rotation.x for the selected path result to display
         const auto resultID = tp->Data1.Entity->Rotation.x;
         const auto result = sys->GetResult(resultID);
@@ -301,8 +284,4 @@ void NavSysCreate() {
     pNavSysTask->DeleteSub = NavSysDestructor;
 
     pNavSysTask->Data2.Undefined = (void*)(new NavSys());
-}
-
-void InitNavMesh() {
-
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "navsys.h"
+
 #include <vector>
 #include <queue>
 #include <optional>
@@ -13,8 +15,6 @@
 #include "external/Detour/Include/DetourCommon.h"
 
 class NavSys {
-public:
-    using PathResult = std::vector<NJS_POINT3>;
 private:
     struct PathEntry {
         NJS_POINT3 start, end;
@@ -33,11 +33,11 @@ private:
 
     uint32_t m_queryIndex = 0;
     std::queue<PathEntry> m_queue;
-    std::unordered_map<uint32_t, PathResult> m_results;
+    std::unordered_map<uint32_t, NavSysPathResult> m_results;
 
     dtNavMeshQuery* m_navQuery;
 
-    PathResult CalcStraightPath(const PathEntry& entry);
+    NavSysPathResult CalcStraightPath(const PathEntry& entry);
 public:
 #ifdef IMGUIDEBUG
     void ImGuiDebug();
@@ -55,7 +55,7 @@ public:
     bool IsReady();
 
     uint32_t AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos);
-    std::optional<PathResult> GetResult(const uint32_t queryIndex);
+    std::optional<NavSysPathResult> GetResult(const uint32_t queryIndex);
 };
 
 #define GET_NAV_SYS(tp) ((NavSys*)(tp->Data2.Undefined))

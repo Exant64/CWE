@@ -408,7 +408,7 @@ struct __declspec(align(4)) ChaoData1
 	ObjectMaster* ObjectMaster_ptr2;
 	ObjectMaster *ObjectMaster_ptr2_notreally;
 	char field_54[12];
-	int field_60;
+	float ClimbFirstPos;
 	int field_58;
 	ChaoDataBase *pParamGC;
 	char field_70[40];
@@ -481,6 +481,10 @@ struct __declspec(align(4)) ChaoData1
 	bool BaldHideHead;
 	Uint16* pBaldAdjacencyIndices;
 	size_t BaldAdjacencyIndexCount;
+
+	uint32_t NaviCurrQueryIndex;
+	NJS_POINT3* pNaviPoints;
+	size_t NaviPointCount;
 };
 #pragma pack(pop)
 
