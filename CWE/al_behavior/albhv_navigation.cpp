@@ -70,10 +70,6 @@ int ALBHV_CheckNavigate(task* tp) {
 }
 
 int ALBHV_Navigation(task* tp) {
-    auto work = GET_CHAOWK(tp);
-    AL_BEHAVIOR* bhv = &work->Behavior;
-    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
-
     enum {
         MD_START,
         MD_WALK_START,
@@ -88,6 +84,10 @@ int ALBHV_Navigation(task* tp) {
         MD_ARRIVE
     };
 
+    auto work = GET_CHAOWK(tp);
+    AL_BEHAVIOR* bhv = &work->Behavior;
+    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+
     switch(bhv->Mode) {
         case MD_START:
             // always start with walking, since they won't start navigation from water
@@ -96,23 +96,36 @@ int ALBHV_Navigation(task* tp) {
             MOV_SetAimPos(tp, &work->pNaviPoints[bhv->SubMode]);
             [[fallthrough]];
         case MD_WALK_START:
-            // todo: anims
-        	AL_SetMotionLink(tp, 100);
-            
+            if(AL_ParameterGetSkill(tp, SKILL_RUN) < GET_GLOBAL()->SkillWalk) {
+                AL_SetMotionLink(tp, ALM_HAIHAI);
+            }
+            else {
+                // intentionally left out the rest of the run anims
+                // we don't want the chao to go too fast based on skill
+                // but the actual fast running anims will look off with the walking speeds
+                AL_SetMotionLink(tp, ALM_ARUKU);
+            }
+
 			bhv->Mode = MD_WALK;
             break;
 
         case MD_WALK: {
-            MOV_TurnToAim2(tp, int(384 / 1.5f));
-			AL_ForwardAcc(tp, GET_GLOBAL()->WalkAcc * 0.8f);
-
             if(work->entity.Position.y + 2 < move->WaterY) {
                 bhv->Mode = MD_SWIM_START;
                 break;
             }
 
+            MOV_TurnToAim2(tp, int(384 / 1.5f));
+
             // match-decomp WalkControl code
             if(move->Flag & 0x400) {
+                if(AL_ParameterGetSkill(tp, SKILL_RUN) < GET_GLOBAL()->SkillWalk) {
+                    AL_ForwardAcc(tp, GET_GLOBAL()->WalkSlowAcc);
+                }
+                else {
+                    AL_ForwardAcc(tp, GET_GLOBAL()->WalkAcc * 0.8f);
+                }
+
                 const NJS_VECTOR up = {0, 1, 0};
                 const float dot = njInnerProduct(&move->Shadow.hit[XYZS_ASS_YL].normal, &up);
 
