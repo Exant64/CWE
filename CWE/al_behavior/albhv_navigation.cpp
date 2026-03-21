@@ -179,6 +179,12 @@ int ALBHV_Navigation(task* tp) {
         }
 
         case MD_SWIM: {
+            // attempt at code for climbing out
+            if(move->Flag & 0x4000) {
+                bhv->Timer = 0;
+                bhv->Mode = MD_CLIMB_START;
+            }
+            
             // AL_CheckWater logic, but with flag logic removed, we can do that right here cleaner
             if(work->entity.Position.y + 2 < move->WaterY) {
                 if(move->Velo.y < 0) {
@@ -275,12 +281,6 @@ int ALBHV_Navigation(task* tp) {
 
         case MD_WALK:
         case MD_SWIM:
-            // attempt at code for climbing out
-            if(move->Flag & 0x4000) {
-                bhv->Timer = 0;
-                bhv->Mode = MD_CLIMB_START;
-            }
-            
             const float dist = MOV_DistFromAim(tp);
 			if (dist > 0 && dist < 4) {
                 if(bhv->SubMode == work->NaviPointCount - 1) {
