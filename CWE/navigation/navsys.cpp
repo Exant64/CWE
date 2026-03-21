@@ -16,6 +16,13 @@
 #include <chrono>
 #include <assert.h>
 
+void NavSys::DiscardResult(const uint32_t queryIndex) {
+    std::lock_guard<std::mutex> lock(m_resultMutex);
+    
+    assert(m_results.contains(queryIndex));
+    m_results.erase(queryIndex);
+}
+
 std::optional<NavSysPathResult> NavSys::GetResult(const uint32_t queryIndex) {
     std::lock_guard<std::mutex> lock(m_resultMutex);
     if(!m_results.contains(queryIndex)) {
@@ -140,23 +147,29 @@ NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
     m_navQuery->findNearestPoly(&entry.end.x, m_polyPickExt, &m_filter, &endRef, 0);
 
     int m_npolys = 0;
-    m_navQuery->findPath(startRef, endRef, &entry.start.x, &entry.end.x, &m_filter, m_polys, &m_npolys, 256);
+    const auto findStatus = m_navQuery->findPath(startRef, endRef, &entry.start.x, &entry.end.x, &m_filter, m_polys, &m_npolys, 256);
 
-    if (m_npolys) {
-        // In case of partial path, make sure the end point is clamped to the last polygon.
+    // I'm not sure how many of these are redundant tbh, but better safe than sorry
+    if (dtStatusSucceed(findStatus) && !dtStatusDetail(findStatus, DT_PARTIAL_RESULT) && m_npolys) {
         float epos[3];
         dtVcopy(epos, &entry.end.x);
 
-        if (m_polys[m_npolys-1] != endRef)
-            m_navQuery->closestPointOnPoly(m_polys[m_npolys-1], &entry.end.x, epos, 0);
-        
+        // from sample code (like most things in this)
+        // but now that we don't allow partial path I don't think we need this...?
+        // still gonna leave it here just incase
+        #if 0
+            // In case of partial path, make sure the end point is clamped to the last polygon.
+            if (m_polys[m_npolys-1] != endRef)
+                m_navQuery->closestPointOnPoly(m_polys[m_npolys-1], &entry.end.x, epos, 0);
+        #endif
+
         static NJS_POINT3 straightPath[256];
         static int pathCount = 0;
-        m_navQuery->findStraightPath(&entry.start.x, epos, m_polys, m_npolys,
+        const auto findStatus = m_navQuery->findStraightPath(&entry.start.x, epos, m_polys, m_npolys,
                                     &straightPath->x, m_straightPathFlags,
-                                    m_straightPathPolys, &pathCount, 256, 0);
+                                    m_straightPathPolys, &pathCount, _countof(straightPath), 0);
 
-        if(pathCount) {
+        if(dtStatusSucceed(findStatus) && !dtStatusDetail(findStatus, DT_PARTIAL_RESULT) && pathCount) {
             std::copy(straightPath, straightPath + pathCount, std::back_inserter(result));
         }
     }
@@ -165,6 +178,10 @@ NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
 }
 
 static task* pNavSysTask;
+
+void NavSysDiscardResult(const uint32_t queryIndex) {
+    return GET_NAV_SYS(pNavSysTask)->DiscardResult(queryIndex);
+}
 
 uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos) {
     return GET_NAV_SYS(pNavSysTask)->AddPath(*pStartPos, *pEndPos);

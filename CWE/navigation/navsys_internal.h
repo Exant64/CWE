@@ -54,6 +54,7 @@ public:
 
     bool IsReady();
 
+    void DiscardResult(const uint32_t queryIndex);
     uint32_t AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos);
     std::optional<NavSysPathResult> GetResult(const uint32_t queryIndex);
 };
