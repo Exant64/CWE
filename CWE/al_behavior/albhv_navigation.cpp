@@ -8,14 +8,58 @@
 #include <ninja_functions.h>
 #include <ALifeSDK_Functions.h>
 
+int ALBHV_CheckNavigate(task* tp) {
+    enum {
+        MD_QUERY_THINK,
+        MD_QUERY_WAIT
+    };
+
+    auto work = GET_CHAOWK(tp);
+    AL_BEHAVIOR* bhv = &work->Behavior;
+    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+
+    switch(bhv->Mode) {
+        case MD_QUERY_THINK:
+            AL_SetMotionLink(tp, ALM_STAND);
+
+            work->NaviCurrQueryIndex = NavSysAddPath(&work->entity.Position, &move->AimPos);
+            bhv->Mode = MD_QUERY_WAIT;
+
+            break;
+
+        case MD_QUERY_WAIT: {
+            const auto result = NavSysGetResult(work->NaviCurrQueryIndex);
+            if (result) {
+                NavSysDiscardResult(work->NaviCurrQueryIndex);
+
+                if(result->empty()) {
+                    // failed
+                    // todo: do we want any visual?
+
+                    return BHV_RET_BREAK;
+                }
+
+                work->NaviPointCount = result->size();
+                
+                // todo: memleak (we should free on setbehavior/whenever vanilla frees its behavior stack stuff)
+                work->pNaviPoints = ALLOC_ARRAY(work->NaviPointCount, NJS_POINT3);
+                memcpy(work->pNaviPoints, result->data(), work->NaviPointCount * sizeof(*work->pNaviPoints));
+
+                return BHV_RET_FINISH;
+            }
+        } break;
+    }
+
+    return BHV_RET_CONTINUE;
+}
+
 int ALBHV_Navigation(task* tp) {
     auto work = GET_CHAOWK(tp);
     AL_BEHAVIOR* bhv = &work->Behavior;
     MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
 
     enum {
-        MD_QUERY_THINK,
-        MD_QUERY_WAIT,
+        MD_START,
         MD_WALK_START,
         MD_WALK,
         MD_JUMP_TO_POND_START,
@@ -29,32 +73,12 @@ int ALBHV_Navigation(task* tp) {
     };
 
     switch(bhv->Mode) {
-        case MD_QUERY_THINK:
-            work->NaviCurrQueryIndex = NavSysAddPath(&work->entity.Position, &move->AimPos);
-
-            bhv->Mode = MD_QUERY_WAIT;
-            break;
-
-        case MD_QUERY_WAIT: {
-            const auto result = NavSysGetResult(work->NaviCurrQueryIndex);
-            if (result) {
-                // todo: handle size == 0, create "can navigate to"
-                
-                work->NaviPointCount = result->size();
-                
-                // todo: memleak (we should free on setbehavior/whenever vanilla frees its behavior stack stuff)
-                work->pNaviPoints = ALLOC_ARRAY(work->NaviPointCount, NJS_POINT3);
-                memcpy(work->pNaviPoints, result->data(), work->NaviPointCount * sizeof(*work->pNaviPoints));
-
-                // always start with walking, since they won't start navigation from water
-                bhv->Mode = MD_WALK_START;
-                bhv->SubMode = 0;
-                MOV_SetAimPos(tp, &work->pNaviPoints[bhv->SubMode]);
-            }
-
-            break;
-        }
-        
+        case MD_START:
+            // always start with walking, since they won't start navigation from water
+            bhv->Mode = MD_WALK_START;
+            bhv->SubMode = 0;
+            MOV_SetAimPos(tp, &work->pNaviPoints[bhv->SubMode]);
+            [[fallthrough]];
         case MD_WALK_START:
             // todo: anims
         	AL_SetMotionLink(tp, 100);
@@ -248,5 +272,6 @@ int ALBHV_Navigation(task* tp) {
 void CreatePathAtPos(size_t chaoID, NJS_POINT3& endPos) {
     auto task = GetChaoObject(0, chaoID);
     MOV_SetAimPos(task, &endPos);
-    AL_SetBehavior(task, ALBHV_Navigation);
+    AL_SetBehavior(task, ALBHV_CheckNavigate);
+    AL_SetNextBehavior(task, ALBHV_Navigation);
 }

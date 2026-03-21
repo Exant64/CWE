@@ -7,6 +7,7 @@
 
 using NavSysPathResult = std::vector<NJS_POINT3>;
 
+void NavSysDiscardResult(const uint32_t queryIndex);
 uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos);
 std::optional<NavSysPathResult> NavSysGetResult(const uint32_t queryIndex);
 
