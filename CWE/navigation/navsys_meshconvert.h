@@ -6,17 +6,6 @@
 #include <string>
 
 // this can probably be integrated into generator, but whatever
-
-enum {
-	NAV_AREA_GROUND = 0,
-	NAV_AREA_WATER = 1
-};
-
-enum {
-	NAV_FLAGS_WALK = BIT_0,
-	NAV_FLAGS_SWIM = BIT_1
-};
-
 class NavSysMeshConvert
 {
 public:

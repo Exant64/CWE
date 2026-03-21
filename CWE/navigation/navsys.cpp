@@ -69,11 +69,12 @@ void NavSys::TryStopThread() {
     }
 }
 
-uint32_t NavSys::AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos) {
+uint32_t NavSys::AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos, const uint32_t excludeFlags) {
     const uint32_t entryIndex = m_queryIndex++;
     const PathEntry entry = {
         .start = startPos,
         .end = endPos,
+        .excludeFlags = excludeFlags,
         .queryID = entryIndex
     };
 
@@ -143,6 +144,8 @@ NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
     unsigned char m_straightPathFlags[256];
     dtQueryFilter m_filter;
 
+    m_filter.setExcludeFlags(entry.excludeFlags);
+
     m_navQuery->findNearestPoly(&entry.start.x, m_polyPickExt, &m_filter, &startRef, 0);
     m_navQuery->findNearestPoly(&entry.end.x, m_polyPickExt, &m_filter, &endRef, 0);
 
@@ -183,8 +186,8 @@ void NavSysDiscardResult(const uint32_t queryIndex) {
     return GET_NAV_SYS(pNavSysTask)->DiscardResult(queryIndex);
 }
 
-uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos) {
-    return GET_NAV_SYS(pNavSysTask)->AddPath(*pStartPos, *pEndPos);
+uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos, const uint32_t excludeFlags) {
+    return GET_NAV_SYS(pNavSysTask)->AddPath(*pStartPos, *pEndPos, excludeFlags);
 }
 
 std::optional<NavSysPathResult> NavSysGetResult(const uint32_t queryIndex) {

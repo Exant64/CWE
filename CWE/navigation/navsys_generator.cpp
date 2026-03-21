@@ -2,6 +2,7 @@
 
 #include "navsys_generator.h"
 #include "navsys_meshconvert.h"
+#include "navsys.h"
 
 #include "external/Detour/Include/DetourNavMeshBuilder.h"
 #include "external/Detour/Include/DetourNavMeshQuery.h"

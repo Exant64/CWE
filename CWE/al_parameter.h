@@ -107,3 +107,5 @@ void IncrementFlySwim(task* a1, float a2);
 void IncrementPowerRun(task* a1, float a2);
 
 void AL_ParameterInit();
+
+int AL_ParameterGetSkill(task* tp, Uint16 SkillKind);
