@@ -8,6 +8,9 @@
 #include "external/Detour/Include/DetourNavMeshQuery.h"
 #include <assert.h>
 
+#include <memory_debug.h>
+#include "external/Recast/Include/RecastAlloc.h"
+
 NavSysGenerator gNavSysGenerator;
 
 struct NavMeshSetHeader {
@@ -152,6 +155,20 @@ dtNavMesh* NavSysGenerator::LoadNavMesh(const char* path) {
 	return mesh;
 }
 
+#define MEMORY_PROFILE
+
+#ifdef MEMORY_PROFILE 
+    static MemoryProfiler memProfiler;
+
+    void* customAlloc (size_t size, rcAllocHint) {
+        return memProfiler.alloc(size);
+    }
+
+    void customFree (void* ptr) {
+        memProfiler.free(ptr);
+    };
+#endif
+
 std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const uint32_t hash) {
     char land_navmesh_path[40];
     sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
@@ -171,6 +188,15 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
     NavSysMeshConvert mesh;
 
     return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash]{
+        #ifdef MEMORY_PROFILE
+            memProfiler.clear();
+            
+            rcAllocSetCustom(customAlloc, customFree);
+        #endif
+
+        LARGE_INTEGER startTime;
+        QueryPerformanceCounter(&startTime);
+
         char land_navmesh_path[40];
         sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
 
@@ -310,14 +336,12 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
-        #if 1
         if (true)
             rcFilterLowHangingWalkableObstacles(&m_recastContext, walkableClimb, *m_solid);
         if (true)
             rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *m_solid);
         if (true)
             rcFilterWalkableLowHeightSpans(&m_recastContext, walkableHeight, *m_solid);
-        #endif
 
         //
         // Step 4. Partition walkable surface to simple regions.
@@ -509,9 +533,14 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
             SaveNavMesh(land_navmesh_path, result.get());
         }
 
-        // m_ctx->stopTimer(RC_TIMER_TOTAL);
+        LARGE_INTEGER endTime;
+        QueryPerformanceCounter(&endTime);
 
+        LARGE_INTEGER freq;
+	    QueryPerformanceFrequency(&freq);
+        const auto diff = (endTime.QuadPart - startTime.QuadPart);
         // Show performance stats.
+        PrintDebug("=== TOTAL:\t%.2fms", (diff*1000000 / freq.QuadPart) / 1000.0f);
         // duLogBuildTimes(*m_ctx, m_ctx->getAccumulatedTime(RC_TIMER_TOTAL));
         PrintDebug(">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
 
