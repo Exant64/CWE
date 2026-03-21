@@ -252,9 +252,18 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         // the are type for each of the meshes and rasterize them.
 
         assert(m_mesh.getAreas().size() == ntris);
-        memcpy(m_triareas, m_mesh.getAreas().data(), sizeof(unsigned char) * ntris);
+
+        memset(m_triareas, 0, sizeof(unsigned char) * ntris);
 
         rcMarkWalkableTriangles(&m_recastContext, m_config.m_agentMaxSlope, verts, nverts, tris, ntris, m_triareas);
+
+        // overwrite custom areas
+        for(size_t i = 0; i < m_mesh.getAreas().size(); ++i) {
+            if(m_mesh.getAreas()[i] == NAV_AREA_WATER) {
+                m_triareas[i] = NAV_AREA_WATER;
+            }
+        }
+
         if (!rcRasterizeTriangles(&m_recastContext, verts, nverts, tris, m_triareas, ntris, *m_solid, walkableClimb))
         {
             PrintDebug("buildNavigation: Could not rasterize triangles.");
@@ -459,7 +468,6 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
 
             // Update poly flags from areas.
             for (int i = 0; i < m_pmesh->npolys; ++i) {
-                m_pmesh->areas[i] = 0;
                 m_pmesh->flags[i] = NAV_FLAGS_WALK;
 
                 if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
