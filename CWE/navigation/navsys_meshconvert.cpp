@@ -20,6 +20,7 @@
 
 #include "ninja_functions.h"
 #include "navsys_meshconvert.h"
+#include "navsys.h"
 
 #include <stdio.h>
 #include <stdlib.h>

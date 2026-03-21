@@ -2,6 +2,7 @@
 
 #include "Chao.h"
 #include <cwe_api.h>
+#include "al_stage.h"
 
 void AL_NameSet(char* lval, char* rval) {
 	memcpy(lval, rval, sizeof(AL_NAME));
@@ -132,4 +133,14 @@ void IncrementPowerRun(ObjectMaster* a1, float a2)
 		v3->PowerRun = -*(float*)0x1312C88;
 	}
 	v2->Flag |= 2u;
+}
+
+int AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {
+    const int stg = AL_GetStageNumber();
+
+    if (stg == CHAO_STG_KINDER || stg > CHAO_STG_STADIUM && stg <= CHAO_STG_KARATE_2P) {
+        return GET_CHAOWK(tp)->pParamGC->StatPoints[SkillKind];
+    }
+
+    return 3 * GET_CHAOWK(tp)->pParamGC->StatPoints[SkillKind];
 }

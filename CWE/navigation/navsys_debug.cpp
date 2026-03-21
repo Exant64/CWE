@@ -91,8 +91,11 @@ void NavSys::ImGuiDebug() {
         epos = MainCharObj1[0]->Position;
     }
 
+    static bool excludeSwim = false;
+    ImGui::Checkbox("Exclude Swim", &excludeSwim);
+
     if(ImGui::Button("Query and Display")) {
-        GetNavSysTask()->Data1.Entity->Rotation.x = AddPath(spos, epos);
+        GetNavSysTask()->Data1.Entity->Rotation.x = AddPath(spos, epos, !excludeSwim ? 0 : NAV_FLAGS_SWIM);
     }
 
     if(ImGui::Button("Query and Run BHV")) {

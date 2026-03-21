@@ -18,6 +18,7 @@ class NavSys {
 private:
     struct PathEntry {
         NJS_POINT3 start, end;
+        uint32_t excludeFlags;
         uint32_t queryID;
     };
     
@@ -55,7 +56,7 @@ public:
     bool IsReady();
 
     void DiscardResult(const uint32_t queryIndex);
-    uint32_t AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos);
+    uint32_t AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos, const uint32_t excludeFlags);
     std::optional<NavSysPathResult> GetResult(const uint32_t queryIndex);
 };
 

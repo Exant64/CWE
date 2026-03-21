@@ -1,6 +1,17 @@
 #pragma once
 #include "SA2ModLoader.h"
 
+enum {
+    SKILL_SWIM,
+    SKILL_FLY,
+    SKILL_RUN,
+    SKILL_POWER,
+    SKILL_STAMINA,
+    SKILL_GUTS,
+    SKILL_INTELLECT,
+    NB_SKILL
+};
+
 void AL_NameSet(char* lval, char* rval);
 bool AL_IsChild(ObjectMaster* tp);
 bool AL_IsHero(unsigned __int8 a1);
@@ -17,3 +28,5 @@ void AL_ParameterGrow(ObjectMaster* a1, unsigned __int16 a2, unsigned __int16 a3
 
 void IncrementFlySwim(ObjectMaster* a1, float a2);
 void IncrementPowerRun(ObjectMaster* a1, float a2);
+
+int AL_ParameterGetSkill(task* tp, Uint16 SkillKind);

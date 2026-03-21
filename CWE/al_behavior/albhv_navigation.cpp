@@ -8,6 +8,17 @@
 #include <ninja_functions.h>
 #include <ALifeSDK_Functions.h>
 
+// for now, the only thing it does is to check if they can swim
+static uint32_t GetChaoNaviExcludeFlags(task *tp) {
+    uint32_t flags = 0;
+
+    if (AL_ParameterGetSkill(tp, SKILL_SWIM) < GET_GLOBAL()->SkillSwimBataashi) {
+        flags |= NAV_FLAGS_SWIM;
+    }
+
+    return flags;
+}
+
 int ALBHV_CheckNavigate(task* tp) {
     enum {
         MD_QUERY_THINK,
@@ -22,7 +33,12 @@ int ALBHV_CheckNavigate(task* tp) {
         case MD_QUERY_THINK:
             AL_SetMotionLink(tp, ALM_STAND);
 
-            work->NaviCurrQueryIndex = NavSysAddPath(&work->entity.Position, &move->AimPos);
+            work->NaviCurrQueryIndex = NavSysAddPath(
+                &work->entity.Position, 
+                &move->AimPos, 
+                GetChaoNaviExcludeFlags(tp)
+            );
+            
             bhv->Mode = MD_QUERY_WAIT;
 
             break;
@@ -167,8 +183,7 @@ int ALBHV_Navigation(task* tp) {
                 // todo: do we want this though? what if the chao has like insane swim speed
                 // maybe we should have the same speed as walking
 
-                // inlined ParameterGetSkill, lazy :(
-                const Uint16 skill = 3 * GET_CHAOWK(tp)->pParamGC->StatPoints[0];
+                const Uint16 skill = AL_ParameterGetSkill(tp, SKILL_SWIM);
                 const float spd = GET_GLOBAL()->SkillSwimAccBase + skill * GET_GLOBAL()->SkillSwimAccRatio;
 
                 work->entity.Position.y += 0.1f;
