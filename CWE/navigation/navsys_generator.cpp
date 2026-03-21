@@ -358,45 +358,13 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
             rcMarkConvexPolyArea(&m_recastContext, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned char)vols[i].area, *m_chf);
         #endif
 
-        // Partition the heightfield so that we can use simple algorithm later to triangulate the walkable areas.
-        // There are 3 partitioning methods, each with some pros and cons:
-        // 1) Watershed partitioning
-        //   - the classic Recast partitioning
-        //   - creates the nicest tessellation
-        //   - usually slowest
-        //   - partitions the heightfield into nice regions without holes or overlaps
-        //   - the are some corner cases where this method creates produces holes and overlaps
-        //      - holes may appear when a small obstacles is close to large open area (triangulation can handle this)
-        //      - overlaps may occur if you have narrow spiral corridors (i.e stairs), this make triangulation to fail
-        //   * generally the best choice if you precompute the navmesh, use this if you have large open areas
-        // 2) Monotone partitioning
-        //   - fastest
-        //   - partitions the heightfield into regions without holes and overlaps (guaranteed)
-        //   - creates long thin polygons, which sometimes causes paths with detours
-        //   * use this if you want fast navmesh generation
-        // 3) Layer partitoining
-        //   - quite fast
-        //   - partitions the heighfield into non-overlapping regions
-        //   - relies on the triangulation code to cope with holes (thus slower than monotone partitioning)
-        //   - produces better triangles than monotone partitioning
-        //   - does not have the corner cases of watershed partitioning
-        //   - can be slow and create a bit ugly tessellation (still better than monotone)
-        //     if you have large open areas with small obstacles (not a problem if you use tiles)
-        //   * good choice to use for tiled navmesh with medium and small sized tiles
+        // we ended up picking monotone type generation for speed
+		if (!rcBuildRegionsMonotone(&m_recastContext, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
+		{
+			PrintDebug("buildNavigation: Could not build monotone regions.");
+			return result;
+		}
 
-        // Prepare for region partitioning, by calculating distance field along the walkable surface.
-        if (!rcBuildDistanceField(&m_recastContext, *m_chf))
-        {
-            PrintDebug("buildNavigation: Could not build distance field.");
-            return result;
-        }
-        
-        // Partition the walkable surface into simple regions without holes.
-        if (!rcBuildRegions(&m_recastContext, *m_chf, 0, minRegionArea, mergeRegionArea))
-        {
-            PrintDebug("buildNavigation: Could not build watershed regions.");
-            return result;
-        }
         //
         // Step 5. Trace and simplify region contours.
         //
