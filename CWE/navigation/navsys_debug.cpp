@@ -10,13 +10,13 @@
 
 #ifdef IMGUIDEBUG
     #include "imgui/imgui.h"
+    #include <data/debugsphere.h>
 #endif
 
+#include "ninja_functions.h"
+#include <renderfix.h>
+
 void NavSysGenerator::ImGuiDebug() {
-    if(GetNavSysTask()) {
-        GetNavSysTask()->Data1.Entity->Position.y = m_config.m_agentMaxClimb;
-    }
-    
     ImGui::Checkbox("Use Cache", &m_useCache);
     ImGui::SliderFloat("Cell Size", &m_config.m_cellSize, 0.1f, 10.f);
     ImGui::SliderFloat("Cell Height", &m_config.m_cellHeight, 0.1f, 10.f);
@@ -32,6 +32,112 @@ void NavSysGenerator::ImGuiDebug() {
     ImGui::SliderFloat("Detail Sample Max Error", &m_config.m_detailSampleMaxError, 0.f, 50.f);
 }
 
+void NavSysGenerator::DebugDrawMaxClimbLine() {
+    NJS_POINT3 pos[2];
+
+    pos[0] = pos[1] = {
+        MainCharObj1[0]->Position.x + 3,
+        MainCharObj1[0]->Position.y,
+        MainCharObj1[0]->Position.z + 3
+    };
+
+    pos[1].y += m_config.m_agentMaxClimb;
+
+    rfapi_core->pDraw->DrawLineStrip3D(
+        pos, 
+        _countof(pos), 
+        5.f, 
+        0xFFFFFFFF
+    );
+}
+
+void NavSys::DebugDrawNavMesh() {
+    if(!m_debugDisplayNavMesh) return;
+    if(!m_navMesh) return;
+
+    const auto& mesh = *m_navMesh;
+    for (int i = 0; i < mesh.getMaxTiles(); ++i) {
+		const dtMeshTile* tile = mesh.getTile(i);
+		if (tile->header) {
+            dtPolyRef base = mesh.getPolyRefBase(tile);
+
+            int tileNum = mesh.decodePolyIdTile(base);
+            NJS_COLOR col;
+            col.argb.a = 0xA0;
+
+            // warning: int i here aswell, luckily in separate scope
+            for (int i = 0; i < tile->header->polyCount; ++i) {
+                const dtPoly* p = &tile->polys[i];
+                if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)	// Skip off-mesh links.
+                    continue;
+                    
+                const dtPolyDetail* pd = &tile->detailMeshes[i];
+
+                switch(p->getArea()) {
+                    case NAV_AREA_GROUND:
+                        col.argb.r = 0;
+                        col.argb.g = col.argb.b = 0x70;
+                        break;
+                    case NAV_AREA_WATER:
+                        col.argb.r = col.argb.g = 0x30;
+                        col.argb.b = 255;
+                        break;
+                }
+                
+                for (int j = 0; j < pd->triCount; ++j) {
+                    NJS_POLYGON_VTX vtx[3];
+                    const unsigned char* t = &tile->detailTris[(pd->triBase+j)*4];
+
+                    for (int k = 0; k < 3; ++k) {
+                        if (t[k] < p->vertCount) {
+                            vtx[k] = {
+                                tile->verts[p->verts[t[k]]*3], 
+                                tile->verts[p->verts[t[k]]*3 + 1], 
+                                tile->verts[p->verts[t[k]]*3 + 2], 
+                                col.color
+                            };
+                        }
+                        else {
+                            vtx[k] = {
+                                tile->detailVerts[(pd->vertBase+t[k]-p->vertCount)*3], 
+                                tile->detailVerts[(pd->vertBase+t[k]-p->vertCount)*3 + 1], 
+                                tile->detailVerts[(pd->vertBase+t[k]-p->vertCount)*3 + 2], 
+                                col.color
+                            };
+                        }
+                    }
+
+                    rfapi_core->pNjDraw->DrawPolygon3DEx(vtx, 3, 1);
+                }
+            }
+        }
+	}
+}
+
+void NavSys::DebugDrawPathResult() {
+    const auto result = GetResult(m_debugDisplayPath);
+    if(!result) return;
+
+    if(rfapi_core && result->size() >= 2) {
+        rfapi_core->pDraw->DrawLineStrip3D(
+            result->data(), 
+            result->size(), 
+            5.f, 
+            0xFFFFFFFF
+        );
+    }
+
+    for(size_t i = 0; i < result->size(); ++i) {
+        const auto& p = result->at(i);
+
+        njPushMatrixEx();
+        njTranslate(NULL, p.x, p.y, p.z);
+        njScale(NULL, 0.05f, 0.05f, 0.05f);
+        njCnkDrawObject(&DebugSphere);
+        njPopMatrixEx();
+    }
+}
+
 void NavSys::ImGuiDebug() {
     using namespace std::chrono_literals;
 
@@ -42,6 +148,8 @@ void NavSys::ImGuiDebug() {
     ImGui::Text("m_navMesh: %s", m_navMesh.get() ? "Loaded" : "NULL");
     ImGui::Text("WorkerStop: %d", m_workerStop.load());
     ImGui::Text("m_queryIndex: %d", m_queryIndex);
+
+    ImGui::Checkbox("Display NavMesh", &m_debugDisplayNavMesh);
 
     if(ImGui::TreeNode("Queue")) {
         std::lock_guard<std::mutex> lock(m_queueMutex);
@@ -70,7 +178,7 @@ void NavSys::ImGuiDebug() {
 
             if(ImGui::TreeNode(buf)) {
                 if(ImGui::Button("Display Result")) {
-                    GetNavSysTask()->Data1.Entity->Rotation.x = result.first;
+                    m_debugDisplayPath = result.first;
                 }
                 for(const auto& p : result.second) {
                     ImGui::Text("%f %f %f", p.x, p.y, p.z);
@@ -95,7 +203,7 @@ void NavSys::ImGuiDebug() {
     ImGui::Checkbox("Exclude Swim", &excludeSwim);
 
     if(ImGui::Button("Query and Display")) {
-        GetNavSysTask()->Data1.Entity->Rotation.x = AddPath(spos, epos, !excludeSwim ? 0 : NAV_FLAGS_SWIM);
+        m_debugDisplayPath = AddPath(spos, epos, !excludeSwim ? 0 : NAV_FLAGS_SWIM);
     }
 
     if(ImGui::Button("Query and Run BHV")) {
