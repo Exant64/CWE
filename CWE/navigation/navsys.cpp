@@ -4,7 +4,6 @@
 #include "navsys_generator.h"
 
 #include "ninja_functions.h"
-#include "data/debugsphere.h"
 #include <al_world.h>
 #include <Chao.h>
 #include <renderfix.h>
@@ -246,49 +245,10 @@ static void NavSysDisplayer(task* tp) {
     }
 
     #ifdef IMGUIDEBUG
-        // display max climb
-        {
-            // debug menu stores the current maxclimb in pos.y
-            NJS_POINT3 pos[2];
-            pos[0] = pos[1] = {
-                MainCharObj1[0]->Position.x + 3,
-                MainCharObj1[0]->Position.y,
-                MainCharObj1[0]->Position.z + 3
-            };
+        sys->DebugDrawNavMesh();
+        sys->DebugDrawPathResult();
 
-            pos[1].y += tp->Data1.Entity->Position.y;
-
-            rfapi_core->pDraw->DrawLineStrip3D(
-                pos, 
-                _countof(pos), 
-                5.f, 
-                0xFFFFFFFF
-            );
-        }
-        // debug menu sets Rotation.x for the selected path result to display
-        const auto resultID = tp->Data1.Entity->Rotation.x;
-        const auto result = sys->GetResult(resultID);
-
-        if(!result) return;
-
-        if(rfapi_core && result->size() >= 2) {
-            rfapi_core->pDraw->DrawLineStrip3D(
-                result->data(), 
-                result->size(), 
-                5.f, 
-                0xFFFFFFFF
-            );
-        }
-
-        for(size_t i = 0; i < result->size(); ++i) {
-            const auto& p = result->at(i);
-
-            njPushMatrixEx();
-            njTranslate(NULL, p.x, p.y, p.z);
-            njScale(NULL, 0.05f, 0.05f, 0.05f);
-            njCnkDrawObject(&DebugSphere);
-            njPopMatrixEx();
-        }
+        gNavSysGenerator.DebugDrawMaxClimbLine();
     #endif
 }
 

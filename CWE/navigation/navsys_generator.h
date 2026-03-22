@@ -79,6 +79,7 @@ private:
 public:
     #ifdef IMGUIDEBUG
         void ImGuiDebug();
+        void DebugDrawMaxClimbLine();
     #endif
 
     std::future<std::shared_ptr<dtNavMesh>> TryLoadGenerate(const uint32_t hash);

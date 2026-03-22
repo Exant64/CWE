@@ -21,6 +21,11 @@ private:
         uint32_t excludeFlags;
         uint32_t queryID;
     };
+
+    #ifdef IMGUIDEBUG
+        uint32_t m_debugDisplayPath;
+        bool m_debugDisplayNavMesh;
+    #endif
     
     bool m_isReady;
     std::future<std::shared_ptr<dtNavMesh>> m_loadingNavMeshResult;
@@ -42,6 +47,8 @@ private:
 public:
 #ifdef IMGUIDEBUG
     void ImGuiDebug();
+    void DebugDrawNavMesh();
+    void DebugDrawPathResult();
 #endif
 
     NavSys();
