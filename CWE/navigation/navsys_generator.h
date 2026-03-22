@@ -41,7 +41,15 @@ struct NavGenConfig {
     float m_detailSampleDist;
     float m_detailSampleMaxError;
 
+    bool m_filterLowHanging;
+    bool m_filterLedgeSpans;
+    bool m_filterWalkableLowHeightSpans;
+
     NavGenConfig() {
+        m_filterLowHanging = true;
+        m_filterLedgeSpans = true;
+        m_filterWalkableLowHeightSpans = true;
+
         m_cellSize = 1.2f; //0.5f;
         m_cellHeight = 0.2f;
         m_agentHeight = 5.f;
@@ -61,16 +69,6 @@ struct NavGenConfig {
 class NavSysGenerator {
 private:
     bool m_useCache = false;
-
-    cweRcContext* m_recastContext;
-
-    rcHeightfield* m_solid;
-    rcCompactHeightfield* m_chf;
-    rcContourSet* m_cset;
-    rcPolyMesh* m_pmesh;
-    rcConfig m_cfg;	
-    rcPolyMeshDetail* m_dmesh;
-
     NavGenConfig m_config;
 
     std::mutex m_inProgressMutex;
@@ -83,7 +81,7 @@ public:
         void ImGuiDebug();
     #endif
 
-    std::future<std::unique_ptr<dtNavMesh>> TryLoadGenerate(const uint32_t hash);
+    std::future<std::shared_ptr<dtNavMesh>> TryLoadGenerate(const uint32_t hash);
 };
 
 extern NavSysGenerator gNavSysGenerator;

@@ -11,6 +11,25 @@
 #include <memory_debug.h>
 #include "external/Recast/Include/RecastAlloc.h"
 
+// custom deleter for unique_ptrs in thread
+template <typename T>
+struct RcDeleter {
+    void operator()(T* ptr) const {
+        // copied from rcDelete since it's not externd
+        if (ptr) {
+            ptr->~T();
+            rcFree((void*)ptr);
+        }
+    }
+};
+
+// custom deleter for navmesh
+struct DtDeleter {
+    void operator()(dtNavMesh* ptr) {
+        if(ptr) dtFreeNavMesh(ptr);
+    }
+};
+
 NavSysGenerator gNavSysGenerator;
 
 struct NavMeshSetHeader {
@@ -169,7 +188,7 @@ dtNavMesh* NavSysGenerator::LoadNavMesh(const char* path) {
     };
 #endif
 
-std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const uint32_t hash) {
+std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const uint32_t hash) {
     char land_navmesh_path[40];
     sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
 
@@ -178,8 +197,8 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         auto tryLoad = LoadNavMesh(land_navmesh_path);
         if(tryLoad) {
             // hack to return "immediate future"
-            std::promise<std::unique_ptr<dtNavMesh>> p;
-            p.set_value(std::unique_ptr<dtNavMesh>(tryLoad));
+            std::promise<std::shared_ptr<dtNavMesh>> p;
+            p.set_value(std::shared_ptr<dtNavMesh>(tryLoad));
             return p.get_future();
         }
     }
@@ -187,7 +206,7 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
     // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
     NavSysMeshConvert mesh;
 
-    return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash]{
+    return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash] {
         #ifdef MEMORY_PROFILE
             memProfiler.clear();
             
@@ -202,9 +221,8 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
 
         cweRcContext m_recastContext;
 
-        std::unique_ptr<dtNavMesh> result = NULL;
+        std::shared_ptr<dtNavMesh> result = NULL;
 
-        // cleanup();
         const float* verts = &m_mesh.getVerts().data()->x;
         const int nverts = m_mesh.getVertCount();
         const int* tris = m_mesh.getTris().data();
@@ -214,19 +232,6 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         float bmax[3];
         rcCalcBounds(verts, nverts, bmin, bmax);
 
-        NJS_POINT3 extent = {
-            .x = bmax[0] - bmin[0],
-            .y = bmax[1] - bmin[1],
-            .z = bmax[2] - bmin[2]
-        };
-
-        float extentScalor = njScalor(&extent);
-        PrintDebug("bounds extent: %f %f %f (%f)", extent.x, extent.y, extent.z, extentScalor);
-        
-        //const int targetCellSize = 750;
-        //CELL_SIZE *= (extent.x / float(targetCellSize) + extent.z / float(targetCellSize));
-
-        // Init build configuration from GUI
         const int walkableHeight = (int)ceilf(m_config.m_agentHeight / m_config.m_cellHeight);
         const int walkableClimb = (int)floorf(m_config.m_agentMaxClimb / m_config.m_cellHeight);
         const int walkableRadius = (int)ceilf(m_config.m_agentRadius / m_config.m_cellSize);
@@ -252,62 +257,59 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         //
 
         // Allocate voxel heightfield where we rasterize our input data to.
-        m_solid = rcAllocHeightfield();
-        if (!m_solid)
+        std::unique_ptr<rcHeightfield, RcDeleter<rcHeightfield>> solid { rcAllocHeightfield() };
+        if (!solid)
         {
             PrintDebug("buildNavigation: Out of memory 'solid'.");
             return result;
         }
-        if (!rcCreateHeightfield(&m_recastContext, *m_solid, width, height, bmin, bmax, m_config.m_cellSize, m_config.m_cellHeight))
+        if (!rcCreateHeightfield(&m_recastContext, *solid, width, height, bmin, bmax, m_config.m_cellSize, m_config.m_cellHeight))
         {
             PrintDebug("buildNavigation: Could not create solid heightfield.");
             return result;
         }
 
-        // Allocate array that can hold triangle area types.
-        // If you have multiple meshes you need to process, allocate
-        // and array which can hold the max number of triangles you need to process.
-        unsigned char* m_triareas = new unsigned char[ntris];
-        if (!m_triareas)
+        // calc span areas
         {
-            PrintDebug("buildNavigation: Out of memory 'm_triareas' (%d).", ntris);
-            return result;
-        }
+            std::unique_ptr<uint8_t> m_triareas { new unsigned char[ntris]};
+            if (!m_triareas)
+            {
+                PrintDebug("buildNavigation: Out of memory 'm_triareas' (%d).", ntris);
+                return result;
+            }
 
-        // Find triangles which are walkable based on their slope and rasterize them.
-        // If your input data is multiple meshes, you can transform them here, calculate
-        // the are type for each of the meshes and rasterize them.
+            // Find triangles which are walkable based on their slope and rasterize them.
+            // If your input data is multiple meshes, you can transform them here, calculate
+            // the are type for each of the meshes and rasterize them.
 
-        assert(m_mesh.getAreas().size() == ntris);
+            assert(m_mesh.getAreas().size() == ntris);
 
-        memset(m_triareas, 0, sizeof(unsigned char) * ntris);
+            memset(m_triareas.get(), 0, sizeof(unsigned char) * ntris);
 
-        rcMarkWalkableTriangles(&m_recastContext, m_config.m_agentMaxSlope, verts, nverts, tris, ntris, m_triareas);
+            rcMarkWalkableTriangles(&m_recastContext, m_config.m_agentMaxSlope, verts, nverts, tris, ntris, m_triareas.get());
 
-        // overwrite custom areas
-        for(size_t i = 0; i < m_mesh.getAreas().size(); ++i) {
-            if(m_mesh.getAreas()[i] == NAV_AREA_WATER) {
-                m_triareas[i] = NAV_AREA_WATER;
+            // overwrite custom areas
+            for(size_t i = 0; i < m_mesh.getAreas().size(); ++i) {
+                if(m_mesh.getAreas()[i] == NAV_AREA_WATER) {
+                    m_triareas.get()[i] = NAV_AREA_WATER;
+                }
+            }
+
+            if (!rcRasterizeTriangles(&m_recastContext, verts, nverts, tris, m_triareas.get(), ntris, *solid, walkableClimb))
+            {
+                PrintDebug("buildNavigation: Could not rasterize triangles.");
+                return result;
             }
         }
-
-        if (!rcRasterizeTriangles(&m_recastContext, verts, nverts, tris, m_triareas, ntris, *m_solid, walkableClimb))
-        {
-            PrintDebug("buildNavigation: Could not rasterize triangles.");
-            return result;
-        }
-
-        delete [] m_triareas;
-        m_triareas = NULL;
 
         // water logic
         // set ground below water to water aswell to prevent walking "below water"
         {
             std::vector<rcSpan*> spansToSet;
 
-            for (int z = 0; z < m_solid->height; ++z) {
-                for (int x = 0; x < m_solid->width; ++x) {
-                    rcSpan* span = m_solid->spans[x + z * m_solid->width];
+            for (int z = 0; z < solid->height; ++z) {
+                for (int x = 0; x < solid->width; ++x) {
+                    rcSpan* span = solid->spans[x + z * solid->width];
                     rcSpan* prev = nullptr;
 
                     // spans are like lists of a cell at a given XZ pos
@@ -336,12 +338,12 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
-        if (true)
-            rcFilterLowHangingWalkableObstacles(&m_recastContext, walkableClimb, *m_solid);
-        if (true)
-            rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *m_solid);
-        if (true)
-            rcFilterWalkableLowHeightSpans(&m_recastContext, walkableHeight, *m_solid);
+        if (m_config.m_filterLowHanging)
+            rcFilterLowHangingWalkableObstacles(&m_recastContext, walkableClimb, *solid);
+        if (m_config.m_filterLedgeSpans)
+            rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *solid);
+        if (m_config.m_filterWalkableLowHeightSpans)
+            rcFilterWalkableLowHeightSpans(&m_recastContext, walkableHeight, *solid);
 
         //
         // Step 4. Partition walkable surface to simple regions.
@@ -350,26 +352,22 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         // Compact the heightfield so that it is faster to handle from now on.
         // This will result more cache coherent data as well as the neighbours
         // between walkable cells will be calculated.
-        m_chf = rcAllocCompactHeightfield();
-        if (!m_chf)
+        std::unique_ptr<rcCompactHeightfield, RcDeleter<rcCompactHeightfield>> chf { rcAllocCompactHeightfield() };
+        if (!chf)
         {
             PrintDebug("buildNavigation: Out of memory 'chf'.");
             return result;
         }
-        if (!rcBuildCompactHeightfield(&m_recastContext, walkableHeight, walkableClimb, *m_solid, *m_chf))
+        if (!rcBuildCompactHeightfield(&m_recastContext, walkableHeight, walkableClimb, *solid, *chf))
         {
             PrintDebug("buildNavigation: Could not build compact data.");
             return result;
         }
 
-        if (true)
-        {
-            rcFreeHeightField(m_solid);
-            m_solid = 0;
-        }
-            
+        solid = NULL;
+        
         // Erode the walkable area by agent radius.
-        if (!rcErodeWalkableArea(&m_recastContext, walkableRadius, *m_chf))
+        if (!rcErodeWalkableArea(&m_recastContext, walkableRadius, *chf))
         {
             PrintDebug("buildNavigation: Could not erode.");
             return result;
@@ -377,13 +375,13 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
 
         // (Optional) Mark areas.
         #if 0
-        const ConvexVolume* vols = m_geom->getConvexVolumes();
-        for (int i  = 0; i < m_geom->getConvexVolumeCount(); ++i)
-            rcMarkConvexPolyArea(&m_recastContext, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned char)vols[i].area, *m_chf);
+            const ConvexVolume* vols = m_geom->getConvexVolumes();
+            for (int i  = 0; i < m_geom->getConvexVolumeCount(); ++i)
+                rcMarkConvexPolyArea(&m_recastContext, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned char)vols[i].area, *m_chf);
         #endif
 
         // we ended up picking monotone type generation for speed
-		if (!rcBuildRegionsMonotone(&m_recastContext, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
+		if (!rcBuildRegionsMonotone(&m_recastContext, *chf, 0, minRegionArea, mergeRegionArea))
 		{
 			PrintDebug("buildNavigation: Could not build monotone regions.");
 			return result;
@@ -394,13 +392,13 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         //
 
         // Create contours.
-        m_cset = rcAllocContourSet();
-        if (!m_cset)
+        std::unique_ptr<rcContourSet, RcDeleter<rcContourSet>> cset { rcAllocContourSet() };
+        if (!cset)
         {
             PrintDebug("buildNavigation: Out of memory 'cset'.");
             return result;
         }
-        if (!rcBuildContours(&m_recastContext, *m_chf, m_config.m_edgeMaxError, maxEdgeLen, *m_cset))
+        if (!rcBuildContours(&m_recastContext, *chf, m_config.m_edgeMaxError, maxEdgeLen, *cset))
         {
             PrintDebug("buildNavigation: Could not create contours.");
             return result;
@@ -411,13 +409,13 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         //
 
         // Build polygon navmesh from the contours.
-        m_pmesh = rcAllocPolyMesh();
-        if (!m_pmesh)
+        std::unique_ptr<rcPolyMesh, RcDeleter<rcPolyMesh>> pmesh { rcAllocPolyMesh() };
+        if (!pmesh)
         {
             PrintDebug("buildNavigation: Out of memory 'pmesh'.");
             return result;
         }
-        if (!rcBuildPolyMesh(&m_recastContext, *m_cset, m_config.m_vertsPerPoly, *m_pmesh))
+        if (!rcBuildPolyMesh(&m_recastContext, *cset, m_config.m_vertsPerPoly, *pmesh))
         {
             PrintDebug("buildNavigation: Could not triangulate contours.");
             return result;
@@ -427,23 +425,21 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         // Step 7. Create detail mesh which allows to access approximate height on each polygon.
         //
 
-        m_dmesh = rcAllocPolyMeshDetail();
-        if (!m_dmesh)
+        std::unique_ptr<rcPolyMeshDetail, RcDeleter<rcPolyMeshDetail>> dmesh { rcAllocPolyMeshDetail() };
+        if (!dmesh)
         {
             PrintDebug("buildNavigation: Out of memory 'pmdtl'.");
             return result;
         }
 
-        if (!rcBuildPolyMeshDetail(&m_recastContext, *m_pmesh, *m_chf, detailSampleDist, detailSampleMaxError, *m_dmesh))
+        if (!rcBuildPolyMeshDetail(&m_recastContext, *pmesh, *chf, detailSampleDist, detailSampleMaxError, *dmesh))
         {
             PrintDebug("buildNavigation: Could not build detail mesh.");
             return result;
         }
 
-        rcFreeCompactHeightfield(m_chf);
-        m_chf = NULL;
-        rcFreeContourSet(m_cset);
-        m_cset = NULL;
+        chf = NULL;
+        cset = NULL;
 
         // At this point the navigation mesh data is ready, you can access it from m_pmesh.
         // See duDebugDrawPolyMesh or dtCreateNavMeshData as examples how to access the data.
@@ -460,34 +456,34 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
             int navDataSize = 0;
 
             // Update poly flags from areas.
-            for (int i = 0; i < m_pmesh->npolys; ++i) {
-                m_pmesh->flags[i] = NAV_FLAGS_WALK;
+            for (int i = 0; i < pmesh->npolys; ++i) {
+                pmesh->flags[i] = NAV_FLAGS_WALK;
 
-                if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
-                    m_pmesh->areas[i] = NAV_AREA_GROUND;
+                if (pmesh->areas[i] == RC_WALKABLE_AREA)
+                    pmesh->areas[i] = NAV_AREA_GROUND;
                 
-                if (m_pmesh->areas[i] == NAV_AREA_GROUND) {
-                    m_pmesh->flags[i] = NAV_FLAGS_WALK;
+                if (pmesh->areas[i] == NAV_AREA_GROUND) {
+                    pmesh->flags[i] = NAV_FLAGS_WALK;
                 }
-                else if (m_pmesh->areas[i] == NAV_AREA_WATER) {
-                    m_pmesh->flags[i] = NAV_FLAGS_SWIM;
+                else if (pmesh->areas[i] == NAV_AREA_WATER) {
+                    pmesh->flags[i] = NAV_FLAGS_SWIM;
                 }
             }
                 
             dtNavMeshCreateParams params;
             memset(&params, 0, sizeof(params));
-            params.verts = m_pmesh->verts;
-            params.vertCount = m_pmesh->nverts;
-            params.polys = m_pmesh->polys;
-            params.polyAreas = m_pmesh->areas;
-            params.polyFlags = m_pmesh->flags;
-            params.polyCount = m_pmesh->npolys;
-            params.nvp = m_pmesh->nvp;
-            params.detailMeshes = m_dmesh->meshes;
-            params.detailVerts = m_dmesh->verts;
-            params.detailVertsCount = m_dmesh->nverts;
-            params.detailTris = m_dmesh->tris;
-            params.detailTriCount = m_dmesh->ntris;
+            params.verts = pmesh->verts;
+            params.vertCount = pmesh->nverts;
+            params.polys = pmesh->polys;
+            params.polyAreas = pmesh->areas;
+            params.polyFlags = pmesh->flags;
+            params.polyCount = pmesh->npolys;
+            params.nvp = pmesh->nvp;
+            params.detailMeshes = dmesh->meshes;
+            params.detailVerts = dmesh->verts;
+            params.detailVertsCount = dmesh->nverts;
+            params.detailTris = dmesh->tris;
+            params.detailTriCount = dmesh->ntris;
             #if 0
             params.offMeshConVerts = m_geom->getOffMeshConnectionVerts();
             params.offMeshConRad = m_geom->getOffMeshConnectionRads();
@@ -500,8 +496,8 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
             params.walkableHeight = m_config.m_agentHeight;
             params.walkableRadius = m_config.m_agentRadius;
             params.walkableClimb = m_config.m_agentMaxClimb;
-            rcVcopy(params.bmin, m_pmesh->bmin);
-            rcVcopy(params.bmax, m_pmesh->bmax);
+            rcVcopy(params.bmin, pmesh->bmin);
+            rcVcopy(params.bmax, pmesh->bmax);
             params.cs = m_config.m_cellSize;
             params.ch = m_config.m_cellHeight;
             params.buildBvTree = true;
@@ -512,7 +508,7 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
                 return result;
             }
             
-            result = std::unique_ptr<dtNavMesh>(dtAllocNavMesh());
+            result = std::shared_ptr<dtNavMesh>(dtAllocNavMesh(), DtDeleter{});
             if (!result)
             {
                 dtFree(navData);
@@ -541,8 +537,7 @@ std::future<std::unique_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const u
         const auto diff = (endTime.QuadPart - startTime.QuadPart);
         // Show performance stats.
         PrintDebug("=== TOTAL:\t%.2fms", (diff*1000000 / freq.QuadPart) / 1000.0f);
-        // duLogBuildTimes(*m_ctx, m_ctx->getAccumulatedTime(RC_TIMER_TOTAL));
-        PrintDebug(">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
+        PrintDebug(">> Polymesh: %d vertices  %d polygons", pmesh->nverts, pmesh->npolys);
 
         return result;
     });

@@ -23,8 +23,8 @@ private:
     };
     
     bool m_isReady;
-    std::future<std::unique_ptr<dtNavMesh>> m_loadingNavMeshResult;
-    std::unique_ptr<dtNavMesh> m_navMesh;
+    std::future<std::shared_ptr<dtNavMesh>> m_loadingNavMeshResult;
+    std::shared_ptr<dtNavMesh> m_navMesh;
 
     std::mutex m_queueMutex;
     std::mutex m_resultMutex;
