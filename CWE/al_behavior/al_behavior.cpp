@@ -11,6 +11,7 @@
 #include <api/api_accessory.h>
 #include <api/api_metadata.h>
 #include <FunctionHook.h>
+#include <memory.h>
 
 extern void ALBHV_Life_Init();
 
@@ -520,7 +521,38 @@ static int AL_CheckWater_r(task* tp) {
 	return AL_CheckWater_t.Original(tp);
 }
 
+// AL_BehaviorResetParameter hook on bottom to free navigation points when not needed anymore
+// we make sure to free it in Chao_Delete_r aswell, incase the player leaves the garden mid-navigation behavior chain
+static void AL_BehaviorResetParameter_r(task* tp) {
+	auto work = GET_CHAOWK(tp);
+
+	// original behavior of the instructions we overwrite with our call
+	work->field_B0 |= 2; 
+
+	if (work->pNaviPoints) {
+		FREE(work->pNaviPoints);
+		work->pNaviPoints = NULL;
+	}
+}
+static void __declspec(naked) AL_BehaviorResetParameter_t()
+{
+	__asm
+	{
+		push edi // a1
+
+		// Call your __cdecl function here:
+		call AL_BehaviorResetParameter_r
+
+		add esp, 4 // a1
+		retn
+	}
+}
+
 void AL_Behavior_Init() {
+	// writecall onto existing instructions on the bottom of behaviorresetparameter
+	WriteCall((void*)0x0053D881, AL_BehaviorResetParameter_t);
+	WriteData<0xB-0x6>((uint8_t*)0x0053D886, (uint8_t)0x90);
+
 	AL_Behavior_PostureFix();
 
 	AL_IntentionInit();
