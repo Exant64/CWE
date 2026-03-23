@@ -7,10 +7,13 @@
 
 #include "external/Detour/Include/DetourNavMeshBuilder.h"
 #include "external/Detour/Include/DetourNavMeshQuery.h"
+#include "external/Recast/Include/RecastAlloc.h"
+
 #include <assert.h>
 
-#include <memory_debug.h>
-#include "external/Recast/Include/RecastAlloc.h"
+#ifdef MEMORY_PROFILE
+    #include <memory_debug.h>
+#endif
 
 // custom deleter for unique_ptrs in thread
 template <typename T>
@@ -175,8 +178,6 @@ dtNavMesh* NavSysGenerator::LoadNavMesh(const char* path) {
 	return mesh;
 }
 
-#define MEMORY_PROFILE
-
 #ifdef MEMORY_PROFILE 
     static MemoryProfiler memProfiler;
 
@@ -217,8 +218,10 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             rcAllocSetCustom(customAlloc, customFree);
         #endif
 
-        LARGE_INTEGER startTime;
-        QueryPerformanceCounter(&startTime);
+        #ifdef TIME_PROFILE
+            LARGE_INTEGER startTime;
+            QueryPerformanceCounter(&startTime);
+        #endif
 
         char land_navmesh_path[40];
         sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
@@ -531,13 +534,15 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             SaveNavMesh(land_navmesh_path, result.get());
         }
 
-        LARGE_INTEGER endTime;
-        QueryPerformanceCounter(&endTime);
+        #ifdef TIME_PROFILE
+            LARGE_INTEGER endTime;
+            QueryPerformanceCounter(&endTime);
 
-        LARGE_INTEGER freq;
-	    QueryPerformanceFrequency(&freq);
-        const auto diff = (endTime.QuadPart - startTime.QuadPart);
-        NavSysLog("=== TOTAL:\t%.2fms", (diff*1000000 / freq.QuadPart) / 1000.0f);
+            LARGE_INTEGER freq;
+            QueryPerformanceFrequency(&freq);
+            const auto diff = (endTime.QuadPart - startTime.QuadPart);
+            NavSysLog("=== TOTAL:\t%.2fms", (diff*1000000 / freq.QuadPart) / 1000.0f);
+        #endif
 
         return result;
     });
