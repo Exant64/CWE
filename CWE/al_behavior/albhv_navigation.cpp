@@ -33,7 +33,7 @@ int ALBHV_CheckNavigate(task* tp) {
         case MD_QUERY_THINK:
             AL_SetMotionLink(tp, ALM_STAND);
 
-            work->NaviCurrQueryIndex = NavSysAddPath(
+            work->NaviCurrQueryIndex = NavSysQueryPath(
                 &work->entity.Position, 
                 &move->AimPos, 
                 GetChaoNaviExcludeFlags(tp)
