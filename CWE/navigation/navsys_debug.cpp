@@ -203,7 +203,7 @@ void NavSys::ImGuiDebug() {
     ImGui::Checkbox("Exclude Swim", &excludeSwim);
 
     if(ImGui::Button("Query and Display")) {
-        m_debugDisplayPath = AddPath(spos, epos, !excludeSwim ? 0 : NAV_FLAGS_SWIM);
+        m_debugDisplayPath = QueryPath(spos, epos, !excludeSwim ? 0 : NAV_FLAGS_SWIM);
     }
 
     if(ImGui::Button("Query and Run BHV")) {

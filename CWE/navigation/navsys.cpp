@@ -32,7 +32,7 @@ std::optional<NavSysPathResult> NavSys::GetResult(const uint32_t queryIndex) {
     return m_results[queryIndex];
 }
 
-void NavSys::LaunchThread() {
+void NavSys::LaunchQueryWorkerThread() {
     m_queryWorkerThread = std::thread([&]{
         PathEntry entry;
 
@@ -61,7 +61,7 @@ void NavSys::LaunchThread() {
     });
 }
 
-void NavSys::TryStopThread() {
+void NavSys::TryStopQueryWorkerThread() {
     if(m_queryWorkerThread.joinable()) {
         m_workerStop = true;
         m_workerConditionVariable.notify_all();
@@ -69,7 +69,7 @@ void NavSys::TryStopThread() {
     }
 }
 
-uint32_t NavSys::AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos, const uint32_t excludeFlags) {
+uint32_t NavSys::QueryPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos, const uint32_t excludeFlags) {
     const uint32_t entryIndex = m_queryIndex++;
     const PathEntry entry = {
         .start = startPos,
@@ -100,7 +100,7 @@ void NavSys::InitQuery() {
     const auto status = m_navQuery->init(m_navMesh.get(), 2048);
     assert(!dtStatusFailed(status));
 
-    m_isReady = true;
+    m_isQueryReady = true;
 }
 
 NavSys::WAIT_FOR_GENERATE_RESULT NavSys::WaitForGenerate() {
@@ -117,16 +117,14 @@ NavSys::WAIT_FOR_GENERATE_RESULT NavSys::WaitForGenerate() {
             return WAIT_FOR_GENERATE_RESULT::FAIL;
         }
 
-        InitQuery();
-
         return WAIT_FOR_GENERATE_RESULT::SUCCESS;
     }       
 
     return WAIT_FOR_GENERATE_RESULT::WAIT;
 }
 
-bool NavSys::IsReady() {
-    return m_isReady;
+bool NavSys::IsQueryReady() {
+    return m_isQueryReady;
 }
 
 void NavSys::Generate() {
@@ -141,7 +139,6 @@ bool NavSys::CheckAndLoadCache() {
     auto result = gNavSysGenerator.TryLoad(land_hash);
     if(result) {
         m_navMesh = result;
-        InitQuery();
 
         return true;
     }
@@ -206,8 +203,8 @@ void NavSysDiscardResult(const uint32_t queryIndex) {
     return GET_NAV_SYS(pNavSysTask)->DiscardResult(queryIndex);
 }
 
-uint32_t NavSysAddPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos, const uint32_t excludeFlags) {
-    return GET_NAV_SYS(pNavSysTask)->AddPath(*pStartPos, *pEndPos, excludeFlags);
+uint32_t NavSysQueryPath(const NJS_POINT3* pStartPos, const NJS_POINT3* pEndPos, const uint32_t excludeFlags) {
+    return GET_NAV_SYS(pNavSysTask)->QueryPath(*pStartPos, *pEndPos, excludeFlags);
 }
 
 std::optional<NavSysPathResult> NavSysGetResult(const uint32_t queryIndex) {
@@ -232,7 +229,6 @@ static void NavSysExecutor(task* tp) {
             }
 
             if (sys->CheckAndLoadCache()) {
-                sys->LaunchThread();
                 work->Action = NAV_MD_ACTIVE;
             }
             else {
@@ -254,13 +250,16 @@ static void NavSysExecutor(task* tp) {
                     DeleteObject_(tp);
                     break;
                 case NavSys::WAIT_FOR_GENERATE_RESULT::SUCCESS:
-                    sys->LaunchThread();
                     work->Action = NAV_MD_ACTIVE;
                     break;
             }
             break;
 
         case NAV_MD_ACTIVE:
+            if(!sys->IsQueryReady()) {
+                sys->InitQuery();
+                sys->LaunchQueryWorkerThread();
+            }
             break;
     }
 }
@@ -269,7 +268,7 @@ static void NavSysDestructor(task* tp) {
     auto sys = GET_NAV_SYS(tp);
     assert(sys);
 
-    sys->TryStopThread();
+    sys->TryStopQueryWorkerThread();
 
     pNavSysTask = NULL;
     
@@ -280,7 +279,7 @@ static void NavSysDestructor(task* tp) {
 static void NavSysDisplayer(task* tp) {
     auto sys = GET_NAV_SYS(tp);
 
-    if(!sys->IsReady()) {
+    if(!sys->IsQueryReady()) {
         return;
 
         SetShaders(1);

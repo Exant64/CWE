@@ -27,7 +27,7 @@ private:
         bool m_debugDisplayNavMesh;
     #endif
     
-    bool m_isReady;
+    bool m_isQueryReady;
     std::future<std::shared_ptr<dtNavMesh>> m_loadingNavMeshResult;
     std::shared_ptr<dtNavMesh> m_navMesh;
 
@@ -44,8 +44,6 @@ private:
     dtNavMeshQuery* m_navQuery;
 
     NavSysPathResult CalcStraightPath(const PathEntry& entry);
-
-    void InitQuery();
 public:
     enum class WAIT_FOR_GENERATE_RESULT {
         WAIT,
@@ -62,17 +60,17 @@ public:
     NavSys();
     ~NavSys();
 
-    void LaunchThread();
-    void TryStopThread();
+    void InitQuery();
+    bool IsQueryReady();
+    void LaunchQueryWorkerThread();
+    void TryStopQueryWorkerThread();
 
     bool CheckAndLoadCache();
     void Generate();
     WAIT_FOR_GENERATE_RESULT WaitForGenerate();
 
-    bool IsReady();
-
     void DiscardResult(const uint32_t queryIndex);
-    uint32_t AddPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos, const uint32_t excludeFlags);
+    uint32_t QueryPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos, const uint32_t excludeFlags);
     std::optional<NavSysPathResult> GetResult(const uint32_t queryIndex);
 };
 
