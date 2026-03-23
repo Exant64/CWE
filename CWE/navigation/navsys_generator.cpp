@@ -188,21 +188,24 @@ dtNavMesh* NavSysGenerator::LoadNavMesh(const char* path) {
     };
 #endif
 
-std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryLoadGenerate(const uint32_t hash) {
+std::shared_ptr<dtNavMesh> NavSysGenerator::TryLoad(const uint32_t hash) {
+    if(!m_useCache) {
+        return NULL;
+    }
+
     char land_navmesh_path[40];
     sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
 
     // check if cached file already exists before spinning up thread
-    if(m_useCache) {
-        auto tryLoad = LoadNavMesh(land_navmesh_path);
-        if(tryLoad) {
-            // hack to return "immediate future"
-            std::promise<std::shared_ptr<dtNavMesh>> p;
-            p.set_value(std::shared_ptr<dtNavMesh>(tryLoad));
-            return p.get_future();
-        }
+    auto tryLoad = LoadNavMesh(land_navmesh_path);
+    if(tryLoad) {
+        return std::shared_ptr<dtNavMesh>(tryLoad, DtDeleter {});
     }
 
+    return NULL;
+}
+
+std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint32_t hash) {
     // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
     NavSysMeshConvert mesh;
 

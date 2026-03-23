@@ -82,7 +82,8 @@ public:
         void DebugDrawMaxClimbLine();
     #endif
 
-    std::future<std::shared_ptr<dtNavMesh>> TryLoadGenerate(const uint32_t hash);
+    std::shared_ptr<dtNavMesh> TryLoad(const uint32_t hash);
+    std::future<std::shared_ptr<dtNavMesh>> TryGenerate(const uint32_t hash);
 };
 
 extern NavSysGenerator gNavSysGenerator;

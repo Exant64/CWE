@@ -95,6 +95,15 @@ NavSys::~NavSys() {
     delete m_navQuery;
 }
 
+void NavSys::InitQuery() {
+    assert(m_navMesh);
+
+    const auto status = m_navQuery->init(m_navMesh.get(), 2048);
+    assert(!dtStatusFailed(status));
+
+    m_isReady = true;
+}
+
 bool NavSys::WaitForGenerate() {
     using namespace std::chrono_literals;
 
@@ -105,12 +114,7 @@ bool NavSys::WaitForGenerate() {
     if (m_loadingNavMeshResult.wait_for(0ms) == std::future_status::ready) {
         m_navMesh = m_loadingNavMeshResult.get();
 
-        assert(m_navMesh);
-
-        const auto status = m_navQuery->init(m_navMesh.get(), 2048);
-        assert(!dtStatusFailed(status));
-
-        m_isReady = true;
+        InitQuery();
 
         return true;
     }       
@@ -125,7 +129,21 @@ bool NavSys::IsReady() {
 void NavSys::Generate() {
     uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
 
-    m_loadingNavMeshResult = gNavSysGenerator.TryLoadGenerate(land_hash);
+    m_loadingNavMeshResult = gNavSysGenerator.TryGenerate(land_hash);
+}
+
+bool NavSys::CheckAndLoadCache() {
+    uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
+
+    auto result = gNavSysGenerator.TryLoad(land_hash);
+    if(result) {
+        m_navMesh = result;
+        InitQuery();
+
+        return true;
+    }
+
+    return false;
 }
 
 NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
@@ -200,17 +218,30 @@ static void NavSysExecutor(task* tp) {
 
     switch(work->Action) {
         case NAV_MD_INIT:
-            work->Action++;
+            work->Action = NAV_MD_CHECK_CACHE_GENERATE;
+            [[fallthrough]];
+        case NAV_MD_CHECK_CACHE_GENERATE:
+            if (sys->CheckAndLoadCache()) {
+                sys->LaunchThread();
+                work->Action = NAV_MD_ACTIVE;
+            }
+            else {
+                work->Action = NAV_MD_LAUNCH_GENERATE;
+            }
+            break;
+
         case NAV_MD_LAUNCH_GENERATE:
             sys->Generate();
-            work->Action++;
+            work->Action = NAV_MD_WAIT_FOR_GENERATE;
             break;
+
         case NAV_MD_WAIT_FOR_GENERATE:
             if(sys->WaitForGenerate()) {
                 sys->LaunchThread();
-                work->Action++;
+                work->Action = NAV_MD_ACTIVE;
             }
             break;
+            
         case NAV_MD_ACTIVE:
             break;
     }
