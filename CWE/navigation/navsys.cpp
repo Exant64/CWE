@@ -220,6 +220,13 @@ static void NavSysExecutor(task* tp) {
             work->Action = NAV_MD_CHECK_CACHE_GENERATE;
             [[fallthrough]];
         case NAV_MD_CHECK_CACHE_GENERATE:
+            if(!CurrentLandTable) {
+                PrintDebug("no landtable found, aborting NAV_MD_CHECK_CACHE_GENERATE and deleting navsys task");
+                
+                DeleteObject_(tp);
+                return;
+            }
+
             if (sys->CheckAndLoadCache()) {
                 sys->LaunchThread();
                 work->Action = NAV_MD_ACTIVE;
