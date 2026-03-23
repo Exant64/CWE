@@ -103,22 +103,26 @@ void NavSys::InitQuery() {
     m_isReady = true;
 }
 
-bool NavSys::WaitForGenerate() {
+NavSys::WAIT_FOR_GENERATE_RESULT NavSys::WaitForGenerate() {
     using namespace std::chrono_literals;
 
     if(!m_loadingNavMeshResult.valid()) {
-        return false;
+        return WAIT_FOR_GENERATE_RESULT::WAIT;
     }
 
     if (m_loadingNavMeshResult.wait_for(0ms) == std::future_status::ready) {
         m_navMesh = m_loadingNavMeshResult.get();
 
+        if(!m_navMesh) {
+            return WAIT_FOR_GENERATE_RESULT::FAIL;
+        }
+
         InitQuery();
 
-        return true;
+        return WAIT_FOR_GENERATE_RESULT::SUCCESS;
     }       
 
-    return false;
+    return WAIT_FOR_GENERATE_RESULT::WAIT;
 }
 
 bool NavSys::IsReady() {
@@ -222,9 +226,9 @@ static void NavSysExecutor(task* tp) {
         case NAV_MD_CHECK_CACHE_GENERATE:
             if(!CurrentLandTable) {
                 PrintDebug("no landtable found, aborting NAV_MD_CHECK_CACHE_GENERATE and deleting navsys task");
-                
+
                 DeleteObject_(tp);
-                return;
+                break;
             }
 
             if (sys->CheckAndLoadCache()) {
@@ -242,9 +246,17 @@ static void NavSysExecutor(task* tp) {
             break;
 
         case NAV_MD_WAIT_FOR_GENERATE:
-            if(sys->WaitForGenerate()) {
-                sys->LaunchThread();
-                work->Action = NAV_MD_ACTIVE;
+            switch(sys->WaitForGenerate()) {
+                case NavSys::WAIT_FOR_GENERATE_RESULT::WAIT:
+                    break;
+                case NavSys::WAIT_FOR_GENERATE_RESULT::FAIL:
+                    PrintDebug("navmesh generation failed, aborting NAV_MD_WAIT_FOR_GENERATE and deleting navsys task");
+                    DeleteObject_(tp);
+                    break;
+                case NavSys::WAIT_FOR_GENERATE_RESULT::SUCCESS:
+                    sys->LaunchThread();
+                    work->Action = NAV_MD_ACTIVE;
+                    break;
             }
             break;
 

@@ -47,6 +47,12 @@ private:
 
     void InitQuery();
 public:
+    enum class WAIT_FOR_GENERATE_RESULT {
+        WAIT,
+        FAIL,
+        SUCCESS
+    };
+
 #ifdef IMGUIDEBUG
     void ImGuiDebug();
     void DebugDrawNavMesh();
@@ -61,7 +67,7 @@ public:
 
     bool CheckAndLoadCache();
     void Generate();
-    bool WaitForGenerate();
+    WAIT_FOR_GENERATE_RESULT WaitForGenerate();
 
     bool IsReady();
 
