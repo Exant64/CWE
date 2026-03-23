@@ -2,6 +2,7 @@
 
 #include "navsys_generator.h"
 #include "navsys_meshconvert.h"
+#include "navsys_log.h"
 #include "navsys.h"
 
 #include "external/Detour/Include/DetourNavMeshBuilder.h"
@@ -222,6 +223,8 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         char land_navmesh_path[40];
         sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
 
+        NavSysLog("Started navmesh generation: %s", land_navmesh_path);
+
         cweRcContext m_recastContext;
 
         std::shared_ptr<dtNavMesh> result = NULL;
@@ -251,10 +254,6 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         // area could be specified by an user defined box, etc.
         rcCalcGridSize(bmin, bmax, m_config.m_cellSize, &width, &height);
 
-        PrintDebug("Building navigation:");
-        PrintDebug(" - %d x %d cells", width, height);
-        PrintDebug(" - %.1fK verts, %.1fK tris", nverts/1000.0f, ntris/1000.0f);
-
         //
         // Step 2. Rasterize input polygon soup.
         //
@@ -263,12 +262,12 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         std::unique_ptr<rcHeightfield, RcDeleter<rcHeightfield>> solid { rcAllocHeightfield() };
         if (!solid)
         {
-            PrintDebug("buildNavigation: Out of memory 'solid'.");
+            NavSysLog("buildNavigation: Out of memory 'solid'.");
             return result;
         }
         if (!rcCreateHeightfield(&m_recastContext, *solid, width, height, bmin, bmax, m_config.m_cellSize, m_config.m_cellHeight))
         {
-            PrintDebug("buildNavigation: Could not create solid heightfield.");
+            NavSysLog("buildNavigation: Could not create solid heightfield.");
             return result;
         }
 
@@ -277,7 +276,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             std::unique_ptr<uint8_t> m_triareas { new unsigned char[ntris]};
             if (!m_triareas)
             {
-                PrintDebug("buildNavigation: Out of memory 'm_triareas' (%d).", ntris);
+                NavSysLog("buildNavigation: Out of memory 'm_triareas' (%d).", ntris);
                 return result;
             }
 
@@ -300,7 +299,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
 
             if (!rcRasterizeTriangles(&m_recastContext, verts, nverts, tris, m_triareas.get(), ntris, *solid, walkableClimb))
             {
-                PrintDebug("buildNavigation: Could not rasterize triangles.");
+                NavSysLog("buildNavigation: Could not rasterize triangles.");
                 return result;
             }
         }
@@ -358,12 +357,12 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         std::unique_ptr<rcCompactHeightfield, RcDeleter<rcCompactHeightfield>> chf { rcAllocCompactHeightfield() };
         if (!chf)
         {
-            PrintDebug("buildNavigation: Out of memory 'chf'.");
+            NavSysLog("buildNavigation: Out of memory 'chf'.");
             return result;
         }
         if (!rcBuildCompactHeightfield(&m_recastContext, walkableHeight, walkableClimb, *solid, *chf))
         {
-            PrintDebug("buildNavigation: Could not build compact data.");
+            NavSysLog("buildNavigation: Could not build compact data.");
             return result;
         }
 
@@ -372,7 +371,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         // Erode the walkable area by agent radius.
         if (!rcErodeWalkableArea(&m_recastContext, walkableRadius, *chf))
         {
-            PrintDebug("buildNavigation: Could not erode.");
+            NavSysLog("buildNavigation: Could not erode.");
             return result;
         }
 
@@ -386,7 +385,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         // we ended up picking monotone type generation for speed
 		if (!rcBuildRegionsMonotone(&m_recastContext, *chf, 0, minRegionArea, mergeRegionArea))
 		{
-			PrintDebug("buildNavigation: Could not build monotone regions.");
+			NavSysLog("buildNavigation: Could not build monotone regions.");
 			return result;
 		}
 
@@ -398,12 +397,12 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         std::unique_ptr<rcContourSet, RcDeleter<rcContourSet>> cset { rcAllocContourSet() };
         if (!cset)
         {
-            PrintDebug("buildNavigation: Out of memory 'cset'.");
+            NavSysLog("buildNavigation: Out of memory 'cset'.");
             return result;
         }
         if (!rcBuildContours(&m_recastContext, *chf, m_config.m_edgeMaxError, maxEdgeLen, *cset))
         {
-            PrintDebug("buildNavigation: Could not create contours.");
+            NavSysLog("buildNavigation: Could not create contours.");
             return result;
         }
 
@@ -415,12 +414,12 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         std::unique_ptr<rcPolyMesh, RcDeleter<rcPolyMesh>> pmesh { rcAllocPolyMesh() };
         if (!pmesh)
         {
-            PrintDebug("buildNavigation: Out of memory 'pmesh'.");
+            NavSysLog("buildNavigation: Out of memory 'pmesh'.");
             return result;
         }
         if (!rcBuildPolyMesh(&m_recastContext, *cset, m_config.m_vertsPerPoly, *pmesh))
         {
-            PrintDebug("buildNavigation: Could not triangulate contours.");
+            NavSysLog("buildNavigation: Could not triangulate contours.");
             return result;
         }
 
@@ -431,13 +430,13 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         std::unique_ptr<rcPolyMeshDetail, RcDeleter<rcPolyMeshDetail>> dmesh { rcAllocPolyMeshDetail() };
         if (!dmesh)
         {
-            PrintDebug("buildNavigation: Out of memory 'pmdtl'.");
+            NavSysLog("buildNavigation: Out of memory 'pmdtl'.");
             return result;
         }
 
         if (!rcBuildPolyMeshDetail(&m_recastContext, *pmesh, *chf, detailSampleDist, detailSampleMaxError, *dmesh))
         {
-            PrintDebug("buildNavigation: Could not build detail mesh.");
+            NavSysLog("buildNavigation: Could not build detail mesh.");
             return result;
         }
 
@@ -507,7 +506,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             
             if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
             {
-                PrintDebug("Could not build Detour navmesh.");
+                NavSysLog("Could not build Detour navmesh.");
                 return result;
             }
             
@@ -515,7 +514,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             if (!result)
             {
                 dtFree(navData);
-                PrintDebug("Could not create Detour navmesh");
+                NavSysLog("Could not create Detour navmesh");
                 return result;
             }
             
@@ -525,7 +524,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             if (dtStatusFailed(status))
             {
                 dtFree(navData);
-                PrintDebug("Could not init Detour navmesh");
+                NavSysLog("Could not init Detour navmesh");
                 return result;
             }
 
@@ -538,9 +537,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         LARGE_INTEGER freq;
 	    QueryPerformanceFrequency(&freq);
         const auto diff = (endTime.QuadPart - startTime.QuadPart);
-        // Show performance stats.
-        PrintDebug("=== TOTAL:\t%.2fms", (diff*1000000 / freq.QuadPart) / 1000.0f);
-        PrintDebug(">> Polymesh: %d vertices  %d polygons", pmesh->nverts, pmesh->npolys);
+        NavSysLog("=== TOTAL:\t%.2fms", (diff*1000000 / freq.QuadPart) / 1000.0f);
 
         return result;
     });
