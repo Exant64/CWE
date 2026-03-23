@@ -55,7 +55,7 @@ struct NavGenConfig {
         m_agentHeight = 5.f;
         m_agentRadius = 3.5f;
         m_agentMaxClimb = 1.9f; // high enough climb to still be able to navigate climbing out of pools and stuff
-        m_agentMaxSlope = 45.f;
+        m_agentMaxSlope = NJM_RAD_DEG(acosf(0.78f)); // the max slope from the MOV code, ~38.7
         m_regionMinSize = 8.f;
         m_regionMergeSize = 20.f;
         m_edgeMaxLen = 12.f;
