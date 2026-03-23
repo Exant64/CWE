@@ -5,6 +5,7 @@
 
 #include "ninja_functions.h"
 #include <al_world.h>
+#include <al_stage.h>
 #include <Chao.h>
 #include <renderfix.h>
 #include <api/api_idhash.h>
@@ -96,8 +97,6 @@ NavSys::~NavSys() {
 }
 
 void NavSys::InitQuery() {
-    assert(m_navMesh);
-
     const auto status = m_navQuery->init(m_navMesh.get(), 2048);
     assert(!dtStatusFailed(status));
 
@@ -241,7 +240,7 @@ static void NavSysExecutor(task* tp) {
                 work->Action = NAV_MD_ACTIVE;
             }
             break;
-            
+
         case NAV_MD_ACTIVE:
             break;
     }
@@ -289,6 +288,8 @@ task* GetNavSysTask() {
 
 void NavSysCreate() {
     assert(!pNavSysTask);
+
+    if(!AL_IsGarden()) return;
 
     pNavSysTask = LoadObject(4, "NavSysTask", NavSysExecutor, LoadObj_Data1);
     pNavSysTask->DisplaySub = NavSysDisplayer;
