@@ -100,6 +100,7 @@
 #include "cwe_c_colli.h"
 
 #include "navigation/navsys.h"
+#include "navigation/navsys_log.h"
 
 const char* PathToModFolder = "";
 
@@ -410,6 +411,10 @@ extern "C"
 		CWE_Codes_OnFrame();
 	}
 	
+	__declspec(dllexport) void OnExit() {
+		NavSysLogExit();
+	}
+
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex) {
 		CWE_ModIndex = modIndex;
 
@@ -470,6 +475,8 @@ extern "C"
 		GlobalSave_Init();
 
 		KCE_Init();
+
+		NavSysLogInit(path);
 
 		//DEBUG LENS THING
 		//WriteCall((void*)0x0056D696, SetChunkTexIndexPrimaryHook);

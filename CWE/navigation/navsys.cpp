@@ -2,6 +2,7 @@
 
 #include "navsys_internal.h"
 #include "navsys_generator.h"
+#include "navsys_log.h"
 
 #include "ninja_functions.h"
 #include <al_world.h>
@@ -53,6 +54,18 @@ void NavSys::LaunchQueryWorkerThread() {
 
             const auto result = CalcStraightPath(entry);
 
+            // todo: check if logging is enabled
+            if(!result.empty()) {
+                NavSysLog("Query %x result:", entry.queryID);
+
+                for(const auto& p : result) {
+                    NavSysLog("p(%f %f %f)", p.x, p.y, p.z);
+                }
+            }
+            else {
+                NavSysLog("Query %x result: empty", entry.queryID);
+            }
+
             {
                 std::lock_guard<std::mutex> lock(m_resultMutex);
                 m_results[entry.queryID] = std::move(result);
@@ -77,6 +90,13 @@ uint32_t NavSys::QueryPath(const NJS_POINT3& startPos, const NJS_POINT3& endPos,
         .excludeFlags = excludeFlags,
         .queryID = entryIndex
     };
+
+    NavSysLog(
+        "Query: s(%f %f %f), e(%f %f %f), i(%x)", 
+        startPos.x, startPos.y, startPos.z,
+        endPos.x, endPos.y, endPos.z,
+        entryIndex
+    );
 
     {
         std::lock_guard<std::mutex> lock(m_queueMutex);
@@ -222,7 +242,7 @@ static void NavSysExecutor(task* tp) {
             [[fallthrough]];
         case NAV_MD_CHECK_CACHE_GENERATE:
             if(!CurrentLandTable) {
-                PrintDebug("no landtable found, aborting NAV_MD_CHECK_CACHE_GENERATE and deleting navsys task");
+                NavSysLog("no landtable found, aborting NAV_MD_CHECK_CACHE_GENERATE and deleting navsys task");
 
                 DeleteObject_(tp);
                 break;
@@ -246,7 +266,7 @@ static void NavSysExecutor(task* tp) {
                 case NavSys::WAIT_FOR_GENERATE_RESULT::WAIT:
                     break;
                 case NavSys::WAIT_FOR_GENERATE_RESULT::FAIL:
-                    PrintDebug("navmesh generation failed, aborting NAV_MD_WAIT_FOR_GENERATE and deleting navsys task");
+                    NavSysLog("navmesh generation failed, aborting NAV_MD_WAIT_FOR_GENERATE and deleting navsys task");
                     DeleteObject_(tp);
                     break;
                 case NavSys::WAIT_FOR_GENERATE_RESULT::SUCCESS:
