@@ -44,6 +44,8 @@ private:
     dtNavMeshQuery* m_navQuery;
 
     NavSysPathResult CalcStraightPath(const PathEntry& entry);
+
+    void InitQuery();
 public:
 #ifdef IMGUIDEBUG
     void ImGuiDebug();
@@ -57,6 +59,7 @@ public:
     void LaunchThread();
     void TryStopThread();
 
+    bool CheckAndLoadCache();
     void Generate();
     bool WaitForGenerate();
 
@@ -71,6 +74,7 @@ public:
 
 enum {
     NAV_MD_INIT,
+    NAV_MD_CHECK_CACHE_GENERATE,
     NAV_MD_LAUNCH_GENERATE,
     NAV_MD_WAIT_FOR_GENERATE,
     NAV_MD_ACTIVE
