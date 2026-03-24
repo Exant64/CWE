@@ -130,17 +130,16 @@ NavSys::WAIT_FOR_GENERATE_RESULT NavSys::WaitForGenerate() {
         return WAIT_FOR_GENERATE_RESULT::WAIT;
     }
 
-    if (m_loadingNavMeshResult.wait_for(0ms) == std::future_status::ready) {
-        m_navMesh = m_loadingNavMeshResult.get();
+    if (m_loadingNavMeshResult.wait_for(0ms) != std::future_status::ready) {
+        return WAIT_FOR_GENERATE_RESULT::WAIT;
+    }
 
-        if(!m_navMesh) {
-            return WAIT_FOR_GENERATE_RESULT::FAIL;
-        }
+    m_navMesh = m_loadingNavMeshResult.get();
+    if(!m_navMesh) {
+        return WAIT_FOR_GENERATE_RESULT::FAIL;
+    }
 
-        return WAIT_FOR_GENERATE_RESULT::SUCCESS;
-    }       
-
-    return WAIT_FOR_GENERATE_RESULT::WAIT;
+    return WAIT_FOR_GENERATE_RESULT::SUCCESS;
 }
 
 bool NavSys::IsQueryReady() {
@@ -148,13 +147,13 @@ bool NavSys::IsQueryReady() {
 }
 
 void NavSys::Generate() {
-    uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
+    const uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
 
     m_loadingNavMeshResult = gNavSysGenerator.TryGenerate(land_hash);
 }
 
 bool NavSys::CheckAndLoadCache() {
-    uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
+    const uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
 
     auto result = gNavSysGenerator.TryLoad(land_hash);
     if(result) {
