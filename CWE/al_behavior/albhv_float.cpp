@@ -9,6 +9,10 @@
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 
+#include "albhv_navigation.h"
+
+#include "albhv_navigation.h"
+
 signed int ALBHV_RideFloat(task* a1)
 {
 	chaowk* v1; // esi
@@ -121,7 +125,10 @@ signed int __cdecl ALBHV_GoToFloat(task* a1)
 
 	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);
-	AL_SetNextBehavior(a1, ALBHV_GoToLockOn);
+	//AL_SetNextBehavior(a1, ALBHV_GoToLockOn);
+	AL_SetNextBehavior(a1, ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>);
+	AL_SetNextBehavior(a1, ALBHV_CheckNavigate);
+	AL_SetNextBehavior(a1, ALBHV_Navigation);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x5613C0);
 	AL_SetNextBehavior(a1, ALBHV_GoToWaterWithBoat);
 	AL_SetNextBehavior(a1, ALBHV_RideFloat);

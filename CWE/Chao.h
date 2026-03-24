@@ -26,7 +26,11 @@ struct chaowk_cwe {
 
 	void* BhvUserData[16];
 
+	NJS_POINT3 NaviTargetPos;
+	NJS_POINT3 NaviAimPos;
+	uint32_t NaviCurrQueryIndex;
 	NJS_POINT3* pNaviPoints;
+	size_t NaviPointCount;
 };
 
 #define GET_CHAOWK_CWE(tp) ((chaowk_cwe*)(GET_CHAOWK(tp) + 1))

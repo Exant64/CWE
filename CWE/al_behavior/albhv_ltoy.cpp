@@ -7,6 +7,7 @@
 #include "../al_world.h"
 #include "al_intention.h"
 #include "albhv.h"
+#include "albhv_navigation.h"
 
 
 
@@ -85,7 +86,9 @@ int __cdecl ALBHV_GoToTV(task* tp)
 
 	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);
+	AL_SetNextBehavior(tp, ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>);
+	AL_SetNextBehavior(tp, ALBHV_CheckNavigate);
+	AL_SetNextBehavior(tp, ALBHV_Navigation);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BBA0>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056B560>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x056B6C0>);

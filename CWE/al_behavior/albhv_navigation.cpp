@@ -35,7 +35,7 @@ int ALBHV_CheckNavigate(task* tp) {
 
             work->NaviCurrQueryIndex = NavSysQueryPath(
                 &work->entity.Position, 
-                &move->AimPos, 
+                &work->NaviTargetPos, 
                 GetChaoNaviExcludeFlags(tp)
             );
             
@@ -69,6 +69,14 @@ int ALBHV_CheckNavigate(task* tp) {
     return BHV_RET_CONTINUE;
 }
 
+static void TurnToNaviAim2(task* tp, int adjust) {
+    auto work = GET_CHAOWK(tp);
+    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+
+    move->AimAng.y = njArcTan2(work->NaviAimPos.z - work->entity.Position.z, work->NaviAimPos.x - work->entity.Position.x);
+    work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, move->AimAng.y, adjust);
+}
+
 int ALBHV_Navigation(task* tp) {
     enum {
         MD_START,
@@ -93,7 +101,7 @@ int ALBHV_Navigation(task* tp) {
             // always start with walking, since they won't start navigation from water
             bhv->Mode = MD_WALK_START;
             bhv->SubMode = 0;
-            MOV_SetAimPos(tp, &work->pNaviPoints[bhv->SubMode]);
+            work->NaviAimPos = work->pNaviPoints[bhv->SubMode];
             [[fallthrough]];
         case MD_WALK_START:
             if(AL_ParameterGetSkill(tp, SKILL_RUN) < GET_GLOBAL()->SkillWalk) {
@@ -115,7 +123,7 @@ int ALBHV_Navigation(task* tp) {
                 break;
             }
 
-            MOV_TurnToAim2(tp, int(384 / 1.5f));
+            TurnToNaviAim2(tp, int(384 / 1.5f));
 
             // match-decomp WalkControl code
             if(move->Flag & 0x400) {
@@ -196,7 +204,7 @@ int ALBHV_Navigation(task* tp) {
             }
 
             // swimcontrol code from match decomp
-            MOV_TurnToAim2(tp, 288);
+            TurnToNaviAim2(tp, 288);
 
             if(work->entity.Position.y <= move->WaterY - 2.1f) {
                 // todo: do we want this though? what if the chao has like insane swim speed
@@ -281,13 +289,13 @@ int ALBHV_Navigation(task* tp) {
 
         case MD_WALK:
         case MD_SWIM:
-            const float dist = MOV_DistFromAim(tp);
+            const float dist = CheckDistance(&work->entity.Position, &work->NaviAimPos);
 			if (dist > 0 && dist < 4) {
                 if(bhv->SubMode == work->NaviPointCount - 1) {
                     bhv->Mode = MD_ARRIVE;
                 }
                 else {
-                    MOV_SetAimPos(tp, &work->pNaviPoints[++bhv->SubMode]);
+                    work->NaviAimPos = work->pNaviPoints[++bhv->SubMode];
                 }
 			}
             
