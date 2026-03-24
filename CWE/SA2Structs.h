@@ -482,6 +482,8 @@ struct __declspec(align(4)) ChaoData1
 	Uint16* pBaldAdjacencyIndices;
 	size_t BaldAdjacencyIndexCount;
 
+	NJS_POINT3 NaviTargetPos;
+	NJS_POINT3 NaviAimPos;
 	uint32_t NaviCurrQueryIndex;
 	NJS_POINT3* pNaviPoints;
 	size_t NaviPointCount;
