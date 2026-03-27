@@ -8,6 +8,8 @@
 #include <ninja_functions.h>
 #include <ALifeSDK_Functions.h>
 
+#include "albhv_navigation.h"
+
 // for now, the only thing it does is to check if they can swim
 static uint32_t GetChaoNaviExcludeFlags(task *tp) {
     uint32_t flags = 0;
@@ -46,7 +48,9 @@ int ALBHV_CheckNavigate(task* tp) {
         case MD_QUERY_WAIT: {
             const auto result = NavSysGetResult(work->NaviCurrQueryIndex);
             if (result) {
-                NavSysDiscardResult(work->NaviCurrQueryIndex);
+                #ifndef IMGUIDEBUG
+                    NavSysDiscardResult(work->NaviCurrQueryIndex);
+                #endif
 
                 if(result->empty()) {
                     // failed
@@ -73,7 +77,7 @@ static void TurnToNaviAim2(task* tp, int adjust) {
     auto work = GET_CHAOWK(tp);
     MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
 
-    move->AimAng.y = njArcTan2(work->NaviAimPos.z - work->entity.Position.z, work->NaviAimPos.x - work->entity.Position.x);
+    move->AimAng.y = njArcTan2(work->NaviAimPos.x - work->entity.Position.x, work->NaviAimPos.z - work->entity.Position.z);
     work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, move->AimAng.y, adjust);
 }
 
@@ -307,7 +311,10 @@ int ALBHV_Navigation(task* tp) {
 
 void CreatePathAtPos(size_t chaoID, NJS_POINT3& endPos) {
     auto task = GetChaoObject(0, chaoID);
+    
     MOV_SetAimPos(task, &endPos);
-    AL_SetBehavior(task, ALBHV_CheckNavigate);
+
+    AL_SetBehavior(task, ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>);
+    AL_SetNextBehavior(task, ALBHV_CheckNavigate);
     AL_SetNextBehavior(task, ALBHV_Navigation);
 }
