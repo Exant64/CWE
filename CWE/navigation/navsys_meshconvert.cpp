@@ -43,6 +43,12 @@ NavSysMeshConvert::NavSysMeshConvert() {
 	int tcap = 0;
 
 	for (short i = 0; i < landtable->COLCount - landtable->ChunkModelCount; i++) {
+		// check for "wall"/"cant stand" flag
+		if(cols->Flags & (1 << 12)) {
+			cols++;
+			continue;
+		}
+		
 		const uint8_t area = (cols->Flags & (1<<1)) ? NAV_AREA_WATER : NAV_AREA_GROUND;
 
 		const auto* pObj = cols->Model;
