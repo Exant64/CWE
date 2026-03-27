@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include <ninja_functions.h>
+#include <ChaoMain.h>
+#include <al_stage.h>
+
 #include "navsys_generator.h"
 #include "navsys_meshconvert.h"
 #include "navsys_log.h"
@@ -190,6 +194,170 @@ dtNavMesh* NavSysGenerator::LoadNavMesh(const char* path) {
     };
 #endif
 
+void NavSysGenerator::PopulateClimbSpots(std::vector<NavSysGenerator::ClimbSpot>& spots) const {
+    task* pTask = ObjectLists[2];
+
+    if(!pTask) {
+        return;
+    }
+
+    do {
+        // C_CLIMB executor pointer
+        if(pTask->MainSub != ObjectFuncPtr(0x55AB20)) {
+            pTask = pTask->NextObject;
+            continue;
+        }
+
+        auto work = pTask->Data1.Entity;
+        
+        if(!work || !work->Collision || !work->Collision->CollisionArray) {
+            pTask = pTask->NextObject;
+            continue;
+        }
+
+        auto colliEntry = work->Collision->CollisionArray;
+
+        // anonymous_x = xyz scale
+        ClimbSpot spot = {
+            .m_pos = work->Position,
+            .m_extent = { 
+                njAbs(colliEntry->anonymous_1),
+                njAbs(colliEntry->anonymous_2), 
+                njAbs(colliEntry->anonymous_3) 
+            },
+            .m_inverseAngY = -work->Rotation.y,
+            .m_radiusSquared = work->Collision->field_8 * work->Collision->field_8
+        };
+
+        spots.push_back(spot);
+
+        pTask = pTask->NextObject;
+    } while(pTask && pTask != ObjectLists[2]);
+}
+
+bool NavSysGenerator::CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const {
+    for(const auto& spot : spots) {
+        NJS_POINT3 checkP = {
+            p.x - spot.m_pos.x,
+            p.y - spot.m_pos.y,
+            p.z - spot.m_pos.z
+        };
+
+        // check if in collision radius first
+        if(njInnerProduct(&checkP, &checkP) > spot.m_radiusSquared) continue;
+
+        njPushUnitMatrix();
+        njRotateY(_nj_current_matrix_ptr_, spot.m_inverseAngY);
+        // no translation so we can use the "float4(x, 0)" type of transform
+        sub_426CC0(_nj_current_matrix_ptr_, &checkP, &checkP, 1);
+        njPopMatrixEx();
+
+        const bool obbCheck = njAbs(checkP.x) <= spot.m_extent.x &&
+            njAbs(checkP.y) <= spot.m_extent.y && 
+            njAbs(checkP.z) <= spot.m_extent.z;
+        
+        if(obbCheck) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const std::vector<ClimbSpot>& spots) const {
+    std::vector<NJS_POINT3> offmesh;
+
+    for (int z = 0; z < solid->height; ++z) {
+        for (int x = 0; x < solid->width; ++x) {
+            rcSpan* span = solid->spans[x + z * solid->width];
+            while (span) {
+                // if we're not in water,
+                // OR we are, but the next area is water too
+                // skip em (on multiple water spans on top of eachother, we only wanna calc climb with the top one)
+                if(span->area != NAV_AREA_WATER || (span->next && span->next->area == NAV_AREA_WATER)) {
+                    span = span->next;
+                    continue;
+                }
+
+                for (int direction = 0; direction < 4; ++direction) {
+                    const int dirX = rcGetDirOffsetX(direction);
+                    const int dirZ = rcGetDirOffsetY(direction);
+                    const int neighborX = x + dirX;
+                    const int neighborZ = z + dirZ;
+
+                    if (neighborX < 0 || neighborZ < 0 || neighborX >= solid->width || neighborZ >= solid->height) {
+                        break;
+                    }
+
+                    rcSpan* neighborSpan = solid->spans[neighborX + neighborZ * solid->width];
+                    while(neighborSpan) {
+                        // if the water surface (smax) isn't in the interval of the neighboring ground, then invalid
+                        if(neighborSpan->area != RC_WALKABLE_AREA || neighborSpan->smin >= span->smin || neighborSpan->smax < span->smax) {
+                            neighborSpan = neighborSpan->next;
+                            continue;
+                        }
+
+                        // sometimes water geometry spans past where it visually ends, and tries to connect to ground next to it
+                        // this is usually below the actual walkable geo so we try to filter those out here
+                        // basically if floor above is in the interval of the climbspot then the chao would hit it's head, so it's invalid
+                        if(span->next) {
+                            if(neighborSpan->smin <= span->next->smax && neighborSpan->smax >= span->next->smax) {
+                                neighborSpan = neighborSpan->next;
+                                continue;
+                            }
+                        }
+
+                        // filter out any obviously too high walls
+                        // (EC garden walls recognized as climb because SADX gardens are covered in one big CCLIMB)
+                        if(njAbs(span->smax - neighborSpan->smax) * solid->ch > 250) {
+                            neighborSpan = neighborSpan->next;
+                            continue;
+                        }
+
+                        if(!CheckIfPointInsideAnyClimbSpot(spots, {
+                            solid->bmin[0] + (float(x) + 0.5f) * solid->cs,
+                            solid->bmin[1] + (float(span->smin) + 0.5f) * solid->ch,
+                            solid->bmin[2] + (float(z) + 0.5f) * solid->cs
+                        })) {
+                            neighborSpan = neighborSpan->next;
+                            continue;
+                        }
+
+                        offmesh.push_back({
+                            solid->bmin[0] + (float(x) + 0.5f) * solid->cs,
+                            solid->bmin[1] + (float(span->smin) + 0.5f) * solid->ch,
+                            solid->bmin[2] + (float(z) + 0.5f) * solid->cs
+                        });
+                        offmesh.push_back({
+                            solid->bmin[0] + (float(neighborX) + 0.5f) * solid->cs,
+                            solid->bmin[1] + (float(neighborSpan->smax) + 0.5f) * solid->ch,
+                            solid->bmin[2] + (float(neighborZ) + 0.5f) * solid->cs
+                        });
+                        #if 0
+                        offmesh.push_back({
+                            solid->bmin[0] + (float(x - dirX * (walkableRadius * 2.5f)) + 0.5f) * solid->cs,
+                            solid->bmin[1] + (float(span->smin) + 0.5f) * solid->ch,
+                            solid->bmin[2] + (float(z - dirZ * (walkableRadius * 2.5f)) + 0.5f) * solid->cs
+                        });
+
+                        offmesh.push_back({
+                            solid->bmin[0] + (float(neighborX + dirX * (walkableRadius * 2.5f)) + 0.5f) * solid->cs,
+                            solid->bmin[1] + (float(neighborSpan->smax) + 0.5f) * solid->ch,
+                            solid->bmin[2] + (float(neighborZ + dirZ * (walkableRadius * 2.5f)) + 0.5f) * solid->cs
+                        });
+#endif
+                        break;                      
+                    }
+                }
+
+                span = span->next;
+            }
+        }
+    }
+
+    return offmesh;
+}
+
 std::shared_ptr<dtNavMesh> NavSysGenerator::TryLoad(const uint32_t hash) {
     if(!m_useCache) {
         return NULL;
@@ -211,7 +379,11 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
     // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
     NavSysMeshConvert mesh;
 
-    return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash] {
+    // same here
+    std::vector<ClimbSpot> spots;
+    PopulateClimbSpots(spots);
+
+    return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash, spots{std::move(spots)}] {
         #ifdef MEMORY_PROFILE
             memProfiler.clear();
             
@@ -345,10 +517,14 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         // as well as filter spans where the character cannot possibly stand.
         if (m_config.m_filterLowHanging)
             rcFilterLowHangingWalkableObstacles(&m_recastContext, walkableClimb, *solid);
-        if (m_config.m_filterLedgeSpans)
-            rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *solid);
+
         if (m_config.m_filterWalkableLowHeightSpans)
             rcFilterWalkableLowHeightSpans(&m_recastContext, walkableHeight, *solid);
+    
+        std::vector<NJS_POINT3> offmesh = GenerateOffMeshClimbSpots(solid.get(), walkableRadius, spots);
+
+        if (m_config.m_filterLedgeSpans)
+            rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *solid);
 
         //
         // Step 4. Partition walkable surface to simple regions.
@@ -489,15 +665,29 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             params.detailVertsCount = dmesh->nverts;
             params.detailTris = dmesh->tris;
             params.detailTriCount = dmesh->ntris;
-            #if 0
-            params.offMeshConVerts = m_geom->getOffMeshConnectionVerts();
-            params.offMeshConRad = m_geom->getOffMeshConnectionRads();
-            params.offMeshConDir = m_geom->getOffMeshConnectionDirs();
-            params.offMeshConAreas = m_geom->getOffMeshConnectionAreas();
-            params.offMeshConFlags = m_geom->getOffMeshConnectionFlags();
-            params.offMeshConUserID = m_geom->getOffMeshConnectionId();
-            params.offMeshConCount = m_geom->getOffMeshConnectionCount();
-            #endif
+
+            std::vector<float> rad;
+            std::vector<uint8_t> dir;
+            std::vector<uint8_t> areas;
+            std::vector<uint16_t> flags;
+            std::vector<uint32_t> userIDs;
+
+            for(size_t i = 0; i < offmesh.size() / 2; i++) {
+                rad.push_back(m_config.m_agentRadius * 2);
+                dir.push_back(DT_OFFMESH_CON_BIDIR);
+                areas.push_back(NAV_AREA_GROUND);
+                flags.push_back(NAV_FLAGS_WALK);
+                userIDs.push_back(1000 + i);
+            }
+            
+            params.offMeshConVerts = &offmesh.data()->x;
+            params.offMeshConRad = rad.data();
+            params.offMeshConDir = dir.data();
+            params.offMeshConAreas = areas.data();
+            params.offMeshConFlags = flags.data();
+            params.offMeshConUserID = userIDs.data();
+            params.offMeshConCount = flags.size();
+
             params.walkableHeight = m_config.m_agentHeight;
             params.walkableRadius = m_config.m_agentRadius;
             params.walkableClimb = m_config.m_agentMaxClimb;

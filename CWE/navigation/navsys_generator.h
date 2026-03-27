@@ -68,6 +68,13 @@ struct NavGenConfig {
 
 class NavSysGenerator {
 private:
+    struct ClimbSpot {
+        NJS_POINT3 m_pos;
+        NJS_POINT3 m_extent;
+        Angle m_inverseAngY;
+        float m_radiusSquared;
+    };
+
     bool m_useCache = false;
     NavGenConfig m_config;
 
@@ -76,6 +83,11 @@ private:
 
     void SaveNavMesh(const char* path, const dtNavMesh* mesh);
     dtNavMesh* LoadNavMesh(const char* path);
+
+    void PopulateClimbSpots(std::vector<ClimbSpot>& spots) const;
+    bool CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const;
+
+    std::vector<NJS_POINT3> GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const std::vector<ClimbSpot>& spots) const;
 public:
     #ifdef IMGUIDEBUG
         void ImGuiDebug();

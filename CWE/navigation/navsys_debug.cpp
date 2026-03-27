@@ -17,6 +17,14 @@
 #include <renderfix.h>
 
 void NavSysGenerator::ImGuiDebug() {
+    if(MainCharObj1[0]) {
+        std::vector<ClimbSpot> spots;
+        PopulateClimbSpots(spots);
+        if(CheckIfPointInsideAnyClimbSpot(spots, MainCharObj1[0]->Position)) {
+            ImGui::Text("IN CLIMB");
+        }
+    }
+
     ImGui::Checkbox("Use Cache", &m_useCache);
     ImGui::SliderFloat("Cell Size", &m_config.m_cellSize, 0.1f, 10.f);
     ImGui::SliderFloat("Cell Height", &m_config.m_cellHeight, 0.1f, 10.f);
@@ -68,8 +76,31 @@ void NavSys::DebugDrawNavMesh() {
             // warning: int i here aswell, luckily in separate scope
             for (int i = 0; i < tile->header->polyCount; ++i) {
                 const dtPoly* p = &tile->polys[i];
-                if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)	// Skip off-mesh links.
+                if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION){
+                    const dtOffMeshConnection* con = &tile->offMeshCons[i - tile->header->offMeshBase];
+                    NJS_POINT3* pPos = (NJS_POINT3*)con->pos;
+
+                    rfapi_core->pDraw->DrawLineStrip3D(
+                        pPos, 
+                        2, 
+                        3.f, 
+                        0xFF00FFFF
+                    );
+
+                    njPushMatrixEx();
+                    njTranslateEx(pPos);
+                    njScale(NULL, 0.15f, 0.15f, 0.15f);
+                    njCnkDrawObject(&DebugSphere);
+                    njPopMatrixEx();
+
+                    njPushMatrixEx();
+                    njTranslateEx(pPos + 1);
+                    njScale(NULL, 0.15f, 0.15f, 0.15f);
+                    njCnkDrawObject(&DebugSphere);
+                    njPopMatrixEx();
+
                     continue;
+                }
                     
                 const dtPolyDetail* pd = &tile->detailMeshes[i];
 
