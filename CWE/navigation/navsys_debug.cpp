@@ -17,14 +17,6 @@
 #include <renderfix.h>
 
 void NavSysGenerator::ImGuiDebug() {
-    if(MainCharObj1[0]) {
-        std::vector<ClimbSpot> spots;
-        PopulateClimbSpots(spots);
-        if(CheckIfPointInsideAnyClimbSpot(spots, MainCharObj1[0]->Position)) {
-            ImGui::Text("IN CLIMB");
-        }
-    }
-
     ImGui::Checkbox("Use Cache", &m_useCache);
     ImGui::SliderFloat("Cell Size", &m_config.m_cellSize, 0.1f, 10.f);
     ImGui::SliderFloat("Cell Height", &m_config.m_cellHeight, 0.1f, 10.f);
