@@ -100,6 +100,9 @@ int ALBHV_Navigation(task* tp) {
     AL_BEHAVIOR* bhv = &work->Behavior;
     MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
 
+    // prevent Swim from starting
+    work->Behavior.Flag |= 1;
+
     switch(bhv->Mode) {
         case MD_START:
             // always start with walking, since they won't start navigation from water
