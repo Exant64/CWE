@@ -29,12 +29,8 @@
 #include <cassert>
 
 NavSysMeshConvert::NavSysMeshConvert() {
-	const auto addTriangle = [this](uint32_t a, uint32_t b, uint32_t c, uint8_t area) {
-		// todo: inefficient
-		m_tris.push_back(a);
-		m_tris.push_back(b);
-		m_tris.push_back(c);
-
+	const auto addTriangle = [this](int a, int b, int c, uint8_t area) {
+		m_tris.insert(m_tris.end(), { a, b, c });
 		m_areas.push_back(area);
 	};
 
@@ -97,9 +93,7 @@ NavSysMeshConvert::NavSysMeshConvert() {
 					const Sint16 length = lenRev & 0x7FFF;
 
 					bool flip = !((lenRev & 0x8000) == 0x8000);
-					for (Sint16 strip = 0; strip < length - 2; strip++) {
-						Sint16 k = strip;
-
+					for (Sint16 k = 0; k < length - 2; k++) {
 						flip = !flip;
 						if (!flip) {
 							addTriangle(
