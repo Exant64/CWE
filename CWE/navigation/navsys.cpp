@@ -182,6 +182,9 @@ NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
 
     m_filter.setExcludeFlags(entry.excludeFlags);
 
+    m_filter.setAreaCost(NAV_AREA_GROUND, 1.0f);
+    m_filter.setAreaCost(NAV_AREA_WATER, 1.2f);
+
     m_navQuery->findNearestPoly(&entry.start.x, m_polyPickExt, &m_filter, &startRef, 0);
     m_navQuery->findNearestPoly(&entry.end.x, m_polyPickExt, &m_filter, &endRef, 0);
 
@@ -190,13 +193,13 @@ NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
 
     // I'm not sure how many of these are redundant tbh, but better safe than sorry
     if (dtStatusSucceed(findStatus) && !dtStatusDetail(findStatus, DT_PARTIAL_RESULT) && m_npolys) {
-        float epos[3];
-        dtVcopy(epos, &entry.end.x);
-
         // from sample code (like most things in this)
         // but now that we don't allow partial path I don't think we need this...?
         // still gonna leave it here just incase
         #if 0
+            float epos[3];
+            dtVcopy(epos, &entry.end.x);
+
             // In case of partial path, make sure the end point is clamped to the last polygon.
             if (m_polys[m_npolys-1] != endRef)
                 m_navQuery->closestPointOnPoly(m_polys[m_npolys-1], &entry.end.x, epos, 0);
@@ -204,9 +207,9 @@ NavSysPathResult NavSys::CalcStraightPath(const PathEntry& entry) {
 
         static NJS_POINT3 straightPath[256];
         static int pathCount = 0;
-        const auto findStatus = m_navQuery->findStraightPath(&entry.start.x, epos, m_polys, m_npolys,
+        const auto findStatus = m_navQuery->findStraightPath(&entry.start.x, &entry.end.x, m_polys, m_npolys,
                                     &straightPath->x, m_straightPathFlags,
-                                    m_straightPathPolys, &pathCount, _countof(straightPath), 0);
+                                    m_straightPathPolys, &pathCount, _countof(straightPath), 0 );
 
         if(dtStatusSucceed(findStatus) && !dtStatusDetail(findStatus, DT_PARTIAL_RESULT) && pathCount) {
             std::copy(straightPath, straightPath + pathCount, std::back_inserter(result));

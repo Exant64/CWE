@@ -268,6 +268,20 @@ bool NavSysGenerator::CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot
 }
 
 std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const int walkableClimb, const std::vector<ClimbSpot>& spots) const {
+    // we convert the positions we spawn them at to our own little cell system
+    // to not spam them in too many places
+    const int climbCellSize = 6;
+    std::unordered_set<uint32_t> climbSpotSet;
+
+    const auto getHashIndex = [](uint32_t x, uint32_t y, uint32_t z) {
+        // cantor pairing function
+        const auto cantor = [](uint32_t a, uint32_t b) {
+            return (a + b + 1) * (a + b) / 2 + b;
+        };
+
+        return cantor(x, cantor(y, z));
+    };
+
     std::vector<NJS_POINT3> offmesh;
 
     for (int z = 0; z < solid->height; ++z) {
@@ -278,6 +292,14 @@ std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield
                 // OR we are, but the next area is water too
                 // skip em (on multiple water spans on top of eachother, we only wanna calc climb with the top one)
                 if(span->area != NAV_AREA_WATER || (span->next && span->next->area == NAV_AREA_WATER)) {
+                    span = span->next;
+                    continue;
+                }
+
+                const int climbX = x / climbCellSize;
+                const int climbZ = z / climbCellSize;
+                const uint32_t climbIndex = getHashIndex(climbX, span->smax, climbZ);
+                if(climbSpotSet.contains(climbIndex)) {
                     span = span->next;
                     continue;
                 }
@@ -317,44 +339,52 @@ std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield
                             continue;
                         }
 
+                        #if 0
                         // if the spot was already climbable, no need to mark it
                         if((int)neighborSpan->smax - (int)span->smax <= walkableClimb) {
                             neighborSpan = neighborSpan->next;
                             continue;
                         }
+                        #endif
 
-                        if(!CheckIfPointInsideAnyClimbSpot(spots, {
+                        const NJS_POINT3 startPos = {
                             solid->bmin[0] + (float(x) + 0.5f) * solid->cs,
-                            solid->bmin[1] + (float(span->smin) + 0.5f) * solid->ch,
+                            solid->bmin[1] + (float(span->smax) + 0.5f) * solid->ch,
                             solid->bmin[2] + (float(z) + 0.5f) * solid->cs
-                        })) {
+                        };
+
+                        if(!CheckIfPointInsideAnyClimbSpot(spots, startPos)) {
                             neighborSpan = neighborSpan->next;
                             continue;
                         }
 
-                        offmesh.push_back({
-                            solid->bmin[0] + (float(x) + 0.5f) * solid->cs,
-                            solid->bmin[1] + (float(span->smin) + 0.5f) * solid->ch,
-                            solid->bmin[2] + (float(z) + 0.5f) * solid->cs
-                        });
-                        offmesh.push_back({
+                        const NJS_VECTOR pushDirection = {
+                            dirX * (walkableRadius * 2.f) * solid->cs,
+                            0,
+                            dirZ * (walkableRadius * 2.f) * solid->cs
+                        };
+
+                        const NJS_POINT3 endPos = {
                             solid->bmin[0] + (float(neighborX) + 0.5f) * solid->cs,
                             solid->bmin[1] + (float(neighborSpan->smax) + 0.5f) * solid->ch,
                             solid->bmin[2] + (float(neighborZ) + 0.5f) * solid->cs
-                        });
-                        #if 0
-                        offmesh.push_back({
-                            solid->bmin[0] + (float(x - dirX * (walkableRadius * 2.5f)) + 0.5f) * solid->cs,
-                            solid->bmin[1] + (float(span->smin) + 0.5f) * solid->ch,
-                            solid->bmin[2] + (float(z - dirZ * (walkableRadius * 2.5f)) + 0.5f) * solid->cs
+                        };
+
+                        climbSpotSet.insert(climbIndex);
+
+                        offmesh.insert(offmesh.end(), {
+                            {
+                                startPos.x - pushDirection.x,
+                                startPos.y,
+                                startPos.z - pushDirection.z
+                            }, 
+                            {
+                                endPos.x + pushDirection.x,
+                                endPos.y,
+                                endPos.z + pushDirection.z
+                            }
                         });
 
-                        offmesh.push_back({
-                            solid->bmin[0] + (float(neighborX + dirX * (walkableRadius * 2.5f)) + 0.5f) * solid->cs,
-                            solid->bmin[1] + (float(neighborSpan->smax) + 0.5f) * solid->ch,
-                            solid->bmin[2] + (float(neighborZ + dirZ * (walkableRadius * 2.5f)) + 0.5f) * solid->cs
-                        });
-#endif
                         break;                      
                     }
                 }
@@ -525,7 +555,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         if (m_config.m_filterWalkableLowHeightSpans)
             rcFilterWalkableLowHeightSpans(&m_recastContext, walkableHeight, *solid);
     
-        std::vector<NJS_POINT3> offmesh = GenerateOffMeshClimbSpots(solid.get(), walkableRadius, walkableClimb, spots);
+        std::vector<NJS_POINT3> offmeshVerts = GenerateOffMeshClimbSpots(solid.get(), walkableRadius, walkableClimb, spots);
 
         if (m_config.m_filterLedgeSpans)
             rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *solid);
@@ -670,27 +700,24 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             params.detailTris = dmesh->tris;
             params.detailTriCount = dmesh->ntris;
 
-            std::vector<float> rad;
-            std::vector<uint8_t> dir;
-            std::vector<uint8_t> areas;
-            std::vector<uint16_t> flags;
-            std::vector<uint32_t> userIDs;
+            const size_t offmeshConCount = offmeshVerts.size() / 2;
 
-            for(size_t i = 0; i < offmesh.size() / 2; i++) {
-                rad.push_back(m_config.m_agentRadius * 2);
-                dir.push_back(DT_OFFMESH_CON_BIDIR);
-                areas.push_back(NAV_AREA_GROUND);
-                flags.push_back(NAV_FLAGS_WALK);
-                userIDs.push_back(1000 + i);
-            }
+            std::vector<float> offmeshRad(offmeshConCount);
+            std::vector<uint8_t> offmeshDir(offmeshConCount);
+            std::vector<uint8_t> offmeshAreas(offmeshConCount);
+            std::vector<uint16_t> offmeshFlags(offmeshConCount);
+
+            std::fill(offmeshRad.begin(), offmeshRad.end(), m_config.m_agentRadius * 2);
+            std::fill(offmeshDir.begin(), offmeshDir.end(), DT_OFFMESH_CON_BIDIR);
+            std::fill(offmeshAreas.begin(), offmeshAreas.end(), NAV_AREA_GROUND);
+            std::fill(offmeshFlags.begin(), offmeshFlags.end(), NAV_FLAGS_WALK);
             
-            params.offMeshConVerts = &offmesh.data()->x;
-            params.offMeshConRad = rad.data();
-            params.offMeshConDir = dir.data();
-            params.offMeshConAreas = areas.data();
-            params.offMeshConFlags = flags.data();
-            params.offMeshConUserID = userIDs.data();
-            params.offMeshConCount = flags.size();
+            params.offMeshConVerts = &offmeshVerts.data()->x;
+            params.offMeshConRad = offmeshRad.data();
+            params.offMeshConDir = offmeshDir.data();
+            params.offMeshConAreas = offmeshAreas.data();
+            params.offMeshConFlags = offmeshFlags.data();
+            params.offMeshConCount = offmeshConCount;
 
             params.walkableHeight = m_config.m_agentHeight;
             params.walkableRadius = m_config.m_agentRadius;
