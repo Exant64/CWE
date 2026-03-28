@@ -3,6 +3,7 @@
 #include <navigation/navsys.h>
 #include <move.h>
 #include <memory.h>
+#include <playsound.h>
 #include <al_motion.h>
 #include <Chao.h>
 #include <ninja_functions.h>
@@ -61,7 +62,6 @@ int ALBHV_CheckNavigate(task* tp) {
 
                 work->NaviPointCount = result->size();
                 
-                // todo: memleak (we should free on setbehavior/whenever vanilla frees its behavior stack stuff)
                 work->pNaviPoints = ALLOC_ARRAY(work->NaviPointCount, NJS_POINT3);
                 memcpy(work->pNaviPoints, result->data(), work->NaviPointCount * sizeof(*work->pNaviPoints));
 
@@ -141,24 +141,10 @@ int ALBHV_Navigation(task* tp) {
                 const NJS_VECTOR up = {0, 1, 0};
                 const float dot = njInnerProduct(&move->Shadow.hit[XYZS_ASS_YL].normal, &up);
 
-                // todo: what does this do? jump if too steep?
                 if(dot < 0.7f) {
                     move->Velo.y += 0.55f;
                     bhv->Mode = MD_JUMP_TO_POND_START;
                 }
-            }
-            else if (work->entity.Position.y - move->Shadow.hit[XYZS_ASS_YL].onpos > 2) {
-                //move->Velo.y += 0.55f;
-
-                if(move->Shadow.hit[XYZS_ASS_YL].objatt & (1<<1)) {
-                    bhv->Mode = MD_JUMP_TO_POND_START;
-                }
-                // todo: find definition for GetCurrLandAttr
-                #if 0
-                    if(AL_GetCurrLandAttr(&move->AimPos) == LMA_WATER) {
-                        bhv->Mode = MD_JUMP_TO_POND_START;
-                    }
-                #endif
             }
             break;
         }
@@ -182,10 +168,15 @@ int ALBHV_Navigation(task* tp) {
             break;
 
         case MD_SWIM_START: {
-            // todo: select anim
-            AL_SetMotionLink(tp, ALM_SEOYOGI_KAITEN);
+            if(AL_ParameterGetSkill(tp, SKILL_SWIM) < GET_GLOBAL()->SkillSwimCrawl) {
+                AL_SetMotionLink(tp, ALM_BATAASHI_B);
+            }
+            else {
+                AL_SetMotionLink(tp, ALM_CRAWL);
+            }
 
-            // todo: sound
+            PlaySound_XYZ(0x1020, &GET_CHAOWK(tp)->entity.Position, 0, 0, 0);
+
             bhv->Mode = MD_SWIM;
             break;
         }
@@ -211,11 +202,8 @@ int ALBHV_Navigation(task* tp) {
             TurnToNaviAim2(tp, 288);
 
             if(work->entity.Position.y <= move->WaterY - 2.1f) {
-                // todo: do we want this though? what if the chao has like insane swim speed
-                // maybe we should have the same speed as walking
-
-                const Uint16 skill = AL_ParameterGetSkill(tp, SKILL_SWIM);
-                const float spd = GET_GLOBAL()->SkillSwimAccBase + skill * GET_GLOBAL()->SkillSwimAccRatio;
+                // swim at minimum speed
+                const float spd = GET_GLOBAL()->SkillSwimAccBase + GET_GLOBAL()->SkillSwimBataashi * GET_GLOBAL()->SkillSwimAccRatio;
 
                 work->entity.Position.y += 0.1f;
                 if(work->entity.Position.y > move->WaterY - 2.1f)
@@ -227,7 +215,7 @@ int ALBHV_Navigation(task* tp) {
                 move->Acc.z = njCos(work->entity.Rotation.y) * spd - move->Velo.z * 0.05f;
             }
             
-            // todo: swim sounds
+            SE_CallV2_TIMER(tp, 0x101F, &GET_CHAOWK(tp)->entity.Position, 1, -25, 90);
 
             break;
         }
