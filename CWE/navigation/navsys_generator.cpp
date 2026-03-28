@@ -702,22 +702,25 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
 
             const size_t offmeshConCount = offmeshVerts.size() / 2;
 
+            // we have to keep this here outside to keep it in scope for the lifetime of "params"
             std::vector<float> offmeshRad(offmeshConCount);
             std::vector<uint8_t> offmeshDir(offmeshConCount);
             std::vector<uint8_t> offmeshAreas(offmeshConCount);
             std::vector<uint16_t> offmeshFlags(offmeshConCount);
 
-            std::fill(offmeshRad.begin(), offmeshRad.end(), m_config.m_agentRadius * 2);
-            std::fill(offmeshDir.begin(), offmeshDir.end(), DT_OFFMESH_CON_BIDIR);
-            std::fill(offmeshAreas.begin(), offmeshAreas.end(), NAV_AREA_GROUND);
-            std::fill(offmeshFlags.begin(), offmeshFlags.end(), NAV_FLAGS_WALK);
-            
-            params.offMeshConVerts = &offmeshVerts.data()->x;
-            params.offMeshConRad = offmeshRad.data();
-            params.offMeshConDir = offmeshDir.data();
-            params.offMeshConAreas = offmeshAreas.data();
-            params.offMeshConFlags = offmeshFlags.data();
-            params.offMeshConCount = offmeshConCount;
+            if(!offmeshVerts.empty()) {
+                std::fill(offmeshRad.begin(), offmeshRad.end(), m_config.m_agentRadius * 2);
+                std::fill(offmeshDir.begin(), offmeshDir.end(), DT_OFFMESH_CON_BIDIR);
+                std::fill(offmeshAreas.begin(), offmeshAreas.end(), NAV_AREA_GROUND);
+                std::fill(offmeshFlags.begin(), offmeshFlags.end(), NAV_FLAGS_WALK);
+                
+                params.offMeshConVerts = &offmeshVerts.data()->x;
+                params.offMeshConRad = offmeshRad.data();
+                params.offMeshConDir = offmeshDir.data();
+                params.offMeshConAreas = offmeshAreas.data();
+                params.offMeshConFlags = offmeshFlags.data();
+                params.offMeshConCount = offmeshConCount;
+            }
 
             params.walkableHeight = m_config.m_agentHeight;
             params.walkableRadius = m_config.m_agentRadius;
