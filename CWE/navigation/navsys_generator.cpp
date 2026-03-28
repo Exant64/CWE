@@ -375,6 +375,28 @@ std::shared_ptr<dtNavMesh> NavSysGenerator::TryLoad(const uint32_t hash) {
     return NULL;
 }
 
+// set ground below water to water aswell to prevent walking "below water"
+void NavSysGenerator::AssignWaterToGroundBelowWater(rcHeightfield* solid) {
+    for (int z = 0; z < solid->height; ++z) {
+        for (int x = 0; x < solid->width; ++x) {
+            rcSpan* span = solid->spans[x + z * solid->width];
+            rcSpan* prev = nullptr;
+
+            // spans are like lists of a cell at a given XZ pos
+            // each element is a cell from bottom to top
+            // so if we detect water, the previous cell was the ground below it
+            while (span) {
+                if (span->area == NAV_AREA_WATER && prev) {
+                    prev->area = NAV_AREA_WATER;
+                }
+
+                prev = span;
+                span = span->next;
+            }
+        }
+    }
+}
+
 std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint32_t hash) {
     // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
     NavSysMeshConvert mesh;
@@ -479,34 +501,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             }
         }
 
-        // water logic
-        // set ground below water to water aswell to prevent walking "below water"
-        {
-            std::vector<rcSpan*> spansToSet;
-
-            for (int z = 0; z < solid->height; ++z) {
-                for (int x = 0; x < solid->width; ++x) {
-                    rcSpan* span = solid->spans[x + z * solid->width];
-                    rcSpan* prev = nullptr;
-
-                    // spans are like lists of a cell at a given XZ pos
-                    // each element is a cell from bottom to top
-                    // so if we detect water, the previous cell was the ground below it
-                    while (span) {
-                        if (span->area == NAV_AREA_WATER && prev) {
-                            spansToSet.push_back(prev);
-                        }
-
-                        prev = span;
-                        span = span->next;
-                    }
-                }
-            }
-
-            for (const auto& span : spansToSet) {
-                span->area = NAV_AREA_WATER;
-            }
-        }
+        AssignWaterToGroundBelowWater(solid.get());
 
         //
         // Step 3. Filter walkable surfaces.
