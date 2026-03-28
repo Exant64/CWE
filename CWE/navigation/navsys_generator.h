@@ -88,7 +88,7 @@ private:
 
     void PopulateClimbSpots(std::vector<ClimbSpot>& spots) const;
     bool CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const;
-    std::vector<NJS_POINT3> GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const std::vector<ClimbSpot>& spots) const;
+    std::vector<NJS_POINT3> GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const int walkableClimb, const std::vector<ClimbSpot>& spots) const;
 public:
     #ifdef IMGUIDEBUG
         void ImGuiDebug();

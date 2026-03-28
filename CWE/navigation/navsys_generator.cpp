@@ -267,7 +267,7 @@ bool NavSysGenerator::CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot
     return false;
 }
 
-std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const std::vector<ClimbSpot>& spots) const {
+std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const int walkableClimb, const std::vector<ClimbSpot>& spots) const {
     std::vector<NJS_POINT3> offmesh;
 
     for (int z = 0; z < solid->height; ++z) {
@@ -313,6 +313,12 @@ std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield
                         // filter out any obviously too high walls
                         // (EC garden walls recognized as climb because SADX gardens are covered in one big CCLIMB)
                         if(njAbs(float(span->smax) - float(neighborSpan->smax)) * solid->ch > 250) {
+                            neighborSpan = neighborSpan->next;
+                            continue;
+                        }
+
+                        // if the spot was already climbable, no need to mark it
+                        if((int)neighborSpan->smax - (int)span->smax <= walkableClimb) {
                             neighborSpan = neighborSpan->next;
                             continue;
                         }
@@ -519,7 +525,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         if (m_config.m_filterWalkableLowHeightSpans)
             rcFilterWalkableLowHeightSpans(&m_recastContext, walkableHeight, *solid);
     
-        std::vector<NJS_POINT3> offmesh = GenerateOffMeshClimbSpots(solid.get(), walkableRadius, spots);
+        std::vector<NJS_POINT3> offmesh = GenerateOffMeshClimbSpots(solid.get(), walkableRadius, walkableClimb, spots);
 
         if (m_config.m_filterLedgeSpans)
             rcFilterLedgeSpans(&m_recastContext, walkableHeight, walkableClimb, *solid);
