@@ -16,6 +16,7 @@
 
 #include <chrono>
 #include <assert.h>
+#include <filesystem>
 
 void NavSys::DiscardResult(const uint32_t queryIndex) {
     std::lock_guard<std::mutex> lock(m_resultMutex);
@@ -336,4 +337,18 @@ void NavSysCreate() {
     pNavSysTask->DeleteSub = NavSysDestructor;
 
     pNavSysTask->Data2.Undefined = (void*)(new NavSys());
+}
+
+void NavSysInit(const char* path) {
+	NavSysLogInit(path);
+
+    const auto cacheFolderPath = std::string(path) + "\\NavMeshCache";
+
+    if(!std::filesystem::exists(cacheFolderPath)) {
+        if(!std::filesystem::create_directories(cacheFolderPath)) {
+            MessageBoxA(0, "Failed to create cache folder!", "Chao World Extended", MB_ICONERROR);
+        }
+    }
+
+    gNavSysGenerator.SetNavMeshCachePath(cacheFolderPath);
 }

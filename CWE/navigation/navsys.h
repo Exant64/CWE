@@ -23,3 +23,5 @@ std::optional<NavSysPathResult> NavSysGetResult(const uint32_t queryIndex);
 
 task* GetNavSysTask();
 void NavSysCreate();
+
+void NavSysInit(const char* path);

@@ -68,6 +68,8 @@ struct NavGenConfig {
 
 class NavSysGenerator {
 private:
+    std::string m_cachePath;
+
     struct ClimbSpot {
         NJS_POINT3 m_pos;
         NJS_POINT3 m_extent;
@@ -81,6 +83,7 @@ private:
     std::mutex m_inProgressMutex;
     std::set<uint32_t> m_inProgress;
 
+    const std::string GetCacheFilePath(const uint32_t hash) const;
     void SaveNavMesh(const char* path, const dtNavMesh* mesh);
     dtNavMesh* LoadNavMesh(const char* path);
 
@@ -94,6 +97,8 @@ public:
         void ImGuiDebug();
         void DebugDrawMaxClimbLine();
     #endif
+
+    void SetNavMeshCachePath(const std::string& cachePath);
 
     std::shared_ptr<dtNavMesh> TryLoad(const uint32_t hash);
     std::future<std::shared_ptr<dtNavMesh>> TryGenerate(const uint32_t hash);

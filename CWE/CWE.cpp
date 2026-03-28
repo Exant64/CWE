@@ -474,7 +474,7 @@ extern "C"
 
 		KCE_Init();
 
-		NavSysLogInit(path);
+		NavSysInit(path);
 
 		NavSysLogInit(path);
 
