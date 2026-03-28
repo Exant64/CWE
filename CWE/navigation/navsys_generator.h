@@ -84,9 +84,10 @@ private:
     void SaveNavMesh(const char* path, const dtNavMesh* mesh);
     dtNavMesh* LoadNavMesh(const char* path);
 
+    void AssignWaterToGroundBelowWater(rcHeightfield* solid);
+
     void PopulateClimbSpots(std::vector<ClimbSpot>& spots) const;
     bool CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const;
-
     std::vector<NJS_POINT3> GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const std::vector<ClimbSpot>& spots) const;
 public:
     #ifdef IMGUIDEBUG
