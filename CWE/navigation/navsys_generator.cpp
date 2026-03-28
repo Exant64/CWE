@@ -309,7 +309,7 @@ std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield
 
                         // filter out any obviously too high walls
                         // (EC garden walls recognized as climb because SADX gardens are covered in one big CCLIMB)
-                        if(njAbs(span->smax - neighborSpan->smax) * solid->ch > 250) {
+                        if(njAbs(float(span->smax) - float(neighborSpan->smax)) * solid->ch > 250) {
                             neighborSpan = neighborSpan->next;
                             continue;
                         }
