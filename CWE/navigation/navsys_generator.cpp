@@ -246,15 +246,18 @@ bool NavSysGenerator::CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot
         // check if in collision radius first
         if(njInnerProduct(&checkP, &checkP) > spot.m_radiusSquared) continue;
 
-        njPushUnitMatrix();
-        njRotateY(_nj_current_matrix_ptr_, spot.m_inverseAngY);
-        // no translation so we can use the "float4(x, 0)" type of transform
-        sub_426CC0(_nj_current_matrix_ptr_, &checkP, &checkP, 1);
-        njPopMatrixEx();
+        // inline njPushUnitMatrix + rotateY + calcvector
+        const float angCos = njCos(spot.m_inverseAngY);
+        const float angSin = njSin(spot.m_inverseAngY);
+        const NJS_POINT3 inverseTransformed = {
+            njAbs(checkP.x * angCos + checkP.z * angSin),
+            njAbs(checkP.y),
+            njAbs(checkP.x * -angSin + checkP.z * angCos)
+        };
 
-        const bool obbCheck = njAbs(checkP.x) <= spot.m_extent.x &&
-            njAbs(checkP.y) <= spot.m_extent.y && 
-            njAbs(checkP.z) <= spot.m_extent.z;
+        const bool obbCheck = inverseTransformed.x <= spot.m_extent.x &&
+            inverseTransformed.y <= spot.m_extent.y && 
+            inverseTransformed.z <= spot.m_extent.z;
         
         if(obbCheck) {
             return true;
