@@ -476,7 +476,7 @@ extern "C"
 
 		KCE_Init();
 
-		NavSysLogInit(path);
+		NavSysInit(path);
 
 		//DEBUG LENS THING
 		//WriteCall((void*)0x0056D696, SetChunkTexIndexPrimaryHook);

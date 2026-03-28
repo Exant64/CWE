@@ -397,16 +397,26 @@ std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield
     return offmesh;
 }
 
+const std::string NavSysGenerator::GetCacheFilePath(const uint32_t hash) const {
+    char land_navmesh_filename[40];
+    sprintf_s(land_navmesh_filename, "\\cwe_nav_%x", hash);
+
+    return m_cachePath + land_navmesh_filename;
+}
+
+void NavSysGenerator::SetNavMeshCachePath (const std::string& cachePath) {
+    m_cachePath = cachePath;
+}
+
 std::shared_ptr<dtNavMesh> NavSysGenerator::TryLoad(const uint32_t hash) {
     if(!m_useCache) {
         return NULL;
     }
 
-    char land_navmesh_path[40];
-    sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
+    const auto filePath = GetCacheFilePath(hash);
 
     // check if cached file already exists before spinning up thread
-    auto tryLoad = LoadNavMesh(land_navmesh_path);
+    auto tryLoad = LoadNavMesh(filePath.c_str());
     if(tryLoad) {
         return std::shared_ptr<dtNavMesh>(tryLoad, DtDeleter {});
     }
@@ -456,10 +466,9 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             QueryPerformanceCounter(&startTime);
         #endif
 
-        char land_navmesh_path[40];
-        sprintf_s(land_navmesh_path, "cwe_nav_%x", hash);
+        const auto filePath = GetCacheFilePath(hash);
 
-        NavSysLog("Started navmesh generation: %s", land_navmesh_path);
+        NavSysLog("Started navmesh generation: %s", filePath.c_str());
 
         cweRcContext m_recastContext;
 
@@ -711,8 +720,8 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
             if(!offmeshVerts.empty()) {
                 std::fill(offmeshRad.begin(), offmeshRad.end(), m_config.m_agentRadius * 2);
                 std::fill(offmeshDir.begin(), offmeshDir.end(), DT_OFFMESH_CON_BIDIR);
-                std::fill(offmeshAreas.begin(), offmeshAreas.end(), NAV_AREA_GROUND);
-                std::fill(offmeshFlags.begin(), offmeshFlags.end(), NAV_FLAGS_WALK);
+                std::fill(offmeshAreas.begin(), offmeshAreas.end(), NAV_AREA_WATER);
+                std::fill(offmeshFlags.begin(), offmeshFlags.end(), NAV_FLAGS_SWIM);
                 
                 params.offMeshConVerts = &offmeshVerts.data()->x;
                 params.offMeshConRad = offmeshRad.data();
@@ -755,7 +764,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
                 return result;
             }
 
-            SaveNavMesh(land_navmesh_path, result.get());
+            SaveNavMesh(filePath.c_str(), result.get());
         }
 
         #ifdef TIME_PROFILE

@@ -8,6 +8,7 @@ build/CWE.lib
 build/mod.version
 build/mod.manifest
 build/config.ini
+build/NavMeshCache
 
 # User-specific files
 *.suo
