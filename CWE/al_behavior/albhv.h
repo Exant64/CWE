@@ -26,14 +26,20 @@ signed int ALBHV_RideFloat(ObjectMaster* a1);
 signed int __cdecl ALBHV_GoToHorse(ObjectMaster* a1);
 int ALBHV_Capture(ObjectMaster* tp);
 
-#define BHVFunc(NAME, ADDRESS) FunctionPointer(int,NAME,(ObjectMaster*),ADDRESS);
-BHVFunc(ALBHV_Think, 0x00565BE0);
-BHVFunc(ALBHV_GoToAim, 0x56B560);
-BHVFunc(ALBHV_TurnToAim, 0x56B500);
-BHVFunc(ALBHV_TurnToLockOn, 0x56B6C0);
-BHVFunc(ALBHV_GoToLockOn, 0x56BA80);
-BHVFunc(ALBHV_Cry, 0x59FCA0);
-BHVFunc(ALBHV_HoldThink, 0x569340);
+#define ALBHV_Think ((BHV_FUNC)0x00565BE0)
+#define ALBHV_GoToAim ((BHV_FUNC)0x56B560)
+#define ALBHV_TurnToAim ((BHV_FUNC)0x56B500)
+#define ALBHV_TurnToLockOn ((BHV_FUNC)0x56B6C0)
+#define ALBHV_GoToLockOn ((BHV_FUNC)0x56BA80)
+#define ALBHV_Cry ((BHV_FUNC)0x59FCA0)
+#define ALBHV_HoldThink ((BHV_FUNC)0x569340)
+#define ALBHV_Notice ((BHV_FUNC)0x56B480)
+#define ALBHV_Touch ((BHV_FUNC)0x56BBA0)
+#define ALBHV_ListenMusic ((BHV_FUNC)0x0059E710)
+
+#define ALBHV_RideHorse ((BHV_FUNC)0x598F40)
+#define ALBHV_WatchTV ((BHV_FUNC)0x598890)
+#define ALBHV_ListenRadicase ((BHV_FUNC)0x598B90)
 
 template <BHV_FUNC bhv>
 int __cdecl ALBHV_ToyMoveCheck(ObjectMaster* a1)

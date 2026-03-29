@@ -16,8 +16,6 @@
 #include "../ChaoMain.h"
 #include <al_draw.h>
 
-BHVFunc(ALBHV_ListenMusic, 0x0059E710);
-
 int ALBHV_Guitar(ObjectMaster* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 

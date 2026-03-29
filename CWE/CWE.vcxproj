@@ -598,6 +598,7 @@
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
     <ClCompile Include="al_garden_info.cpp" />
+    <ClCompile Include="al_landmark.cpp" />
     <ClCompile Include="al_daynight_rain.cpp" />
     <ClCompile Include="al_ode_mainmenubar.cpp" />
     <ClCompile Include="api\api_accessory.cpp" />
