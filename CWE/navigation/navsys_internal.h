@@ -28,7 +28,7 @@ private:
     #endif
     
     bool m_isQueryReady;
-    std::future<std::shared_ptr<dtNavMesh>> m_loadingNavMeshResult;
+    std::shared_future<std::shared_ptr<dtNavMesh>> m_loadingNavMeshResult;
     std::shared_ptr<dtNavMesh> m_navMesh;
 
     std::mutex m_queueMutex;

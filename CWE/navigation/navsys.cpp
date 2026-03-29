@@ -239,6 +239,8 @@ static void NavSysExecutor(task* tp) {
     auto sys = GET_NAV_SYS(tp);
     auto work = tp->Data1.Entity;
 
+    gNavSysGenerator.CheckCleanInProgress();
+
     switch(work->Action) {
         case NAV_MD_INIT:
             work->Action = NAV_MD_CHECK_CACHE_GENERATE;
