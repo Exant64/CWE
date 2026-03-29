@@ -4,6 +4,7 @@
 
 #include <future>
 #include <set>
+#include <unordered_map>
 
 #include "external/Recast/Include/Recast.h"
 #include "external/Detour/Include/DetourCommon.h"
@@ -80,8 +81,9 @@ private:
     bool m_useCache = false;
     NavGenConfig m_config;
 
-    std::mutex m_inProgressMutex;
-    std::set<uint32_t> m_inProgress;
+    std::mutex m_toEraseMutex;
+    std::vector<uint32_t> m_toErase;
+    std::unordered_map<uint32_t, std::shared_future<std::shared_ptr<dtNavMesh>>> m_inProgress;
 
     const std::string GetCacheFilePath(const uint32_t hash) const;
     void SaveNavMesh(const char* path, const dtNavMesh* mesh);
@@ -93,6 +95,8 @@ private:
     bool CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const;
     std::vector<NJS_POINT3> GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const int walkableClimb, const std::vector<ClimbSpot>& spots) const;
 public:
+    void CheckCleanInProgress();
+
     #ifdef IMGUIDEBUG
         void ImGuiDebug();
         void DebugDrawMaxClimbLine();
@@ -101,7 +105,7 @@ public:
     void SetNavMeshCachePath(const std::string& cachePath);
 
     std::shared_ptr<dtNavMesh> TryLoad(const uint32_t hash);
-    std::future<std::shared_ptr<dtNavMesh>> TryGenerate(const uint32_t hash);
+    std::shared_future<std::shared_ptr<dtNavMesh>> TryGenerate(const uint32_t hash);
 };
 
 extern NavSysGenerator gNavSysGenerator;

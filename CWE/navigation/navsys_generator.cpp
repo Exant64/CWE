@@ -397,6 +397,18 @@ std::vector<NJS_POINT3> NavSysGenerator::GenerateOffMeshClimbSpots(rcHeightfield
     return offmesh;
 }
 
+void NavSysGenerator::CheckCleanInProgress() {
+    std::lock_guard<std::mutex> lock(m_toEraseMutex);
+
+    if(m_toErase.empty()) return;
+
+    for(const auto& entry : m_toErase) {
+        m_inProgress.erase(entry);
+    }
+
+    m_toErase.clear();
+}
+
 const std::string NavSysGenerator::GetCacheFilePath(const uint32_t hash) const {
     char land_navmesh_filename[40];
     sprintf_s(land_navmesh_filename, "\\cwe_nav_%x", hash);
@@ -446,7 +458,11 @@ void NavSysGenerator::AssignWaterToGroundBelowWater(rcHeightfield* solid) {
     }
 }
 
-std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint32_t hash) {
+std::shared_future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint32_t hash) {
+    if(m_inProgress.contains(hash)) {
+        return m_inProgress[hash];
+    }
+
     // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
     NavSysMeshConvert mesh;
 
@@ -454,7 +470,7 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
     std::vector<ClimbSpot> spots;
     PopulateClimbSpots(spots);
 
-    return std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash, spots{std::move(spots)}] {
+    const std::shared_future<std::shared_ptr<dtNavMesh>> future = std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash, spots{std::move(spots)}] {
         #ifdef MEMORY_PROFILE
             memProfiler.clear();
             
@@ -605,11 +621,11 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
         #endif
 
         // we ended up picking monotone type generation for speed
-		if (!rcBuildRegionsMonotone(&m_recastContext, *chf, 0, minRegionArea, mergeRegionArea))
-		{
-			NavSysLog("buildNavigation: Could not build monotone regions.");
-			return result;
-		}
+        if (!rcBuildRegionsMonotone(&m_recastContext, *chf, 0, minRegionArea, mergeRegionArea))
+        {
+            NavSysLog("buildNavigation: Could not build monotone regions.");
+            return result;
+        }
 
         //
         // Step 5. Trace and simplify region contours.
@@ -764,7 +780,16 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
                 return result;
             }
 
+            NavSysLog("Finished generation for %s", filePath.c_str());
+
             SaveNavMesh(filePath.c_str(), result.get());
+
+            NavSysLog("Wrote cache for %s", filePath.c_str());
+
+            {
+                std::lock_guard<std::mutex> lock(m_toEraseMutex);
+                m_toErase.push_back(hash);
+            }
         }
 
         #ifdef TIME_PROFILE
@@ -779,4 +804,8 @@ std::future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(const uint3
 
         return result;
     });
+
+    m_inProgress[hash] = future;
+
+    return future;
 }
