@@ -9,6 +9,7 @@
 #include "albhv.h"
 #include "albhv_navigation.h"
 #include <al_landmark.h>
+#include <ChaoMain.h>
 
 DataPointer(task*, pRadicaseTask, 0x01AED2E0);
 DataPointer(task*, pTVTask, 0x1AED288);
@@ -33,7 +34,7 @@ Bool ALO_GetTVWatchPos(NJS_POINT3* pPos) {
     if (!pTVTask)
         return FALSE;
     else {
-        EntityData1* work = pRadicaseTask->Data1.Entity;
+        EntityData1* work = pTVTask->Data1.Entity;
         float mul = 10 + njRandom() * 3;
         int ang = work->Rotation.y + 0x8000 + NJM_DEG_ANG(njRandom() * 80 - 40);
         pPos->x = njSin(ang) * mul + work->Position.x;
@@ -54,7 +55,16 @@ int ALBHV_GoToTV(task* tp) {
 
         AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+
+		if(!gConfigVal.PathfindingVanilla) {
+        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+		}
+		else {
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+		}
+
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Touch>);
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn>);
@@ -76,7 +86,16 @@ int ALBHV_GoToRadicase(task* tp) {
 
 		AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+
+		if(!gConfigVal.PathfindingVanilla) {
+        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+		}
+		else {
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+		}
+
 		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Touch>);
 		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
 		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn>);
@@ -98,7 +117,16 @@ int ALBHV_GoToHorse(task* tp) {
 
         AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+
+        if(!gConfigVal.PathfindingVanilla) {
+        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+		}
+		else {
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+		}
+
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToAim>);
         AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_RideHorse>);
 

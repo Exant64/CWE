@@ -5,7 +5,7 @@
 #include <mutex>
 
 static std::mutex logMutex;
-static FILE* logOutput;
+static FILE* logOutput = NULL;
 
 void NavSysLogInit(const char* path) {
     static char filePath[256];
