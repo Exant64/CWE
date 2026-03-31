@@ -3,6 +3,8 @@
 #include "al_behavior/al_knowledge.h"
 #include "Chao.h"
 
+#include "data/color_mix_table.h"
+
 #include <random>
 #include <unordered_map>
 #include "ChaoMain.h"
@@ -38,10 +40,47 @@ void AL_GeneAnalyzeCommon(AL_GENE* a1, ChaoDataBase* a2)
 	}
 }
 
+static void AL_GeneColorMixing(AL_GENE* pGene, ChaoDataBase* pParam) {
+	// we know normal colored chao can't mix so don't even bother checking
+	if (!pGene->Color[0] || !pGene->Color[1]) {
+		return;
+	}
+
+	// hack: in the original lst code, these corresponded to a different value
+	// than the pair the other way around
+	// darky said this was because it was different for some reason on photoshop too
+	// and he didn't mind because it was a happy accident, so we'll keep it for now too
+	if(pGene->Color[0] == 2 && pGene->Color[1] == 7) {
+		pParam->Color = 43;
+		return;
+	}
+
+	if(pGene->Color[0] == 13 && pGene->Color[1] == 7) {
+		pParam->Color = 54;
+		return;
+	}
+
+	for(size_t i = 0; i < _countof(color_mix_table); ++i) {
+		const auto& entry = color_mix_table[i];
+
+		const bool checkPair1 = pGene->Color[0] == entry.color_a && pGene->Color[1] == entry.color_b;
+		const bool checkPair2 = pGene->Color[1] == entry.color_a && pGene->Color[0] == entry.color_b;
+
+		if(checkPair1 || checkPair2) {
+			pParam->Color = entry.color_result;
+			break;
+		}
+	}
+}
+
 // this is where you would add anything that gets applied to the chaodata from the dna
 void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 {
-	AL_GeneAnalyzeCommon(pGene, pParam);
+	AL_GeneAnalyzeCommon(pGene, pParam);	
+
+	if(gConfigVal.ColorMixing) {
+		AL_GeneColorMixing(pGene, pParam);
+	}
 
 	pParam->Flags |= AL_PARAM_FLAG_NEWBORN;
 

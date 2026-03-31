@@ -41,7 +41,6 @@
 CodeParser codeParser;
 struct Config { const char* a, * b; };
 static Config codeConfig[] = {
-	{ "Advanced", "AdvancedMixingColors"},
 	{ "Advanced", "AdvancedNewbornChaoHaveVaryingShadesofColor"},
 	{ "Advanced", "AdvancedNormalChaocanmakeColorChao"},
 	{ "Advanced", "AdvancedEyeColorsforNewbornChao"},
