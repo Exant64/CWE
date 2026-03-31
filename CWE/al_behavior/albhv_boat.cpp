@@ -7,6 +7,8 @@
 #include <random>
 #include "albhv.h"
 #include "../AL_ModAPI.h"
+#include <ChaoMain.h>
+#include "albhv_navigation.h"
 
 signed int __cdecl ALBHV_GoToWaterWithBoat(ObjectMaster* a1)
 {
@@ -131,29 +133,36 @@ signed int ALBHV_RideBoat(ObjectMaster* a1)
 	return BHV_RET_CONTINUE;
 }
 
-signed int __cdecl ALBHV_GoToBoat(ObjectMaster* a1)
-{
+int ALBHV_GoToBoat(task* tp) {
 	ObjectMaster* v1; // edi
 
-	v1 = AL_GetFoundToyTask(a1);
+	v1 = AL_GetFoundToyTask(tp);
 	if (!v1)
 	{
 		return BHV_RET_FINISH;
 	}
 
-	ALW_LockOn(a1, v1);
-	AL_EmotionAdd(a1, EM_ST_THIRSTY, 100);
+	ALW_LockOn(tp, v1);
+	AL_EmotionAdd(tp, EM_ST_THIRSTY, 100);
 	
 	//AL_GetRandomAttrPos(9, &a1->EntityData2->Waypoint);
-	sub_534F80((int)& stru_1A15938[9], &a1->EntityData2->Waypoint, stru_1A15938[9].nbIndex);
+	sub_534F80((int)& stru_1A15938[9], &tp->EntityData2->Waypoint, stru_1A15938[9].nbIndex);
 	
-	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
-	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);
-	AL_SetNextBehavior(a1, ALBHV_GoToLockOn);
-	AL_SetNextBehavior(a1, (BHV_FUNC)0x5613C0);
-	AL_SetNextBehavior(a1, ALBHV_GoToWaterWithBoat);
-	AL_SetNextBehavior(a1, ALBHV_RideBoat);
-	//AL_SetNextBehavior(a1, ALBHV_TurnToLockOn);
-	//AL_SetNextBehavior(a1, ALBHV_WatchTV);
+	AL_SetBehavior(tp, ALBHV_PostureChangeStand);
+	AL_SetNextBehavior(tp, ALBHV_Notice);
+
+	if(!gConfigVal.PathfindingVanilla) {
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+	}
+	else {
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+	}
+
+	AL_SetNextBehavior(tp, ALBHV_PickUpLockOn);
+	AL_SetNextBehavior(tp, ALBHV_GoToWaterWithBoat);
+	AL_SetNextBehavior(tp, ALBHV_RideBoat);
+	
 	return BHV_RET_CONTINUE;
 }

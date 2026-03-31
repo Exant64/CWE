@@ -98,7 +98,18 @@
         <HelpText>Lets you edit the current time by pressing X+Y (Note: It pauses passing time)</HelpText>
       </Property>
     </Group>
-    <Group name="Advanced" display="03 - Advanced Features">
+    <Group name="Pathfinding" display="03 - Pathfinding System (experimental)">
+      <Property name="Pathfinding" type="bool" defaultvalue="True" display="Pathfinding System">
+        <HelpText>Enables generating pathfinding "NavMeshes", and the usage of them for CWE's custom behaviors.</HelpText>
+      </Property>
+      <Property name="Vanilla" type="bool" defaultvalue="True" display="Vanilla Go to Object behaviors use pathfinding">
+        <HelpText>Makes the vanilla "go to object" type behaviors use our pathfinding system.</HelpText>
+      </Property>
+      <Property name="Log" type="bool" defaultvalue="True" display="Logging">
+        <HelpText>Enables logging pathfinding system operations into a log file created in CWE's folder.</HelpText>
+      </Property>
+    </Group>
+    <Group name="Advanced" display="04 - Advanced Features">
       <Property name="AdvancedChaosandCharactersChaoarelikeNormalChao" type="bool" defaultvalue="False" display="Rare Chao act like Normal Chao">
         <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allows Chaos Chao to have expressions!</HelpText>
       </Property>
@@ -136,7 +147,7 @@
         <HelpText>"Restores" the way Shiny Jewel Chao look to the GameCube Shiny Jewels. (/!\ Require Chao Backup, this cannot be undo after save /!\)</HelpText>
       </Property>
     </Group>
-    <Group name="Hard" display="04 - Hard Mode">
+    <Group name="Hard" display="05 - Hard Mode">
       <Property name="HardBullyChaoRequiresMoreChaoAnimations" type="bool" defaultvalue="False" display="Bully Chao">
         <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Requires “More Chao Animations” turned on to work.</HelpText>
       </Property>
@@ -159,7 +170,7 @@
         <HelpText>Increase the Chance of your Chao getting Sick. Does nothing much but go Heal your Chao and make the Doctor do his job.</HelpText>
       </Property>
     </Group>
-    <Group name="Easy" display="05 - Easy Mode">
+    <Group name="Easy" display="06 - Easy Mode">
       <Property name="EmotionDisplay" type="bool" defaultvalue="False" display="Emotion Display">
         <HelpText>Icons show up next to Chao that display if they're Hungry, Sad, Sick, Etc</HelpText>
       </Property>
@@ -194,7 +205,7 @@
         <HelpText>Disables natural reincarnation.</HelpText>
       </Property>
     </Group>
-    <Group name="Misc" display="06 - Miscellaneous Features">
+    <Group name="Misc" display="07 - Miscellaneous Features">
       <Property name="LegacyBald" type="bool" defaultvalue="True" display="Make Bald Y-only on Legacy Accessories">
         <HelpText>Make old pre-9.6 accessories's bald toggle only affect the Chao head vertically.</HelpText>
       </Property>
@@ -283,7 +294,7 @@
         <HelpText>Turns the vertex colors in the Dark Garden to grayscale, leaving custom textures alone (only intended for GC format landtables).</HelpText>
       </Property>
     </Group>
-    <Group name="Detail" display="07 - Detail Settings">
+    <Group name="Detail" display="08 - Detail Settings">
       <Property name="DetailFittingPersonality" type="bool" defaultvalue="False" display="Fitting Personality">
         <HelpText>Personalities are tied to more Chao Faces.</HelpText>
       </Property>
@@ -306,7 +317,7 @@
         <HelpText>Cocoons behave as they do in the DC version (all cocoons are grey).</HelpText>
       </Property>
     </Group>
-    <Group name="Input" display="08 - Input Codes">
+    <Group name="Input" display="09 - Input Codes">
       <Property name="ControllerOnlyBetterCameraControl" type="bool" defaultvalue="False" display="(Controller) Better Camera Control">
         <HelpText>Use the D-Pad and C Stick to have better control of the camera in the Chao Garden. Use L+R to reset the camera back to default.</HelpText>
       </Property>
@@ -320,7 +331,7 @@
         <HelpText>Hold down X (or Blue Input for Keyboard) while Chao World is loading to load an alternate save file in which Chao have opposite textures (i.e. Hero Chao are dark colored and Dark Chao are light colored).</HelpText>
       </Property>
     </Group>
-    <Group name="Race" display="09 - Race and Karate Features">
+    <Group name="Race" display="10 - Race and Karate Features">
       <Property name="BonusChaoKarategiveMedal" type="bool" defaultvalue="False" display="Chao Karate gives Medals">
         <HelpText>Winning a Karate match will give the Chao a medal. Uses some of the SADX exclusive medals.</HelpText>
       </Property>
@@ -343,7 +354,7 @@
         <HelpText>Chao will ignore the intelligence minigame.</HelpText>
       </Property>
     </Group>
-    <Group name="HDTex" display="10 - HD Texture">
+    <Group name="HDTex" display="11 - HD Texture">
       <Property name="ChaoTex" type="bool" defaultvalue="False" display="Chao Textures">
         <HelpText>HD Chao textures (except Child and Hero chao), including vanilla wearables (medals and hats). (ECW texture support included!)</HelpText>
       </Property>

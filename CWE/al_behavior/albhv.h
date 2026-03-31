@@ -31,6 +31,7 @@ int ALBHV_Capture(ObjectMaster* tp);
 #define ALBHV_TurnToAim ((BHV_FUNC)0x56B500)
 #define ALBHV_TurnToLockOn ((BHV_FUNC)0x56B6C0)
 #define ALBHV_GoToLockOn ((BHV_FUNC)0x56BA80)
+#define ALBHV_PickUpLockOn ((BHV_FUNC)0x5613C0)
 #define ALBHV_Cry ((BHV_FUNC)0x59FCA0)
 #define ALBHV_HoldThink ((BHV_FUNC)0x569340)
 #define ALBHV_Notice ((BHV_FUNC)0x56B480)

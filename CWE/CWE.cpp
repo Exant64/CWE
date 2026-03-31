@@ -476,8 +476,6 @@ extern "C"
 
 		KCE_Init();
 
-		NavSysInit(path);
-
 		//DEBUG LENS THING
 		//WriteCall((void*)0x0056D696, SetChunkTexIndexPrimaryHook);
 		//WriteCall((void*)0x0056D6B8, SetChunkTexIndexPrimaryHook);
@@ -516,6 +514,10 @@ extern "C"
 		gConfigVal.StageAnimalChance = config->getInt("Chao World Extended", "StageAnimalChance", 50) / 100.f;
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
+
+		gConfigVal.PathfindingEnabled = config->getBool("Pathfinding", "Pathfinding", true);
+		gConfigVal.PathfindingVanilla = config->getBool("Pathfinding", "Vanilla", true);
+		gConfigVal.PathfindingLog = config->getBool("Pathfinding", "Log", true);
 
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
@@ -615,6 +617,8 @@ extern "C"
 		if (gConfigVal.KeepAnimalParts) {
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
+
+		NavSysInit(path);
 
 		HDTexture_Init(path, config);
 

@@ -9,6 +9,8 @@
 #include "albhv.h"
 #include <al_face.h>
 #include <util.h>
+#include <ChaoMain.h>
+#include <al_behavior/albhv_navigation.h>
 
 static int GetPianoType (task* pToy) {
 	return pToy->Data1.Entity->Index;
@@ -132,8 +134,17 @@ int ALBHV_GoToPiano(task* tp) {
 	MOV_SetAimPos(tp, &toyPos);
 
 	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>); // Notice
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B560>); // GoToAim
+	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>); // Notice
+
+	if(!gConfigVal.PathfindingVanilla) {
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+	}
+	else {
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+	}
+
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);
 	switch (GetPianoType(pToy)) {
 		case PIANOTYPE_PIANO:

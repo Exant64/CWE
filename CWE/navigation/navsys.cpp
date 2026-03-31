@@ -12,6 +12,7 @@
 #include <api/api_idhash.h>
 #include <al_msg_font.h>
 #include <ALifeSDK_Functions.h>
+#include <ChaoMain.h>
 #include "memory.h"
 
 #include <chrono>
@@ -332,6 +333,7 @@ task* GetNavSysTask() {
 void NavSysCreate() {
     assert(!pNavSysTask);
 
+    if(!gConfigVal.PathfindingEnabled) return;
     if(!AL_IsGarden()) return;
 
     pNavSysTask = LoadObject(4, "NavSysTask", NavSysExecutor, LoadObj_Data1);
@@ -342,7 +344,11 @@ void NavSysCreate() {
 }
 
 void NavSysInit(const char* path) {
-	NavSysLogInit(path);
+    if(!gConfigVal.PathfindingEnabled) return;
+    
+    if(gConfigVal.PathfindingLog) {
+	    NavSysLogInit(path);
+    }
 
     const auto cacheFolderPath = std::string(path) + "\\NavMeshCache";
 
