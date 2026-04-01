@@ -515,6 +515,7 @@ extern "C"
 		gConfigVal.FixMonsterEvo = config->getBool("Advanced", "FixMonsterEvo", false);
 		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
 		gConfigVal.ColorMixing = config->getBool("Advanced", "AdvancedMixingColors", false);
+		gConfigVal.NewbornVaryingShades = config->getBool("Advanced", "AdvancedNewbornChaoHaveVaryingShadesofColor", false);
 
 		//Detail
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);

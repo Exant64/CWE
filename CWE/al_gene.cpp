@@ -73,6 +73,68 @@ static void AL_GeneColorMixing(AL_GENE* pGene, ChaoDataBase* pParam) {
 	}
 }
 
+static void AL_GeneVaryingShades(AL_GENE* pGene, ChaoDataBase* pParam) {
+	// I'm guessing the idea for this was that it would be for black market chao only
+	if(pGene->Color[0] != pGene->Color[1]) {
+		return;
+	}
+
+	const auto color = pGene->Color[0];
+
+	// normal chao or not a vanilla color
+	if(!color || color > SA2BColour_Black) {
+		return;
+	}
+
+	std::vector<uint8_t> shades;
+	switch (color) {
+		case SA2BColour_Yellow:
+			shades = { 0x12, 0x9C, 0xAE, 0xB3 };
+			break;
+		case SA2BColour_White:
+			shades = { 0x13, 0xB4, 0xB6, 0xB9 };
+			break;
+		case SA2BColour_Brown:
+			shades = { 0x14, 0xBA, 0xBC, 0xC0 };
+			break;
+		case SA2BColour_SkyBlue:
+			shades = { 0x16, 0xC2, 0xC3, 0xC5 };
+			break;
+		case SA2BColour_Pink:
+			shades = { 0x17, 0xC6, 0xC9, 0xCC };
+			break;
+		case SA2BColour_Blue:
+			shades = { 0x18, 0xCE, 0xD0, 0xD1 };
+			break;
+		case SA2BColour_Grey:
+			shades = { 0x1E, 0xD2, 0xD8 };
+			break;
+		case SA2BColour_Green:
+			shades = { 0x19, 0xDA, 0xDD, 0xDE };
+			break;
+		case SA2BColour_Red:
+			shades = { 0x1A, 0xE1, 0xE3, 0xE4 };
+			break;
+		case SA2BColour_LimeGreen:
+			shades = { 0x1B, 0xE6, 0xE9, 0xEA };
+			break;
+		case SA2BColour_Purple:
+			shades = { 0x1C, 0xF0, 0xF2, 0xF3 };
+			break;
+		case SA2BColour_Orange:
+			shades = { 0x1F, 0xF5, 0xF6, 0xF9 };
+			break;
+		case SA2BColour_Black:
+			shades = { 0xFC, 0xFE, 0xFF };
+			break;
+	}
+
+	// add the original shade to the pool aswell
+	shades.push_back(color);
+
+	pParam->Color = shades[size_t(njRandom() * (shades.size() - 0.001f))];
+}
+
 // this is where you would add anything that gets applied to the chaodata from the dna
 void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 {
@@ -80,6 +142,10 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 
 	if(gConfigVal.ColorMixing) {
 		AL_GeneColorMixing(pGene, pParam);
+	}
+
+	if(gConfigVal.NewbornVaryingShades) {
+		AL_GeneVaryingShades(pGene, pParam);
 	}
 
 	pParam->Flags |= AL_PARAM_FLAG_NEWBORN;
