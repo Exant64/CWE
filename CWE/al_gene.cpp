@@ -245,6 +245,97 @@ static void AL_GetMedalGene(const ChaoDataBase* param, AL_GENE& gene) {
 	}
 }
 
+static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
+	const auto param = GET_CHAOPARAM(tp);
+
+	// if not normal colored or not regular adult chao
+	if(param->Color || param->Type < 5 || param->Type >= ChaoType_Neutral_Chaos) {
+		return;
+	}
+
+	gene.Color[0] = 0;
+	gene.Color[1] = 0;
+
+	if(param->EvolutionProgress < 0.8f) {
+		return;
+	}
+
+	struct GENE_NORMAL_COLORS {
+		uint8_t swim, monster_swim;
+		uint8_t fly, monster_fly;
+		uint8_t run, monster_run;
+		uint8_t power, monster_power;
+	};
+
+	static const GENE_NORMAL_COLORS HeroColor = { 
+		2, 0x7F,
+		2, 0x7F,
+		2, 0x7F,
+		2, 0x7F
+	};
+
+	// array starts from neutral/normal (first adult type index)
+	static const GENE_NORMAL_COLORS ColorEntries[] = {
+		{ 0x04, 0xD4, 0x04, 0xD4, 0x04, 0xD4, 0x04, 0xD4 },
+		HeroColor,
+		{ 0x86, 0xF4, 0x05, 0xBB, 0x0B, 0xE5, 0x0C, 0xBE },
+
+		{ 0x15, 0x8F, 0x05, 0xD9, 0x04, 0xAF, 0x01, 0x83 },
+		HeroColor,
+		{ 0x88, 0xC1, 0x87, 0x92, 0x04, 0xD4, 0x08, 0xC8 },
+
+		{ 0x8A, 0xF4, 0x8D, 0xAB, 0x9A, 0xD9, 0x96, 0x97 },
+		HeroColor,
+		{ 0x8E, 0xB5, 0x8D, 0xAB, 0x89, 0xA5, 0x8A, 0x8C },
+
+		{ 0x04, 0xAF, 0x73, 0xEB, 0x52, 0xFB, 0x0B, 0xF8 },
+		HeroColor,
+		{ 0x90, 0xB0, 0x88, 0xC1, 0x09, 0xED, 0x52, 0xFB },
+
+		{ 0x05, 0xD3, 0x05, 0xD3, 0x0C, 0xBE, 0x09, 0xB1 },
+		HeroColor,
+		{ 0x04, 0xB5, 0x87, 0xE2, 0x0A, 0xE0, 0x94, 0xBE },
+	};
+
+	const auto& entry = ColorEntries[param->Type - 5];
+
+	if(param->PowerRun > 0.8f) {
+		if(param->PowerRun < 1.5f) {
+			gene.Color[0] = gene.Color[1] = entry.power;
+		}
+		else {
+			gene.Color[0] = gene.Color[1] = entry.monster_power;
+		}
+	}
+
+	if(param->PowerRun < -0.8f) {
+		if(param->PowerRun > -1.5f) {
+			gene.Color[0] = gene.Color[1] = entry.run;
+		}
+		else {
+			gene.Color[0] = gene.Color[1] = entry.monster_run;
+		}
+	}
+
+	if(param->FlySwim > 0.8f) {
+		if(param->FlySwim < 1.5f) {
+			gene.Color[0] = gene.Color[1] = entry.fly;
+		}
+		else {
+			gene.Color[0] = gene.Color[1] = entry.monster_fly;
+		}
+	}
+
+	if(param->FlySwim < -0.8f) {
+		if(param->FlySwim > -1.5f) {
+			gene.Color[0] = gene.Color[1] = entry.swim;
+		}
+		else {
+			gene.Color[0] = gene.Color[1] = entry.monster_swim;
+		}
+	}
+}
+
 void AL_CreateChildGene(ObjectMaster* pMotherTask, ObjectMaster* pFatherTask, AL_GENE* pChildGene)
 {
 	AL_GENE FatherGene = pFatherTask->Data1.Chao->pParamGC->Gene;
@@ -253,6 +344,11 @@ void AL_CreateChildGene(ObjectMaster* pMotherTask, ObjectMaster* pFatherTask, AL
 	if (gConfigVal.MedalChaoCanMakeColorChao) {
 		AL_GetMedalGene(pFatherTask->Data1.Chao->pParamGC, FatherGene);
 		AL_GetMedalGene(pMotherTask->Data1.Chao->pParamGC, MotherGene);
+	}
+
+	if (gConfigVal.NormalChaoMakeColorChao) {
+		AL_GeneNormalChaoColors(pFatherTask, FatherGene);
+		AL_GeneNormalChaoColors(pMotherTask, MotherGene);
 	}
 
 	AL_BlendGene(&MotherGene, &FatherGene, pChildGene);

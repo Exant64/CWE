@@ -36,6 +36,7 @@ struct ConfigValues {
 
 	bool ColorMixing;
 	bool NewbornVaryingShades;
+	bool NormalChaoMakeColorChao;
 
 	bool DayNightCycle;
 	bool DayNightShinyTex;
