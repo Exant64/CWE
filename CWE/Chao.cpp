@@ -562,7 +562,7 @@ void Chao_Init()
 	WriteData((short*)0x550448, (short)0x800);
 
 	AL_Gene_Init();
-
+	AL_ParameterInit();
 	AL_FaceInit();
 
 	// new drawings

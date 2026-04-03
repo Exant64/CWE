@@ -507,6 +507,10 @@ extern "C"
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
 
+		// Hard
+		gConfigVal.ChaoAttention = config->getBool("Hard", "HardChaoAttention", false);
+		gConfigVal.AnnoyingMeanChao = config->getBool("Hard", "HardAnnoyingMeanChao", false);
+
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
 
@@ -568,6 +572,13 @@ extern "C"
 		gConfigVal.NeutGrayscale = config->getBool("Misc", "NeutGrayscale", false);
 		gConfigVal.HeroGrayscale = config->getBool("Misc", "HeroGrayscale", false);
 		gConfigVal.DarkGrayscale = config->getBool("Misc", "DarkGrayscale", false);
+
+		// the other half of this code is in al_parameter.cpp AL_CalcParameter_r
+		// we kinda need a better place for this to be written
+		if (gConfigVal.ChaoAttention) {
+			GET_GLOBAL()->TimeAddGrowthChild *= 2;
+			GET_GLOBAL()->TimeAddGrowthAdult *= 2;
+		}
 
 		if (gConfigVal.DayNightCycleHourFrame <= 0) {
 			MessageBoxA(0, "Day Night Cycle's \"In-Game Hour In Real-Life Seconds\" option cannot be set to zero or lower! Temporarily resetting setting to default.", "Chao World Extended", 0);

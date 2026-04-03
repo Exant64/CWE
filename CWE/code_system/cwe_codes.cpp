@@ -44,8 +44,6 @@ static Config codeConfig[] = {
 	{ "Advanced", "AdvancedEyeColorsforNewbornChao"},
 	{ "Advanced", "AdvancedFruitscanSpoilt"},
 	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
-	{ "Hard", "HardChaoAttention"},
-	{ "Hard", "HardAnnoyingMeanChao"},
 	{ "Easy", "EasyInstantGrowTrees"},
 	{ "Easy", "EasyAutoGenerateStats"},
 	{ "Race", "BonusChaoKarategiveMedal"},
