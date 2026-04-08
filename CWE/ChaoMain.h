@@ -34,6 +34,8 @@ struct ConfigValues {
 	bool MoreAnimation;
 	bool ClassroomTimerDisplay;
 
+	bool AutoGenerateStats;
+
 	bool ChaoAttention;
 	bool AnnoyingMeanChao;
 

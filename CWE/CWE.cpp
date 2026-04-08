@@ -513,6 +513,7 @@ extern "C"
 
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
+		gConfigVal.AutoGenerateStats = config->getBool("Easy", "EasyAutoGenerateStats", false);
 
 		//Advanced
 		gConfigVal.MedalChaoCanMakeColorChao = config->getBool("Advanced", "AdvancedMedalChaocanmakeJewelChao", false);

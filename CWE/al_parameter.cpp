@@ -135,6 +135,16 @@ void IncrementPowerRun(ObjectMaster* a1, float a2)
 	v2->Flag |= 2u;
 }
 
+// levelup function in AL_ParameterGrow, no symbols name :(
+static void sub_535E90(ChaoDataBase *a1, int a2) {
+	static const void* fptr = (void*)0x535E90;
+	__asm {
+		mov edi, a1
+		mov esi, a2
+		call fptr
+	}
+}
+
 static void AL_CalcParameter(task* tp) {
 	static const void* fptr = (const void*)0x005353C0;
 	__asm {
@@ -181,6 +191,24 @@ static void AL_CalcParameter_r(task* tp) {
 				}
 
 				player.like = like;
+			}
+		}
+
+		if (gConfigVal.AutoGenerateStats) {
+			for(size_t i = 0; i < 5; ++i) {
+				if(param->StatLevels[i] >= 10) continue;
+
+				// doing this to prevent overflow
+				int fract = int(param->StatFractions[i]) + 20;
+
+				if(fract >= 100) {
+					fract -= 100;
+					param->StatLevels[i]++;
+
+					sub_535E90(param, i);
+				}
+
+				param->StatFractions[i] = fract;
 			}
 		}
 	}

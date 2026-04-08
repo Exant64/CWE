@@ -45,7 +45,6 @@ static Config codeConfig[] = {
 	{ "Advanced", "AdvancedFruitscanSpoilt"},
 	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
 	{ "Easy", "EasyInstantGrowTrees"},
-	{ "Easy", "EasyAutoGenerateStats"},
 	{ "Race", "BonusChaoKarategiveMedal"},
 	{ "Misc", "BonusLuckyChao"},
 	{ "Input", "ControllerOnlyBetterCameraControl"},
