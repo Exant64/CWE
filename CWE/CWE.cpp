@@ -514,6 +514,7 @@ extern "C"
 		gConfigVal.MedalChaoCanMakeColorChao = config->getBool("Advanced", "AdvancedMedalChaocanmakeJewelChao", false);
 		gConfigVal.FixMonsterEvo = config->getBool("Advanced", "FixMonsterEvo", false);
 		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
+		gConfigVal.OldName = config->getBool("Advanced", "OldName", false);
 
 		//Detail
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);

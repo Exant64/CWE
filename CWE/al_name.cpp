@@ -7,9 +7,7 @@
 #include <FunctionHook.h>
 #include <ninja_functions.h>
 #include <al_name.h>
-
-
-VoidFunc(sub_583C60, 0x583C60);
+#include "ChaoMain.h"
 
 static const int DisplayChaoNamePtr = 0x00536BE0;
 static void DisplayChaoName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8)
@@ -29,16 +27,30 @@ static void DisplayChaoName(const char* a1, float a2, float a3, float a4, float 
 	}
 }
 
+static float GetSpacingRatio(const size_t index) {
+	if(gConfigVal.OldName) {
+		return 1.f;
+	}
+
+	// a single character is 44x44 pixels
+	// or atleast the table stores it as such
+	return float(ChaoNameFontWidth[index]) / 44.f;
+}
+
 // finds the x position of the last letter, taking into account sizeRatio and everything
 static Float CalculateLastLetterXPos(const Float x, const float xsize, const char* name, const size_t length, const float sizeRatio = 1.0f) {
 	Float xpos = x;
 
+	if(gConfigVal.OldName) {
+		return xpos + length * sizeRatio * (xsize - 1);
+	}
+	
 	for (size_t c = 0; c < length; c++) {
 		const size_t character = name[c];
 
 		if (character != 0 && character != 95 && character != 255)
 		{
-			Uint8 index;
+			size_t index;
 			if (character >= 95)
 			{
 				index = character - 2;
@@ -48,8 +60,7 @@ static Float CalculateLastLetterXPos(const Float x, const float xsize, const cha
 				index = character - 1;
 			}
 
-			const size_t spacing = ChaoNameFontWidth[index];
-			const float spacingRatio = float(spacing) / 44.f;
+			const float spacingRatio = GetSpacingRatio(index);
 			const float width = xsize * spacingRatio;
 			xpos += width * sizeRatio + xsize / 22.0f;
 		}
@@ -67,7 +78,12 @@ static Float CalculateStringSizeRatio(const char* pName, float xpos, float xsize
 		// we calculate the start position of the 8th letter, and calculate the size in a manner
 		// that the last letter ends up there
 		const float letterAtEnd = CalculateLastLetterXPos(xpos, xsize, pName, 8 - 1);
-		const float letterRealAtEnd = CalculateLastLetterXPos(xpos, xsize, pName, length - 1);
+		const float letterRealAtEnd = CalculateLastLetterXPos(
+			xpos, 
+			xsize, 
+			pName, 
+			gConfigVal.OldName ? length : (length - 1)
+		);
 		return (letterAtEnd - xpos) / (letterRealAtEnd - xpos);
 	}
 
@@ -80,8 +96,7 @@ static Float CalculateStringXPos(const char* pName, float xpos, float xsize, siz
 	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
 }
 
-void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
-	const char* pName = (const char*)(name + (offsetof(ChaoDataBase, Name) - 0x12));
+void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
 	const size_t length = strlen(pName);
 
 	SetChaoHUDThingBColor(
@@ -90,8 +105,6 @@ void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, fl
 		col.argb.g / 255.f,
 		col.argb.r / 255.f
 	);
-
-	Float xisze_ = length * (xsize - 1.0f);
 
 	Float anchorMul = 1.0f;
 
@@ -118,16 +131,25 @@ void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, fl
 	}
 
 	ChaoHudThingB bbi;
-	bbi.pTexlist = &CWE_UI_TEXLIST;
-	bbi.TexNum = 35;
+
+	if(gConfigVal.OldName) {
+		bbi.pTexlist = (NJS_TEXLIST*)0x01366ABC;
+		bbi.TexNum = 1;
+	}
+	else {
+		bbi.pTexlist = &CWE_UI_TEXLIST;
+		bbi.TexNum = 35;
+	}
+
 	bbi.adjust = 1;
 
 	for (size_t c = 0; c < length; c++) {
 		const size_t character = pName[c];
 
-		if (character != 0 && character != 95 && character != 255)
-		{
-			Uint8 index;
+		const bool isSpace = character == 0 || character == 95 || character == 255;
+
+		if (!isSpace) {
+			size_t index;
 			if (character >= 95)
 			{
 				index = character - 2;
@@ -137,15 +159,14 @@ void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, fl
 				index = character - 1;
 			}
 
-			const size_t spacing = ChaoNameFontWidth[index];
-			const float spacingRatio = float(spacing) / 44.f;
+			const float spacingRatio = GetSpacingRatio(index);
 
 			bbi.wd = xsize * spacingRatio;
 			bbi.ht = ysize;
 
 			// those small floats added to it are to prevent the font from bilinear interpolating towards a letter below or above it
-			const Float loc_x = (22 * (index % 23));
-			const Float loc_y = (22 * (index / 23));
+			const Float loc_x = float(22 * (index % 23));
+			const Float loc_y = float(22 * (index / 23));
 			bbi.s0 = (loc_x + 0.1f) / 512.0f;
 			bbi.t0 = (loc_y + 0.35f) / 256.0f;
 			bbi.s1 = (loc_x + 22.0f * spacingRatio) / 512.0f;
@@ -155,19 +176,45 @@ void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, fl
 				&bbi,
 				x,
 				ypos,
-				-1.2,
+				-1.2f,
 				sizeRatio * xsize / 22.f,
 				sizeRatio * ysize / 22.0f,
 				DrawAncorV_Left,
 				DrawAncorV_Top
 			);
+		}
 
+		if(gConfigVal.OldName) {
+			x += sizeRatio * (xsize - 1);
+			continue;
+		}
+
+		if(!isSpace) {
 			x += sizeRatio * bbi.wd + xsize * (1/22.f);
 		}
 		else {
 			x += sizeRatio * xsize / 2.f;
 		}
 	}
+}
+
+// hacky func that offsets the og name pointer to our new one, used for
+static const char* GetNewChaoDataNameLocation(const char* pOriginalName) {
+	return pOriginalName - offsetof(ChaoDataBase, Name_) + offsetof(ChaoDataBase, Name);
+}
+
+// this is a function that sits inbetween the draw func to 
+static void DisplayChaoName_GetNewPtr(char* pName, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
+	DisplayChaoName_NewFont(
+		GetNewChaoDataNameLocation(pName),
+		xpos,
+		ypos,
+		xsize,
+		ysize,
+		col,
+		FreeStrlen,
+		ancH
+	);
 }
 
 static void __declspec(naked) DisplayChaoName_Hook()
@@ -184,7 +231,7 @@ static void __declspec(naked) DisplayChaoName_Hook()
 		push[esp + 20h] // a1
 
 		// Call your __cdecl function here:
-		call DisplayChaoName_NewFont
+		call DisplayChaoName_GetNewPtr
 
 		add esp, 4 // a1
 		add esp, 4 // a2
@@ -263,7 +310,6 @@ static void __declspec(naked) OpenNameMenuHook()
 		retn
 	}
 }
-
 
 AL_NAME FortuneTellerNameBuffer;
 
@@ -349,10 +395,11 @@ static void NameMenuDisplayHook(char* work) {
 	if (nameLength <= 0) return;
 	
 	// the name menu has an arbitrary name length, so this is a hack to terminate it at the specified index
-	char backupChar = namePointer[nameLength];
+	const char backupChar = namePointer[nameLength];
 	namePointer[nameLength] = 0;
-	// the function expects a vanilla chaodata name offset as input so we undo the hack done to it using this subtraction/addition
-	DisplayChaoName_NewFont(namePointer - offsetof(ChaoDataBase, Name) + 0x12, 433, 131, 22, 22, (NJS_COLOR)-1, 0, DrawAncorV_Left);
+
+	DisplayChaoName_NewFont(namePointer, 433, 131, 22, 22, (NJS_COLOR)-1, 0, DrawAncorV_Left);
+
 	namePointer[nameLength] = backupChar;
 }
 

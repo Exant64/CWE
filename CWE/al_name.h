@@ -13,5 +13,5 @@ enum DrawAnchorV
 	DrawAncorV_Bottom = 0x1,
 };
 
-void DisplayChaoName_NewFont(char* name, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH);
+void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH);
 void AL_Name_Init();

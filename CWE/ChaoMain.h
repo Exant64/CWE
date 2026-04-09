@@ -33,6 +33,7 @@ struct ConfigValues {
 	bool MoreSound;
 	bool MoreAnimation;
 	bool ClassroomTimerDisplay;
+	bool OldName;
 
 	bool DayNightCycle;
 	bool DayNightShinyTex;
