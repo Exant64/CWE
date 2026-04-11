@@ -153,6 +153,10 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 			pParam->Headgear = 1 + Uint8(njRandom() * (14 - 1 + 0.999f));
 		}
 	}
+
+	if (gConfigVal.EyeColorsForNewbornChao) {
+		pParam->EyeColor = Uint8(njRandom() * 5.999f);
+	}
 	
 	pParam->Flags |= AL_PARAM_FLAG_NEWBORN;
 

@@ -522,6 +522,7 @@ extern "C"
 		gConfigVal.ColorMixing = config->getBool("Advanced", "AdvancedMixingColors", false);
 		gConfigVal.NewbornVaryingShades = config->getBool("Advanced", "AdvancedNewbornChaoHaveVaryingShadesofColor", false);
 		gConfigVal.NormalChaoMakeColorChao = config->getBool("Advanced", "AdvancedNormalChaocanmakeColorChao", false);
+		gConfigVal.EyeColorsForNewbornChao = config->getBool("Advanced", "AdvancedEyeColorsforNewbornChao", false);
 
 		//Detail
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);
