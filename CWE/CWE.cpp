@@ -544,6 +544,7 @@ extern "C"
 		gConfigVal.DisableArmsLegs = config->getBool("Misc", "OtherDisableAnimalPartsArmslegs", false);
 		gConfigVal.DisableAllParts = config->getBool("Misc", "OtherDisableAnimalPartsALL", false);
 		gConfigVal.BlackMarketShort = config->getBool("Misc", "BlackMarketShort", false);
+		gConfigVal.LuckyChao = config->getBool("Misc", "BonusLuckyChao", false);
 
 		//Cheat
 		gConfigVal.ToyReset = config->getBool("Cheat", "ToyReset", false);

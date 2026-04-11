@@ -148,6 +148,12 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 		AL_GeneVaryingShades(pGene, pParam);
 	}
 
+	if (gConfigVal.LuckyChao) {
+		if(njRandom() < 6 / 100.f) {
+			pParam->Headgear = 1 + Uint8(njRandom() * (14 - 1 + 0.999f));
+		}
+	}
+	
 	pParam->Flags |= AL_PARAM_FLAG_NEWBORN;
 
 	pParam->Negative = pGene->Negative[0] || pGene->Negative[1];
