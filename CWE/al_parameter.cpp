@@ -30,8 +30,6 @@ bool AL_IsDark2(ObjectMaster* a1) {
 	return AL_IsDark(a1->Data1.Chao->pParamGC->Type);
 }
 
-
-DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
 bool AL_IsNegative(ObjectMaster* a1) {
 	if (AL_IsCustomChao(a1)) {
 		return false;

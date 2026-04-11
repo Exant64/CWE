@@ -32,6 +32,7 @@
 #include "codes/include/code_fruit_nodespawn.h"
 #include "codes/include/code_dynamiclifetime.h"
 #include "codes/include/race/code_karatemedal.h"
+#include "codes/include/code_negativesave.h"
 
 #include <code_system/codes/include/code_shinyjewelmonotone.h>
 #include <code_system/codes/include/cheat/code_levellimit.h>
@@ -52,7 +53,6 @@ static Config codeConfig[] = {
 	{ "Misc", "OtherMoreandRandomChaoFace"},
 	{ "Race", "RaceJewelandBeginnerRacebecome8PPartyRace"},
 	{ "Race", "RaceChaoGainExpatChaoRace"},
-	{ "Input", "SaveHoldXtoLoadNegativeChaoSave"},
 	{ "Detail", "DetailFittingPersonality"}
 };
 
@@ -161,6 +161,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<JackInBoxPunishment>("JackInBoxPunishment", false);
 	CodeManager::Instance().Add<IgnoreMinigameIntel>("IgnoreMinigameIntel", false);
 	CodeManager::Instance().Add<KarateGiveMedal>("BonusChaoKarategiveMedal", false);
+	CodeManager::Instance().Add<NegativeSave>("SaveHoldXtoLoadNegativeChaoSave", false);
 
 	//lst ports
 	CodeManager::Instance().Add<RaceCamSwitch>("RaceCameraswitchManuallyusingkeyboard", false);

@@ -12,6 +12,7 @@ void AL_CustomizationInit();
 DataArray(ChaoData*, ChaoSelectData, 0x01DBEE80, 48);
 
 DataPointer(char, ControlEnabled, 0x0174AFFE);
+DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
 
 void AL_NameDisplayCreate();
 ObjectMaster* AL_LargeTitleBar_Create();
