@@ -31,6 +31,8 @@
 #include "codes/include/code_multisave.h"
 #include "codes/include/code_fruit_nodespawn.h"
 #include "codes/include/code_dynamiclifetime.h"
+#include "codes/include/race/code_karatemedal.h"
+
 #include <code_system/codes/include/code_shinyjewelmonotone.h>
 #include <code_system/codes/include/cheat/code_levellimit.h>
 #include <code_system/codes/include/bonus/code_babychaolevel.h>
@@ -45,7 +47,6 @@ static Config codeConfig[] = {
 	{ "Advanced", "AdvancedFruitscanSpoilt"},
 	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
 	{ "Easy", "EasyInstantGrowTrees"},
-	{ "Race", "BonusChaoKarategiveMedal"},
 	{ "Misc", "BonusLuckyChao"},
 	{ "Input", "ControllerOnlyBetterCameraControl"},
 	{ "Input", "KeyboardwithNumpadBetterCameraControl"},
@@ -161,6 +162,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<HDToyModels>("HDToyModels", false);
 	CodeManager::Instance().Add<JackInBoxPunishment>("JackInBoxPunishment", false);
 	CodeManager::Instance().Add<IgnoreMinigameIntel>("IgnoreMinigameIntel", false);
+	CodeManager::Instance().Add<KarateGiveMedal>("BonusChaoKarategiveMedal", false);
 
 	//lst ports
 	CodeManager::Instance().Add<RaceCamSwitch>("RaceCameraswitchManuallyusingkeyboard", false);

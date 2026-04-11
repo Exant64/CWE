@@ -729,6 +729,7 @@
     <ClCompile Include="code_system\codes\code_personality.cpp" />
     <ClCompile Include="code_system\codes\code_playerspeed.cpp" />
     <ClCompile Include="code_system\codes\code_sick.cpp" />
+    <ClCompile Include="code_system\codes\code_karatemedal.cpp" />
     <ClCompile Include="code_system\cwe_patch.cpp" />
     <ClCompile Include="code_system\cwe_transpile.cpp" />
     <ClCompile Include="collision_debug.cpp" />
