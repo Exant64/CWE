@@ -12,6 +12,8 @@ void AL_ParameterClearAccessory(ObjectMaster* tp, int slot);
 
 void AL_ParameterAddAPos(ObjectMaster* a1, float a2);
 
+void sub_535E90(ChaoDataBase *a1, int a2);
+
 void AL_ParameterAddUserLike(ObjectMaster* tp, int add, float AddAttr);
 void AL_ParameterGrow(ObjectMaster* a1, unsigned __int16 a2, unsigned __int16 a3, int a4);
 

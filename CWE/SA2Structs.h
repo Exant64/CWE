@@ -913,7 +913,7 @@ struct ChaoDataBase
 	char field_19;
 	char GBATexture;
 	char field_1B[5];
-	char StatFractions[8];
+	Uint8 StatFractions[8];
 	char StatGrades[8];
 	char StatLevels[8];
 	__int16 StatPoints[8];

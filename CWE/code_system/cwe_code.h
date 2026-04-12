@@ -16,7 +16,8 @@ public:
 	virtual void OnChaoData(ChaoDataBase& chao) {};
 };
 
-//for codes that only use init
+// for codes that only use init
+
 #define PATCH_CODE(name) \
 class name : public Code { \
 	public: \

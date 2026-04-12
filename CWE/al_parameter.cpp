@@ -134,7 +134,7 @@ void IncrementPowerRun(ObjectMaster* a1, float a2)
 }
 
 // levelup function in AL_ParameterGrow, no symbols name :(
-static void sub_535E90(ChaoDataBase *a1, int a2) {
+void sub_535E90(ChaoDataBase *a1, int a2) {
 	static const void* fptr = (void*)0x535E90;
 	__asm {
 		mov edi, a1
