@@ -35,6 +35,8 @@
 #include "codes/include/code_negativesave.h"
 #include "codes/include/race/code_racegainexp.h"
 
+#include "codes/include/easy/code_instantgrowtrees.h"
+
 #include <code_system/codes/include/code_shinyjewelmonotone.h>
 #include <code_system/codes/include/cheat/code_levellimit.h>
 #include <code_system/codes/include/bonus/code_babychaolevel.h>
@@ -47,7 +49,6 @@ struct Config { const char* a, * b; };
 static Config codeConfig[] = {
 	{ "Advanced", "AdvancedFruitscanSpoilt"},
 	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
-	{ "Easy", "EasyInstantGrowTrees"},
 	{ "Input", "ControllerOnlyBetterCameraControl"},
 	{ "Input", "KeyboardwithNumpadBetterCameraControl"},
 	{ "Input", "KeyboardwithoutNumpadBetterCameraControl"}, 
@@ -55,7 +56,6 @@ static Config codeConfig[] = {
 	{ "Race", "RaceJewelandBeginnerRacebecome8PPartyRace"},
 	{ "Detail", "DetailFittingPersonality"}
 };
-
 
 //one day this will be moved out to cwe.cpp once we stop needing codeparser
 int ToyResetTimer = 0;
@@ -163,6 +163,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<KarateGiveMedal>("BonusChaoKarategiveMedal", false);
 	CodeManager::Instance().Add<NegativeSave>("SaveHoldXtoLoadNegativeChaoSave", false);
 	CodeManager::Instance().Add<RaceGainExp>("RaceChaoGainExpatChaoRace", false);
+	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
 
 	//lst ports
 	CodeManager::Instance().Add<RaceCamSwitch>("RaceCameraswitchManuallyusingkeyboard", false);
