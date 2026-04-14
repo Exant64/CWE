@@ -5,6 +5,7 @@
 #include <al_race.h>
 #include <al_parameter.h>
 #include <Chao.h>
+#include <ALifeSDK_Functions.h>
 
 PATCH_CODE(RaceGainExp);
 
@@ -79,12 +80,16 @@ static void sub_5396C0_r() {
 
     if(!CanRunStatGain()) return;
 
+    bool leveledUp = false;
+
     const auto pParam = GET_CHAOPARAM(stru_1DCFAE0[0].pChaoObject);
 
     for(size_t i = 0; i < 5; ++i) {
         int fract = pParam->StatFractions[i];
 
         while(fract >= 100) {
+            leveledUp = true;
+
             fract -= 100;
 
             if(++pParam->StatLevels[i] >= 99) {
@@ -95,6 +100,10 @@ static void sub_5396C0_r() {
         }
 
         pParam->StatFractions[i] = fract;
+    }
+
+    if(leveledUp) {
+        PlayJingle("chao_k_net_fine.adx");
     }
 }
 
