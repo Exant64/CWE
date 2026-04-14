@@ -58,6 +58,8 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 		
 		if (v2->Rotation.z > 0)
 		{
+			SaveControl3D();
+
 			RotateY(v2->Rotation.y);
 			njPushMatrixEx();
 			njScale(NULL, a2, a2, a2);
@@ -65,8 +67,18 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			{
 				njControl3D |= 0x2400u;
 			}
+			
+			const bool isCustomFruit = v2->Rotation.x > SA2BFruit_Grapes;
+
+			// fix for spoiled fruit not being green
+			// todo: fix all fruits to be RF compat
+			if(isCustomFruit) {
+				OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
+			}
+
 			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
 			njControl3D &= ~0x2400u;
+			LoadControl3D();
 			njPopMatrixEx();
 
 			if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float *)&v1->UnknownA_ptr->field_30) {

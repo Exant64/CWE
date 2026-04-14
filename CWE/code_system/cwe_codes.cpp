@@ -36,6 +36,7 @@
 #include "codes/include/race/code_racegainexp.h"
 
 #include "codes/include/easy/code_instantgrowtrees.h"
+#include "codes/include/advanced/code_spoiledfruit.h"
 
 #include <code_system/codes/include/code_shinyjewelmonotone.h>
 #include <code_system/codes/include/cheat/code_levellimit.h>
@@ -47,7 +48,6 @@
 CodeParser codeParser;
 struct Config { const char* a, * b; };
 static Config codeConfig[] = {
-	{ "Advanced", "AdvancedFruitscanSpoilt"},
 	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
 	{ "Input", "ControllerOnlyBetterCameraControl"},
 	{ "Input", "KeyboardwithNumpadBetterCameraControl"},
@@ -164,6 +164,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<NegativeSave>("SaveHoldXtoLoadNegativeChaoSave", false);
 	CodeManager::Instance().Add<RaceGainExp>("RaceChaoGainExpatChaoRace", false);
 	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
+	CodeManager::Instance().Add<SpoiledFruits>("AdvancedFruitscanSpoilt", false);
 
 	//lst ports
 	CodeManager::Instance().Add<RaceCamSwitch>("RaceCameraswitchManuallyusingkeyboard", false);
