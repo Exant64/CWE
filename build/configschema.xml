@@ -307,14 +307,12 @@
       </Property>
     </Group>
     <Group name="Input" display="08 - Input Codes">
-      <Property name="ControllerOnlyBetterCameraControl" type="bool" defaultvalue="False" display="(Controller) Better Camera Control">
-        <HelpText>Use the D-Pad and C Stick to have better control of the camera in the Chao Garden. Use L+R to reset the camera back to default.</HelpText>
-      </Property>
-      <Property name="KeyboardwithNumpadBetterCameraControl" type="bool" defaultvalue="False" display="(Numpad) Better Camera Control">
-        <HelpText>Use the Keyboard numpad (-, +, *, Page Up, Page Down, Home, End) to have better control of the camera in the Chao Garden. Use / to reset the camera back to default.</HelpText>
-      </Property>
-      <Property name="KeyboardwithoutNumpadBetterCameraControl" type="bool" defaultvalue="False" display="(Keyboard) Better Camera Control">
-        <HelpText>Use the Keyboard numpad (-, +, *, R, F, T, G) to have better control of the camera in the Chao Garden. Use BackSpace to reset the camera back to default.</HelpText>
+      <Property name="CameraControl" type="Camera" defaultvalue="0" display="Better Camera Control">
+        <HelpText>
+          Controller: Use the D-Pad and C Stick to have better control of the camera in the Chao Garden. Use L+R to reset the camera back to default.
+          Keyboard (without numpad): Use the Keyboard numpad (-, +, *, R, F, T, G) to have better control of the camera in the Chao Garden. Use BackSpace to reset the camera back to default.
+          Keyboard (with numpad): Use the Keyboard numpad (-, +, *, Page Up, Page Down, Home, End) to have better control of the camera in the Chao Garden. Use / to reset the camera back to default.
+        </HelpText>
       </Property>
       <Property name="SaveHoldXtoLoadNegativeChaoSave" type="bool" defaultvalue="False" display="Hold X to Load Negative Chao Save">
         <HelpText>Hold down X (or Blue Input for Keyboard) while Chao World is loading to load an alternate save file in which Chao have opposite textures (i.e. Hero Chao are dark colored and Dark Chao are light colored).</HelpText>
@@ -398,6 +396,12 @@
       <EnumMember name="1" display="Off/Disabled"></EnumMember>
       <EnumMember name="2" display="Double"></EnumMember>
       <EnumMember name="3" display="Triple"></EnumMember>
+    </Enum>
+    <Enum name="Camera">
+      <EnumMember name="0" display="Off/Disabled"></EnumMember>
+      <EnumMember name="1" display="Keyboard (without Numpad)"></EnumMember>
+      <EnumMember name="2" display="Keyboard (with Numpad)"></EnumMember>
+      <EnumMember name="3" display="Controller"></EnumMember>
     </Enum>
   </Enums>
 </ConfigSchema>

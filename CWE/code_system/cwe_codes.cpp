@@ -34,6 +34,7 @@
 #include "codes/include/race/code_karatemedal.h"
 #include "codes/include/code_negativesave.h"
 #include "codes/include/race/code_racegainexp.h"
+#include "codes/include/input/code_camera.h"
 
 #include "codes/include/easy/code_instantgrowtrees.h"
 #include "codes/include/advanced/code_spoiledfruit.h"
@@ -49,9 +50,6 @@ CodeParser codeParser;
 struct Config { const char* a, * b; };
 static Config codeConfig[] = {
 	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
-	{ "Input", "ControllerOnlyBetterCameraControl"},
-	{ "Input", "KeyboardwithNumpadBetterCameraControl"},
-	{ "Input", "KeyboardwithoutNumpadBetterCameraControl"}, 
 	{ "Misc", "OtherMoreandRandomChaoFace"},
 	{ "Race", "RaceJewelandBeginnerRacebecome8PPartyRace"},
 	{ "Detail", "DetailFittingPersonality"}
@@ -165,6 +163,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<RaceGainExp>("RaceChaoGainExpatChaoRace", false);
 	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
 	CodeManager::Instance().Add<SpoiledFruits>("AdvancedFruitscanSpoilt", false);
+	CodeManager::Instance().Add<BetterCameraControl>("CameraControl", 0, 0);
 
 	//lst ports
 	CodeManager::Instance().Add<RaceCamSwitch>("RaceCameraswitchManuallyusingkeyboard", false);
