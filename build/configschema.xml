@@ -222,6 +222,9 @@
       <Property name="KeepAnimalParts" type="bool" defaultvalue="False" display="Keep All Current Animal Parts">
         <HelpText>Prevents Chao from getting any new animal parts.</HelpText>
       </Property>
+      <Property name="OtherAngry" type="bool" defaultvalue="True" display="Let any type of Chao get angry">
+        <HelpText>Let non-dark Chao get angry aswell.</HelpText>
+      </Property>
       <Property name="EnergyCap" type="bool" defaultvalue="False" display="Drowning Prevention">
         <HelpText>Caps off Energy at 5000 for Chao that cannot swim yet to make them go swim less frequently.</HelpText>
       </Property>

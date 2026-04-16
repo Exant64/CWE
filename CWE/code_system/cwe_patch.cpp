@@ -18,10 +18,13 @@ inline void PatchData(T* writeaddress, const T& data)
 void CWE_Patch_Init(const IniFile* config)
 {
 	//main code
+
+	// todo: nuke this file, this is so odd
+
 	//other chao than dark chao can get angry
-	PatchData((unsigned char*)0x005A1279, (unsigned char)0xFE);
-	PatchData((unsigned char*)0x005A127C, (unsigned char)23);
-	PatchData((unsigned char*)0x005A1288, (unsigned char)1);
+	if (config->getBool("Misc", "OtherAngry", true)) {
+		WriteData<0x005A1296 - 0x005A127A>((unsigned char*)0x005A127A, (unsigned char)0x90);
+	}
 
 	//stg 13 write
 	PatchData((unsigned short*)0x01313DF3, (unsigned short)0x3030);
