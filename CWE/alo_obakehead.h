@@ -4,6 +4,7 @@
 #include "ChaoMain.h"
 #include "brightfixapi.h"
 #include <vector>
+#include "renderfix.h"
 
 extern std::vector<std::pair<NJS_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
 
@@ -32,7 +33,7 @@ void ALO_ObakeHeadDraw(int headgear) {
 		else if(list[headgear])
 		{
 			if (AltDrawCheck && IsAltDrawHead(headgear))
-				njCnkDrawObject(list[headgear]);
+				RenderFixBackwardsCompatibilityDrawObject(list[headgear]);
 			else
 				chCnkDrawObject(list[headgear]);
 		}
