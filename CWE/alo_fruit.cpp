@@ -77,7 +77,7 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			{
 				njControl3D |= 0x2400u;
 			}
-			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
 			njControl3D &= ~0x2400u;
 			njPopMatrixEx();
 
