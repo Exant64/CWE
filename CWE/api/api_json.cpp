@@ -40,6 +40,12 @@ static NJS_OBJECT* GenericParseChunkObj(const rapidjson::Document& document, con
 		return NULL;
 	}
 	
+	const auto objPath = jsonPath.parent_path() / document["model"].GetString();
+	if(!std::filesystem::exists(objPath)) {
+		error.print("sa2mdl file not found!");
+		return NULL;
+	}
+
 	ModelInfo* pModel = new ModelInfo(jsonPath.parent_path() / document["model"].GetString());
 	auto pObj = pModel->getmodel();
 
