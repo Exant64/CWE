@@ -1,7 +1,7 @@
 #pragma once
 #include "rfapi.h"
 
-extern RFAPI_CORE* rfapi_core;
+extern const RFAPI_CORE* rfapi_core;
 
 bool RenderFix_IsEnabled();
 
@@ -21,4 +21,4 @@ struct RenderFixBackwardsCompatibilityGuard {
 void rfCnkNormalDrawObject(NJS_OBJECT* pObject);
 void rfCnkNormalDrawModel(NJS_CNK_MODEL* pModel);
 
-void RenderFix_Init(const HelperFunctions& helper);
+void RenderFix_VersionCheck(const HelperFunctions& helper);

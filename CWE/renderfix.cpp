@@ -3,7 +3,7 @@
 #include "renderfix.h"
 #include <assert.h>
 
-RFAPI_CORE* rfapi_core = NULL;
+const RFAPI_CORE* rfapi_core = NULL;
 
 bool RenderFix_IsEnabled() {
 	return rfapi_core != NULL;
@@ -74,9 +74,27 @@ void rfCnkNormalDrawModel(NJS_CNK_MODEL* pModel) {
 	rfapi_core->pChunk->CnkNormalDrawModel(pModel);
 }
 
-void RenderFix_Init(const HelperFunctions& helper) {
+extern "C" __declspec(dllexport)
+int32_t RFAPI_Init(const RFAPI_CORE* pApi, const char* puPath, const HelperFunctions* pHelpFuncs, size_t ixMod) {
+    if ( RFAPI_CHECKVER( pApi, 1,5,3,0 ) ) {
+		rfapi_core = pApi;
+	}
+	
+    return 0;
+}
+
+void RenderFix_VersionCheck(const HelperFunctions& helper) {
 	auto* rf = helper.Mods->find("sa2-render-fix");
 	if (!rf) return;
+	
+	// if RF was found but RFAPI_Init didn't run or was early exited
+	// then rfapi_core didn't get set, and we know version wasn't new enough
+	if(rfapi_core) return;
 
-	rfapi_core = rf->GetDllExport<RFAPI_CORE*>("rfapi_core");
+	MessageBoxA(
+		0, 
+		"RenderFix is out of date, please update to 1.5.3 or above.", 
+		"Chao World Extended", 
+		MB_ICONWARNING
+	);
 }

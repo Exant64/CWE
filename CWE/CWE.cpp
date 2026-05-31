@@ -432,7 +432,7 @@ extern "C"
 		njRandomSeed(time(0));
 
 		CWE_CCL_Init();
-		RenderFix_Init(helperFunctions);
+		RenderFix_VersionCheck(helperFunctions);
 
 		// todo: integrate this into CWE_API_FindMods or prefix with CWE_APIJSON_ or something
 		ScanAllMods();
