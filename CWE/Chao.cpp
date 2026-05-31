@@ -449,19 +449,27 @@ static void Chao_Main_r(ObjectMaster* a1)
 		c->ChaoObject(a1);
 	}
 
-	// we backup the Shape flag before buyo
-	// once the jiggle and everything has been ran
-	// we normalize all normals if jiggle is disabled, to hopefully fix
-	// disablejiggle'd accessories causing normals to progressively get messed up
-	// 2 is deform flag, 0x20 is jiggle flag
-	const auto before_shape_flag = work->Flag;
-
 	Chao_Main_hook.Original(a1);
+}
 
-	if((before_shape_flag & 2) && !(work->field_B0 & 0x20)) {
-		AL_FitToBaseObject(a1, work->field_510);
+// once the jiggle and everything has been ran
+// if jiggle is disabled reset the normals
+// unfortunately the chao normals being sane depends on jiggle basing it off
+// pOrgVertexNormal
+// luckily adult chao set pVertex->Normal instead of pOrgVertexNormal
+// note: since child chao set pOrgVertexNormal itself, it might not be enough
+// and we need to normalize for them
+static void AL_Deform_r(task* tp);
+static FunctionHook<void, task*> AL_Deform_t(0x5A49C0, AL_Deform_r);
+static void AL_Deform_r(task* tp) {
+	AL_Deform_t.Original(tp);
+
+	chaowk* work = GET_CHAOWK(tp);
+	if(!(work->field_B0 & 0x20)) {
+		AL_FitToBaseObject(tp, work->field_510);
 	}
 }
+
 
 static void RaceChaoExecutor(task* tp);
 static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, RaceChaoExecutor);
