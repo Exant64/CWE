@@ -862,11 +862,16 @@ static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer)
 		}
 	}
 
+	const uint32_t prevFlag = (work->field_B0 & 0x20);
 	if (disableJiggle) {
 		work->field_B0 &= ~0x20;
 	}
 	else {
 		work->field_B0 |= 0x20;
+	}
+
+	if((work->field_B0 & 0x20) != prevFlag) {
+		work->JiggleFlagChanged = true;
 	}
 
 	work->BaldHideHead = false;

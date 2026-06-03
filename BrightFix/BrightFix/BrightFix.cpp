@@ -15,7 +15,7 @@
 #include <ninja_functions.h>
 #include <ALifeSDK_Functions.h>
 
-RFAPI_CORE* RenderFixAPI;
+const RFAPI_CORE* RenderFixAPI;
 
 const int sub_41FA60Ptr = 0x41FA60;
 void  sub_41FA60(WeirdChunkTexIndexThing* a1, signed int a2)
@@ -637,7 +637,7 @@ extern "C"
 	IDirect3DVertexShader9* vertShader;
 
 #ifdef BRIGHTFIX_PLUS
-	API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData, RFAPI_CORE* rfapi_core)
+	API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData, const RFAPI_CORE* rfapi_core)
 #else
 	__declspec(dllexport) void __cdecl Init(const char* path)
 #endif

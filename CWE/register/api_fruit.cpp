@@ -21,18 +21,20 @@ BlackMarketItemAttributes HyperFlyFruitAttrib = { 10000, 2500, 0, -1, -1, 0 };
 BlackMarketItemAttributes HyperRunFruitAttrib = { 10000, 2500, 0, -1, -1, 0 };
 BlackMarketItemAttributes HyperPowerFruitAttrib = { 10000, 2500, 0, -1, -1, 0 };
 
-const char* ShinyFruitDescription = "A Bright Fruit for Shiny Chao";
-const char* HyperFruitDescription = "The rarest, but most powerful fruit";
+static const char* ShinyFruitDescription = "A Bright Fruit for Shiny Chao";
+static const char* HyperFruitDescription = "The rarest, but most powerful fruit";
 
-const char* GBAFruitDescription = "Animals love this!";
-const char* GBAFruitNames[] = {
-	"Orange Fruit",
-	"Blue Fruit",
-	"Pink Fruit",
-	"Green Fruit",
-	"Purple Fruit",
-	"Yellow Fruit",
-	"Red Fruit",
+static const char* GBAFruitDescription = "Animals love this!";
+
+// "fruit" is intentionally not capitalized, like the other vanilla fruit
+static const char* GBAFruitNames[] = {
+	"Orange fruit",
+	"Blue fruit",
+	"Pink fruit",
+	"Green fruit",
+	"Purple fruit",
+	"Yellow fruit",
+	"Red fruit",
 };
 
 
@@ -70,11 +72,11 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 
 	//vanilla fruit names
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 0)->Name = cwe_api->RegisterAlItemString("Chao Garden Fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 1)->Name = cwe_api->RegisterAlItemString("Hero Garden Fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 2)->Name = cwe_api->RegisterAlItemString("Dark Garden Fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 3)->Name = cwe_api->RegisterAlItemString("Strong Fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 4)->Name = cwe_api->RegisterAlItemString("Tasty Fruit");
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 0)->Name = cwe_api->RegisterAlItemString("Chao Garden fruit");
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 1)->Name = cwe_api->RegisterAlItemString("Hero Garden fruit");
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 2)->Name = cwe_api->RegisterAlItemString("Dark Garden fruit");
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 3)->Name = cwe_api->RegisterAlItemString("Strong fruit");
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 4)->Name = cwe_api->RegisterAlItemString("Tasty fruit");
 
 	cwe_api->GetItemAttr(ChaoItemCategory_Hat, 1)->Name = cwe_api->RegisterAlItemString("Pumpkin");
 	cwe_api->GetItemAttr(ChaoItemCategory_Hat, 2)->Name = cwe_api->RegisterAlItemString("Skull");
