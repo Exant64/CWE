@@ -43,7 +43,19 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 		a2 = 0.8f * v13;
 
 		AL_DayNightCycle_PushFallbackLight();
+
+		// hack to fix normalization issues when scaling in current RF
+		const NJS_VECTOR backupColor = LightsGC[LightIndex].lightColor;
+		const float backupIntensity = Lights[LightIndex].intensity;
+		if(RenderFix_IsEnabled()) {
+			Lights[LightIndex].intensity /= a2;
+			LightsGC[LightIndex].lightColor.x /= a2;
+			LightsGC[LightIndex].lightColor.y /= a2;
+			LightsGC[LightIndex].lightColor.z /= a2;
+		}
 		DoLighting(LightIndex);
+		Lights[LightIndex].intensity = backupIntensity;
+		LightsGC[LightIndex].lightColor = backupColor;
 		
 		njPushMatrixEx();
 		njTranslateEx(&v2->Position);
@@ -65,7 +77,7 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			{
 				njControl3D |= 0x2400u;
 			}
-			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
 			njControl3D &= ~0x2400u;
 			njPopMatrixEx();
 
