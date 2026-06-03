@@ -450,6 +450,13 @@ static void Chao_Main_r(ObjectMaster* a1)
 	}
 
 	Chao_Main_hook.Original(a1);
+
+	// if disable jiggle was enabled or disabled rerun fittobaseobject
+	// to prevent the jiggled vertices to be frozen
+	if(work->JiggleFlagChanged) {
+		AL_FitToBaseObject(a1, work->field_510);
+		work->JiggleFlagChanged = false;
+	}
 }
 
 // once the jiggle and everything has been ran
