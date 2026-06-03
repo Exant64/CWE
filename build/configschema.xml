@@ -213,6 +213,9 @@
       <Property name="SaveMultiSavefile" type="bool" defaultvalue="False" display="Multi Savefile">
         <HelpText>Each SA2 save also includes its own Chao World file instead of using one file universally.</HelpText>
       </Property>
+      <Property name="IncludeDir0" type="StatPanelDir" defaultvalue="optional/statpanelredesign" display="Stat Panel Redesign">
+        <HelpText>Enables the recolored version of the stat panel.</HelpText>
+      </Property>
       <Property name="TransporterColor" type="bool" defaultvalue="True" display="Different Transporter Colors">
         <HelpText>Gives a different color and texture to the transporter based on the garden you're in.</HelpText>
       </Property>
@@ -379,6 +382,10 @@
     </Group>
   </Groups>
   <Enums>
+    <Enum name="StatPanelDir">
+      <EnumMember name="optional/statpanelredesign" display="On"></EnumMember>
+      <EnumMember name="optional/null" display="Off"></EnumMember>
+    </Enum>
     <Enum name="OnOff">
       <EnumMember name="0" display="Off/Disabled"></EnumMember>
       <EnumMember name="1" display="On"></EnumMember>
