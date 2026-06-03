@@ -255,9 +255,6 @@
       <Property name="OtherSADXChaoAlignment" type="bool" defaultvalue="False" display="SADX Chao Alignment">
         <HelpText>A Chao’s hero/dark alignment can only be changed with Hero and Dark fruits like in SADX.</HelpText>
       </Property>
-      <Property name="OtherMoreandRandomChaoFace" type="bool" defaultvalue="False" display="More faces for newborn Chao">
-        <HelpText>Adds lots of new random face combinations for newborn Chao. Also restores some unused mouths.</HelpText>
-      </Property>
       <Property name="OtherRemoveDarkChao'sMeanEyesOverride" type="bool" defaultvalue="False" display="Remove Dark Chao's Mean Eyes Override">
         <HelpText>A Chao evolving into a Dark Chao will keep its original eyes instead of being overwritten with the classic Dark Chao Mean Eyes.</HelpText>
       </Property>
@@ -284,8 +281,8 @@
       </Property>
     </Group>
     <Group name="Detail" display="07 - Detail Settings">
-      <Property name="DetailFittingPersonality" type="bool" defaultvalue="False" display="Fitting Personality">
-        <HelpText>Personalities are tied to more Chao Faces.</HelpText>
+      <Property name="MoreFaces" type="Face" defaultvalue="1" display="More Chao Faces">
+        <HelpText>Adds more Chao faces for a Chao to be born with. The "Personality" option calculates the Chao's face through it's personality values, similar to vanilla faces. The "Random" option picks the face completely randomly.</HelpText>
       </Property>
       <Property name="DetailDoctorChaogivemoreInformationEN" type="bool" defaultvalue="False" display="Doctor Chao gives more Information">
         <HelpText>Adds more things for the Chao Doctor to say. (English only)</HelpText>
@@ -396,6 +393,11 @@
       <EnumMember name="1" display="Off/Disabled"></EnumMember>
       <EnumMember name="2" display="Double"></EnumMember>
       <EnumMember name="3" display="Triple"></EnumMember>
+    </Enum>
+    <Enum name="Face">
+      <EnumMember name="0" display="Off/Disabled"></EnumMember>
+      <EnumMember name="1" display="Personality"></EnumMember>
+      <EnumMember name="2" display="Random"></EnumMember>
     </Enum>
     <Enum name="Camera">
       <EnumMember name="0" display="Off/Disabled"></EnumMember>

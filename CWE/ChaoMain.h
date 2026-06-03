@@ -23,6 +23,12 @@ ThiscallFunctionPointer(DWORD*, sub_52F9E0, (int a1), 0x52F9E0);
 DataArray(int, nbWorldEntry, 0x1DC0F80, 5); //length is not actually 5 but good for now
 DataArray(int, nbMaxEntry, 0x008AB838, 5);
 
+enum {
+	CFG_MORE_FACE_NONE,
+	CFG_MORE_FACE_PERSONALITY,
+	CFG_MORE_FACE_RANDOM
+};
+
 struct ConfigValues {
 	bool BrightFixEnabled;
 	bool KeepAnimalParts;
@@ -45,6 +51,8 @@ struct ConfigValues {
 	bool NewbornVaryingShades;
 	bool NormalChaoMakeColorChao;
 	bool EyeColorsForNewbornChao;
+
+	uint32_t MoreFaces;
 
 	bool DayNightCycle;
 	bool DayNightShinyTex;

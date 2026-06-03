@@ -135,6 +135,17 @@ static void AL_GeneVaryingShades(AL_GENE* pGene, ChaoDataBase* pParam) {
 	pParam->Color = shades[size_t(njRandom() * (shades.size() - 0.001f))];
 }
 
+static void AL_GeneAnalyzeMoreFaces(ChaoDataBase* pParam) {
+	if(gConfigVal.MoreFaces == CFG_MORE_FACE_RANDOM) {
+		pParam->EyeType = Uint8(njRandom() * (float(ChaoEyes_Mean) + 0.999f));
+		pParam->MouthType = Uint8(njRandom() * (float(0x10) + 0.999f));
+
+		return;
+	}
+
+	// CFG_MORE_FACE_PERSONALITY
+}
+
 // this is where you would add anything that gets applied to the chaodata from the dna
 void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 {
@@ -146,6 +157,10 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 
 	if(gConfigVal.NewbornVaryingShades) {
 		AL_GeneVaryingShades(pGene, pParam);
+	}
+
+	if (gConfigVal.MoreFaces) {
+		AL_GeneAnalyzeMoreFaces(pParam);
 	}
 
 	if (gConfigVal.LuckyChao) {

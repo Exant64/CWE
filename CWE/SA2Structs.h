@@ -481,6 +481,8 @@ struct __declspec(align(4)) ChaoData1
 	bool BaldHideHead;
 	Uint16* pBaldAdjacencyIndices;
 	size_t BaldAdjacencyIndexCount;
+
+	void* BhvUserData[16];
 };
 #pragma pack(pop)
 

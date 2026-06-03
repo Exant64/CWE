@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
-#include "CodeParser.hpp"
 #include "../IniFile.h"
 #include "../al_behavior/al_intention.h"
 #include "../define.h"
-
 
 template<typename T>
 inline void PatchData(T* writeaddress, const T& data)

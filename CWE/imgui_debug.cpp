@@ -15,6 +15,7 @@
 #include <al_draw.h>
 #include <api/api_accessory.h>
 #include <al_behavior/al_behavior.h>
+#include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
 
 static int SelectedChaoIndex;
@@ -154,6 +155,9 @@ static void ChaoInfoMenu() {
                     }
                     if (ImGui::Button("Float")) {
                         AL_SetBehavior(pChao, ALBHV_GoToFloat);
+                    }
+                    if (ImGui::Button("Bully")) {
+                        CalcIntentionTest(pChao);
                     }
 
                     ImGui::TreePop();

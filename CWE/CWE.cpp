@@ -525,6 +525,7 @@ extern "C"
 		gConfigVal.EyeColorsForNewbornChao = config->getBool("Advanced", "AdvancedEyeColorsforNewbornChao", false);
 
 		//Detail
+		gConfigVal.MoreFaces = config->getBool("Detail", "MoreFaces", CFG_MORE_FACE_PERSONALITY);
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);
 		gConfigVal.MoreAnimation = config->getBool("Detail", "MoreAnimation", false);
 		gConfigVal.ClassroomTimerDisplay = config->getBool("Detail", "ClassroomTimerDisplay", true);
