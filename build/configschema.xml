@@ -129,6 +129,9 @@
       <Property name="AccUpdateDraw" type="bool" defaultvalue="False" display="Update Accessories on Chao when paused">
         <HelpText>This option immediately lets you see the changes to a Chao's accessories when edited with KCE while paused (not recommended for regular gameplay).</HelpText>
       </Property>
+      <Property name="OldName" type="bool" defaultvalue="False" display="Use Old Name Texture">
+        <HelpText>Reverts Chao name rendering to use the old/vanilla name texture (note: this also disables the new character spacing).</HelpText>
+      </Property>
       <Property name="AdvancedFruitscanSpoilt" type="bool" defaultvalue="False" display="Spoiled Fruits">
         <HelpText>If left out long enough, fruit may spoil. Feeding a spoiled fruit to your Chao will decrease its Magnitude and Stamina.</HelpText>
       </Property>
