@@ -2,6 +2,7 @@
 #include <Chao.h>
 #include "al_parts.h"
 #include "api/api_customchao.h"
+#include "ChaoMain.h"
 
 void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, ChaoDataBase* data)
 {
@@ -97,7 +98,8 @@ int __cdecl AL_ShapeChangeType_Hack(ObjectMaster* tp, int type) {
 		}
 	}
 
-	if (mini && pParam->Happiness > 80 && pParam->Reincarnations >= 2)
+	if (gConfigVal.CharacterChaoEvo && mini && pParam->Happiness > 80 && 
+		pParam->Reincarnations >= 2)
 	{
 		switch (type) {
 		case ChaoType_Neutral_Fly:
@@ -120,15 +122,17 @@ int __cdecl AL_ShapeChangeType_Hack(ObjectMaster* tp, int type) {
 		}
 	}
 
-	for (size_t i = 0; i < CustomChaoTypeEntries.size(); i++) {
-		CustomChaoEntry& entry = CustomChaoTypeEntries[i];
+	if(gConfigVal.CustomChaoEvo) {
+		for (size_t i = 0; i < CustomChaoTypeEntries.size(); i++) {
+			CustomChaoEntry& entry = CustomChaoTypeEntries[i];
 
-		if (entry.Data.pEvolveFunc && entry.Data.pEvolveFunc(tp)) {
-			//set type
-			type = 26;
-			memcpy(pParam->TypeID, entry.Data.ID, sizeof(pParam->TypeID));
+			if (entry.Data.pEvolveFunc && entry.Data.pEvolveFunc(tp)) {
+				//set type
+				type = 26;
+				memcpy(pParam->TypeID, entry.Data.ID, sizeof(pParam->TypeID));
 
-			break;
+				break;
+			}
 		}
 	}
 

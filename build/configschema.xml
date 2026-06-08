@@ -2,6 +2,9 @@
 <ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
   <Groups>
     <Group name="Chao World Extended" display="01 - Main Features">
+      <Property name="CharacterChaoEvo" type="bool" defaultvalue="True" display="Obtainable Character Chao">
+        <HelpText>Makes the vanilla Character Chao obtainable. If a Chao meets the Chaos Chao evolution conditions, Fly influence will evolve them into a Tails Chao, Power influence into Knuckles Chao, and Run into Amy Chao.</HelpText>
+      </Property>
       <Property name="StageAnimals" type="bool" defaultvalue="True" display="Obtain Custom Animals in Stages">
         <HelpText>Makes the second Chao Box spawn custom animals.</HelpText>
       </Property>
@@ -99,6 +102,9 @@
       </Property>
     </Group>
     <Group name="Advanced" display="03 - Advanced Features">
+      <Property name="CustomChaoEvo" type="bool" defaultvalue="True" display="Custom Character Chao Evolutions">
+        <HelpText>Disabling this will prevent Chao from evolving into custom chao (such as Spartoi).</HelpText>
+      </Property>
       <Property name="AdvancedChaosandCharactersChaoarelikeNormalChao" type="bool" defaultvalue="False" display="Rare Chao act like Normal Chao">
         <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allows Chaos Chao to have expressions!</HelpText>
       </Property>

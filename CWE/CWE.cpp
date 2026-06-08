@@ -495,6 +495,7 @@ extern "C"
 		//LessonArray[14] = 14;
 		
 		//Main
+		gConfigVal.CharacterChaoEvo = config->getBool("Chao World Extended", "CharacterChaoEvo", true);
 		gConfigVal.UnusedToys = config->getBool("Chao World Extended", "UnusedToys", true);
 		gConfigVal.SpawnOmochao = config->getBool("Chao World Extended", "SpawnOmochao", true);
 		gConfigVal.OmochaoParts = config->getBool("Chao World Extended", "OmochaoParts", false);
@@ -511,6 +512,7 @@ extern "C"
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
 
 		//Advanced
+		gConfigVal.CustomChaoEvo = config->getBool("Chao World Extended", "CustomChaoEvo", true);
 		gConfigVal.MedalChaoCanMakeColorChao = config->getBool("Advanced", "AdvancedMedalChaocanmakeJewelChao", false);
 		gConfigVal.FixMonsterEvo = config->getBool("Advanced", "FixMonsterEvo", false);
 		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
