@@ -214,10 +214,22 @@ void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 		AL_CalcIntentionScore_Bully(a1, a2);
 	}
 
-	AL_CalcIntentionScore_JoinSToy(a1, a2);
-	AL_CalcIntentionScore_MayuReact(a1, a2);
-	AL_CalcIntentionScore_Chat(a1, a2);
-	AL_CalcIntentionScore_Tree(a1, a2);
+	if(gConfigVal.BhvJoinableToys) {
+		AL_CalcIntentionScore_JoinSToy(a1, a2);
+	}
+	
+	if(gConfigVal.BhvCocoonReactions) { 
+		AL_CalcIntentionScore_MayuReact(a1, a2);
+	}
+
+	if (gConfigVal.BhvSocial) {
+		AL_CalcIntentionScore_Chat(a1, a2);
+	}
+
+	if (gConfigVal.BhvTreeShake) {
+		AL_CalcIntentionScore_Tree(a1, a2);
+	}
+
 	AL_CalcIntentionScore_Mayu(a1, a2);
 
 }
@@ -319,13 +331,16 @@ void AL_IntentionInit() {
 	//small toy intention
 	WriteJump((void*)0x55E7A0, (void*)sub_55E7A0);
 
-	//dance
-	WriteJump((void*)0x59C6D0, (void*)AL_DecideBehaviorDance);
-	WriteJump((void*)0x0059C3D0, (void*)AL_CalcIntentionScore_JoinDanceHook);
+	if (gConfigVal.BhvNewDance) {
+		WriteJump((void*)0x59C6D0, (void*)AL_DecideBehaviorDance);
+		WriteJump((void*)0x0059C3D0, (void*)AL_CalcIntentionScore_JoinDanceHook);
+	}
 
-	//new instruments
-	WriteJump((void*)0x59D410, (void*)AL_DecideBehaviorMusic_r);
-	WriteJump((void*)0x0059D0D0, (void*)AL_CalcIntentionScore_JoinMusicH);
+	if (gConfigVal.BhvNewInstruments) {
+		WriteJump((void*)0x59D410, (void*)AL_DecideBehaviorMusic_r);
+		WriteJump((void*)0x0059D0D0, (void*)AL_CalcIntentionScore_JoinMusicH);
+	}
+	
 	WriteJump((void*)0x00599B60, (void*)AL_CalcIntentionScore_LToy_Hook);
 	WriteCall((void*)0x0562B65, (void*)AL_CalcIntentionScore_Hook);
 }

@@ -55,6 +55,14 @@ struct ConfigValues {
 	bool EyeColorsForNewbornChao;
 
 	uint32_t MoreFaces;
+	
+	bool BhvSandCastle;
+	bool BhvNewDance;
+	bool BhvNewInstruments;
+	bool BhvJoinableToys;
+	bool BhvCocoonReactions;
+	bool BhvSocial;
+	bool BhvTreeShake;
 
 	bool DayNightCycle;
 	bool DayNightShinyTex;
