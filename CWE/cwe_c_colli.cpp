@@ -2,6 +2,9 @@
 #include <FunctionHook.h>
 
 #include <vector>
+#include "ChaoMain.h"
+#include "IniFile.h"
+#include "ALifeSDK_Functions.h"
 
 // credit to sadx decomp for reference code
 
@@ -34,14 +37,18 @@ static void CCL_ClearInfo(task* tp) {
     }
 }
 
-// todo: replace struct properly in the future
-typedef CollisionInfo CCL_INFO;
-
-// naming convention based on cwe
+// naming convention based on symbols
 static std::vector<task*> cwe_entry_list;
 
+static bool FoundDrawDistanceMod = false;
+
 void CWE_CCL_Entry(task* tp) {
-    CCL_INFO* pInfo = tp->Data1.Entity->Collision;
+    if(FoundDrawDistanceMod) {
+        AddToCollisionList(tp);
+        return;
+    }
+
+    CCL_INFO* pInfo = (CCL_INFO*)tp->Data1.Entity->Collision;
 
     if(!pInfo || tp->MainSub == DeleteObject_)  {
         return;
@@ -52,7 +59,7 @@ void CWE_CCL_Entry(task* tp) {
 }
 
 static void CCL_CCheckColli_r();
-static FunctionHook<void> CCL_CCheckColli_hook(0x485C70, CCL_CCheckColli_r);
+static FunctionHook<void> CCL_CCheckColli_hook(0x485C70);
 static void CCL_CCheckColli_r() {
     // run chao collision first
     CCL_CCheckColli_hook.Original();
@@ -123,6 +130,29 @@ static void __declspec(naked) CCL_Entry_to_CWE_CCL_Entry_r() {
 }
 
 void CWE_CCL_Init() {
+    const auto& modList = *g_HelperFunctions->Mods;
+    for(const auto& mod : modList) {
+        if(!strcmp(mod.Name, "Higher Draw Distance")) {
+            std::string iniPath = std::string(mod.Folder);
+            iniPath += "\\config.ini";
+            
+            IniFile* pDrawDistConfig = new IniFile(iniPath.c_str());
+            if(pDrawDistConfig && pDrawDistConfig->getBool("Limits", "Collisions", true)) {
+                FoundDrawDistanceMod = true;
+            }
+            delete pDrawDistConfig;
+
+            break;
+        }
+    }
+
+    // don't apply patches if the limits mod was enabled
+    if(FoundDrawDistanceMod) {
+        return;
+    }
+
+    CCL_CCheckColli_hook.Hook(CCL_CCheckColli_r);
+
     // optimization to not have to worry about reallocations under normal circumstances
     cwe_entry_list.reserve(256);
 

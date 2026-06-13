@@ -762,7 +762,7 @@ public:
 				nameColor.argb.a = Uint8(m_alpha * 255);
 				if(alpha < 1) nameColor.argb.a = Uint8(m_alpha * alpha * 255);
 				
-				DisplayChaoName_NewFont((char*)(nums - offsetof(ChaoDataBase, Name) + 0x12), m_visualPosX + x * horizSpacing + sprite->wd, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + sprite->ht - 15, 22, 22, nameColor, 0, DrawAncorV_Center);
+				DisplayChaoName_NewFont(nums, m_visualPosX + x * horizSpacing + sprite->wd, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + sprite->ht - 15, 22, 22, nameColor, 0, DrawAncorV_Center);
 
 				Rotation rot = { 0, 0, 0 };
 

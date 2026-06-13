@@ -31,6 +31,8 @@ enum {
 
 struct ConfigValues {
 	bool BrightFixEnabled;
+	bool CharacterChaoEvo;
+	bool CustomChaoEvo;
 	bool KeepAnimalParts;
 	bool EnergyCap;
 	bool ForceShinyTT;
@@ -40,6 +42,7 @@ struct ConfigValues {
 	bool MoreSound;
 	bool MoreAnimation;
 	bool ClassroomTimerDisplay;
+	bool OldName;
 
 	bool AutoGenerateStats;
 	bool LuckyChao;

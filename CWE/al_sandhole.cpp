@@ -4,12 +4,13 @@
 #include "data/toy/NeutralSandCastleModel.h"
 #include "data/toy/SandHoleModel.h"
 
-void DoLighting(int a1)
+__declspec(naked) void DoLighting(int a1)
 {
 	__asm
 	{
-		mov eax, a1
+		mov eax, [esp+4]
 		call DoLightingPtr
+		ret
 	}
 }
 
