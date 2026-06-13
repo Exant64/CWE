@@ -558,6 +558,15 @@ extern "C"
 		gConfigVal.NormalChaoMakeColorChao = config->getBool("Advanced", "AdvancedNormalChaocanmakeColorChao", false);
 		gConfigVal.EyeColorsForNewbornChao = config->getBool("Advanced", "AdvancedEyeColorsforNewbornChao", false);
 
+		// Behaviors
+		gConfigVal.BhvSandCastle = config->getBool("Behavior", "SandCastle", true);
+		gConfigVal.BhvNewDance = config->getBool("Behavior", "NewDance", true);
+		gConfigVal.BhvNewInstruments = config->getBool("Behavior", "NewInstruments", true);
+		gConfigVal.BhvJoinableToys = config->getBool("Behavior", "JoinableToys", true);
+		gConfigVal.BhvCocoonReactions = config->getBool("Behavior", "CocoonReactions", true);
+		gConfigVal.BhvSocial = config->getBool("Behavior", "Social", true);
+		gConfigVal.BhvTreeShake = config->getBool("Behavior", "TreeShake", true);
+		
 		//Detail
 		gConfigVal.MoreFaces = config->getBool("Detail", "MoreFaces", CFG_MORE_FACE_PERSONALITY);
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);
