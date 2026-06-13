@@ -37,6 +37,14 @@ struct ConfigValues {
 	bool ClassroomTimerDisplay;
 	bool OldName;
 
+	bool BhvSandCastle;
+	bool BhvNewDance;
+	bool BhvNewInstruments;
+	bool BhvJoinableToys;
+	bool BhvCocoonReactions;
+	bool BhvSocial;
+	bool BhvTreeShake;
+
 	bool DayNightCycle;
 	bool DayNightShinyTex;
 	bool DayNightRain;

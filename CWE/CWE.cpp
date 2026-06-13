@@ -518,6 +518,15 @@ extern "C"
 		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
 		gConfigVal.OldName = config->getBool("Advanced", "OldName", false);
 
+		// Behaviors
+		gConfigVal.BhvSandCastle = config->getBool("Behavior", "SandCastle", true);
+		gConfigVal.BhvNewDance = config->getBool("Behavior", "NewDance", true);
+		gConfigVal.BhvNewInstruments = config->getBool("Behavior", "NewInstruments", true);
+		gConfigVal.BhvJoinableToys = config->getBool("Behavior", "JoinableToys", true);
+		gConfigVal.BhvCocoonReactions = config->getBool("Behavior", "CocoonReactions", true);
+		gConfigVal.BhvSocial = config->getBool("Behavior", "Social", true);
+		gConfigVal.BhvTreeShake = config->getBool("Behavior", "TreeShake", true);
+		
 		//Detail
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);
 		gConfigVal.MoreAnimation = config->getBool("Detail", "MoreAnimation", false);

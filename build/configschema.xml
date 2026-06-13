@@ -101,6 +101,29 @@
         <HelpText>Lets you edit the current time by pressing X+Y (Note: It pauses passing time)</HelpText>
       </Property>
     </Group>
+    <Group name="Behavior" display="03 - Chao Behaviors">
+      <Property name="SandCastle" type="bool" defaultvalue="True" display="Sand Castles">
+        <HelpText>Chao can play with the shovel by building sand castles.</HelpText>
+      </Property>
+      <Property name="NewDance" type="bool" defaultvalue="True" display="Unused Chao Dances">
+        <HelpText>Restores break-dancing and the "hero/dark" dances!</HelpText>
+      </Property>
+      <Property name="NewInstruments" type="bool" defaultvalue="True" display="New Chao Instruments">
+        <HelpText>New Chao instruments can be learned from the classroom: guitar, triangle, accordion.</HelpText>
+      </Property>
+      <Property name="JoinableToys" type="bool" defaultvalue="True" display="Playing with toys in groups">
+        <HelpText>Chao can play together with toys similar to bands.</HelpText>
+      </Property>
+      <Property name="CocoonReactions" type="bool" defaultvalue="True" display="Cocoon Reactions">
+        <HelpText>Chao can react to cocoons.</HelpText>
+      </Property>
+      <Property name="Social" type="bool" defaultvalue="True" display="Social Chao Actions">
+        <HelpText>Adds several social Chao behaviors such as talking, hugging, etc.</HelpText>
+      </Property>
+      <Property name="TreeShake" type="bool" defaultvalue="True" display="Tree Shaking">
+        <HelpText>Chao can shake trees if they're hungry enough.</HelpText>
+      </Property>
+    </Group>
     <Group name="Advanced" display="03 - Advanced Features">
       <Property name="CustomChaoEvo" type="bool" defaultvalue="True" display="Custom Character Chao Evolutions">
         <HelpText>Disabling this will prevent Chao from evolving into custom chao (such as Spartoi).</HelpText>

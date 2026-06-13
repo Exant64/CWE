@@ -517,8 +517,10 @@ void AL_Behavior_Init() {
 	WriteCall((void*)0x00563DE7, AccessoryRemoveHook);
 	WriteCall((void*)0x00565F0B, AccessoryRemove2Hook);
 
-	//shovel action 
-	WriteData((int*)0x012FE9A0, (int)&ALBHV_SandHole);
+	if (gConfigVal.BhvSandCastle) {
+		//shovel action 
+		WriteData((int*)0x012FE9A0, (int)&ALBHV_SandHole);
+	}
 
 	WriteJump((void*)0x566DF0, ALBHV_Capture);
 }
