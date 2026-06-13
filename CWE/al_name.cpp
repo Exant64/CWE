@@ -46,7 +46,7 @@ static Float CalculateLastLetterXPos(const Float x, const float xsize, const cha
 	}
 	
 	for (size_t c = 0; c < length; c++) {
-		const size_t character = name[c];
+		const uint8_t character = name[c];
 
 		if (character != 0 && character != 95 && character != 255)
 		{
@@ -144,7 +144,7 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 	bbi.adjust = 1;
 
 	for (size_t c = 0; c < length; c++) {
-		const size_t character = pName[c];
+		const uint8_t character = pName[c];
 
 		const bool isSpace = character == 0 || character == 95 || character == 255;
 
