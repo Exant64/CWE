@@ -519,6 +519,13 @@ void Chao_Init()
 	WriteData((short*)0x55043E, (short)0x804);
 	WriteData((short*)0x550448, (short)0x800);
 
+	// egg ParamCopy alloc size (2 malloc, 2 memset, and memcpy)
+	WriteData((uint32_t*)0x0057BC0E, uint32_t(sizeof(ChaoData) + 4));
+	WriteData((uint32_t*)0x0057BC61, uint32_t(sizeof(ChaoData) + 4));
+	WriteData((uint32_t*)0x0057BC18, uint32_t(sizeof(ChaoData)));
+	WriteData((uint32_t*)0x0057BC6B, uint32_t(sizeof(ChaoData)));
+	WriteData((uint32_t*)0x0057BC32, uint32_t(sizeof(ChaoData) / 4));
+
 	AL_Gene_Init();
 	AL_ParameterInit();
 	AL_FaceInit();
