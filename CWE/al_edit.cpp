@@ -34,7 +34,8 @@ void BlackMarketDebug(BlackMarketData *a1)
 		MD_SETINV
 	};
 
-	g_HelperFunctions->SetDebugFontSize(12);
+	const float displayRatioY = VerticalResolution / 480.0f;
+	g_HelperFunctions->SetDebugFontSize(floorf(12 * displayRatioY));
 	g_HelperFunctions->SetDebugFontColor(0xFFFFFFFF);
 	
 	switch (mode)
