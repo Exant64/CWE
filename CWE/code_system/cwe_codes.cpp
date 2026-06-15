@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
-#include "CodeParser.hpp"
 #include "../IniFile.h"
 #include "../ChaoMain.h"
 
@@ -31,6 +30,15 @@
 #include "codes/include/code_multisave.h"
 #include "codes/include/code_fruit_nodespawn.h"
 #include "codes/include/code_dynamiclifetime.h"
+#include "codes/include/race/code_karatemedal.h"
+#include "codes/include/code_negativesave.h"
+#include "codes/include/race/code_racegainexp.h"
+#include "codes/include/race/code_partyrace.h"
+#include "codes/include/input/code_camera.h"
+
+#include "codes/include/easy/code_instantgrowtrees.h"
+#include "codes/include/advanced/code_spoiledfruit.h"
+
 #include <code_system/codes/include/code_shinyjewelmonotone.h>
 #include <code_system/codes/include/cheat/code_levellimit.h>
 #include <code_system/codes/include/bonus/code_babychaolevel.h>
@@ -38,37 +46,10 @@
 
 #include <code_system/codes/include/easy/code_disable_reincarnation.h>
 
-CodeParser codeParser;
-struct Config { const char* a, * b; };
-static Config codeConfig[] = {
-	{ "Advanced", "AdvancedMixingColors"},
-	{ "Advanced", "AdvancedNewbornChaoHaveVaryingShadesofColor"},
-	{ "Advanced", "AdvancedNormalChaocanmakeColorChao"},
-	{ "Advanced", "AdvancedEyeColorsforNewbornChao"},
-	{ "Advanced", "AdvancedFruitscanSpoilt"},
-	{ "Hard", "HardBullyChaoRequiresMoreChaoAnimations"},
-	{ "Hard", "HardChaoAttention"},
-	{ "Hard", "HardAnnoyingMeanChao"},
-	{ "Easy", "EasyInstantGrowTrees"},
-	{ "Easy", "EasyAutoGenerateStats"},
-	{ "Race", "BonusChaoKarategiveMedal"},
-	{ "Misc", "BonusLuckyChao"},
-	{ "Input", "ControllerOnlyBetterCameraControl"},
-	{ "Input", "KeyboardwithNumpadBetterCameraControl"},
-	{ "Input", "KeyboardwithoutNumpadBetterCameraControl"}, 
-	{ "Misc", "OtherMoreandRandomChaoFace"},
-	{ "Race", "RaceJewelandBeginnerRacebecome8PPartyRace"},
-	{ "Race", "RaceChaoGainExpatChaoRace"},
-	{ "Input", "SaveHoldXtoLoadNegativeChaoSave"},
-	{ "Detail", "DetailFittingPersonality"}
-};
-
-
 //one day this will be moved out to cwe.cpp once we stop needing codeparser
 int ToyResetTimer = 0;
 void CWE_Codes_OnFrame() {
 	ChaoWorldExtendedRequired();
-	codeParser.processCodeList();
 
 	for (auto& c : CodeManager::Instance()) {
 		c->OnFrame();
@@ -125,19 +106,6 @@ void CWE_Codes_OnFrame() {
 		
 }
 
-void CWE_Codes_CheckAndLoadCode(const char* path, const IniFile* config, const Config& param)
-{
-	char binPath[MAX_PATH];
-	if (config->getBool(param.a, param.b, false))
-	{
-		PrintDebug("CWE_Codes: Loading %s", param.b);
-		sprintf(binPath, "%s\\CodeBinary\\%s.bin", path, param.b);
-		int ret = codeParser.readCodes(binPath);
-		if (ret == -ENOENT)
-			PrintDebug("failed to load %s", binPath);
-	}
-}
-
 void CWE_Codes_Init(const char* path, const IniFile* config) {
 
 	//config gets deleted after init, but it stays inside the codemanager
@@ -167,6 +135,13 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<HDToyModels>("HDToyModels", false);
 	CodeManager::Instance().Add<JackInBoxPunishment>("JackInBoxPunishment", false);
 	CodeManager::Instance().Add<IgnoreMinigameIntel>("IgnoreMinigameIntel", false);
+	CodeManager::Instance().Add<KarateGiveMedal>("BonusChaoKarategiveMedal", false);
+	CodeManager::Instance().Add<NegativeSave>("SaveHoldXtoLoadNegativeChaoSave", false);
+	CodeManager::Instance().Add<RaceGainExp>("RaceChaoGainExpatChaoRace", false);
+	CodeManager::Instance().Add<PartyRace>("RaceJewelandBeginnerRacebecome8PPartyRace", false);
+	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
+	CodeManager::Instance().Add<SpoiledFruits>("AdvancedFruitscanSpoilt", false);
+	CodeManager::Instance().Add<BetterCameraControl>("CameraControl", 0, 0);
 
 	//lst ports
 	CodeManager::Instance().Add<RaceCamSwitch>("RaceCameraswitchManuallyusingkeyboard", false);
@@ -177,10 +152,4 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<DisableLevelLimit>("CheatDisableLevelLimit", false);
 	CodeManager::Instance().Add<StayBabyChaoLvl>("BonusStayBabyChaoUntilalllvl.10", false);
 	CodeManager::Instance().Add<GCShinyJewel>("AdvancedTransformPCShinyJewelsintoGCShinyJewels", false);
-	
-	codeParser.clear();
-	for (size_t i = 0; i < LengthOfArray(codeConfig); i++)
-	{
-		CWE_Codes_CheckAndLoadCode(path, config, codeConfig[i]);
-	}
 }
