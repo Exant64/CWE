@@ -17,6 +17,7 @@
 #include <al_behavior/al_behavior.h>
 #include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
+#include <data/more_faces.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -29,6 +30,7 @@ static bool ShowItemsMenu = false;
 static bool ShowAccessoryMenu = false;
 static bool ShowMarketMenu = false;
 static bool ShowSoundsMenu = false;
+static bool ShowMoreFacesMenu = false;
 
 static task* GetSelectedChao() {
     return GetChaoObject(0, SelectedChaoIndex);
@@ -36,6 +38,54 @@ static task* GetSelectedChao() {
 
 static task* GetSelectedOtherChao() {
     return GetChaoObject(0, SelectedOtherChaoIndex);
+}
+
+static void MoreFacesMenu() {
+    if(!ShowMoreFacesMenu) return;
+    if(!MainCharObj2[0]);
+
+    task* pHeld = MainCharObj2[0]->HeldObject;
+    if(!pHeld) return;
+    if(pHeld->MainSub != Chao_Main) return;
+    
+    static int index = 0;
+
+    static const char* PersonalityStrings[] = {
+        "CURIOSITY",
+        "KINDNESS",
+        "AGRESSIVE",
+        "Naive/SLEEPY_HEAD",
+        "SOLITUDE",
+        "VITALITY",
+        "GLUTTON",
+        "REGAIN",
+        "SKILLFUL",
+        "CHARM",
+        "CHATTY",
+        "Carefree/CALM",
+        "FICKLE"
+    };
+
+    static const char* RangeStrings[] = {
+        "Low",
+        "Mid",
+        "High"
+    };
+
+    if(ShowMoreFacesMenu && ImGui::Begin("More Faces Debug", &ShowMoreFacesMenu)) {
+        ImGui::SliderInt("Select", &index, 0, _countof(NewFaceEntries) - 1);
+
+        const auto& entry = NewFaceEntries[index];
+
+        AL_FaceChangeEye(pHeld, entry.Eye);
+        AL_FaceChangeMouth(pHeld, entry.Mouth);
+        
+        for(size_t i = 0; i < entry.PersonalityCount; ++i) {
+            ImGui::Text("%s %s", RangeStrings[entry.PersonalityCheckRanges[i]], PersonalityStrings[entry.PersonalityKinds[i] - EM_PER_CURIOSITY]);
+        }
+
+        ImGui::End();
+    }
 }
 
 static void ChaoInfoMenu() {
@@ -741,6 +791,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Accessory Internals", NULL, &ShowAccessoryMenu);
             ImGui::MenuItem("Market", NULL, &ShowMarketMenu);
             ImGui::MenuItem("Sound System", NULL, &ShowSoundsMenu);
+            ImGui::MenuItem("More Chao Faces", NULL, &ShowMoreFacesMenu);
             
             ImGui::EndMenu();
         }
@@ -754,6 +805,7 @@ static void ImGuiMenu() {
         AccessoryInternals();
         MarketMenu();
         SoundsMenu();
+        MoreFacesMenu();
 
         ImGui::EndMainMenuBar();
     }

@@ -4,6 +4,7 @@
 #include "Chao.h"
 
 #include "data/color_mix_table.h"
+#include "data/more_faces.h"
 
 #include <random>
 #include <unordered_map>
@@ -143,7 +144,58 @@ static void AL_GeneAnalyzeMoreFaces(ChaoDataBase* pParam) {
 		return;
 	}
 
-	// CFG_MORE_FACE_PERSONALITY
+	uint32_t acceptedEntryIndices[_countof(NewFaceEntries)];
+	uint32_t acceptedEntryCount = 0;
+
+	for(size_t i = 0; i < _countof(NewFaceEntries); ++i) {
+		const auto& entry = NewFaceEntries[i];
+
+		bool check = true;
+
+		for(size_t j = 0; j < entry.PersonalityCount; ++j) {
+			const auto persKind = entry.PersonalityKinds[j];
+			const auto persRange = entry.PersonalityCheckRanges[j];
+	
+			const auto pers = (&pParam->Emotion.Normal_Curiosity)[persKind - EM_PER_CURIOSITY];
+			const bool persLow = pers < -40;
+			const bool persHigh = pers > 40;
+
+			bool localCheck = false;
+
+			switch(persRange) {
+				case GENE_FACE_CHECK_LOW:
+					localCheck = persLow;
+					break;
+				case GENE_FACE_CHECK_MID:
+					localCheck = !persLow && !persHigh;
+					break;
+				case GENE_FACE_CHECK_HIGH:
+					localCheck = persHigh;
+					break;
+			}
+
+			if(!localCheck) {
+				check = false;
+				break;
+			}
+		}
+
+		if(check) {
+			acceptedEntryIndices[acceptedEntryCount++] = i;
+		}
+	}
+
+	if(acceptedEntryCount > 0) {
+		// added 1 + because index 0 resembles the existing vanilla face
+		const auto index = Uint32(njRandom() * (1 + float(acceptedEntryCount) - 0.0001f));
+
+		if(!index) return;
+
+		const auto& entry = NewFaceEntries[acceptedEntryIndices[index - 1]];
+
+		pParam->EyeType = entry.Eye;
+		pParam->MouthType = entry.Mouth;
+	}
 }
 
 // this is where you would add anything that gets applied to the chaodata from the dna
