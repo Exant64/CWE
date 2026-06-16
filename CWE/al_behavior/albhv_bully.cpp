@@ -338,6 +338,7 @@ static int ALBHV_AfraidWait(task* tp) {
 					break;
 			}
 
+			bhv->LimitTimer = 1800;
 			bhv->Mode = AFRAIDWAIT_MD_START_TURN;
 		case AFRAIDWAIT_MD_START_TURN:
 			if (!AL_IsMotionEnd(tp)) break;
@@ -393,10 +394,9 @@ static int ALBHV_AfraidWait(task* tp) {
 			break;
 	}
 
-	const float dist = ALW_CalcDistFromLockOn(tp);
-	if (dist >= 0 && dist < 4) {
-		return BHV_RET_FINISH;
-	}
+	if (--bhv->LimitTimer <= 0) {
+        AL_SetBehavior(tp, ALBHV_Think);
+    }
 
 	return BHV_RET_CONTINUE;
 }
@@ -463,6 +463,10 @@ int ALBHV_ConfidentWait(task* tp) {
 	return BHV_RET_CONTINUE;
 }
 
+static bool IsChaoAttackCapable(task* tp) {
+	
+}
+
 static task* FindChaoToBully(task* tp) {
     chaowk* work = GET_CHAOWK(tp);
     task* pSelectedChao = NULL;
@@ -495,23 +499,30 @@ static task* FindChaoToBully(task* tp) {
 
 static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
     task* pSelectedChao = NULL;
+	float distClosest = 100.f;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
 		task* pChao = GetChaoObject(0, i);
+		chaowk* work = GET_CHAOWK(pChao);
+
 		if (!pChao || pChao == pBullyChao || pChao == pVictimChao) continue;
 		
-		BHV_FUNC func = AL_GetBehavior(pChao);
-
+		if (AL_IsChild(pChao)) continue;
+		if (!AL_IsHero2(pChao) && AL_EmotionGetValue(pChao, EM_PER_KINDNESS) < 10) continue;
+		
 		//not in water 
 		if (pChao->Data1.Entity->Position.y + 2.0 < pChao->EntityData2->field_DC) continue;
 
+		const BHV_FUNC func = AL_GetBehavior(pChao);
+		
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->entity.Position, &pChao->Data1.Entity->Position);
+				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->entity.Position, &work->entity.Position);
 
-				if (dist < 100.f) {
+				if (dist < distClosest) {
 					pSelectedChao = pChao;
+					distClosest = dist;
                 }
                 
 				break;
@@ -573,20 +584,55 @@ static int ALBHV_AngryGoToLockOn(task* tp) {
     return BHV_RET_CONTINUE;
 }
 
-void CalcIntentionTest(task* tp) {
+static Uint32 IntentionAngerBullyTrigger = 80;
+static float IntentionAngerBullyMinScore = 0.7f;
+static float IntentionAngerBullyMaxScore = 0.99f;
+
+void AL_CalcIntentionScore_Bully(task* tp, float* pMaxScore) {
+	float score = 0.0f;
+    Uint32 angerTrigger = IntentionAngerBullyTrigger;
+    Uint32 value = AL_EmotionGetValue(tp, EM_MD_ANGER);
+
+    if (AL_EmotionGetValue(tp, EM_PER_KINDNESS) > 60) {
+        return;
+	}
+
 	task* pVictimChao = FindChaoToBully(tp);
 	if (!pVictimChao) return;
 
-    task* pStopperChao = FindStopperChao(tp, pVictimChao);
+	bool trigger = false;
+
+	if (value > angerTrigger) {
+		if (AL_EmotionGetValue(tp, EM_PER_AGRESSIVE) > 0 || njRandom() < 0.5f) {
+			score = AL_CalcMoodScoreTypeA(value, angerTrigger);
+			score += (100 + AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) / 200.f * (1.f - IntentionAngerBullyMinScore);
+			score *= IntentionAngerBullyMaxScore;
+			AL_ScoreRandomize(&score);
+		}
+
+		if(score > *pMaxScore) {
+			trigger = true;
+
+			*pMaxScore = score;
+		}
+	}
+
+	if(!trigger) return;
+
+    task* pStopperChao = NULL;
+	if (njRandom() < 0.4f) {
+		pStopperChao = FindStopperChao(tp, pVictimChao);
+	}
 
     ALW_LockOn(tp, pVictimChao);
     ALW_LockOn(pVictimChao, tp);
 
-	//const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->StatPoints[3] - GET_CHAOPARAM(tp)->StatPoints[3]) > 500 || 
-	//	(GET_CHAOPARAM(pVictimChao)->KarateInfo - GET_CHAOPARAM(tp)->KarateInfo) >= 5;
+	const int angerDecrease = -(50 + max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)));
+	AL_EmotionAdd(tp, EM_MD_ANGER, angerDecrease);
 
-	const bool canDefendThemselves = false;
-
+	const bool canDefendThemselves = false; /*(GET_CHAOPARAM(pVictimChao)->StatPoints[3] - GET_CHAOPARAM(tp)->StatPoints[3]) > 500 || 
+		(GET_CHAOPARAM(pVictimChao)->KarateInfo - GET_CHAOPARAM(tp)->KarateInfo) >= 5;
+*/
 	if (!canDefendThemselves && pStopperChao) {
 		// warning: not the prettiest, no existing systems were really appropriate for this
 		// but i didn't wanna invent a new one just for this one thing
@@ -613,10 +659,15 @@ void CalcIntentionTest(task* tp) {
 		AL_SetBehavior(tp, ALBHV_BullyPostureChangeStand);
 		AL_SetNextBehavior(tp, ALBHV_AngryGoToLockOn);
 
-		ALW_CommunicationOn(tp, pVictimChao);
-
 		AL_SetBehavior(pVictimChao, ALBHV_ConfidentWait);
 		AL_SetNextBehavior(pVictimChao, ALBHV_HitChao);
+
+		ALW_CommunicationOn(tp, pVictimChao);
+		ALW_SendCommand(tp, 0);
+		ALW_SendCommand(pVictimChao, 0);
+
+		ALW_LockOn(tp, pVictimChao);
+    	ALW_LockOn(pVictimChao, tp);
 
 		return;
 	}
@@ -624,8 +675,13 @@ void CalcIntentionTest(task* tp) {
     AL_SetBehavior(tp, ALBHV_PostureChangeStand);
     AL_SetNextBehavior(tp, ALBHV_AngryGoToLockOn);
     AL_SetNextBehavior(tp, ALBHV_HitChao);
+	
+    AL_SetBehavior(pVictimChao, ALBHV_AfraidWait);
 
     ALW_CommunicationOn(tp, pVictimChao);
+	ALW_SendCommand(tp, 0);
+	ALW_SendCommand(pVictimChao, 0);
 
-    AL_SetBehavior(pVictimChao, ALBHV_AfraidWait);
+	ALW_LockOn(tp, pVictimChao);
+    ALW_LockOn(pVictimChao, tp);
 }

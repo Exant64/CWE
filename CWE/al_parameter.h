@@ -4,6 +4,7 @@
 void AL_NameSet(char* lval, char* rval);
 bool AL_IsChild(ObjectMaster* tp);
 bool AL_IsHero(unsigned __int8 a1);
+bool AL_IsHero2(ObjectMaster* a1);
 bool AL_IsDark(unsigned __int8 a1);
 bool AL_IsNegative(ObjectMaster* a1);
 bool AL_IsCustomChao(ObjectMaster* tp);

@@ -511,6 +511,7 @@ extern "C"
 		// Hard
 		gConfigVal.ChaoAttention = config->getBool("Hard", "HardChaoAttention", false);
 		gConfigVal.AnnoyingMeanChao = config->getBool("Hard", "HardAnnoyingMeanChao", false);
+		gConfigVal.BullyChao = config->getBool("Hard", "HardBullyChaoRequiresMoreChaoAnimations", false);
 
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);

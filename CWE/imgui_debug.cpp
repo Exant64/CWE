@@ -206,9 +206,6 @@ static void ChaoInfoMenu() {
                     if (ImGui::Button("Float")) {
                         AL_SetBehavior(pChao, ALBHV_GoToFloat);
                     }
-                    if (ImGui::Button("Bully")) {
-                        CalcIntentionTest(pChao);
-                    }
 
                     ImGui::TreePop();
                 }
@@ -784,7 +781,7 @@ static void ImGuiMenu() {
         if (ImGui::BeginMenu("Menus")) {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
             ImGui::MenuItem("Light", NULL, &ShowLight);
-            ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
+            // ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
             ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
             ImGui::MenuItem("Tasks", NULL, &ShowTaskList);
             ImGui::MenuItem("Items", NULL, &ShowItemsMenu);
@@ -798,7 +795,7 @@ static void ImGuiMenu() {
 
         ChaoSoundMenu();
         ChaoInfoMenu();
-        DayNightMenu();
+        // DayNightMenu();
         LightMenu();
         ItemsMenu();
         TaskListMenu();
@@ -810,7 +807,7 @@ static void ImGuiMenu() {
         ImGui::EndMainMenuBar();
     }
 
-    if (true && ImGui::Begin("rain test")) {
+    if (false && ImGui::Begin("rain test")) {
         static int timer = 4000;
         ImGui::SliderInt("timer", &timer, 0, 10000);
 

@@ -49,6 +49,7 @@ struct ConfigValues {
 
 	bool ChaoAttention;
 	bool AnnoyingMeanChao;
+	bool BullyChao;
 
 	bool ColorMixing;
 	bool NewbornVaryingShades;

@@ -11,6 +11,7 @@
 #include <random>
 #include <util.h>
 #include "al_intention.h"
+#include <ChaoMain.h>
 
 void AL_ScoreRandomize(float* pScore)
 {
@@ -31,6 +32,17 @@ float AL_CalcScoreTypeA(int value, int trigger) {
 	}
 
 	return 0;
+}
+
+float AL_CalcMoodScoreTypeA(int value, int trigger) {
+    float fValue = value;
+    float fTrigger = trigger;
+
+    if (value > trigger) {
+        return (fValue - fTrigger) / (200 - fTrigger);
+    }
+
+    return 0;
 }
 
 extern int ALBHV_HoldHands_Left(ObjectMaster* a1);
@@ -199,6 +211,10 @@ void __cdecl AL_CalcIntentionScore_All(ObjectMaster* a1, float* a2)
 	{
 		AL_SetBehavior(a1, (BHV_FUNC)0x0568F60);
 		*a2 = 1.0f;
+	}
+
+	if (gConfigVal.BullyChao) {
+		AL_CalcIntentionScore_Bully(a1, a2);
 	}
 
 	AL_CalcIntentionScore_JoinSToy(a1, a2);

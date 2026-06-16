@@ -147,7 +147,7 @@
     </Group>
     <Group name="Hard" display="04 - Hard Mode">
       <Property name="HardBullyChaoRequiresMoreChaoAnimations" type="bool" defaultvalue="False" display="Bully Chao">
-        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Requires “More Chao Animations” turned on to work.</HelpText>
+        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack.</HelpText>
       </Property>
       <Property name="ChaoDrown" type="bool" defaultvalue="False" display="Chao Drown">
         <HelpText>If the Chao can't swim, they will slowly lose Happiness, and if it reaches -100, they Drown.</HelpText>
