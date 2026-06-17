@@ -12,7 +12,6 @@
 #include "Trampoline.h"
 
 #include <ctime>
-#include "al_console.h"
 #include "Chao.h"
 #include "alo_obakehead.h"
 #include "alg_kinder_he.h"
@@ -26,13 +25,11 @@
 #include "al_palette.h"
 
 #include "define.h"
-#include "al_tv.h"
 #include "al_draw.h"
 
 #include "al_face.h"
 #include "al_animation.h"
 
-#include "al_look.h"
 #include "al_modelcontainer.h"
 #include "al_parts.h"
 #include "al_name.h"

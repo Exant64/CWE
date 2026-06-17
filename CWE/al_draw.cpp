@@ -10,7 +10,6 @@
 #include "al_palette.h"
 #include "al_face.h"
 #include "al_parts.h"
-#include "al_look.h"
 #include "al_modelcontainer.h"
 #include "alo_obakehead.h"
 
@@ -175,24 +174,6 @@ static bool IsEggChao(const task* tp) {
 void AL_SetMotionMatrix(ObjectMaster* a1, ChunkObjectPointer* ptr)
 {
 	AnimateChao((int)ptr);
-
-	AL_LOOK* look = AL_GetLook(a1);
-	if (Chao_NodeIndex == 14)
-	{
-		//njRotateX(NULL, look->AngX);
-
-		if (look->AngY != 0)
-		{
-			//njRotateY(NULL, -a1->Data1.Entity->Rotation.y);
-			//njRotateY(NULL, NJM_DEG_ANG(180) + look->AngY);
-			/*
-			if (a1->Data1.Entity->Rotation.y > look->AngY)
-				njRotateY(NULL, a1->Data1.Entity->Rotation.y - look->AngY);
-			else
-				njRotateY(NULL, look->AngY - a1->Data1.Entity->Rotation.y);
-				*/
-		}
-	}
 }
 
 void CWE_ShinyCheck(int shiny)

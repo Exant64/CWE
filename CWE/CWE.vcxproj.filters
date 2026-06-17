@@ -413,9 +413,6 @@
     <None Include="data\cwe\object_common_cnk\alo_cakeslice.nja" />
     <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
     <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
-    <None Include="data\debug\alr_camera.nja" />
-    <None Include="data\debug\alr_chaoicon.nja" />
-    <None Include="data\debug\alr_cube.nja" />
     <None Include="data\minimal\bee.mini" />
     <None Include="data\minimal\lady.mini" />
     <None Include="data\minimal\scorpion.mini" />

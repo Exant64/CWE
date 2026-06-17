@@ -5,8 +5,6 @@
 #include "ChaoMain.h"
 #include "Chao.h"
 #include "al_parts.h"
-#include "al_medal_disp.h"
-#include "alr_camera_edit.h"
 #include "al_animation.h"
 #include "AL_ModAPI.h"
 
@@ -32,7 +30,6 @@
 #include "al_piano.h"
 
 #include "brightfixapi.h"
-#include "al_tv.h"
 #include <cassert>
 #include "al_butterfly.h"
 #include "al_sandhole.h"
@@ -107,13 +104,6 @@ extern "C"
 	{
 		int retval = AL_NormalCameraExecutor_Load();
 		
-#ifdef RENDERTARGET
-		LoadObject(4, "testbeginscenehook", [](ObjectMaster* a1) {
-			WriteCall((void*)0x00434011, BeginScene_Ex);
-			a1->MainSub = DeleteObject_;
-			}, (LoadObj)0);
-#endif
-
 		switch (AL_GetStageNumber()) {
 		case CHAO_STG_NEUT:
 		case CHAO_STG_HERO:
