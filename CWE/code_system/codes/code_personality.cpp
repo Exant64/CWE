@@ -4,18 +4,27 @@
 #include "include/code_personality.h"
 
 void PersonalityMultiply::Init() {
-	ChaoGlobal.ParamSubAnger *= m_param; //Anger (Crybaby-Energetic, Kindness and Carefree)
-	ChaoGlobal.ParamSubSorrow *= m_param;  //Urge to cry (Crybaby-Energetic and Carefree)
-	ChaoGlobal.ParamSubFear *= m_param; //Fear (Crybaby-Energetic and Carefree)
-	ChaoGlobal.ParamSubSurprise *= m_param; //Surprise (Carefree)
-	ChaoGlobal.ParamSubPain *= m_param; //Dizziness (Regain)
-	ChaoGlobal.ParamSubRelax *= m_param; //Relax (Curious and Fickle) 
-	ChaoGlobal.ParamAddSleepy *= m_param; //Sleepiness (Naive)
-	ChaoGlobal.ParamAddHunger *= m_param; //Hunger (Big Eater)
-	ChaoGlobal.ParamAddBreed *= m_param; //Desire to mate (Vitality)
-	ChaoGlobal.ParamAddTediousCuriosity *= m_param; //Boredom (Curious)
-	ChaoGlobal.ParamAddTediousAggressive *= m_param; //Boredom (Crybaby-Energetic)
-	ChaoGlobal.ParamAddTediousCalm *= m_param; //Boredom (Carefree)
-	ChaoGlobal.ParamAddLonely *= m_param; //Lonely (Solitude)
-	ChaoGlobal.ParamAddTireNormal *= m_param; //Tire (Vitality)
+	if(m_param <= 1) return;
+
+	const auto multiplier = ((m_param - 2) % 2) + 2;
+	const bool affectHunger = m_param < 4;
+
+	ChaoGlobal.ParamSubAnger *= multiplier; //Anger (Crybaby-Energetic, Kindness and Carefree)
+	ChaoGlobal.ParamSubSorrow *= multiplier;  //Urge to cry (Crybaby-Energetic and Carefree)
+	ChaoGlobal.ParamSubFear *= multiplier; //Fear (Crybaby-Energetic and Carefree)
+	ChaoGlobal.ParamSubSurprise *= multiplier; //Surprise (Carefree)
+	ChaoGlobal.ParamSubPain *= multiplier; //Dizziness (Regain)
+	ChaoGlobal.ParamSubRelax *= multiplier; //Relax (Curious and Fickle) 
+	ChaoGlobal.ParamAddSleepy *= multiplier; //Sleepiness (Naive)
+
+	if(affectHunger) {
+		ChaoGlobal.ParamAddHunger *= multiplier; //Hunger (Big Eater)
+	}
+
+	ChaoGlobal.ParamAddBreed *= multiplier; //Desire to mate (Vitality)
+	ChaoGlobal.ParamAddTediousCuriosity *= multiplier; //Boredom (Curious)
+	ChaoGlobal.ParamAddTediousAggressive *= multiplier; //Boredom (Crybaby-Energetic)
+	ChaoGlobal.ParamAddTediousCalm *= multiplier; //Boredom (Carefree)
+	ChaoGlobal.ParamAddLonely *= multiplier; //Lonely (Solitude)
+	ChaoGlobal.ParamAddTireNormal *= multiplier; //Tire (Vitality)
 }
