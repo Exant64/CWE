@@ -33,7 +33,7 @@ void someUIProjectionCodeCopy(NJS_VECTOR* a1, NJS_VECTOR* a2)
 	}
 }
 
-static ObjectMaster* pGuestChao = NULL;
+static task* pGuestChao = NULL;
 static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 {
 	NJS_VECTOR posIn = { 240, 300, -25 };

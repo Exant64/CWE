@@ -11,35 +11,35 @@
 #include "ChaoMain.h"
 #include "renderfix.h"
 
-bool __cdecl SetPianoWaypoint(ObjectMaster* a2, NJS_VECTOR* a1)
+bool __cdecl SetPianoWaypoint(task* a2, NJS_VECTOR* a1)
 {
 	if (a2)
 	{
-		EntityData1* v2 = a2->Data1.Entity;
-		Angle v4 = v2->Rotation.y;
+		taskwk* v2 = a2->twp;
+		Angle v4 = v2->ang.y;
 
-		a1->x = njSin(v4) * 1.5 *2 + v2->Position.x;
-		a1->y = v2->Position.y;
-		a1->z = njCos(v4) * 1.5 * 2 + v2->Position.z;
+		a1->x = njSin(v4) * 1.5 *2 + v2->pos.x;
+		a1->y = v2->pos.y;
+		a1->z = njCos(v4) * 1.5 * 2 + v2->pos.z;
 	}
 	return 1;
 }
 
-void Piano_Display(ObjectMaster * a1)
+void Piano_Display(task * a1)
 {
-	if (ScaleObjectMaster_XYZ(a1, 5.2f, 4.5f, 2.9f)) 
+	if (Scaletask_XYZ(a1, 5.2f, 4.5f, 2.9f)) 
 	{
 		njPushMatrixEx();
 		njSetTexture(&AL_TOY_TEXLIST);
 
-		njTranslateEx(&a1->Data1.Entity->Position);
+		njTranslateEx(&a1->twp->pos);
 		
-		njRotateY(NULL, a1->Data1.Entity->Rotation.y);
+		njRotateY(NULL, a1->twp->ang.y);
 
 		SaveControl3D(); 
 		OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 
-		switch (a1->Data1.Entity->Index)
+		switch (a1->twp->btimer)
 		{
 		case PIANOTYPE_PIANO:
 			njRotateY(NULL, 0x8000);
@@ -58,7 +58,7 @@ void Piano_Display(ObjectMaster * a1)
 		{
 			njTranslate(NULL, 0, 0.4f, 0);
 
-			switch (a1->Data1.Entity->Index)
+			switch (a1->twp->btimer)
 			{
 			case PIANOTYPE_PIANO:
 				njScale(NULL, 1.5f, 0.7f, 1.5f);
@@ -92,21 +92,21 @@ const std::array<const char*, 4> OrganSongs = {
 	"chao_g_organ4.adx"
 };
 
-void Piano_Main(ObjectMaster * a1)
+void Piano_Main(task * a1)
 {
 	if (ALO_Field_Find_(a1,0, CI_KIND_AL_PIANO))
 	{
-		a1->Data1.Entity->Status &= ~0x240u;
+		a1->twp->flag &= ~0x240u;
 
-		if (!a1->Data1.Entity->Action)
+		if (!a1->twp->mode)
 		{
 			float a = njRandom();
 
 			InitJingle();
-			a1->Data1.Entity->Action++;
+			a1->twp->mode++;
 
 			int index = 0;
-			switch (a1->Data1.Entity->Index)
+			switch (a1->twp->btimer)
 			{	
 			case PIANOTYPE_PIANO:
 				a *= PianoSongs.size() - 0.00001f;
@@ -133,11 +133,11 @@ void Piano_Main(ObjectMaster * a1)
 	}
 	else 
 	{
-		a1->Data1.Entity->Status |= 0x240u;
+		a1->twp->flag |= 0x240u;
 
-		if (a1->Data1.Entity->Action)
+		if (a1->twp->mode)
 			ResetMusic();
-		a1->Data1.Entity->Action = 0;
+		a1->twp->mode = 0;
 	}
 
 	AL_Toy_Move_Update(a1);
@@ -148,23 +148,23 @@ void Piano_Main(ObjectMaster * a1)
 CollisionData ALO_RadicaseExecutor_collision[] = {
 	{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  1.5,  0.0,  0.0, 0, 0, 0, 0 }
 };
-void ALO_Piano_Init(ObjectMaster *a1)
+void ALO_Piano_Init(task *a1)
 {
-	a1->MainSub = Piano_Main;
-	a1->DeleteSub = (ObjectFuncPtr)0x0057B9B0;
+	a1->exec = Piano_Main;
+	a1->dest = (task_exec)0x0057B9B0;
 	AL_Toy_Move_Register(a1, ALW_KIND_PIANO);
 }
 
 void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
-	ObjectMaster *piano;
+	task *piano;
 
-	piano = LoadObject(4, "ALO_Piano", ALO_Piano_Init, LoadObj_Data1);
-	piano->DeleteSub = ALO_Delete;
-	piano->DisplaySub = Piano_Display;
+	piano = CreateElementalTask(4, "ALO_Piano", ALO_Piano_Init, LoadObj_Data1);
+	piano->dest = ALO_Delete;
+	piano->disp = Piano_Display;
 
-	piano->Data1.Entity->Index = index;
-	piano->Data1.Entity->Position = *pPos;
-	piano->Data1.Entity->Rotation.y = ang;
+	piano->twp->btimer = index;
+	piano->twp->pos = *pPos;
+	piano->twp->ang.y = ang;
 
 	//InitCollision(piano, (CollisionData*)&ALO_RadicaseExecutor_collision, 2, 4);
 	AL_Toy_Move_Init(piano, (CCL_INFO*)ALO_RadicaseExecutor_collision);

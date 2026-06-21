@@ -204,11 +204,11 @@ extern "C"
 		param.UpgradeCounter = 5;
 	}
 
-	void __cdecl ALW_Control_Main_Hook(ObjectMaster* a1);
+	void __cdecl ALW_Control_Main_Hook(task* a1);
 	Trampoline ALW_Control_t(0x00530850, 0x00530859, ALW_Control_Main_Hook);
-	void __cdecl ALW_Control_Main_Hook(ObjectMaster* a1)
+	void __cdecl ALW_Control_Main_Hook(task* a1)
 	{
-		if (a1->Data1.Entity->Action == 0) {
+		if (a1->twp->mode == 0) {
 			const bool checkIfNeedToGreyscale = 
 				(AL_GetStageNumber() == CHAO_STG_NEUT && gConfigVal.NeutGrayscale) ||
 				(AL_GetStageNumber() == CHAO_STG_HERO && gConfigVal.HeroGrayscale) ||

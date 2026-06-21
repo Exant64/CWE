@@ -18,7 +18,7 @@ void sub_46E5E0(int a1, int a2)
 }
 
 const int sub_46E5B0Ptr = 0x46E5B0;
-void sub_46E5B0(ObjectMaster* a1, int a2)
+void sub_46E5B0(task* a1, int a2)
 {
 	__asm
 	{
@@ -260,9 +260,9 @@ static void AL_CreateCustomHoldingItem() {
 
 static void AL_CreateHoldingItem() {
 	ChaoObjectData* v1; // esi
-	EntityData1* v2; // edi
+	taskwk* v2; // edi
 	int v3; // ebx
-	ObjectMaster* v6; // esi
+	task* v6; // esi
 	ChaoObjectData* v7; // [esp+8h] [ebp-1Ch]
 	NJS_VECTOR a2; // [esp+Ch] [ebp-18h]
 	NJS_VECTOR a4; // [esp+18h] [ebp-Ch]
@@ -287,8 +287,8 @@ static void AL_CreateHoldingItem() {
 		{
 			v2 = MainCharObj1[0];
 
-			a2 = MainCharObj1[0]->Position;
-			v3 = MainCharObj1[0]->Rotation.y;
+			a2 = MainCharObj1[0]->pos;
+			v3 = MainCharObj1[0]->ang.y;
 
 			a2.x += njSin(v3) * 3.0f;
 			a2.z += njCos(v3) * 3.0f;
@@ -307,20 +307,20 @@ static void AL_CreateHoldingItem() {
 				}
 				else
 				{
-					v6 = AL_MinimalExecutor_Load((char)v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (int)v1);
+					v6 = AL_MinimalExecutor_Load((char)v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
 				}
 				break;
 			case 3:
-				v6 = ALO_FruitExecutor_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (ChaoData*)v1);
+				v6 = ALO_FruitExecutor_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (ChaoData*)v1);
 				break;
 			case 7:
 				v6 = ALO_SeedExecutor_Load(v1->Type, &a2, &a4, (int)v1);
 				break;
 			case 9:
-				v6 = ALO_ObakeHeadExecutor_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (int)v1);
+				v6 = ALO_ObakeHeadExecutor_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
 				break;
 			case ChaoItemCategory_Special:
-				v6 = ALO_Special_Load(v1->Type, &a2, MainCharObj1[0]->Rotation.y, &a4, (short*)v1);
+				v6 = ALO_Special_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (short*)v1);
 				break;
 			default:
 				throw std::exception("CWE: holding incorrect item");
@@ -358,14 +358,14 @@ static bool AL_CreatePurchasedCustomItem(const SAlItem& item, NJS_POINT3& positi
 	}
 
 	// only accessory for now
-	Accessory_Load(item.mType, &position, MainCharObj1[0]->Rotation.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory));
+	Accessory_Load(item.mType, &position, MainCharObj1[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory));
 
 	return true;
 }
 
 // this is a hook that redirects responsibility to AL_CreatePurchasedCustomItem to create the new item types (except special)
-static void AL_MinimalCreateManagerExecutor_New(ObjectMaster* a2) {
-	EntityData1* v1; // esi
+static void AL_MinimalCreateManagerExecutor_New(task* a2) {
+	taskwk* v1; // esi
 	double v5; // st7
 	int v7; // eax
 	int v8; // ebp
@@ -382,15 +382,15 @@ static void AL_MinimalCreateManagerExecutor_New(ObjectMaster* a2) {
 	NJS_VECTOR result; // [esp+24h] [ebp-B4h]
 
 
-	v1 = (EntityData1*)a2->Data1.Entity;
-	v1->Index++;
-	if (v1->Index > 15)
+	v1 = (taskwk*)a2->twp;
+	v1->btimer++;
+	if (v1->btimer > 15)
 	{
-		v1->Index = 0;
+		v1->btimer = 0;
 
-		position.x = MainCharObj1[0]->Position.x;
-		position.y = MainCharObj1[0]->Position.y + 4.5f;
-		position.z = MainCharObj1[0]->Position.z;
+		position.x = MainCharObj1[0]->pos.x;
+		position.y = MainCharObj1[0]->pos.y + 4.5f;
+		position.z = MainCharObj1[0]->pos.z;
 
 		result.x = 0;
 		result.y = (0.5f - njRandom()) * 0.2f * 1.6f + 0.96f;
@@ -399,19 +399,19 @@ static void AL_MinimalCreateManagerExecutor_New(ObjectMaster* a2) {
 		njPushMatrixEx();
 		memcpy(_nj_current_matrix_ptr_, (void*)0x025F02A0, 0x30);
 		v5 = (0.5 - njRandom()) * 60.0 * -182.0444488525391;
-		RotateY(0x4000 - (signed int)v5 - MainCharObj1[0]->Rotation.y);
+		RotateY(0x4000 - (signed int)v5 - MainCharObj1[0]->ang.y);
 		njCalcVector(&result, &output, _nj_current_matrix_ptr_);
 		njPopMatrixEx();
 
 		v7 = cweSaveFile.purchasedItemCount;
 		if (cweSaveFile.purchasedItemCount <= 0)
 		{
-			a2->MainSub = DeleteObject_;
+			a2->exec = DeleteObject_;
 		}
 		else
 		{
 			v8 = v7 - 1;
-			v1->Rotation.x = v7 - 1;
+			v1->ang.x = v7 - 1;
 			v9 = save::CWE_PurchasedItems[v7 - 1].mCategory;
 			v10 = save::CWE_PurchasedItems[v8].mType;
 			--cweSaveFile.purchasedItemCount;
@@ -423,7 +423,7 @@ static void AL_MinimalCreateManagerExecutor_New(ObjectMaster* a2) {
 					if (AL_GetLocalChaoCount(AL_GetStageNumber()) < 8)
 					{
 						AL_GENE gene;
-						ObjectMaster* v12;
+						task* v12;
 						ChaoData* v11 = AL_GetNewChaoSaveInfo();
 
 						InitChaoDNA(&gene);
@@ -444,16 +444,16 @@ static void AL_MinimalCreateManagerExecutor_New(ObjectMaster* a2) {
 					++cweSaveFile.purchasedItemCount;
 					return;
 				case 3:
-					ALO_FruitExecutor_Load(v10, &position, MainCharObj1[0]->Rotation.y, &output, (ChaoData*)AL_GetNewItemSaveInfo(3));
+					ALO_FruitExecutor_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (ChaoData*)AL_GetNewItemSaveInfo(3));
 					break;
 				case 7:
 					ALO_SeedExecutor_Load(v10, &position, &output, (int)AL_GetNewItemSaveInfo(7));
 					break;
 				case 9:
-					ALO_ObakeHeadExecutor_Load(v10, &position, MainCharObj1[0]->Rotation.y, &output, (int)AL_GetNewItemSaveInfo(9));
+					ALO_ObakeHeadExecutor_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (int)AL_GetNewItemSaveInfo(9));
 					break;
 				case ChaoItemCategory_Special:
-					ALO_Special_Load(v10, &position, MainCharObj1[0]->Rotation.y, &output, (short*)AL_GetSpecialItemSave());
+					ALO_Special_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (short*)AL_GetSpecialItemSave());
 					break;
 				default:
 					goto LABEL_34;
@@ -497,13 +497,13 @@ static void AL_PackageCustomItemSaveInfo(const ChaoItemCategory category) {
 		tp = CWE_ALW_GetTaskCount(category, count);
 		if (tp) {
 			const auto stage = AL_GetStageNumber();
-			EntityData1* work = tp->Data1.Entity;
+			taskwk* work = tp->twp;
 			ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)(((al_entry_work*)tp->UnknownA_ptr)->pSaveInfo);
 			
 			// not held (! & 0x8000) most likely
-			if (work->Status >= 0) {
-				pSaveInfo->Position = work->Position;
-				pSaveInfo->Angle = work->Rotation.y;
+			if (work->flag >= 0) {
+				pSaveInfo->Position = work->pos;
+				pSaveInfo->Angle = work->ang.y;
 			}
 			else if (AL_IsGarden()) {
 				pSaveInfo->Position = ProbablyChaoSpawnPoints[(stage - 1) * 16 + int(njRandom() * 15.f)];

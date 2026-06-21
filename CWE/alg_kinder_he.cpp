@@ -33,7 +33,7 @@ void sub_42D690(int a1)
 	}
 }
 
-void __cdecl sub_58F980(ObjectMaster* a1)
+void __cdecl sub_58F980(task* a1)
 {
 	signed int v1; // ebp
 	float a3; // ST20_4
@@ -442,10 +442,10 @@ void ConvertName(char* original_, char* output)
 	WcConvFromCStr((int)output, (int)wcbuffer, TextLanguage == 0);
 }
 
-ObjectMaster* pMother = 0;
-ObjectMaster* pFather = 0;
-ObjectFuncPtr pDisplaySub = 0;
-ObjectFuncPtr pField20Sub = 0;
+task* pMother = 0;
+task* pFather = 0;
+task_exec pDisplaySub = 0;
+task_exec pField20Sub = 0;
 bool noMother;
 AL_NAME motherName;
 bool noFather;
@@ -464,13 +464,14 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu[i], -1);
 
 	if (!noMother && !noFather) {
+		auto pParam = GET_CHAOPARAM(a1->medicalChartChao_);
 
-		ConvertName(a1->medicalChartChao_->Data1.Chao->pParamGC->MotherName, motherName);
-		ConvertName(a1->medicalChartChao_->Data1.Chao->pParamGC->MGroundMotherName, mgmName);
-		ConvertName(a1->medicalChartChao_->Data1.Chao->pParamGC->MGroundFatherName, mgfName);
-		ConvertName(a1->medicalChartChao_->Data1.Chao->pParamGC->FatherName, fatherName);
-		ConvertName(a1->medicalChartChao_->Data1.Chao->pParamGC->FGroundMotherName, fgmName);
-		ConvertName(a1->medicalChartChao_->Data1.Chao->pParamGC->FGroundFatherName, fgfName);
+		ConvertName(pParam->MotherName, motherName);
+		ConvertName(pParam->MGroundMotherName, mgmName);
+		ConvertName(pParam->MGroundFatherName, mgfName);
+		ConvertName(pParam->FatherName, fatherName);
+		ConvertName(pParam->FGroundMotherName, fgmName);
+		ConvertName(pParam->FGroundFatherName, fgfName);
 
 		for (size_t i = 0; i < LengthOfArray(HealthCenter_DNAMenu2); i++)
 			DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu2[i], -1);
@@ -623,8 +624,8 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(MenuButtons_Held[0] & Buttons_Y) && MenuButtons_Held[0] & Buttons_Down)
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup < 0) {
-			bodyTypeBackup = TextLocation->medicalChartChao->Data1.Chao->pParamGC->BodyType;
-			TextLocation->medicalChartChao->Data1.Chao->pParamGC->BodyType = (SADXBodyType)9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
+			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType = (SADXBodyType)9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
 		}
 		if (!pMother)
 		{
@@ -633,7 +634,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			ChaoDataBase* data = nullptr;
 			KarateOpponent* opponentPtr = nullptr;
 
-			noMother = TextLocation->medicalChartChao_->Data1.Chao->pParamGC->Gene.MotherID.id[0] == 0;
+			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID.id[0] == 0;
 			if (noMother)
 			{
 				data = nullptr;
@@ -642,10 +643,10 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			else
 			{
 				opponentPtr = nullptr;
-				data = AL_KW_FindChaoBasedOnId(TextLocation->medicalChartChao_->Data1.Chao->pParamGC->Gene.MotherID);
+				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID);
 				if (data == nullptr)
 				{
-					opponentPtr = &TextLocation->medicalChartChao_->Data1.Chao->pParamGC->motherData;
+					opponentPtr = &GET_CHAOPARAM(TextLocation->medicalChartChao_)->motherData;
 				}
 			}
 
@@ -658,13 +659,13 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				opponentPtr,
 				&pos,
 				0);
-			pMother->Data1.Chao->field_B0 &= ~8u;
-			pMother->Data1.Chao->field_B0 &= ~2u;
-			pMother->Data1.Chao->field_B0 |= 0x2000;
-			pMother->Data1.Chao->field_B0 &= ~0x10;
-			pMother->Data1.Chao->field_B0 &= ~0x20000;
+			GET_CHAOWK(pMother)->field_B0 &= ~8u;
+			GET_CHAOWK(pMother)->field_B0 &= ~2u;
+			GET_CHAOWK(pMother)->field_B0 |= 0x2000;
+			GET_CHAOWK(pMother)->field_B0 &= ~0x10;
+			GET_CHAOWK(pMother)->field_B0 &= ~0x20000;
 
-			noFather = TextLocation->medicalChartChao_->Data1.Chao->pParamGC->Gene.FatherID.id[0] == 0;
+			noFather = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID.id[0] == 0;
 			if (noFather) //if id is invalid then dont do anything
 			{
 				data = nullptr;
@@ -673,11 +674,11 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			else
 			{
 				opponentPtr = nullptr;
-				data = AL_KW_FindChaoBasedOnId(TextLocation->medicalChartChao_->Data1.Chao->pParamGC->Gene.FatherID); //find current parent
+				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID); //find current parent
 				if (data == nullptr)
 				{
 					//if cant find it, use last "image" of them
-					opponentPtr = &TextLocation->medicalChartChao_->Data1.Chao->pParamGC->fatherData;
+					opponentPtr = &GET_CHAOPARAM(TextLocation->medicalChartChao_)->fatherData;
 				}
 			}
 
@@ -687,19 +688,19 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				opponentPtr,
 				&pos,
 				0);
-			pFather->Data1.Chao->field_B0 &= ~8u;
-			pFather->Data1.Chao->field_B0 &= ~2u;
-			pFather->Data1.Chao->field_B0 |= 0x2000;
-			pFather->Data1.Chao->field_B0 &= ~0x10;
-			pFather->Data1.Chao->field_B0 &= ~0x20000;
+			GET_CHAOWK(pFather)->field_B0 &= ~8u;
+			GET_CHAOWK(pFather)->field_B0 &= ~2u;
+			GET_CHAOWK(pFather)->field_B0 |= 0x2000;
+			GET_CHAOWK(pFather)->field_B0 &= ~0x10;
+			GET_CHAOWK(pFather)->field_B0 &= ~0x20000;
 
-			pDisplaySub = pMother->DisplaySub;
+			pDisplaySub = pMother->disp;
 			pField20Sub = pMother->field_20;
-			if (!pDisplaySub) pDisplaySub = (ObjectFuncPtr)nullsub_1;
-			if (!pField20Sub) pField20Sub = (ObjectFuncPtr)nullsub_1;
-			pMother->DisplaySub = 0;
+			if (!pDisplaySub) pDisplaySub = (task_exec)nullsub_1;
+			if (!pField20Sub) pField20Sub = (task_exec)nullsub_1;
+			pMother->disp = 0;
 			pMother->field_20 = 0;
-			pFather->DisplaySub = 0;
+			pFather->disp = 0;
 			pFather->field_20 = 0;
 		}
 		HealthCenterDNAMenu(TextLocation);
@@ -707,16 +708,16 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	else
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup >= 0) {
-			TextLocation->medicalChartChao->Data1.Chao->pParamGC->BodyType = (SADXBodyType)bodyTypeBackup;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType = (SADXBodyType)bodyTypeBackup;
 			bodyTypeBackup = -1;
 		}
 
 		if (pMother)
 		{
 			//deinit
-			pMother->MainSub = DeleteObject_;
+			pMother->exec = DeleteObject_;
 			pMother = 0;
-			pFather->MainSub = DeleteObject_;
+			pFather->exec = DeleteObject_;
 			pFather = 0;
 		}
 
@@ -733,8 +734,8 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		{
 			if (TextLocation->field_8)
 			{
-				int v11 = TextLocation->field_8->Data1.Chao->pParamGC->Gene.LifeTime[1];
-				int v12 = TextLocation->field_8->Data1.Chao->pParamGC->Gene.LifeTime[0];
+				int v11 = GET_CHAOPARAM(TextLocation->field_8)->Gene.LifeTime[1];
+				int v12 = GET_CHAOPARAM(TextLocation->field_8)->Gene.LifeTime[0];
 				if ((unsigned __int8)v12 < v11)
 				{
 					v12 = v11;
@@ -756,7 +757,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 						if (gradeIndex >= 8u)
 							gradeIndex = 0;
 
-						int grade = TextLocation->field_8->Data1.Chao->pParamGC->StatGrades[gradeIndex];
+						int grade = GET_CHAOPARAM(TextLocation->field_8)->StatGrades[gradeIndex];
 						if (grade == 6 || grade == 7) //Grade_X
 						{
 							njSetTexture(&CWE_UI_TEXLIST);
@@ -790,14 +791,14 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				ChaoHudThingB lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
 				//ChaoHudThing lifespan = { {0x132, (264 + 32 * 5.25f)}, {}, {0,0}, {4096, 4096} };
 				sub_536770(
-					(Uint32)((TextLocation->field_8->Data1.Chao->pParamGC->Lifespan / 3900.0f) * 1000),
+					(Uint32)((GET_CHAOPARAM(TextLocation->field_8)->Lifespan / 3900.0f) * 1000),
 					380.0f, 
 					(264 + 32 * 5) + 1, 
 					92.0f, 
 					14.0f, 
 					1.0f
 				);
-				sub_5369F0(TextLocation->field_8->Data1.Chao->pParamGC->Lifespan, 476, (264 + 32 * 5), 1.0f);
+				sub_5369F0(GET_CHAOPARAM(TextLocation->field_8)->Lifespan, 476, (264 + 32 * 5), 1.0f);
 				DrawChaoHudThingB(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
 				SetChaoHUDThingBColor(1, 0.72f, 1, 0);
 				DrawChaoHudThingB(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
@@ -817,13 +818,13 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		sprintf(
 			buffer,
 			&TextLocation->dword60[*((int*)TextLocation->dword60 + 65)],
-			TextLocation->field_8->Data1.Chao->pParamGC->ClockRollovers / TextLocation->field_8->Data1.Chao->pParamGC->Birthday
+			GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers / GET_CHAOPARAM(TextLocation->field_8)->Birthday
 		);
 		DrawMedicalChartText((const char *)buffer, 288.0, 243.0, 999.0, 20.0, 0);
 		sprintf(
 			buffer,
 			"Birthday in %d Chao days.",
-			TextLocation->field_8->Data1.Chao->pParamGC->Birthday - (TextLocation->field_8->Data1.Chao->pParamGC->ClockRollovers % TextLocation->field_8->Data1.Chao->pParamGC->Birthday)
+			GET_CHAOPARAM(TextLocation->field_8)->Birthday - (GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers % GET_CHAOPARAM(TextLocation->field_8)->Birthday)
 		);
 		DrawMedicalChartText((const char*)buffer, 288.0, 392, 999.0, 20.0, 0);
 	}
@@ -896,13 +897,13 @@ void __fastcall AL_HealthCenter_SetMessageStr(HealthCenter* a1, const char* a2)
 	*(uint32_t*)0x01A267D0 = 0xFFFFFFFF;
 	AlMsgWinAddLineC(a1->pkindercomessagething3C, a2, TextLanguage == 0);
 }
-signed int AL_HealthCenter_GetSickness(ObjectMaster* a1)
+signed int AL_HealthCenter_GetSickness(task* a1)
 {
 	AL_EMOTION* v1; // ecx
 	int v2; // eax
 	signed int result; // eax
 
-	v1 = &a1->Data1.Chao->pParamGC->Emotion;
+	v1 = &GET_CHAOPARAM(a1)->Emotion;
 	v2 = 0;
 	while (*(&v1->CoughLevel + v2) >= 0)
 	{
@@ -950,7 +951,7 @@ void __cdecl ConditionText(HealthCenter* a2)
 
 std::vector<const char*> messageValues;
 
-void Doctor_PersonalityText(ObjectMaster* tp, int emotion, const char* a1, const char* a2, const char* a3) {
+void Doctor_PersonalityText(task* tp, int emotion, const char* a1, const char* a2, const char* a3) {
 	int val = AL_EmotionGetValue(tp, emotion);
 
 	if (val >= -80 && val <= -40 && a1) 
@@ -966,8 +967,8 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 	if (a1->field_8 == nullptr)
 		return;
 
-	ObjectMaster* pChaoTask = a1->field_8;
-	ChaoDataBase* pParam = a1->field_8->Data1.Chao->pParamGC;
+	task* pChaoTask = a1->field_8;
+	ChaoDataBase* pParam = GET_CHAOPARAM(pChaoTask);
 
 	if (pParam == nullptr)
 		return;

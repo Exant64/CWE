@@ -10,8 +10,9 @@ void MonsterEvo::Init() {
 		ChaoGlobal.GrowthLimit = 2.4f;
 }
 
-void MonsterEvo::ChaoObject(ObjectMaster* tp) {
-	ChaoDataBase* data = tp->Data1.Chao->pParamGC;
+void MonsterEvo::ChaoObject(task* tp) {
+	ChaoDataBase* data = GET_CHAOPARAM(tp);
+	
 	if (data->StatPoints[0] < 2000 && data->FlySwim < -1) data->FlySwim = -1;
 	if (data->StatPoints[0] < 3000 && data->FlySwim < -1.5f) data->FlySwim = -1.5f;
 

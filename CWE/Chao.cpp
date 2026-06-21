@@ -44,7 +44,7 @@
 #include "FunctionHook.h"
 
 const int AL_IconSetPtr = 0x53D660;
-void AL_IconSet(ObjectMaster* a4, char a2, int a3)
+void AL_IconSet(task* a4, char a2, int a3)
 {
 	__asm 
 	{
@@ -69,7 +69,7 @@ void sub_534F80alt(int a1, NJS_VECTOR* a2, signed int a3)
 		add esp, 4
 	}
 }
-void AL_GetRandomAttrPos_0(ObjectMaster* a1)
+void AL_GetRandomAttrPos_0(task* a1)
 {
 	if (stru_1A15938[1].nbIndex > 0)
 	{
@@ -77,7 +77,7 @@ void AL_GetRandomAttrPos_0(ObjectMaster* a1)
 	}
 }
 const int sub_55A920Ptr = 0x55A920;
-ObjectMaster* sub_55A920(int a1, NJS_VECTOR* a2, ObjectMaster* parent, Uint8 a4, float a5)
+task* sub_55A920(int a1, NJS_VECTOR* a2, task* parent, Uint8 a4, float a5)
 {
 	__asm
 	{
@@ -90,7 +90,7 @@ ObjectMaster* sub_55A920(int a1, NJS_VECTOR* a2, ObjectMaster* parent, Uint8 a4,
 		add esp, 12
 	}
 }
-void ALOField_Load(ObjectMaster* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer)
+void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer)
 {
 	sub_55A920(timer, a3, a1, a2, a4);
 }
@@ -110,9 +110,9 @@ struct __declspec(align(16)) KarateMainExecData
 	char field_9;
 	char MenuSelection;
 	char field_B;
-	ObjectMaster* playerChao;
-	ObjectMaster* pointerToSaveThing;
-	ObjectMaster* PointerToOtherSaveThing;
+	task* playerChao;
+	task* pointerToSaveThing;
+	task* PointerToOtherSaveThing;
 	ChaoData* field_18;
 	ChaoData* field_1C;
 	int field_20;
@@ -122,7 +122,7 @@ struct __declspec(align(16)) KarateMainExecData
 	float field_30;
 	int field_34;
 	int field_38;
-	ObjectMaster* field_3C;
+	task* field_3C;
 };
 #pragma pack(pop)
 
@@ -133,7 +133,7 @@ struct __declspec(align(8)) KarateChaoExec_Data2
 	short word2;
 	short flag;
 	short word6;
-	ObjectMaster* pointerToChao;
+	task* pointerToChao;
 	void* dwordC;
 	ChaoData* chaoDataPointer;
 	int field_14;
@@ -153,13 +153,13 @@ struct __declspec(align(8)) KarateChaoExec_Data2
 #pragma pack(pop)
 
 DataPointer(KarateMainExecData*, KarateMainExec_Ptr, 0x01A5D148);
-ObjectMaster* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
+task* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
 {
 	KarateOpponent* opponent = a3;
 
 	if (opponent->StatPoints[7] == 1)
 	{
-		ObjectMaster* player = KarateMainExec_Ptr->pointerToSaveThing;
+		task* player = KarateMainExec_Ptr->pointerToSaveThing;
 		KarateChaoExec_Data2* data2 = (KarateChaoExec_Data2*)player->Data2.Undefined;
 		opponent->Alignment = (short)(data2->chaoDataPointer->data.Alignment * 10000.0f);
 		opponent->Magnitude = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
@@ -174,8 +174,8 @@ ObjectMaster* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, N
 		}
 	}
 
-	ObjectMaster* chao = CreateChao(chaoData, a2, opponent, position, angle);
-	ChaoDataBase* fullData = chao->Data1.Chao->pParamGC;
+	task* chao = CreateChao(chaoData, a2, opponent, position, angle);
+	ChaoDataBase* fullData = GET_CHAOPARAM(chao);
 
 	for (int i = 0; i < 7; i++)
 		fullData->partsDX.MinimalParts[i] = opponent->Name[i];
@@ -221,19 +221,19 @@ ObjectMaster* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, N
 	return chao;
 }
 
-void sub_54A690(ObjectMaster* a1)
+void sub_54A690(task* a1)
 {
 	Data1Ptr v1; // eax
-	CollisionInfo* v2; // eax
+	colliwk* v2; // eax
 
-	if (a1 && (v1.Undefined = (EntityData1*)a1->Data1.Entity) != 0 && (v2 = v1.Entity->Collision) != 0)
+	if (a1 && (v1.Undefined = (taskwk*)a1->twp) != 0 && (v2 = v1.Entity->cwp) != 0)
 	{
 		v2->CollisionArray[1].field_2 |= 0x70u;
 	}
 }
-void sub_54A730(ObjectMaster* tp)
+void sub_54A730(task* tp)
 {
-	tp->Data1.Entity->Status &= ~0x240u;
+	tp->twp->flag &= ~0x240u;
 	CCL_Disable(tp, 0);
 	CCL_Disable(tp, 2);
 }
@@ -341,16 +341,16 @@ void AL_BuyoBuyo_AccessoryHandling(task* tp) {
 	AL_ChaoAccessoryMainCheck(tp);
 }
 
-static void Chao_Main_r(ObjectMaster* a1);
+static void Chao_Main_r(task* a1);
 static FunctionHook<void, task*> Chao_Main_hook(0x0054FE20, Chao_Main_r);
-static void Chao_Main_r(ObjectMaster* a1)
+static void Chao_Main_r(task* a1)
 {
 	chaowk* work = GET_CHAOWK(a1);
-	ChaoDataBase* pParam = a1->Data1.Chao->pParamGC;
+	ChaoDataBase* pParam = GET_CHAOPARAM(a1);
 	if (!pParam) return;
 
 	//some timer
-	if (a1->Data1.Chao->gap_30 <= 2u)
+	if (GET_CHAOWK(a1)->gap_30 <= 2u)
 	{
 		if (pParam->field_19 == 2)
 			pParam->field_19 = 0;
@@ -417,11 +417,11 @@ static void Chao_Main_r(ObjectMaster* a1)
 	}
 
 	//new power climbing
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_CLIMB && a1->Data1.Chao->Behavior.SubTimer == 240)
+	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_CLIMB && GET_CHAOWK(a1)->Behavior.SubTimer == 240)
 	{
 		if (pParam->StatPoints[3] >= 150) //USE GETSTAT THING LATER
 		{
-			a1->Data1.Chao->Behavior.SubTimer = 0;
+			GET_CHAOWK(a1)->Behavior.SubTimer = 0;
 		}
 	}
 
@@ -429,9 +429,9 @@ static void Chao_Main_r(ObjectMaster* a1)
 	if (pParam->FlySwim < -1 || pParam->FlySwim > 1 ||
 		pParam->PowerRun < -1 || pParam->PowerRun > 1)
 	{
-		if (a1->Data1.Chao->Face.pMouthObject && a1->Data1.Chao->Face.pMouthObject->chunkmodel)
+		if (GET_CHAOWK(a1)->Face.pMouthObject && GET_CHAOWK(a1)->Face.pMouthObject->chunkmodel)
 		{
-			__int32* color = (__int32*)a1->Data1.Chao->Face.pMouthObject->chunkmodel->plist;
+			__int32* color = (__int32*)GET_CHAOWK(a1)->Face.pMouthObject->chunkmodel->plist;
 			color[1] = 0xFFFFFFFF;
 		}
 	}

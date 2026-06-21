@@ -27,7 +27,7 @@ struct FRUIT_INFO
 #pragma pack(push, 8)
 struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
 {
-    EntityData1 entityData;
+    taskwk entityData;
     char kind;
     char state;
     __int16 field_32;
@@ -166,7 +166,7 @@ void __cdecl sub_546670Hook(NJS_VECTOR* a1, ALO_GrowTreeExecutor_Data* a2, int a
     sub_546670(a1, a2, a3);
 }
 
-ObjectMaster* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ChaoData* a5)
+task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ChaoData* a5)
 {    
     if(a1 >= SA2BFruit_ChaoGardenFruit && a1 <= SA2BFruit_DarkGardenFruit)
         return ALO_FruitExecutor_Load(a1, position, angle, a4, a5);
@@ -186,26 +186,26 @@ __declspec(naked) void AL_GrowTree_CreateFruitHook()
     }
 }
 
-void __cdecl ALO_SeedExecutor_Display_(ObjectMaster* eax0)
+void __cdecl ALO_SeedExecutor_Display_(task* eax0)
 {
-    EntityData1* v1; // esi
+    taskwk* v1; // esi
 
-    v1 = eax0->Data1.Entity;
-    if (ScaleObjectMaster_XYZ(eax0, 1.5f, 1.5f, 1.0f))
+    v1 = eax0->twp;
+    if (Scaletask_XYZ(eax0, 1.5f, 1.5f, 1.0f))
     {
         DoLighting(LightIndex);
        
         njPushMatrixEx();
-        if (v1->Status < 0)
+        if (v1->flag < 0)
         {
             njTranslate(NULL, 0, *(float*)0xA3329C, 0);
         }
-        njTranslateEx(&v1->Position);
-        RotateY( v1->Rotation.y);
+        njTranslateEx(&v1->pos);
+        RotateY( v1->ang.y);
         njScale(NULL, 1.5f, 1.5f, 1.5f);
         njControl3D |= 0x2400u;
-        njSetTexture(ModAPI_SeedTexlists[v1->Rotation.x]);
-        chCnkDrawModel(ModAPI_SeedModels[v1->Rotation.x]->chunkmodel);
+        njSetTexture(ModAPI_SeedTexlists[v1->ang.x]);
+        chCnkDrawModel(ModAPI_SeedModels[v1->ang.x]->chunkmodel);
         njControl3D &= ~0x2400;
 
         if(RenderFix_IsEnabled()) {
@@ -221,9 +221,9 @@ void __cdecl ALO_SeedExecutor_Display_(ObjectMaster* eax0)
     }
 }
 
-void ALO_GrowTreeExecutor_Display_(ObjectMaster* a1)
+void ALO_GrowTreeExecutor_Display_(task* a1)
 {
-    ALO_GrowTreeExecutor_Data* v1 = (ALO_GrowTreeExecutor_Data *)a1->Data1.Undefined;
+    ALO_GrowTreeExecutor_Data* v1 = (ALO_GrowTreeExecutor_Data *)a1->twp;
     if(v1->state != TREE_ST_LOCAL)
         v1->texlist = ModAPI_TreeEntries[v1->kind].pTexlist;
     
@@ -237,10 +237,10 @@ void ALO_GrowTreeExecutor_Display_(ObjectMaster* a1)
 
 void __cdecl FixTransition(ALO_GrowTreeExecutor_Data* v2)
 {
-    v2->entityData.Action = 8;
-    v2->entityData.NextAction = 0;
-    v2->entityData.field_6 = 0;
-    v2->entityData.Index = 0;
+    v2->entityData.mode = 8;
+    v2->entityData.smode = 0;
+    v2->entityData.wtimer = 0;
+    v2->entityData.btimer = 0;
     v2->life = 0;
     v2->growth = 0;
 }

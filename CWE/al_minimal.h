@@ -19,6 +19,6 @@ extern std::vector< NJS_MOTION*>   ModAPI_MinimalMotion1;
 extern std::vector< NJS_MOTION*>   ModAPI_MinimalMotion2;
 extern std::vector< NJS_MOTION*>   ModAPI_MinimalMotion3;
 extern std::map<int, std::vector<CWE_MINIMAL_FRUIT>> ModAPI_MinimalFruit;
-void AL_Minimal_Timer(ObjectMaster* a1);
-void ParamFukidasiExecutor_Load(ObjectMaster* a1);
+void AL_Minimal_Timer(task* a1);
+void ParamFukidasiExecutor_Load(task* a1);
 void al_minimal_Init();

@@ -254,9 +254,9 @@ enum {
 	EMOTION_ICON_ILLNESS = 3,
 	EMOTION_ICON_COUNT
 };
-bool AL_EmoteIconRequirement(ObjectMaster* a1, int index)
+bool AL_EmoteIconRequirement(task* a1, int index)
 {
-	ChaoDataBase* data = a1->Data1.Chao->pParamGC;
+	ChaoDataBase* data = GET_CHAOPARAM(a1);
 
 	if (!data)
 		return false;
@@ -281,17 +281,17 @@ bool AL_EmoteIconRequirement(ObjectMaster* a1, int index)
 	return false;
 }
 
-void AL_NameDisplayer(ObjectMaster* a1) {
-	if (a1->Data1.Entity->Action == 0 && gConfigVal.EmotionDisplay)
+void AL_NameDisplayer(task* a1) {
+	if (a1->twp->mode == 0 && gConfigVal.EmotionDisplay)
 	{
 		for (int i = 0; i < 32; i++) {
-			ObjectMaster* chao = stru_1DC0FC0[i].pointerToOwner;
+			task* chao = stru_1DC0FC0[i].pointerToOwner;
 			if (chao &&
 				chao->EntityData2 &&
-				chao->Data1.Entity->Position.y + 2 >= chao->EntityData2->field_DC)
+				chao->twp->pos.y + 2 >= chao->EntityData2->field_DC)
 			{
 				NJS_VECTOR asd;
-				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->Data1.Entity->Position, 0);
+				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->twp->pos, 0);
 
 				njPushMatrix((NJS_MATRIX_PTR)0x025F02A0);
 
@@ -304,7 +304,7 @@ void AL_NameDisplayer(ObjectMaster* a1) {
 				{
 					if (AL_EmoteIconRequirement(chao, j))
 					{
-						Uint32 color = *(Uint32*)(((int)chao->Data1.Undefined) + 0x6EC + 0x14);
+						Uint32 color = *(Uint32*)(((int)chao->twp) + 0x6EC + 0x14);
 						emoIcon[0].col = color;
 						emoIcon[1].col = color;
 						emoIcon[2].col = color;
@@ -319,25 +319,25 @@ void AL_NameDisplayer(ObjectMaster* a1) {
 			}
 		}
 	}
-	if (a1->Data1.Entity->Action == 1)
+	if (a1->twp->mode == 1)
 	{
 		*(char*)0x25EFFCC = 0;
 		//njDrawSprite2D(&chaoCamEdge_sprite, 1, 0, 0x60);
 		selectMenu.p = { 320,220, 0 };
-		njDrawSprite2D(&selectMenu, (a1->Data1.Entity->NextAction == 0) ? 1 : 0, 1, 0x60);
+		njDrawSprite2D(&selectMenu, (a1->twp->smode == 0) ? 1 : 0, 1, 0x60);
 		selectMenu.p.y += 40;
-		njDrawSprite2D(&selectMenu, (a1->Data1.Entity->NextAction == 1) ? 3 : 2, 1, 0x60);
+		njDrawSprite2D(&selectMenu, (a1->twp->smode == 1) ? 3 : 2, 1, 0x60);
 		*(char*)0x25EFFCC = 1;
 	}
-	else if (a1->Data1.Entity->Action == 2)
+	else if (a1->twp->mode == 2)
 	{
 		for (int i = 0; i < 32; i++) {
-			ObjectMaster* chao = stru_1DC0FC0[i].pointerToOwner;
+			task* chao = stru_1DC0FC0[i].pointerToOwner;
 			if (chao)
-				AL_NameDisplay_(chao->Data1.Chao->pParamGC->Name, &chao->Data1.Entity->Position);
+				AL_NameDisplay_(GET_CHAOPARAM(chao)->Name, &chao->twp->pos);
 		}
 	}
-	else if (a1->Data1.Entity->Action == 3)
+	else if (a1->twp->mode == 3)
 	{
 		*(char*)0x25EFFCC = 0;
 
@@ -351,9 +351,9 @@ void AL_NameDisplayer(ObjectMaster* a1) {
 	}
 	//SetShaders(backup);
 }
-void AL_NameDisplay_Main(ObjectMaster* a1)
+void AL_NameDisplay_Main(task* a1)
 {
-	switch (a1->Data1.Entity->Action)
+	switch (a1->twp->mode)
 	{
 	case 0:
 		if ((MenuButtons_Held[0] & Buttons_X) &&
@@ -361,34 +361,34 @@ void AL_NameDisplay_Main(ObjectMaster* a1)
 			MainCharObj2[0] && !MainCharObj2[0]->HeldObject)
 		{
 			if (gConfigVal.DayNightCheat)
-				a1->Data1.Entity->Action = 1;
+				a1->twp->mode = 1;
 			else
-				a1->Data1.Entity->Action = 2;
+				a1->twp->mode = 2;
 		}
 		break;
 	case 1:
 		ControlEnabled = 0;
 
 		if (MenuButtons_Pressed[0] & Buttons_Up)
-			a1->Data1.Entity->NextAction = 0;
+			a1->twp->smode = 0;
 		else if (MenuButtons_Pressed[0] & Buttons_Down)
-			a1->Data1.Entity->NextAction = 1;
+			a1->twp->smode = 1;
 
 
 		if (MenuButtons_Pressed[0] & Buttons_A)
 		{
 			ControlEnabled = 1;
-			a1->Data1.Entity->Action = 2 + a1->Data1.Entity->NextAction;
-			a1->Data1.Entity->NextAction = 0;
+			a1->twp->mode = 2 + a1->twp->smode;
+			a1->twp->smode = 0;
 		}
 		break;
 
 	case 2:
-		a1->Data1.Entity->field_6++;
-		if (a1->Data1.Entity->field_6 > 60 * 10)
+		a1->twp->wtimer++;
+		if (a1->twp->wtimer > 60 * 10)
 		{
-			a1->Data1.Entity->field_6 = 0;
-			a1->Data1.Entity->Action = 0;
+			a1->twp->wtimer = 0;
+			a1->twp->mode = 0;
 		}
 		break;
 	case 3:
@@ -407,8 +407,8 @@ void AL_NameDisplay_Main(ObjectMaster* a1)
 
 		if (MenuButtons_Pressed[0] & Buttons_A)
 		{
-			a1->Data1.Entity->field_6 = 0;
-			a1->Data1.Entity->Action = 0;
+			a1->twp->wtimer = 0;
+			a1->twp->mode = 0;
 
 			ControlEnabled = 1;
 		}
@@ -418,6 +418,6 @@ void AL_NameDisplay_Main(ObjectMaster* a1)
 }
 
 void AL_NameDisplayCreate() {
-	ObjectMaster* p = LoadObject(2, "AL_NameDisplay", AL_NameDisplay_Main, LoadObj_Data1);
+	task* p = CreateElementalTask(2, "AL_NameDisplay", AL_NameDisplay_Main, LoadObj_Data1);
 	p->field_28 = AL_NameDisplayer;
 }

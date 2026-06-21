@@ -13,13 +13,13 @@
 #include <al_stage.h>
 #include <al_garden_info.h>
 
-int __cdecl ALBHV_Wrench(ObjectMaster* a1)
+int __cdecl ALBHV_Wrench(task* a1)
 {
-	switch (a1->Data1.Chao->Behavior.Mode)
+	switch (GET_CHAOWK(a1)->Behavior.Mode)
 	{
 	case 0:
 		AL_SetMotionLink(a1, 191);
-		++a1->Data1.Chao->Behavior.Mode;
+		++GET_CHAOWK(a1)->Behavior.Mode;
 		break;
 	case 1:
 		MOV_TurnToAim2(a1, 384);
@@ -28,7 +28,7 @@ int __cdecl ALBHV_Wrench(ObjectMaster* a1)
 		{
 			if (MOV_DistFromAim(a1) < 4.0)
 			{
-				++a1->Data1.Chao->Behavior.Mode;
+				++GET_CHAOWK(a1)->Behavior.Mode;
 				al_entry_work* v7 = ALW_IsCommunicating(a1);
 
 				//failsafe
@@ -41,7 +41,7 @@ int __cdecl ALBHV_Wrench(ObjectMaster* a1)
 					AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)v9);
 					AL_ClearItemSaveInfoPtr(v7->tp);
 				}
-				v7->tp->MainSub = DeleteObject_;
+				v7->tp->exec = DeleteObject_;
 			}
 		}
 		break;
@@ -51,12 +51,12 @@ int __cdecl ALBHV_Wrench(ObjectMaster* a1)
 		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
 		Chao_RegAnimation(a1, "alm_wrench_start");//AL_SetMotionLink(a1, 231);
 		AL_SetItem(a1, 11, &object_al_toy_wrench, &AL_EYE_TEXLIST);
-		a1->Data1.Chao->Behavior.Mode++;
-		a1->Data1.Chao->Behavior.Timer = (int)(njRandom() * 300.f) + 600;
+		GET_CHAOWK(a1)->Behavior.Mode++;
+		GET_CHAOWK(a1)->Behavior.Timer = (int)(njRandom() * 300.f) + 600;
 		break;
 	case 3:
-		a1->Data1.Chao->Behavior.Timer--;
-		if (a1->Data1.Chao->Behavior.Timer <= 0)
+		GET_CHAOWK(a1)->Behavior.Timer--;
+		if (GET_CHAOWK(a1)->Behavior.Timer <= 0)
 		{
 			GetOmoData()->phase |= MANNEQUIN;
 			if (GetOmoData()->phase == 0xFF)
@@ -79,16 +79,16 @@ int __cdecl ALBHV_Wrench(ObjectMaster* a1)
 	return BHV_RET_CONTINUE;
 }
 
-int __cdecl ALBHV_BuildStart(ObjectMaster* a1)
+int __cdecl ALBHV_BuildStart(task* a1)
 {
 	OMOCHAO_INFO* omo = GetOmoData();
 
 	MOV_SetAimPos(a1, &OmoPositions[AL_GetStageNumber() - 1]);
 	
-	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[CurrentChaoArea - 1].x, 25, OmoPositions[CurrentChaoArea - 1].z, &a1->Data1.Entity->Rotation);
+	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[CurrentChaoArea - 1].x, 25, OmoPositions[CurrentChaoArea - 1].z, &a1->twp->Rotation);
 	if (omo->phase == 0 || !AL_KW_IDExists(omo->chaoID))
 	{
-		ChaoDataBase* pParamGC = a1->Data1.Chao->pParamGC;
+		ChaoDataBase* pParamGC = GET_CHAOPARAM(a1);
 
 		if (!AL_KW_IDExists(omo->chaoID))
 		{

@@ -41,84 +41,84 @@ int off_1361888[] =
 	0,
 };
 
-DataPointer(ObjectMaster*, pWinnerChao, 0x019F6418);
+DataPointer(task*, pWinnerChao, 0x019F6418);
 FunctionPointer(RaceConfigThing*, sub_53A9B0, (), 0x53A9B0);
 FunctionPointer(void, CreateToyPresenter, (int a1, int isLToy), 0x00539F30);
-DataPointer(ObjectMaster*, pChaoObject, 0x01DCFAF0);
+DataPointer(task*, pChaoObject, 0x01DCFAF0);
 
-DataPointer(ObjectMaster*, dword_1A5AF18, 0x1A5AF18);
+DataPointer(task*, dword_1A5AF18, 0x1A5AF18);
 
-void AL_EggPresenterExecutor(ObjectMaster* tp) {
-	EntityData1* v1 = tp->Data1.Entity;
+void AL_EggPresenterExecutor(task* tp) {
+	taskwk* v1 = tp->twp;
 
-	switch (v1->Action)
+	switch (v1->mode)
 	{
 	case 0:
-		if (++v1->field_6 <= 0x23Au)
+		if (++v1->wtimer <= 0x23Au)
 		{
 			goto LABEL_12;
 		}
-		v1->Rotation.y += 512;
-		v1->Action++;
-		v1->NextAction = 0;
+		v1->ang.y += 512;
+		v1->mode++;
+		v1->smode = 0;
 		break;
 	case 1:
-		v1->Scale.x += 0.08f;
-		if (v1->Scale.x <= 1)
+		v1->scl.x += 0.08f;
+		if (v1->scl.x <= 1)
 		{
 			goto LABEL_12;
 		}
-		v1->Scale.x = 1;
-		v1->Rotation.y += 512;
-		v1->Action++;
-		v1->NextAction = 0;
-		v1->field_6 = 0;
+		v1->scl.x = 1;
+		v1->ang.y += 512;
+		v1->mode++;
+		v1->smode = 0;
+		v1->wtimer = 0;
 		break;
 	case 2:
-		if (v1->field_6 == 30)
+		if (v1->wtimer == 30)
 		{
 			PlayMusic("chao_r_item_get.adx");
 			ResetMusic();
 		}
-		if (v1->field_6++ <= 0x14Au)
+		if (v1->wtimer++ <= 0x14Au)
 		{
 			goto LABEL_12;
 		}
-		v1->Action++;
-		v1->Rotation.y += 512;
-		v1->NextAction = 0;
-		v1->field_6 = 0;
+		v1->mode++;
+		v1->ang.y += 512;
+		v1->smode = 0;
+		v1->wtimer = 0;
 		break;
 	case 3:
-		v1->Scale.x -= 0.08f;
-		if (v1->Scale.x >= 0.0)
+		v1->scl.x -= 0.08f;
+		if (v1->scl.x >= 0.0)
 		{
 			goto LABEL_12;
 		}
-		v1->Scale.x = 0;
-		v1->Rotation.y += 512;
-		v1->Action++;
-		v1->NextAction = 0;
+		v1->scl.x = 0;
+		v1->ang.y += 512;
+		v1->mode++;
+		v1->smode = 0;
 		break;
 	default:
 	LABEL_12:
-		v1->Rotation.y += 512;
+		v1->ang.y += 512;
 		break;
 	}
 }
-void AL_EggPresenterDisplayer(ObjectMaster* tp) {
-	if (tp->Data1.Entity->Action && *(int*)dword_1A5AF18->Data2.Undefined < 10 && tp->Data1.Entity->Scale.x > 0.001f) {
+void AL_EggPresenterDisplayer(task* tp) {
+	if (tp->twp->mode && *(int*)dword_1A5AF18->Data2.Undefined < 10 && tp->twp->scl.x > 0.001f) {
 		SetShaders(1);
 		DoLighting(0);
-		Rotation rot = { 0,tp->Data1.Entity->Rotation.y,0 };
+		Angle3 rot = { 0,tp->twp->ang.y,0 };
 		DrawItem(
 			320,
 			400,
-			tp->Data1.Entity->Scale.x * 1.2f, 
+			tp->twp->scl.x * 1.2f, 
 			rot,
 		{
 				ChaoItemCategory_Egg, 
-				(Uint16)tp->Data1.Entity->Rotation.x
+				(Uint16)tp->twp->ang.x
 			}
 
 		);
@@ -165,9 +165,9 @@ void WinJewelChaoInRace() {
 
 			cweSaveFile.purchasedItemCount++;
 
-			//ObjectMaster* eggPresent = LoadObject(2, "AL_EggPresenter", AL_EggPresenterExecutor, LoadObj_Data1);
+			//task* eggPresent = LoadObject(2, "AL_EggPresenter", AL_EggPresenterExecutor, LoadObj_Data1);
 			//eggPresent->DisplaySub = AL_EggPresenterDisplayer;
-			//eggPresent->Data1.Entity->Rotation.x = 54 + texture - 1;
+			//eggPresent->twp->Rotation.x = 54 + texture - 1;
 		}
 	}
 }

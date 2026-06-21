@@ -11,16 +11,16 @@
 #include "renderfix.h"
 
 extern NJS_OBJECT object_alo_mannequin;
-void __cdecl ALO_Special_Display(ObjectMaster* a1)
+void __cdecl ALO_Special_Display(task* a1)
 {
 	DoLighting(LightIndex);
 	njPushMatrixEx();
 
-	njTranslateEx(&a1->Data1.Entity->Position);
-	njRotateY(NULL, a1->Data1.Entity->Rotation.y);
+	njTranslateEx(&a1->twp->pos);
+	njRotateY(NULL, a1->twp->ang.y);
 
-	//ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Special, a1->Data1.Entity->Rotation.x);
-	ObjectRegistry::DrawObject(ChaoItemCategory_Special, a1->Data1.Entity->Rotation.x);
+	//ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Special, a1->twp->Rotation.x);
+	ObjectRegistry::DrawObject(ChaoItemCategory_Special, a1->twp->ang.x);
 
 	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
 		njTranslate(NULL, 0, 0.4f, 0);
@@ -32,12 +32,12 @@ void __cdecl ALO_Special_Display(ObjectMaster* a1)
 
 }
 
-extern "C" __declspec(dllexport) ObjectMaster* ALO_Special_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
+extern "C" __declspec(dllexport) task* ALO_Special_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
 {
-	ObjectMaster* obj = ALO_ObakeHeadExecutor_Load(ID, position, rotY, velocity, (int)savedata);
-	*(unsigned char*)&obj->Data1.Entity->Collision->CollisionArray[2].field_0 = CI_KIND_AL_SPECIAL;
-	obj->Data1.Entity->Rotation.x = ID;
-	obj->DisplaySub = ALO_Special_Display;
+	task* obj = ALO_ObakeHeadExecutor_Load(ID, position, rotY, velocity, (int)savedata);
+	*(unsigned char*)&obj->twp->cwp->CollisionArray[2].field_0 = CI_KIND_AL_SPECIAL;
+	obj->twp->ang.x = ID;
+	obj->disp = ALO_Special_Display;
 	((ChaoSomeUnknownA*)obj->UnknownA_ptr)->index = ChaoItemCategory_Special;
 	return obj;
 }

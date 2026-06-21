@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 float MOV_DistFromAimXZ(task* tp) {
-	NJS_POINT3* pos = &tp->Data1.Entity->Position;
+	NJS_POINT3* pos = &tp->twp->pos;
 	NJS_POINT3* aimPos = &tp->EntityData2->Waypoint;
 
 	NJS_VECTOR v = {

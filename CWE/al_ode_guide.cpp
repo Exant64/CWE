@@ -14,24 +14,24 @@ void sub_669B90(int a1, int a2, int a3, int a4) {
 	}
 }
 
-void ButtonGuideDisp(ObjectMaster* tp) {
+void ButtonGuideDisp(task* tp) {
 	*(Uint32*)0x12D27A4 = 0xFFFFFFFF;
 
 	sub_669B90(-1,
-		(tp->Data1.Entity->Index & SELECT),
-		(tp->Data1.Entity->Index & CONFIRM),
-		(tp->Data1.Entity->Index & BACK)
+		(tp->twp->btimer & SELECT),
+		(tp->twp->btimer & CONFIRM),
+		(tp->twp->btimer & BACK)
 	);
 }
 
-void ButtonGuideExec(ObjectMaster* tp) {
+void ButtonGuideExec(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr || AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
 		DeleteObject_(tp);
 	}
 }
 
 void CreateButtonGuide(int _flags) {
-	ObjectMaster* pTask = LoadObject(4, "ButtonGuide", ButtonGuideExec, LoadObj_Data1);
-	pTask->Data1.Entity->Index = _flags;
-	pTask->DisplaySub = ButtonGuideDisp;
+	task* pTask = CreateElementalTask(4, "ButtonGuide", ButtonGuideExec, LoadObj_Data1);
+	pTask->twp->btimer = _flags;
+	pTask->disp = ButtonGuideDisp;
 }

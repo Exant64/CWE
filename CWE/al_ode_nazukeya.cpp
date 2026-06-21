@@ -19,14 +19,14 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1);
 CWE_API_ODEKAKE_ENTRY OdekakeNameEntry = { AL_OdekakeName, nullptr, ODE_FLAGS_REQUIRE_CHAO, &NameMenuSprites[2], &NameMenuSprites[0], &NameMenuSprites[1], nullptr, nullptr };
 
 char NazukeyaBuff[0x60 + 4 + sizeof(AL_NAME)];
-ObjectMaster* nazukeyaObj = 0;
+task* nazukeyaObj = 0;
 FunctionPointer(void, sub_5827A0, (int a1), 0x5827A0);
 
-static void Nazukeya_Main(ObjectMaster *a1) {
+static void Nazukeya_Main(task *a1) {
 	sub_582F60((char*)NazukeyaBuff);
 }
 
-static void Nazukeya_Display(ObjectMaster *a1) {
+static void Nazukeya_Display(task *a1) {
 	sub_5827A0((int)NazukeyaBuff);
 }
 
@@ -50,13 +50,13 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 		*(short*)& NazukeyaBuff[88] = 16;
 		*(short*)& NazukeyaBuff[90] = 0;
 		*(short*)& NazukeyaBuff[92] = 0;
-		nazukeyaObj = LoadObject(4, "Nazukeya", Nazukeya_Main, (LoadObj)0);
+		nazukeyaObj = CreateElementalTask(4, "Nazukeya", Nazukeya_Main, (LoadObj)0);
 		nazukeyaObj->field_1C = Nazukeya_Display;
 		//obj->field_1C 
 		break;
 	case 1:	
 		if (!NazukeyaBuff[80]) {
-			nazukeyaObj->MainSub = DeleteObject_;
+			nazukeyaObj->exec = DeleteObject_;
 
 			if (NazukeyaBuff[0x51] != 2) {//not "cancel"
 				memset(GBAManager_GetChaoDataPointer()->Name, 0, sizeof(AL_NAME));

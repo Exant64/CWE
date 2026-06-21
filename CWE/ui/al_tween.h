@@ -53,12 +53,12 @@ static void TweenInterpolateValue(TweenData<NJS_POINT3>* data, NJS_POINT3* value
 }
 
 template <typename T>
-static void TweenExecutor(ObjectMaster* tp) {
+static void TweenExecutor(task* tp) {
 	// i can't use auto because intellisense is a fucking idiot and it doesn't autocomplete it
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);
 
 	if (tween->Timer == tween->FrameCount + 1) {
-		tp->MainSub = DeleteObject_;
+		tp->exec = DeleteObject_;
 
 		if (tween->TweenPointer) {
 			*tween->TweenPointer = NULL;
@@ -83,7 +83,7 @@ static void TweenExecutor(ObjectMaster* tp) {
 	tween->Timer++;
 }
 
-static void TweenDestructor(ObjectMaster* tp) {
+static void TweenDestructor(task* tp) {
 	// technically the callback call could go in here too, but I feel more comfortable with putting this logic in the mainsub
 	FREE(tp->Data2.Undefined);
 }
@@ -95,18 +95,18 @@ void TweenSetTaskPointer(task* tween, task** ptp) {
 }
 
 template <typename T>
-ObjectMaster* CreateTween(ObjectMaster* parent, const EASE_TYPE easingMode, const INTERP_TYPE interpolation, T* whatToChange, const T& target, const int frameCount, const TweenCallback callback) {
-	ObjectMaster* tp;
+task* CreateTween(task* parent, const EASE_TYPE easingMode, const INTERP_TYPE interpolation, T* whatToChange, const T& target, const int frameCount, const TweenCallback callback) {
+	task* tp;
 
 	if (parent == nullptr) {
-		tp = LoadObject(4, "AL_Tween", TweenExecutor<T>, (LoadObj)0);
+		tp = CreateElementalTask(4, "AL_Tween", TweenExecutor<T>, (LoadObj)0);
 	}
 	else {
-		tp = LoadChildObject((LoadObj)0, TweenExecutor<T>, parent);
+		tp = CreateChildTask((LoadObj)0, TweenExecutor<T>, parent);
 	}
 
 	tp->Data2.Undefined = ALLOC(TweenData<T>);
-	tp->DeleteSub = TweenDestructor;
+	tp->dest = TweenDestructor;
 
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);
 	tween->InterpolationMethod = TweenInterpolationMethods[interpolation][easingMode];

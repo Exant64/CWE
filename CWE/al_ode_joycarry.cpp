@@ -36,7 +36,7 @@ const char* JoyCarryFiles[] =
 
 NJS_OBJECT* JoyCarryModels[32];
 
-void JoyCarry_Display(ObjectMaster* a1)
+void JoyCarry_Display(task* a1)
 {
 	SetShaders(1);
 	njPushMatrixEx();
@@ -48,7 +48,7 @@ void JoyCarry_Display(ObjectMaster* a1)
 		else PrintDebug("%d \n", i);
 	njPopMatrixEx();
 }
-void JoyCarry_Main(ObjectMaster *a1){}
+void JoyCarry_Main(task *a1){}
 void JoyCarry_Init()
 {
 	for (int i = 0; i < 25; i++)
@@ -59,5 +59,5 @@ void JoyCarry_Init()
 		//JoyCarryModels[i] = info->getmodel();
 	}
 	LoadTextureList((char*)"JOYobj", &JOBJ_TEXLIST);
-	LoadObject(5, "JoyCarryTest", JoyCarry_Main, LoadObj_Data1)->DisplaySub = JoyCarry_Display;
+	CreateElementalTask(5, "JoyCarryTest", JoyCarry_Main, LoadObj_Data1)->disp = JoyCarry_Display;
 }

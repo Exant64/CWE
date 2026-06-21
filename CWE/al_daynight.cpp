@@ -1991,8 +1991,8 @@ static void AL_DayNightCycleManagerDestructor(task* tp) {
 // this serves the purpose of deleting the regular daynight cycle task, since its in object list 1
 // and those don't autodestruct on level change
 static void AL_CreateDayNightCycleManager() {
-	task* tp = LoadObject(4, "AL_DayNightCycleManager", [](task* tp){}, (LoadObj)0);
-	tp->DeleteSub = AL_DayNightCycleManagerDestructor;
+	task* tp = CreateElementalTask(4, "AL_DayNightCycleManager", [](task* tp){}, (LoadObj)0);
+	tp->dest = AL_DayNightCycleManagerDestructor;
 }
 
 void AL_CreateDayNightCycle() {
@@ -2001,7 +2001,7 @@ void AL_CreateDayNightCycle() {
 	if (!AL_DayNightCycle_CheckECWSafety()) return;
 	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
 	
-	task* tp = LoadObject(1, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
+	task* tp = CreateElementalTask(1, "AL_DayNightCycle", AL_DayNightCycleExecutor, LoadObj_Data1);
 	pDayNightTask = tp;
 
 	AL_CreateDayNightCycleManager();
@@ -2024,8 +2024,8 @@ void AL_CreateDayNightCycle() {
 		work.phase = PHASE_DAY;
 	}
 
-	tp->DisplaySub = AL_DayNightCycleDisplayer;
-	tp->DeleteSub = AL_DayNightCycleDestructor;
+	tp->disp = AL_DayNightCycleDisplayer;
+	tp->dest = AL_DayNightCycleDestructor;
 }
 
 // this hook is done to termporarily disable the vertex buffer caching mechanic for daynight cycle, 

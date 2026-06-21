@@ -511,7 +511,7 @@ void SpawnCWEChao()
 					}
 					else if (*(char*)&chao->data.InKindergarten == -1)
 					{
-						ObjectMaster* task = CreateChao(
+						task* task = CreateChao(
 							chao,
 							0,
 							0,

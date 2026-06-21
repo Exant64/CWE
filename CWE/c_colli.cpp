@@ -2,7 +2,7 @@
 #include <SA2ModLoader.h>
 
 const int CCL_EnablePtr = 0x00486CD0;
-void CCL_Enable(ObjectMaster* a1, int a2)
+void CCL_Enable(task* a1, int a2)
 {
 	__asm
 	{
@@ -12,7 +12,7 @@ void CCL_Enable(ObjectMaster* a1, int a2)
 	}
 }
 const int CCL_DisablePtr = 0x0486D00;
-void CCL_Disable(ObjectMaster* a1, int a2)
+void CCL_Disable(task* a1, int a2)
 {
 	__asm
 	{

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ALifeSDK_Functions.h"
+#include "Chao.h"
 
 DataArray(__int16, word_8A7A70, 0x8A7A70, 3);
 DataArray(__int16, word_8A7AC0, 0x8A7AC0, 3);
@@ -15,7 +16,9 @@ void  SetChunkTextureID_(NJS_CNK_MODEL* a1, int a2)
 		call SetChunkTextureIDPtr
 	}
 }
-void __cdecl AL_FaceSetEyeCWE(ObjectMaster* a3, int a2, int a1)
+
+// todo: refactor with decomp
+void __cdecl AL_FaceSetEyeCWE(task* a3, int a2, int a1)
 {
 	ChaoFacialData* v3; // esi
 	ChaoData1* v4; // ecx
@@ -26,10 +29,10 @@ void __cdecl AL_FaceSetEyeCWE(ObjectMaster* a3, int a2, int a1)
 	NJS_OBJECT* v9; // esi
 	NJS_CNK_MODEL* v10; // ecx
 
-	v3 = &a3->Data1.Chao->Face;
+	v3 = &GET_CHAOWK(a3)->Face;
 	v3->EyeTimer = a1;
 	v3->EyeCurrNum = a2;
-	if (!a3->Data1.Chao->Face.EyeCurrNum)
+	if (!v3->EyeCurrNum)
 	{
 		if (v3->EyeDefaultNum == 10)
 		{
@@ -39,14 +42,14 @@ void __cdecl AL_FaceSetEyeCWE(ObjectMaster* a3, int a2, int a1)
 		}
 		goto LABEL_8;
 	}
-	if (a3->Data1.Chao->Face.EyeCurrNum == 9)
+	if (GET_CHAOWK(a3)->Face.EyeCurrNum == 9)
 	{
 		v3->EyeLidExpressionAimCloseAng = 0x4000;
 	LABEL_9:
 		v3->EyeLidExpressionAimSlopeAng = 0;
 		goto LABEL_10;
 	}
-	if (a3->Data1.Chao->Face.EyeCurrNum != 10)
+	if (GET_CHAOWK(a3)->Face.EyeCurrNum != 10)
 	{
 	LABEL_8:
 		v3->EyeLidExpressionAimCloseAng = 0;
@@ -55,7 +58,7 @@ void __cdecl AL_FaceSetEyeCWE(ObjectMaster* a3, int a2, int a1)
 	v3->EyeLidExpressionAimCloseAng = 0x3555;
 	v3->EyeLidExpressionAimSlopeAng = 0xE38;
 LABEL_10:
-	v4 = a3->Data1.Chao;
+	v4 = GET_CHAOWK(a3);
 	v5 = v4->Face.EyeCurrNum;
 	if (v4->Face.EyeCurrNum && (v5 <= 8 || v5 > 10))
 	{
@@ -239,7 +242,7 @@ unsigned __int8 mouse_default_num[3][3][3] =
 };
 
 const int Chao_SetMouthPtr = 0x0053A5A0;
-void AL_FaceSetMouth(ObjectMaster* a2, int a3, int a1)
+void AL_FaceSetMouth(task* a2, int a3, int a1)
 {
 	__asm
 	{
@@ -252,7 +255,7 @@ void AL_FaceSetMouth(ObjectMaster* a2, int a3, int a1)
 }
 
 const int Chao_SetEyePtr = 0x0053A4B0;
-void AL_FaceSetEye(ObjectMaster* a3, int a2, int a1)
+void AL_FaceSetEye(task* a3, int a2, int a1)
 {
 	__asm
 	{
@@ -263,11 +266,11 @@ void AL_FaceSetEye(ObjectMaster* a3, int a2, int a1)
 	}
 }
 
-void AL_FaceChangeEye(ObjectMaster* tp, int EyeNum) {
+void AL_FaceChangeEye(task* tp, int EyeNum) {
 	AL_FaceSetEye(tp, EyeNum, -1);
 }
 
-void AL_FaceChangeMouth(ObjectMaster* tp, int MouthNum) {
+void AL_FaceChangeMouth(task* tp, int MouthNum) {
 	AL_FaceSetMouth(tp, MouthNum, -1);
 }
 

@@ -285,8 +285,8 @@ static void __cdecl OpenNameMenu(char* NazukeyaBuff)
 	NazukeyaBuff[80] = 1;
 	NazukeyaBuff[81] = 0;
 	int ptr = (int)NazukeyaBuff;
-	ObjectMaster* chao = *(ObjectMaster**)(ptr + 0x1C);
-	memcpy(&NazukeyaBuff[0x60], chao->Data1.Chao->pParamGC->Name, sizeof(AL_NAME));
+	task* chao = *(task**)(ptr + 0x1C);
+	memcpy(&NazukeyaBuff[0x60], GET_CHAOPARAM(chao)->Name, sizeof(AL_NAME));
 	NazukeyaBuff[0x4F] = 0;
 	int v4 = strlen((const char*)(&NazukeyaBuff[0x60]));
 	NazukeyaBuff[82] = v4;

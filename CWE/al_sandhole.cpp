@@ -21,27 +21,27 @@ NJS_OBJECT* object_sandpit[] = {
 
 float scale_sandpit[] = { 0.25f, 0.75f };
 
-void SandHole_Display(ObjectMaster *a1)
+void SandHole_Display(task *a1)
 {
 	DoLighting(LightIndex);
 
 	njPushMatrixEx();
-	njTranslateEx(&a1->Data1.Entity->Position);
+	njTranslateEx(&a1->twp->pos);
 	
-	float scl = scale_sandpit[a1->Data1.Entity->Index];
+	float scl = scale_sandpit[a1->twp->btimer];
 	njScale(NULL, scl, scl, scl);
 
 	njSetTexture(&AL_SANDHOLE_TEXLIST);
-	chCnkDrawObject(object_sandpit[a1->Data1.Entity->Index]);
+	chCnkDrawObject(object_sandpit[a1->twp->btimer]);
 
 	njPopMatrixEx();
 	DoLighting(LightIndexBackupMaybe);
 }
 
-ObjectMaster* __cdecl SandHole_Load(NJS_VECTOR * pos)
+task* __cdecl SandHole_Load(NJS_VECTOR * pos)
 {
-	ObjectMaster* loaded = LoadObject(4, "SandHole", (ObjectFuncPtr)nullsub_1, LoadObj_Data1);
-	loaded->DisplaySub = SandHole_Display;
-	loaded->Data1.Entity->Position = *pos;
+	task* loaded = CreateElementalTask(4, "SandHole", (task_exec)nullsub_1, LoadObj_Data1);
+	loaded->disp = SandHole_Display;
+	loaded->twp->pos = *pos;
 	return loaded;
 }

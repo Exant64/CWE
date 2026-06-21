@@ -47,13 +47,13 @@ const std::array<std::pair<int, NJS_OBJECT*>, 6> OmochaoPartModels = {{
 	{PROPELLER, &object_omobuild_prop}
 }};
 
-void __cdecl AL_OmoBuild_Display(ObjectMaster* a1)
+void __cdecl AL_OmoBuild_Display(task* a1)
 {
 	EggStartShaderHook();
 	njPushMatrixEx();
 	njSetTexture(&AL_BODY);
-	njTranslateEx(&a1->Data1.Entity->Position);
-	njRotateY(NULL, a1->Data1.Entity->Rotation.y);
+	njTranslateEx(&a1->twp->pos);
+	njRotateY(NULL, a1->twp->ang.y);
 	
 	OMOCHAO_INFO* omoinf = GetOmoData();
 	
@@ -92,7 +92,7 @@ void sub_540FD0(NJS_VECTOR* v, float f)
 }
 
 //FunctionPointer(ChaoData*, AL_GetNewChaoSaveInfo, (), 0x00531AA0);
-void __cdecl AL_OmoBuild_Main(ObjectMaster* a1)
+void __cdecl AL_OmoBuild_Main(task* a1)
 {
 	if (GetOmoData()->phase == 255)
 	{
@@ -119,9 +119,9 @@ void __cdecl AL_OmoBuild_Main(ObjectMaster* a1)
 			v11->data.Gene.Jewel[1] = GetOmoData()->jewel;
 			v11->data.Texture		= GetOmoData()->jewel;
 
-			CreateChao(v11, 0, 0, &a1->Data1.Entity->Position, a1->Data1.Entity->Rotation.y);
+			CreateChao(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
 			memset(GetOmoData(), 0, sizeof(OMOCHAO_INFO));
-			a1->MainSub = DeleteObject_;
+			a1->exec = DeleteObject_;
 			return;
 		}
 		
@@ -136,15 +136,15 @@ void __cdecl AL_OmoBuild_Main(ObjectMaster* a1)
 
 	AddToCollisionList(a1);
 	if (GetOmoData()->phase & MANNEQUIN)
-		sub_540FD0(&a1->Data1.Entity->Position, 0.235f);
+		sub_540FD0(&a1->twp->pos, 0.235f);
 }
 
 
 CollisionData omoColli = { 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
-	ObjectMaster* obj = LoadObject(4, "AL_OmoBuild", AL_OmoBuild_Main, LoadObj_Data1);
+	task* obj = CreateElementalTask(4, "AL_OmoBuild", AL_OmoBuild_Main, LoadObj_Data1);
 	InitCollision(obj, (CollisionData*)&omoColli, 1, 5);
-	obj->Data1.Entity->Position = *pPos;
-	obj->Data1.Entity->Rotation.y = ang;
-	obj->DisplaySub = AL_OmoBuild_Display;
+	obj->twp->pos = *pPos;
+	obj->twp->ang.y = ang;
+	obj->disp = AL_OmoBuild_Display;
 }

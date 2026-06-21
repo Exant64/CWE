@@ -2,18 +2,18 @@
 #include "SA2ModLoader.h"
 
 void AL_NameSet(char* lval, char* rval);
-bool AL_IsChild(ObjectMaster* tp);
+bool AL_IsChild(task* tp);
 bool AL_IsHero(unsigned __int8 a1);
 bool AL_IsDark(unsigned __int8 a1);
-bool AL_IsNegative(ObjectMaster* a1);
-bool AL_IsCustomChao(ObjectMaster* tp);
+bool AL_IsNegative(task* a1);
+bool AL_IsCustomChao(task* tp);
 
-void AL_ParameterClearAccessory(ObjectMaster* tp, int slot);
+void AL_ParameterClearAccessory(task* tp, int slot);
 
-void AL_ParameterAddAPos(ObjectMaster* a1, float a2);
+void AL_ParameterAddAPos(task* a1, float a2);
 
-void AL_ParameterAddUserLike(ObjectMaster* tp, int add, float AddAttr);
-void AL_ParameterGrow(ObjectMaster* a1, unsigned __int16 a2, unsigned __int16 a3, int a4);
+void AL_ParameterAddUserLike(task* tp, int add, float AddAttr);
+void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4);
 
-void IncrementFlySwim(ObjectMaster* a1, float a2);
-void IncrementPowerRun(ObjectMaster* a1, float a2);
+void IncrementFlySwim(task* a1, float a2);
+void IncrementPowerRun(task* a1, float a2);

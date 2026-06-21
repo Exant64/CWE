@@ -82,10 +82,10 @@ void AL_CalcIntentionScore_Rain(task* tp, float* pMaxScore) {
 		// if they don't have an umbrella, chill under a tree a bit
 		//check if tree found and other chao isn't shaking it + check if tree is adult
 		al_perception_link* pLink = AL_GetFoundTree(tp);
-		if (pLink && !ALW_IsSheAttentionOtherOne(tp, pLink->pEntry->tp) && pLink->pEntry->tp->Data1.Entity->Action == 7)
+		if (pLink && !ALW_IsSheAttentionOtherOne(tp, pLink->pEntry->tp) && pLink->pEntry->tp->twp->mode == 7)
 		{
 			//ALW_LockOn(tp, pLink->pEntry->tp);
-			MOV_SetAimPos(tp, &pLink->pEntry->tp->Data1.Entity->Position);
+			MOV_SetAimPos(tp, &pLink->pEntry->tp->twp->pos);
 
 			AL_SetBehavior(tp, ALBHV_GoToAimTree);
 			AL_SetNextBehavior(tp, ALBHV_WaitForRainToEnd);

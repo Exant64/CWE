@@ -10,7 +10,7 @@
 #include <al_parts.h>
 
 const int ParamFukidasiExecutor_LoadPtr = 0x05659E0;
-void ParamFukidasiExecutor_Load(ObjectMaster* a1)
+void ParamFukidasiExecutor_Load(task* a1)
 {
 	__asm
 	{
@@ -22,8 +22,8 @@ FunctionPointer(void, sub_6EFF10, (NJS_VECTOR* a1, NJS_VECTOR* a2, float a3), 0x
 ObjectFunc(AL_CloseParameterFukidasiWait, 0x00565BC0);
 
 //we split this out into a separate function for cleanness, on the original version it was inside
-void ALBHV_Capture_Parts(ObjectMaster* tp, int minitype) {
-	ChaoData1* work = tp->Data1.Chao;
+void ALBHV_Capture_Parts(task* tp, int minitype) {
+	chaowk* work = GET_CHAOWK(tp);
 	ChaoDataBase* pParamGC = work->pParamGC;
 
 	if (minitype >= 21 && minitype <= 24) return;
@@ -103,8 +103,8 @@ void ALBHV_Capture_Parts(ObjectMaster* tp, int minitype) {
 	}
 }
 
-int ALBHV_Capture(ObjectMaster* tp) {
-	ChaoData1* work = tp->Data1.Chao;
+int ALBHV_Capture(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
 
 	switch (work->Behavior.Mode) {
 	case 0:
@@ -113,9 +113,9 @@ int ALBHV_Capture(ObjectMaster* tp) {
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
 		if (CurrentChaoArea == NextChaoArea)
 		{
-			PlaySound_XYZ(4100, &tp->Data1.Chao->entity.Position, 0, 0, 0);
+			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->entity.pos, 0, 0, 0);
 		}
-		LoadChildObject(LoadObj_Data1, (ObjectFuncPtr)0x566CF0, tp);
+		CreateChildTask(LoadObj_Data1, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
 	case 1:
 		if (!AL_MoveHoldingObject(tp)) {
@@ -128,11 +128,11 @@ int ALBHV_Capture(ObjectMaster* tp) {
 			work->Behavior.Mode = 2;
 			if (CurrentChaoArea == NextChaoArea)
 			{
-				PlaySound_XYZ(4101, &tp->Data1.Chao->entity.Position, 0, 0, 0);
+				PlaySound_XYZ(4101, &GET_CHAOWK(tp)->entity.pos, 0, 0, 0);
 			}
 
 			for (int i = 0; i < 40; i++) {
-				NJS_POINT3* pos = &work->entity.Position;
+				NJS_POINT3* pos = &work->entity.pos;
 				int ang = NJM_DEG_ANG(9) * i; //40 steps around a circle
 
 				NJS_POINT3 ppos = {
@@ -152,9 +152,9 @@ int ALBHV_Capture(ObjectMaster* tp) {
 
 			if (pEntryMinimal) {
 				ChaoDataBase* pParamGC = work->pParamGC;
-				ObjectMaster* pMinimal = pEntryMinimal->tp;
-				EntityData1* pWorkMinimal = pMinimal->Data1.Entity;
-				int minitype = pWorkMinimal->Index;
+				task* pMinimal = pEntryMinimal->tp;
+				taskwk* pWorkMinimal = pMinimal->twp;
+				int minitype = pWorkMinimal->btimer;
 				NJS_VECTOR velo;
 				float addform;
 
@@ -163,11 +163,11 @@ int ALBHV_Capture(ObjectMaster* tp) {
 					return BHV_RET_FINISH;
 				}
 
-				pWorkMinimal->Rotation.z = 1;
+				pWorkMinimal->ang.z = 1;
 
-				velo.x = pWorkMinimal->Position.x - tp->Data1.Entity->Position.x;
+				velo.x = pWorkMinimal->pos.x - tp->twp->pos.x;
 				velo.y = 0;
-				velo.z = pWorkMinimal->Position.z - tp->Data1.Entity->Position.z;
+				velo.z = pWorkMinimal->pos.z - tp->twp->pos.z;
 				njUnitVector(&velo);
 				velo.x = velo.x * 0.4f;
 				velo.y = 0.85f;

@@ -46,7 +46,7 @@ struct butterflywk {
 	Uint8 flapmode;
 	int timer;
 
-	ObjectMaster* target;
+	task* target;
 	NJS_VECTOR position;
 	Angle ang;
 
@@ -65,8 +65,8 @@ struct butterflywk {
 	NJS_POINT3 targetPosition;
 };
 
-#define GET_BUTTERFLY_WK ((butterflywk*)(a1->Data1.Undefined))
-void ALO_Butterfly_Display(ObjectMaster* a1)
+#define GET_BUTTERFLY_WK ((butterflywk*)(a1->twp))
+void ALO_Butterfly_Display(task* a1)
 {
 	butterflywk* work = GET_BUTTERFLY_WK;
 
@@ -109,7 +109,7 @@ void ALO_Butterfly_Display(ObjectMaster* a1)
 }
 
 
-FunctionPointer(float, CalculateFalloffPosition, (float x, float y, float z, Rotation* a4), 0x00494C30);
+FunctionPointer(float, CalculateFalloffPosition, (float x, float y, float z, Angle3* a4), 0x00494C30);
 
 NJS_ARGB colors[] = {
 	{1,1,1,1},
@@ -119,7 +119,7 @@ NJS_ARGB colors[] = {
 };
 const int sinIncrement = 1024 * 6;
 const float speed = 0.15f;
-void ALO_Butterfly_Main(ObjectMaster* a1)
+void ALO_Butterfly_Main(task* a1)
 {
 	butterflywk* work = GET_BUTTERFLY_WK;
 
@@ -131,7 +131,7 @@ void ALO_Butterfly_Main(ObjectMaster* a1)
 		sub_534F80((int)&stru_1A15938[1], &work->targetPosition, stru_1A15938[1].nbIndex);
 
 		if (work->target)
-			work->targetPosition = work->target->Data1.Entity->Position;
+			work->targetPosition = work->target->twp->pos;
 		work->speed = 0.15f;
 		work->attr.color = colors[rand() % 4];
 		work->attr.scl = 0.4f + njRandom() * 0.75f; //(0.75 - 1.15)
@@ -159,10 +159,10 @@ void ALO_Butterfly_Main(ObjectMaster* a1)
 			float dist = distX * distX + distZ * distZ;
 			if (dist < 10.0f) {
 				//if (work->target)
-					//work->targetPosition = work->target->Data1.Entity->Position;
+					//work->targetPosition = work->target->twp->Position;
 			}
 
-			Rotation fake = { 0,0,0 };
+			Angle3 fake = { 0,0,0 };
 			work->position.x += njSin(work->ang) * speed;
 			work->position.y = CalculateFalloffPosition(work->position.x, 25, work->position.z, &fake) + work->targetPosition.y;
 			work->position.z += njCos(work->ang) * speed;
@@ -218,7 +218,7 @@ void ALO_Butterfly_Main(ObjectMaster* a1)
 	
 
 	//shadow code
-	//sub_540FD0(&a1->Data1.Entity->Position, 0.1f);
+	//sub_540FD0(&a1->twp->Position, 0.1f);
 }
 
 void ALO_Butterfly_Load()
@@ -226,8 +226,8 @@ void ALO_Butterfly_Load()
 	int count = (int)(njRandom() * 3.f) + 2;
 	for (int i = 0; i < count; i++)
 	{
-		ObjectMaster* loaded = LoadObject(4, "ALO_Butterfly", ALO_Butterfly_Main, (LoadObj)0);
+		task* loaded = CreateElementalTask(4, "ALO_Butterfly", ALO_Butterfly_Main, (LoadObj)0);
 		loaded->field_1C = ALO_Butterfly_Display;
-		loaded->Data1.Undefined = AllocateArray(sizeof(butterflywk), 1, (char*)__FILE__, __LINE__);
+		// loaded->twp = AllocateArray(sizeof(butterflywk), 1, (char*)__FILE__, __LINE__);
 	}
 }

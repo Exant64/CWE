@@ -108,9 +108,9 @@ int BM_GetInvSize(BlackMarketData* a1)
 }
 
 const int ALO_Kinder_Window_LoadPtr = 0x05A92B0;
-ObjectMaster* ALO_Kinder_Window_Load(ObjectMaster* result, char layer, ALK_WINDOW_TABLE* a3, int color)
+task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color)
 {
-	ObjectMaster* retval;
+	task* retval;
 	__asm
 	{
 		mov eax, result
@@ -1384,7 +1384,7 @@ void DrawTimer()
 Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1, 0.5f, {  1,  1,  1 } };
 #define Translate(x,y,z) OrthoScreenTranslate(x, y, (-26.0f) / z * scl)
 
-extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Rotation& rot, const SAlItem& mItemDescItem) {
+extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Angle3& rot, const SAlItem& mItemDescItem) {
 	njPushMatrixEx();
 	njUnitMatrix(0);
 
@@ -1593,7 +1593,7 @@ void DrawPurchasedItem() {
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
 			SetShaders(1);
 			DoLighting(0);
-			Rotation rot = { 0,0,0 };
+			Angle3 rot = { 0,0,0 };
 			DrawItem(
 				i * *(float*)0x1A13BE0 + *(float*)0x1A13BE8,
 				i * *(float*)0x1A13BF0 + *(float*)0x1A13BF4,
@@ -1976,10 +1976,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				{
 					goto LABEL_57;
 				}
-				a1->BuylistKinder[0]->MainSub = DeleteObject_;
-				a1->BuylistKinder[1]->MainSub = DeleteObject_;
-				a1->BuylistKinder[2]->MainSub = DeleteObject_;
-				a1->BuylistKinder[3]->MainSub = DeleteObject_;
+				a1->BuylistKinder[0]->exec = DeleteObject_;
+				a1->BuylistKinder[1]->exec = DeleteObject_;
+				a1->BuylistKinder[2]->exec = DeleteObject_;
+				a1->BuylistKinder[3]->exec = DeleteObject_;
 				goto LABEL_56;
 			}
 			if (a1->mItemDescItem.mCategory == 16)
@@ -2003,10 +2003,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				{
 					FMainWinAddLineId(a1, 21);
 					FMainWinWaitClose(a1);
-					a1->BuylistKinder[0]->MainSub = DeleteObject_;
-					a1->BuylistKinder[1]->MainSub = DeleteObject_;
-					a1->BuylistKinder[2]->MainSub = DeleteObject_;
-					a1->BuylistKinder[3]->MainSub = DeleteObject_;
+					a1->BuylistKinder[0]->exec = DeleteObject_;
+					a1->BuylistKinder[1]->exec = DeleteObject_;
+					a1->BuylistKinder[2]->exec = DeleteObject_;
+					a1->BuylistKinder[3]->exec = DeleteObject_;
 
 					goto LABEL_56;
 				}
@@ -2018,10 +2018,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 						save::CWE_PurchasedItems.size());
 					FMainWinAddLineStr(a1, buff);
 					FMainWinWaitClose(a1);
-					a1->BuylistKinder[0]->MainSub = DeleteObject_;
-					a1->BuylistKinder[1]->MainSub = DeleteObject_;
-					a1->BuylistKinder[2]->MainSub = DeleteObject_;
-					a1->BuylistKinder[3]->MainSub = DeleteObject_;
+					a1->BuylistKinder[0]->exec = DeleteObject_;
+					a1->BuylistKinder[1]->exec = DeleteObject_;
+					a1->BuylistKinder[2]->exec = DeleteObject_;
+					a1->BuylistKinder[3]->exec = DeleteObject_;
 
 					goto LABEL_56;
 				}
@@ -2040,10 +2040,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			FMainWinWaitClose(a1);
 			ALO_RingWinAdd(-a1->mItemDescInfo->PurchasePrice);
 
-			a1->BuylistKinder[0]->MainSub = DeleteObject_;
-			a1->BuylistKinder[1]->MainSub = DeleteObject_;
-			a1->BuylistKinder[2]->MainSub = DeleteObject_;
-			a1->BuylistKinder[3]->MainSub = DeleteObject_;
+			a1->BuylistKinder[0]->exec = DeleteObject_;
+			a1->BuylistKinder[1]->exec = DeleteObject_;
+			a1->BuylistKinder[2]->exec = DeleteObject_;
+			a1->BuylistKinder[3]->exec = DeleteObject_;
 
 			if (!AlItemIsRebuyable(a1->mItemDescItem))
 			{
@@ -2241,7 +2241,7 @@ static void SellHeldItem() {
 	task* pHeld = MainCharObj2[0]->HeldObject;
 	if (pHeld)
 	{
-		pHeld->MainSub = DeleteObject_;
+		pHeld->exec = DeleteObject_;
 		if (MainCharObj1[0]) {
 			sub_46E5E0(0, (int)MainCharObj1[0]);
 		}

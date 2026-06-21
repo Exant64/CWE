@@ -22,7 +22,7 @@ struct CWE_API_CHAO_DATA {
 	Uint32 IconType; // use the ICON_TYPE defines for setting this
 	void* pIconData; //placeholder for custom emotion balls in the future
 
-	bool (*pEvolveFunc) (ObjectMaster* tp); //if function returns true during evolution, chao will evolve into this type
+	bool (*pEvolveFunc) (task* tp); //if function returns true during evolution, chao will evolve into this type
 
 	Uint32 Flags;
 	const char* Name; //we use it for the health center for now, also useful for KCE, ex. "Spartoi"

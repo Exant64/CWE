@@ -9,13 +9,13 @@
 
 typedef NJS_VECTOR Vector3;
 
-struct EntityData1;
+struct taskwk;
 struct ObjectListEntry;
 struct COL;
 struct ModelIndex;
 struct SETEntry;
 struct SETObjectData;
-struct CollisionInfo;
+struct colliwk;
 struct struct_0;
 struct AnimationIndex;
 struct AnimationInfo;
@@ -30,9 +30,9 @@ struct UnknownData2;
 struct ChaoData1;
 struct ObjUnknownA;
 struct ObjUnknownB;
-struct ObjectMaster;
+struct task;
 
-typedef void(__cdecl *ObjectFuncPtr)(ObjectMaster *);
+typedef void(__cdecl *task_exec)(task *);
 
 // All structs should be packed.
 #pragma pack(push, 1)
@@ -46,8 +46,7 @@ struct AllocatedMem
 union __declspec(align(2)) Data1Ptr
 {
 	void *Undefined;
-	EntityData1 *Entity;
-	ChaoData1 *Chao;
+	taskwk *Entity;
 	ChaoDebugData1 *ChaoDebug;
 };
 
@@ -60,22 +59,22 @@ union Data2Ptr
 	UnknownData2 *Unknown_Chao;
 };
 
-struct ObjectMaster
+struct task
 {
-	ObjectMaster *PrevObject;
-	ObjectMaster *NextObject;
-	ObjectMaster *Parent;
-	ObjectMaster *Child;
-	ObjectFuncPtr MainSub;
-	ObjectFuncPtr DisplaySub;
-	ObjectFuncPtr DeleteSub;
-	ObjectFuncPtr field_1C;
-	ObjectFuncPtr field_20;
-	ObjectFuncPtr SomethingSub;
-	ObjectFuncPtr field_28;
+	task *PrevObject;
+	task *NextObject;
+	task *Parent;
+	task *Child;
+	task_exec exec;
+	task_exec disp;
+	task_exec dest;
+	task_exec field_1C;
+	task_exec field_20;
+	task_exec SomethingSub;
+	task_exec field_28;
 	void *field_2C;
 	SETObjectData *SETData;
-	Data1Ptr Data1;
+	taskwk* twp;
 	UnknownData2 *EntityData2;
 	ObjUnknownA *UnknownA_ptr;
 	Data2Ptr Data2;
@@ -89,30 +88,30 @@ struct SETObjectData
 	uint8_t LoadCount;
 	char field_1;
 	__int16 Flags;
-	ObjectMaster *Object;
+	task *Object;
 	SETEntry *SETEntry;
 	float field_C;
 };
 
-struct Rotation
+struct Angle3
 {
 	int x;
 	int y;
 	int z;
 };
 
-struct EntityData1
+struct taskwk
 {
-	char Action;
-	char NextAction;
-	char field_2;
-	char Index;
-	__int16 Status;
-	__int16 field_6;
-	Rotation Rotation;
-	NJS_VECTOR Position;
-	NJS_VECTOR Scale;
-	CollisionInfo *Collision;
+	char mode;
+	char smode;
+	char id;
+	char btimer;
+	__int16 flag;
+	__int16 wtimer;
+	Angle3 ang;
+	NJS_POINT3 pos;
+	NJS_VECTOR scl;
+	colliwk *cwp;
 };
 
 struct ChaoUnknownD
@@ -186,7 +185,7 @@ struct ChunkObjectPointer
 	ChaoToyChunk toy;
 	int useTransform;
 	NJS_VECTOR position;
-	Rotation rotation;
+	Angle3 rotation;
 	NJS_MATRIX_PTR Matrix;
 	NJS_VECTOR *field_C8;
 	int field_CC;
@@ -306,10 +305,10 @@ struct __declspec(align(4)) AL_BEHAVIOR
 	int FreeWork;
 	float MoveRadius;
 	NJS_POINT3 BasePos;
-	int(__cdecl* PrevFunc)(ObjectMaster*);
+	int(__cdecl* PrevFunc)(task*);
 	int nbBhvFuncEntry;
 	int CurrBhvFuncNum;
-	int(__cdecl* BhvFuncList[16])(ObjectMaster*);
+	int(__cdecl* BhvFuncList[16])(task*);
 	int ReserveTimerList[16];
 };
 #pragma pack(pop)
@@ -323,14 +322,14 @@ struct al_entry_work
 	void* pSaveInfo;
 	int CommuID;
 	NJS_POINT3 pos;
-	Rotation ang;
+	Angle3 ang;
 	float radius;
 	float offset;
 	float CamDist;
 	__int16 command;
 	__int16 command_value;
 	int state;
-	ObjectMaster* tp;
+	task* tp;
 	al_entry_work* pCommu;
 	al_entry_work* pLockOn;
 };
@@ -355,7 +354,7 @@ struct ChaoSomeUnknownA
 	__int16 field_36;
 	__int16 field_38;
 	__int16 field_3A;
-	ObjectMaster* pointerToOwner;
+	task* pointerToOwner;
 	ChaoSomeUnknownA* heldBy;
 	ChaoSomeUnknownA* field_44;
 };
@@ -400,13 +399,13 @@ struct __declspec(align(4)) AL_PERCEPTION_INFO
 #pragma pack(push, 8)
 struct __declspec(align(4)) ChaoData1
 {
-	EntityData1 entity;
+	taskwk entity;
 	int gap_30;
 	int gap_34;
-	ObjectMaster* ObjectMaster_ptr1;
-	ObjectMaster *ObjectMaster_ptr1_notreally;
-	ObjectMaster* ObjectMaster_ptr2;
-	ObjectMaster *ObjectMaster_ptr2_notreally;
+	task* task_ptr1;
+	task *task_ptr1_notreally;
+	task* task_ptr2;
+	task *task_ptr2_notreally;
 	char field_54[12];
 	int field_60;
 	int field_58;
@@ -671,9 +670,9 @@ struct CharObj2Base
 	int field_4C[6];
 	NJS_VECTOR Speed;
 	char gap_70[36];
-	ObjectMaster *HeldObject;
+	task *HeldObject;
 	char gap_98[4];
-	ObjectMaster *HoldTarget;
+	task *HoldTarget;
 	char gap_A0[28];
 	NJS_MOTION **Animation;
 	PhysicsData PhysData;
@@ -692,16 +691,16 @@ struct SETEntry
 	NJS_VECTOR Scale;
 };
 
-struct CollisionInfo
+struct colliwk
 {
 	__int16 char0;
 	__int16 field_2;
-	uint16_t word4;
-	uint16_t Count;
+	uint16_t flag;
+	uint16_t nbInfo;
 	float field_8;
 	CollisionData *CollisionArray;
 	uint8_t f10[140];
-	ObjectMaster *Object;
+	task *Object;
 	__int16 field_A0;
 	__int16 field_A2;
 	int field_A4;
@@ -1077,7 +1076,7 @@ struct ObjectListEntry
 	char List;
 	__int16 ObjectFlags;
 	float DistanceMaybe;
-	ObjectFuncPtr Function;
+	task_exec Function;
 	char *Name;
 };
 
@@ -1138,7 +1137,7 @@ struct LevelHeader
 	int field_8;
 	void(__cdecl *Init)();
 	void *anonymous_2;
-	ObjectFuncPtr subprgmanager;
+	task_exec subprgmanager;
 };
 
 struct ChaoItemStats
@@ -1320,7 +1319,7 @@ struct LoopHead
 	__int16 Count;
 	float TotalDistance;
 	LoopPoint *Points;
-	ObjectFuncPtr Object;
+	task_exec Object;
 };
 
 struct EmeManThing
@@ -1671,7 +1670,7 @@ struct MotionTableEntry
 
 struct ALO_ChaosDriveExecutor_Data1
 {
-	EntityData1 entity;
+	taskwk entity;
 	char field_30;
 	char gap_31[3];
 	int field_34;
@@ -1686,7 +1685,7 @@ struct ALO_ChaosDriveExecutor_Data1
 
 struct AL_MinimalExecutor_Data1
 {
-	EntityData1 entity;
+	taskwk entity;
 	int field_30;
 	int field_34;
 	MotionTableData field_38;
@@ -1752,7 +1751,7 @@ struct AL_GBAManagerExecutor_Data
 	int field_0;
 	int field_4;
 	int field_8;
-	ObjectMaster *ObjectPtr;
+	task *ObjectPtr;
 	char field_10[4228];
 	char gap_1094[12691];
 	char field_4227;

@@ -145,7 +145,7 @@ extern "C"
 		SaveFileAPIEntry entry = { suffix,buffer,size };
 		ModAPI_SaveAPI.push_back(entry);
 	}
-	bool ALS_Default(ObjectMaster* chao, ObjectMaster* item)
+	bool ALS_Default(task* chao, task* item)
 	{
 		return true;
 	}

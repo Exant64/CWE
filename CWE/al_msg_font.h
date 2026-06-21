@@ -43,4 +43,4 @@ void DrawFontThing(__int16* a1, float a2, float a3, float a4);
 void AlMsgFontDrawRegionScale2(signed int a1, MessageFontThing* a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9);
 void AlMsgFontDelete(MessageFontThing* a1);
 
-ObjectMaster* AL_KinderPMessageExec_Load(ObjectMaster* a1, AL_KinderPMessage* a2);
+task* AL_KinderPMessageExec_Load(task* a1, AL_KinderPMessage* a2);

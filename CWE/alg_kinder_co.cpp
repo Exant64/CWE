@@ -39,11 +39,11 @@ struct al_stg_kinder_co_data
 };
 #pragma pack(pop)
 
-DataPointer(ObjectMaster*, pKinderChao, 0x01AED248);
+DataPointer(task*, pKinderChao, 0x01AED248);
 static bool IsValidRoom(int room) {
 	if (!pKinderChao) return true;
 
-	if (pKinderChao->Data1.Chao->pParamGC->field_19 == 1 && room == 4)
+	if (GET_CHAOPARAM(pKinderChao)->field_19 == 1 && room == 4)
 		return false;
 
 	return true;
@@ -164,14 +164,14 @@ static void __declspec(naked) CorridorText2Hook()
 
 
 
-DataArray(ObjectMaster*, doorObjectArray, 0x01A27850, 6);
+DataArray(task*, doorObjectArray, 0x01A27850, 6);
 void __cdecl EnteringRoom(al_stg_kinder_co_data* pCoData, int room) {
 	pCoData->enteringRoom = room;
 	if (IsValidRoom(room) && ControllerPointers[0]->press & (Buttons_A | Buttons_B))
 	{
 		*(char*)0x0174AFFE = 0;
 		*(char*)0x0174AFD6 = 1;
-		doorObjectArray[room]->Data1.Entity->NextAction = 1;
+		doorObjectArray[room]->twp->smode = 1;
 		pCoData->timer = 30;
 		pCoData->mode = 2;
 		pCoData->dword14 = 1024;

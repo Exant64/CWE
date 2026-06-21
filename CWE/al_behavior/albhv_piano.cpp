@@ -11,7 +11,7 @@
 #include <util.h>
 
 static int GetPianoType (task* pToy) {
-	return pToy->Data1.Entity->Index;
+	return pToy->twp->btimer;
 }
 
 static int ALBHV_PlayPiano(task* tp) {
@@ -28,9 +28,9 @@ static int ALBHV_PlayPiano(task* tp) {
 		pToy = ALW_GetLockOnTask(tp);
 		SetPianoWaypoint(pToy, &toyPos);
 
-		toyPos.y = work->entity.Position.y;
-		work->entity.Position = toyPos;
-		work->entity.Rotation.y = pToy->Data1.Entity->Rotation.y + 0x8000;
+		toyPos.y = work->entity.pos.y;
+		work->entity.pos = toyPos;
+		work->entity.ang.y = pToy->twp->ang.y + 0x8000;
 
 		switch (GetPianoType(pToy))
 		{
@@ -49,14 +49,14 @@ static int ALBHV_PlayPiano(task* tp) {
 
 		timer = (int)(1800 + (njRandom() * 800.f)) * 2;
 
-		work->ObjectMaster_ptr1 = AL_FieldExecutor_Load(
+		work->task_ptr1 = AL_FieldExecutor_Load(
 			CI_KIND_AL_RANDOM_MUSIC,
-			&work->entity.Position,
+			&work->entity.pos,
 			20,
 			timer);
-		work->ObjectMaster_ptr2 = AL_FieldExecutor_Load( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
+		work->task_ptr2 = AL_FieldExecutor_Load( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
 			CI_KIND_AL_PIANO,
-			&work->entity.Position,
+			&work->entity.pos,
 			20,
 			timer);
 		break;
@@ -82,7 +82,7 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 	SetPianoWaypoint(pToy, &pianoPos);
 	
-	const Angle targetAng = pToy->Data1.Entity->Rotation.y + 0x8000;
+	const Angle targetAng = pToy->twp->ang.y + 0x8000;
 	MOV_SetAimPos(tp, &pianoPos);
 
 	switch (bhv->Mode) {
@@ -95,8 +95,8 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 		{
 			const float speed = GET_GLOBAL()->WalkAcc * 0.8f;
-			tp->EntityData2->speed.x = njSin(work->entity.Rotation.y) * speed;
-			tp->EntityData2->speed.z = njCos(work->entity.Rotation.y) * speed;
+			tp->EntityData2->speed.x = njSin(work->entity.ang.y) * speed;
+			tp->EntityData2->speed.z = njCos(work->entity.ang.y) * speed;
 		}
 		
 		if (MOV_DistFromAimXZ(tp) < 0.5f) {
@@ -104,9 +104,9 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 		}
 		break;
 	case 2:
-		work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, targetAng, ANGLE_SPD);
+		work->entity.ang.y = AdjustAngle(work->entity.ang.y, targetAng, ANGLE_SPD);
 
-		if (abs(work->entity.Rotation.y - targetAng) <= ANGLE_SPD) {
+		if (abs(work->entity.ang.y - targetAng) <= ANGLE_SPD) {
 			return BHV_RET_FINISH;
 		}
 		break;

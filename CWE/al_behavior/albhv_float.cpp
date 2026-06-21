@@ -9,13 +9,13 @@
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 
-signed int ALBHV_RideFloat(ObjectMaster* a1)
+signed int ALBHV_RideFloat(task* a1)
 {
 	ChaoData1* v1; // esi
 	AL_BEHAVIOR* v3; // esi
 	float v2;
 
-	v1 = (ChaoData1*)a1->Data1.Chao;
+	v1 = (ChaoData1*)GET_CHAOWK(a1);
 	v3 = &v1->Behavior;
 
 	//SWIM CONTROL
@@ -66,41 +66,41 @@ signed int ALBHV_RideFloat(ObjectMaster* a1)
 		v3->Mode++;
 		break;
 	case 1:
-		a1->Data1.Chao->Behavior.SubTimer++;
-		if (a1->Data1.Chao->Behavior.SubTimer % 600 == 0)
+		GET_CHAOWK(a1)->Behavior.SubTimer++;
+		if (GET_CHAOWK(a1)->Behavior.SubTimer % 600 == 0)
 			if (njRandom() > 0.6f)
 				AL_EmotionSet(a1, EM_ST_THIRSTY, 0);
 
 		if (MOV_DistFromAim(a1) < 36.0)
 			sub_561740((int)a1);
 
-		a1->Data1.Entity->Position.y = a1->EntityData2->field_DC;
+		a1->twp->pos.y = a1->EntityData2->field_DC;
 		MOV_TurnToAim2(a1, 100);
 		float v8 = 0.005f;
 		a1->EntityData2->speed.y = -a1->EntityData2->gravity - a1->EntityData2->velocity.y * 0.1f;
-		a1->EntityData2->speed.x = njSin(a1->Data1.Entity->Rotation.y) * v8 - a1->EntityData2->velocity.x * 0.05f;
-		a1->EntityData2->speed.z = njCos(a1->Data1.Entity->Rotation.y) * v8 - a1->EntityData2->velocity.z * 0.05f;
+		a1->EntityData2->speed.x = njSin(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.x * 0.05f;
+		a1->EntityData2->speed.z = njCos(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.z * 0.05f;
 
 
 		//AL_ForwardAcc(a1, ChaoGlobal.WalkAcc * 0.8f);
 
-		ObjectMaster* pCommu = ALW_GetLockOnTask(a1);
-		pCommu->Data1.Entity->field_6 = 0;//dont render
-		pCommu->Data1.Entity->Position = a1->Data1.Entity->Position;
-		pCommu->Data1.Entity->Rotation.y = a1->Data1.Entity->Rotation.y;
-		pCommu->Data1.Entity->Position.x += njSin(a1->Data1.Entity->Rotation.y);
-		pCommu->Data1.Entity->Position.y -= 2;
-		pCommu->Data1.Entity->Position.z += njCos(a1->Data1.Entity->Rotation.y);
+		task* pCommu = ALW_GetLockOnTask(a1);
+		pCommu->twp->wtimer = 0;//dont render
+		pCommu->twp->pos = a1->twp->pos;
+		pCommu->twp->ang.y = a1->twp->ang.y;
+		pCommu->twp->pos.x += njSin(a1->twp->ang.y);
+		pCommu->twp->pos.y -= 2;
+		pCommu->twp->pos.z += njCos(a1->twp->ang.y);
 		break;
 	}
-	((ChaoData1*)a1->Data1.Chao)->Behavior.Flag |= 1;
+	GET_CHAOWK(a1)->Behavior.Flag |= 1;
 	return BHV_RET_CONTINUE;
 }
 
-signed int __cdecl ALBHV_GoToWaterWithBoat(ObjectMaster* a1);
-signed int __cdecl ALBHV_GoToFloat(ObjectMaster* a1)
+signed int __cdecl ALBHV_GoToWaterWithBoat(task* a1);
+signed int __cdecl ALBHV_GoToFloat(task* a1)
 {
-	ObjectMaster* v1; // edi
+	task* v1; // edi
 
 	v1 = AL_GetFoundToyTask(a1);
 	if (!v1)

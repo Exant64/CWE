@@ -11,15 +11,15 @@
 
 //DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 
-int ALBHV_HoldHands_Left(ObjectMaster* a1)
+int ALBHV_HoldHands_Left(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
 		//PrintDebug("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
-	ObjectMaster* otherChao;
+	task* otherChao;
 	NJS_VECTOR v8;
-	chaowk* wk = (chaowk*)a1->Data1.Chao;
+	chaowk* wk = GET_CHAOWK(a1);
 
 	NJS_VECTOR testVectr;
 	testVectr.x = 3;
@@ -44,36 +44,36 @@ int ALBHV_HoldHands_Left(ObjectMaster* a1)
 		
 
 		njPushUnitMatrix();
-		njTranslateEx(&a1->Data1.Entity->Position);
-		RotateY(a1->Data1.Entity->Rotation.y);
+		njTranslateEx(&a1->twp->pos);
+		RotateY(a1->twp->ang.y);
 		sub_426CC0(_nj_current_matrix_ptr_, &v8, &testVectr, 0);
 		njPopMatrixEx();
 
-		otherChao->Data1.Entity->Position.x = (v8.x - otherChao->Data1.Entity->Position.x) * 0.1f + otherChao->Data1.Entity->Position.x;
-		otherChao->Data1.Entity->Position.y = (v8.y - otherChao->Data1.Entity->Position.y) * 0.1f + otherChao->Data1.Entity->Position.y;
-		otherChao->Data1.Entity->Position.z = (v8.z - otherChao->Data1.Entity->Position.z) * 0.1f + otherChao->Data1.Entity->Position.z;
+		otherChao->twp->pos.x = (v8.x - otherChao->twp->pos.x) * 0.1f + otherChao->twp->pos.x;
+		otherChao->twp->pos.y = (v8.y - otherChao->twp->pos.y) * 0.1f + otherChao->twp->pos.y;
+		otherChao->twp->pos.z = (v8.z - otherChao->twp->pos.z) * 0.1f + otherChao->twp->pos.z;
 
-		otherChao->Data1.Entity->Rotation.y = AdjustAngle_(otherChao->Data1.Entity->Rotation.y, a1->Data1.Entity->Rotation.y, 1024);
+		otherChao->twp->ang.y = AdjustAngle_(otherChao->twp->ang.y, a1->twp->ang.y, 1024);
 
-		v8.y = otherChao->Data1.Entity->Position.y;
-		if(CheckDistance(&v8, &otherChao->Data1.Entity->Position) <= 0.2)
+		v8.y = otherChao->twp->pos.y;
+		if(CheckDistance(&v8, &otherChao->twp->pos) <= 0.2)
 			wk->Behavior.Mode++;
 		break;
 	case 2:
 		otherChao = ALW_IsCommunicating(a1)->tp;
 
 		//FIX THIS
-		float backupY = otherChao->Data1.Entity->Position.y;
+		float backupY = otherChao->twp->pos.y;
 		njPushUnitMatrix();
-		njTranslateEx(&a1->Data1.Entity->Position);
-		njRotateY(NULL, a1->Data1.Entity->Rotation.y);
-		sub_426CC0(_nj_current_matrix_ptr_, &otherChao->Data1.Entity->Position, &testVectr, 0);
+		njTranslateEx(&a1->twp->pos);
+		njRotateY(NULL, a1->twp->ang.y);
+		sub_426CC0(_nj_current_matrix_ptr_, &otherChao->twp->pos, &testVectr, 0);
 		njPopMatrixEx();
 
-		otherChao->Data1.Entity->Position.y = backupY;
-		otherChao->Data1.Entity->Rotation.y = a1->Data1.Entity->Rotation.y;
+		otherChao->twp->pos.y = backupY;
+		otherChao->twp->ang.y = a1->twp->ang.y;
 
-		((UnknownData2*)a1->EntityData2)->Waypoint.y = a1->Data1.Entity->Position.y; //DISGUSTING hack
+		((UnknownData2*)a1->EntityData2)->Waypoint.y = a1->twp->pos.y; //DISGUSTING hack
 
 		MOV_TurnToAim2(a1, 384);
 		float a2 = ChaoGlobal.WalkAcc * 0.4f;
@@ -91,15 +91,15 @@ int ALBHV_HoldHands_Left(ObjectMaster* a1)
 	}
 	return 0;
 }
-//FunctionPointer(signed int, AL_GetRandomAttrPos_0, (ObjectMaster* a1), 0x0073AEE0);
+//FunctionPointer(signed int, AL_GetRandomAttrPos_0, (task* a1), 0x0073AEE0);
 
-int ALBHV_HoldHands_Right(ObjectMaster* a1)
+int ALBHV_HoldHands_Right(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
 		//PrintDebug("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
-	chaowk* wk = (chaowk*)a1->Data1.Chao;
+	chaowk* wk = GET_CHAOWK(a1);
 	switch (wk->Behavior.Mode)
 	{
 	case 0:
@@ -117,9 +117,9 @@ int ALBHV_HoldHands_Right(ObjectMaster* a1)
 	}
 	return 0;
 }
-int ALBHV_InitHoldHands(ObjectMaster* a1)
+int ALBHV_InitHoldHands(task* a1)
 {
-	ObjectMaster* otherChao = ALW_GetLockOnTask(a1); //hardcoded select second chao
+	task* otherChao = ALW_GetLockOnTask(a1); //hardcoded select second chao
 	if (otherChao == a1)
 	{
 		return 1;

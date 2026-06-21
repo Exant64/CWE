@@ -15,14 +15,14 @@ void CocoonFix()
 }
 
 ObjectFunc(EGG_Display, 0x0057B640);
-void __cdecl EGG_Display_(ObjectMaster* a1)
+void __cdecl EGG_Display_(task* a1)
 {
 	BrightFixPlus_ShinyCheck(1);
 	EGG_Display(a1);
 
 }
 
-ObjectMaster* dword_1946618[32];
+task* dword_1946618[32];
 FunctionPointer(void, free_, (void* lpMem), 0x07A80DD);
 FunctionPointer(void*, new_, (int size), 0x007A5DA1);
 void ChaoExpandPatch() {
@@ -90,7 +90,7 @@ void __cdecl ExpandTextureBuffer()
 	njInitTextureBuffer(v2);
 }
 
-static void __cdecl BreedPatch(ObjectMaster* a1)
+static void __cdecl BreedPatch(task* a1)
 {
 	sub_54A690(a1);
 	//attentionoff
@@ -118,26 +118,23 @@ static void __declspec(naked) BreedPatch_asm()
 }
 
 DataPointer(int, BallUsable, 0x01DBE574);
-DataPointer(ObjectMaster*, ALO_BallPtr, 0x01DBE570);
-signed int __cdecl AL_CheckBallFix(ObjectMaster* a1)
-{
-	Data1Ptr v1; // eax
-	ChaoDataBase* v2; // esi
-
-	if (ALO_BallPtr == nullptr || ALO_BallPtr->Data1.Undefined == nullptr || !BallUsable)
-	{
+DataPointer(task*, ALO_BallPtr, 0x01DBE570);
+signed int __cdecl AL_CheckBallFix(task* tp) {
+	if (ALO_BallPtr == nullptr || ALO_BallPtr->twp == nullptr || !BallUsable) {
 		return 0;
 	}
-	v1.Chao = (ChaoData1*)a1->Data1.Chao;
-	v2 = v1.Chao->pParamGC;
-	if (AL_EmotionGetValue(a1, EM_ST_TEDIOUS) <= 4000
-		|| CheckDistance(&v1.Chao->entity.Position, &ALO_BallPtr->Data1.Entity->Position) >= 50)
+
+	chaowk* work = GET_CHAOWK(tp);
+	auto pParam = GET_CHAOPARAM(tp);
+
+	if (AL_EmotionGetValue(tp, EM_ST_TEDIOUS) <= 4000
+		|| CheckDistance(&work->entity.pos, &ALO_BallPtr->twp->pos) >= 50)
 	{
 		return 0;
 	}
 
-	AL_EmotionAdd(a1, EM_ST_TEDIOUS, -2000);
-	AL_SetBehaviorWithTimer(a1, (int)0x0563830, -1);
+	AL_EmotionAdd(tp, EM_ST_TEDIOUS, -2000);
+	AL_SetBehaviorWithTimer(tp, (int)0x0563830, -1);
 	return 1;
 }
 static void __declspec(naked) AL_CheckBallHook()
@@ -154,7 +151,7 @@ static void __declspec(naked) AL_CheckBallHook()
 	}
 }
 
-void Ball_Delete(ObjectMaster* a1) {
+void Ball_Delete(task* a1) {
 	ObjectFunc(j_ALO_Delete, 0x0057B9B0);
 	j_ALO_Delete(a1);
 	ALO_BallPtr = 0;

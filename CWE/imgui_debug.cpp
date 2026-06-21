@@ -55,7 +55,7 @@ static void ChaoInfoMenu() {
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
-                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->entity.Position, 3);
+                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->entity.pos, 3);
 
                 static bool ChaoDebugDistEnabled = false;
                 ImGui::Checkbox("Distance Debug", &ChaoDebugDistEnabled);
@@ -481,7 +481,7 @@ static void ChaoSoundMenu() {
         }
 
         if (ImGui::Button("Play")) {
-            PlaySound_XYZ(SoundID, &MainCharObj1[0]->Position, 0, 0, 110);
+            PlaySound_XYZ(SoundID, &MainCharObj1[0]->pos, 0, 0, 110);
         }
 
         if (ImGui::Button("Stop Music")) {
@@ -760,7 +760,7 @@ static void ImGuiMenu() {
 
         if (ImGui::Button("spawn")) {
             raintp = AL_CreateDayNightRain(timer, 0xA0A0A0FF);
-            raintp->DeleteSub = RainDelete;
+            raintp->dest = RainDelete;
         }
 
         if (raintp) {

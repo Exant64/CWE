@@ -140,14 +140,14 @@ static void AL_GetMedalGene(const ChaoDataBase* param, AL_GENE& gene) {
 	}
 }
 
-void AL_CreateChildGene(ObjectMaster* pMotherTask, ObjectMaster* pFatherTask, AL_GENE* pChildGene)
+void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGene)
 {
-	AL_GENE FatherGene = pFatherTask->Data1.Chao->pParamGC->Gene;
-	AL_GENE MotherGene = pMotherTask->Data1.Chao->pParamGC->Gene;
+	AL_GENE FatherGene = GET_CHAOPARAM(pFatherTask)->Gene;
+	AL_GENE MotherGene = GET_CHAOPARAM(pMotherTask)->Gene;
 
 	if (gConfigVal.MedalChaoCanMakeColorChao) {
-		AL_GetMedalGene(pFatherTask->Data1.Chao->pParamGC, FatherGene);
-		AL_GetMedalGene(pMotherTask->Data1.Chao->pParamGC, MotherGene);
+		AL_GetMedalGene(GET_CHAOPARAM(pFatherTask), FatherGene);
+		AL_GetMedalGene(GET_CHAOPARAM(pMotherTask), MotherGene);
 	}
 
 	AL_BlendGene(&MotherGene, &FatherGene, pChildGene);
@@ -156,10 +156,10 @@ void AL_CreateChildGene(ObjectMaster* pMotherTask, ObjectMaster* pFatherTask, AL
 	if (*(char*)0x0053FD6C == 1)
 	{
 		float Chance = 0.0f;
-		if (pMotherTask->Data1.Chao->pParamGC->field_19 != 1 && pMotherTask->Data1.Chao->pParamGC->Medal == 7)
+		if (GET_CHAOPARAM(pMotherTask)->field_19 != 1 && GET_CHAOPARAM(pMotherTask)->Medal == 7)
 			Chance += 0.38f;
 
-		if (pFatherTask->Data1.Chao->pParamGC->field_19 != 1 && pFatherTask->Data1.Chao->pParamGC->Medal == 7)
+		if (GET_CHAOPARAM(pFatherTask)->field_19 != 1 && GET_CHAOPARAM(pFatherTask)->Medal == 7)
 			Chance += 0.38f;
 
 		if (Chance > 0)
@@ -178,10 +178,11 @@ void AL_CreateChildGene(ObjectMaster* pMotherTask, ObjectMaster* pFatherTask, AL
 			}
 		}
 	}
-	pChildGene->Negative[0] = pMotherTask->Data1.Chao->pParamGC->Negative;
-	pChildGene->Negative[1] = pFatherTask->Data1.Chao->pParamGC->Negative;
-	pChildGene->MotherID = pMotherTask->Data1.Chao->pParamGC->ChaoID;
-	pChildGene->FatherID = pFatherTask->Data1.Chao->pParamGC->ChaoID;
+	
+	pChildGene->Negative[0] = GET_CHAOPARAM(pMotherTask)->Negative;
+	pChildGene->Negative[1] = GET_CHAOPARAM(pFatherTask)->Negative;
+	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
+	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }
 static void __declspec(naked) AL_CreateChildGeneHook()
 {

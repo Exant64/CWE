@@ -65,5 +65,5 @@ enum
 #endif
 	PVP_COUNT
 };
-void alpalSetBank(ObjectMaster* a1, int a2);
+void alpalSetBank(task* a1, int a2);
 void AL_Palette_Init();

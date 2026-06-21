@@ -15,7 +15,7 @@ struct SA2CAMERADATA
 	int dunno;
 	int dunno1;
 	NJS_VECTOR Position;
-	Rotation Rotation;
+	Angle3 Rotation;
 	NJS_VECTOR field_24;
 	NJS_VECTOR Target;
 	float distance;
@@ -130,8 +130,8 @@ static void AL_DayNightRainExecutor(task* tp) {
 		drop.scale = njRandom() * 100.f;
 
 		{
-			Rotation returnAng;
-			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->Position.y + 65.f, drop.startPos.z, &returnAng);
+			Angle3 returnAng;
+			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
 
 			drop.ang[0] = returnAng.x;
 			drop.ang[1] = returnAng.y;
@@ -263,9 +263,9 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 		return NULL;
 	}
 	
-	task* tp = LoadObject(4, "AL_DayNightRain", AL_DayNightRainExecutor, LoadObj(0));
+	task* tp = CreateElementalTask(4, "AL_DayNightRain", AL_DayNightRainExecutor, LoadObj(0));
 
-	tp->DisplaySub = AL_DayNightRainDisplayer;
+	tp->disp = AL_DayNightRainDisplayer;
 
 	RAIN_WORK* work = ALLOC(RAIN_WORK);
 	tp->Data2.Undefined = work;

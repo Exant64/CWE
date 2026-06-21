@@ -25,33 +25,33 @@ void  Chao_PlayAnimationSpeed(MotionTableData* result, int a2, unsigned __int16 
 	}
 }
 
-unsigned int __cdecl AL_IsMotionStop(ObjectMaster* a1)
+unsigned int __cdecl AL_IsMotionStop(task* a1)
 {
-	return a1->Data1.Chao->MotionTable.flag & 8;
+	return GET_CHAOWK(a1)->MotionTable.flag & 8;
 }
-void AL_SetMotionLink(ObjectMaster* a1, int index)
+void AL_SetMotionLink(task* a1, int index)
 {
-	Chao_Animation(&a1->Data1.Chao->MotionTable, index);
+	Chao_Animation(&GET_CHAOWK(a1)->MotionTable, index);
 }
-void AL_SetMotionLinkStep(ObjectMaster* a1, int index, int spd)
+void AL_SetMotionLinkStep(task* a1, int index, int spd)
 {
-	Chao_PlayAnimationSpeed(&a1->Data1.Chao->MotionTable, index, spd);
+	Chao_PlayAnimationSpeed(&GET_CHAOWK(a1)->MotionTable, index, spd);
 }
-void __cdecl AL_SetMotionSpd(ObjectMaster* a1, float a2)
+void __cdecl AL_SetMotionSpd(task* a1, float a2)
 {
-	a1->Data1.Chao->MotionTable.frameIncreaseSpeed_ = a2;
+	GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = a2;
 }
 
-int AL_GetMotionNum(ObjectMaster* tp) {
+int AL_GetMotionNum(task* tp) {
 	MotionTableData* Ctrl = &GET_CHAOWK(tp)->MotionTable;
 	return Ctrl->AnimID;
 }
 
-int AL_GetMotionPosture(ObjectMaster* tp) {
+int AL_GetMotionPosture(task* tp) {
 	MotionTableData* Ctrl = &GET_CHAOWK(tp)->MotionTable;
 	return Ctrl->gap2;
 }
 
-int AL_IsMotionEnd(ObjectMaster* a1) {
-	return a1->Data1.Chao->MotionTable.flag & 1;
+int AL_IsMotionEnd(task* a1) {
+	return GET_CHAOWK(a1)->MotionTable.flag & 1;
 };

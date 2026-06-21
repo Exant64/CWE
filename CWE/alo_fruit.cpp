@@ -17,26 +17,26 @@
 std::vector<ChaoItemStats> ModAPI_FruitStats;
 
 
-void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
+void ALO_FruitExecutor_DisplayHack(task *eax0)
 {
-	ObjectMaster *v1; // ebx
-	EntityData1 *v2; // ebp
+	task *v1; // ebx
+	taskwk *v2; // ebp
 	
 	float v13; // [esp+1Ch] [ebp-38h]
 	float a2; // [esp+1Ch] [ebp-38h]
 
 	v1 = eax0;
-	v2 = eax0->Data1.Entity;
+	v2 = eax0->twp;
 	//this function is incorrectly named, its a bounds check (only used for chao stuff for some reason)
 	//Rotation.x = fruit type
 	//Rotation.z = fruit size (like the "bites" value)
 	//rotation.y is actually the y rotation lol
 	//i store the "visible onscreen" flag inside Index as you can see below here
-	if (ScaleObjectMaster_XYZ(eax0, 2.5, 2.5, 2.0))
+	if (Scaletask_XYZ(eax0, 2.5, 2.5, 2.0))
 	{
-		v2->Index = 1;
-		v13 = v2->Rotation.z * 0.3f + 0.3f;
-		if (v2->Rotation.x == 9)
+		v2->btimer = 1;
+		v13 = v2->ang.z * 0.3f + 0.3f;
+		if (v2->ang.x == 9)
 		{
 			v13 = v13 * 0.8f;
 		}
@@ -58,8 +58,8 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 		LightsGC[LightIndex].lightColor = backupColor;
 		
 		njPushMatrixEx();
-		njTranslateEx(&v2->Position);
-		if (v2->Status >= 0)
+		njTranslateEx(&v2->pos);
+		if (v2->flag >= 0)
 		{
 			njTranslate(NULL, 0, a2 * 0.55f + 0.8f, 0);
 		}
@@ -68,16 +68,16 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 			njTranslate(NULL, 0, 0.4f, 0);
 		}
 		
-		if (v2->Rotation.z > 0)
+		if (v2->ang.z > 0)
 		{
-			RotateY(v2->Rotation.y);
+			RotateY(v2->ang.y);
 			njPushMatrixEx();
 			njScale(NULL, a2, a2, a2);
 			if (ALO_Field_Find_(v1, 1, 150))
 			{
 				njControl3D |= 0x2400u;
 			}
-			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Fruit, v2->Rotation.x);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Fruit, v2->ang.x);
 			njControl3D &= ~0x2400u;
 			njPopMatrixEx();
 
@@ -100,24 +100,24 @@ void ALO_FruitExecutor_DisplayHack(ObjectMaster *eax0)
 		AL_DayNightCycle_PopFallbackLight();
 		DoLighting(LightIndexBackupMaybe);
 	}
-	else if (!(v2->Status < 0)) { //if not being held by player
-		v2->Index = 0;
+	else if (!(v2->flag < 0)) { //if not being held by player
+		v2->btimer = 0;
 	}
 }
 
 #define RATIO(x,y) random >= (x / 100.0f) && random <= (y / 100.0f)
-void ALO_FruitExecutor_Main_r(ObjectMaster* a1);
+void ALO_FruitExecutor_Main_r(task* a1);
 Trampoline ALO_FruitExecutor_Main_t(0x00545E40, 0x00545E4A, ALO_FruitExecutor_Main_r);
-void ALO_FruitExecutor_Main_r(ObjectMaster *a1)
+void ALO_FruitExecutor_Main_r(task *a1)
 {
 	ObjectFunc(original, ALO_FruitExecutor_Main_t.Target());
 	original(a1);
 	
 	//if fruit ID inside api registered fruit list
-	if (!ModAPI_MinimalFruit.count(a1->Data1.Entity->Rotation.x)) return;
+	if (!ModAPI_MinimalFruit.count(a1->twp->ang.x)) return;
 	
 	//if not visible onscreen (animals only spawn if fruit is not visible)
-	if (a1->Data1.Entity->Index) return;
+	if (a1->twp->btimer) return;
 
 	//random check (0.05% every frame it's onscreen)
 	if (njRandom() > 0.0005) return;
@@ -128,9 +128,9 @@ void ALO_FruitExecutor_Main_r(ObjectMaster *a1)
 	void* data = sub_52F9E0(2);
 	if (data && nbWorldEntry[2] < nbMaxEntry[2]) {
 		//decrease bites
-		a1->Data1.Entity->Rotation.z--;
+		a1->twp->ang.z--;
 
-		if (a1->Data1.Entity->Rotation.z <= 0)
+		if (a1->twp->ang.z <= 0)
 		{
 			//if no bites left, delete object
 			ALW_SendCommand(a1, ALW_CMD_FINISH);
@@ -142,13 +142,13 @@ void ALO_FruitExecutor_Main_r(ObjectMaster *a1)
 				v23->saveData = 0;
 			}
 
-			a1->MainSub = DeleteObject_;
+			a1->exec = DeleteObject_;
 		}
 		//purple chaos drive is the last vanilla animal, after that comes the new ones
 		int type = SA2BAnimal_PurpleChaosDrive + 1; 
 		float random = njRandom();
 
-		for (const auto& minifruitentry : ModAPI_MinimalFruit[a1->Data1.Entity->Rotation.x])
+		for (const auto& minifruitentry : ModAPI_MinimalFruit[a1->twp->ang.x])
 		{
 			if(RATIO(minifruitentry.chanceMin, minifruitentry.chanceMax))
 			{
@@ -156,12 +156,12 @@ void ALO_FruitExecutor_Main_r(ObjectMaster *a1)
 				break;
 			}
 		}
-		AL_MinimalExecutor_Load(type, &a1->Data1.Entity->Position, 0, &velocity, (int)data);
+		AL_MinimalExecutor_Load(type, &a1->twp->pos, 0, &velocity, (int)data);
 	}
 }
 
 const int sub_530690Ptr = 0x530690;
-signed int sub_530690(ObjectMaster *a1)
+signed int sub_530690(task *a1)
 {
 	int retval;
 	__asm
@@ -174,7 +174,7 @@ signed int sub_530690(ObjectMaster *a1)
 }
 
 const int sub_545790Ptr = 0x545790;
-void sub_545790(ObjectMaster *a1, unsigned __int8 a2, int a3)
+void sub_545790(task *a1, unsigned __int8 a2, int a3)
 {
 	__asm
 	{
@@ -185,25 +185,25 @@ void sub_545790(ObjectMaster *a1, unsigned __int8 a2, int a3)
 		add esp, 8
 	}
 }
-FastcallFunctionPointer(signed int, sub_56D170, (int a1, ObjectMaster *a2), 0x56D170);
-void __cdecl sub_545C20(ObjectMaster *a1)
+FastcallFunctionPointer(signed int, sub_56D170, (int a1, task *a2), 0x56D170);
+void __cdecl sub_545C20(task *a1)
 {
 	ChaoSomeUnknownA *v1; // eax
 	Data1Ptr v2; // ebx
 	ChaoSomeUnknownA *v3; // ecx
 	int v4; // edx
 	Data1Ptr v5; // eax
-	CollisionInfo *v6; // eax
+	colliwk *v6; // eax
 	Data1Ptr v7; // eax
-	CollisionInfo *v8; // eax
+	colliwk *v8; // eax
 	Data1Ptr v9; // eax
-	CollisionInfo *v10; // eax
+	colliwk *v10; // eax
 	__int16 v11; // ax
 	ChaoSomeUnknownA *v12; // eax
 	ChaoSomeUnknownA *v13; // edi
 	Data1Ptr v14; // eax
 	ObjUnknownA *v15; // eax
-	ObjectMaster *v16; // eax
+	task *v16; // eax
 	ChaoDataBase *v17; // ecx
 	ChaoSomeUnknownA *v22; // eax
 	ChaoSomeUnknownA *v23; // eax
@@ -212,10 +212,10 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 	ChaoSomeUnknownA *v27; // ecx
 
 	v1 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-	v2.Entity = (EntityData1 *)a1->Data1.Entity;
+	v2.Entity = (taskwk *)a1->twp;
 
 	//to stop warning 
-	if (!a1->Data1.Undefined) return;
+	if (!a1->twp) return;
 
 	v3 = 0;
 	if (v1)
@@ -225,44 +225,44 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 	}
 
 	v4 = (int)v3;
-	if (!v2.Entity->NextAction)
+	if (!v2.Entity->smode)
 	{
-		v5.Entity = (EntityData1 *)a1->Data1.Entity;
+		v5.Entity = (taskwk *)a1->twp;
 		if (v5.Entity)
 		{
-			v6 = v5.Entity->Collision;
+			v6 = v5.Entity->cwp;
 			if (v6)
 			{
 				v6->CollisionArray->field_4 &= 0xFFFFFFEF;
 			}
 		}
-		v7.Entity = (EntityData1 *)a1->Data1.Entity;
+		v7.Entity = (taskwk *)a1->twp;
 		v3 = (ChaoSomeUnknownA *)16;
 		if (v7.Undefined)
 		{
-			v8 = v7.Entity->Collision;
+			v8 = v7.Entity->cwp;
 			if (v8)
 			{
 				v8->CollisionArray[1].field_4 |= 0x10u;
 			}
 		}
-		v9.Entity = (EntityData1 *)a1->Data1.Entity;
+		v9.Entity = (taskwk *)a1->twp;
 		if (v9.Entity)
 		{
-			v10 = v9.Entity->Collision;
+			v10 = v9.Entity->cwp;
 			if (v10)
 			{
 				v10->CollisionArray[2].field_4 |= 0x10u;
 			}
 		}
-		++a1->Data1.Entity->NextAction;
-		a1->Data1.Entity->field_6 = 0;
+		++a1->twp->smode;
+		a1->twp->wtimer = 0;
 	}
 	if (v4 == 2)
 	{
-		v11 = v2.Entity->field_6;
+		v11 = v2.Entity->wtimer;
 		v3 = (ChaoSomeUnknownA *)180;
-		v2.Entity->field_6 = v11 + 1;
+		v2.Entity->wtimer = v11 + 1;
 		if ((unsigned __int16)v11 > 0xB4u)
 		{
 			v3 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
@@ -274,57 +274,57 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 			{
 				v13 = 0;
 			}
-			--v2.Entity->Rotation.z;
-			v2.Entity->field_6 = 0;
+			--v2.Entity->ang.z;
+			v2.Entity->wtimer = 0;
 			if (v13)
 			{
-				sub_545790(v13->pointerToOwner, v2.Entity->Rotation.x, v2.Entity->Rotation.z == 0); //PROBLEMATIC CALL, POSSIBLE STACK PROBLEM WATCH OUT YOURE GONNA CRASH AHHHH!!!
+				sub_545790(v13->pointerToOwner, v2.Entity->ang.x, v2.Entity->ang.z == 0); //PROBLEMATIC CALL, POSSIBLE STACK PROBLEM WATCH OUT YOURE GONNA CRASH AHHHH!!!
 			}
-			v14.Entity = (EntityData1 *)a1->Data1.Entity;
+			v14.Entity = (taskwk *)a1->twp;
 			if (v14.Undefined)
 			{
-				v14.Entity = (EntityData1 *)v14.Entity->Collision;
+				v14.Entity = (taskwk *)v14.Entity->cwp;
 				if (v14.Undefined)
 				{
-					v14.Entity = (EntityData1 *)(v14.Entity->Rotation.y + 48);
+					v14.Entity = (taskwk *)(v14.Entity->ang.y + 48);
 				}
 			}
 
 			if(v14.Entity)
-				v14.Entity->Position.x = v2.Entity->Rotation.z * 0.5f;
+				v14.Entity->pos.x = v2.Entity->ang.z * 0.5f;
 
 			v15 = a1->UnknownA_ptr;
 			if (v15)
 			{
-				v15->field_28 = 0.5f * v2.Entity->Rotation.z;
+				v15->field_28 = 0.5f * v2.Entity->ang.z;
 			}
-			if (v2.Entity->Rotation.x >= 24 && v2.Entity->Rotation.x <= 28 && v13)
+			if (v2.Entity->ang.x >= 24 && v2.Entity->ang.x <= 28 && v13)
 			{
 				v16 = v13->pointerToOwner;
-				v17 = v16->Data1.Chao->pParamGC;
+				v17 = GET_CHAOPARAM(v16);
 				v17->EvolutionProgress -= 0.05f;
 				if (v17->EvolutionProgress < 0)
 					v17->EvolutionProgress = 0;
 			}
-			if (v2.Entity->Rotation.x == SA2BFruit_Mushroom || v2.Entity->Rotation.x == SA2BFruit_MushroomAlt)
+			if (v2.Entity->ang.x == SA2BFruit_Mushroom || v2.Entity->ang.x == SA2BFruit_MushroomAlt)
 			{
 				if (v13) 
 				{
 					v16 = v13->pointerToOwner;
-					v17 = v16->Data1.Chao->pParamGC;
-					if (v2.Entity->Rotation.x == SA2BFruit_Mushroom)
+					v17 = GET_CHAOPARAM(v16);
+					if (v2.Entity->ang.x == SA2BFruit_Mushroom)
 						v17->EvolutionProgress += 0.05f;
 					else v17->EvolutionProgress += 0.10f;
 				}
 			}
-			if (!v2.Entity->Rotation.z)
+			if (!v2.Entity->ang.z)
 			{
 				if (v13)
 				{
 					v16 = v13->pointerToOwner;
-					v17 = v16->Data1.Chao->pParamGC;
+					v17 = GET_CHAOPARAM(v16);
 					
-					switch (v2.Entity->Rotation.x)
+					switch (v2.Entity->ang.x)
 					{
 					case SA2BFruit_HeroFruit:
 						AL_ParameterAddAPos(v16, 0.15f);
@@ -336,8 +336,8 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 						AL_EmotionAdd(v16, EM_ST_BREED, 10000);
 						break;
 					default:
-						if (lastBiteFruit[v2.Entity->Rotation.x]) 
-							lastBiteFruit[v2.Entity->Rotation.x]((ChaoData*)v17, a1);
+						if (lastBiteFruit[v2.Entity->ang.x]) 
+							lastBiteFruit[v2.Entity->ang.x]((ChaoData*)v17, a1);
 						break;
 					}
 				}
@@ -364,13 +364,13 @@ void __cdecl sub_545C20(ObjectMaster *a1)
 						v25->field_8 = 0;
 					}
 				}
-				a1->MainSub = DeleteObject_;
+				a1->exec = DeleteObject_;
 				goto LABEL_54;
 			}
 		}
 	}
 LABEL_54:
-	if (v2.Entity->Status < 0)
+	if (v2.Entity->flag < 0)
 	{
 		v26 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
 		if (v26)
@@ -385,13 +385,13 @@ LABEL_54:
 			}
 		}
 		sub_530690(a1);
-		v2.Entity->Action = 3;
-		v2.Entity->NextAction = 0;
+		v2.Entity->mode = 3;
+		v2.Entity->smode = 0;
 	}
 	if (!sub_56D170((int)v3, a1))
 	{
-		v2.Entity->Action = 2;
-		v2.Entity->NextAction = 0;
+		v2.Entity->mode = 2;
+		v2.Entity->smode = 0;
 	}
 }
 

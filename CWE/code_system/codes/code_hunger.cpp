@@ -3,15 +3,15 @@
 #include <Chao.h>
 #include <random>
 
-int __cdecl ALBHV_ChaoStarving_Punishment(ObjectMaster* a1)
+int __cdecl ALBHV_ChaoStarving_Punishment(task* a1)
 {
-	ChaoDataBase* base = a1->Data1.Chao->pParamGC;
+	auto pParam = GET_CHAOPARAM(a1);
 
 	AL_EmotionAdd(a1, EM_MD_ANGER, (rand() % 100 + 100));
 	AL_EmotionAdd(a1, EM_MD_SORROW, (rand() % 100 + 100));
 
-	base->Happiness -= 5;
-	if (base->Happiness < -100) base->Happiness = -100;
+	pParam->Happiness -= 5;
+	if (pParam->Happiness < -100) pParam->Happiness = -100;
 
 	AL_SetBehavior(a1, (BHV_FUNC)ChaoBehaviour_STARVING);
 	return 0;

@@ -57,7 +57,7 @@ struct __declspec(align(32)) ChaoSelectMenuManager_Data
 	int purpose;
 	float offsetx;
 	float offsety;
-	ObjectMaster* tp;
+	task* tp;
 	int IsEnd;
 	int IsBusy;
 	int status;
@@ -181,11 +181,11 @@ static ChaoData* AL_GetSecondFileChao() {
 	return data;
 }
 
-static void AL_HikkoshiMenuExecutor(ObjectMaster *a1) {
-	if (a1->Data1.Entity->Action == 0) {
+static void AL_HikkoshiMenuExecutor(task *a1) {
+	if (a1->twp->mode == 0) {
 		if (*(int*)0x1AED254 == 2) { // menu is quitting 
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
-			a1->MainSub = DeleteObject_;
+			a1->exec = DeleteObject_;
 			return;
 		}
 	}
@@ -194,9 +194,9 @@ static void AL_HikkoshiMenuExecutor(ObjectMaster *a1) {
 		return; // sadly i cant stop the selectmanager from running so you can still move the cursor
 		
 	if(SelectMenuManager->cursor.x == 4 && SelectMenuManager->cursor.y == 2) // the move button is vertical 2 for some reason, and horizontal 4 is shared by the second panel first tile
-		a1->Data1.Entity->Rotation.x += 1280;
+		a1->twp->ang.x += 1280;
 	else 
-		a1->Data1.Entity->Rotation.x = 0;
+		a1->twp->ang.x = 0;
 
 	// move button pressed
 	if (SelectMenuManager->cursor.x == 4 && SelectMenuManager->cursor.y == 2) {
@@ -251,18 +251,18 @@ static void AL_HikkoshiMenuExecutor(ObjectMaster *a1) {
 		}
 	}
 
-	a1->Data1.Entity->Rotation.y += 1792;
+	a1->twp->ang.y += 1792;
 
 	// quit button temp(?)
 	if (SelectMenuManager->cursor.x == 3 && SelectMenuManager->cursor.y == 2) {
-		a1->Data1.Entity->Scale.x += 0.05f;
-		if (a1->Data1.Entity->Scale.x > 1)
-			a1->Data1.Entity->Scale.x = 1;
+		a1->twp->scl.x += 0.05f;
+		if (a1->twp->scl.x > 1)
+			a1->twp->scl.x = 1;
 	}
 	else  {
-		a1->Data1.Entity->Scale.x -= 0.05f;
-		if (a1->Data1.Entity->Scale.x < 0)
-			a1->Data1.Entity->Scale.x = 0;
+		a1->twp->scl.x -= 0.05f;
+		if (a1->twp->scl.x < 0)
+			a1->twp->scl.x = 0;
 	}
 	
 }
@@ -284,17 +284,17 @@ static ChaoHudThingB HikkoshiUI[] = {
 // the generic menu sprite array used throughout the odekake menus
 DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
 
-static void AL_HikkoshiMenuDisplayer(ObjectMaster* a1) {
+static void AL_HikkoshiMenuDisplayer(task* a1) {
 	*(char*)0x25EFFCC = 0;
 
 	//DrawChaoHudThingB(MenuArray[2], 472, 399, -1.2f, 1, 1, 0, 0); //the middle arrow thing
-	float scale = njSin(a1->Data1.Entity->Rotation.x) * 0.1f + 0.85f;
+	float scale = njSin(a1->twp->ang.x) * 0.1f + 0.85f;
 	DrawChaoHudThingB((ChaoHudThingB*)0x011BB0D4, 320, 272, -1.2f, scale, scale, 0,0); //the middle arrow thing
 	
 	float v14 = 340;
 	float a3 = 424;
 	float v9 = a3 - 5.0f;
-	float v7 = (njSin(a1->Data1.Entity->Rotation.y) * a1->Data1.Entity->Scale.x * 0.1f) + 1.0f;
+	float v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1.0f;
 	float sizeX = 40.0f;
 
 	DrawChaoHudThingB(&MenuArray[40], 458 + 18 - 60,  145, -1, 1,     1, 1,  1);  //button1 
@@ -307,18 +307,18 @@ static void AL_HikkoshiMenuDisplayer(ObjectMaster* a1) {
 	DrawChaoHudThingB(&MenuArray[40], v14 - sizeX, a3, -1, 1, 1, 1,1); //button1
 	DrawChaoHudThingB(&MenuArray[41], v14        , a3, -1, sizeX+sizeX, 1.0, 0, 1); //button2
 	DrawChaoHudThingB(&MenuArray[42], v14 + sizeX, a3, -1, 1, 1, -1, 1); //button3
-	v7 = (njSin(a1->Data1.Entity->Rotation.y) * a1->Data1.Entity->Scale.x * 0.1f) + 1.0f;
+	v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1.0f;
 	float newVal = 2 - v7;
 	DrawChaoHudThingB(&MenuArray[2],  v14 + 8,   v9, -1, v7, newVal, 0, 1); //back text
-	v7 = (njSin(a1->Data1.Entity->Rotation.y) * a1->Data1.Entity->Scale.x * 0.1f) + 1; //HACK: patches bug that happens to what im assuming the compiler trying to preserve on stack but failing 
+	v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1; //HACK: patches bug that happens to what im assuming the compiler trying to preserve on stack but failing 
 	DrawChaoHudThingB(&MenuArray[34], v14 - 42,  v9, -1, v7, 2 - v7, 0, 1); //swirly quit
 	*(char*)0x25EFFCC = 1;
 }
 
 static void AL_HikkoshiMenu() {
-	ObjectMaster* a1 = LoadObject(3, "HikkoshiMenuExecutor", AL_HikkoshiMenuExecutor, LoadObj_Data1);
-	a1->DisplaySub = AL_HikkoshiMenuDisplayer;
-	a1->Data1.Entity->Scale.x = 0;
+	task* a1 = CreateElementalTask(3, "HikkoshiMenuExecutor", AL_HikkoshiMenuExecutor, LoadObj_Data1);
+	a1->disp = AL_HikkoshiMenuDisplayer;
+	a1->twp->scl.x = 0;
 }
 
 static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {

@@ -14,7 +14,7 @@ DataArray(ChaoData*, ChaoSelectData, 0x01DBEE80, 48);
 DataPointer(char, ControlEnabled, 0x0174AFFE);
 
 void AL_NameDisplayCreate();
-ObjectMaster* AL_LargeTitleBar_Create();
+task* AL_LargeTitleBar_Create();
 DataPointer(int, ChaoSaveTimer, 0x019F6474);
 VoidFunc(sub_583C60, 0x583C60);
 FunctionPointer(void, ProjectToScreen, (float screenX, float screenY, float worldSpaceZ), 0x005848F0);
@@ -92,7 +92,7 @@ extern ConfigValues gConfigVal;
 FunctionPointer(ChaoData*, AL_GetNewChaoSaveInfo, (), 0x00531AA0);
 ThiscallFunctionPointer(void*, AL_GetNewItemSaveInfo, (int a1), 0x52F9E0);
 
-extern ObjectMaster* pBirthdayChao;
+extern task* pBirthdayChao;
 
 #pragma pack(push, 8)
 struct TreeData
