@@ -50,7 +50,7 @@ std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 size_t AddChaoHat(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	size_t ret = MaskObjObjectList.size();
 	if (model == nullptr)
-		MaskObjObjectList.push_back(std::make_pair(&object_alo_missing, &CWE_OBJECT_TEXLIST));
+		MaskObjObjectList.push_back(std::make_pair(&object_alo_missing, texlist_cwe_object));
 	else
 		MaskObjObjectList.push_back(std::make_pair(model, texlist));
 
@@ -377,11 +377,11 @@ void AL_ModAPI_Init() {
 		BlackMarketItemAttributes missing_attrib = { 2500,500,999, (short)MissingItem,-1,0 };
 		ChaoItemStats missing_stats = { 0 };
 		missing_attrib.Descriptions = MissingAcc;
-		cwe_api->RegisterChaoAccessory(EAccessoryType::Head, &object_alo_missing, &CWE_OBJECT_TEXLIST, &missing_attrib, 0, 0);
+		cwe_api->RegisterChaoAccessory(EAccessoryType::Head, &object_alo_missing, texlist_cwe_object, &missing_attrib, 0, 0);
 		missing_attrib.Descriptions = MissingFruit;
-		cwe_api->RegisterChaoFruit(&object_alo_missing, &CWE_OBJECT_TEXLIST, &missing_stats, &missing_attrib, 0, 0, 0);
+		cwe_api->RegisterChaoFruit(&object_alo_missing, texlist_cwe_object, &missing_stats, &missing_attrib, 0, 0, 0);
 		missing_attrib.Descriptions = MissingAcc;
-		cwe_api->AddChaoHat(&object_alo_missing, &CWE_OBJECT_TEXLIST, &missing_attrib, 0, 0);
+		cwe_api->AddChaoHat(&object_alo_missing, texlist_cwe_object, &missing_attrib, 0, 0);
 
 		const CWE_API_TREE_DATA missing_tree = {
 			.pSeedObj = &object_alo_missing,
@@ -390,7 +390,7 @@ void AL_ModAPI_Init() {
 			.pAdultObj = &object_alo_missing_tree,
 			.pDeadObj = &object_alo_missing_tree,
 
-			.pTexlist = &CWE_OBJECT_TEXLIST,
+			.pTexlist = texlist_cwe_object,
 
 			.ID = "cwe_missing",
 			.Flags = 0,

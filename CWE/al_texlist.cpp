@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "AL_ModAPI.h"
+#include "api/api_main.h"
 
 NJS_TEXNAME AL_DX_PARTS_TEX_TEXNAME[129];
 NJS_TEXLIST AL_DX_PARTS_TEX_TEXLIST = { arrayptrandlength(AL_DX_PARTS_TEX_TEXNAME) };
@@ -10,17 +11,13 @@ NJS_TEXLIST AL_SANDHOLE_TEXLIST = { arrayptrandlength(AL_SANDHOLE_TEXNAME) };
 NJS_TEXNAME BIRTHDAYHAT_TEXNAME[10];
 NJS_TEXLIST BIRTHDAYHAT_TEXLIST = { arrayptrandlength(BIRTHDAYHAT_TEXNAME) };
 
-NJS_TEXNAME timeofdayTexnames[100]; //reserved 100 to be sure
-NJS_TEXLIST timeofdayTexlistReplacer = { timeofdayTexnames, 100 };
-
 NJS_TEXNAME AL_ITEM_TEXNAME[ChaoItemCategory_Count];
 NJS_TEXLIST AL_ITEM_TEXLIST = { AL_ITEM_TEXNAME, ChaoItemCategory_Count };
 
 NJS_TEXNAME osamenu_tex[9];
 NJS_TEXLIST AL_OSAMENU = { osamenu_tex, 9 };
 
-NJS_TEXNAME CWE_OBJECT_TEXNAME[69];
-NJS_TEXLIST CWE_OBJECT_TEXLIST = { CWE_OBJECT_TEXNAME, 69 };
+NJS_TEXLIST* texlist_cwe_object = NULL;
 
 NJS_TEXNAME AL_DRAWING_TEXNAME[21];
 NJS_TEXLIST AL_DRAWING_TEXLIST = { AL_DRAWING_TEXNAME, 21 };
@@ -65,7 +62,7 @@ NEWLENSTEX(CWE_LENS_JEWEL_SILVER)
 void CWE_RegisterTexlists(const CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterChaoTexlistLoad("al_minda", &AL_SANDHOLE_TEXLIST);
 	cwe_api->RegisterChaoTexlistLoad("birthdayhat", &BIRTHDAYHAT_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("CWE_OBJECT", &CWE_OBJECT_TEXLIST);
+	texlist_cwe_object = CWE_API_Main.pRegister->pTexture->AddAutoTextureLoad("CWE_OBJECT");
 	cwe_api->RegisterChaoTexlistLoad("AL_OSAMENU_TEX_E", &AL_OSAMENU);
 	cwe_api->RegisterChaoTexlistLoad("AL_ITEM", &AL_ITEM_TEXLIST);
 	cwe_api->RegisterChaoTexlistLoad("NAME_ODE", &NAME_ODE_TEXLIST);

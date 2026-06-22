@@ -145,7 +145,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 static void DrawDrops(task* tp) {
 	auto* work = GET_WORK(tp);
 
-	njSetTexture(&CWE_OBJECT_TEXLIST);
+	njSetTexture(texlist_cwe_object);
 	njSetTextureNum(68);
 	
 	njColorBlendingMode(0, NJD_COLOR_BLENDING_ONE);
@@ -253,7 +253,7 @@ static void AL_DayNightRainDisplayer(task* tp) {
 
 	if (!dropCount) return;
 
-	njSetTexture(&CWE_OBJECT_TEXLIST);
+	njSetTexture(texlist_cwe_object);
 	njSetTextureNum(67);
 	njDrawTexture3DExSetData(drops, dropCount, 0);
 }

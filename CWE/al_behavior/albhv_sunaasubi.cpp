@@ -17,7 +17,7 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		*(int*)0x12F5954 = (int)0x012FDE44;
 		DrawToyTransform(a1, 0x12F5954, 11);
 
-		AL_SetItem(a1, 0, &alo_bucket, &CWE_OBJECT_TEXLIST);
+		AL_SetItem(a1, 0, &alo_bucket, texlist_cwe_object);
 		
 		GET_CHAOWK(a1)->Behavior.Mode++;
 		GET_CHAOWK(a1)->Behavior.Timer = (int)(180 + (njRandom() * 121.f));

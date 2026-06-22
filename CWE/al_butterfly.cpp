@@ -82,7 +82,7 @@ void ALO_Butterfly_Display(task* a1)
 		finalColor.argb.b = (Uint8)(work->attr.color.b * 255.0f);
 		ChunkObjectColor = finalColor.color;
 
-		njSetTexture(&CWE_OBJECT_TEXLIST);
+		njSetTexture(texlist_cwe_object);
 		njTranslateEx(&work->position);
 		njRotateY(NULL, work->ang);
 

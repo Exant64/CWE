@@ -18,7 +18,7 @@ int ALBHV_Umbrella(task* tp) {
 		AL_SetMotionLink(tp, 0);
 		AL_FaceChangeEye(tp, ChaoEyes_ClosedHappy);
 		AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
-		AL_SetItem(tp, 4, al_item_parasol, &CWE_OBJECT_TEXLIST);
+		AL_SetItem(tp, 4, al_item_parasol, texlist_cwe_object);
 		bhv->Mode++;
 		bhv->Timer = 150 + njRandom() * 300;
 		break;	

@@ -17,7 +17,7 @@ NJS_OBJECT* ObjectRegistry::GetObj(int index)const {
 }
 NJS_TEXLIST* ObjectRegistry::GetTex(int index) const {
 	if (index < 0 || (size_t)index > m_texlists.size())
-		return &CWE_OBJECT_TEXLIST;
+		return texlist_cwe_object;
 
 	return m_texlists[index];
 }
@@ -37,7 +37,7 @@ void ObjectRegistry::Set(int index, NJS_TEXLIST* tex) {
 void ObjectRegistry::Add(NJS_OBJECT* obj, NJS_TEXLIST* tex) {
 	if (!obj || !tex) {
 		obj = &object_alo_missing;
-		tex = &CWE_OBJECT_TEXLIST;
+		tex = texlist_cwe_object;
 	}
 	m_objects.push_back(obj);
 	m_texlists.push_back(tex);

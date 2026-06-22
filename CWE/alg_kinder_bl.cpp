@@ -790,7 +790,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -1.4f, 0);
 
-		njSetTexture(&CWE_OBJECT_TEXLIST);
+		njSetTexture(texlist_cwe_object);
 		if (IsAccessoryGeneric(type))
 		{
 			njTranslate(NULL, 0, -0.5f, 0);
@@ -1411,7 +1411,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -1.4f, 0);
 
-			njSetTexture(&CWE_OBJECT_TEXLIST);
+			njSetTexture(texlist_cwe_object);
 			if (IsAccessoryGeneric(type)) {
 				njTranslate(NULL, 0, -0.5f, 0);
 				njScale(NULL, 0.978f, 0.978f, 0.978f);

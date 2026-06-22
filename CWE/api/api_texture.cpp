@@ -1,17 +1,25 @@
 #include "stdafx.h"
 
 #include <unordered_map>
+#include <set>
 
 #include <cwe_api.h>
 #include <api/api_util.h>
 
 static std::unordered_map<std::string, NJS_TEXLIST*> TextureLoadPairs;
+static std::set<NJS_TEXLIST*> TextureRegisteredCheck; // todo: more elegant solution to all this
+
 std::vector<std::pair<const char*, NJS_TEXLIST*>> TexlistLoads;
 
 FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
 
 extern "C" __declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
 {
+	if(TextureRegisteredCheck.contains(load)) {
+		PrintDebug("RegisterChaoTexlistLoad: %s already registered, skipping...", name);
+		return;
+	}
+
 	static APIErrorUtil error("RegisterChaoTexlistLoad error:");
 
 	if (!name) {
@@ -25,9 +33,17 @@ extern "C" __declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, 
 	}
 
 	TexlistLoads.push_back(std::make_pair(name, load));
+	TextureRegisteredCheck.insert(load);
 }
 
 NJS_TEXLIST* AddAutoTextureLoad(const char* pTextureName) {
+	for(const auto& pair : TexlistLoads) {
+		if(!strcmp(pair.first, pTextureName)) {
+			PrintDebug("AddAutoTextureLoad: %s already registered as TexlistLoad, skipping...", pTextureName);
+			return pair.second;
+		}
+	}
+
 	if (TextureLoadPairs.contains(pTextureName)) {
 		return TextureLoadPairs[pTextureName];
 	}
