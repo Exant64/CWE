@@ -1096,7 +1096,7 @@ static void Chao_Display_r(task* tp) {
 #ifdef IMGUIDEBUG
 	if (ChaoDebugDistSelected == tp) {
 		njPushMatrixEx();
-		njTranslateEx(&GET_CHAOWK(tp)->entity.Position);
+		njTranslateEx(&GET_CHAOWK(tp)->entity.pos);
 		njScale(NULL, ChaoDebugDist * 0.1f, ChaoDebugDist * 0.1f, ChaoDebugDist * 0.1f);
 		SaveControl3D();
 		OnControl3D(NJD_CONTROL_3D_CONSTANT_MATERIAL);
