@@ -256,7 +256,7 @@
         <HelpText>The rate at which Chao will grow, evolve, and reincarnate depends on how many Chao are in the garden. Less Chao per garden makes them grow faster.</HelpText>
       </Property>
       <Property name="BonusLuckyChao" type="bool" defaultvalue="False" display="Lucky Chao">
-        <HelpText>Gives a 1/60 chance that Chao will be born with a Hat, Toy, or Lesson.</HelpText>
+        <HelpText>Gives a 1/60 chance that Chao will be born with a random hat.</HelpText>
       </Property>
       <Property name="BonusStayBabyChaoUntilalllvl.10" type="bool" defaultvalue="False" display="Stay Baby Chao Until lvl.10">
         <HelpText>A Baby Chao will not evolve unless all the stats reach level 10, or Stamina reaches level 99.</HelpText>
