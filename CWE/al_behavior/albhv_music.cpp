@@ -33,7 +33,7 @@ int ALBHV_Guitar(task* tp) {
 		//al_toy, the function got automatically optimized to always use al_toy inside the code
 		//so i gotta do it manually
 		//todo: fix with decomp function in al_parts or something		
-		GET_CHAOWK(tp)->field_524[AL_PART_HAND_R]->toy.texlist = &CWE_OBJECT_TEXLIST;
+		GET_CHAOWK(tp)->field_524[AL_PART_HAND_R]->toy.texlist = texlist_cwe_object;
 		
 		++bhv->Mode;
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));

@@ -62,13 +62,13 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterChaoFruit(FruitModels[28], &AL_OBJECT_TEXLIST, &TastySpoiledFruitStats, &Spoiled, 0, "Spoiled Tasty Fruit", "");
 
 	//New v8 fruit
-	HyperSwimFruitID = cwe_api->RegisterChaoFruit(&object_HyperSwimFruit, &CWE_OBJECT_TEXLIST, &HyperSwimFruitStats, &HyperSwimFruitAttrib, CWEFruit_HyperFruit, "Hyper Swim Fruit", HyperFruitDescription);
-	HyperFlyFruitID = cwe_api->RegisterChaoFruit(&object_HyperFlyFruit, &CWE_OBJECT_TEXLIST, &HyperFlyFruitStats, &HyperFlyFruitAttrib, CWEFruit_HyperFruit, "Hyper Fly Fruit", HyperFruitDescription);
-	HyperRunFruitID = cwe_api->RegisterChaoFruit(&object_HyperRunFruit, &CWE_OBJECT_TEXLIST, &HyperRunFruitStats, &HyperRunFruitAttrib, CWEFruit_HyperFruit, "Hyper Run Fruit", HyperFruitDescription);
-	HyperPowerFruitID = cwe_api->RegisterChaoFruit(&object_HyperPowerFruit, &CWE_OBJECT_TEXLIST, &HyperPowerFruitStats, &HyperPowerFruitAttrib, CWEFruit_HyperFruit, "Hyper Power Fruit", HyperFruitDescription);
-	ShinyFruitID = cwe_api->RegisterChaoFruit(&object_ShinyFruit, &CWE_OBJECT_TEXLIST, &GenericStaminaStats, &ShinyFruitAttrib, CWEFruit_Shiny, "Shiny Fruit", ShinyFruitDescription);
-	CakeSliceID = cwe_api->RegisterChaoFruit(&object_alo_cakeslice, &CWE_OBJECT_TEXLIST, &GenericStaminaStats, &CakeSliceAttrib, 0, "Cake Slice", "");
-	OrangeID = cwe_api->RegisterChaoFruit(&obj_ali_orange, &CWE_OBJECT_TEXLIST, &GenericStaminaStats, &OrangeAttrib, 0, "Orange", "Tastes fresh, might attract bugs if you leave it out for too long...");
+	HyperSwimFruitID = cwe_api->RegisterChaoFruit(&object_HyperSwimFruit, texlist_cwe_object, &HyperSwimFruitStats, &HyperSwimFruitAttrib, CWEFruit_HyperFruit, "Hyper Swim Fruit", HyperFruitDescription);
+	HyperFlyFruitID = cwe_api->RegisterChaoFruit(&object_HyperFlyFruit, texlist_cwe_object, &HyperFlyFruitStats, &HyperFlyFruitAttrib, CWEFruit_HyperFruit, "Hyper Fly Fruit", HyperFruitDescription);
+	HyperRunFruitID = cwe_api->RegisterChaoFruit(&object_HyperRunFruit, texlist_cwe_object, &HyperRunFruitStats, &HyperRunFruitAttrib, CWEFruit_HyperFruit, "Hyper Run Fruit", HyperFruitDescription);
+	HyperPowerFruitID = cwe_api->RegisterChaoFruit(&object_HyperPowerFruit, texlist_cwe_object, &HyperPowerFruitStats, &HyperPowerFruitAttrib, CWEFruit_HyperFruit, "Hyper Power Fruit", HyperFruitDescription);
+	ShinyFruitID = cwe_api->RegisterChaoFruit(&object_ShinyFruit, texlist_cwe_object, &GenericStaminaStats, &ShinyFruitAttrib, CWEFruit_Shiny, "Shiny Fruit", ShinyFruitDescription);
+	CakeSliceID = cwe_api->RegisterChaoFruit(&object_alo_cakeslice, texlist_cwe_object, &GenericStaminaStats, &CakeSliceAttrib, 0, "Cake Slice", "");
+	OrangeID = cwe_api->RegisterChaoFruit(&obj_ali_orange, texlist_cwe_object, &GenericStaminaStats, &OrangeAttrib, 0, "Orange", "Tastes fresh, might attract bugs if you leave it out for too long...");
 
 
 	//vanilla fruit names

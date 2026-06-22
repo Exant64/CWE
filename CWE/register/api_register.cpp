@@ -113,7 +113,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.pAdultObj = &tree,
 		.pDeadObj = &treedead,
 
-		.pTexlist = &CWE_OBJECT_TEXLIST,
+		.pTexlist = texlist_cwe_object,
 
 		.ID = "cwe_chaotree",
 		.Flags = 0,

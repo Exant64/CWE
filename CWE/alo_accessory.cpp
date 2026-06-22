@@ -27,7 +27,7 @@ void Accessory_Display(task* a1) {
 	njTranslateEx(&a1->twp->pos);
 	njRotateY(NULL, a1->twp->ang.y);
 
-	njSetTexture(&CWE_OBJECT_TEXLIST);
+	njSetTexture(texlist_cwe_object);
 
 	if (IsAccessoryGeneric(a1->twp->ang.x))
 		chCnkDrawObject(&object_ala_full_mannequin);

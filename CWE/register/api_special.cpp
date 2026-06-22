@@ -93,23 +93,23 @@ void ALS_Reincarn(task* chao, task* item)
 }
 
 void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
-	int LensDefault = cwe_api->RegisterChaoSpecial(&LensBoxDefault, &CWE_OBJECT_TEXLIST, &LensBoxDefaultAttr, ALS_LensSpecial, nullptr, "Default Lens", LensDefaultDescription, false);
+	int LensDefault = cwe_api->RegisterChaoSpecial(&LensBoxDefault, texlist_cwe_object, &LensBoxDefaultAttr, ALS_LensSpecial, nullptr, "Default Lens", LensDefaultDescription, false);
 	int lensGenericDescription = cwe_api->RegisterAlItemString(LensGenericDescription);
 	LensBoxAligAttr.Descriptions = lensGenericDescription;
 	LensBoxColorAttr.Descriptions = lensGenericDescription;
 	LensBoxSpecialAttr.Descriptions = lensGenericDescription;
-	cwe_api->RegisterChaoSpecial(&LensBoxNeut, &CWE_OBJECT_TEXLIST, &LensBoxAligAttr, ALS_LensSpecial, nullptr, "Neutral Lens", 0, false);
-	cwe_api->RegisterChaoSpecial(&LensBoxHero, &CWE_OBJECT_TEXLIST, &LensBoxAligAttr, ALS_LensSpecial, nullptr, "Hero Lens", 0, false);
-	cwe_api->RegisterChaoSpecial(&LensBoxDark, &CWE_OBJECT_TEXLIST, &LensBoxAligAttr, ALS_LensSpecial, nullptr, "Dark Lens", 0, false);
+	cwe_api->RegisterChaoSpecial(&LensBoxNeut, texlist_cwe_object, &LensBoxAligAttr, ALS_LensSpecial, nullptr, "Neutral Lens", 0, false);
+	cwe_api->RegisterChaoSpecial(&LensBoxHero, texlist_cwe_object, &LensBoxAligAttr, ALS_LensSpecial, nullptr, "Hero Lens", 0, false);
+	cwe_api->RegisterChaoSpecial(&LensBoxDark, texlist_cwe_object, &LensBoxAligAttr, ALS_LensSpecial, nullptr, "Dark Lens", 0, false);
 
-	int LensGreen = cwe_api->RegisterChaoSpecial(&LensBoxGreen, &CWE_OBJECT_TEXLIST, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Green Lens", 0, false);
-	int LensMagenta = cwe_api->RegisterChaoSpecial(&LensBoxMagenta, &CWE_OBJECT_TEXLIST, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Magenta Lens", 0, false);
-	int LensPurple = cwe_api->RegisterChaoSpecial(&LensBoxPurple, &CWE_OBJECT_TEXLIST, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Purple Lens", 0, false);
-	int LensRed = cwe_api->RegisterChaoSpecial(&LensBoxRed, &CWE_OBJECT_TEXLIST, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Red Lens", 0, false);
-	int LensYellow = cwe_api->RegisterChaoSpecial(&LensBoxYellow, &CWE_OBJECT_TEXLIST, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Yellow Lens", 0, false);
-	int LensSpartoi = cwe_api->RegisterChaoSpecial(&LensBoxSpartoi, &CWE_OBJECT_TEXLIST, &LensBoxSpecialAttr, ALS_LensSpecial, nullptr, "Spartoi Lens", 0, false);
-	int LensSnake = cwe_api->RegisterChaoSpecial(&LensBoxSnake, &CWE_OBJECT_TEXLIST, &LensBoxSpecialAttr, ALS_LensSpecial, nullptr, "Snake Lens", 0, false);
-	int LensRobot = cwe_api->RegisterChaoSpecial(&LensBoxRobot, &CWE_OBJECT_TEXLIST, &LensBoxSpecialAttr, ALS_LensSpecial, nullptr, "Robot Lens", 0, false);
+	int LensGreen = cwe_api->RegisterChaoSpecial(&LensBoxGreen, texlist_cwe_object, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Green Lens", 0, false);
+	int LensMagenta = cwe_api->RegisterChaoSpecial(&LensBoxMagenta, texlist_cwe_object, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Magenta Lens", 0, false);
+	int LensPurple = cwe_api->RegisterChaoSpecial(&LensBoxPurple, texlist_cwe_object, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Purple Lens", 0, false);
+	int LensRed = cwe_api->RegisterChaoSpecial(&LensBoxRed, texlist_cwe_object, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Red Lens", 0, false);
+	int LensYellow = cwe_api->RegisterChaoSpecial(&LensBoxYellow, texlist_cwe_object, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Yellow Lens", 0, false);
+	int LensSpartoi = cwe_api->RegisterChaoSpecial(&LensBoxSpartoi, texlist_cwe_object, &LensBoxSpecialAttr, ALS_LensSpecial, nullptr, "Spartoi Lens", 0, false);
+	int LensSnake = cwe_api->RegisterChaoSpecial(&LensBoxSnake, texlist_cwe_object, &LensBoxSpecialAttr, ALS_LensSpecial, nullptr, "Snake Lens", 0, false);
+	int LensRobot = cwe_api->RegisterChaoSpecial(&LensBoxRobot, texlist_cwe_object, &LensBoxSpecialAttr, ALS_LensSpecial, nullptr, "Robot Lens", 0, false);
 	cwe_api->RegisterEyeColor("cwe_eye_green", &CWE_LENS_GREEN_TEXLIST, LensGreen);
 	cwe_api->RegisterEyeColor("cwe_eye_magenta", &CWE_LENS_MAGENTA_TEXLIST, LensMagenta);
 	cwe_api->RegisterEyeColor("cwe_eye_purple", &CWE_LENS_PURPLE_TEXLIST, LensPurple);
@@ -120,11 +120,11 @@ void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterEyeColor("cwe_eye_robot", &CWE_LENS_ROBOT_TEXLIST, LensRobot);
 
 	BlackMarketItemAttributes DCWings = { 500,150,0,  -1,-1,   0 };
-	cwe_api->RegisterChaoSpecial(&object_als_dcwings, &CWE_OBJECT_TEXLIST, &DCWings, ALS_DCWings, nullptr, "Cosmetic Wings", "Matches a Chao's wings to it's appearance.", false);
+	cwe_api->RegisterChaoSpecial(&object_als_dcwings, texlist_cwe_object, &DCWings, ALS_DCWings, nullptr, "Cosmetic Wings", "Matches a Chao's wings to it's appearance.", false);
 
 	BlackMarketItemAttributes Negative = { 2000,400,0, -1, -1,   0 };
 	MirrorID = cwe_api->RegisterChaoSpecial(&object_als_mirror,
-		&CWE_OBJECT_TEXLIST,
+		texlist_cwe_object,
 		&Negative,
 		[](task* chao, task* item) {
 			GET_CHAOPARAM(chao)->Negative = !GET_CHAOPARAM(chao)->Negative;
@@ -137,12 +137,12 @@ void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 
 	BlackMarketItemAttributes Reincarnation = { 50000,5000,0,  -1,-1,   0 };
 	BlackMarketItemAttributes Brush = { 1000,200,0,  -1,-1,   0 };
-	cwe_api->RegisterChaoSpecial(&object_brush_hn, &CWE_OBJECT_TEXLIST, &Brush, ALS_Brush, ALS_BrushCondition, "Normal Brush", "A special brush for hero chao", false);
-	cwe_api->RegisterChaoSpecial(&object_brush_hs, &CWE_OBJECT_TEXLIST, &Brush, ALS_Brush, ALS_BrushCondition, "Swim Brush", "A special brush for hero chao", false);
-	cwe_api->RegisterChaoSpecial(&object_brush_hf, &CWE_OBJECT_TEXLIST, &Brush, ALS_Brush, ALS_BrushCondition, "Fly Brush", "A special brush for hero chao", false);
-	cwe_api->RegisterChaoSpecial(&object_brush_hr, &CWE_OBJECT_TEXLIST, &Brush, ALS_Brush, ALS_BrushCondition, "Run Brush", "A special brush for hero chao", false);
-	cwe_api->RegisterChaoSpecial(&object_brush_hp, &CWE_OBJECT_TEXLIST, &Brush, ALS_Brush, ALS_BrushCondition, "Power Brush", "A special brush for hero chao", false);
-	cwe_api->RegisterChaoSpecial(&object_susbottle, &CWE_OBJECT_TEXLIST, &Reincarnation, ALS_Reincarn, ALS_ReincarnCondition, "Suspicious Bottle", "Warning: Affects your chao's lifespan", false);
+	cwe_api->RegisterChaoSpecial(&object_brush_hn, texlist_cwe_object, &Brush, ALS_Brush, ALS_BrushCondition, "Normal Brush", "A special brush for hero chao", false);
+	cwe_api->RegisterChaoSpecial(&object_brush_hs, texlist_cwe_object, &Brush, ALS_Brush, ALS_BrushCondition, "Swim Brush", "A special brush for hero chao", false);
+	cwe_api->RegisterChaoSpecial(&object_brush_hf, texlist_cwe_object, &Brush, ALS_Brush, ALS_BrushCondition, "Fly Brush", "A special brush for hero chao", false);
+	cwe_api->RegisterChaoSpecial(&object_brush_hr, texlist_cwe_object, &Brush, ALS_Brush, ALS_BrushCondition, "Run Brush", "A special brush for hero chao", false);
+	cwe_api->RegisterChaoSpecial(&object_brush_hp, texlist_cwe_object, &Brush, ALS_Brush, ALS_BrushCondition, "Power Brush", "A special brush for hero chao", false);
+	cwe_api->RegisterChaoSpecial(&object_susbottle, texlist_cwe_object, &Reincarnation, ALS_Reincarn, ALS_ReincarnCondition, "Suspicious Bottle", "Warning: Affects your chao's lifespan", false);
 
 	//eru lenses
 	int LensJewelIDStart = cwe_api->RegisterChaoSpecial(&LensBoxJewel, &CWE_LENS_AQUA_TEXLIST, &LensBoxColorAttr, ALS_LensSpecial, nullptr, "Jewel Aqua Lens", 0, false);
@@ -161,7 +161,7 @@ void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterEyeColor("cwe_eye_jewel_silver", &CWE_LENS_JEWEL_SILVER_TEXLIST, LensJewelIDStart + 6);
 
 	BlackMarketItemAttributes Box = { 2500,500,0,  -1,-1,   0 };
-	cwe_api->RegisterChaoSpecial(&object_als_boxparts, &CWE_OBJECT_TEXLIST, &Box, ALS_Omobuild, ALS_OmobuildCondition, "Box Of Parts", "Might be useful to chao with the right equipment...", true);
+	cwe_api->RegisterChaoSpecial(&object_als_boxparts, texlist_cwe_object, &Box, ALS_Omobuild, ALS_OmobuildCondition, "Box Of Parts", "Might be useful to chao with the right equipment...", true);
 
 
 	//default lens rebuyable

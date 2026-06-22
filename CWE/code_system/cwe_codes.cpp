@@ -76,8 +76,8 @@ void CWE_Codes_OnFrame() {
 
 	if (CurrentLevel == 90) {
 		//if the texlist is loaded at all
-		if (CWE_OBJECT_TEXLIST.textures[0].texaddr) {
-			if (CWE_OBJECT_TEXLIST.nbTexture < 67 || !CWE_OBJECT_TEXLIST.textures[62].texaddr) {
+		if (texlist_cwe_object && texlist_cwe_object->textures[0].texaddr) {
+			if (texlist_cwe_object->nbTexture < 67 || !texlist_cwe_object->textures[62].texaddr) {
 				g_HelperFunctions->SetDebugFontColor(0xFF00FF00); //ARGB
 				g_HelperFunctions->SetDebugFontSize(12);
 				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0,2), "CWE_OBJECT was replaced by another mod with outdated textures");
