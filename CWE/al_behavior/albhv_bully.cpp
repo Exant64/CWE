@@ -13,8 +13,6 @@ enum {
     NB_HIT_TYPE
 };
 
-// todo: proper conditions for bully check
-
 // this task is a hack to make sure every chao stops once any of them get interrupted
 // doing a 3 way "a - > b -> c -> a" type setup with ALW_AttentionOn doesn't work because
 // AL_SetBehavior only sets ALW_CMD_CHANGE if the tasks are communicating with eachother
@@ -627,12 +625,12 @@ void AL_CalcIntentionScore_Bully(task* tp, float* pMaxScore) {
     ALW_LockOn(tp, pVictimChao);
     ALW_LockOn(pVictimChao, tp);
 
-	const int angerDecrease = -(50 + max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)));
+	const int angerDecrease = max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
 	AL_EmotionAdd(tp, EM_MD_ANGER, angerDecrease);
 
-	const bool canDefendThemselves = false; /*(GET_CHAOPARAM(pVictimChao)->StatPoints[3] - GET_CHAOPARAM(tp)->StatPoints[3]) > 500 || 
+	const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->StatPoints[3] - GET_CHAOPARAM(tp)->StatPoints[3]) > 500 || 
 		(GET_CHAOPARAM(pVictimChao)->KarateInfo - GET_CHAOPARAM(tp)->KarateInfo) >= 5;
-*/
+
 	if (!canDefendThemselves && pStopperChao) {
 		// warning: not the prettiest, no existing systems were really appropriate for this
 		// but i didn't wanna invent a new one just for this one thing
