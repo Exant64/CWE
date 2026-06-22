@@ -147,7 +147,7 @@
     </Group>
     <Group name="Hard" display="04 - Hard Mode">
       <Property name="HardBullyChaoRequiresMoreChaoAnimations" type="bool" defaultvalue="False" display="Bully Chao">
-        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack.</HelpText>
+        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Combine with "More Chao Anger" to amplify its likeliness.</HelpText>
       </Property>
       <Property name="ChaoDrown" type="bool" defaultvalue="False" display="Chao Drown">
         <HelpText>If the Chao can't swim, they will slowly lose Happiness, and if it reaches -100, they Drown.</HelpText>
@@ -155,8 +155,11 @@
       <Property name="HardEnableSpinDashandSomersault" type="bool" defaultvalue="False" display="Enable SpinDash and Somersault">
         <HelpText>Enables Spindash and Somersault in the Chao Gardens. Be careful, you could hurt your Chao!</HelpText>
       </Property>
+      <Property name="MoreAnger" type="bool" defaultvalue="False" display="More Chao Anger">
+        <HelpText>Chao get angry more easily through negative animations, such as overfeeding, hunger, uncomfortable holding, or crying animations. Anger gain is amplified through Energetic personality.</HelpText>
+      </Property>
       <Property name="ChaoHunger" type="bool" defaultvalue="False" display="Chao Hunger">
-        <HelpText>When Chao are Starving, they will start Crying, being Angry, and losing happiness. This also Boost Stamina by 25% for Fruit Garden.</HelpText>
+        <HelpText>When Chao are starving, they will start to cry and lose happiness. This code also boosts Stamina gain by 25% for garden fruit.</HelpText>
       </Property>
       <Property name="HardChaoAttention" type="bool" defaultvalue="False" display="Chao Attention">
         <HelpText>Chao will lose happiness if you don’t give them attention for a while.</HelpText>

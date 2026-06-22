@@ -7,7 +7,6 @@ int __cdecl ALBHV_ChaoStarving_Punishment(task* a1)
 {
 	auto pParam = GET_CHAOPARAM(a1);
 
-	AL_EmotionAdd(a1, EM_MD_ANGER, (rand() % 100 + 100));
 	AL_EmotionAdd(a1, EM_MD_SORROW, (rand() % 100 + 100));
 
 	pParam->Happiness -= 5;
