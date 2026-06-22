@@ -11,7 +11,7 @@ struct SOCIAL_BHVDATA
 
 struct SOCIALDATA
 {
-	ObjectMaster* chaoPointer;
+	task* chaoPointer;
 	SOCIAL_BHVDATA bhvStatus;
 	int parameter1;
 	int parameter2;
@@ -44,12 +44,12 @@ struct socialwk
 	int nbBhvFuncEntry;
 	int CurrBhvFuncNum;
 };
-void ALS_ChatSetup(ObjectMaster* a1, ObjectMaster* a2);
-int ALBHV_Social(ObjectMaster* a1);
-ObjectMaster* Social_Create(SBHV_FUNC idleFunc);
-ObjectMaster* Social_GetActor(ObjectMaster* a1, int a2);
-void Social_SetActor(ObjectMaster* a1, int a2, ObjectMaster* chao);
-void Social_SetParameter(ObjectMaster* a1, int a2, int param);
-void Social_QueueBehavior(ObjectMaster* a1, int a2, SBHV_FUNC func);
-void Social_SetIdle(ObjectMaster* a1, SBHV_FUNC a2);
-void Social_SetSync(ObjectMaster* a1, int a2);
+void ALS_ChatSetup(task* a1, task* a2);
+int ALBHV_Social(task* a1);
+task* Social_Create(SBHV_FUNC idleFunc);
+task* Social_GetActor(task* a1, int a2);
+void Social_SetActor(task* a1, int a2, task* chao);
+void Social_SetParameter(task* a1, int a2, int param);
+void Social_QueueBehavior(task* a1, int a2, SBHV_FUNC func);
+void Social_SetIdle(task* a1, SBHV_FUNC a2);
+void Social_SetSync(task* a1, int a2);

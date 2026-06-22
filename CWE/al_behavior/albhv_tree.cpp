@@ -25,7 +25,7 @@ struct FRUIT_INFO
 #pragma pack(push, 8)
 struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
 {
-	EntityData1 entityData;
+	taskwk entityData;
 	char kind;
 	char state;
 	__int16 field_32;
@@ -61,10 +61,10 @@ struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
 #pragma pack(pop)
 
 
-//FunctionPointer(al_perception_link*, AL_GetFoundTree, (ObjectMaster* a1), 0x073E660);
-int ALBHV_TreeShake(ObjectMaster* a1)
+//FunctionPointer(al_perception_link*, AL_GetFoundTree, (task* a1), 0x073E660);
+int ALBHV_TreeShake(task* a1)
 {
-	chaowk* wk = (chaowk*)a1->Data1.Chao;
+	chaowk* wk = GET_CHAOWK(a1);
 	ALO_GrowTreeExecutor_Data* treedata = nullptr;
 
 	switch (wk->Behavior.Mode)
@@ -93,13 +93,13 @@ int ALBHV_TreeShake(ObjectMaster* a1)
 		}
 		else
 		{
-			ObjectMaster* tree = ALW_GetLockOnTask(a1);
+			task* tree = ALW_GetLockOnTask(a1);
 			if (!tree)
 				return BHV_RET_FINISH;
 
 			//maps -1 to 1 to 0-1
-			tree->EntityData2->speed.x = njSin(a1->Data1.Entity->Rotation.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
-			tree->EntityData2->speed.z = njCos(a1->Data1.Entity->Rotation.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
+			tree->EntityData2->speed.x = njSin(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
+			tree->EntityData2->speed.z = njCos(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
 			wk->Behavior.SubTimer += 1024 + 512;
 		}
 		break;
@@ -119,7 +119,7 @@ int ALBHV_GoToAimTree(task* tp) {
 	AL_BEHAVIOR* bhv = &work->Behavior;
 	int v2 = bhv->Mode;
 
-	((UnknownData2*)tp->EntityData2)->Waypoint.y = tp->Data1.Entity->Position.y; //DISGUSTING hack
+	((UnknownData2*)tp->EntityData2)->Waypoint.y = tp->twp->pos.y; //DISGUSTING hack
 
 	if (v2)
 	{
@@ -161,7 +161,7 @@ int ALBHV_GoToAimTree(task* tp) {
 	return BHV_RET_CONTINUE;
 }
 #pragma optimize("gty", off)
-void __cdecl AL_CalcIntentionScore_Tree(ObjectMaster* a1, float* a2)
+void __cdecl AL_CalcIntentionScore_Tree(task* a1, float* a2)
 {
 	if (njRandom() < 0.6f) return;
 	
@@ -173,10 +173,10 @@ void __cdecl AL_CalcIntentionScore_Tree(ObjectMaster* a1, float* a2)
 		al_perception_link* v1 = AL_GetFoundTree(a1);
 			
 		//check if tree found and other chao isn't shaking it + check if tree is adult
-		if (v1 && !ALW_IsSheAttentionOtherOne(a1, v1->pEntry->tp) && v1->pEntry->tp->Data1.Entity->Action == 7) 
+		if (v1 && !ALW_IsSheAttentionOtherOne(a1, v1->pEntry->tp) && v1->pEntry->tp->twp->mode == 7) 
 		{
 			ALW_LockOn(a1, v1->pEntry->tp);
-			MOV_SetAimPos(a1, &v1->pEntry->tp->Data1.Entity->Position);
+			MOV_SetAimPos(a1, &v1->pEntry->tp->twp->pos);
 			AL_SetBehavior(a1, (BHV_FUNC)0x0056B480);
 			AL_SetNextBehavior(a1, ALBHV_GoToAimTree);
 			AL_SetNextBehavior(a1, ALBHV_TurnToLockOn);

@@ -15,12 +15,12 @@
 // HACK: so for the whole toy registering ordeal, the original version delayed the displaysub (because the displaysub needed the entrywork)
 // and we couldn't hook the actual ALW_Entry function and do all our business there (because the position and angle set in the load functions  
 // runs **after* the ALW_Entry call), so this is an ugly workaround
-// we set this pointer when AL_Toy_Move_Init gets called, and then inside our FunctionHook/UsercallHooks, we use it to get the currently being spawned toy's ObjectMaster ptr
+// we set this pointer when AL_Toy_Move_Init gets called, and then inside our FunctionHook/UsercallHooks, we use it to get the currently being spawned toy's task ptr
 // and call ALW_Entry there
-static ObjectMaster* pLastToyTask = NULL;
+static task* pLastToyTask = NULL;
 
 const int MOV_ControlPtr = 0x00796780;
-void MOV_Control(ObjectMaster* eax0)
+void MOV_Control(task* eax0)
 {
 	__asm
 	{
@@ -30,7 +30,7 @@ void MOV_Control(ObjectMaster* eax0)
 }
 
 const int sub_54B230Ptr = 0x54B230;
-void sub_54B230(ObjectMaster* eax0, float a2)
+void sub_54B230(task* eax0, float a2)
 {
 	__asm
 	{
@@ -42,7 +42,7 @@ void sub_54B230(ObjectMaster* eax0, float a2)
 }
 
 const int sub_47D9E0Ptr = 0x47D9E0;
-void ObjectMovableInitialize(EntityData1* a1, int a2)
+void ObjectMovableInitialize(taskwk* a1, int a2)
 {
 	__asm
 	{
@@ -53,7 +53,7 @@ void ObjectMovableInitialize(EntityData1* a1, int a2)
 }
 
 const int MoveFunc2Ptr = 0x00798300;
-void MoveFunc2(ObjectMaster* a1)
+void MoveFunc2(task* a1)
 {
 	__asm
 	{
@@ -62,7 +62,7 @@ void MoveFunc2(ObjectMaster* a1)
 	}
 }
 static const void* const AddToGlobalChaoThingMaybePtr_ = (void*)0x530750;
-static inline signed int AddToGlobalChaoThingMaybe_(unsigned __int16 a1, ObjectMaster* obj, __int16 a3, ChaoData* data)
+static inline signed int AddToGlobalChaoThingMaybe_(unsigned __int16 a1, task* obj, __int16 a3, ChaoData* data)
 {
 	signed int result;
 	__asm
@@ -77,7 +77,7 @@ static inline signed int AddToGlobalChaoThingMaybe_(unsigned __int16 a1, ObjectM
 	}
 	return result;
 }
-void AL_Toy_Move_Register(ObjectMaster* obj, __int16 a3)
+void AL_Toy_Move_Register(task* obj, __int16 a3)
 {
 	ITEM_SAVE_INFO* info = NULL;
 	
@@ -89,8 +89,8 @@ void AL_Toy_Move_Register(ObjectMaster* obj, __int16 a3)
 		info = &cweSaveFile.cweToyInfo[saveIndex];
 		if (info->Garden == 0) {
 			info->Garden = AL_GetStageNumber();
-			info->position = obj->Data1.Entity->Position;
-			info->Age = obj->Data1.Entity->Rotation.y;
+			info->position = obj->twp->pos;
+			info->Age = obj->twp->ang.y;
 		}
 	}
 	else {
@@ -99,17 +99,17 @@ void AL_Toy_Move_Register(ObjectMaster* obj, __int16 a3)
 
 	AddToGlobalChaoThingMaybe_(6, obj, a3, (ChaoData*)info);
 	if (info) {
-		obj->Data1.Entity->Position = info->position;
-		obj->Data1.Entity->Rotation.y = info->Age;
+		obj->twp->pos = info->position;
+		obj->twp->ang.y = info->Age;
 	}
 }
 
-AL_TOY_MOVE* GetToyMove(ObjectMaster* a1)
+AL_TOY_MOVE* GetToyMove(task* a1)
 {
 	return (AL_TOY_MOVE*)((int)a1->EntityData2 + 0x26C);
 }
 
-void AL_Toy_Move_Update(ObjectMaster *a1)
+void AL_Toy_Move_Update(task *a1)
 {
 	AL_TOY_MOVE* toyMove = GetToyMove(a1);
 	//todo: "nextaction" for collision changes?
@@ -147,13 +147,13 @@ void AL_Toy_Move_Update(ObjectMaster *a1)
 		}
 
 		//if not picked up
-		if (a1->Data1.Entity->Status >= 0)
+		if (a1->twp->flag >= 0)
 		{
-			CollisionInfo* v8 = a1->Data1.Entity->Collision;
+			colliwk* v8 = a1->twp->cwp;
 			if (v8)
 			{
 				//if the object is touched, start running collision
-				if ((v8->word4 & 0x10) != 0)
+				if ((v8->flag & 0x10) != 0)
 				{
 					toyMove->timer = 0;
 					toyMove->flag = 0;
@@ -180,7 +180,7 @@ void AL_Toy_Move_Update(ObjectMaster *a1)
 		//water handler
 		sub_54B230(a1, toyMove->floatVal);
 
-		if (a1->Data1.Entity->Status & 1)
+		if (a1->twp->flag & 1)
 		{
 			NJS_VECTOR veloVec;
 			veloVec.x = a1->EntityData2->velocity.x;
@@ -212,7 +212,7 @@ void AL_Toy_Move_Update(ObjectMaster *a1)
 			}
 		}
 		//if picked up
-		if (a1->Data1.Entity->Status < 0)
+		if (a1->twp->flag < 0)
 		{
 			toyMove->flag = 0;
 			toyMove->timer = 0;
@@ -231,9 +231,9 @@ void AL_Toy_Move_Update(ObjectMaster *a1)
 			toyMove->flag++;
 		}
 		ALW_CommunicationOff(a1);
-		a1->Data1.Entity->Rotation.y = 0x4000 - MainCharObj1[0]->Rotation.y;
+		a1->twp->ang.y = 0x4000 - MainCharObj1[0]->ang.y;
 		//if it gets put down, go back to dynamic
-		if (a1->Data1.Entity->Status >= 0)
+		if (a1->twp->flag >= 0)
 		{
 			toyMove->timer = 0;
 			toyMove->flag = 0;
@@ -242,10 +242,10 @@ void AL_Toy_Move_Update(ObjectMaster *a1)
 		break;
 	}
 
-	a1->EntityData2->some_vector = a1->Data1.Entity->Position;
+	a1->EntityData2->some_vector = a1->twp->pos;
 	
 }
-UnknownData2* __cdecl AllocateUnknownData2New(ObjectMaster* obj)
+UnknownData2* __cdecl AllocateUnknownData2New(task* obj)
 {
 	UnknownData2* data2; // esi
 
@@ -265,7 +265,7 @@ UnknownData2* __cdecl AllocateUnknownData2New(ObjectMaster* obj)
 	return data2;
 }
 
-void AL_Toy_Move_Init(ObjectMaster* p, CCL_INFO* col)
+void AL_Toy_Move_Init(task* p, CCL_INFO* col)
 {
 	UnknownData2* mov = AllocateUnknownData2New(p);
 
@@ -299,18 +299,18 @@ void AL_Toy_Move_Init(ObjectMaster* p, CCL_INFO* col)
 	InitCollision(p, (CollisionData*)collisions, 3, 5);
 	if (p->EntityData2)
 	{
-		ObjectMovableInitialize(p->Data1.Entity, 10);
+		ObjectMovableInitialize(p->twp, 10);
 	}
 }
 
-void __cdecl AddToColliListToy(ObjectMaster* a1)
+void __cdecl AddToColliListToy(task* a1)
 {
 	AL_Toy_Move_Update(a1);
 
-	//if (a1->Data1.Entity->Action == 0)
-	//	a1->Data1.Entity->Status |= 0x240u;
+	//if (a1->twp->Action == 0)
+	//	a1->twp->Status |= 0x240u;
 	//else
-	//	a1->Data1.Entity->Status &= ~0x240u;
+	//	a1->twp->Status &= ~0x240u;
 
 	AddToCollisionList(a1);
 }
@@ -335,7 +335,7 @@ CCL_INFO RadioCol = { '\0', '\0', 'w', '\f', 32768u, {  0.0,  0.0,  0.0 }, 2.0, 
 CCL_INFO stru_8A5C10 = { '\0', '\0', 'w', '\f', 32768u, {  0.0,  1.0,  0.0 }, 2.0, 0.0, 0.0, 0.0, 0, 0, 0 };
 CCL_INFO ALO_BoxExecutor_collision = { '\0', '\0', 'w', '\f', 32768u, {  0,  1.6f,  0 }, 1.6f, 0, 0, 0, 0, 0, 0 };
 
-void __cdecl AL_TV_Init(ObjectMaster* a1)
+void __cdecl AL_TV_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &stru_8A5C10);
 	a1->EntityData2->field_AC = 1.75f;
@@ -355,14 +355,14 @@ static void __declspec(naked) AL_TV_Init_Hook()
 	}
 }
 
-void __cdecl AL_Toy_Update(ObjectMaster* a1)
+void __cdecl AL_Toy_Update(task* a1)
 {
 	AL_Toy_Move_Update(a1);
 
 	if (!ALW_IsAttention(a1))
-		a1->Data1.Entity->Status |= 0x240u;
+		a1->twp->flag |= 0x240u;
 	else
-		a1->Data1.Entity->Status &= ~0x240u;
+		a1->twp->flag &= ~0x240u;
 
 
 	AddToCollisionList(a1);
@@ -382,7 +382,7 @@ static void __declspec(naked) AL_Toy_UpdateHook()
 	}
 }
 
-void __cdecl AL_Box_Init(ObjectMaster* a1)
+void __cdecl AL_Box_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &ALO_BoxExecutor_collision);
 	//a1->EntityData2->field_AC = 1.75f;
@@ -402,7 +402,7 @@ static void __declspec(naked) AL_Box_Init_Hook()
 	}
 }
 
-void __cdecl AL_Radio_Init(ObjectMaster* a1)
+void __cdecl AL_Radio_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &RadioCol);
 	a1->EntityData2->field_AC = 1.6f;
@@ -422,7 +422,7 @@ static void __declspec(naked) AL_Radio_Init_Hook()
 	}
 }
 
-void __cdecl AL_Horse_Init(ObjectMaster* a1)
+void __cdecl AL_Horse_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &ALO_Horse_collision);
 	//a1->EntityData2->field_AC = 1.75f;
@@ -442,42 +442,42 @@ static void __declspec(naked) AL_Horse_Init_Hook()
 	}
 }
 
-void __cdecl ALO_BoxExecutor_Main_(ObjectMaster* a1)
+void __cdecl ALO_BoxExecutor_Main_(task* a1)
 {
-	a1->MainSub = ALO_BoxExecutor_Main;
+	a1->exec = ALO_BoxExecutor_Main;
 	AL_Toy_Move_Register(a1, ALW_KIND_BOX);
 }
 
-void __cdecl ALO_TVExecutor_Display_(ObjectMaster *a1)
+void __cdecl ALO_TVExecutor_Display_(task *a1)
 {
-	a1->DisplaySub = ALO_TVExecutor_Display;
+	a1->disp = ALO_TVExecutor_Display;
 	AL_Toy_Move_Register(a1, ALW_KIND_TV);
 	ALO_TVExecutor_Display(a1);
 }
 
 ObjectFunc(ALO_HorseExecutor_Display, 0x00580CA0);
-void __cdecl ALO_HorseExecutor_Display_(ObjectMaster* a1)
+void __cdecl ALO_HorseExecutor_Display_(task* a1)
 {
-	a1->DisplaySub = ALO_HorseExecutor_Display;
+	a1->disp = ALO_HorseExecutor_Display;
 	AL_Toy_Move_Register(a1, ALW_KIND_HORSE);
 	ALO_HorseExecutor_Display(a1);
 }
 
-void __cdecl ALO_RadicaseExecutor_Display_(ObjectMaster* a1)
+void __cdecl ALO_RadicaseExecutor_Display_(task* a1)
 {
-	a1->DisplaySub = ALO_RadicaseExecutor_Display;
+	a1->disp = ALO_RadicaseExecutor_Display;
 	AL_Toy_Move_Register(a1, ALW_KIND_RADICASE); 
 	ALO_RadicaseExecutor_Display(a1);
 }
 
-template<ObjectFuncPtr func, int index>
-void __cdecl ALO_ToyDisplayHook(ObjectMaster* tp) {
-	tp->DisplaySub = func;
+template<task_exec func, int index>
+void __cdecl ALO_ToyDisplayHook(task* tp) {
+	tp->disp = func;
 	AL_Toy_Move_Register(tp, index);
 	func(tp);
 }
 
-void __cdecl ALO_Ball_Main2_(ObjectMaster* a1)
+void __cdecl ALO_Ball_Main2_(task* a1)
 {
 	//a1->MainSub = ALO_Ball_Main2;
 	//a1->DisplaySub = ALO_Ball_Display;
@@ -509,7 +509,7 @@ al_entry_work* sub_530470(int a1, int a2)
 
 void SaveToyPos() {
 	ITEM_SAVE_INFO* v5;
-	ObjectMaster* v6;
+	task* v6;
 	al_entry_work* v4 = 0;
 	if (AL_IsGarden())
 	{
@@ -538,14 +538,14 @@ void SaveToyPos() {
 				}
 			}
 
-			v5->position = v6->Data1.Entity->Position;
-			v5->Age = v6->Data1.Entity->Rotation.y;
+			v5->position = v6->twp->pos;
+			v5->Age = v6->twp->ang.y;
 			if (AL_IsGarden())
 			{
 				v5->Garden = AL_GetStageNumber();
 			}
 
-			if (v6->Data1.Entity->Status >= 0)
+			if (v6->twp->flag >= 0)
 			{
 				if (v5->position.y >= -100.0)
 				{
@@ -625,7 +625,7 @@ void AL_Toy_Moveable_Init()
 	WriteCall((void*)0x0057CD00, nullsub_1);
 	//HookToyLoad<ALW_KIND_RADICASE, 0x0057CCA0>();
 	//HookToyLoad<ALW_KIND_RADICASE>(ALO_RadicaseExecutor_Load_t);
-	WriteData((int*)(0x0057CD2B - 4), (int)ALO_ToyDisplayHook<(ObjectFuncPtr)0x57CA80, 3>);
+	WriteData((int*)(0x0057CD2B - 4), (int)ALO_ToyDisplayHook<(task_exec)0x57CA80, 3>);
 	WriteCall((void*)0x0057CCF2, AL_Radio_Init_Hook);
 	WriteCall((void*)0x0057C9F5, AL_Toy_UpdateHook);
 	WriteCall((void*)0x0057CA58, AL_Toy_UpdateHook);

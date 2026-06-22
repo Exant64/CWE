@@ -11,8 +11,8 @@ public:
 
 	virtual void Init() {};
 	virtual void OnFrame() {};
-	virtual void ChaoObject(ObjectMaster* tp) {};
-	virtual void OnALControl(ObjectMaster* tp) {};
+	virtual void ChaoObject(task* tp) {};
+	virtual void OnALControl(task* tp) {};
 	virtual void OnChaoData(ChaoDataBase& chao) {};
 };
 

@@ -11,14 +11,14 @@
 
 //DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 
-int ALBHV_Hug1(ObjectMaster* a1)
+int ALBHV_Hug1(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
 		//PrintDebug("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
-	ObjectMaster* otherChao;
-	chaowk* wk = (chaowk*)a1->Data1.Chao;
+	task* otherChao;
+	chaowk* wk = GET_CHAOWK(a1);
 
 	otherChao = ALW_IsCommunicating(a1)->tp;
 	switch (wk->Behavior.Mode)
@@ -46,15 +46,15 @@ int ALBHV_Hug1(ObjectMaster* a1)
 	}
 	return 0;
 }
-//FunctionPointer(signed int, AL_GetRandomAttrPos_0, (ObjectMaster* a1), 0x0073AEE0);
+//FunctionPointer(signed int, AL_GetRandomAttrPos_0, (task* a1), 0x0073AEE0);
 
-int ALBHV_Hug2(ObjectMaster* a1)
+int ALBHV_Hug2(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
 		//PrintDebug("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
-	chaowk* wk = (chaowk*)a1->Data1.Chao;
+	chaowk* wk = GET_CHAOWK(a1);
 	switch (wk->Behavior.Mode)
 	{
 	case 0:
@@ -71,7 +71,7 @@ int ALBHV_Hug2(ObjectMaster* a1)
 	}
 	return 0;
 }
-signed int __cdecl ALBHV_GoToHug(ObjectMaster* a1)
+signed int __cdecl ALBHV_GoToHug(task* a1)
 {
 	chaowk* v1; // esi
 	int v2; // eax
@@ -84,7 +84,7 @@ signed int __cdecl ALBHV_GoToHug(ObjectMaster* a1)
 		return BHV_RET_BREAK;
 	}
 
-	v1 = (chaowk*)a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->Behavior.Mode;
 	v3 = &v1->Behavior;
 	switch (v2)
@@ -125,9 +125,9 @@ signed int __cdecl ALBHV_GoToHug(ObjectMaster* a1)
 	}
 	return 0;
 }
-int ALBHV_InitHug(ObjectMaster* a1)
+int ALBHV_InitHug(task* a1)
 {
-	ObjectMaster* otherChao = ALW_GetLockOnTask(a1); //hardcoded select second chao
+	task* otherChao = ALW_GetLockOnTask(a1); //hardcoded select second chao
 	if (otherChao == a1)
 	{
 		return 1;
@@ -139,7 +139,7 @@ int ALBHV_InitHug(ObjectMaster* a1)
 
 	//AL_GetRandomAttrPos_0(a1);
 
-	MOV_SetAimPos(a1, &otherChao->Data1.Entity->Position);
+	MOV_SetAimPos(a1, &otherChao->twp->pos);
 
 	AL_SetBehavior(otherChao, ALBHV_WaitForSocialArrive); //wait for chao to arrive
 	AL_SetNextBehavior(otherChao, ALBHV_Hug2);

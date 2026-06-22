@@ -250,10 +250,10 @@ enum
 	NB_INT_TIMER,
 };
 
-Uint32 AL_SetIntervalTimer(ObjectMaster* a1, Uint16 TimerKind, Uint32 timer);
+Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer);
 
-void __cdecl AL_CalcIntentionScore_Chat(ObjectMaster* a1, float* a2);
-void AL_CalcIntentionScore_Tree(ObjectMaster* a1, float* a2);
+void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2);
+void AL_CalcIntentionScore_Tree(task* a1, float* a2);
 float __cdecl AL_CalcScoreTypeA(signed int value, signed int minimum);
 float AL_CalcMoodScoreTypeA(int value, int trigger);
 void AL_IntentionInit();

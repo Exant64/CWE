@@ -19,7 +19,7 @@ struct AL_ChaoSelect {
 	ChaoData* m_chaoData;
 	int m_chaoDataCount;
 
-	std::vector<ObjectMaster*>* m_chaoTasks;
+	std::vector<task*>* m_chaoTasks;
 
 	float m_posX, m_posY; //top left corner
 	int m_zoom;
@@ -39,7 +39,7 @@ void AL_ChaoSelect_DeleteChao(AL_ChaoSelect* chaoSelect) {
 }
 static Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1,  0.5f, {  1,  1,  1 } };
 
-void ChaoDisplayHookTest(ObjectMaster* tp) {
+void ChaoDisplayHookTest(task* tp) {
 
 	Lights[10] = BM_MenuLight;
 	int backupLI = LightIndex;
@@ -49,12 +49,12 @@ void ChaoDisplayHookTest(ObjectMaster* tp) {
 	OrthoDrawBegin();
 
 	njPushMatrixEx();
-	OrthoScreenTranslate(tp->Data1.Entity->Position.x, tp->Data1.Entity->Position.y, 1);
+	OrthoScreenTranslate(tp->twp->pos.x, tp->twp->pos.y, 1);
 
-	NJS_VECTOR backupPos = tp->Data1.Entity->Position;
-	tp->Data1.Entity->Position = { 0,0,0 };
+	NJS_VECTOR backupPos = tp->twp->pos;
+	tp->twp->pos = { 0,0,0 };
 	Chao_Display(tp);
-	tp->Data1.Entity->Position = backupPos;
+	tp->twp->pos = backupPos;
 
 	OrthoDrawEnd();
 	njPopMatrixEx();
@@ -82,12 +82,12 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 			return;
 		}
 
-		ObjectMaster* obj = CreateChao(&chaoSelect->m_chaoData[i], 0, 0, &posIn, 0);
-		obj->DisplaySub = ChaoDisplayHookTest;
+		task* obj = CreateChao(&chaoSelect->m_chaoData[i], 0, 0, &posIn, 0);
+		obj->disp = ChaoDisplayHookTest;
 		if (obj) {
-			obj->Data1.Chao->field_B0 &= ~8u;
-			obj->Data1.Chao->field_B0 &= ~2u;
-			obj->Data1.Chao->field_B0 &= ~0x10u;
+			GET_CHAOWK(obj)->field_B0 &= ~8u;
+			GET_CHAOWK(obj)->field_B0 &= ~2u;
+			GET_CHAOWK(obj)->field_B0 &= ~0x10u;
 			chaoSelect->m_chaoTasks->at(i) = obj;
 		}
 		else {
@@ -121,7 +121,7 @@ AL_ChaoSelect* Create_AL_ChaoSelect(float x, float y, ChaoData* pChaoData, int m
 
 	chaoSelect->m_zoom = 1;
 
-	chaoSelect->m_chaoTasks = new std::vector<ObjectMaster*>();
+	chaoSelect->m_chaoTasks = new std::vector<task*>();
 
 	AL_ChaoSelect_UpdateChaoData(chaoSelect, pChaoData, maxChao);
 
@@ -169,19 +169,19 @@ void LoadChaoFiles() {
 }
 
 DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
-void BackButtonDisp(ObjectMaster* a1) {
+void BackButtonDisp(task* a1) {
 
 	float v14 = 320;
 	float a3 = 470;
 	float v9 = a3 - 5.0f;
-	float v7 = (njSin(a1->Data1.Entity->Rotation.y) *  0.1f) + 1.0f;
+	float v7 = (njSin(a1->twp->ang.y) *  0.1f) + 1.0f;
 	float sizeX = 40.0f;
 
 	*(char*)0x25EFFCC = 1;
 }
 
 void CreateBackButton() {
-	LoadObject(4, "back", [](ObjectMaster*) {}, LoadObj_Data1)->field_1C = BackButtonDisp;
+	CreateElementalTask(4, "back", [](task*) {}, LoadObj_Data1)->field_1C = BackButtonDisp;
 }
 
 void AL_OdekakeStorage(ODE_MENU_MASTER_WORK* a1)

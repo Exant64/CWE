@@ -16,41 +16,41 @@ BlackMarketItemAttributes LensBoxSpecialAttr = { 6000,1500,0,  -1, -1,   0 };
 const char* LensDefaultDescription = "These lenses restore your Chao's eye color to Normal.";
 const char* LensGenericDescription = "These lenses allow you to customize your Chao's eye color!";
 
-extern "C" __declspec(dllexport) void ALS_LensSpecial(ObjectMaster * chao, ObjectMaster * item)
+extern "C" __declspec(dllexport) void ALS_LensSpecial(task * chao, task * item)
 {
-	if (item->Data1.Entity->Rotation.x == 0)
+	if (item->twp->ang.x == 0)
 	{
-		chao->Data1.Chao->pParamGC->EyeColor = 0;
-		chao->Data1.Chao->pParamGC->EyeAlignment = 0;
+		GET_CHAOPARAM(chao)->EyeColor = 0;
+		GET_CHAOPARAM(chao)->EyeAlignment = 0;
 	}
-	else if (item->Data1.Entity->Rotation.x >= 1 && item->Data1.Entity->Rotation.x <= 3)
+	else if (item->twp->ang.x >= 1 && item->twp->ang.x <= 3)
 	{
 		//	chao->Data1.Chao->pParamGC->EyeColor = 0;
-		chao->Data1.Chao->pParamGC->EyeAlignment = item->Data1.Entity->Rotation.x;
+		GET_CHAOPARAM(chao)->EyeAlignment = item->twp->ang.x;
 	}
-	else if (item->Data1.Entity->Rotation.x >= 4)
+	else if (item->twp->ang.x >= 4)
 	{
-		chao->Data1.Chao->pParamGC->EyeColor = ModAPI_LensColorMap[item->Data1.Entity->Rotation.x] + 1;
+		GET_CHAOPARAM(chao)->EyeColor = ModAPI_LensColorMap[item->twp->ang.x] + 1;
 		//chao->Data1.Chao->pParamGC->EyeAlignment = 0;
 	}
 }
-void ALS_DCWings(ObjectMaster* chao, ObjectMaster* item)
+void ALS_DCWings(task* chao, task* item)
 {
-	chao->Data1.Chao->pParamGC->DCWings = !chao->Data1.Chao->pParamGC->DCWings;
+	GET_CHAOPARAM(chao)->DCWings = !GET_CHAOPARAM(chao)->DCWings;
 }
 
-void ALS_Brush(ObjectMaster* chao, ObjectMaster* item)
+void ALS_Brush(task* chao, task* item)
 {
-	chao->Data1.Chao->pParamGC->LobbyTextureValue = (item->Data1.Entity->Rotation.x - (MirrorID + 1)) + 1;
+	GET_CHAOPARAM(chao)->LobbyTextureValue = (item->twp->ang.x - (MirrorID + 1)) + 1;
 }
-bool ALS_BrushCondition(ObjectMaster* chao, ObjectMaster* item)
+bool ALS_BrushCondition(task* chao, task* item)
 {
-	if (!chao->Data1.Chao->pParamGC) return false;
-	return AL_IsHero(chao->Data1.Chao->pParamGC->Type);
+	if (!GET_CHAOPARAM(chao)) return false;
+	return AL_IsHero(GET_CHAOPARAM(chao)->Type);
 }
 
 const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
-void AL_GrabObjectBothHands(ObjectMaster* a2, int a1)
+void AL_GrabObjectBothHands(task* a2, int a1)
 {
 	__asm
 	{
@@ -59,15 +59,16 @@ void AL_GrabObjectBothHands(ObjectMaster* a2, int a1)
 		call AL_GrabObjectBothHandsPtr
 	}
 }
-void ALS_Omobuild(ObjectMaster* chao, ObjectMaster* item)
+void ALS_Omobuild(task* chao, task* item)
 {
 	AL_GrabObjectBothHands(chao, (int)item);
 	AL_SetBehavior(chao, ALBHV_BuildStart);
 }
-bool ALS_OmobuildCondition(ObjectMaster* chao, ObjectMaster* item)
+bool ALS_OmobuildCondition(task* chao, task* item)
 {
-	ChaoDataBase* pParam = chao->Data1.Chao->pParamGC;
+	ChaoDataBase* pParam = GET_CHAOPARAM(chao);
 	OMOCHAO_INFO* omo = GetOmoData();
+
 	return (omo->phase == 0 ||
 		!AL_KW_IDExists(omo->chaoID) ||
 		(pParam->ChaoID.id[0] == omo->chaoID.id[0] &&
@@ -75,20 +76,20 @@ bool ALS_OmobuildCondition(ObjectMaster* chao, ObjectMaster* item)
 		pParam->Knowledge.SToyFlag & (1 << 12) && omo->phase != 255;
 }
 
-bool ALS_ReincarnCondition(ObjectMaster* chao, ObjectMaster* item)
+bool ALS_ReincarnCondition(task* chao, task* item)
 {
-	if (!chao->Data1.Chao->pParamGC) return false;
+	if (!GET_CHAOPARAM(chao)) return false;
 
-	return (chao->Data1.Chao->pParamGC->Type > 2 && !chao->Data1.Chao->pParamGC->ForceReincarnate);
+	return GET_CHAOPARAM(chao)->Type > 2 && !GET_CHAOPARAM(chao)->ForceReincarnate;
 }
 
-void ALS_Reincarn(ObjectMaster* chao, ObjectMaster* item)
+void ALS_Reincarn(task* chao, task* item)
 {
-	chao->Data1.Chao->pParamGC->Lifespan = 0;
-	chao->Data1.Chao->pParamGC->Lifespan2 = 0;
-	chao->Data1.Chao->pParamGC->StatGrades[6]++;
-	chao->Data1.Chao->pParamGC->StatGrades[5]++;
-	chao->Data1.Chao->pParamGC->ForceReincarnate = true;
+	GET_CHAOPARAM(chao)->Lifespan = 0;
+	GET_CHAOPARAM(chao)->Lifespan2 = 0;
+	GET_CHAOPARAM(chao)->StatGrades[6]++;
+	GET_CHAOPARAM(chao)->StatGrades[5]++;
+	GET_CHAOPARAM(chao)->ForceReincarnate = true;
 }
 
 void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
@@ -125,8 +126,8 @@ void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 	MirrorID = cwe_api->RegisterChaoSpecial(&object_als_mirror,
 		&CWE_OBJECT_TEXLIST,
 		&Negative,
-		[](ObjectMaster* chao, ObjectMaster* item) {
-			chao->Data1.Chao->pParamGC->Negative = !chao->Data1.Chao->pParamGC->Negative;
+		[](task* chao, task* item) {
+			GET_CHAOPARAM(chao)->Negative = !GET_CHAOPARAM(chao)->Negative;
 		},
 		nullptr,
 			"Reverse Mirror",

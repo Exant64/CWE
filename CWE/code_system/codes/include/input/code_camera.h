@@ -26,11 +26,11 @@ class BetterCameraControl : public Code {
 DataPointer(task*, pCamTask, 0x01AED2E8);
 
 struct AL_NormalCameraExecutor_Data1 {
-    EntityData1 EntityData1;
+    taskwk EntityData1;
     unsigned __int16 type;
     NJS_POINT3 velo;
     NJS_POINT3 AimPos;
-    Rotation AngSpd;
+    Angle3 AngSpd;
     NJS_POINT3 target;
     NJS_POINT3 AimTarget;
     float dist;
@@ -163,7 +163,7 @@ void BetterCameraControl::OnFrame() {
     if(!pCamTask) return;
     if(GameState != GameStates_Ingame) return;
 
-    AL_NormalCameraExecutor_Data1* work = (AL_NormalCameraExecutor_Data1*)pCamTask->Data1.Undefined;
+    AL_NormalCameraExecutor_Data1* work = (AL_NormalCameraExecutor_Data1*)pCamTask->twp;
 
     // shad has the struct for these but i just cannot care to look it up atm
     DataPointer(int, CameraModeThing, 0x01DD0194);

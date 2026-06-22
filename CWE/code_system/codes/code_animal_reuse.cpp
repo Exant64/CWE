@@ -2,8 +2,8 @@
 #include "include/code_animal_reuse.h"
 #include <c_colli.h>
 
-FastcallFunctionPointer(signed int, sub_56D170, (int a1, ObjectMaster* a2), 0x56D170);
-signed int __fastcall MinimalHold(int a1, ObjectMaster* a2)
+FastcallFunctionPointer(signed int, sub_56D170, (int a1, task* a2), 0x56D170);
+signed int __fastcall MinimalHold(int a1, task* a2)
 {
 	int test = sub_56D170(a1, a2);
 	if (!test)

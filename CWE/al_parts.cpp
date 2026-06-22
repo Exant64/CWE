@@ -8,12 +8,12 @@
 #include <vector>
 #include <map>
 
-void __cdecl AL_SetItem(ObjectMaster* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist)
+void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist)
 {
 	ChaoData1* v4; // eax
 	ChunkObjectPointer* v5; // edx
 
-	v4 = a1->Data1.Chao;
+	v4 = GET_CHAOWK(a1);
 	v5 = v4->field_524[a2];
 	if (v5->toy.model != model)
 	{
@@ -25,38 +25,38 @@ void __cdecl AL_SetItem(ObjectMaster* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST
 	v4->field_524[a2]->useTransform = 0;
 }
 
-void  AL_PartsMinimalFlagOn(ObjectMaster* tp, int MinimalType)
+void  AL_PartsMinimalFlagOn(task* tp, int MinimalType)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	work->pParamGC->PartsBTL.MinimalFlag |= 1 << MinimalType;
 }
-void  AL_PartsMinimalFlagOff(ObjectMaster* tp, int MinimalType)
+void  AL_PartsMinimalFlagOff(task* tp, int MinimalType)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	work->pParamGC->PartsBTL.MinimalFlag = 0;
 }
-int  AL_PartsIsMinimalFlagOn(ObjectMaster* tp, int MinimalType)
+int  AL_PartsIsMinimalFlagOn(task* tp, int MinimalType)
 {
-    chaowk* work = CHAOWK(tp);
+    chaowk* work = GET_CHAOWK(tp);
     if (work->pParamGC->PartsBTL.MinimalFlag & (1 << MinimalType))
         return 1;
     else
         return 0;
 }
 
-void AL_PartsMinimalFlagOn_DX(ObjectMaster* tp, int MinimalType)
+void AL_PartsMinimalFlagOn_DX(task* tp, int MinimalType)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	work->pParamGC->partsDX.MinimalFlag |= 1 << MinimalType;
 }
-void AL_PartsMinimalFlagOff_DX(ObjectMaster* tp, int MinimalType)
+void AL_PartsMinimalFlagOff_DX(task* tp, int MinimalType)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	work->pParamGC->partsDX.MinimalFlag = 0;
 }
-int AL_PartsIsMinimalFlagOn_DX(ObjectMaster* tp, int MinimalType)
+int AL_PartsIsMinimalFlagOn_DX(task* tp, int MinimalType)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	if (work->pParamGC->partsDX.MinimalFlag & (1 << MinimalType))
 		return 1;
 	else
@@ -72,9 +72,9 @@ bool AL_IsExistPartsAdult(int MinimalNum, int PartsKind)
 	return ModAPI_MiniParts[MinimalNum][1].objects[PartsObjectListNumber[PartsKind][0]];
 }
 
-int AL_GetMinimalPart(ObjectMaster* tp, int PartsKind)
+int AL_GetMinimalPart(task* tp, int PartsKind)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	return work->pParamGC->PartsBTL.MinimalParts[PartsKind];
 }
 
@@ -104,8 +104,8 @@ int PartsObjectListNumber[8][2] = {
 	{10, 11},
 	{12, -1}
 };
-void AL_SetMinimalParts(ObjectMaster* tp, int PartsKind, int MinimalType) {
-	chaowk* work = tp->Data1.Chao;
+void AL_SetMinimalParts(task* tp, int PartsKind, int MinimalType) {
+	chaowk* work = GET_CHAOWK(tp);
 	int i;
 
 	if (gConfigVal.DisableAllParts) return;
@@ -146,14 +146,14 @@ void AL_SetMinimalParts(ObjectMaster* tp, int PartsKind, int MinimalType) {
 	}
 }
 
-void AL_RemoveMinimalParts(ObjectMaster* tp, int PartsType) {
+void AL_RemoveMinimalParts(task* tp, int PartsType) {
 	AL_SetMinimalParts(tp, PartsType, -1);
 }
 
 FunctionPointer(void, sub_566B30, (ChunkObjectPointer* a1), 0x566B30);
 
-static void AL_PartsConversion(ObjectMaster* a1) {
-	ChaoData1* wk = CHAOWK(a1);
+static void AL_PartsConversion(task* a1) {
+	ChaoData1* wk = GET_CHAOWK(a1);
 	ChaoDataBase* pParam = wk->pParamGC;
 
 	for (size_t i = 0; i < NB_PARTS_KIND; i++) {
@@ -163,8 +163,8 @@ static void AL_PartsConversion(ObjectMaster* a1) {
 	}
 }
 
-void sub_566B80(ObjectMaster* tp) {
-	ChaoData1* wk = CHAOWK(tp);
+void sub_566B80(task* tp) {
+	ChaoData1* wk = GET_CHAOWK(tp);
 	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 
 	if (!(pParam->Flags & AL_PARAM_FLAG_PARTS_CONVERSION)) {

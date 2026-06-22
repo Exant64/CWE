@@ -20,28 +20,27 @@ bool IsAltDrawHead(int headgear) {
 		headgear == SA2BHat_Pan;
 }
 
-void __cdecl ALO_ObakeHeadExecutor_Display_(ObjectMaster *a1)
+void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
 {
-	ObjectMaster *v1; // ebx
-	Data1Ptr v2; // ebp
+	task *v1; // ebx
 	float v28; // st6
 	float a3; // ST04_4
 
 	v1 = a1;
-	v2.Chao = (ChaoData1 *)a1->Data1.Chao;
-	if (ScaleObjectMaster_XYZ(a1, 2.5f, 2.5f, 2.0f))
+	taskwk* work = a1->twp;
+	if (Scaletask_XYZ(a1, 2.5f, 2.5f, 2.0f))
 	{
 		njSetTexture(&AL_BODY);
 		DoLighting(LightIndex);
 		njPushMatrixEx();
-		njTranslateEx(&v2.Entity->Position);
-		if (v2.Chao->entity.Status < 0)
+		njTranslateEx(&work->pos);
+		if (work->flag < 0)
 			njTranslate(NULL, 0, -0.35f, 0);
-		RotateY(v2.Entity->Rotation.y);
+		RotateY(work->ang.y);
 		njPushMatrixEx();
 		if (ALO_Field_Find_(v1, 1, 150))
 			njControl3D |= 0x2400u;
-		ALO_ObakeHeadDraw<true>(v2.Chao->entity.Rotation.x);
+		ALO_ObakeHeadDraw<true>(work->ang.x);
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
 		if (flt_1312CBC > (double)*(float *)&v1->UnknownA_ptr->field_30)

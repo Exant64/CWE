@@ -229,7 +229,7 @@ static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
     }
     njDrawTexture(4, 44657590, (int)vtx, 1);
 
-    const Rotation rot = { 0, -4000, 0 };
+    const Angle3 rot = { 0, -4000, 0 };
     const SAlItem item = { 2, type };
     
     const float scale = 1.65f;
@@ -360,7 +360,7 @@ static void sub_48ACD0(int a1, float a2, float a3, float a4) {
     }
 }
 
-FunctionPointer(ObjectMaster*, sub_48AAD0, (float posX, float posY, float posZ, int a4, int mode), 0x48AAD0);
+FunctionPointer(task*, sub_48AAD0, (float posX, float posY, float posZ, int a4, int mode), 0x48AAD0);
 static void sub_48ACD0_r(int i, int a1, float a2, float a3, float a4) {
     // the first parameter (i) is "stolen" from the caller function through register edi
     // we use it to only run the animal spawn checks for the first animal

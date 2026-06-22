@@ -137,13 +137,13 @@ int ALBHV_MayuDance(task *tp) {
 	return BHV_RET_CONTINUE;
 }
 
-void AL_CalcIntentionScore_Mayu(ObjectMaster* tp, float* pMaxScore) {
+void AL_CalcIntentionScore_Mayu(task* tp, float* pMaxScore) {
 	task* pField;
 
 	if (GET_CHAOWK(tp)->Behavior.IntervalTimer[0x10]) return;
 
 	if (pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_MAYU_GROW_FIELD)) {
-		MOV_SetAimPos(tp, &pField->Parent->Data1.Entity->Position);
+		MOV_SetAimPos(tp, &pField->Parent->twp->pos);
 		AL_KW_MeetEachother(tp, pField->Parent, KW_MEET_EVOLVE);
 
 		AL_SetBehavior(tp, ALBHV_GoToMayu);
@@ -153,7 +153,7 @@ void AL_CalcIntentionScore_Mayu(ObjectMaster* tp, float* pMaxScore) {
 		*pMaxScore = 1.0f;
 	}
 	else if (pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_MAYU_DEATH_FIELD)) {
-		MOV_SetAimPos(tp, &pField->Parent->Data1.Entity->Position);
+		MOV_SetAimPos(tp, &pField->Parent->twp->pos);
 		AL_EmotionAdd(tp, EM_MD_SORROW, 50);
 
 		AL_SetBehavior(tp, ALBHV_GoToMayu);
@@ -163,7 +163,7 @@ void AL_CalcIntentionScore_Mayu(ObjectMaster* tp, float* pMaxScore) {
 		*pMaxScore = 1.0f;
 	}
 	else if (pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_MAYU_SUCCEED_FIELD)) {
-		MOV_SetAimPos(tp, &pField->Parent->Data1.Entity->Position); //set waypoint to chao position
+		MOV_SetAimPos(tp, &pField->Parent->twp->pos); //set waypoint to chao position
 		AL_KW_MeetEachother(tp, pField->Parent, KW_MEET_REBIRTH); //meet chao
 
 		AL_SetBehavior(tp, ALBHV_GoToMayu);

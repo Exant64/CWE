@@ -1,13 +1,16 @@
 #include "stdafx.h"
 #include "usercall.h"
+#include "Chao.h"
 
-int(*AL_EmotionGetValue)(ObjectMaster* tp, int emotion) = GenerateUsercallWrapper<int(*)(ObjectMaster* tp, int emotion)>(rEAX, 0x0054E930, rEAX, rECX);
+// todo: refactor with decomp
 
-void* __cdecl Chao_GetFeelingPtr(ObjectMaster* a1, int a2)
+int(*AL_EmotionGetValue)(task* tp, int emotion) = GenerateUsercallWrapper<int(*)(task* tp, int emotion)>(rEAX, 0x0054E930, rEAX, rECX);
+
+void* __cdecl Chao_GetFeelingPtr(task* a1, int a2)
 {
 	AL_EMOTION* v2; // ecx
 
-	v2 = &a1->Data1.Chao->pParamGC->Emotion;
+	v2 = &GET_CHAOWK(a1)->pParamGC->Emotion;
 	if ((unsigned int)a2 <= 7)
 	{
 		return ((unsigned __int8*)&v2->Joy + a2);
@@ -24,7 +27,7 @@ void* __cdecl Chao_GetFeelingPtr(ObjectMaster* a1, int a2)
 }
 
 
-void AL_EmotionAdd(ObjectMaster* a1, int a2, int a3)
+void AL_EmotionAdd(task* a1, int a2, int a3)
 {
 	void* ptr = Chao_GetFeelingPtr(a1, a2);
 	if ((unsigned int)a2 <= 7)
@@ -51,7 +54,7 @@ void AL_EmotionAdd(ObjectMaster* a1, int a2, int a3)
 	}
 }
 
-void AL_EmotionSet(ObjectMaster* a1, int a2, int a3)
+void AL_EmotionSet(task* a1, int a2, int a3)
 {
 	void* ptr = Chao_GetFeelingPtr(a1, a2);
 	if ((unsigned int)a2 <= 7) {

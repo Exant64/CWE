@@ -48,9 +48,8 @@ void CWE_CCL_Entry(task* tp) {
         return;
     }
 
-    CCL_INFO* pInfo = (CCL_INFO*)tp->Data1.Entity->Collision;
 
-    if(!pInfo || tp->MainSub == DeleteObject_)  {
+    if(!tp->twp->cwp || tp->exec == DeleteObject_)  {
         return;
     }
 

@@ -155,7 +155,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.IconColor = 0xFFFFCC00,
 		.IconType = ICON_TYPE_SPIKY,
 
-		.pEvolveFunc = [](ObjectMaster* tp) {
+		.pEvolveFunc = [](task* tp) {
 			ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 		
 			return pParam->Type == ChaoType_Dark_Power && pParam->EyeColor == SpartoiLensID;

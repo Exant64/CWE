@@ -30,7 +30,7 @@ struct BlackMarketItemAttributes
 #pragma pack(push, 8)
 struct BlackMarketData
 {
-	ObjectMaster* mTask;
+	task* mTask;
 	Uint32 mMode;
 	char mSelect;
 	char field_9;
@@ -38,7 +38,7 @@ struct BlackMarketData
 	Uint16 wordC;
 	Sint8 gapE[2];
 	Uint32* mMsgList;
-	ObjectMaster* KinderWindows[7];
+	task* KinderWindows[7];
 	Sint8 byte30;
 	Sint8 byte31;
 	Sint8 byte32;
@@ -73,12 +73,12 @@ struct BlackMarketData
 	char field_A9;
 	char field_AA;
 	char field_AB;
-	ObjectMaster* BuylistKinder[4];
+	task* BuylistKinder[4];
 	char mSellListShow;
 	char mSellListSelect;
 	char field_BE;
 	char field_BF;
-	ObjectMaster* SellKinder[4];
+	task* SellKinder[4];
 	int byteD0;
 	// new fields starting here
 	int currentTab;
@@ -117,4 +117,4 @@ extern std::unordered_map<int, int> OtherItemFuncs;
 
 void BlackMarketAddInventory(int cat, int item);
 void alg_kinder_bl_Init();
-extern "C" __declspec(dllexport) void DrawItem(float x, float y, float scl, const Rotation & rot, const SAlItem & CurrentItem);
+extern "C" __declspec(dllexport) void DrawItem(float x, float y, float scl, const Angle3 & rot, const SAlItem & CurrentItem);

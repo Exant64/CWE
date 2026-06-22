@@ -18,30 +18,30 @@
 extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
-void Accessory_Display(ObjectMaster* a1) {
+void Accessory_Display(task* a1) {
 	const AccessorySaveInfo* save = (const AccessorySaveInfo*)AL_GetItemSaveInfo(a1);
 
 	DoLighting(LightIndex);
 	njPushMatrixEx();
 
-	njTranslateEx(&a1->Data1.Entity->Position);
-	njRotateY(NULL, a1->Data1.Entity->Rotation.y);
+	njTranslateEx(&a1->twp->pos);
+	njRotateY(NULL, a1->twp->ang.y);
 
 	njSetTexture(&CWE_OBJECT_TEXLIST);
 
-	if (IsAccessoryGeneric(a1->Data1.Entity->Rotation.x))
+	if (IsAccessoryGeneric(a1->twp->ang.x))
 		chCnkDrawObject(&object_ala_full_mannequin);
 	else
 		chCnkDrawObject(&object_alo_mannequin);
 
 	Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-	AccessorySetupDraw(a1->Data1.Entity->Rotation.x, save->Colors, save->UsedColors);
+	AccessorySetupDraw(a1->twp->ang.x, save->Colors, save->UsedColors);
 	
-	if(!IsAccessoryRFSupported(a1->Data1.Entity->Rotation.x)) {
-		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
+	if(!IsAccessoryRFSupported(a1->twp->ang.x)) {
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, a1->twp->ang.x);
 	}
 	else {
-		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, a1->Data1.Entity->Rotation.x);
+		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, a1->twp->ang.x);
 	}
 
 	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
@@ -64,18 +64,18 @@ static void ALO_AccessoryDelete(task* tp) {
 FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 
 task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
-	task* tp = LoadObject(4, "ALO_Accessory", ALO_ObakeHeadExecutor_Main, LoadObj_Data1);
-	EntityData1* work = tp->Data1.Entity;
+	task* tp = CreateElementalTask(4, "ALO_Accessory", ALO_ObakeHeadExecutor_Main, LoadObj_Data1);
+	taskwk* work = tp->twp;
 	UnknownData2* move = AllocateUnknownData2(tp);
 
-	work->Position = *pPos;
-	work->Rotation.y = AngY;
+	work->pos = *pPos;
+	work->ang.y = AngY;
 
 	if (pVelo) {
 		move->velocity = *pVelo;
 	}
 
-	work->Rotation.x = ID;
+	work->ang.x = ID;
 
 	move->gravity = -0.05f;
 	move->field_AC = 3; // Offset.y
@@ -87,13 +87,13 @@ task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const
 	InitCollision(tp, ALO_ObakeHeadExecutor_collision, 3, 5u);
 	ObjectMovableInitialize(work, 10);
 
-	*(unsigned char*)&work->Collision->CollisionArray[2].field_0 = CI_KIND_AL_ACCESSORY;
+	*(unsigned char*)&work->cwp->CollisionArray[2].field_0 = CI_KIND_AL_ACCESSORY;
 
-	tp->DisplaySub = Accessory_Display;
-	tp->DeleteSub = ALO_AccessoryDelete;
+	tp->disp = Accessory_Display;
+	tp->dest = ALO_AccessoryDelete;
 
-	work->Action = 0;
-	work->NextAction = 0;
+	work->mode = 0;
+	work->smode = 0;
 
 	CWE_ALW_Entry(ChaoItemCategory_Accessory, tp, 0, savedata);
 	ALW_SetHeldOffset(tp, 0.0f);

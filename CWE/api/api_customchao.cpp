@@ -31,7 +31,7 @@ static int NodeCounter;
 std::vector<CustomChaoEntry> CustomChaoTypeEntries;
 
 const int AL_CalcIconColorPtr = 0x0053B940;
-void AL_CalcIconColor(ObjectMaster* tp)
+void AL_CalcIconColor(task* tp)
 {
 	__asm
 	{
@@ -39,8 +39,8 @@ void AL_CalcIconColor(ObjectMaster* tp)
 		call AL_CalcIconColorPtr
 	}
 }
-void __cdecl AL_CalcIconColorMod(ObjectMaster* tp) {
-	ChaoData1* work = CHAOWK(tp);
+void __cdecl AL_CalcIconColorMod(task* tp) {
+	ChaoData1* work = GET_CHAOWK(tp);
 	ChaoDataBase* pParam = work->pParamGC;
 	
 	//we put the monster evo fix here because iirc CalcIconColor is called right before the deform crap
@@ -58,7 +58,7 @@ void __cdecl AL_CalcIconColorMod(ObjectMaster* tp) {
 
 	if (AL_IsCustomChao(tp)) {
 		//icon color offset in chaodata1
-		*(Uint32*)((int)tp->Data1.Chao + 0x700) = CustomChaoTypeEntries[work->LocalCharacterChaoType].Data.IconColor;
+		*(Uint32*)((int)GET_CHAOWK(tp) + 0x700) = CustomChaoTypeEntries[work->LocalCharacterChaoType].Data.IconColor;
 		return;
 	}
 
@@ -78,11 +78,11 @@ static void __declspec(naked) AL_CalcIconColorHook()
 	}
 }
 
-void __cdecl AL_IconDraw_r(ObjectMaster* a1);
+void __cdecl AL_IconDraw_r(task* a1);
 Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, AL_IconDraw_r);
-void __cdecl AL_IconDraw_r(ObjectMaster* tp)
+void __cdecl AL_IconDraw_r(task* tp)
 {
-	ChaoData1* work = CHAOWK(tp);
+	ChaoData1* work = GET_CHAOWK(tp);
 	ChaoDataBase* pParam = work->pParamGC;
 	const auto original = reinterpret_cast<decltype(AL_IconDraw_r)*>(AL_IconDraw_t.Target());
 
@@ -294,10 +294,10 @@ static int AL_CustomChao_SearchID(const char* pID) {
 	return -1;
 }
 
-static int __cdecl AL_ShapeInit_r(ObjectMaster* tp);
+static int __cdecl AL_ShapeInit_r(task* tp);
 static Trampoline AL_ShapeInit_Tramp(0x0056C9D0, 0x0056C9D7, AL_ShapeInit_r);
-static int __cdecl AL_ShapeInit_r(ObjectMaster* tp) {
-	ChaoData1* work = CHAOWK(tp);
+static int __cdecl AL_ShapeInit_r(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
 	ChaoDataBase* pParam = work->pParamGC;
 
 	work->IsCustomChaoTypeLoaded = false;
@@ -416,7 +416,7 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 }
 
 void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5, float a6, float a7) {
-	ChaoData1* work = CHAOWK(a2->field_8);
+	chaowk* work = GET_CHAOWK(a2->field_8);
 	ChaoDataBase* pParam = work->pParamGC;
 	int msg = (int)a3;
 
@@ -471,10 +471,10 @@ static void __declspec(naked) sub_58D9F0Hook()
 	}
 }
 
-int __cdecl sub_5366E0(ObjectMaster* a1, int a2)
+int __cdecl sub_5366E0(task* a1, int a2)
 {
-	ChaoDataBase* v2 = a1->Data1.Chao->pParamGC;
-	switch (v2->Type)
+	auto pParam = GET_CHAOPARAM(a1);
+	switch (pParam->Type)
 	{
 	case ChaoType_Empty:
 	case ChaoType_Good:
@@ -489,10 +489,10 @@ int __cdecl sub_5366E0(ObjectMaster* a1, int a2)
 	case ChaoType_Dark_Chaos:
 		return 7;
 	default:
-		if (v2->Type >= ChaoType_Tails) 
+		if (pParam->Type >= ChaoType_Tails) 
 			return 7;
 
-		return ((unsigned __int8)v2->Type - 5) / 3 + 2;
+		return ((unsigned __int8)pParam->Type - 5) / 3 + 2;
 	}
 }
 
@@ -512,10 +512,10 @@ static void __declspec(naked) sub_5366E0Hook()
 	}
 }
 
-static void AL_ChaoParamWindowExecutorDisplay_r(ObjectMaster* tp);
+static void AL_ChaoParamWindowExecutorDisplay_r(task* tp);
 static Trampoline AL_ChaoParamWindowExecutorDisplay_t(0x005928A0, 0x005928A8, AL_ChaoParamWindowExecutorDisplay_r);
 DataArray(ChaoHudThingB, AL_ChaoParamWindow_HudThingB, 0x011D1658, 1);
-static void AL_ChaoParamWindowExecutorDisplay_r(ObjectMaster* tp) {
+static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 #pragma pack(push, 8)
 	struct __declspec(align(16)) AL_ChaoParamWindowExecutor_Data
 	{
@@ -536,7 +536,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(ObjectMaster* tp) {
 		int field_2C;
 		int dword30;
 		int dword34;
-		ObjectMaster* PointerToChao;
+		task* PointerToChao;
 		ChaoData* ChaoData;
 	};
 #pragma pack(pop)

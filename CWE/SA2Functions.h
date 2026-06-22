@@ -5,7 +5,7 @@
 #include "SA2Structs.h"
 #include "SA2Enums.h"
 
-#define ObjectFunc(NAME, ADDRESS) FunctionPointer(void,NAME,(ObjectMaster *obj),ADDRESS)
+#define ObjectFunc(NAME, ADDRESS) FunctionPointer(void,NAME,(task *obj),ADDRESS)
 // SA2 Functions
 StdcallFunctionPointer(LRESULT, WndProc, (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam), 0x401810);
 ThiscallFunctionPointer(int, CopyString_, (void *_this, const char *Src), 0x401E90);
@@ -103,19 +103,19 @@ ThiscallFunctionPointer(void, DoNextAction, (int playerNum, char action, int unk
 ObjectFunc(PlayerSpeedUp_Main, 0x46DF80);
 ObjectFunc(PlayerSpeedUp_Delete, 0x46DFC0);
 ObjectFunc(PlayerSpeedUp, 0x46E000);
-FunctionPointer(Bool, CheckBreakObject, (ObjectMaster *_this, ObjectMaster *other), 0x46EC00);
+FunctionPointer(Bool, CheckBreakObject, (task *_this, task *other), 0x46EC00);
 ObjectFunc(DeleteObject_, 0x46F720);
 FunctionPointer(void, RunObjectIndex, (int index), 0x46F8C0);
 FunctionPointer(int, RunMostObjects, (), 0x46FBA0);
 VoidFunc(UpdateObjects, 0x470010);
-FunctionPointer(EntityData1 *, AllocateEntityData1, (), 0x470B40);
+FunctionPointer(taskwk *, AllocateEntityData1, (), 0x470B40);
 FunctionPointer(EntityData2 *, AllocateEntityData2, (), 0x470B70);
 FunctionPointer(ObjUnknownA *, AllocateObjUnknownA, (), 0x470BA0);
 FunctionPointer(ObjUnknownB *, AllocateObjUnknownB, (), 0x470BD0);
-FunctionPointer(ObjectMaster *, LoadChildObject, (LoadObj a3, void(__cdecl *a4)(ObjectMaster *), ObjectMaster *parent), 0x470C00);
+FunctionPointer(task *, CreateChildTask, (LoadObj a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
 ObjectFunc(DeleteChildObjects, 0x470C80);
 ObjectFunc(StageNameDisplayExecutor_Main, 0x4724C0);
-FunctionPointer(int, DamagePlayer, (EntityData1 *data1, CharObj2Base *data2), 0x473800);
+FunctionPointer(int, DamagePlayer, (taskwk *data1, CharObj2Base *data2), 0x473800);
 ObjectFunc(ExecutePlayerDrawMotionWithAlphaReducing, 0x476BD0);
 ObjectFunc(PSubCallSEWithWait, 0x476EA0);
 ObjectFunc(LoopSECallForTheMode, 0x476F20);
@@ -135,7 +135,7 @@ VoidFunc(CountPerfectRings, 0x4890E0);
 ObjectFunc(MinimalCounterExecutor, 0x489240);
 ObjectFunc(MinimalCaptureEffect_Exec, 0x489650);
 ObjectFunc(Minimal_Exec, 0x4898B0);
-FunctionPointer(int, MINIMAL, (ObjectMaster *a1), 0x48ADE0);
+FunctionPointer(int, MINIMAL, (task *a1), 0x48ADE0);
 FunctionPointer(int, ChaosDrive_Unknown, (int), 0x48F0E0);
 ObjectFunc(ChaosDrive_Delete, 0x48F7C0);
 ObjectFunc(ChaosDrive_Load2, 0x48F810);
@@ -217,10 +217,10 @@ ObjectFunc(ALO_ChaosDriveExecutor_Main, 0x5450C0);
 ObjectFunc(ALO_ChaosDriveExecutor_Display, 0x545150);
 FunctionPointer(int, ALO_ChaosDriveExecutor_Unknown, (int), 0x545430);
 ObjectFunc(ALO_ChaosDriveExecutor_Delete, 0x5455B0);
-FunctionPointer(ObjectMaster *, ALO_ChaosDriveExecutor_Load, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, ChaoData *a4), 0x545600);
+FunctionPointer(task *, ALO_ChaosDriveExecutor_Load, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, ChaoData *a4), 0x545600);
 ObjectFunc(ALO_FruitExecutor_Main, 0x545E40);
 ObjectFunc(ALO_FruitExecutor_Display, 0x545EE0);
-FunctionPointer(ObjectMaster *, ALO_FruitExecutor_Load, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, ChaoData *a5), 0x546180);
+FunctionPointer(task *, ALO_FruitExecutor_Load, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, ChaoData *a5), 0x546180);
 ObjectFunc(ALO_GrowTreeExecutor_Main, 0x546810);
 ObjectFunc(ALO_GrowTreeExecutor_Display, 0x547E70);
 ObjectFunc(ALO_GrowTreeExecutor_Delete, 0x5481E0);
@@ -228,15 +228,15 @@ FunctionPointer(int, ALO_GrowTreeExecutor_Load, (int, int), 0x548210);
 ObjectFunc(AL_MinimalExecutor_Display, 0x5489D0);
 ObjectFunc(AL_MinimalExecutor_Delete, 0x548C30);
 ObjectFunc(AL_MinimalExecutor_Main, 0x548C50);
-FunctionPointer(ObjectMaster *, AL_MinimalExecutor_Load, (char a1, NJS_VECTOR *a2, int a3, void *a4, int a5), 0x548D30);
+FunctionPointer(task *, AL_MinimalExecutor_Load, (char a1, NJS_VECTOR *a2, int a3, void *a4, int a5), 0x548D30);
 ObjectFunc(AL_MinimalCreateManagerExecutor, 0x5492B0);
 ObjectFunc(ALO_SeedExecutor_Main, 0x549860);
 ObjectFunc(ALO_SeedExecutor_Display, 0x5498E0);
-FunctionPointer(ObjectMaster *, ALO_SeedExecutor_Load, (int a1, NJS_VECTOR *position, NJS_VECTOR *a3, int a4), 0x549B00);
+FunctionPointer(task *, ALO_SeedExecutor_Load, (int a1, NJS_VECTOR *position, NJS_VECTOR *a3, int a4), 0x549B00);
 FastcallFunctionPointer(int, CalcChaoSaveChecksum, (char *a1), 0x549C40);
 ObjectFunc(ALO_ObakeHeadExecutor_Main, 0x54A050);
 ObjectFunc(ALO_ObakeHeadExecutor_Display, 0x54A0F0);
-FunctionPointer(ObjectMaster *, ALO_ObakeHeadExecutor_Load, (int a1, NJS_VECTOR *position, int a3, NJS_VECTOR *a4, int a5), 0x54A540);
+FunctionPointer(task *, ALO_ObakeHeadExecutor_Load, (int a1, NJS_VECTOR *position, int a3, NJS_VECTOR *a4, int a5), 0x54A540);
 FunctionPointer(void, ChaoStgDark_Prolog, (), 0x54B420);
 ObjectFunc(AL_DarkGardenMaster, 0x54B730);
 ObjectFunc(AL_OdekakeStage, 0x54BCE0);
@@ -252,7 +252,7 @@ ObjectFunc(AlgKinderMaster, 0x54E780);
 ObjectFunc(Chao_Main, 0x54FE20);
 ObjectFunc(Chao_Delete, 0x54FF30);
 ObjectFunc(Chao_Display, 0x54FF80);
-FunctionPointer(ObjectMaster *, CreateChao, (ChaoData *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
+FunctionPointer(task *, CreateChao, (ChaoData *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
 ObjectFunc(ChaoSelectMenuManager, 0x5542B0);
 ObjectFunc(ALO_EntranceElevatorExecutor_Main, 0x557FC0);
 ObjectFunc(ALO_EntranceElevatorExecutor_Display, 0x558350);
@@ -264,7 +264,7 @@ ObjectFunc(ALO_RaceFruit_Main, 0x55A560);
 FunctionPointer(int, ALO_RaceFruit_Load, (int), 0x55A5E0);
 ObjectFunc(AL_FieldExecutor_Main, 0x55A6A0);
 ObjectFunc(AL_FieldExecutor_Display, 0x55A6D0);
-FunctionPointer(ObjectMaster *, AL_FieldExecutor_Load, (char a1, NJS_VECTOR *a2, float a3, int a4), 0x55A850);
+FunctionPointer(task *, AL_FieldExecutor_Load, (char a1, NJS_VECTOR *a2, float a3, int a4), 0x55A850);
 ObjectFunc(ALO_TVExecutor_Main, 0x55C540);
 ObjectFunc(ALO_TVExecutor_Display, 0x55C9E0);
 ObjectFunc(ALO_TVExecutor_Delete, 0x55CB70);
@@ -287,7 +287,7 @@ ObjectFunc(KarateCameraExec, 0x574480);
 ObjectFunc(KarateChaoExec_Main, 0x578D30);
 ObjectFunc(EGG, 0x57B520);
 ObjectFunc(ALO_Delete, 0x57B9B0);
-FunctionPointer(ObjectMaster *, CreateChaoEgg, (const void *a1, ChaoData *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
+FunctionPointer(task *, CreateChaoEgg, (const void *a1, ChaoData *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
 ObjectFunc(ALO_RadicaseExecutor_Main, 0x57C840);
 ObjectFunc(ALO_RadicaseExecutor_Display, 0x57CA80);
 ObjectFunc(ALO_RadicaseExecutor_Delete, 0x57CC80);
@@ -354,7 +354,7 @@ ObjectFunc(Omochao_Main, 0x6C0780);
 ObjectFunc(MsgerDmyTaskExec, 0x6C0A50);
 ObjectFunc(EfObjLightExec, 0x6C37A0);
 ThiscallFunctionPointer(Sint32, LoadStageLight, (const char *filename), 0x6C3AE0);
-FunctionPointer(void, SomethingParticleRelated, (Rotation *a1, NJS_VECTOR *a2, float a3), 0x6CD720);
+FunctionPointer(void, SomethingParticleRelated, (Angle3 *a1, NJS_VECTOR *a2, float a3), 0x6CD720);
 ObjectFunc(FogTaskExec_Main, 0x6DFCC0);
 ObjectFunc(FogTaskExec_Delete, 0x6DFD20);
 ObjectFunc(FogtaskManExec_Main, 0x6DFD40);
@@ -368,7 +368,7 @@ ObjectFunc(ObjectWaterripple, 0x6EDB80);
 ObjectFunc(ObjectWaterripple_Main, 0x6EDBA0);
 ObjectFunc(ObjectWaterripple_Display, 0x6EDC30);
 ObjectFunc(ObjectWaterripple_Delete, 0x6EDD80);
-FunctionPointer(void, Exec_Load, (NJS_VECTOR *a1, Rotation *a2, float a3, float a4), 0x6EDEE0);
+FunctionPointer(void, Exec_Load, (NJS_VECTOR *a1, Angle3 *a2, float a3, float a4), 0x6EDEE0);
 ObjectFunc(Exec, 0x6EE310);
 ObjectFunc(bubble_crush_exec, 0x6EFAA0);
 ObjectFunc(bbl_ripple_exec, 0x6EFC90);
@@ -394,7 +394,7 @@ FunctionPointer(void *, MemoryManager__AllocateArray, (int count, int size), 0x7
 FunctionPointer(void, MemoryManager__Deallocate2, (AllocatedMem *a1, size_t count), 0x77DFE0);
 VoidFunc(UpdateControllers, 0x77E780);
 
-FunctionPointer(UnknownData2 *, AllocateUnknownData2, (ObjectMaster *obj), 0x7966D0);
+FunctionPointer(UnknownData2 *, AllocateUnknownData2, (task *obj), 0x7966D0);
 VoidFunc(nullsub_1, 0x6FE430);
 FunctionPointer(int, nullsub_2, (), 0x7B4AEF);
 FunctionPointer(int, nullsub_3, (), 0x7F4700);
@@ -531,7 +531,7 @@ static inline void SetCurrentLevel(__int16 stageNumber)
 
 // Sint32 __usercall@<eax>(int playerNumber@<ecx>, NJS_VECTOR *position@<edi>, Rotation *rotation)
 static const void *const LoadStartPositionPtr = (void*)0x43D8E0;
-static inline Sint32 LoadStartPosition(int playerNumber, NJS_VECTOR *position, Rotation *rotation)
+static inline Sint32 LoadStartPosition(int playerNumber, NJS_VECTOR *position, Angle3 *rotation)
 {
 	Sint32 result;
 	__asm
@@ -766,9 +766,9 @@ static inline AnimationIndex * LoadMTNFile(char *filename)
 	return result;
 }
 
-// int __usercall@<eax>(ObjectMaster *a1@<eax>)
+// int __usercall@<eax>(task *a1@<eax>)
 static const void *const GetPlayerNumberPtr = (void*)0x46DCC0;
-static inline int GetPlayerNumber(ObjectMaster *a1)
+static inline int GetPlayerNumber(task *a1)
 {
 	int result;
 	__asm
@@ -780,11 +780,11 @@ static inline int GetPlayerNumber(ObjectMaster *a1)
 	return result;
 }
 
-// ObjectMaster *__usercall@<eax>(int list@<ecx>, char *name@<eax>, void (__cdecl *mainSub)(ObjectMaster *)@<edi>, LoadObj flags)
+// task *__usercall@<eax>(int list@<ecx>, char *name@<eax>, void (__cdecl *mainSub)(task *)@<edi>, LoadObj flags)
 static const void *const LoadObjectPtr = (void*)0x46F610;
-static inline ObjectMaster * LoadObject(int list, const char *name, void(__cdecl *mainSub)(ObjectMaster *), LoadObj flags)
+static inline task * CreateElementalTask(int list, const char *name, void(__cdecl *mainSub)(task *), LoadObj flags)
 {
-	ObjectMaster * result;
+	task * result;
 	__asm
 	{
 		push dword ptr [flags]
@@ -798,17 +798,17 @@ static inline ObjectMaster * LoadObject(int list, const char *name, void(__cdecl
 	return result;
 }
 
-// ObjectMaster *__usercall@<eax>(void (__cdecl *mainSub)(ObjectMaster *)@<edi>, int list@<esi>, char *name)
-static const void *const AllocateObjectMasterPtr = (void*)0x46F680;
-static inline ObjectMaster * AllocateObjectMaster(void(__cdecl *mainSub)(ObjectMaster *), int list, const char *name)
+// task *__usercall@<eax>(void (__cdecl *mainSub)(task *)@<edi>, int list@<esi>, char *name)
+static const void *const AllocatetaskPtr = (void*)0x46F680;
+static inline task * Allocatetask(void(__cdecl *mainSub)(task *), int list, const char *name)
 {
-	ObjectMaster * result;
+	task * result;
 	__asm
 	{
 		push[name]
 		mov esi, [list]
 		mov edi, [mainSub]
-		call AllocateObjectMasterPtr
+		call AllocatetaskPtr
 		add esp, 4
 		mov result, eax
 	}
@@ -829,9 +829,9 @@ static inline int ScreenFade(int targetAlpha)
 	return result;
 }
 
-// signed int __usercall@<eax>(ObjectMaster *obj@<eax>, CollisionData *collision, int count, unsigned __int8 a4)
+// signed int __usercall@<eax>(task *obj@<eax>, CollisionData *collision, int count, unsigned __int8 a4)
 static const void *const InitCollisionPtr = (void*)0x47E520;
-static inline signed int InitCollision(ObjectMaster *obj, CollisionData *collision, int count, unsigned __int8 a4)
+static inline signed int InitCollision(task *obj, CollisionData *collision, int count, unsigned __int8 a4)
 {
 	signed int result;
 	__asm
@@ -905,9 +905,9 @@ static inline void WriteChaoSaveChecksum(char *a1)
 	}
 }
 
-// signed int __usercall@<eax>(unsigned __int16 a1@<cx>, ObjectMaster *obj@<ebx>, __int16 a3, ChaoData *data)
+// signed int __usercall@<eax>(unsigned __int16 a1@<cx>, task *obj@<ebx>, __int16 a3, ChaoData *data)
 static const void *const AddToGlobalChaoThingMaybePtr = (void*)0x530750;
-static inline signed int AddToGlobalChaoThingMaybe(unsigned __int16 a1, ObjectMaster *obj, __int16 a3, ChaoData *data)
+static inline signed int AddToGlobalChaoThingMaybe(unsigned __int16 a1, task *obj, __int16 a3, ChaoData *data)
 {
 	signed int result;
 	__asm
@@ -950,9 +950,9 @@ static inline int InitChaoDNA(AL_GENE *a1)
 	return result;
 }
 
-// void __usercall(ObjectMaster *a1@<eax>)
+// void __usercall(task *a1@<eax>)
 static const void *const LoadChaoMotionTablePtr = (void*)0x55C370;
-static inline void LoadChaoMotionTable(ObjectMaster *a1)
+static inline void LoadChaoMotionTable(task *a1)
 {
 	__asm
 	{
@@ -979,9 +979,9 @@ static inline int ALO_ShabonExecutor_Load(NJS_VECTOR *position, int a2)
 
 // EntityData1 *__usercall@<eax>(NJS_VECTOR *position@<ebx>, int a2)
 static const void *const ALO_OdekakeMachine_LoadPtr = (void*)0x57E4F0;
-static inline EntityData1 * ALO_OdekakeMachine_Load(NJS_VECTOR *position, int a2)
+static inline taskwk * ALO_OdekakeMachine_Load(NJS_VECTOR *position, int a2)
 {
-	EntityData1 * result;
+	taskwk * result;
 	__asm
 	{
 		push[a2]
@@ -993,11 +993,11 @@ static inline EntityData1 * ALO_OdekakeMachine_Load(NJS_VECTOR *position, int a2
 	return result;
 }
 
-// ObjectMaster *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
+// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
 static const void *const ALO_LobbyGateKinderExecutor_LoadPtr = (void*)0x57F060;
-static inline ObjectMaster * ALO_LobbyGateKinderExecutor_Load(NJS_VECTOR *position)
+static inline task * ALO_LobbyGateKinderExecutor_Load(NJS_VECTOR *position)
 {
-	ObjectMaster * result;
+	task * result;
 	__asm
 	{
 		mov ebx, [position]
@@ -1007,11 +1007,11 @@ static inline ObjectMaster * ALO_LobbyGateKinderExecutor_Load(NJS_VECTOR *positi
 	return result;
 }
 
-// ObjectMaster *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
+// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
 static const void *const ALO_LobbyGateNeutExecutor_LoadPtr = (void*)0x57F8C0;
-static inline ObjectMaster * ALO_LobbyGateNeutExecutor_Load(NJS_VECTOR *position)
+static inline task * ALO_LobbyGateNeutExecutor_Load(NJS_VECTOR *position)
 {
-	ObjectMaster * result;
+	task * result;
 	__asm
 	{
 		mov ebx, [position]
@@ -1021,11 +1021,11 @@ static inline ObjectMaster * ALO_LobbyGateNeutExecutor_Load(NJS_VECTOR *position
 	return result;
 }
 
-// ObjectMaster *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
+// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
 static const void *const ALO_LobbyGateHeroExecutor_LoadPtr = (void*)0x57FCE0;
-static inline ObjectMaster * ALO_LobbyGateHeroExecutor_Load(NJS_VECTOR *position)
+static inline task * ALO_LobbyGateHeroExecutor_Load(NJS_VECTOR *position)
 {
-	ObjectMaster * result;
+	task * result;
 	__asm
 	{
 		mov ebx, [position]
@@ -1035,11 +1035,11 @@ static inline ObjectMaster * ALO_LobbyGateHeroExecutor_Load(NJS_VECTOR *position
 	return result;
 }
 
-// ObjectMaster *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
+// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
 static const void *const ALO_LobbyGateDarkExecutor_LoadPtr = (void*)0x580140;
-static inline ObjectMaster * ALO_LobbyGateDarkExecutor_Load(NJS_VECTOR *position)
+static inline task * ALO_LobbyGateDarkExecutor_Load(NJS_VECTOR *position)
 {
-	ObjectMaster * result;
+	task * result;
 	__asm
 	{
 		mov ebx, [position]

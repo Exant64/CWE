@@ -242,16 +242,16 @@ void __cdecl sub_6EFF10_(NJS_VECTOR* a1, NJS_VECTOR* a2, float a3)
 		v3->filler5 = 0.0;
 	}
 }
-void AL_Minimal_Timer(ObjectMaster* a1)
+void AL_Minimal_Timer(task* a1)
 {
 	sub_57BD40(a1);
 
-	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)a1->Data1.Undefined;
+	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)a1->twp;
 	int* timer = (int*)((char*)&v1->field_F4 + 4);
 	(*timer)++;
 	if (!v1->field_F4 && (*timer & 31) == 1)
 	{
-		NJS_VECTOR pos = v1->entity.Position;
+		NJS_VECTOR pos = v1->entity.pos;
 		NJS_VECTOR zeroVelo = { 0,0,0 };
 		int ang = (int)(njRandom() * 65536.f);
 
@@ -264,9 +264,9 @@ void AL_Minimal_Timer(ObjectMaster* a1)
 }
 
 
-void SetAnimalTexEntity(EntityData1* data)
+void SetAnimalTexEntity(taskwk* data)
 {
-	njSetTexture(ModAPI_MinimalTexlists[data->Index]);
+	njSetTexture(ModAPI_MinimalTexlists[data->btimer]);
 }
 
 const int sub_793F90Ptr = 0x793F90;
@@ -280,18 +280,18 @@ void sub_793F90(NJS_OBJECT* a1, MotionTableData* a2)
 	}
 }
 
-void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
+void __cdecl AL_MinimalExecutor_Display_(task* a1)
 {
-	ObjectMaster* v1; // edi
+	task* v1; // edi
 	AL_MinimalExecutor_Data1* v2; // ebp
 	float v3; // st7
 
 	v1 = a1;
-	v2 = (AL_MinimalExecutor_Data1*)a1->Data1.Undefined;
-	if (ScaleObjectMaster_XYZ(a1, 3, 3, 2))
+	v2 = (AL_MinimalExecutor_Data1*)a1->twp;
+	if (Scaletask_XYZ(a1, 3, 3, 2))
 	{
 		v2->field_34 = 200;
-		if (v2->entity.Status >= 0)
+		if (v2->entity.flag >= 0)
 		{
 			v3 = -1.0f;
 		}
@@ -300,11 +300,11 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 			v3 = -1.2f;
 		}
 		DoLighting(LightIndex);
-		SetAnimalTexEntity(a1->Data1.Entity);
+		SetAnimalTexEntity(a1->twp);
 		njPushMatrixEx();
-		njTranslateEx(&v2->entity.Position);
+		njTranslateEx(&v2->entity.pos);
 		njTranslate(NULL, 0, v3, 0);
-		RotateY(v2->entity.Rotation.y);
+		RotateY(v2->entity.ang.y);
 		njPushMatrixEx();
 
 		if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
@@ -316,12 +316,12 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 		if (RenderFix_IsEnabled()) {
 			RF_BACKWARDS_COMPAT_GUARD();
 			g_HelperFunctions->PushInterpolationFix();
-			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.Index], &v2->field_38);
+			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.btimer], &v2->field_38);
 			g_HelperFunctions->PopInterpolationFix();
 		}
 		else {
 			g_HelperFunctions->PushInterpolationFix();
-			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.Index], &v2->field_38);
+			sub_793F90(ModAPI_MinimalModels[(unsigned __int8)v2->entity.btimer], &v2->field_38);
 			g_HelperFunctions->PopInterpolationFix();
 		}
 
@@ -351,8 +351,8 @@ void __cdecl AL_MinimalExecutor_Display_(ObjectMaster* a1)
 		v2->field_34--;
 		if (v2->field_34 <= 0)
 		{
-			v2->entity.Action = 3;
-			v2->entity.NextAction = 0;
+			v2->entity.mode = 3;
+			v2->entity.smode = 0;
 		}
 	}
 }

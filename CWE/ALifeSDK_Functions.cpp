@@ -5,9 +5,9 @@
 #pragma warning(push)
 #pragma warning(disable: 4409)
 const int ALO_Field_Find_Ptr = 0x054B1F0;
-ObjectMaster* ALO_Field_Find_(ObjectMaster *a1, int a2, Uint8 a3)
+task* ALO_Field_Find_(task *a1, int a2, Uint8 a3)
 {
-	ObjectMaster* retval;
+	task* retval;
 	__asm
 	{
 		push a3
@@ -44,8 +44,8 @@ void sub_561740(int a1)
 	}
 }
 
-const int ScaleObjectMaster_XYZPtr = 0x0054AC70;
-int ScaleObjectMaster_XYZ(ObjectMaster* a1, float a2, float a3, float a4)
+const int Scaletask_XYZPtr = 0x0054AC70;
+int Scaletask_XYZ(task* a1, float a2, float a3, float a4)
 {
 	int retval;
 	__asm
@@ -54,14 +54,14 @@ int ScaleObjectMaster_XYZ(ObjectMaster* a1, float a2, float a3, float a4)
 		push a3
 		push a2
 		mov eax, a1
-		call ScaleObjectMaster_XYZPtr
+		call Scaletask_XYZPtr
 		add esp, 12
 		mov retval, eax
 	}
 	return retval;
 }
 
-void DrawToyTransform(ObjectMaster *a1, int a2, int a3)
+void DrawToyTransform(task *a1, int a2, int a3)
 {
 	int asd = 0x0566A20;
 	__asm
@@ -73,7 +73,7 @@ void DrawToyTransform(ObjectMaster *a1, int a2, int a3)
 
 	}
 }
-void sub_5669B0(ObjectMaster *a1, int a2, int a3)
+void sub_5669B0(task *a1, int a2, int a3)
 {
 	int asd = 0x5669B0;
 	__asm

@@ -45,9 +45,9 @@ float AL_CalcMoodScoreTypeA(int value, int trigger) {
     return 0;
 }
 
-extern int ALBHV_HoldHands_Left(ObjectMaster* a1);
-extern int ALBHV_HoldHands_Right(ObjectMaster* a1);
-extern void ALBHV_Gossip(ObjectMaster* a1, ObjectMaster* a2);
+extern int ALBHV_HoldHands_Left(task* a1);
+extern int ALBHV_HoldHands_Right(task* a1);
+extern void ALBHV_Gossip(task* a1, task* a2);
 
 const BHV_FUNC ALBHV_TalkAllowed[] = {
 	(BHV_FUNC)0x5A3580, (BHV_FUNC)0x5A3460, (BHV_FUNC)0x5A3380, (BHV_FUNC)0x5A3280, //walking bhavs
@@ -57,11 +57,11 @@ const BHV_FUNC ALBHV_TalkAllowed[] = {
 const int IntentionChatTrigger = 8500;
 const float IntentionChatMaxScore = 0.99f;
 
-void __cdecl AL_CalcIntentionScore_Chat(ObjectMaster* a1, float* a2)
+void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 {
 	float score;
-	ObjectMaster* pSelectedChao;
-	chaowk* wk = (chaowk*)a1->Data1.Chao;
+	task* pSelectedChao;
+	chaowk* wk = GET_CHAOWK(a1);
 
 	//ALBHV_Gossip(a1, GetChaoObject(0, 1));
 	//* a2 = 1.0f;
@@ -72,20 +72,20 @@ void __cdecl AL_CalcIntentionScore_Chat(ObjectMaster* a1, float* a2)
 	score = 0.0;
 	for (int i = 0; i < ALW_CountEntry(0); i++)
 	{
-		ObjectMaster* pChao = GetChaoObject(0, i);
+		task* pChao = GetChaoObject(0, i);
 		if (!pChao || pChao == a1) continue;
 		
 		BHV_FUNC func = AL_GetBehavior(pChao);
 
 		//not in water 
-		if (pChao->Data1.Entity->Position.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
 
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_TalkAllowed); j++)
 		{
 			if (func == ALBHV_TalkAllowed[j])
 			{
-				float dist = CheckDistance(&wk->entity.Position, &pChao->Data1.Entity->Position);
+				float dist = CheckDistance(&wk->entity.pos, &pChao->twp->pos);
 				if (dist < 50.0f && njRandom() < 0.5f)
 					pSelectedChao = pChao;
 				break;
@@ -126,8 +126,8 @@ void __cdecl AL_CalcIntentionScore_Chat(ObjectMaster* a1, float* a2)
 			int nbTimesTheyMet = AL_KW_GetMeetChao(a1, pSelectedChao);
 			if (njRandom() > 0.75f && nbTimesTheyMet >= 10) {
 				//easter egg, unlock pearl medal if other chao is pearl, found by chao professor
-				if (pSelectedChao->Data1.Chao->pParamGC->Texture == 12)
-					a1->Data1.Chao->pParamGC->DoctorMedal |= (1 << 10);
+				if (GET_CHAOPARAM(pSelectedChao)->Texture == 12)
+					GET_CHAOPARAM(a1)->DoctorMedal |= (1 << 10);
 
 				if(njRandom() > 0.5f)
 					AL_SetBehavior(a1, ALBHV_InitHug);
@@ -145,7 +145,7 @@ void __cdecl AL_CalcIntentionScore_Chat(ObjectMaster* a1, float* a2)
 }
 
 const int sub_562800Ptr = 0x562800;
-void sub_562800(float* a1, ObjectMaster* a2)
+void sub_562800(float* a1, task* a2)
 {
 	__asm
 	{
@@ -155,11 +155,11 @@ void sub_562800(float* a1, ObjectMaster* a2)
 	}
 }
 
-signed int __cdecl ALBHV_FartReaction(ObjectMaster* a1)
+signed int __cdecl ALBHV_FartReaction(task* a1)
 {
 	ChaoData1* v2;
 
-	v2 = (ChaoData1*)a1->Data1.Chao;
+	v2 = (ChaoData1*)GET_CHAOWK(a1);
 	if (!v2->Behavior.Mode)
 	{
 		AL_SetMotionLink(a1, 565);
@@ -192,14 +192,14 @@ static void __declspec(naked) AL_CalcIntentionScore_LToy_Hook()
 }
 
 const int AL_CalcIntentionScore_MayuPtr = 0x00562800;
-void AL_CalcIntentionScore_Mayua(ObjectMaster* a2, float* a1) {
+void AL_CalcIntentionScore_Mayua(task* a2, float* a1) {
 	__asm {
 		mov esi, a2
 		mov edi, a1
 		call AL_CalcIntentionScore_MayuPtr
 	}
 }
-void __cdecl AL_CalcIntentionScore_All(ObjectMaster* a1, float* a2)
+void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 {
 	if (ALO_Field_Find_(a1, 1, 151))
 	{
@@ -207,7 +207,7 @@ void __cdecl AL_CalcIntentionScore_All(ObjectMaster* a1, float* a2)
 		*a2 = 1;
 	}
 
-	if (a1->Data1.Chao->pParamGC && a1->Data1.Chao->pParamGC->ForceReincarnate)
+	if (GET_CHAOPARAM(a1) && GET_CHAOPARAM(a1)->ForceReincarnate)
 	{
 		AL_SetBehavior(a1, (BHV_FUNC)0x0568F60);
 		*a2 = 1.0f;
@@ -241,7 +241,7 @@ static void __declspec(naked) AL_CalcIntentionScore_Hook()
 	}
 }
 
-extern void __cdecl AL_CalcIntentionScore_JoinMusic(ObjectMaster* a1, float* a2);
+extern void __cdecl AL_CalcIntentionScore_JoinMusic(task* a1, float* a2);
 static void __declspec(naked) AL_CalcIntentionScore_JoinMusicH()
 {
 	__asm
@@ -287,9 +287,9 @@ static void __declspec(naked) AL_CalcIntentionScore_JoinDanceHook()
 	}
 }
 
-Uint32 AL_SetIntervalTimer(ObjectMaster* a1, Uint16 TimerKind, Uint32 timer)
+Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer)
 {
-	a1->Data1.Chao->Behavior.IntervalTimer[TimerKind] = timer;
+	GET_CHAOWK(a1)->Behavior.IntervalTimer[TimerKind] = timer;
 	return 0;
 }
 

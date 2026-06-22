@@ -14,12 +14,12 @@
 #include "../data/cwe/object_common_cnk/CakeTest.h"
 #include "../data/accessory/ala_birthdayhat.nja"
 
-ObjectMaster* pBirthdayChao;
+task* pBirthdayChao;
 
-int ALBHV_Birthday(ObjectMaster* a1)
+int ALBHV_Birthday(task* a1)
 {
 	NJS_VECTOR vel{ 0,0,0 };
-	ChaoData1* wk = CHAOWK(a1);
+	chaowk* wk = GET_CHAOWK(a1);
 	switch (wk->Behavior.Mode)
 	{
 	case 0:
@@ -28,10 +28,10 @@ int ALBHV_Birthday(ObjectMaster* a1)
 		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
 
 		sub_5669B0(a1, (int)&object_cake, 28);
-		a1->Data1.Chao->field_524[28]->toy.texlist = &AL_SANDHOLE_TEXLIST;
+		GET_CHAOWK(a1)->field_524[28]->toy.texlist = &AL_SANDHOLE_TEXLIST;
 		sub_5669B0(a1, (int)&hat_main, 16);
-		a1->Data1.Chao->field_524[16]->toy.texlist = &BIRTHDAYHAT_TEXLIST;
-		pBirthdayChao->Data1.Chao->Behavior.FreeWork = 0;
+		GET_CHAOWK(a1)->field_524[16]->toy.texlist = &BIRTHDAYHAT_TEXLIST;
+		GET_CHAOWK(pBirthdayChao)->Behavior.FreeWork = 0;
 		wk->Behavior.Mode = 1;
 		break;
 	case 1:
@@ -42,7 +42,7 @@ int ALBHV_Birthday(ObjectMaster* a1)
 		break;
 	case 2:
 		//spawn the fruit eat it and end the whole thing
-		ObjectMaster * slice = ALO_FruitExecutor_Load(CakeSliceID, &a1->Data1.Chao->entity.Position, 0, &vel, 0);
+		task * slice = ALO_FruitExecutor_Load(CakeSliceID, &GET_CHAOWK(a1)->entity.pos, 0, &vel, 0);
 		ALW_LockOn(a1, slice);
 		AL_SetBehavior(a1, (BHV_FUNC)0x5613C0);
 		AL_SetNextBehavior(a1, (BHV_FUNC)0x05607C0);
@@ -51,12 +51,12 @@ int ALBHV_Birthday(ObjectMaster* a1)
 	return BHV_RET_CONTINUE;
 }
 
-int ALBHV_Celebrate(ObjectMaster* a1)
+int ALBHV_Celebrate(task* a1)
 {
 	*(int*)0x01DBE574 = 0;
 	NJS_VECTOR vel{};
 	float v5;
-	ChaoData1* wk = CHAOWK(a1);
+	chaowk* wk = GET_CHAOWK(a1);
 	switch (wk->Behavior.Mode)
 	{
 	case 0:
@@ -100,10 +100,10 @@ int ALBHV_Celebrate(ObjectMaster* a1)
 		}
 		break;
 	case 4:
-		NJS_VECTOR pos = a1->Data1.Chao->entity.Position;
-		pos.x += njSin(a1->Data1.Entity->Rotation.y) * -2;
-		pos.z += njCos(a1->Data1.Entity->Rotation.y) * -2;
-		ObjectMaster* slice = ALO_FruitExecutor_Load(CakeSliceID, &pos, 0, &vel, 0);
+		NJS_VECTOR pos = GET_CHAOWK(a1)->entity.pos;
+		pos.x += njSin(a1->twp->ang.y) * -2;
+		pos.z += njCos(a1->twp->ang.y) * -2;
+		task* slice = ALO_FruitExecutor_Load(CakeSliceID, &pos, 0, &vel, 0);
 		ALW_LockOn(a1, slice);
 		//ALW_TurnToLockOn(a1, 3000);
 		AL_SetBehavior(a1, (BHV_FUNC)0x0056B6C0);

@@ -108,7 +108,7 @@ static void __declspec(naked) Classroom_GetMsg_hook()
 //for the dance and music lessons it just checks if its already unlocked, those don't have any "levels"
 //for singing and art, it checks all the flags, if any of them aren't it returns false and returns the level in pLessonLevel
 //if none of the flags are on we assume all of them are learned so we return true
-Bool IsLessonLearned(ObjectMaster* tp, int* pLessonLevel, int LessonKind) {
+Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
 	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 
 	*pLessonLevel = 0;
@@ -175,7 +175,7 @@ static void __declspec(naked) IsLessonLearned_Hook()
 	}
 }
 
-void SetLessonLearned(ObjectMaster* tp, char level, int LessonKind) {
+void SetLessonLearned(task* tp, char level, int LessonKind) {
 	if (LessonKind == 30) {
 		AL_KW_ArtFlagOn(tp, level);
 	}
@@ -227,20 +227,20 @@ static void __declspec(naked) SetLessonLearned_Hook()
 extern "C" __declspec(dllexport) int LessonRerollTimer = 108000;
 extern "C" __declspec(dllexport) int LessonFinishTimer = 36000;
 
-void AL_KinderMessageTimerExec(ObjectMaster* tp) {
-	char* ourMsg = (char*)tp->Data1.Entity->Rotation.x;
-	char* origMsg = (char*)tp->Data1.Entity->Rotation.y;
+void AL_KinderMessageTimerExec(task* tp) {
+	char* ourMsg = (char*)tp->twp->ang.x;
+	char* origMsg = (char*)tp->twp->ang.y;
 	int globaltimer = *(int*)0x01DEC62C;
 
 	int timerFrames;
 
 	//if "current lesson" font use this formula
-	if (!tp->Data1.Entity->Index) {
+	if (!tp->twp->btimer) {
 		timerFrames = LessonRerollTimer - (globaltimer % LessonRerollTimer);
 	}
 	else {
 		int* LessonStartTime = (int*)0x19F6E54;
-		timerFrames = LessonFinishTimer - (globaltimer - LessonStartTime[tp->Data1.Entity->Index - 1]);
+		timerFrames = LessonFinishTimer - (globaltimer - LessonStartTime[tp->twp->btimer - 1]);
 	}
 
 	if (timerFrames < 0)
@@ -252,11 +252,11 @@ void AL_KinderMessageTimerExec(ObjectMaster* tp) {
 	sprintf(ourMsg, "%s (%02d:%02d)", origMsg, timerMinutes, timerSeconds % 60);
 }
 
-void AL_KinderMessageTimerDisp(ObjectMaster* tp) {
+void AL_KinderMessageTimerDisp(task* tp) {
 	MessageFontThing messageBuffer;
-	char* ourMsg = (char*)tp->Data1.Entity->Rotation.x;
-	NJS_POINT3* pPos = &tp->Data1.Entity->Position;
-	NJS_BGRA* pColor = (NJS_BGRA*)&tp->Data1.Entity->Rotation.z;
+	char* ourMsg = (char*)tp->twp->ang.x;
+	NJS_POINT3* pPos = &tp->twp->pos;
+	NJS_BGRA* pColor = (NJS_BGRA*)&tp->twp->ang.z;
 	NJS_COLOR textColor;
 	textColor.argb.b = pColor->a;
 	textColor.argb.g = pColor->b;
@@ -264,21 +264,21 @@ void AL_KinderMessageTimerDisp(ObjectMaster* tp) {
 	textColor.argb.a = pColor->r;
 
 	//msg color
-	//tp->Data1.Entity->Rotation.z;
+	//tp->twp->Rotation.z;
 
 	*(int*)0x01A267D0 = textColor.color;
 	AlMsgFontCreateCStr(TextLanguage == 0, (int)ourMsg, (int)&messageBuffer, 999);
 
-	AlMsgFontDrawRegionScale2(-1, (MessageFontThing*)&messageBuffer, pPos->x, pPos->y, pPos->z, 32, 0, tp->Data1.Entity->Scale.x, tp->Data1.Entity->Scale.x);
+	AlMsgFontDrawRegionScale2(-1, (MessageFontThing*)&messageBuffer, pPos->x, pPos->y, pPos->z, 32, 0, tp->twp->scl.x, tp->twp->scl.x);
 
 	AlMsgFontDelete((MessageFontThing*)&messageBuffer);
 }
 
-void AL_KinderMessageTimerDest(ObjectMaster* tp) {
-	syFree((void*)tp->Data1.Entity->Rotation.x, __FILE__, __LINE__);
+void AL_KinderMessageTimerDest(task* tp) {
+	syFree((void*)tp->twp->ang.x, __FILE__, __LINE__);
 }
 
-ObjectMaster* __cdecl AL_KinderPMessageExec_Timer(ObjectMaster* a1, AL_KinderPMessage* a2) {	
+task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {	
 	const char* pMsg = Classroom_GetMsg(0, a2->msgID);
 
 	//HUGE NASTY HACK
@@ -288,26 +288,26 @@ ObjectMaster* __cdecl AL_KinderPMessageExec_Timer(ObjectMaster* a1, AL_KinderPMe
 	sprintf(buffer, "%s (44:44)", pMsg);
 	a2->string = buffer;
 	a2->flags |= 4;
-	ObjectMaster* orig = AL_KinderPMessageExec_Load(a1, a2);
+	task* orig = AL_KinderPMessageExec_Load(a1, a2);
 
-	ObjectMaster* pTask = LoadChildObject(LoadObj_Data1, AL_KinderMessageTimerExec, a1);
-	pTask->Data1.Entity->Scale.x = orig->Data1.Entity->Scale.x;
-	pTask->Data1.Entity->Position = orig->Data1.Entity->Position;
+	task* pTask = CreateChildTask(LoadObj_Data1, AL_KinderMessageTimerExec, a1);
+	pTask->twp->scl.x = orig->twp->scl.x;
+	pTask->twp->pos = orig->twp->pos;
 
 	//check if this is a "chao in class" lesson text
-	if (a1->MainSub == (ObjectFuncPtr)0x587FC0) {
+	if (a1->exec == (task_exec)0x587FC0) {
 		//lesson index + 1 (we use 0 for the "Today's lesson" text)
-		pTask->Data1.Entity->Index = a1->Data1.Entity->field_2 + 1;
+		pTask->twp->btimer = a1->twp->id + 1;
 	}
 
 	DeleteObject_(orig);
 
 	//15 extra characters have to be enough right 
-	pTask->Data1.Entity->Rotation.x = (int)syMalloc(strlen(pMsg) + 15, __FILE__, __LINE__);
-	pTask->Data1.Entity->Rotation.y = (int)pMsg;
-	pTask->Data1.Entity->Rotation.z = a2->color;
+	pTask->twp->ang.x = (int)syMalloc(strlen(pMsg) + 15, __FILE__, __LINE__);
+	pTask->twp->ang.y = (int)pMsg;
+	pTask->twp->ang.z = a2->color;
 	pTask->field_1C = AL_KinderMessageTimerDisp;
-	pTask->DeleteSub = AL_KinderMessageTimerDest;
+	pTask->dest = AL_KinderMessageTimerDest;
 
 	return pTask;
 }

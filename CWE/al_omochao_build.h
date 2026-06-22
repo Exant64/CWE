@@ -8,4 +8,4 @@ void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang);
 
 OMOCHAO_INFO* GetOmoData();
 
-FunctionPointer(double, CalculateFalloffPosition_, (float x, float y, float z, Rotation* a4), 0x00494C30);
+FunctionPointer(double, CalculateFalloffPosition_, (float x, float y, float z, Angle3* a4), 0x00494C30);

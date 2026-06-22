@@ -17,7 +17,7 @@ struct ChaoRacePointer {
     int finishedRace;
     int displayPosition;
     int displayUpdateTimer;
-    ObjectMaster *pChaoObject;
+    task *pChaoObject;
 };
 
 DataArray(ChaoRacePointer, stru_1DCFAE0, 0x1DCFAE0, 8);

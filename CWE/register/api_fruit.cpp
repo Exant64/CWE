@@ -38,15 +38,15 @@ static const char* GBAFruitNames[] = {
 };
 
 
-void CWEFruit_HyperFruit(ChaoData* chaoData, ObjectMaster* fruit) {
-	int hyperFruitID = fruit->Data1.Entity->Rotation.x - HyperSwimFruitID;
+void CWEFruit_HyperFruit(ChaoData* chaoData, task* fruit) {
+	int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
 	if (chaoData->data.StatGrades[hyperFruitID] == 5 && chaoData->data.XGradeValue == 0)
 	{
 		chaoData->data.XGradeValue = hyperFruitID + 1;
 	}
 }
 
-void CWEFruit_Shiny(ChaoData* chaoData, ObjectMaster* fruit) {
+void CWEFruit_Shiny(ChaoData* chaoData, task* fruit) {
 	if (chaoData->data.Shiny)
 	{
 		chaoData->data.Shiny = (chaoData->data.Shiny % 2) + 1;

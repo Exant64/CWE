@@ -413,12 +413,10 @@
     <ClInclude Include="al_behavior\al_intention.h" />
     <ClInclude Include="al_behavior\al_knowledge.h" />
     <ClInclude Include="al_butterfly.h" />
-    <ClInclude Include="al_console.h" />
     <ClInclude Include="al_daynight.h" />
     <ClInclude Include="al_draw.h" />
     <ClInclude Include="al_garden_info.h" />
     <ClInclude Include="al_gene.h" />
-    <ClInclude Include="al_look.h" />
     <ClInclude Include="al_marketattr.h" />
     <ClInclude Include="al_minimal.h" />
     <ClInclude Include="al_msg_font.h" />
@@ -666,7 +664,6 @@
     <ClCompile Include="al_behavior\albhv_boat.cpp" />
     <ClCompile Include="al_behavior\albhv_capture.cpp" />
     <ClCompile Include="al_behavior\albhv_coffin.cpp" />
-    <ClCompile Include="al_behavior\albhv_console.cpp" />
     <ClCompile Include="al_behavior\albhv_dance.cpp" />
     <ClCompile Include="al_behavior\albhv_float.cpp" />
     <ClCompile Include="al_behavior\albhv_glide.cpp" />
@@ -771,12 +768,10 @@
     <ClCompile Include="al_behavior\al_intention.cpp" />
     <ClCompile Include="al_behavior\al_knowledge.cpp" />
     <ClCompile Include="al_butterfly.cpp" />
-    <ClCompile Include="al_console.cpp" />
     <ClCompile Include="al_customization.cpp" />
     <ClCompile Include="al_daynight.cpp" />
     <ClCompile Include="al_draw.cpp" />
     <ClCompile Include="al_gene.cpp" />
-    <ClCompile Include="al_look.cpp" />
     <ClCompile Include="al_marketattr.cpp" />
     <ClCompile Include="al_minimal.cpp" />
     <ClCompile Include="al_misc.cpp" />
@@ -800,7 +795,6 @@
     <ClCompile Include="al_piano.cpp" />
     <ClCompile Include="al_sandhole.cpp" />
     <ClCompile Include="al_save.cpp" />
-    <ClCompile Include="al_script.cpp" />
     <ClCompile Include="al_shape.cpp" />
     <ClCompile Include="al_social.cpp" />
     <ClCompile Include="al_stage.cpp" />
@@ -839,7 +833,6 @@
     <ClCompile Include="cwe_fixes.cpp" />
     <ClCompile Include="cwe_func.cpp" />
     <ClCompile Include="c_colli.cpp" />
-    <ClCompile Include="experimental_rendertarget.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="kce_helper.cpp" />
     <ClCompile Include="memory.cpp" />
@@ -919,9 +912,6 @@
     <None Include="data\cwe\object_common_cnk\alo_cakeslice.nja" />
     <None Include="data\cwe\object_common_cnk\alo_mannequin.nja" />
     <None Include="data\cwe\object_common_cnk\alo_missing.nja" />
-    <None Include="data\debug\alr_camera.nja" />
-    <None Include="data\debug\alr_chaoicon.nja" />
-    <None Include="data\debug\alr_cube.nja" />
     <None Include="data\minimal\bee.mini" />
     <None Include="data\minimal\lady.mini" />
     <None Include="data\minimal\scorpion.mini" />

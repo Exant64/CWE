@@ -45,13 +45,13 @@ enum KW_MEET_TYPE : char
 	KW_MEET_EVOLVE,
 	KW_MEET_REBIRTH
 };
-int AL_KW_AlreadyKnows(ObjectMaster* a1, ObjectMaster* a2);
-void AL_KW_AddLikeChao(ObjectMaster* a1, int index, int val);
-int AL_KW_GetFriendCount(ObjectMaster* a1);
-void AL_KW_MeetEachother(ObjectMaster* a1, ObjectMaster* a2, KW_MEET_TYPE type);
-int AL_KW_GetRelationIndex(ObjectMaster* a1, ObjectMaster* a2);
-int AL_KW_GetMeetChao(ObjectMaster* a1, int index);
-int AL_KW_GetMeetChao(ObjectMaster* a1, ObjectMaster* a2);
+int AL_KW_AlreadyKnows(task* a1, task* a2);
+void AL_KW_AddLikeChao(task* a1, int index, int val);
+int AL_KW_GetFriendCount(task* a1);
+void AL_KW_MeetEachother(task* a1, task* a2, KW_MEET_TYPE type);
+int AL_KW_GetRelationIndex(task* a1, task* a2);
+int AL_KW_GetMeetChao(task* a1, int index);
+int AL_KW_GetMeetChao(task* a1, task* a2);
 bool AL_KW_IDExists(const CHAO_ID& id);
 ChaoDataBase* AL_KW_FindChaoBasedOnId(const CHAO_ID& id);
 

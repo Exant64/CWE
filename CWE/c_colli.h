@@ -16,5 +16,5 @@ struct CCL_INFO
 	int angz;
 };
 
-void CCL_Enable(ObjectMaster* a1, int a2);
-void CCL_Disable(ObjectMaster* a1, int a2);
+void CCL_Enable(task* a1, int a2);
+void CCL_Disable(task* a1, int a2);

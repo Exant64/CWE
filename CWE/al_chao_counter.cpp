@@ -6,7 +6,7 @@
 #include "ALifeSDK_Functions.h"
 
 DataArray(ChaoHudThingB, StatText, 0x13128B0, 10);
-void AL_ChaoCounterDisp(ObjectMaster* a1)
+void AL_ChaoCounterDisp(task* a1)
 {
 	if (GameState == GameStates_Pause && !(MenuButtons_Held[0] & Buttons_X && MenuButtons_Held[0] & Buttons_Y))
 	{
@@ -40,7 +40,7 @@ void AL_ChaoCounterDisp(ObjectMaster* a1)
 }
 
 void AL_ChaoCounterCreate() {
-	ObjectMaster* tp = LoadObject(4, "AL_ChaoCounter", [] (ObjectMaster*) {}, (LoadObj)0);
+	task* tp = CreateElementalTask(4, "AL_ChaoCounter", [] (task*) {}, (LoadObj)0);
 
-	tp->DisplaySub = AL_ChaoCounterDisp;
+	tp->disp = AL_ChaoCounterDisp;
 }

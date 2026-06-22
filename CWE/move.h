@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-ThiscallFunctionPointer(float, MOV_DistFromAim, (ObjectMaster* a1), 0x007968A0);
+ThiscallFunctionPointer(float, MOV_DistFromAim, (task* a1), 0x007968A0);
 
 float MOV_DistFromAimXZ(task* tp);
 int MOV_TurnToAim2(task* tp, int ang);

@@ -2,7 +2,7 @@
 #include "../cwe_code.h"
 #include "include/code_playerspeed.h"
 
-void PlayerSpeed::OnALControl(ObjectMaster* tp) {
+void PlayerSpeed::OnALControl(task* tp) {
 	for (int i = 0; i < 2; i++) {
 		if (!MainCharObj2[i]) continue;
 

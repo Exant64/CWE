@@ -60,9 +60,9 @@ void DrawFontThing(__int16* a1, float a2, float a3, float a4)
 }
 
 const int AL_KinderPMessageExec_LoadPtr = 0x00585460;
-ObjectMaster* AL_KinderPMessageExec_Load(ObjectMaster* a1, AL_KinderPMessage* a2)
+task* AL_KinderPMessageExec_Load(task* a1, AL_KinderPMessage* a2)
 {
-	ObjectMaster* retval;
+	task* retval;
 	__asm
 	{
 		mov eax, a1

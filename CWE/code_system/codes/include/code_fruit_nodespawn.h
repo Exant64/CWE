@@ -7,10 +7,10 @@ class FruitsDontDespawn : public Code {
 public:
 	using Code::Code;
 
-	void OnALControl(ObjectMaster* tp) override;
+	void OnALControl(task* tp) override;
 };
 
-void FruitsDontDespawn::OnALControl(ObjectMaster* tp) {
+void FruitsDontDespawn::OnALControl(task* tp) {
 	for (size_t i = 0; i < 40; i++) {
 		ChaoObjectData* objData = (ChaoObjectData*)ChaoFruitSlots;
 		objData[i].Age = 0;

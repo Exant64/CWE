@@ -83,7 +83,7 @@ bool SetChaoMotionTransition(const char* pFromID, const char* pToID) {
     return SetChaoMotionTransition(std::string{pFromID}, std::string{pToID});
 }
 
-void Chao_RegAnimation(ObjectMaster* a1, const std::string& name) {
+void Chao_RegAnimation(task* a1, const std::string& name) {
     AL_SetMotionLink(a1, IDMotionMap[name]);
 }
 

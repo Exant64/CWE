@@ -18,7 +18,7 @@
 
 BHVFunc(ALBHV_ListenMusic, 0x0059E710);
 
-int ALBHV_Guitar(ObjectMaster* tp) {
+int ALBHV_Guitar(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
 	switch (bhv->Mode) {
@@ -33,7 +33,7 @@ int ALBHV_Guitar(ObjectMaster* tp) {
 		//al_toy, the function got automatically optimized to always use al_toy inside the code
 		//so i gotta do it manually
 		//todo: fix with decomp function in al_parts or something		
-		tp->Data1.Chao->field_524[AL_PART_HAND_R]->toy.texlist = &CWE_OBJECT_TEXLIST;
+		GET_CHAOWK(tp)->field_524[AL_PART_HAND_R]->toy.texlist = &CWE_OBJECT_TEXLIST;
 		
 		++bhv->Mode;
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
@@ -41,7 +41,7 @@ int ALBHV_Guitar(ObjectMaster* tp) {
 		bhv->SubTimer++;
 		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && CurrentChaoArea == NextChaoArea)
 		{
-			PlaySound_XYZ((24576 + 162), &tp->Data1.Entity->Position, 0, 0, 56);
+			PlaySound_XYZ((24576 + 162), &tp->twp->pos, 0, 0, 56);
 		}
 		break;
 	}
@@ -49,7 +49,7 @@ int ALBHV_Guitar(ObjectMaster* tp) {
 	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;//if the band/music field is gone, end the action
 }
 
-int ALBHV_Triangle(ObjectMaster* tp) {
+int ALBHV_Triangle(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
 	switch (bhv->Mode) {
@@ -65,14 +65,14 @@ int ALBHV_Triangle(ObjectMaster* tp) {
 		bhv->SubTimer++;
 		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5f && CurrentChaoArea == NextChaoArea)
 		{
-			PlaySound_XYZ((24576 + 163), &tp->Data1.Entity->Position, 0, 0, 75);
+			PlaySound_XYZ((24576 + 163), &tp->twp->pos, 0, 0, 75);
 		}
 		break;
 	}
 	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL; //if the band/music field is gone, end the action
 }
 
-int ALBHV_Accordion(ObjectMaster* tp) {
+int ALBHV_Accordion(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
 	switch (bhv->Mode) {
@@ -87,7 +87,7 @@ int ALBHV_Accordion(ObjectMaster* tp) {
 		bhv->SubTimer++;
 		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && CurrentChaoArea == NextChaoArea)
 		{
-			PlaySound_XYZ((24576 + 161), &tp->Data1.Entity->Position, 0, 0, 56);
+			PlaySound_XYZ((24576 + 161), &tp->twp->pos, 0, 0, 56);
 		}
 		break;
 	}
@@ -129,10 +129,10 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 			NJS_POINT3 music_center;
 			Uint32 kind = InstList[(int)(njRandom() * (count - 0.00001f))];
 
-			int ang = work->entity.Rotation.y;
-			music_center.x = njSin(ang) * 8 + work->entity.Position.x;
-			music_center.y = work->entity.Position.y;
-			music_center.z = njCos(ang) * 8 + work->entity.Position.z;
+			int ang = work->entity.ang.y;
+			music_center.x = njSin(ang) * 8 + work->entity.pos.x;
+			music_center.y = work->entity.pos.y;
+			music_center.z = njCos(ang) * 8 + work->entity.pos.z;
 
 			AL_SetBehavior(tp, ALBHV_MusicFunc_CWE[kind]);
 			ALOField_Load(tp, CI_KIND_AL_RANDOM_MUSIC, &music_center, 20, (int)(1800 + (njRandom() * 2401.f)));
@@ -143,7 +143,7 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 	return FALSE;
 }
 
-void AL_CalcIntentionScore_JoinMusic(ObjectMaster* tp, float* pMaxScore) {
+void AL_CalcIntentionScore_JoinMusic(task* tp, float* pMaxScore) {
 	float score = 0.0f;
 	Uint32 trigger = GET_GLOBAL()->IntentionHimaTrigger >> 1; //div by 2?
 	Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
@@ -177,7 +177,7 @@ void AL_CalcIntentionScore_JoinMusic(ObjectMaster* tp, float* pMaxScore) {
 				if (count > 0) {
 					Uint32 kind = InstList[(int)(njRandom() * (count - 0.00001f))];
 
-					MOV_SetAimPos(tp, &pField->Data1.Entity->Position);
+					MOV_SetAimPos(tp, &pField->twp->pos);
 
 					AL_SetBehavior(tp, ALBHV_TurnToAim);
 					AL_SetNextBehavior(tp, ALBHV_MusicFunc_CWE[kind]);
@@ -192,7 +192,7 @@ void AL_CalcIntentionScore_JoinMusic(ObjectMaster* tp, float* pMaxScore) {
 				}
 				else {
 					if (pField->Parent) {
-						MOV_SetAimPos(tp, &pField->Parent->Data1.Entity->Position);
+						MOV_SetAimPos(tp, &pField->Parent->twp->pos);
 					}
 					AL_SetBehavior(tp, ALBHV_TurnToAim);
 					AL_SetNextBehavior(tp, ALBHV_PostureChangeSit);

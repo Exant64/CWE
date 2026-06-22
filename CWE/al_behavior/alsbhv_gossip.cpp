@@ -37,7 +37,7 @@ int ALS_Gossip(SOCIALDATA* data)
 		if (!data->bhvStatus.Timer)
 		{
 			AL_FaceChangeEye(data->chaoPointer, ChaoEyes_Normal);
-			AL_FaceChangeMouth(data->chaoPointer, ((chaowk*)data->chaoPointer->Data1.Chao)->Face.MouthDefaultNum);
+			AL_FaceChangeMouth(data->chaoPointer, GET_CHAOWK(data->chaoPointer)->Face.MouthDefaultNum);
 			//AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405 + 3);
 			return 1;
 		}
@@ -51,14 +51,14 @@ int ALS_GossipIdle(SOCIALDATA* data)
 	if (data->bhvStatus.Mode == 0)
 	{
 		data->bhvStatus.Mode++;
-		if (((chaowk*)data->chaoPointer->Data1.Chao)->MotionTable.AnimID != data->parameter1 + 405)
+		if (GET_CHAOWK(data->chaoPointer)->MotionTable.AnimID != data->parameter1 + 405)
 			AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405);
 	}
 	return 0;
 }
-void ALS_GossipSetup(ObjectMaster* a1, ObjectMaster* a2)
+void ALS_GossipSetup(task* a1, task* a2)
 {
-	ObjectMaster* social = Social_Create(ALS_GossipIdle);
+	task* social = Social_Create(ALS_GossipIdle);
 
 	ALW_CommunicationOff(a1);
 
@@ -80,43 +80,43 @@ void ALS_GossipSetup(ObjectMaster* a1, ObjectMaster* a2)
 }
 
 
-int ALBHV_GossipTest(ObjectMaster* a1)
+int ALBHV_GossipTest(task* a1)
 {
 	ALS_GossipSetup(a1, ALW_GetLockOnTask(a1));
 	return 0;
 }
 
-int ALBHV_SnapToGossip(ObjectMaster* a1)
+int ALBHV_SnapToGossip(task* a1)
 {
-	ObjectMaster* otherChao = ALW_IsCommunicating(a1)->tp;
+	task* otherChao = ALW_IsCommunicating(a1)->tp;
 	NJS_VECTOR v8;
 	NJS_VECTOR testVectr = { 3.2f,0,0 };
-	if(a1->Data1.Chao->Behavior.Mode == 0)
+	if(GET_CHAOWK(a1)->Behavior.Mode == 0)
 	{
 		sub_54A690(a1);
 
 		njPushUnitMatrix();
-		njTranslateEx(&otherChao->Data1.Entity->Position);
-		RotateY(otherChao->Data1.Entity->Rotation.y);
+		njTranslateEx(&otherChao->twp->pos);
+		RotateY(otherChao->twp->ang.y);
 		sub_426CC0(_nj_current_matrix_ptr_, &v8, &testVectr, 0);
 		njPopMatrixEx();
 
-		a1->Data1.Entity->Position.x = (v8.x - a1->Data1.Entity->Position.x) * 0.1f + a1->Data1.Entity->Position.x;
-		a1->Data1.Entity->Position.y = (v8.y - a1->Data1.Entity->Position.y) * 0.1f + a1->Data1.Entity->Position.y;
-		a1->Data1.Entity->Position.z = (v8.z - a1->Data1.Entity->Position.z) * 0.1f + a1->Data1.Entity->Position.z;
+		a1->twp->pos.x = (v8.x - a1->twp->pos.x) * 0.1f + a1->twp->pos.x;
+		a1->twp->pos.y = (v8.y - a1->twp->pos.y) * 0.1f + a1->twp->pos.y;
+		a1->twp->pos.z = (v8.z - a1->twp->pos.z) * 0.1f + a1->twp->pos.z;
 
-		a1->Data1.Entity->Rotation.y = AdjustAngle_(a1->Data1.Entity->Rotation.y, otherChao->Data1.Entity->Rotation.y, 1024);
+		a1->twp->ang.y = AdjustAngle_(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
 
-		v8.y = a1->Data1.Entity->Position.y;
-		if (CheckDistance(&a1->Data1.Entity->Position, &v8) <= 0.2)
+		v8.y = a1->twp->pos.y;
+		if (CheckDistance(&a1->twp->pos, &v8) <= 0.2)
 			return 1;
 	}
 	return 0;
 }
 
-void ALBHV_Gossip(ObjectMaster* a1, ObjectMaster* a2)
+void ALBHV_Gossip(task* a1, task* a2)
 {
-	ObjectMaster* otherChao = a2; //hardcoded select second chao
+	task* otherChao = a2; //hardcoded select second chao
 	if (otherChao == a1)
 	{
 		// stop if trying to gossip with self
@@ -129,11 +129,11 @@ void ALBHV_Gossip(ObjectMaster* a1, ObjectMaster* a2)
 	NJS_VECTOR finalPos = { 3,0,0 };
 
 	njPushUnitMatrix();
-	njTranslateEx(&otherChao->Data1.Entity->Position);
-	RotateY(otherChao->Data1.Entity->Rotation.y);
+	njTranslateEx(&otherChao->twp->pos);
+	RotateY(otherChao->twp->ang.y);
 	sub_426CC0(_nj_current_matrix_ptr_, &a1->EntityData2->Waypoint, &finalPos, 0);
-	//njCalcVector(&test, &otherChao->Data1.Entity->Position, _nj_current_matrix_ptr_);
-	//TESTcalcpoint(0, &otherChao->Data1.Entity->Position, &otherChao->Data1.Entity->Position);
+	//njCalcVector(&test, &otherChao->twp->Position, _nj_current_matrix_ptr_);
+	//TESTcalcpoint(0, &otherChao->twp->Position, &otherChao->twp->Position);
 	njPopMatrixEx();
 
 	//AL_SetBehavior(otherChao, ALBHV_WaitForSocialArrive); //wait for chao to arrive

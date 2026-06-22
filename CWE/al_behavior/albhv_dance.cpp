@@ -11,7 +11,7 @@
 #include "al_intention.h"
 #include "../ChaoMain.h"
 
-int ALBHV_DanceHero(ObjectMaster* tp) {
+int ALBHV_DanceHero(task* tp) {
     AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
     switch(bhv->Mode) {
@@ -26,7 +26,7 @@ int ALBHV_DanceHero(ObjectMaster* tp) {
     else
         return BHV_RET_FINISH;
 }
-int __cdecl ALBHV_DanceDark(ObjectMaster* tp) {
+int __cdecl ALBHV_DanceDark(task* tp) {
     AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
     switch (bhv->Mode) {
@@ -44,9 +44,9 @@ int __cdecl ALBHV_DanceDark(ObjectMaster* tp) {
 
 //broke the naming convention oops
 //not the same bhv as the sadx one, since that one is an animal behavior it doesnt check for the dance field, and it ends when the motion ends
-int ALBHV_BreakDance(ObjectMaster* tp)
+int ALBHV_BreakDance(task* tp)
 {
-    chaowk* work = CHAOWK(tp);
+    chaowk* work = GET_CHAOWK(tp);
     AL_BEHAVIOR* bhv = &work->Behavior;
     
     switch (bhv->Mode) {
@@ -77,7 +77,7 @@ extern "C" __declspec(dllexport) BHV_FUNC ALBHV_DanceFunc_CWE[] = {
     ALBHV_BreakDance
 };
 
-Bool AL_DecideBehaviorDance(ObjectMaster* tp)
+Bool AL_DecideBehaviorDance(task* tp)
 {
     NJS_POINT3 center;
 	int InstList[32];
@@ -99,9 +99,9 @@ Bool AL_DecideBehaviorDance(ObjectMaster* tp)
         return FALSE;
     }
 
-    center.x = njSin(tp->Data1.Chao->entity.Rotation.y) * 8 + tp->Data1.Chao->entity.Position.x;
-    center.y = tp->Data1.Chao->entity.Position.y;
-    center.z = njCos(tp->Data1.Chao->entity.Rotation.y) * 8 + tp->Data1.Chao->entity.Position.z;
+    center.x = njSin(GET_CHAOWK(tp)->entity.ang.y) * 8 + GET_CHAOWK(tp)->entity.pos.x;
+    center.y = GET_CHAOWK(tp)->entity.pos.y;
+    center.z = njCos(GET_CHAOWK(tp)->entity.ang.y) * 8 + GET_CHAOWK(tp)->entity.pos.z;
     
     //i overcomplicated it like this with a switch case to support the original DanceFunc array if any other mod overwrites it
     int kind = InstList[(unsigned int)(njRandom() * ((double)nb - 0.0001f))];
@@ -111,11 +111,11 @@ Bool AL_DecideBehaviorDance(ObjectMaster* tp)
 	return TRUE;
 }
 
-void AL_CalcIntentionScore_JoinDance(ObjectMaster* tp, float* pMaxScore) {
+void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
     Uint32 trigger = ChaoGlobal.IntentionHimaTrigger;
     float score = 0;
     Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
-    ObjectMaster* pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE);
+    task* pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE);
 
     if (*pMaxScore < 1) {
         if (pField) {
@@ -145,7 +145,7 @@ void AL_CalcIntentionScore_JoinDance(ObjectMaster* tp, float* pMaxScore) {
 
                 //vanilla fix: the original check was kind > 0 so it didn't run for shake dance
                 if (kind >= 0) {
-                    MOV_SetAimPos(tp, &pField->Data1.Entity->Position);
+                    MOV_SetAimPos(tp, &pField->twp->pos);
 
                     AL_SetBehavior(tp, ALBHV_TurnToAim);
 
@@ -162,7 +162,7 @@ void AL_CalcIntentionScore_JoinDance(ObjectMaster* tp, float* pMaxScore) {
                 }
                 else {
                     if (pField->Parent) {
-                        MOV_SetAimPos(tp, &pField->Parent->Data1.Entity->Position);
+                        MOV_SetAimPos(tp, &pField->Parent->twp->pos);
                     }
 
                     AL_SetBehavior(tp, ALBHV_TurnToAim);

@@ -412,6 +412,8 @@
       <EnumMember name="1" display="Off/Disabled"></EnumMember>
       <EnumMember name="2" display="Double"></EnumMember>
       <EnumMember name="3" display="Triple"></EnumMember>
+      <EnumMember name="4" display="Double (w/o hunger)"></EnumMember>
+      <EnumMember name="5" display="Triple (w/o hunger)"></EnumMember>
     </Enum>
     <Enum name="Face">
       <EnumMember name="0" display="Off/Disabled"></EnumMember>

@@ -14,9 +14,9 @@
 #define SOUNDBANK1(a1) 0x1000 + a1
 #define SOUNDBANK6(a1) 0x6000 + a1
 
-void Chao_ExtraAnimations(ObjectMaster* a1)
+void Chao_ExtraAnimations(task* a1)
 {
-	ChaoData1* data = a1->Data1.Chao;
+	ChaoData1* data = GET_CHAOWK(a1);
 
 	//Reset to 0 each Behavior
 	if (data->Behavior.Mode == 0) data->AnimRandomized = 0;
@@ -476,36 +476,36 @@ void Chao_ExtraAnimations(ObjectMaster* a1)
 		int skillful = AL_EmotionGetValue(a1, EM_PER_SKILLFUL);
 		if (skillful > 70)
 		{
-			a1->Data1.Chao->MotionTable.frameIncreaseSpeed_ = 1.25f;
+			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 1.25f;
 		}
 		else if (skillful > 30)
 		{
-			a1->Data1.Chao->MotionTable.frameIncreaseSpeed_ = 1.125f;
+			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 1.125f;
 		}
 		else if (skillful < -30)
 		{
-			a1->Data1.Chao->MotionTable.frameIncreaseSpeed_ = 0.875f;
+			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 0.875f;
 		}
 		else if (skillful < -70)
 		{
-			a1->Data1.Chao->MotionTable.frameIncreaseSpeed_ = 0.75f;
+			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 0.75f;
 		}
 	}
 
 	//Anger Face
 	if (AL_EmotionGetValue(a1, EM_MD_ANGER) > 80 && AL_EmotionGetValue(a1, EM_PER_AGRESSIVE) > 30)
 	{
-		a1->Data1.Chao->Face.EyeDefaultNum = ChaoEyes_Mean;
+		GET_CHAOWK(a1)->Face.EyeDefaultNum = ChaoEyes_Mean;
 	}
 	else
 	{
-		a1->Data1.Chao->Face.EyeDefaultNum = a1->Data1.Chao->pParamGC->EyeType;
+		GET_CHAOWK(a1)->Face.EyeDefaultNum = GET_CHAOWK(a1)->pParamGC->EyeType;
 	}
 }
 
-void Chao_ExtraSounds(ObjectMaster* a1)
+void Chao_ExtraSounds(task* a1)
 {
-	ChaoData1* data = a1->Data1.Chao;
+	ChaoData1* data = GET_CHAOWK(a1);
 
 	//Reset to 0 each Behavior
 	if (data->Behavior.Mode == 0) data->ExtraSound = 0;
@@ -519,7 +519,7 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 				const int BegSound[] = { 137, 138 };
 				int BegRNG = rand() % std::size(BegSound);
 
-				PlaySound_XYZ(SOUNDBANK6(BegSound[BegRNG]), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(BegSound[BegRNG]), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 			else if (data->MotionTable.TransitionToID == 199)
@@ -527,19 +527,19 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 				const int HatSuccesSound[] = { 149, 150, 151 };
 				int HatSuccesRNG = rand() % std::size(HatSuccesSound);
 
-				PlaySound_XYZ(SOUNDBANK6(HatSuccesSound[HatSuccesRNG]), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(HatSuccesSound[HatSuccesRNG]), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 			else if (data->MotionTable.TransitionToID == 454)
 			{
-				PlaySound_XYZ(SOUNDBANK6(152), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(152), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
 		{
-			PlaySound_XYZ(SOUNDBANK1(18), &data->entity.Position, 0, 0, 0);
+			PlaySound_XYZ(SOUNDBANK1(18), &data->entity.pos, 0, 0, 0);
 			data->ExtraSound++;
 		}
 
@@ -547,7 +547,7 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 		{
 			if (data->MotionTable.TransitionToID == 21)
 			{
-				PlaySound_XYZ(SOUNDBANK6(7), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(7), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 		}
@@ -556,12 +556,12 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 		{
 			if (data->MotionTable.TransitionToID == 194)
 			{
-				PlaySound_XYZ(SOUNDBANK6(27), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(27), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 			else if (data->MotionTable.TransitionToID == 519)
 			{
-				PlaySound_XYZ(SOUNDBANK6(32), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(32), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 		}
@@ -571,7 +571,7 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 			const int JumpSound[] = { 30, 52, 139 };
 			int JumpRNG = rand() % std::size(JumpSound);
 
-			PlaySound_XYZ(SOUNDBANK6(JumpSound[JumpRNG]), &data->entity.Position, 0, 0, 55);
+			PlaySound_XYZ(SOUNDBANK6(JumpSound[JumpRNG]), &data->entity.pos, 0, 0, 55);
 			data->ExtraSound++;
 		}
 
@@ -580,7 +580,7 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 			const int GotFoodSound[] = { 42, 65 };
 			int GotFoodRNG = rand() % std::size(GotFoodSound);
 
-			PlaySound_XYZ(SOUNDBANK6(GotFoodSound[GotFoodRNG]), &data->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(SOUNDBANK6(GotFoodSound[GotFoodRNG]), &data->entity.pos, 0, 0, 110);
 			data->ExtraSound++;
 		}
 
@@ -588,7 +588,7 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 		{
 			if (data->MotionTable.TransitionToID == 126)
 			{
-				PlaySound_XYZ(SOUNDBANK6(68), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(68), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 		}
@@ -598,19 +598,19 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 			const int DamageSound[] = { 109, 41 };
 			int DamageRNG = rand() % std::size(DamageSound);
 
-			PlaySound_XYZ(SOUNDBANK6(DamageSound[DamageRNG]), &data->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(SOUNDBANK6(DamageSound[DamageRNG]), &data->entity.pos, 0, 0, 110);
 			data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTTHROWND)
 		{
-			PlaySound_XYZ(SOUNDBANK6(141), &data->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(SOUNDBANK6(141), &data->entity.pos, 0, 0, 110);
 			data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_PUTHAT)
 		{
-			PlaySound_XYZ(SOUNDBANK6(143), &data->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(SOUNDBANK6(143), &data->entity.pos, 0, 0, 110);
 			data->ExtraSound++;
 		}
 
@@ -618,20 +618,20 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 		{
 			if (data->MotionTable.TransitionToID == 325)
 			{
-				PlaySound_XYZ(SOUNDBANK6(154), &data->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(SOUNDBANK6(154), &data->entity.pos, 0, 0, 110);
 				data->ExtraSound++;
 			}
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
 		{
-			PlaySound_XYZ(SOUNDBANK6(156), &data->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(SOUNDBANK6(156), &data->entity.pos, 0, 0, 110);
 			data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 		{
-			PlaySound_XYZ(SOUNDBANK6(159), &data->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(SOUNDBANK6(159), &data->entity.pos, 0, 0, 110);
 			data->ExtraSound++;
 		}
 	}
@@ -640,11 +640,11 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 	{
 		if (data->MotionTable.frame == 1.0f)
 		{
-			PlaySound_XYZ(SOUNDBANK1(2), &data->entity.Position, 0, 0, 0);
+			PlaySound_XYZ(SOUNDBANK1(2), &data->entity.pos, 0, 0, 0);
 		}
 		else if (data->MotionTable.frame == 7.0f)
 		{
-			PlaySound_XYZ(SOUNDBANK1(3), &data->entity.Position, 0, 0, 0);
+			PlaySound_XYZ(SOUNDBANK1(3), &data->entity.pos, 0, 0, 0);
 		}
 	}
 
@@ -652,23 +652,23 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 	{
 		if (data->MotionTable.AnimID == 283)
 		{
-			PlaySound_XYZ(SOUNDBANK1(36), &data->entity.Position, 0, 0, 0);
+			PlaySound_XYZ(SOUNDBANK1(36), &data->entity.pos, 0, 0, 0);
 		}
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_BROOMSTICK && data->Behavior.Timer % 34 == 0)
 	{
-		PlaySound_XYZ(SOUNDBANK1(37), &data->entity.Position, 0, 0, 0);
+		PlaySound_XYZ(SOUNDBANK1(37), &data->entity.pos, 0, 0, 0);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_POGOSTICK && data->MotionTable.frame == 5.0f)
 	{
-		PlaySound_XYZ(SOUNDBANK1(41), &data->entity.Position, 0, 0, 0);
+		PlaySound_XYZ(SOUNDBANK1(41), &data->entity.pos, 0, 0, 0);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY && data->Behavior.Timer == 100 && RandomChance)
 	{
-		PlaySound_XYZ(SOUNDBANK6(0), &data->entity.Position, 0, 0, 110);
+		PlaySound_XYZ(SOUNDBANK6(0), &data->entity.pos, 0, 0, 110);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TIRED && data->Behavior.Timer == 0)
@@ -676,12 +676,12 @@ void Chao_ExtraSounds(ObjectMaster* a1)
 		const int TiredSound[] = { 4, 158 };
 		int TiredRNG = rand() % std::size(TiredSound);
 
-		PlaySound_XYZ(SOUNDBANK6(TiredSound[TiredRNG]), &data->entity.Position, 0, 0, 110);
+		PlaySound_XYZ(SOUNDBANK6(TiredSound[TiredRNG]), &data->entity.pos, 0, 0, 110);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TRIP && data->Behavior.Timer == 40 && RandomChance)
 	{
-		PlaySound_XYZ(SOUNDBANK6(24), &data->entity.Position, 0, 0, 110);
+		PlaySound_XYZ(SOUNDBANK6(24), &data->entity.pos, 0, 0, 110);
 	}
 }
 
@@ -841,7 +841,7 @@ void AL_MoreAnimSound()
 	}
 }
 
-int ALBHV_PickUpLockOn_MoreAnim(ObjectMaster* tp) {
+int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &work->Behavior;
 
@@ -852,7 +852,7 @@ int ALBHV_PickUpLockOn_MoreAnim(ObjectMaster* tp) {
 
 			if (gConfigVal.MoreSound) {
 				if (CurrentChaoArea == NextChaoArea) {
-					PlaySound_XYZ(SOUNDBANK6(129), &work->entity.Position, 0, 0, 110);
+					PlaySound_XYZ(SOUNDBANK6(129), &work->entity.pos, 0, 0, 110);
 				}
 			}
 		}
@@ -862,17 +862,17 @@ int ALBHV_PickUpLockOn_MoreAnim(ObjectMaster* tp) {
 			if (gConfigVal.MoreSound) {
 				if (CurrentChaoArea == NextChaoArea) {
 					if (njRandom() < 0.5f) {
-						PlaySound_XYZ(SOUNDBANK6(147), &work->entity.Position, 0, 0, 110);
+						PlaySound_XYZ(SOUNDBANK6(147), &work->entity.pos, 0, 0, 110);
 					}
 					else {
-						PlaySound_XYZ(SOUNDBANK6(148), &work->entity.Position, 0, 0, 110);
+						PlaySound_XYZ(SOUNDBANK6(148), &work->entity.pos, 0, 0, 110);
 					}
 				}
 			}
 		}
 
 		if (CurrentChaoArea == NextChaoArea) {
-			PlaySound_XYZ(4097, &work->entity.Position, 0, 0, 0);
+			PlaySound_XYZ(4097, &work->entity.pos, 0, 0, 0);
 		}
 
 		bhv->Mode++;
@@ -880,7 +880,7 @@ int ALBHV_PickUpLockOn_MoreAnim(ObjectMaster* tp) {
 		break;
 	case 1:
 		if (AL_IsMotionEnd(tp)) {
-			ObjectMaster* pLockOn = ALW_GetLockOnTask(tp);
+			task* pLockOn = ALW_GetLockOnTask(tp);
 			if (pLockOn && !ALW_IsSheAttentionOtherOne(tp, pLockOn)) {
 				AL_GrabObjectBothHands(tp, pLockOn);
 				AL_MoveHoldingObject(tp);

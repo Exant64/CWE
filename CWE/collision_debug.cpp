@@ -52,29 +52,29 @@ void CheckAndSetColColor(CCL_INFO* Col) {
 	}
 }
 
-void __cdecl DrawCollisionInfo(CollisionInfo* ColInfo)
+void __cdecl DrawCollisionInfo(colliwk* ColInfo)
 {
 	CollisionData* Col; // esi
-	ObjectMaster* Obj; // eax
-	EntityData1* data; // edi
+	task* Obj; // eax
+	taskwk* data; // edi
 	int v4; // ebx
 
 	if (ColInfo)
 	{
 		Col = ColInfo->CollisionArray;
 		Obj = ColInfo->Object;
-		if (ColInfo->Count)
+		if (ColInfo->nbInfo)
 		{
 			if (Col)
 			{
 				if (Obj)
 				{
-					data = Obj->Data1.Entity;
+					data = Obj->twp;
 					if (data)
 					{
-						if (ColInfo->Count)
+						if (ColInfo->nbInfo)
 						{
-							v4 = ColInfo->Count;
+							v4 = ColInfo->nbInfo;
 							do
 							{
 								DrawCol((CCL_INFO*)Col++, data);
@@ -89,13 +89,13 @@ void __cdecl DrawCollisionInfo(CollisionInfo* ColInfo)
 }
 
 
-void __cdecl DrawDebugCollision(ObjectMaster* a1)
+void __cdecl DrawDebugCollision(task* a1)
 {
 
-	if (a1->Data1.Entity->Collision == nullptr)
+	if (a1->twp->cwp == nullptr)
 		return;
 
-	DrawCollisionInfo(a1->Data1.Entity->Collision);
+	DrawCollisionInfo(a1->twp->cwp);
 
 }
 
@@ -103,7 +103,7 @@ void __cdecl DrawDebugCollision(ObjectMaster* a1)
 #pragma endregion
 
 //the following functions came from SADX
-void njTranslateCol(CCL_INFO* Col, EntityData1* data)
+void njTranslateCol(CCL_INFO* Col, taskwk* data)
 {
 	Uint32 Flag; // ebx
 	Angle RotY; // eax
@@ -116,22 +116,22 @@ void njTranslateCol(CCL_INFO* Col, EntityData1* data)
 	Flag = Col->attr;
 	if ((Flag & 0x20) == 0)
 	{
-		njTranslateEx(&data->Position);
+		njTranslateEx(&data->pos);
 		if ((Flag & 0x8000) == 0)
 		{
 			if ((Flag & 0x200) != 0)
 			{
-				RotY = data->Rotation.y;
+				RotY = data->ang.y;
 				if (RotY)
 				{
 					njRotateY(NULL, (unsigned __int16)RotY);
 				}
-				RotZ = data->Rotation.z;
+				RotZ = data->ang.z;
 				if (RotZ)
 				{
 					njRotateZ(NULL, (unsigned __int16)RotZ);
 				}
-				RotX = data->Rotation.x;
+				RotX = data->ang.x;
 				if (RotX)
 				{
 					njRotateX(NULL, (unsigned __int16)RotX);
@@ -141,17 +141,17 @@ void njTranslateCol(CCL_INFO* Col, EntityData1* data)
 			}
 			else
 			{
-				RotZ2 = data->Rotation.z;
+				RotZ2 = data->ang.z;
 				if (RotZ2)
 				{
 					njRotateZ(NULL, (unsigned __int16)RotZ2);
 				}
-				RotX2 = data->Rotation.x;
+				RotX2 = data->ang.x;
 				if (RotX2)
 				{
 					njRotateX(NULL, (unsigned __int16)RotX2);
 				}
-				RotY2 = data->Rotation.y;
+				RotY2 = data->ang.y;
 				if (RotY2)
 				{
 					njRotateY(NULL, (unsigned __int16)RotY2);
@@ -163,7 +163,7 @@ void njTranslateCol(CCL_INFO* Col, EntityData1* data)
 }
 
 
-void DrawColCylinderModel(EntityData1* data, CCL_INFO* col)
+void DrawColCylinderModel(taskwk* data, CCL_INFO* col)
 {
 	Uint32 v3; // ebx
 	Angle rotX; // eax
@@ -177,37 +177,37 @@ void DrawColCylinderModel(EntityData1* data, CCL_INFO* col)
 	njTranslateCol(col, data);
 	if ((v3 & 0x20) == 0 && (v3 & 0x8000) == 0)
 	{
-		rotX = data->Rotation.x;
-		if (rotX || data->Rotation.z)
+		rotX = data->ang.x;
+		if (rotX || data->ang.z)
 		{
 			if ((v3 & 0x200) != 0)
 			{
 				if (rotX)
 				{
-					njRotateX(NULL, (unsigned __int16)-LOWORD(data->Rotation.x));
+					njRotateX(NULL, (unsigned __int16)-LOWORD(data->ang.x));
 				}
-				if (data->Rotation.z)
+				if (data->ang.z)
 				{
-					njRotateZ(NULL, (unsigned __int16)-LOWORD(data->Rotation.z));
+					njRotateZ(NULL, (unsigned __int16)-LOWORD(data->ang.z));
 				}
-				if (data->Rotation.y)
+				if (data->ang.y)
 				{
-					njRotateY(NULL, (unsigned __int16)-LOWORD(data->Rotation.y));
+					njRotateY(NULL, (unsigned __int16)-LOWORD(data->ang.y));
 				}
 			}
 			else
 			{
-				if (data->Rotation.y)
+				if (data->ang.y)
 				{
-					njRotateY(NULL, (unsigned __int16)-LOWORD(data->Rotation.y));
+					njRotateY(NULL, (unsigned __int16)-LOWORD(data->ang.y));
 				}
-				if (data->Rotation.x)
+				if (data->ang.x)
 				{
-					njRotateX(NULL, (unsigned __int16)-LOWORD(data->Rotation.x));
+					njRotateX(NULL, (unsigned __int16)-LOWORD(data->ang.x));
 				}
-				if (data->Rotation.z)
+				if (data->ang.z)
 				{
-					njRotateZ(NULL, (unsigned __int16)-LOWORD(data->Rotation.z));
+					njRotateZ(NULL, (unsigned __int16)-LOWORD(data->ang.z));
 				}
 			}
 		}
@@ -222,7 +222,7 @@ void DrawColCylinderModel(EntityData1* data, CCL_INFO* col)
 	njPopMatrixEx();
 }
 
-void DrawColSphereModel(CCL_INFO* Col, EntityData1* Data)
+void DrawColSphereModel(CCL_INFO* Col, taskwk* Data)
 {
 	float XScale; // [esp+0h] [ebp-4h]
 
@@ -238,7 +238,7 @@ void DrawColSphereModel(CCL_INFO* Col, EntityData1* Data)
 }
 
 
-void __cdecl DrawCol(CCL_INFO* Col, EntityData1* data)
+void __cdecl DrawCol(CCL_INFO* Col, taskwk* data)
 {
 	if (Col)
 	{

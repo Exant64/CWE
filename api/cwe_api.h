@@ -14,9 +14,9 @@
 #define CWE_API_REGISTER_MSG_VER 1
 
 using OtherItemPtr = void(*)(int ID);
-using LastBiteFruitFuncPtr = void(*)(ChaoData* chaoData, ObjectMaster* fruit);
-using SpecialItemFuncPtr = void(*)(ObjectMaster* chao, ObjectMaster* item);
-using SpecialConditionFuncPtr = bool(*)(ObjectMaster* chao, ObjectMaster* item);
+using LastBiteFruitFuncPtr = void(*)(ChaoData* chaoData, task* fruit);
+using SpecialItemFuncPtr = void(*)(task* chao, task* item);
+using SpecialConditionFuncPtr = bool(*)(task* chao, task* item);
 
 struct CWE_API_TREE_DATA {
 	NJS_OBJECT* pSeedObj;

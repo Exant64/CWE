@@ -6,5 +6,5 @@ public:
 	using Code::Code;
 
 	void Init() override;
-	void ChaoObject(ObjectMaster* tp) override;
+	void ChaoObject(task* tp) override;
 };

@@ -1,4 +1,4 @@
 #pragma once
-extern ObjectMaster* pBirthdayChao;
-int ALBHV_Birthday(ObjectMaster* a1);
-int ALBHV_Celebrate(ObjectMaster* a1);
+extern task* pBirthdayChao;
+int ALBHV_Birthday(task* a1);
+int ALBHV_Celebrate(task* a1);

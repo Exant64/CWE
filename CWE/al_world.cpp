@@ -6,7 +6,7 @@
 
 #define ALW_ENTRY_WORK(tp) ((al_entry_work*)tp->UnknownA_ptr)
 
-al_entry_work* __cdecl ALW_IsCommunication(ObjectMaster* a1)
+al_entry_work* __cdecl ALW_IsCommunication(task* a1)
 {
 	al_entry_work* v1; // ecx
 	al_entry_work* result; // eax
@@ -18,7 +18,7 @@ al_entry_work* __cdecl ALW_IsCommunication(ObjectMaster* a1)
 	}
 	return result;
 }
-__int16 __cdecl ALW_RecieveCommand(ObjectMaster* a1)
+__int16 __cdecl ALW_RecieveCommand(task* a1)
 {
 	al_entry_work* v1; // ecx
 	__int16 result; // ax
@@ -32,11 +32,11 @@ __int16 __cdecl ALW_RecieveCommand(ObjectMaster* a1)
 	}
 	return result;
 }
-ObjectMaster* __cdecl ALW_GetLockOnTask(ObjectMaster* a1)
+task* __cdecl ALW_GetLockOnTask(task* a1)
 {
 	al_entry_work* v1; // eax
 	al_entry_work* v2; // eax
-	ObjectMaster* result; // eax
+	task* result; // eax
 
 	v1 = (al_entry_work*)a1->UnknownA_ptr;
 	if (!v1 || (v2 = v1->pLockOn) == 0 || (result = v2->tp) == 0)
@@ -45,7 +45,7 @@ ObjectMaster* __cdecl ALW_GetLockOnTask(ObjectMaster* a1)
 	}
 	return result;
 }
-signed int __cdecl ALW_SendCommand(ObjectMaster* a1, __int16 a2)
+signed int __cdecl ALW_SendCommand(task* a1, __int16 a2)
 {
 	al_entry_work* v2; // eax
 
@@ -59,7 +59,7 @@ signed int __cdecl ALW_SendCommand(ObjectMaster* a1, __int16 a2)
 }
 
 const int ALW_CommunicationOffPtr = 0x00530690;
-void ALW_CommunicationOff(ObjectMaster* a1)
+void ALW_CommunicationOff(task* a1)
 {
 	__asm
 	{
@@ -68,7 +68,7 @@ void ALW_CommunicationOff(ObjectMaster* a1)
 	}
 }
 
-void* __cdecl AL_GetItemSaveInfo(ObjectMaster* a1)
+void* __cdecl AL_GetItemSaveInfo(task* a1)
 {
 	al_entry_work* v1; // eax
 	void* result; // eax
@@ -84,7 +84,7 @@ void* __cdecl AL_GetItemSaveInfo(ObjectMaster* a1)
 	}
 	return result;
 }
-void __cdecl AL_ClearItemSaveInfoPtr(ObjectMaster* a1)
+void __cdecl AL_ClearItemSaveInfoPtr(task* a1)
 {
 	al_entry_work* v1; // eax
 
@@ -95,7 +95,7 @@ void __cdecl AL_ClearItemSaveInfoPtr(ObjectMaster* a1)
 	}
 }
 
-bool __cdecl ALW_IsHeld(ObjectMaster* a1)
+bool __cdecl ALW_IsHeld(task* a1)
 {
 	al_entry_work* v1; // eax
 
@@ -103,7 +103,7 @@ bool __cdecl ALW_IsHeld(ObjectMaster* a1)
 	return v1 && v1->flag & 2;
 }
 
-signed int __cdecl ALW_LockOn(ObjectMaster* a1, ObjectMaster* a2)
+signed int __cdecl ALW_LockOn(task* a1, task* a2)
 {
 	al_entry_work* v2; // eax
 	al_entry_work* v3; // ecx
@@ -119,7 +119,7 @@ signed int __cdecl ALW_LockOn(ObjectMaster* a1, ObjectMaster* a2)
 }
 
 const int ALW_TurnToLockOnPtr = 0x00530510;
-int ALW_TurnToLockOn(ObjectMaster* a1, int a2)
+int ALW_TurnToLockOn(task* a1, int a2)
 {
 	int retur;
 	__asm
@@ -134,7 +134,7 @@ int ALW_TurnToLockOn(ObjectMaster* a1, int a2)
 }
 
 const int sub_530640Ptr = 0x530640;
-void ALW_CommunicationOn(ObjectMaster* a1, ObjectMaster* a2)
+void ALW_CommunicationOn(task* a1, task* a2)
 {
 	__asm
 	{
@@ -162,7 +162,7 @@ Bool ALW_AttentionOn(task* tp1, task* tp2) {
     return FALSE;
 }
 
-al_entry_work* __cdecl ALW_IsCommunicating(ObjectMaster* a1)
+al_entry_work* __cdecl ALW_IsCommunicating(task* a1)
 {
 	al_entry_work* v1; // ecx
 	al_entry_work* result; // eax
@@ -179,7 +179,7 @@ int __cdecl ALW_CountEntry(unsigned __int16 index)
 {
 	return NumberOfChaoGlobal[index];
 }
-al_perception_link* __cdecl AL_GetFoundTree(ObjectMaster* a1)
+al_perception_link* __cdecl AL_GetFoundTree(task* a1)
 {
 	ChaoData1* v1; // ecx
 	int v2; // edx
@@ -187,7 +187,7 @@ al_perception_link* __cdecl AL_GetFoundTree(ObjectMaster* a1)
 	al_perception_link* result; // eax
 	__int16 v5; // dx
 
-	v1 = a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->TreeObjects.InSightFlag;
 	v3 = &v1->TreeObjects;
 	result = 0;
@@ -201,7 +201,7 @@ al_perception_link* __cdecl AL_GetFoundTree(ObjectMaster* a1)
 	}
 	return result;
 }
-bool __cdecl ALW_IsSheAttentionOtherOne(ObjectMaster* a1, ObjectMaster* a2)
+bool __cdecl ALW_IsSheAttentionOtherOne(task* a1, task* a2)
 {
 	al_entry_work* v2; // eax
 	al_entry_work* v3; // eax
@@ -255,12 +255,12 @@ Bool ALW_SetHeldRadius(task* tp, float radius) {
 	return FALSE;
 }
 
-bool ALW_LockOnPickedUp(ObjectMaster* a1)
+bool ALW_LockOnPickedUp(task* a1)
 {
-	return (ALW_GetLockOnTask(a1) && ALW_GetLockOnTask(a1)->Data1.Entity->Status < 0);
+	return (ALW_GetLockOnTask(a1) && ALW_GetLockOnTask(a1)->twp->flag < 0);
 }
 
-al_perception_link* __cdecl GetToyObjects(ObjectMaster* a1)
+al_perception_link* __cdecl GetToyObjects(task* a1)
 {
 	ChaoData1* v1; // ecx
 	int v2; // edx
@@ -268,7 +268,7 @@ al_perception_link* __cdecl GetToyObjects(ObjectMaster* a1)
 	al_perception_link* result; // eax
 	__int16 v5; // dx
 
-	v1 = a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->ToyObjects.InSightFlag;
 	v3 = &v1->ToyObjects;
 	result = 0;
@@ -282,11 +282,11 @@ al_perception_link* __cdecl GetToyObjects(ObjectMaster* a1)
 	}
 	return result;
 }
-ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1)
+task* __cdecl AL_GetFoundToyTask(task* a1)
 {
 	al_perception_link* v1; // eax
 	al_entry_work* v2; // eax
-	ObjectMaster* result; // eax
+	task* result; // eax
 
 	v1 = GetToyObjects(a1);
 	if (!v1 || (v2 = v1->pEntry) == 0 || (result = v2->tp) == 0)
@@ -297,9 +297,9 @@ ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1)
 }
 
 const int GetChaoObjectPtr = 0x00530410;
-ObjectMaster* GetChaoObject(int a1, int a2)
+task* GetChaoObject(int a1, int a2)
 {
-	ObjectMaster* val;
+	task* val;
 	__asm
 	{
 		mov eax, a1

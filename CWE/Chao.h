@@ -9,8 +9,7 @@
 #include "al_behavior/al_intention.h"
 #include "move.h"
 
-#define CHAOWK(a) (a->Data1.Chao)
-#define GET_CHAOWK(tp) ((chaowk*)tp->Data1.Chao)
+#define GET_CHAOWK(tp) ((chaowk*)tp->twp)
 #define GET_CHAOPARAM(tp) (GET_CHAOWK(tp)->pParamGC)
 
 enum AL_PARAM_FLAG
@@ -446,29 +445,29 @@ struct al_model {
 void AL_ChaoAccessoryConversion(ChaoDataBase* pParam);
 void AL_ChaoAccessoryMainCheck(task* tp);
 
-ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (ObjectMaster* a1), 0x56CFF0);
-ObjectMaster* __cdecl AL_GetFoundToyTask(ObjectMaster* a1);
+ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (task* a1), 0x56CFF0);
+task* __cdecl AL_GetFoundToyTask(task* a1);
 
-void __cdecl AL_SetItem(ObjectMaster* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist);
-FastcallFunctionPointer(signed int, AL_TraceHoldingPosition, (int a1, ObjectMaster* a2), 0x56D170);
-ObjectMaster* sub_55A920(int a1, NJS_VECTOR* a2, ObjectMaster* parent, Uint8 a4, float a5);
-void sub_54A690(ObjectMaster* a1);
-void LoadCocoon(ObjectMaster* a1, char a2);
-void ALOField_Load(ObjectMaster* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer);
+void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist);
+FastcallFunctionPointer(signed int, AL_TraceHoldingPosition, (int a1, task* a2), 0x56D170);
+task* sub_55A920(int a1, NJS_VECTOR* a2, task* parent, Uint8 a4, float a5);
+void sub_54A690(task* a1);
+void LoadCocoon(task* a1, char a2);
+void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer);
 
-ObjectMaster* GetClosestChao(ObjectMaster* a1);
-void AL_IconSet(ObjectMaster* a4, char a2, int a3);
+task* GetClosestChao(task* a1);
+void AL_IconSet(task* a4, char a2, int a3);
 
-void AL_GetRandomAttrPos_0(ObjectMaster* a1);	
+void AL_GetRandomAttrPos_0(task* a1);	
 typedef ChaoData1 chaowk;
-typedef int(__cdecl* BHV_FUNC)(ObjectMaster*);
-void sub_54A730(ObjectMaster* a1);
-extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(ObjectMaster* a1);
-void __cdecl AL_Brake(ObjectMaster* a1, float a2);
-void AL_SetBehavior(ObjectMaster* a1, BHV_FUNC a2);
-void AL_SetNextBehavior(ObjectMaster* a1, BHV_FUNC a2);
-void __cdecl AL_ForwardAcc(ObjectMaster* a1, float a2);
-BHV_FUNC AL_GetBehavior(ObjectMaster* a1);
+typedef int(__cdecl* BHV_FUNC)(task*);
+void sub_54A730(task* a1);
+extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task* a1);
+void __cdecl AL_Brake(task* a1, float a2);
+void AL_SetBehavior(task* a1, BHV_FUNC a2);
+void AL_SetNextBehavior(task* a1, BHV_FUNC a2);
+void __cdecl AL_ForwardAcc(task* a1, float a2);
+BHV_FUNC AL_GetBehavior(task* a1);
 void Chao_Init();
 
 void AL_BuyoBuyo_AccessoryHandling(task* tp);

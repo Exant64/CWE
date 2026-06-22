@@ -12,15 +12,15 @@ enum eAL_PST {
 void Chao_Animation(MotionTableData* a1, int a2);
 void  Chao_PlayAnimationSpeed(MotionTableData* result, int a2, unsigned __int16 a3);
 
-unsigned int __cdecl AL_IsMotionStop(ObjectMaster* a1);
-void AL_SetMotionLink(ObjectMaster* a1, int index);
-void AL_SetMotionLinkStep(ObjectMaster* a1, int index, int spd);
-void __cdecl AL_SetMotionSpd(ObjectMaster* a1, float a2);
+unsigned int __cdecl AL_IsMotionStop(task* a1);
+void AL_SetMotionLink(task* a1, int index);
+void AL_SetMotionLinkStep(task* a1, int index, int spd);
+void __cdecl AL_SetMotionSpd(task* a1, float a2);
 
-int AL_GetMotionNum(ObjectMaster* tp);
-int AL_GetMotionPosture(ObjectMaster* tp);
+int AL_GetMotionNum(task* tp);
+int AL_GetMotionPosture(task* tp);
 
-int __cdecl AL_IsMotionEnd(ObjectMaster* a1);
+int __cdecl AL_IsMotionEnd(task* a1);
 enum
 {
 	ALM_STAND,

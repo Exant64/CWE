@@ -73,7 +73,7 @@ static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
 }
 
 const int sub_56CF40Ptr = 0x56CF40;
-static int AL_ShapeChangeType(ObjectMaster* a1, int typevalue)
+static int AL_ShapeChangeType(task* a1, int typevalue)
 {
 	int retval;
 	__asm
@@ -86,8 +86,8 @@ static int AL_ShapeChangeType(ObjectMaster* a1, int typevalue)
 	return retval;
 }
 
-int __cdecl AL_ShapeChangeType_Hack(ObjectMaster* tp, int type) {
-	ChaoDataBase* pParam = tp->Data1.Chao->pParamGC;
+int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
+	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
 	int mini = 1;
 	int minicount = 21;
 

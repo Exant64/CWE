@@ -18,10 +18,10 @@ void InstantGrowTrees::OnALControl(task* tp) {
 
         if(!pTree) continue;
 
-        EntityData1* work = pTree->Data1.Entity;
+        taskwk* work = pTree->twp;
 
-        if(work->Action == 4) {
-            work->Action = 5;
+        if(work->mode == 4) {
+            work->mode = 5;
         }
     }
 }

@@ -3,15 +3,15 @@
 #include <AL_ModAPI.h>
 #include <al_behavior/al_behavior.h>
 
-int __cdecl ALBHV_Glide(ObjectMaster* a1)
+int __cdecl ALBHV_Glide(task* a1)
 {
-	ObjectMaster* v2; // ebx
+	task* v2; // ebx
 	UnknownData2* v3; // esi
 	ChaoData1* v4; // edi
 
 	v2 = a1;
 	v3 = a1->EntityData2;
-	v4 = a1->Data1.Chao;
+	v4 = GET_CHAOWK(a1);
 
 	if (!v4->Behavior.Mode)
 	{
@@ -28,9 +28,9 @@ int __cdecl ALBHV_Glide(ObjectMaster* a1)
 			v3->speed.y = 0;
 			v3->velocity.y = 0.25f;
 			//v4->entity.Position.y += 0.05f;
-			if (v4->entity.Position.y > 25)
+			if (v4->entity.pos.y > 25)
 			{
-				v4->entity.Position.y = 25;
+				v4->entity.pos.y = 25;
 			}
 			v4->Behavior.Timer--;
 			if (v4->Behavior.Timer <= 0)
@@ -52,9 +52,9 @@ int __cdecl ALBHV_Glide(ObjectMaster* a1)
 	return BHV_RET_CONTINUE;
 }
 
-int __cdecl ALBHV_GlideCondition(ObjectMaster* a1)
+int __cdecl ALBHV_GlideCondition(task* a1)
 {
-	if (a1->Data1.Chao->pParamGC->Type == ChaoType_Tails)
+	if (GET_CHAOPARAM(a1)->Type == ChaoType_Tails)
 		AL_SetBehavior(a1, ALBHV_Glide);
 	else
 		AL_SetBehavior(a1, (BHV_FUNC)0x005630C0);

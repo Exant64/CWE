@@ -5,9 +5,9 @@
 #include <ALifeSDK_Functions.h>
 #include "albhv.h"
 
-int __cdecl ALBHV_EggChao(ObjectMaster* a1)
+int __cdecl ALBHV_EggChao(task* a1)
 {
-	ChaoData1* wk = CHAOWK(a1);
+	ChaoData1* wk = GET_CHAOWK(a1);
 	AL_BEHAVIOR* bhv = &wk->Behavior;
 
 	switch (bhv->Mode)
@@ -40,7 +40,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, ChaoData* chaoData, int a3, NJS_VECTOR
 		}
 		chaoData->data.Type = ChaoType_Child;
 		chaoData->data.InKindergarten = -1;
-		ObjectMaster* chao = CreateChao(chaoData, 0, 0, position, a5);
+		task* chao = CreateChao(chaoData, 0, 0, position, a5);
 		chaoData->data.BodyType = SADXBodyType_EggChao;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}
@@ -48,12 +48,12 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, ChaoData* chaoData, int a3, NJS_VECTOR
 		CreateChaoEgg(a1, chaoData, a3, position, a5);
 }
 
-void __cdecl sub_550620(ObjectMaster* a1)
+void __cdecl sub_550620(task* a1)
 {
-	if (a1->Data1.Chao->pParamGC->BodyType != 1)
+	if (GET_CHAOPARAM(a1)->BodyType != 1)
 	{
-		memset(a1->Data1.Chao->pParamGC, 0, sizeof(ChaoDataBase));
-		a1->MainSub = DeleteObject_;
+		memset(GET_CHAOPARAM(a1), 0, sizeof(ChaoDataBase));
+		a1->exec = DeleteObject_;
 	}
 }
 static void __declspec(naked) sub_550620Hook()
@@ -70,9 +70,9 @@ static void __declspec(naked) sub_550620Hook()
 	}
 }
 
-void __cdecl EggChao_ALO_Delete(ObjectMaster* a1)
+void __cdecl EggChao_ALO_Delete(task* a1)
 {
-	if (a1->Data1.Chao->pParamGC->BodyType != 1)
+	if (GET_CHAOPARAM(a1)->BodyType != 1)
 		ALO_Delete(a1);
 }
 static void __declspec(naked) EggChao_ALO_Delete_Hook()
@@ -129,20 +129,20 @@ static void __declspec(naked) EggChaoCrawlHook()
 	}
 }
 
-void __cdecl EggChao_KeepOrDie(ObjectMaster* a1)
+void __cdecl EggChao_KeepOrDie(task* a1)
 {
-	if (a1->Data1.Chao->pParamGC->BodyType == 1)
+	if (GET_CHAOPARAM(a1)->BodyType == 1)
 	{
-		a1->MainSub = Chao_Main;
+		a1->exec = Chao_Main;
 		AL_SetBehavior(a1, ALBHV_Think);
 	}
 	else
-		a1->MainSub = DeleteObject_;
+		a1->exec = DeleteObject_;
 }
 
 
 const int LoadCocoonPtr = 0x00568CD0;
-void LoadCocoon(ObjectMaster* a1, char a2)
+void LoadCocoon(task* a1, char a2)
 {
 	__asm
 	{
@@ -160,11 +160,11 @@ enum MayuKind
 	MayuKind_Death = 0x2,
 };
 int MayuFieldTimer = 0x0C8 + 0x708 + 0x384 + 0x384;
-void CreateMayuField(ObjectMaster* a1, char a2)
+void CreateMayuField(task* a1, char a2)
 {
 	NJS_VECTOR* pos;
 	LoadCocoon(a1, a2);
-	pos = &a1->Data1.Entity->Position;//ALO_GetMayuWatchPos(a1, &pos);
+	pos = &a1->twp->pos;//ALO_GetMayuWatchPos(a1, &pos);
 	switch (a2)
 	{
 	case MayuKind_Grow:

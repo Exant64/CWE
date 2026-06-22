@@ -18,7 +18,7 @@ ObjectFunc(sub_5AC010, 0x5AC010);
 
 // we init these in AL_Odekake_MainMenuBar_Finalize
 static int* Odekake_EnabledButtonsCWE;
-static ObjectMaster** pOdeButtons;
+static task** pOdeButtons;
 
 static const float GetButtonPosition(const int index) {
 	return 209 + (56 * ((float)index - 1));
@@ -32,7 +32,7 @@ static const bool IsCursorOnBottomOfScreen() {
 	return AL_OdekakeMenuMaster_Data_ptr->cursorY > odekakeMenuEntries.size() - (NB_BUTTONS_VISIBLE - 1);
 }
 
-static void ScrollingLogic(ObjectMaster* a1) {
+static void ScrollingLogic(task* a1) {
 	const EASE_TYPE ease = EASE_OUT;
 	const INTERP_TYPE interp = INTERP_EXPO;
 	const int timer = 15;
@@ -43,10 +43,10 @@ static void ScrollingLogic(ObjectMaster* a1) {
 	}
 
 	for (size_t i = 0; i < odekakeMenuEntries.size(); i++) {
-		const EntityData1* pOdeButtonData = pOdeButtons[i]->Data1.Entity;
+		const taskwk* pOdeButtonData = pOdeButtons[i]->twp;
 
 		// buttons store their position in this field
-		float* pPosY = (float*)&pOdeButtonData->Rotation.y;
+		float* pPosY = (float*)&pOdeButtonData->ang.y;
 		
 		float targetPosY;
 		if (IsCursorOnTopOfScreen()) {
@@ -81,26 +81,26 @@ static void ScrollingLogic(ObjectMaster* a1) {
 		// if the target position is "offscreen" (above the first button or below the second one)
 		if (targetPosY < GetButtonPosition(0) || targetPosY > GetButtonPosition(NB_BUTTONS_VISIBLE - 1)) {
 			// don't bother to tween if already 0
-			if (pOdeButtonData->Scale.z != 0) {
+			if (pOdeButtonData->scl.z != 0) {
 				// tween to complete transparency (alpha 0)
 				CreateTween(
 					a1,
 					ease,
 					interp,
-					&pOdeButtons[i]->Data1.Entity->Scale.z,
+					&pOdeButtons[i]->twp->scl.z,
 					0.0f,
 					alphaTimer,
 					nullptr
 				);
 			}
 		}
-		else if (pOdeButtonData->Scale.z != 1) {
+		else if (pOdeButtonData->scl.z != 1) {
 			// tween to opaque (alpha 1)
 			CreateTween(
 				a1,
 				ease,
 				interp,
-				&pOdeButtons[i]->Data1.Entity->Scale.z,
+				&pOdeButtons[i]->twp->scl.z,
 				1.0f,
 				alphaTimer,
 				nullptr
@@ -120,7 +120,7 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 		return;
 	}
 
-	if (tp->Data1.Entity->Action != 0) {
+	if (tp->twp->mode != 0) {
 		return;
 	}
 
@@ -128,7 +128,7 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 		tp,
 		EASE_OUT,
 		INTERP_ELASTIC,
-		&tp->Data1.Entity->Scale.x,
+		&tp->twp->scl.x,
 		0.0f,
 		30,
 		[](task* pParent) {
@@ -136,35 +136,35 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 		}
 	);
 
-	tp->Data1.Entity->Action = 1;
+	tp->twp->mode = 1;
 }
 
 static void AL_OdeScrollArrowDisplayer(task* tp) {
 	SetShaders(1);
-	SetChaoHUDThingBColor(tp->Data1.Entity->Scale.z, 1, 1, 1);
+	SetChaoHUDThingBColor(tp->twp->scl.z, 1, 1, 1);
 
 	static ChaoHudThingB UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
 	static ChaoHudThingB GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, &CWE_UI_TEXLIST, 34 };
 	static ChaoHudThingB DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, &CWE_UI_TEXLIST, 34 };
 	static ChaoHudThingB GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
 
-	float scl = tp->Data1.Entity->Scale.x;
+	float scl = tp->twp->scl.x;
 	DrawChaoHudThingB(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
 	DrawChaoHudThingB(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
 }
 
 static void AL_CreateOdeScrollArrow(task* pParent) {
-	task* tp = LoadChildObject(LoadObj_Data1, AL_OdeScrollArrowExecutor, pParent);
+	task* tp = CreateChildTask(LoadObj_Data1, AL_OdeScrollArrowExecutor, pParent);
 	tp->field_1C = AL_OdeScrollArrowDisplayer;
 
-	tp->Data1.Entity->Scale.x = 0.0f;
-	tp->Data1.Entity->Scale.z = 1.0f;
+	tp->twp->scl.x = 0.0f;
+	tp->twp->scl.z = 1.0f;
 	
 	CreateTween(
 		tp,
 		EASE_OUT,
 		INTERP_ELASTIC,
-		&tp->Data1.Entity->Scale.x,
+		&tp->twp->scl.x,
 		1.0f,
 		30,
 		nullptr
@@ -197,7 +197,7 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 		// hack to get the last spawned object (button is in objectlist 3)
 		pOdeButtons[i] = ObjectLists[3]->NextObject;
 		// default alpha with 1 if supposed to be on screen when spawned, 0 if not
-		pOdeButtons[i]->Data1.Entity->Scale.z = i > 5 ? 0.0f : 1.0f;
+		pOdeButtons[i]->twp->scl.z = i > 5 ? 0.0f : 1.0f;
 	}
 
 	// spawn scrolling arrows, only if there are enough buttons for it to be needed
@@ -208,23 +208,23 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 	CreateButtonGuide(SELECT | CONFIRM | BACK);
 }
 
-static void NewButtonDraw(ObjectMaster* a1) {
-	EntityData1* v1 = a1->Data1.Entity;
-	SetChaoHUDThingBColor(*(float*)&v1->Rotation.z, 1, 1, 1);
+static void NewButtonDraw(task* a1) {
+	taskwk* v1 = a1->twp;
+	SetChaoHUDThingBColor(*(float*)&v1->ang.z, 1, 1, 1);
 
 	float v15, v23, v13, a1a, v22;
-	a1a = *(float*)&v1->Rotation.x;
-	v22 = *(float*)&v1->Rotation.y;
-	ChaoHudThingB* v12 = odekakeMenuEntries[v1->field_2].ButtonText;
-	if (!*(int*)(*(int*)(&v1->Scale.y)))
+	a1a = *(float*)&v1->ang.x;
+	v22 = *(float*)&v1->ang.y;
+	ChaoHudThingB* v12 = odekakeMenuEntries[v1->id].ButtonText;
+	if (!*(int*)(*(int*)(&v1->scl.y)))
 	{
-		v12 = odekakeMenuEntries[v1->field_2].GreyButtonText;
+		v12 = odekakeMenuEntries[v1->id].GreyButtonText;
 	}
 	v23 = v22 - 5;
 	v13 = a1a - 44;
 	DrawChaoHudThingB(v12, v13, v23, -100, 1, 1, -1, 1);
 
-	if (!*(int*)(*(int*)(&v1->Scale.y)))
+	if (!*(int*)(*(int*)(&v1->scl.y)))
 	{
 		v15 = *(float*)0xB50FC4;
 	}
@@ -233,28 +233,28 @@ static void NewButtonDraw(ObjectMaster* a1) {
 		v15 = 0.08f;
 	}
 	float v16 = v15;
-	float v17 = njSin(*(int*)(&v1->Position.y)) * (v1->Position.z * v16) + 1;
+	float v17 = njSin(*(int*)(&v1->pos.y)) * (v1->pos.z * v16) + 1;
 	float v18 = v17;
 	float v19 = 2 - v17;
 	float a4 = v18;
 	float a1b = a1a - 72;
-	DrawChaoHudThingB(odekakeMenuEntries[v1->field_2].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
+	DrawChaoHudThingB(odekakeMenuEntries[v1->id].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
 	SetChaoHUDThingBColor(1, 1, 1, 1);
 }
 
-static void ButtonDraw(ObjectMaster* tp) {
+static void ButtonDraw(task* tp) {
 	// we store our alpha for the scrolling effect in scale z
 
 	// i believe this alpha value is used for the text and icon on the button?
-	float* rotZAlphaThing = (float*)(&tp->Data1.Entity->Rotation.z);
+	float* rotZAlphaThing = (float*)(&tp->twp->ang.z);
 	float backupRotAlpha = *rotZAlphaThing;
 
 	// when it sets it to this alpha, it would overwrite the one we set below
 	// so we multiply it together to make our alpha affect this one properly
-	*rotZAlphaThing *= tp->Data1.Entity->Scale.z;
+	*rotZAlphaThing *= tp->twp->scl.z;
 
 	// set our one alpha
-	SetChaoHUDThingBColor(tp->Data1.Entity->Scale.z, 1, 1, 1);
+	SetChaoHUDThingBColor(tp->twp->scl.z, 1, 1, 1);
 	sub_5AC010(tp);
 	NewButtonDraw(tp);
 
@@ -263,7 +263,7 @@ static void ButtonDraw(ObjectMaster* tp) {
 }
 
 void AL_Odekake_MenuMaster_Selection() {
-	ObjectMaster* tp = AL_OdekakeMenuMaster_Data_ptr->tp;
+	task* tp = AL_OdekakeMenuMaster_Data_ptr->tp;
 
 	if (MenuButtons_Pressed[0] & Buttons_Up) {
 		--AL_OdekakeMenuMaster_Data_ptr->cursorY;
@@ -299,7 +299,7 @@ void AL_Odekake_MenuMaster_Selection() {
 void AL_Odekake_MainMenuBar_Finalize() {
 	// we memleak these :)
 	Odekake_EnabledButtonsCWE = (int*)calloc(1, sizeof(int) * odekakeMenuEntries.size());
-	pOdeButtons = (ObjectMaster**)calloc(1, sizeof(ObjectMaster*) * odekakeMenuEntries.size());
+	pOdeButtons = (task**)calloc(1, sizeof(task*) * odekakeMenuEntries.size());
 
 	// mainmenu checks if the button is grey or not through this
 	WriteData((int*)0x5A6DC6, (int)Odekake_EnabledButtonsCWE);

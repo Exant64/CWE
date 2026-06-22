@@ -46,7 +46,7 @@ static void BullyStopperScenario (task* tp) {
 }
 
 static void CreateBullyStopperScenario(task* pBully, task* pVictim, task* pStopper) {
-	task* tp = LoadObject(4, "BullyStopManager", BullyStopperScenario, (LoadObj)0);
+	task* tp = CreateElementalTask(4, "BullyStopManager", BullyStopperScenario, (LoadObj)0);
 
 	// create 3 fake entries that each chao will communicate with
 	al_entry_work* pEntry = ALLOC_ARRAY(3, al_entry_work);
@@ -119,7 +119,7 @@ static int ALBHV_HitChao(task* tp) {
                     break;
             }
 
-			PlaySound_XYZ(0x601E, &GET_CHAOWK(tp)->entity.Position, 0, 0, 110);
+			PlaySound_XYZ(0x601E, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
 
 			// this may feel hacky, but I decided it's the best way to sync up the sequence
 			// if you think about it, it's the same thing as a behaviorinterrupt
@@ -190,7 +190,7 @@ static int ALBHV_WaitForStopper(task* tp) {
 				AL_FaceChangeEye(tp, ChaoEyes_Painful);
 
 				if(njRandom() < 0.7f) {
-					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.Position, 0, 0, 110);
+					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -238,10 +238,10 @@ static int ALBHV_GetHit(task* tp) {
 
 			
             if(njRandom() < 0.5f) {
-				PlaySound_XYZ(24617, &GET_CHAOWK(tp)->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(24617, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
             }
             else {
-				PlaySound_XYZ(24685, &GET_CHAOWK(tp)->entity.Position, 0, 0, 110);
+				PlaySound_XYZ(24685, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
             }
 
             bhv->Mode++;
@@ -349,7 +349,7 @@ static int ALBHV_AfraidWait(task* tp) {
 		case AFRAIDWAIT_TURN: 
 			if (ALW_TurnToLockOn(tp, 384) < 384) {
 				if(njRandom() < 0.7f) {
-					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.Position, 0, 0, 110);
+					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -478,12 +478,12 @@ static task* FindChaoToBully(task* tp) {
 		BHV_FUNC func = AL_GetBehavior(pChao);
 
 		//not in water 
-		if (pChao->Data1.Entity->Position.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
 
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				float dist = CheckDistance(&work->entity.Position, &pChao->Data1.Entity->Position);
+				float dist = CheckDistance(&work->entity.pos, &pChao->twp->pos);
 
 				if (dist < 100.f) {
 					pSelectedChao = pChao;
@@ -511,14 +511,14 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 		if (!AL_IsHero2(pChao) && AL_EmotionGetValue(pChao, EM_PER_KINDNESS) < 10) continue;
 		
 		//not in water 
-		if (pChao->Data1.Entity->Position.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
 
 		const BHV_FUNC func = AL_GetBehavior(pChao);
 		
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->entity.Position, &work->entity.Position);
+				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->entity.pos, &work->entity.pos);
 
 				if (dist < distClosest) {
 					pSelectedChao = pChao;

@@ -69,14 +69,14 @@ DataArray(NJS_OBJECT*, BigMedals, 0x012E58F8, 16);
 extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
-static ObjectMaster* pChao = NULL;
+static task* pChao = NULL;
 
 static bool ColorMenuLastFrame = false;
 static bool ColorMenuOpened = false;
 static NJS_POINT2 HatAccMenuOffset;
 
 static UIController* customizationController = nullptr;
-static ObjectMaster* pCustomizationControllerTask = 0;
+static task* pCustomizationControllerTask = 0;
 
 struct AccessorySaveComparator {
 	bool operator()(const AccessorySaveInfo* a, const AccessorySaveInfo* b) const {
@@ -256,7 +256,7 @@ public:
 			}
 
 			someUIProjectionCode(&posIn, &posOut);
-			CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->Data1.Entity->Position, posOut, 15, NULL);
+			CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->twp->pos, posOut, 15, NULL);
 		}
 	}
 
@@ -764,7 +764,7 @@ public:
 				
 				DisplayChaoName_NewFont(nums, m_visualPosX + x * horizSpacing + sprite->wd, m_visualPosY + (y + m_scrollOffsetY) * verticalSpacing + sprite->ht - 15, 22, 22, nameColor, 0, DrawAncorV_Center);
 
-				Rotation rot = { 0, 0, 0 };
+				Angle3 rot = { 0, 0, 0 };
 
 				SAlItem _item;
 
@@ -1459,7 +1459,7 @@ public:
 		int item = GetItem();
 		if (item < 0) return;
 
-		Rotation rot = { 0, IsSelected() ? m_rotY : 0, 0 };
+		Angle3 rot = { 0, IsSelected() ? m_rotY : 0, 0 };
 
 		SAlItem _item = {
 			(m_slot > 0) ? ChaoItemCategory_Accessory : ChaoItemCategory_Hat,
@@ -1622,10 +1622,10 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 		someUIProjectionCode(&ChaoHatPosition, &posOut);
 		pChao = CreateChao((ChaoData*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
-		pChao->Data1.Chao->field_B0 &= ~8u;
-		pChao->Data1.Chao->field_B0 &= ~2u;
-		pChao->Data1.Chao->field_B0 &= ~0x10u;
-		pChao->Data1.Chao->field_B0 &= ~BIT_5; // buyo
+		GET_CHAOWK(pChao)->field_B0 &= ~8u;
+		GET_CHAOWK(pChao)->field_B0 &= ~2u;
+		GET_CHAOWK(pChao)->field_B0 &= ~0x10u;
+		GET_CHAOWK(pChao)->field_B0 &= ~BIT_5; // buyo
 
 		customizationController = new UIController();
 
@@ -1686,7 +1686,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 				}
 				someUIProjectionCode(&posIn, &posOut);
 				
-				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->Data1.Entity->Position, posOut, 30, NULL);
+				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->twp->pos, posOut, 30, NULL);
 				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &HatAccMenuOffset, targetMenuOffset, 30, NULL);
 
 				auto scrollAreaElement = customizationController->GetButton("scrollarea");
@@ -1718,13 +1718,13 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		CreateButtonGuide(SELECT | CONFIRM | BACK);
 		LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 
-		pCustomizationControllerTask = LoadObject(3,
+		pCustomizationControllerTask = CreateElementalTask(3,
 			"CustomizeUIController",
-			[](ObjectMaster*) {
+			[](task*) {
 				customizationController->Exec();
 			},
 			LoadObj_Data1);
-		pCustomizationControllerTask->DisplaySub = [](ObjectMaster*) {
+		pCustomizationControllerTask->disp = [](task*) {
 			customizationController->Disp();
 		};
 

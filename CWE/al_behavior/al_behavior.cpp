@@ -15,7 +15,7 @@ extern void ALBHV_Life_Init();
 const int Chao_BehaviourPtr = 0x0053D890;
 const int Chao_BehaviourQueuePtr = 0x0053D970;
 
-void AL_SetBehaviorWithTimer(ObjectMaster* a1, int a2, int a3)
+void AL_SetBehaviorWithTimer(task* a1, int a2, int a3)
 {
 	__asm
 	{
@@ -27,7 +27,7 @@ void AL_SetBehaviorWithTimer(ObjectMaster* a1, int a2, int a3)
 	}
 }
 
-void Chao_BehaviourQueue(ObjectMaster* a1, int a2)
+void Chao_BehaviourQueue(task* a1, int a2)
 {
 	__asm
 	{
@@ -37,15 +37,15 @@ void Chao_BehaviourQueue(ObjectMaster* a1, int a2)
 	}
 }
 
-BHV_FUNC AL_GetBehavior(ObjectMaster* a1)
+BHV_FUNC AL_GetBehavior(task* a1)
 {
-	return a1->Data1.Chao->Behavior.BhvFuncList[a1->Data1.Chao->Behavior.CurrBhvFuncNum];
+	return GET_CHAOWK(a1)->Behavior.BhvFuncList[GET_CHAOWK(a1)->Behavior.CurrBhvFuncNum];
 }
-void AL_SetBehavior(ObjectMaster* a1, BHV_FUNC a2)
+void AL_SetBehavior(task* a1, BHV_FUNC a2)
 {
 	AL_SetBehaviorWithTimer(a1, (int)a2, -1);
 }
-void AL_SetNextBehavior(ObjectMaster* a1, BHV_FUNC a2)
+void AL_SetNextBehavior(task* a1, BHV_FUNC a2)
 {
 	Chao_BehaviourQueue(a1, (int)a2);
 }
@@ -83,7 +83,7 @@ void AL_SetBehaviorWithFreeWork(task* tp, BHV_FUNC Func, int info) {
     AL_BehaviorSetFreeWork(tp, info);
 }
 
-extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int type) {
+extern "C" __declspec(dllexport) void AL_SetAccessory(task * a1, int type) {
 	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
@@ -96,7 +96,7 @@ extern "C" __declspec(dllexport) void AL_SetAccessory(ObjectMaster * a1, int typ
 	accessoryData.ColorFlags = 0;
 }
 
-void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int type) {
+void AL_SetAccessory(task* a1, const AccessorySaveInfo* saveInfo, int type) {
 	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
@@ -109,13 +109,13 @@ void AL_SetAccessory(ObjectMaster* a1, const AccessorySaveInfo* saveInfo, int ty
 	accessoryData.ColorFlags = saveInfo->UsedColors;
 }
 
-extern "C" __declspec(dllexport) int AL_GetAccessory(ObjectMaster * a1, int type)
+extern "C" __declspec(dllexport) int AL_GetAccessory(task * a1, int type)
 {
 	return GET_CHAOWK(a1)->AccessoryIndices[type];
 }
 
 const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
-void AL_GrabObjectBothHands(ObjectMaster* a2, ObjectMaster* a1)
+void AL_GrabObjectBothHands(task* a2, task* a1)
 {
 	__asm
 	{
@@ -125,7 +125,7 @@ void AL_GrabObjectBothHands(ObjectMaster* a2, ObjectMaster* a1)
 	}
 }
 const int sub_5691B0Ptr = 0x5691B0;
-signed int sub_5691B0(ObjectMaster* a1)
+signed int sub_5691B0(task* a1)
 {
 	int result;
 	__asm
@@ -138,7 +138,7 @@ signed int sub_5691B0(ObjectMaster* a1)
 }
 
 //putting accessory on
-extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(ObjectMaster * a1)
+extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task * a1)
 {
 	ChaoData1* v1; // esi
 	int v2; // eax
@@ -146,10 +146,10 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(ObjectMa
 	int v4; // eax
 	al_entry_work* v6; // eax
 	al_entry_work* v7; // esi
-	ObjectMaster* v8; // eax
+	task* v8; // eax
 	void* v9; // eax
 
-	v1 = a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->Behavior.Mode;
 	v3 = &v1->Behavior;
 	if (!v2)
@@ -182,30 +182,30 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(ObjectMa
 		{
 			auto* accessorySave = (AccessorySaveInfo*)AL_GetItemSaveInfo(v7->tp);
 			if (accessorySave) {
-				AL_SetAccessory(a1, accessorySave, v8->Data1.Entity->Rotation.x);
+				AL_SetAccessory(a1, accessorySave, v8->twp->ang.x);
 				AL_ClearItemSaveInfo(accessorySave);
 				AL_ClearItemSaveInfoPtr(v7->tp);
 			}
 			else {
-				AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
+				AL_SetAccessory(a1, v8->twp->ang.x);
 			}
-			v7->tp->MainSub = DeleteObject_;
+			v7->tp->exec = DeleteObject_;
 		}
 	}
 	AL_SetMotionLinkStep(a1, 203, 35);
 	return AL_MoveHoldingObject(a1) == 0;
 }
-extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(ObjectMaster * a1)
+extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(task * a1)
 {
 	ChaoData1* v1; // esi
 	int v2; // eax
 	AL_BEHAVIOR* v3; // esi
 	al_entry_work* v6; // eax
 	al_entry_work* v7; // esi
-	ObjectMaster* v8; // eax
+	task* v8; // eax
 	void* v9; // eax
 
-	v1 = a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->Behavior.Mode;
 	v3 = &v1->Behavior;
 	v6 = ALW_IsCommunication(a1);
@@ -217,28 +217,28 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(Obj
 		{
 			auto* accessorySave = (AccessorySaveInfo*)AL_GetItemSaveInfo(v7->tp);
 			if (accessorySave) {
-				AL_SetAccessory(a1, accessorySave, v8->Data1.Entity->Rotation.x);
+				AL_SetAccessory(a1, accessorySave, v8->twp->ang.x);
 				AL_ClearItemSaveInfo(accessorySave);
 				AL_ClearItemSaveInfoPtr(v7->tp);
 			}
 			else {
-				AL_SetAccessory(a1, v8->Data1.Entity->Rotation.x);
+				AL_SetAccessory(a1, v8->twp->ang.x);
 			}
-			v7->tp->MainSub = DeleteObject_;
+			v7->tp->exec = DeleteObject_;
 		}
 	}
 	return 1;
 }
-extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(ObjectMaster * a1)
+extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task * a1)
 {
 	ChaoData1* v1; // edi
 	c_colli_hit_info* v2; // eax
-	ObjectMaster* v3; // ebx
+	task* v3; // ebx
 	ChaoDataBase* v5; // ecx
 	signed int result; // eax
 	int v7; // eax
 
-	v1 = a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	if (!v1->Behavior.Mode)
 	{
 		AL_SetMotionLinkStep(a1, 202, 15);
@@ -262,8 +262,8 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(Object
 		}
 		AL_GrabObjectBothHands(a1, v3);
 		AL_SetBehaviorWithTimer(a1, 0x569340, -1);
-		v5 = a1->Data1.Chao->pParamGC;
-		if (AL_GetAccessory(a1, GetAccessoryType(v3->Data1.Entity->Rotation.x)) == -1)
+		v5 = GET_CHAOPARAM(a1);
+		if (AL_GetAccessory(a1, GetAccessoryType(v3->twp->ang.x)) == -1)
 			Chao_BehaviourQueue(a1, (int)ALBHV_PutOnAccessoryTemp);
 		else
 			Chao_BehaviourQueue(a1, (int)0x569550);
@@ -282,13 +282,13 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(Object
 	}
 	return result;
 }
-signed int __cdecl AL_CheckAccessory(ObjectMaster* a1)
+signed int __cdecl AL_CheckAccessory(task* a1)
 {
-	signed int(__cdecl * v1)(ObjectMaster*); // eax
-	//ObjectMaster* v2; // eax
-	ObjectMaster* v3; // esi
+	signed int(__cdecl * v1)(task*); // eax
+	//task* v2; // eax
+	task* v3; // esi
 
-	v1 = a1->Data1.Chao->Behavior.BhvFuncList[a1->Data1.Chao->Behavior.CurrBhvFuncNum];
+	v1 = GET_CHAOWK(a1)->Behavior.BhvFuncList[GET_CHAOWK(a1)->Behavior.CurrBhvFuncNum];
 	if ((int)v1 == 0x5607C0)
 	{
 		return 0;
@@ -320,25 +320,25 @@ signed int __cdecl AL_CheckAccessory(ObjectMaster* a1)
 		}
 	}
 
-	MOV_SetAimPos(a1, &v3->Data1.Entity->Position);
+	MOV_SetAimPos(a1, &v3->twp->pos);
 	AL_SetBehaviorWithTimer(a1, (int)ALBHV_TurnToAccessory, -1);
 	return 1;
 }
 //putting accessory on
-extern "C" __declspec(dllexport) bool CanSpecialRun(ObjectMaster * chao, ObjectMaster * special) {
-	int type = special->Data1.Entity->Rotation.x;
+extern "C" __declspec(dllexport) bool CanSpecialRun(task * chao, task * special) {
+	int type = special->twp->ang.x;
 	return specialItemFuncs[type].second &&
 		specialItemFuncs[type].second(chao, special);
 }
-extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnSpecial(ObjectMaster* tp)
+extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnSpecial(task* tp)
 {
 	al_entry_work* pSpecialEntry = ALW_IsCommunication(tp);
 	if (!pSpecialEntry) return BHV_RET_FINISH;
 	
-	ObjectMaster* pSpecial = pSpecialEntry->tp;
+	task* pSpecial = pSpecialEntry->tp;
 	if (!pSpecial) return BHV_RET_FINISH;
 		
-	int type = pSpecial->Data1.Entity->Rotation.x;
+	int type = pSpecial->twp->ang.x;
 
 	if (specialItemFuncs[type].first)
 		specialItemFuncs[type].first(tp, pSpecial);
@@ -351,14 +351,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnSpecial(ObjectMas
 			AL_ClearItemSaveInfoPtr(pSpecial);
 		}
 
-		pSpecial->MainSub = DeleteObject_;
+		pSpecial->exec = DeleteObject_;
 		return BHV_RET_FINISH;
 	}	
 
 	return BHV_RET_CONTINUE;
 }
-extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(ObjectMaster * tp) {
-	ChaoData1* v1 = tp->Data1.Chao;
+extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(task * tp) {
+	ChaoData1* v1 = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &v1->Behavior;
 
 	switch (bhv->Mode) {
@@ -370,7 +370,7 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(ObjectMaster * 
 	}
 
 	if (MOV_TurnToAim2(tp, 0x600) < 0xB6) {
-		ObjectMaster* pSpecial;
+		task* pSpecial;
 		c_colli_hit_info* v2 = CCL_IsHitKindEx(tp, 0xCE);
 		if (v2 && (pSpecial = v2->hit_twp) != 0) {
 			if (!ALW_IsHeld(pSpecial)) {
@@ -381,7 +381,7 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(ObjectMaster * 
 				AL_GrabObjectBothHands(tp, pSpecial);
 				AL_SetBehavior(tp, ALBHV_HoldThink);
 
-				int id = pSpecial->Data1.Entity->Rotation.x;
+				int id = pSpecial->twp->ang.x;
 				if (specialItemFuncs[id].second && specialItemFuncs[id].second(tp, pSpecial))
 					AL_SetNextBehavior(tp, ALBHV_PutOnSpecial);
 				else
@@ -395,13 +395,13 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(ObjectMaster * 
 
 	return BHV_RET_CONTINUE;
 }
-signed int __cdecl AL_CheckSpecial(ObjectMaster* a1)
+signed int __cdecl AL_CheckSpecial(task* a1)
 {
-	signed int(__cdecl * v1)(ObjectMaster*); // eax
-	//ObjectMaster* v2; // eax
-	ObjectMaster* v3; // esi
+	signed int(__cdecl * v1)(task*); // eax
+	//task* v2; // eax
+	task* v3; // esi
 
-	v1 = a1->Data1.Chao->Behavior.BhvFuncList[a1->Data1.Chao->Behavior.CurrBhvFuncNum];
+	v1 = GET_CHAOWK(a1)->Behavior.BhvFuncList[GET_CHAOWK(a1)->Behavior.CurrBhvFuncNum];
 	if ((int)v1 == 0x5607C0)
 	{
 		return 0;
@@ -433,11 +433,11 @@ signed int __cdecl AL_CheckSpecial(ObjectMaster* a1)
 		}
 	}
 
-	MOV_SetAimPos(a1, &v3->Data1.Entity->Position);
+	MOV_SetAimPos(a1, &v3->twp->pos);
 	AL_SetBehavior(a1, ALBHV_TurnToSpecial);
 	return 1;
 }
-signed int __cdecl AL_CheckObakeHeadAndAccessory(ObjectMaster* a1)
+signed int __cdecl AL_CheckObakeHeadAndAccessory(task* a1)
 {
 	if (AL_CheckAccessory(a1) || AL_CheckSpecial(a1) || sub_5691B0(a1))
 		return 1;
@@ -472,14 +472,14 @@ static void AccessoryRemoveAll(task* tp) {
 			saveinfo->UsedColors = accessoryChaoData.ColorFlags;
 			memcpy(saveinfo->Colors, accessoryChaoData.ColorSlots, sizeof(saveinfo->Colors));
 			
-			Accessory_Load(index, &work->entity.Position, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
+			Accessory_Load(index, &work->entity.pos, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
 			AL_ParameterClearAccessory(tp, EAccessoryType(i));
 		}
 	}
 }
 
 //removing accessory
-void __cdecl AccessoryRemove1(ObjectMaster* a1)
+void __cdecl AccessoryRemove1(task* a1)
 {
 	AL_SetBehaviorWithTimer(a1, (int)0x563EB0, -1);
 	AccessoryRemoveAll(a1);

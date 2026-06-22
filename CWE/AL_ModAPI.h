@@ -41,7 +41,7 @@ extern std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 
 extern "C" 
 {
-	__declspec(dllexport) void Chao_RegAnimation(ObjectMaster* a1, const std::string& name);
+	__declspec(dllexport) void Chao_RegAnimation(task* a1, const std::string& name);
 	__declspec(dllexport) void Chao_RegAnimationTbl(MotionTableData* a1, const std::string& name);
 	__declspec(dllexport) void RegisterDataFunc(RegisterDataFuncPtr ptr);
 }

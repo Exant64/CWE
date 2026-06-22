@@ -10,7 +10,7 @@
 
 
 
-DataPointer(ObjectMaster*, TVObject, 0x1AED288);
+DataPointer(task*, TVObject, 0x1AED288);
 int ALO_GetTVWatchPos(NJS_VECTOR* a1)
 {
 	Data1Ptr v2; // edi
@@ -18,20 +18,20 @@ int ALO_GetTVWatchPos(NJS_VECTOR* a1)
 	signed int v4; // esi
 	if (TVObject)
 	{
-		v2.Entity = (EntityData1*)TVObject->Data1.Entity;
+		v2.Entity = (taskwk*)TVObject->twp;
 		v3 = njRandom() * 3.0f + 10.0f;
-		v4 = v2.Entity->Rotation.y
+		v4 = v2.Entity->ang.y
 			- (signed int)((njRandom() * 80.0f - 40.0f) * -182.0444488525391f)
 			+ 0x8000;
-		a1->x = njSin(v4) * v3 + v2.Entity->Position.x;
-		a1->y = v2.Entity->Position.y;
-		a1->z = njCos(v4) * v3 + v2.Entity->Position.z;
+		a1->x = njSin(v4) * v3 + v2.Entity->pos.x;
+		a1->y = v2.Entity->pos.y;
+		a1->z = njCos(v4) * v3 + v2.Entity->pos.z;
 		return 1;
 	}
 	return 0;
 }
 
-DataPointer(ObjectMaster*, pRadicaseTask, 0x01AED2E0);
+DataPointer(task*, pRadicaseTask, 0x01AED2E0);
 int ALO_GetRadicaseListenPos(NJS_VECTOR* a1)
 {
 	Data1Ptr v2; // edi
@@ -39,22 +39,22 @@ int ALO_GetRadicaseListenPos(NJS_VECTOR* a1)
 	signed int v4; // esi
 	if (pRadicaseTask)
 	{
-		v2.Entity = (EntityData1*)pRadicaseTask->Data1.Entity;
+		v2.Entity = (taskwk*)pRadicaseTask->twp;
 		v3 = njRandom() * 3.0f + 10.0f;
-		v4 = v2.Entity->Rotation.y
+		v4 = v2.Entity->ang.y
 			- (signed int)((njRandom() * 80.0f - 40.0f) * -182.0444488525391f)
 			+ 0x8000;
-		a1->x = njSin(v4) * v3 + v2.Entity->Position.x;
-		a1->y = v2.Entity->Position.y;
-		a1->z = njCos(v4) * v3 + v2.Entity->Position.z;
+		a1->x = njSin(v4) * v3 + v2.Entity->pos.x;
+		a1->y = v2.Entity->pos.y;
+		a1->z = njCos(v4) * v3 + v2.Entity->pos.z;
 		return 1;
 	}
 	return 0;
 }
 
-int __cdecl ALBHV_GoToRadicase(ObjectMaster* tp)
+int __cdecl ALBHV_GoToRadicase(task* tp)
 {
-	ObjectMaster* v2; // r30
+	task* v2; // r30
 	NJS_POINT3 v4; // [sp+50h] [-30h] BYREF
 
 	v2 = AL_GetFoundToyTask(tp);
@@ -72,9 +72,9 @@ int __cdecl ALBHV_GoToRadicase(ObjectMaster* tp)
 	return BHV_RET_CONTINUE;
 }
 
-int __cdecl ALBHV_GoToTV(ObjectMaster* tp)
+int __cdecl ALBHV_GoToTV(task* tp)
 {
-	ObjectMaster* v2; // r30
+	task* v2; // r30
 	NJS_POINT3 v4; // [sp+50h] [-30h] BYREF
 
 	v2 = AL_GetFoundToyTask(tp);
@@ -91,9 +91,9 @@ int __cdecl ALBHV_GoToTV(ObjectMaster* tp)
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x00598890>);
 	return BHV_RET_CONTINUE;
 }
-signed int __cdecl ALBHV_GoToHorse(ObjectMaster* a1)
+signed int __cdecl ALBHV_GoToHorse(task* a1)
 {
-	ObjectMaster* v1; // edi
+	task* v1; // edi
 	
 	v1 = AL_GetFoundToyTask(a1);
 	if (!v1 || ALW_IsSheAttentionOtherOne(a1, v1))
@@ -101,7 +101,7 @@ signed int __cdecl ALBHV_GoToHorse(ObjectMaster* a1)
 		return BHV_RET_FINISH;
 	}
 
-	MOV_SetAimPos(a1, &v1->Data1.Entity->Position);
+	MOV_SetAimPos(a1, &v1->twp->pos);
 	ALW_LockOn(a1, v1);
 	ALW_CommunicationOn(a1, v1);
 
@@ -129,16 +129,15 @@ int sub_535010(NJS_VECTOR* a1)
 	}
 }
 
-extern signed int __cdecl ALBHV_GoToPiano(ObjectMaster* a1);
-void __cdecl  AL_CalcIntentionScore_LToy(ObjectMaster* a1, float* a2)
+extern signed int __cdecl ALBHV_GoToPiano(task* a1);
+void __cdecl  AL_CalcIntentionScore_LToy(task* a1, float* a2)
 {
-	Data1Ptr v2; // esi
-	ObjectMaster* v3; // ebx
+	task* v3; // ebx
 	int v4; // eax
 	float v11; // [esp+8h] [ebp-4h]
 
-	v2.Chao = (ChaoData1*)a1->Data1.Chao;
-	if (!v2.Chao->Behavior.IntentionTimer[7])
+	chaowk* work = GET_CHAOWK(a1);
+	if (!work->Behavior.IntentionTimer[7])
 	{
 		v3 = AL_GetFoundToyTask(a1);
 		if (v3)
@@ -166,7 +165,7 @@ void __cdecl  AL_CalcIntentionScore_LToy(ObjectMaster* a1, float* a2)
 					AL_SetBehavior(a1, (BHV_FUNC)0x40AD80);
 					break;
 				case ALW_KIND_HORSE:
-					v4 = sub_535010(&a1->Data1.Entity->Position);
+					v4 = sub_535010(&a1->twp->pos);
 					if (v4 != 1 && v4 != 2 && v4 == 3)
 					{
 						return;

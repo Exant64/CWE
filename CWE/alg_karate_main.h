@@ -17,9 +17,9 @@ struct __declspec(align(16)) KarateMainExecData
 	char field_9;
 	char MenuSelection;
 	char field_B;
-	ObjectMaster* playerChao;
-	ObjectMaster* pointerToSaveThing;
-	ObjectMaster* PointerToOtherSaveThing;
+	task* playerChao;
+	task* pointerToSaveThing;
+	task* PointerToOtherSaveThing;
 	ChaoData* field_18;
 	ChaoData* field_1C;
 	int field_20;
@@ -29,7 +29,7 @@ struct __declspec(align(16)) KarateMainExecData
 	float field_30;
 	int field_34;
 	int field_38;
-	ObjectMaster* field_3C;
+	task* field_3C;
 };
 #pragma pack(pop)
 
@@ -40,7 +40,7 @@ struct __declspec(align(8)) KarateChaoExec_Data2
 	short word2;
 	short flag;
 	short word6;
-	ObjectMaster* pointerToChao;
+	task* pointerToChao;
 	void* dwordC;
 	ChaoData* chaoDataPointer;
 	int field_14;

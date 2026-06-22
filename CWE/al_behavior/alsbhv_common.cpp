@@ -38,7 +38,7 @@ int __cdecl DiffAngle(int a1, int a2)
 	}
 	return result;
 }
-signed int __cdecl ALBHV_GoNextToSocial(ObjectMaster* a1)
+signed int __cdecl ALBHV_GoNextToSocial(task* a1)
 {
 	chaowk* v1; // esi
 	int v2; // eax
@@ -51,7 +51,7 @@ signed int __cdecl ALBHV_GoNextToSocial(ObjectMaster* a1)
 		return BHV_RET_BREAK;
 	}
 
-	v1 = (chaowk*)a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->Behavior.Mode;
 	v3 = &v1->Behavior;
 	switch (v2)
@@ -86,7 +86,7 @@ signed int __cdecl ALBHV_GoNextToSocial(ObjectMaster* a1)
 		break;
 	case 2:
 
-		v1->entity.Rotation.y = AdjustAngle_(v1->entity.Rotation.y, ALW_GetLockOnTask(a1)->Data1.Entity->Rotation.y, 1024);
+		v1->entity.ang.y = AdjustAngle_(v1->entity.ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
 		if (v3->Timer++ > 30)
 			return 1;
 		break;
@@ -100,9 +100,9 @@ signed int __cdecl ALBHV_GoNextToSocial(ObjectMaster* a1)
 	}
 	return 0;
 }
-int ALBHV_WaitForSocialArrive(ObjectMaster* tp)
+int ALBHV_WaitForSocialArrive(task* tp)
 {
-	chaowk* work = CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &work->Behavior; // esi
 	float dist;
 
@@ -130,20 +130,20 @@ int ALBHV_WaitForSocialArrive(ObjectMaster* tp)
 	
 	return 0;
 }
-int ALBHV_LockUp(ObjectMaster* a1)
+int ALBHV_LockUp(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
 		PrintDebug("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
-	if ((a1->Data1.Chao)->Behavior.Mode == 0)
+	if (GET_CHAOWK(a1)->Behavior.Mode == 0)
 	{
 		AL_SetMotionLink(a1, 0);
-		(a1->Data1.Chao)->Behavior.Mode++;
+		GET_CHAOWK(a1)->Behavior.Mode++;
 	}
 	return 0;
 }
-signed int __cdecl ALBHV_GoToSocial(ObjectMaster* a1)
+signed int __cdecl ALBHV_GoToSocial(task* a1)
 {
 	chaowk* v1; // esi
 	int v2; // eax
@@ -156,7 +156,7 @@ signed int __cdecl ALBHV_GoToSocial(ObjectMaster* a1)
 		return BHV_RET_BREAK;
 	}
 
-	v1 = (chaowk*)a1->Data1.Chao;
+	v1 = GET_CHAOWK(a1);
 	v2 = v1->Behavior.Mode;
 	v3 = &v1->Behavior;
 	switch (v2)

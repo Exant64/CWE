@@ -6,5 +6,5 @@ public:
 
 	using Code::Code;
 
-	void OnALControl(ObjectMaster* tp) override;
+	void OnALControl(task* tp) override;
 };

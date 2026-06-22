@@ -114,10 +114,10 @@ bool AL_KW_CompareID(const CHAO_ID& id1, const CHAO_ID& id2)
 		id2.gid[0] == id1.gid[0]);
 }
 
-int AL_KW_AlreadyKnows(ObjectMaster* a1, ObjectMaster* a2)
+int AL_KW_AlreadyKnows(task* a1, task* a2)
 {
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
-	chaowk* wk2 = (chaowk*)a2->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
+	chaowk* wk2 = GET_CHAOWK(a2);
 
 	for (int i = 0; i < 20; i++)
 	{
@@ -127,10 +127,10 @@ int AL_KW_AlreadyKnows(ObjectMaster* a1, ObjectMaster* a2)
 	return -1;
 }
 
-int AL_KW_GetRelationIndex(ObjectMaster* a1, ObjectMaster* a2)
+int AL_KW_GetRelationIndex(task* a1, task* a2)
 {
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
-	chaowk* wk2 = (chaowk*)a2->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
+	chaowk* wk2 = GET_CHAOWK(a2);
 
 	//if already registered, find it
 	int alreadyKnowsID = AL_KW_AlreadyKnows(a1, a2);
@@ -172,10 +172,10 @@ ChaoDataBase* AL_KW_FindChaoBasedOnId(const CHAO_ID& id)
 	return nullptr;
 }
 
-int AL_KW_GetFriendCount(ObjectMaster* a1)
+int AL_KW_GetFriendCount(task* a1)
 {
 	int count = 0;
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
 	for (int i = 0; i < 20; i++)
 	{
 		if (wk1->pParamGC->Knowledge.chao[i].id.id[0] != 0)
@@ -184,9 +184,9 @@ int AL_KW_GetFriendCount(ObjectMaster* a1)
 	return count;
 }
 
-void __cdecl AL_KW_MeetChao(ObjectMaster* a1, int index, KW_MEET_TYPE meetType)
+void __cdecl AL_KW_MeetChao(task* a1, int index, KW_MEET_TYPE meetType)
 {
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
 
 	//increment meet
 	if (wk1->pParamGC->Knowledge.chao[index].meet < 0xFFFFu)
@@ -210,37 +210,37 @@ void __cdecl AL_KW_MeetChao(ObjectMaster* a1, int index, KW_MEET_TYPE meetType)
 	wk1->pParamGC->Knowledge.chao[index].distance = 2 * (wk1->pParamGC->Knowledge.chao[index].distance / 3);
 }
 
-void AL_KW_AddLikeChao(ObjectMaster* a1, int index, int val)
+void AL_KW_AddLikeChao(task* a1, int index, int val)
 {
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
 	wk1->pParamGC->Knowledge.chao[index].like += val;
 	if (wk1->pParamGC->Knowledge.chao[index].like > 50) wk1->pParamGC->Knowledge.chao[index].like = 50;
 	if (wk1->pParamGC->Knowledge.chao[index].like < -50) wk1->pParamGC->Knowledge.chao[index].like = -50;
 }
 
-int AL_KW_GetMeetChao(ObjectMaster* a1, int index)
+int AL_KW_GetMeetChao(task* a1, int index)
 {
 	if (index == -1)
 	{
 		//error
 		return -1;
 	}
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
 	return wk1->pParamGC->Knowledge.chao[index].meet;
 }
 
-int AL_KW_GetMeetChao(ObjectMaster* a1, ObjectMaster* a2)
+int AL_KW_GetMeetChao(task* a1, task* a2)
 {
 	return AL_KW_GetMeetChao(a1, AL_KW_GetRelationIndex(a1, a2));
 }
 
-char AL_KW_GetMeetTypeChao(ObjectMaster* a1, int index)
+char AL_KW_GetMeetTypeChao(task* a1, int index)
 {
-	chaowk* wk1 = (chaowk*)a1->Data1.Chao;
+	chaowk* wk1 = GET_CHAOWK(a1);
 	return wk1->pParamGC->Knowledge.chao[index].meetType;
 }
 
-void AL_KW_MeetEachother(ObjectMaster* a1, ObjectMaster* a2, KW_MEET_TYPE type)
+void AL_KW_MeetEachother(task* a1, task* a2, KW_MEET_TYPE type)
 {
 	int relationIndex1 = AL_KW_GetRelationIndex(a1, a2);
 	int relationIndex2 = AL_KW_GetRelationIndex(a2, a1);

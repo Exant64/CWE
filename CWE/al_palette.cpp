@@ -133,7 +133,7 @@ const char* off_1365D78[39] =
 
 #if 0
 const int sub_534E10Ptr = 0x534E10;
-void alpalSetBank(ObjectMaster* a1, int a2)
+void alpalSetBank(task* a1, int a2)
 {
 	__asm
 	{
@@ -189,14 +189,14 @@ int dword_1365D30[] =
 	49,50,51, //dark normal
 };
 
-void __cdecl alpalSetBank(ObjectMaster* a1, int a2)
+void __cdecl alpalSetBank(task* a1, int a2)
 {
 	int v2; // eax
 	NJS_TEXLIST* currentTexlist;
 
 	TexPalMap.clear();
 
-	switch (a1->Data1.Chao->pParamGC->Type)
+	switch (GET_CHAOPARAM(a1)->Type)
 	{
 	case 2:
 		v2 = 0;
@@ -261,7 +261,7 @@ static void __declspec(naked) alpalSetBankHook()
 
 //we removed the alpalSetBank calls from DrawChao, meaning now it only sets bank once before entering DrawChao
 //however to apply it to the right texlist (negative/regular/whatever in the future) we also need to call SetBodyTexture before it
-void __cdecl alpalAL_DrawHook(ObjectMaster* a1, int a2) {
+void __cdecl alpalAL_DrawHook(task* a1, int a2) {
 	AL_SetBodyTexture(a1);
 	alpalSetBank(a1, a2);
 }
@@ -306,7 +306,7 @@ __int16 sub_420F10(unsigned __int8 a1, unsigned __int8 a2, unsigned __int8 a3)
 StdcallFunctionPointer(void, sub_41AB40, (signed int a1), 0x41AB40);
 
 const int UpdateChaoPalettePtr = 0x0534670;
-void __cdecl UpdateChaoPalette(ChaoDataBase* a1, ObjectMaster* a2, int a3)
+void __cdecl UpdateChaoPalette(ChaoDataBase* a1, task* a2, int a3)
 {
 	__asm
 	{
@@ -318,7 +318,7 @@ void __cdecl UpdateChaoPalette(ChaoDataBase* a1, ObjectMaster* a2, int a3)
 	}
 }
 
-void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, ObjectMaster* a1, int cno, char gPalette[][48 * 4])
+void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, task* a1, int cno, char gPalette[][48 * 4])
 {
 	ChaoType v3; // dl
 	signed int v4; // ecx
@@ -424,7 +424,7 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, ObjectMaster* a1, i
 		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCP];
 		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
 		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
-		v28 = (unsigned short*)a1->Data1.Chao->palette;
+		v28 = (unsigned short*)GET_CHAOWK(a1)->palette;
 		v33 = chaoData->Alignment;
 		if (evolution > 1)
 		{
@@ -598,7 +598,7 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, ObjectMaster* a1, i
 		v14 = gPalette[v13];
 		v15 = gPalette[v13 + 5];
 		v16 = gPalette[v13 + 3];
-		v37 = (unsigned short*)a1->Data1.Chao->palette;
+		v37 = (unsigned short*)GET_CHAOWK(a1)->palette;
 		powerruna = chaoData->PowerRun;
 		if (Magnitude > 1)
 		{
@@ -708,7 +708,7 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, ObjectMaster* a1, i
 			--AL_HCNb;
 		} while (AL_HCNb);
 	}
-	v85 = (int)a1->Data1.Chao->palette;
+	v85 = (int)GET_CHAOWK(a1)->palette;
 	v86 = 0;
 	do
 	{
@@ -723,7 +723,7 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, ObjectMaster* a1, i
 		v85 += 32;
 	} while (v86 < 3);
 }
-void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, ObjectMaster* a1, int cno, char gPalette[][256 * 3 * 4])
+void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, task* a1, int cno, char gPalette[][256 * 3 * 4])
 {
 	ChaoType v3; // dl
 	signed int v4; // ecx
@@ -802,7 +802,7 @@ void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, ObjectMaster* a
 		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCP];
 		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
 		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
-		v28 = (unsigned short*)a1->Data1.Chao->palette;
+		v28 = (unsigned short*)GET_CHAOWK(a1)->palette;
 		v33 = chaoData->Alignment;
 		if (evolution > 1.0)
 		{
@@ -969,7 +969,7 @@ void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, ObjectMaster* a
 
 	}
 
-	v85 = (int)a1->Data1.Chao->palette;
+	v85 = (int)GET_CHAOWK(a1)->palette;
 	v86 = 0;
 	do
 	{
@@ -984,7 +984,7 @@ void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, ObjectMaster* a
 		v85 += 256 * 2;
 	} while (v86 < 3);
 }
-void __cdecl UpdateChaoPaletteNew(ChaoDataBase* chaoData, ObjectMaster* a1, int cno)
+void __cdecl UpdateChaoPaletteNew(ChaoDataBase* chaoData, task* a1, int cno)
 {
 	if (AL_IsNegative(a1))
 	{

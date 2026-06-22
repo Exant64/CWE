@@ -17,7 +17,7 @@ struct ODE_MENU_MASTER_WORK
 	int EndFlag;
 	int cursorX;
 	int cursorY;
-	ObjectMaster* tp;
+	task* tp;
 	void* mpStageWork;
 	void(__cdecl* mfStageExit)(ODE_MENU_MASTER_WORK*);
 };

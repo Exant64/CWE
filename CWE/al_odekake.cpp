@@ -19,7 +19,7 @@ static void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1) {
 	sub_5A6F50(a1);
 }
 
-static void AL_OdekakeMenuMaster_(ObjectMaster* a1) {
+static void AL_OdekakeMenuMaster_(task* a1) {
 	ODE_MENU_MASTER_WORK* pOde = AL_OdekakeMenuMaster_Data_ptr;
 	int stage = pOde->CurrStage;
 
@@ -55,46 +55,46 @@ void sub_558BA0(int a1, int a2, int a3, float a4, float a5, float a6)
 	DrawChaoHudThingB((ChaoHudThingB*)a3, a4, a5, a6, 1, 1, a2, a1);
 }
 
-void NewBarDraw(ObjectMaster *a1)
+void NewBarDraw(task *a1)
 {
-	EntityData1* v1 = a1->Data1.Entity;
-	float a2 = *(float*)& v1->Rotation.x;
-	float a3 = *(float*)& v1->Rotation.y;
-	float  v11 = v1->Position.x;
+	taskwk* v1 = a1->twp;
+	float a2 = *(float*)& v1->ang.x;
+	float a3 = *(float*)& v1->ang.y;
+	float  v11 = v1->pos.x;
 	float a5 = v11 * 0.2f + 0.8f;
 	
-	if (v1->field_2 == 0)
+	if (v1->id == 0)
 	{
 		SetChaoHUDThingBColor(1, 0, 0.5f, 0.7f);
 	}
 	else 
 	{
-		SetChaoHUDThingBColor(odekakeMenuEntries[v1->field_2 - 1].BarColorA, odekakeMenuEntries[v1->field_2 - 1].BarColorR, odekakeMenuEntries[v1->field_2 - 1].BarColorG, odekakeMenuEntries[v1->field_2 - 1].BarColorB);
+		SetChaoHUDThingBColor(odekakeMenuEntries[v1->id - 1].BarColorA, odekakeMenuEntries[v1->id - 1].BarColorR, odekakeMenuEntries[v1->id - 1].BarColorG, odekakeMenuEntries[v1->id - 1].BarColorB);
 	}
 	float v12 = a2 - v11 * 18;
 	DrawChaoHudThingB(&stru_11BA528[28], a2, a3, -99.5f, 2, 0.74375004f, -1, 0);
-	a2 = *(float*)& v1->Rotation.x;
-	v11 = v1->Position.x;
+	a2 = *(float*)& v1->ang.x;
+	v11 = v1->pos.x;
 	a5 = v11 * 0.2f + 0.8f;
 	float a6 = a5 * 0.85f;
 	v12 = a2 - v11 * 18;
-	a3 = *(float*)& v1->Rotation.y;
+	a3 = *(float*)& v1->ang.y;
 	DrawChaoHudThingB(&stru_11BA528[26], v12, a3, -99.5f, a6, a6, 0, 0);
 
-	SetChaoHUDThingBColor(*(float*)& v1->Rotation.z, 1, 1, 1);
-	int v5 = 2 * (unsigned __int8)v1->field_2 + 16;
+	SetChaoHUDThingBColor(*(float*)& v1->ang.z, 1, 1, 1);
+	int v5 = 2 * (unsigned __int8)v1->id + 16;
 	int v7;
 	if (v5 != 16)
 	{
 		float v6 = a2 - 18 + 2;
-		sub_558BA0(0, 0, (int)odekakeMenuEntries[v1->field_2 - 1].BarIcon, v6, a3, -99);
+		sub_558BA0(0, 0, (int)odekakeMenuEntries[v1->id - 1].BarIcon, v6, a3, -99);
 	}
 	else
 	{
 		float v6 = a2 - 18 + 2;
 		sub_558BA0(0, 0, (int)&stru_11BA528[v5], v6, a3, -99);
 	}
-	v7 = 2 * (unsigned __int8)v1->field_2 + 17;
+	v7 = 2 * (unsigned __int8)v1->id + 17;
 	SetChaoHUDThingBColor(1, 1, 1, 1);
 	if (v7 == 19)
 	{
@@ -105,10 +105,10 @@ void NewBarDraw(ObjectMaster *a1)
 	if(v7 == 17)
 		DrawChaoHudThingB(&stru_11BA528[v7], v15, a4, -99, 1, 1, -1, 0);
 	else
-		DrawChaoHudThingB(odekakeMenuEntries[v1->field_2 - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
+		DrawChaoHudThingB(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
 }
 ObjectFunc(sub_5ABA70, 0x5ABA70);
-void BarDraw(ObjectMaster* a1)
+void BarDraw(task* a1)
 {
 	sub_5ABA70(a1);
 	NewBarDraw(a1);
@@ -138,8 +138,8 @@ void sub_582F60(char* a1)
 
 void __cdecl sub_582F60_CheckGuest(char* a1)
 {
-	ObjectMaster* chaoPtr = *(ObjectMaster**)(&a1[0x1c]);
-	if (chaoPtr && chaoPtr->Data1.Chao->pParamGC->field_19 == 1 && a1[0x50])
+	task* chaoPtr = *(task**)(&a1[0x1c]);
+	if (chaoPtr && GET_CHAOPARAM(chaoPtr)->field_19 == 1 && a1[0x50])
 	{
 		if(*(void**)(&a1[0x44]))
 			AlMsgWinAddLineC(*(KinderCoMessageThing**)(&a1[0x44]), "This is a Guest Chao.", TextLanguage == 0);
