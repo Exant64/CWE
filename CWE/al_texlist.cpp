@@ -10,9 +10,6 @@ NJS_TEXLIST AL_SANDHOLE_TEXLIST = { arrayptrandlength(AL_SANDHOLE_TEXNAME) };
 NJS_TEXNAME BIRTHDAYHAT_TEXNAME[10];
 NJS_TEXLIST BIRTHDAYHAT_TEXLIST = { arrayptrandlength(BIRTHDAYHAT_TEXNAME) };
 
-NJS_TEXNAME timeofdayTexnames[100]; //reserved 100 to be sure
-NJS_TEXLIST timeofdayTexlistReplacer = { timeofdayTexnames, 100 };
-
 NJS_TEXNAME AL_ITEM_TEXNAME[ChaoItemCategory_Count];
 NJS_TEXLIST AL_ITEM_TEXLIST = { AL_ITEM_TEXNAME, ChaoItemCategory_Count };
 
