@@ -47,7 +47,7 @@ struct MENU_SLOT
 };
 struct MENU_PORT
 {
-	ChaoData* pChaoInfo;
+	CHAO_SAVE_INFO* pChaoInfo;
 	int changed;
 };
 
@@ -173,10 +173,10 @@ static void AL_SaveSecondFile() {
 	}
 }
 
-static ChaoData* AL_GetSecondFileChao() {
+static CHAO_SAVE_INFO* AL_GetSecondFileChao() {
 	int backup = ChaoSaveIndexThing;
 	ChaoSaveIndexThing = 1;
-	ChaoData* data = AL_GetNewChaoSaveInfo();
+	CHAO_SAVE_INFO* data = AL_GetNewChaoSaveInfo();
 	ChaoSaveIndexThing = backup;
 	return data;
 }
@@ -201,15 +201,15 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 	// move button pressed
 	if (SelectMenuManager->cursor.x == 4 && SelectMenuManager->cursor.y == 2) {
 		if(MenuButtons_Pressed[0] & Buttons_A) {
-			ChaoData* data1 = ChaoSelectData[((SelectMenuManager->slot[0].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[0].multiselect - 1) >> 3)];
-			ChaoData* data2 = ChaoSelectData[((SelectMenuManager->slot[1].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[1].multiselect - 1) >> 3) + 24];
+			CHAO_SAVE_INFO* data1 = ChaoSelectData[((SelectMenuManager->slot[0].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[0].multiselect - 1) >> 3)];
+			CHAO_SAVE_INFO* data2 = ChaoSelectData[((SelectMenuManager->slot[1].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[1].multiselect - 1) >> 3) + 24];
 			if (data1 || data2)
 			{
-				ChaoData tempSwap;
+				CHAO_SAVE_INFO tempSwap;
 				int Data2garden, data1Garden;
 				if (data2)
 				{
-					Data2garden = data2->data.Garden;
+					Data2garden = data2->data.place;
 				}
 				else
 				{
@@ -218,10 +218,10 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 				}
 				if (data2) 
 				{
-					memcpy(&tempSwap, data2, sizeof(ChaoData));
+					memcpy(&tempSwap, data2, sizeof(CHAO_SAVE_INFO));
 					if (data1)
 					{
-						data1Garden = data1->data.Garden;
+						data1Garden = data1->data.place;
 					}
 					else
 					{
@@ -230,10 +230,10 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 					}
 					if (data1) 
 					{
-						memcpy(data2, data1, sizeof(ChaoData));
-						data2->data.Garden = Data2garden;
-						memcpy(data1, &tempSwap, sizeof(ChaoData));
-						data1->data.Garden = data1Garden;
+						memcpy(data2, data1, sizeof(CHAO_SAVE_INFO));
+						data2->data.place = Data2garden;
+						memcpy(data1, &tempSwap, sizeof(CHAO_SAVE_INFO));
+						data1->data.place = data1Garden;
 
 						//update display
 						AL_SortChaoSaveInfo(SORT_NORMAL);

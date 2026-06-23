@@ -17,7 +17,7 @@
 #include <api/api_tree.h>
 #include <al_garden_info.h>
 
-DataPointer(ChaoData*, dword_19F6454, 0x19F6454);
+DataPointer(CHAO_SAVE_INFO*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
 FunctionPointer(void, sub_782780, (int a1, int a2, float a3), 0x782780);
 DataArray(NJS_OBJECT*, dword_171A240, 0x171A240, 4);
@@ -146,10 +146,10 @@ void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float Tex
 }
 bool CanStatBeUpgraded(ChaoData1* data1, int stat)
 {
-	if (data1->pParamGC->UpgradeCounter < 3 &&
-		data1->pParamGC->StatLevels[stat] == 99 &&
-		data1->pParamGC->StatGrades[stat] < ChaoGrade_A &&
-		TotalRings >= GradePurchasePrice[data1->pParamGC->StatGrades[stat]])
+	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
+		data1->pParamGC->Lev[stat] == 99 &&
+		data1->pParamGC->Abl[stat] < ChaoGrade_A &&
+		TotalRings >= GradePurchasePrice[data1->pParamGC->Abl[stat]])
 	{
 		return true;
 	}
@@ -171,17 +171,19 @@ void PurchaseGradesCode(ChaoData1* data1)
 {
 	char buff[256];
 	
-	if (data1->pParamGC->UpgradeCounter < 3 )
+	auto pParamCwe = GET_CWEPARAM(data1->pParamGC);
+
+	if (pParamCwe->UpgradeCounter < 3 )
 	{
 		if (CanChaoUpgrade(data1)) 
 		{
 			if (MenuButtons_Held[0] & Buttons_Y)
-				sprintf(buff, "Upgrades Left: %d", 3 - data1->pParamGC->UpgradeCounter);
+				sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
 			else
 				sprintf(buff, "Hold Y to Upgrade");
 		}
 		else 
-			sprintf(buff, "Upgrades Left: %d", 3 - data1->pParamGC->UpgradeCounter);
+			sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
 	}
 	else 
 		sprintf(buff, "No Upgrades Left");
@@ -204,14 +206,14 @@ void PurchaseGradesCode(ChaoData1* data1)
 			{
 				if (MenuButtons_Pressed[0] & UpgradeButtons[i])
 				{
-					data1->pParamGC->StatLevels[i] = 1;
-					data1->pParamGC->StatPoints[i] /= 100;
-					data1->pParamGC->UpgradeCounter++;
+					data1->pParamGC->Lev[i] = 1;
+					data1->pParamGC->Skill[i] /= 100;
+					pParamCwe->UpgradeCounter++;
 					SE_Call_TIMER(0x8004, 0x616C7277, 1, 0, 120);
 					SE_Call_TIMER(0x1005, 0x616C7277, 1, 0, 120);
 
-					TotalRings -= GradePurchasePrice[data1->pParamGC->StatGrades[i]];
-					data1->pParamGC->StatGrades[i]++;
+					TotalRings -= GradePurchasePrice[data1->pParamGC->Abl[i]];
+					data1->pParamGC->Abl[i]++;
 				}
 				plusHUD.y0 = 32 * i + 262;
 				plusHUD.y1 = 32 * i + 282;
@@ -464,7 +466,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu[i], -1);
 
 	if (!noMother && !noFather) {
-		auto pParam = GET_CHAOPARAM(a1->medicalChartChao_);
+		auto pParam = GET_CWEPARAM(a1->medicalChartChao_);
 
 		ConvertName(pParam->MotherName, motherName);
 		ConvertName(pParam->MGroundMotherName, mgmName);
@@ -631,7 +633,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		{
 			noMother = false;
 			noFather = false;
-			ChaoDataBase* data = nullptr;
+			CHAO_PARAM_GC* data = nullptr;
 			KarateOpponent* opponentPtr = nullptr;
 
 			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID.id[0] == 0;
@@ -646,7 +648,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID);
 				if (data == nullptr)
 				{
-					opponentPtr = &GET_CHAOPARAM(TextLocation->medicalChartChao_)->motherData;
+					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->motherData;
 				}
 			}
 
@@ -654,7 +656,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			NJS_VECTOR pos = { 0,0,0 };
 
 			pMother = CreateChao(
-				(ChaoData*)data,
+				(CHAO_SAVE_INFO*)data,
 				1,
 				opponentPtr,
 				&pos,
@@ -678,12 +680,12 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				if (data == nullptr)
 				{
 					//if cant find it, use last "image" of them
-					opponentPtr = &GET_CHAOPARAM(TextLocation->medicalChartChao_)->fatherData;
+					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->fatherData;
 				}
 			}
 
 			pFather = CreateChao(
-				(ChaoData*)data,
+				(CHAO_SAVE_INFO*)data,
 				1,
 				opponentPtr,
 				&pos,
@@ -757,7 +759,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 						if (gradeIndex >= 8u)
 							gradeIndex = 0;
 
-						int grade = GET_CHAOPARAM(TextLocation->field_8)->StatGrades[gradeIndex];
+						int grade = GET_CHAOPARAM(TextLocation->field_8)->Abl[gradeIndex];
 						if (grade == 6 || grade == 7) //Grade_X
 						{
 							njSetTexture(&CWE_UI_TEXLIST);
@@ -791,14 +793,14 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				ChaoHudThingB lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
 				//ChaoHudThing lifespan = { {0x132, (264 + 32 * 5.25f)}, {}, {0,0}, {4096, 4096} };
 				sub_536770(
-					(Uint32)((GET_CHAOPARAM(TextLocation->field_8)->Lifespan / 3900.0f) * 1000),
+					(Uint32)((GET_CHAOPARAM(TextLocation->field_8)->life / 3900.0f) * 1000),
 					380.0f, 
 					(264 + 32 * 5) + 1, 
 					92.0f, 
 					14.0f, 
 					1.0f
 				);
-				sub_5369F0(GET_CHAOPARAM(TextLocation->field_8)->Lifespan, 476, (264 + 32 * 5), 1.0f);
+				sub_5369F0(GET_CHAOPARAM(TextLocation->field_8)->life, 476, (264 + 32 * 5), 1.0f);
 				DrawChaoHudThingB(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
 				SetChaoHUDThingBColor(1, 0.72f, 1, 0);
 				DrawChaoHudThingB(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
@@ -818,13 +820,13 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		sprintf(
 			buffer,
 			&TextLocation->dword60[*((int*)TextLocation->dword60 + 65)],
-			GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers / GET_CHAOPARAM(TextLocation->field_8)->Birthday
+			GET_CHAOPARAM(TextLocation->field_8)->age / GET_CWEPARAM(TextLocation->field_8)->Birthday
 		);
 		DrawMedicalChartText((const char *)buffer, 288.0, 243.0, 999.0, 20.0, 0);
 		sprintf(
 			buffer,
 			"Birthday in %d Chao days.",
-			GET_CHAOPARAM(TextLocation->field_8)->Birthday - (GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers % GET_CHAOPARAM(TextLocation->field_8)->Birthday)
+			GET_CWEPARAM(TextLocation->field_8)->Birthday - (GET_CHAOPARAM(TextLocation->field_8)->age % GET_CWEPARAM(TextLocation->field_8)->Birthday)
 		);
 		DrawMedicalChartText((const char*)buffer, 288.0, 392, 999.0, 20.0, 0);
 	}
@@ -968,14 +970,14 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 		return;
 
 	task* pChaoTask = a1->field_8;
-	ChaoDataBase* pParam = GET_CHAOPARAM(pChaoTask);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(pChaoTask);
 
 	if (pParam == nullptr)
 		return;
 
 	messageValues.clear();
 
-	int age = pParam->ClockRollovers / pParam->Birthday;
+	int age = pParam->age / GET_CWEPARAM(pChaoTask)->Birthday;
 	
 	SETMSGVAR("Your Chao is very healthy.\nPlease take good care of your Chao.");
 	
@@ -983,20 +985,20 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 		SETMSGVAR("This Chao is still a baby. \n It'll be fun to see your Chao grow!");
 	else
 	{
-		if (pParam->Happiness >= 0 && pParam->Happiness < 50)
+		if (pParam->like >= 0 && pParam->like < 50)
 			SETMSGVAR("It doesn't look like you're\ntaking very good care of your Chao");
-		else if (pParam->Happiness < 80)
+		else if (pParam->like < 80)
 			SETMSGVAR("Looks like you're taking  \ngood care of your Chao.            ");
-		else if (pParam->Happiness <= 100)
+		else if (pParam->like <= 100)
 			SETMSGVAR("This Chao looks very happy\nThis is how you take care of Chao! ");
 
 	}
 	
-	if (pParam->Reincarnations == 1 || pParam->Reincarnations == 2)
+	if (pParam->nbSucceed == 1 || pParam->nbSucceed == 2)
 		SETMSGVAR("Take care of this Chao the\nway you have been so far.          ");
-	else if (pParam->Reincarnations == 3 || pParam->Reincarnations == 4)
+	else if (pParam->nbSucceed == 3 || pParam->nbSucceed == 4)
 		SETMSGVAR("You really love your Chao.\nI can't believe this!              ");
-	else if (pParam->Reincarnations > 4)
+	else if (pParam->nbSucceed > 4)
 		SETMSGVAR("Looks like this Chao      \ntransformed so many times!         ");
 	else if (age >= 4 && age <= 5)
 		SETMSGVAR("This Chao has had a long  \nlife! Please take care of your Chao");
@@ -1064,22 +1066,22 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 	else if (pParam->BodyType == 2)
 		SETMSGVAR("This is a nice Omochao.  \nThe Chao that built this did a good job.");
 
-	if (pParam->StatGrades[7] >= 10)
+	if (pParam->Abl[7] >= 10)
 		SETMSGVAR("This Chao is very smart.  \nThis Chao must be a fast learner.  ");
-	else if (pParam->StatGrades[7] >= 4 && pParam->StatGrades[7] <= 9)
+	else if (pParam->Abl[7] >= 4 && pParam->Abl[7] <= 9)
 		SETMSGVAR("This Chao is well-behaved.\nit will learn a lot.               ");
-	if (pParam->StatGrades[6] >= 10)
+	if (pParam->Abl[6] >= 10)
 		SETMSGVAR("This is a very lucky Chao.\nI'm so jealous!!                   ");
-	else if (pParam->StatGrades[6] >= 4 && pParam->StatGrades[6] <= 9)
+	else if (pParam->Abl[6] >= 4 && pParam->Abl[6] <= 9)
 		SETMSGVAR("This Chao is lucky.       \nPlease take good care of your Chao.");
-	if (pParam->StatLevels[0] == 99 && pParam->StatLevels[1] == 99 &&
-		pParam->StatLevels[2] == 99 && pParam->StatLevels[3] == 99 &&
-		pParam->StatLevels[4] == 99)
+	if (pParam->Lev[0] == 99 && pParam->Lev[1] == 99 &&
+		pParam->Lev[2] == 99 && pParam->Lev[3] == 99 &&
+		pParam->Lev[4] == 99)
 		SETMSGVAR("You really love your Chao.\nYou're an excellent Chao trainer!  ");
-	if (pParam->Type > 2 &&
-		pParam->StatLevels[0] < 10 && pParam->StatLevels[1] < 10 &&
-		pParam->StatLevels[2] < 10 && pParam->StatLevels[3] < 10 &&
-		pParam->StatLevels[4] < 10)
+	if (pParam->type > 2 &&
+		pParam->Lev[0] < 10 && pParam->Lev[1] < 10 &&
+		pParam->Lev[2] < 10 && pParam->Lev[3] < 10 &&
+		pParam->Lev[4] < 10)
 		SETMSGVAR("This Chao is spoiled.     \nIs this Chao potty trained?        ");
 
 	Doctor_PersonalityText(pChaoTask, EM_PER_CURIOSITY,

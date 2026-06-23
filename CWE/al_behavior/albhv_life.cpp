@@ -30,7 +30,7 @@ int __cdecl ALBHV_EggChao(task* a1)
 	return BHV_RET_CONTINUE;
 }
 
-void __cdecl EggChaoSpawnEgg(AL_GENE* a1, ChaoData* chaoData, int a3, NJS_VECTOR* position, int a5)
+void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
 	if (njRandom() <= 0.01f)
 	{
@@ -38,7 +38,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, ChaoData* chaoData, int a3, NJS_VECTOR
 		{
 			chaoData->data.Gene = *a1;
 		}
-		chaoData->data.Type = ChaoType_Child;
+		chaoData->data.type = ChaoType_Child;
 		chaoData->data.InKindergarten = -1;
 		task* chao = CreateChao(chaoData, 0, 0, position, a5);
 		chaoData->data.BodyType = SADXBodyType_EggChao;
@@ -52,7 +52,7 @@ void __cdecl sub_550620(task* a1)
 {
 	if (GET_CHAOPARAM(a1)->BodyType != 1)
 	{
-		memset(GET_CHAOPARAM(a1), 0, sizeof(ChaoDataBase));
+		memset(GET_CHAOPARAM(a1), 0, sizeof(CHAO_PARAM_GC));
 		a1->exec = DeleteObject_;
 	}
 }
@@ -88,16 +88,17 @@ static void __declspec(naked) EggChao_ALO_Delete_Hook()
 		retn
 	}
 }
-void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, ChaoData* chaoData, int a3, NJS_VECTOR* position, int a5)
+void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
-	chaoData->data.ForceReincarnate = false;
+	GET_CWEPARAM(chaoData)->ForceReincarnate = false;
+	
 	if (chaoData->data.BodyType == 1)
 	{
 		if (a1)
 		{
 			chaoData->data.Gene = *a1;
 		}
-		chaoData->data.Type = ChaoType_Child;
+		chaoData->data.type = ChaoType_Child;
 		chaoData->data.InKindergarten = -1;
 		chaoData->data.BodyType = SADXBodyType_EggChao;
 	}

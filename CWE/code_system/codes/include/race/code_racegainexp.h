@@ -65,12 +65,12 @@ static void sub_533090_r() {
         if(!IsStatEligibleForGain(i)) continue;
         
         // doing this to prevent overflow
-        int fract = int(pParam->StatFractions[i]);
+        int fract = int(pParam->Exp[i]);
 
         if(fract < 200) {
             fract += 2;
             
-            pParam->StatFractions[i] = fract;
+            pParam->Exp[i] = fract;
         }
     }
 }
@@ -85,21 +85,21 @@ static void sub_5396C0_r() {
     const auto pParam = GET_CHAOPARAM(stru_1DCFAE0[0].pChaoObject);
 
     for(size_t i = 0; i < 5; ++i) {
-        int fract = pParam->StatFractions[i];
+        int fract = pParam->Exp[i];
 
         while(fract >= 100) {
             leveledUp = true;
 
             fract -= 100;
 
-            if(++pParam->StatLevels[i] >= 99) {
-                pParam->StatLevels[i] = 99;
+            if(++pParam->Lev[i] >= 99) {
+                pParam->Lev[i] = 99;
             }
 
             sub_535E90(pParam, i);
         }
 
-        pParam->StatFractions[i] = fract;
+        pParam->Exp[i] = fract;
     }
 
     if(leveledUp) {

@@ -653,12 +653,12 @@ public:
 	void Press(UIController* controller) override {
 		if (!IsSelected()) return;
 
-		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
+		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
 		const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
 		if (index < HatList.size()) {
 			bool canEquip = true;
 			if (pParam->Headgear)
-				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->Garden);
+				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->place);
 
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
@@ -675,8 +675,8 @@ public:
 		const int accType = GetAccessoryType(pSaveInfo->IndexID);
 
 		bool canEquip = true;
-		if (pParam->Accessories[accType].ID[0])
-			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], GET_CHAOPARAM(pChao)->Accessories[accType], pParam->Garden);
+		if (GET_CWEPARAM(pChao)->Accessories[accType].ID[0])
+			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
 
 		if (canEquip) {
 			PlaySoundProbably(0x1007, 0, 0, 0);
@@ -904,7 +904,7 @@ private:
 	NJS_COLOR GetSlotColor(size_t slot) const {
 		if (!m_accessoryType) return NJS_COLOR(0xFFFFFFFF);
 
-		const auto& accData = GET_CHAOPARAM(pChao)->Accessories[*m_accessoryType];
+		const auto& accData = GET_CWEPARAM(pChao)->Accessories[*m_accessoryType];
 		const auto accIndex = GET_CHAOWK(pChao)->AccessoryIndices[*m_accessoryType];
 
 		if (accIndex == -1) return NJS_COLOR(0xFFFFFFFF);
@@ -929,7 +929,7 @@ private:
 		if (!m_accessoryType) return;
 		if (!m_colorSlotIndex) return;
 
-		auto& accData = GET_CHAOPARAM(pChao)->Accessories[*m_accessoryType];
+		auto& accData = GET_CWEPARAM(pChao)->Accessories[*m_accessoryType];
 		NJS_COLOR& accessoryColor = *(NJS_COLOR*)&accData.ColorSlots[*m_colorSlotIndex];
 
 		const NJS_ARGB hslColor = HSLtoRGB(m_hsl[0], m_hsl[1], m_hsl[2]);
@@ -1406,7 +1406,7 @@ private:
 		return m_slot == 0 && GBAManager_GetChaoDataPointer()->Headgear;
 	}
 	bool HasAccessory() {
-		return m_slot > 0 && GBAManager_GetChaoDataPointer()->Accessories[m_slot - 1].ID[0];
+		return m_slot > 0 && GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Accessories[m_slot - 1].ID[0];
 	}
 public:
 	void BeforeBoxDisp() override {
@@ -1469,7 +1469,7 @@ public:
 		if (m_slot > 0) {
 			const auto index = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
 			if (index != -1) {
-				const auto& accData = GET_CHAOPARAM(pChao)->Accessories[m_slot - 1];
+				const auto& accData = GET_CWEPARAM(pChao)->Accessories[m_slot - 1];
 				AccessorySetupDraw(index, accData.ColorSlots, accData.ColorFlags);
 			}
 		}
@@ -1509,18 +1509,18 @@ public:
 			return;
 		}
 
-		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
+		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
 		PlaySoundProbably(0x100A, 0, 0, 0);
 		if (!m_slot)
 		{
 			Uint8& headgear = pParam->Headgear;
-			if (headgear && AL_Customization_CreateHat(headgear, pParam->Garden)) {
+			if (headgear && AL_Customization_CreateHat(headgear, pParam->place)) {
 				headgear = 0;
 			}
 		}
 		else {
 			const auto accessoryIndex = AL_GetAccessory(pChao, m_slot - 1);
-			if (accessoryIndex != -1 && AL_Customization_CreateAcc(accessoryIndex, GET_CHAOPARAM(pChao)->Accessories[m_slot - 1], pParam->Garden)) {
+			if (accessoryIndex != -1 && AL_Customization_CreateAcc(accessoryIndex, GET_CWEPARAM(pChao)->Accessories[m_slot - 1], pParam->place)) {
 				AL_ParameterClearAccessory(pChao, m_slot - 1);
 			}
 		}
@@ -1621,7 +1621,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		}
 
 		someUIProjectionCode(&ChaoHatPosition, &posOut);
-		pChao = CreateChao((ChaoData*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
+		pChao = CreateChao((CHAO_SAVE_INFO*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
 		GET_CHAOWK(pChao)->field_B0 &= ~8u;
 		GET_CHAOWK(pChao)->field_B0 &= ~2u;
 		GET_CHAOWK(pChao)->field_B0 &= ~0x10u;

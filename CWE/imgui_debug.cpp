@@ -102,6 +102,7 @@ static void ChaoInfoMenu() {
         }
 
         chaowk* work = GET_CHAOWK(pChao);
+        auto pParamCwe = GET_CWEPARAM(pChao);
         auto* move_work = pChao->EntityData2;
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
@@ -139,7 +140,7 @@ static void ChaoInfoMenu() {
                     ImGui::Text(
                         "%s (internal data ParamID:%s Data1ID:%s Index: %d)", 
                         slotNames[i],
-                        work->pParamGC->Accessories[i].ID, 
+                        pParamCwe->Accessories[i].ID, 
                         work->AccessoryCalculatedID[i], 
                         work->AccessoryIndices[i]
                     );
@@ -154,7 +155,7 @@ static void ChaoInfoMenu() {
 
                     ImGui::PushID(i);
                     if (ImGui::Combo("Set ID", &setID[i], AccessoryStrings, count)) {
-                        strcpy_s(work->pParamGC->Accessories[i].ID, AccessoryStrings[setID[i]]);
+                        strcpy_s(pParamCwe->Accessories[i].ID, AccessoryStrings[setID[i]]);
                         AL_SetAccessory(pChao, AccessoryIndices[setID[i]]);
                     }
                     ImGui::PopID();
@@ -162,7 +163,7 @@ static void ChaoInfoMenu() {
                     if (work->AccessoryIndices[i] == -1) continue;
                     
                     for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
-                        NJS_COLOR* pCol = (NJS_COLOR*) & work->pParamGC->Accessories[i].ColorSlots[j];
+                        NJS_COLOR* pCol = (NJS_COLOR*) & pParamCwe->Accessories[i].ColorSlots[j];
                         ImGui::PushID(i * 10 + j);
                         float col[3];
                         col[0] = pCol->argb.r / 255.f;
@@ -172,7 +173,7 @@ static void ChaoInfoMenu() {
                             pCol->argb.r = Uint8(col[0] * 255.f);
                             pCol->argb.g = Uint8(col[1] * 255.f);
                             pCol->argb.b = Uint8(col[2] * 255.f);
-                            work->pParamGC->Accessories[i].ColorFlags |= (1 << j);
+                            pParamCwe->Accessories[i].ColorFlags |= (1 << j);
                         }
                         ImGui::PopID();
                     }
@@ -189,7 +190,7 @@ static void ChaoInfoMenu() {
                     "ACCESSORIES_NEW",
                 };
                 for (size_t i = 0; i < 4; ++i) {
-                    ImGui::CheckboxFlags(paramFlagNames[i], &work->pParamGC->Flags, (1 << i));
+                    ImGui::CheckboxFlags(paramFlagNames[i], &pParamCwe->Flags, (1 << i));
                 }
 
                 ImGui::EndTabItem();

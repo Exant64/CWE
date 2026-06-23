@@ -9,8 +9,8 @@ int __cdecl ALBHV_ChaoStarving_Punishment(task* a1)
 
 	AL_EmotionAdd(a1, EM_MD_SORROW, (rand() % 100 + 100));
 
-	pParam->Happiness -= 5;
-	if (pParam->Happiness < -100) pParam->Happiness = -100;
+	pParam->like -= 5;
+	if (pParam->like < -100) pParam->like = -100;
 
 	AL_SetBehavior(a1, (BHV_FUNC)ChaoBehaviour_STARVING);
 	return 0;

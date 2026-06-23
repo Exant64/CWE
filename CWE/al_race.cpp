@@ -147,7 +147,7 @@ void WinJewelChaoInRace() {
 	size_t chaoCount = 0;
 	bool noTexture = true; //check if no chao in the garden have this texture already
 	for (auto param : ChaoInfo::Instance()) {
-		if (param->Type != 0) {
+		if (param->type != 0) {
 			chaoCount++;
 
 			if (param->Texture == texture) noTexture = false;

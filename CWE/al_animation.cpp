@@ -56,7 +56,7 @@ void Chao_ExtraAnimations(task* a1)
 				else if (data->MotionTable.AnimID == 201 || data->MotionTable.AnimID == 192)
 				{
 					int HeroIdle = 483;
-					if (AL_IsHero(data->pParamGC->Type))
+					if (AL_IsHero(data->pParamGC->type))
 					{
 						HeroIdle = 484;
 					}
@@ -73,11 +73,11 @@ void Chao_ExtraAnimations(task* a1)
 				{
 					int HeroIdle = 0;
 					int DarkIdle = 1;
-					if (AL_IsHero(data->pParamGC->Type))
+					if (AL_IsHero(data->pParamGC->type))
 					{
 						HeroIdle = 554;
 					}
-					else if (AL_IsDark(data->pParamGC->Type))
+					else if (AL_IsDark(data->pParamGC->type))
 					{
 						const int DarkAnim[] = { 570, 571, 572 };
 						int DarkRNG = rand() % std::size(DarkAnim);
@@ -86,7 +86,7 @@ void Chao_ExtraAnimations(task* a1)
 					}
 
 					int FlyIdle = 132;
-					if (data->pParamGC->StatPoints[1] >= 100)
+					if (data->pParamGC->Skill[1] >= 100)
 					{
 						FlyIdle = 131;
 					}
@@ -288,7 +288,7 @@ void Chao_ExtraAnimations(task* a1)
 	{
 		if (data->AnimRandomized == 0)
 		{
-			if (data->MotionTable.TransitionToID == 119 && data->pParamGC->StatPoints[2] >= 1333)
+			if (data->MotionTable.TransitionToID == 119 && data->pParamGC->Skill[2] >= 1333)
 			{
 				const int GotoTarget2Anim[] = { 119, 129 };
 				int GotoTarget2RNG = rand() % std::size(GotoTarget2Anim);
@@ -343,7 +343,7 @@ void Chao_ExtraAnimations(task* a1)
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_COMEOUTEGG)
 	{
-		if (data->pParamGC->Reincarnations > 1 && (data->MotionTable.TransitionToID == 205 || data->MotionTable.TransitionToID == 206) && RandomChance)
+		if (data->pParamGC->nbSucceed > 1 && (data->MotionTable.TransitionToID == 205 || data->MotionTable.TransitionToID == 206) && RandomChance)
 		{
 			AL_SetMotionLinkStep(a1, 207, 15);
 		}
@@ -422,7 +422,7 @@ void Chao_ExtraAnimations(task* a1)
 		if (data->MotionTable.TransitionToID == 6)
 		{
 			int HeroIdle = 11;
-			if (AL_IsHero(data->pParamGC->Type))
+			if (AL_IsHero(data->pParamGC->type))
 			{
 				HeroIdle = 8;
 			}

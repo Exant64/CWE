@@ -11,7 +11,7 @@
 #include "ChaoMain.h"
 
 const int sub_536450Ptr = 0x536450;
-void sub_536450(KarateOpponent* a1, ChaoDataBase* a2)
+void sub_536450(KarateOpponent* a1, CHAO_PARAM_GC* a2)
 {
 	__asm
 	{
@@ -30,7 +30,7 @@ void InitChaoDNA_Hook(AL_GENE* a1, int a2, size_t a3) //use this to edit how cha
 }
 
 const int AL_GeneAnalyzeCommmonPtr = 0x00551DA0;
-void AL_GeneAnalyzeCommon(AL_GENE* a1, ChaoDataBase* a2)
+void AL_GeneAnalyzeCommon(AL_GENE* a1, CHAO_PARAM_GC* a2)
 {
 	__asm
 	{
@@ -41,7 +41,7 @@ void AL_GeneAnalyzeCommon(AL_GENE* a1, ChaoDataBase* a2)
 	}
 }
 
-static void AL_GeneColorMixing(AL_GENE* pGene, ChaoDataBase* pParam) {
+static void AL_GeneColorMixing(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	// we know normal colored chao can't mix so don't even bother checking
 	if (!pGene->Color[0] || !pGene->Color[1]) {
 		return;
@@ -74,7 +74,7 @@ static void AL_GeneColorMixing(AL_GENE* pGene, ChaoDataBase* pParam) {
 	}
 }
 
-static void AL_GeneVaryingShades(AL_GENE* pGene, ChaoDataBase* pParam) {
+static void AL_GeneVaryingShades(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	// I'm guessing the idea for this was that it would be for black market chao only
 	if(pGene->Color[0] != pGene->Color[1]) {
 		return;
@@ -136,7 +136,7 @@ static void AL_GeneVaryingShades(AL_GENE* pGene, ChaoDataBase* pParam) {
 	pParam->Color = shades[size_t(njRandom() * (shades.size() - 0.001f))];
 }
 
-static void AL_GeneAnalyzeMoreFaces(ChaoDataBase* pParam) {
+static void AL_GeneAnalyzeMoreFaces(CHAO_PARAM_GC* pParam) {
 	if(gConfigVal.MoreFaces == CFG_MORE_FACE_RANDOM) {
 		pParam->EyeType = Uint8(njRandom() * (float(ChaoEyes_Mean) + 0.999f));
 		pParam->MouthType = Uint8(njRandom() * (float(0x10) + 0.999f));
@@ -199,9 +199,10 @@ static void AL_GeneAnalyzeMoreFaces(ChaoDataBase* pParam) {
 }
 
 // this is where you would add anything that gets applied to the chaodata from the dna
-void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
-{
-	AL_GeneAnalyzeCommon(pGene, pParam);	
+void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
+	auto pParamCwe = GET_CWEPARAM(pParam);
+
+	AL_GeneAnalyzeCommon(pGene, pParam);
 
 	if(gConfigVal.ColorMixing) {
 		AL_GeneColorMixing(pGene, pParam);
@@ -222,28 +223,31 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 	}
 
 	if (gConfigVal.EyeColorsForNewbornChao) {
-		pParam->EyeColor = Uint8(njRandom() * 5.999f);
+		pParamCwe->EyeColor = Uint8(njRandom() * 5.999f);
 	}
-	
-	pParam->Flags |= AL_PARAM_FLAG_NEWBORN;
 
-	pParam->Negative = pGene->Negative[0] || pGene->Negative[1];
+	pParamCwe->Flags |= AL_PARAM_FLAG_NEWBORN;
 
-	if (pGene->MotherID.id[0] != 0)
-	{
-		ChaoDataBase* dataID = AL_KW_FindChaoBasedOnId(pGene->MotherID);
-		memcpy(pParam->MotherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParam->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParam->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParam->motherData, dataID);
+	pParamCwe->Negative = pGene->Negative[0] || pGene->Negative[1];
+
+	if (pGene->MotherID.id[0] != 0) {
+		auto motherParam = AL_KW_FindChaoBasedOnId(pGene->MotherID);
+		auto dataID = GET_CWEPARAM(motherParam);
+
+		memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
+		memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+		memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+		sub_536450(&pParamCwe->motherData, motherParam);
 	}
-	if (pGene->FatherID.id[0] != 0)
-	{
-		ChaoDataBase* dataID = AL_KW_FindChaoBasedOnId(pGene->FatherID);
-		memcpy(pParam->FatherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParam->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParam->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParam->fatherData, dataID);
+
+	if (pGene->FatherID.id[0] != 0) {
+		auto fatherParam = AL_KW_FindChaoBasedOnId(pGene->FatherID);
+		auto dataID = GET_CWEPARAM(fatherParam);
+
+		memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
+		memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+		memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+		sub_536450(&pParamCwe->fatherData, fatherParam);
 	}
 }
 static void __declspec(naked) AL_GeneAnalyzeCommonHook()
@@ -274,7 +278,7 @@ void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene)
 	}
 }
 
-static void AL_GetMedalGene(const ChaoDataBase* param, AL_GENE& gene) {
+static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
 	if (param->Texture != 0) return;
 	if (param->field_19 == 1) return;
 
@@ -326,7 +330,7 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 	const auto param = GET_CHAOPARAM(tp);
 
 	// if not normal colored or not regular adult chao
-	if(param->Color || param->Type < 5 || param->Type >= ChaoType_Neutral_Chaos) {
+	if(param->Color || param->type < 5 || param->type >= ChaoType_Neutral_Chaos) {
 		return;
 	}
 
@@ -374,7 +378,7 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 		{ 0x04, 0xB5, 0x87, 0xE2, 0x0A, 0xE0, 0x94, 0xBE },
 	};
 
-	const auto& entry = ColorEntries[param->Type - 5];
+	const auto& entry = ColorEntries[param->type - 5];
 
 	if(param->PowerRun > 0.8f) {
 		if(param->PowerRun < 1.5f) {
@@ -457,8 +461,8 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 		}
 	}
 	
-	pChildGene->Negative[0] = GET_CHAOPARAM(pMotherTask)->Negative;
-	pChildGene->Negative[1] = GET_CHAOPARAM(pFatherTask)->Negative;
+	pChildGene->Negative[0] = GET_CWEPARAM(pMotherTask)->Negative;
+	pChildGene->Negative[1] = GET_CWEPARAM(pFatherTask)->Negative;
 	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
 	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }

@@ -41,12 +41,12 @@ static void AL_OdekakeMenuMaster_(task* a1) {
 	pOde->state = 0;
 }
 
-ChaoDataBase* GBAManager_GetChaoDataPointer() {
+CHAO_PARAM_GC* GBAManager_GetChaoDataPointer() {
 	if (!AL_GBAManagerExecutor_ptr) {
 		return nullptr;
 	}
 	
-	return (ChaoDataBase*)*((int*)AL_GBAManagerExecutor_ptr + 5);
+	return (CHAO_PARAM_GC*)*((int*)AL_GBAManagerExecutor_ptr + 5);
 }
 
 

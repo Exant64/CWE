@@ -167,7 +167,7 @@ void AL_SetItemOnTheGarden(int a1)
 									LOBYTE(v5->Type) - 21,
 									v8,
 									&a4,
-									(ChaoData*)v5);
+									(CHAO_SAVE_INFO*)v5);
 							}
 							else
 							{
@@ -182,7 +182,7 @@ void AL_SetItemOnTheGarden(int a1)
 									v8,
 									v4,
 									&a4,
-									(ChaoData*)v5);
+									(CHAO_SAVE_INFO*)v5);
 							}
 							else
 							{
@@ -303,7 +303,7 @@ static void AL_CreateHoldingItem() {
 			case 2:
 				if (v1->Type >= 21 && v1->Type < 25)
 				{
-					v6 = ALO_ChaosDriveExecutor_Load(LOBYTE(v1->Type) - 21, &a2, &a4, (ChaoData*)v1);
+					v6 = ALO_ChaosDriveExecutor_Load(LOBYTE(v1->Type) - 21, &a2, &a4, (CHAO_SAVE_INFO*)v1);
 				}
 				else
 				{
@@ -311,7 +311,7 @@ static void AL_CreateHoldingItem() {
 				}
 				break;
 			case 3:
-				v6 = ALO_FruitExecutor_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (ChaoData*)v1);
+				v6 = ALO_FruitExecutor_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (CHAO_SAVE_INFO*)v1);
 				break;
 			case 7:
 				v6 = ALO_SeedExecutor_Load(v1->Type, &a2, &a4, (int)v1);
@@ -424,7 +424,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 					{
 						AL_GENE gene;
 						task* v12;
-						ChaoData* v11 = AL_GetNewChaoSaveInfo();
+						CHAO_SAVE_INFO* v11 = AL_GetNewChaoSaveInfo();
 
 						InitChaoDNA(&gene);
 						gene.EggColor = v32;
@@ -444,7 +444,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 					++cweSaveFile.purchasedItemCount;
 					return;
 				case 3:
-					ALO_FruitExecutor_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (ChaoData*)AL_GetNewItemSaveInfo(3));
+					ALO_FruitExecutor_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (CHAO_SAVE_INFO*)AL_GetNewItemSaveInfo(3));
 					break;
 				case 7:
 					ALO_SeedExecutor_Load(v10, &position, &output, (int)AL_GetNewItemSaveInfo(7));

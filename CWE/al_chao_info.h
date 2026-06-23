@@ -5,7 +5,7 @@
 
 class ChaoInfo {
 private:
-	std::vector<ChaoDataBase*> m_vector;
+	std::vector<CHAO_PARAM_GC*> m_vector;
 	size_t m_size;
 
 protected:
@@ -27,16 +27,16 @@ public:
 		return m_size; 
 	}
 
-	ChaoDataBase& operator[](std::size_t idx) { 
+	CHAO_PARAM_GC& operator[](std::size_t idx) { 
 		return *m_vector[idx]; 
 	}
 
-	std::vector<ChaoDataBase*>::iterator begin()
+	std::vector<CHAO_PARAM_GC*>::iterator begin()
 	{
 		return m_vector.begin();
 	}
 
-	std::vector<ChaoDataBase*>::iterator end()
+	std::vector<CHAO_PARAM_GC*>::iterator end()
 	{
 		return m_vector.end();
 	}

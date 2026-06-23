@@ -68,7 +68,7 @@ LABEL_10:
 	{
 		v6 = word_8A7AC0[v3->EyeColorNum];
 	}
-	if ((unsigned __int8)(v4->pParamGC->Type - byte_0053A5BC) <= 2u)
+	if ((unsigned __int8)(v4->pParamGC->type - byte_0053A5BC) <= 2u)
 	{
 		if (v5 == 7)
 		{
@@ -80,7 +80,7 @@ LABEL_10:
 		}
 	}
 	//alignment 
-	switch (v4->pParamGC->EyeAlignment)
+	switch (GET_CWEPARAM(a3)->EyeAlignment)
 	{
 	case 1:
 		switch (v6)
@@ -126,7 +126,7 @@ LABEL_10:
 	if (v4->pParamGC->BodyType != 2) 
 	{
 		//colors
-		if (v4->pParamGC->EyeColor)
+		if (GET_CWEPARAM(a3)->EyeColor)
 		{
 			v3->Flag = 1;
 			switch (v6)

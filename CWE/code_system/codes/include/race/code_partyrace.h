@@ -41,12 +41,12 @@ void PartyRace::OnFrame() {
     }
 
     if(RaceMainType == 5) {
-        DataArray(ChaoData*, pSelectedChaoSaveInfoList, 0x01A5CC00, 8);
+        DataArray(CHAO_SAVE_INFO*, pSelectedChaoSaveInfoList, 0x01A5CC00, 8);
 
         for(size_t i = 0; i < 8; ++i) {
             auto info = &ChaoSlots[i];
 
-            if(info->data.Type) {
+            if(info->data.type) {
                 pSelectedChaoSaveInfoList[i] = info;
             }
             else {

@@ -96,7 +96,7 @@ void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer)
 	sub_55A920(timer, a3, a1, a2, a4);
 }
 
-task* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
+task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
 {
 	KarateOpponent* opponent = a3;
 
@@ -108,17 +108,18 @@ task* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTO
 		opponent->Magnitude = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
 		opponent->FlySwim = (short)(data2->chaoDataPointer->data.FlySwim * 10000.0f);
 		opponent->PowerRun = (short)(data2->chaoDataPointer->data.PowerRun * 10000.0f);
-		opponent->ChaoType = data2->chaoDataPointer->data.Type;
+		opponent->ChaoType = data2->chaoDataPointer->data.type;
 		for (int i = 0; i < 7; i++)
 		{
-			if (data2->chaoDataPointer->data.StatPoints[i] >= 1000)
-				opponent->StatPoints[i] = data2->chaoDataPointer->data.StatPoints[i] - 200;
-			else opponent->StatPoints[i] = data2->chaoDataPointer->data.StatPoints[i];
+			if (data2->chaoDataPointer->data.Skill[i] >= 1000)
+				opponent->StatPoints[i] = data2->chaoDataPointer->data.Skill[i] - 200;
+			else opponent->StatPoints[i] = data2->chaoDataPointer->data.Skill[i];
 		}
 	}
 
 	task* chao = CreateChao(chaoData, a2, opponent, position, angle);
-	ChaoDataBase* fullData = GET_CHAOPARAM(chao);
+	CHAO_PARAM_GC* fullData = GET_CHAOPARAM(chao);
+	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chao);
 
 	for (int i = 0; i < 7; i++)
 		fullData->partsDX.MinimalParts[i] = opponent->Name[i];
@@ -127,38 +128,38 @@ task* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTO
 	if (opponent->Shiny == 3)
 	{
 		fullData->Shiny = 1;
-		fullData->ShinyJewelMonotone = 1;
+		pParamCwe->ShinyJewelMonotone = 1;
 	}
 
 	if (opponent->f13 == 0)
 	{
-		fullData->EyeAlignment = 0;
-		fullData->EyeColor = 0;
+		pParamCwe->EyeAlignment = 0;
+		pParamCwe->EyeColor = 0;
 	}
 	else if (opponent->f13 >= 1 && opponent->f13 <= 6)
 	{
-		fullData->EyeAlignment = 1;
-		fullData->EyeColor = opponent->f13 - 1;
+		pParamCwe->EyeAlignment = 1;
+		pParamCwe->EyeColor = opponent->f13 - 1;
 	}
 	else if (opponent->f13 >= 7 && opponent->f13 <= 12)
 	{
-		fullData->EyeAlignment = 2;
-		fullData->EyeColor = opponent->f13 - 7;
+		pParamCwe->EyeAlignment = 2;
+		pParamCwe->EyeColor = opponent->f13 - 7;
 	}
 	else if (opponent->f13 >= 13 && opponent->f13 <= 18)
 	{
-		fullData->EyeAlignment = 3;
-		fullData->EyeColor = opponent->f13 - 13;
+		pParamCwe->EyeAlignment = 3;
+		pParamCwe->EyeColor = opponent->f13 - 13;
 	}
 	else if (opponent->f13 >= 20 && opponent->f13 <= 22)
 	{
-		fullData->EyeAlignment = opponent->f13 - 20;
-		fullData->EyeColor = 7;
+		pParamCwe->EyeAlignment = opponent->f13 - 20;
+		pParamCwe->EyeColor = 7;
 	}
 	else if (opponent->f13 >= 23 && opponent->f13 <= 25)
 	{
-		fullData->EyeAlignment = (opponent->f13 - 23) + 1;
-		fullData->EyeColor = 8;
+		pParamCwe->EyeAlignment = (opponent->f13 - 23) + 1;
+		pParamCwe->EyeColor = 8;
 	}
 	sub_566B80(chao);
 	return chao;
@@ -197,7 +198,7 @@ Uint32 __cdecl GenerateRandomSeed()
 // we also store the index back in the old slots, to provide compatibility checks
 void AL_ChaoAccessoryMainCheck(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 
 	// new accessory stuff
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
@@ -237,7 +238,7 @@ void AL_ChaoAccessoryMainCheck(task* tp) {
 // handles converting the old index-based accessories to the new structs
 // this is called per chaodata in alw_control (to handle all in-garden chao as soon as possible)
 // and in the race chao main function to fix them using index 0 in work->AccessoryIndices
-void AL_ChaoAccessoryConversion(ChaoDataBase* pParam) {
+void AL_ChaoAccessoryConversion(CHAO_PARAM_CWE* pParam) {
 	if (!pParam) return;
 
 	if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
@@ -289,7 +290,9 @@ static FunctionHook<void, task*> Chao_Main_hook(0x0054FE20, Chao_Main_r);
 static void Chao_Main_r(task* a1)
 {
 	chaowk* work = GET_CHAOWK(a1);
-	ChaoDataBase* pParam = GET_CHAOPARAM(a1);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(a1);
+	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(a1);
+
 	if (!pParam) return;
 
 	//some timer
@@ -299,33 +302,33 @@ static void Chao_Main_r(task* a1)
 			pParam->field_19 = 0;
 
 		//upgrade to 9.4
-		if (pParam->IsInitializedAccessory == 0)
+		if (pParamCwe->IsInitializedAccessory == 0)
 		{
 			for (int i = 0; i < 4; i++)
-				pParam->Accessories_[i] = pParam->Accessories_old[i];
-			pParam->IsInitializedAccessory = 1;
+				pParamCwe->Accessories_[i] = pParamCwe->Accessories_old[i];
+			pParamCwe->IsInitializedAccessory = 1;
 		}
 
 		
-		if (!(pParam->Flags & AL_PARAM_FLAG_NAME_NEW))
+		if (!(pParamCwe->Flags & AL_PARAM_FLAG_NAME_NEW))
 		{
 			AL_GENE& Gene = pParam->Gene;
 
-			memcpy(pParam->Name, pParam->Name_, sizeof(pParam->Name_));
-			memcpy(pParam->MotherName, Gene.MotherName, sizeof(Gene.MotherName));
-			memcpy(pParam->FatherName, Gene.FatherName, sizeof(Gene.FatherName));
-			memcpy(pParam->MGroundMotherName, Gene.MGroundMotherName, sizeof(Gene.MGroundMotherName));
-			memcpy(pParam->MGroundFatherName, Gene.MGroundFatherName, sizeof(Gene.MGroundFatherName));
-			memcpy(pParam->FGroundMotherName, Gene.FGroundMotherName, sizeof(Gene.FGroundMotherName));
-			memcpy(pParam->FGroundFatherName, Gene.FGroundFatherName, sizeof(Gene.FGroundFatherName));
+			memcpy(pParamCwe->Name, pParam->name, sizeof(pParam->name));
+			memcpy(pParamCwe->MotherName, Gene.MotherName, sizeof(Gene.MotherName));
+			memcpy(pParamCwe->FatherName, Gene.FatherName, sizeof(Gene.FatherName));
+			memcpy(pParamCwe->MGroundMotherName, Gene.MGroundMotherName, sizeof(Gene.MGroundMotherName));
+			memcpy(pParamCwe->MGroundFatherName, Gene.MGroundFatherName, sizeof(Gene.MGroundFatherName));
+			memcpy(pParamCwe->FGroundMotherName, Gene.FGroundMotherName, sizeof(Gene.FGroundMotherName));
+			memcpy(pParamCwe->FGroundFatherName, Gene.FGroundFatherName, sizeof(Gene.FGroundFatherName));
 
-			pParam->Flags |= AL_PARAM_FLAG_NAME_NEW;
+			pParamCwe->Flags |= AL_PARAM_FLAG_NAME_NEW;
 		}
 
 
-		if (!pParam->Birthday)
+		if (!pParamCwe->Birthday)
 		{
-			pParam->Birthday = 60 + (int)(njRandom() * 30); //randrange(60,90)
+			pParamCwe->Birthday = 60 + (int)(njRandom() * 30); //randrange(60,90)
 		}
 
 		if (!pParam->ChaoID.id[0]) //if doesnt have UID
@@ -335,17 +338,15 @@ static void Chao_Main_r(task* a1)
 		}
 	}
 
-	*(int*)pParam->Name_ = *(int*)pParam->Name;
-	*(short*)(&pParam->Name_[4]) = *(short*)(&pParam->Name[4]);
-	pParam->Name_[6] = pParam->Name[6];
+	memcpy(pParam->name, pParamCwe->Name, sizeof(pParam->name));
 
-	if (!(pParam->Flags & AL_PARAM_FLAG_OLD_GUEST_CHECK)) {
-		if ((Uint8)pParam->Name[6] == 0xFB) {
+	if (!(pParamCwe->Flags & AL_PARAM_FLAG_OLD_GUEST_CHECK)) {
+		if ((Uint8)pParamCwe->Name[6] == 0xFB) {
 			pParam->field_19 = 1;
-			pParam->Name[6] = 0;
+			pParamCwe->Name[6] = 0;
 		}
 
-		pParam->Flags |= AL_PARAM_FLAG_OLD_GUEST_CHECK;
+		pParamCwe->Flags |= AL_PARAM_FLAG_OLD_GUEST_CHECK;
 	}
 
 	//these are ported xml codes
@@ -354,15 +355,15 @@ static void Chao_Main_r(task* a1)
 	{
 		if (pParam->Medal == 8)
 		{
-			if (pParam->Lifespan < 1000) pParam->Lifespan = 1000;
-			if (pParam->Lifespan2 < 1000) pParam->Lifespan2 = 1000;
+			if (pParam->life < 1000) pParam->life = 1000;
+			if (pParam->LifeMax < 1000) pParam->LifeMax = 1000;
 		}
 	}
 
 	//new power climbing
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_CLIMB && GET_CHAOWK(a1)->Behavior.SubTimer == 240)
 	{
-		if (pParam->StatPoints[3] >= 150) //USE GETSTAT THING LATER
+		if (pParam->Skill[3] >= 150) //USE GETSTAT THING LATER
 		{
 			GET_CHAOWK(a1)->Behavior.SubTimer = 0;
 		}
@@ -421,7 +422,7 @@ static void AL_Deform_r(task* tp) {
 static void RaceChaoExecutor(task* tp);
 static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, RaceChaoExecutor);
 static void RaceChaoExecutor(task* tp) {
-	AL_ChaoAccessoryConversion(GET_CHAOPARAM(tp));
+	AL_ChaoAccessoryConversion(GET_CWEPARAM(tp));
 
 	auto original = reinterpret_cast<decltype(RaceChaoExecutor)*>(RaceChaoExecutor_t.Target());
 	original(tp);
@@ -492,8 +493,6 @@ static void __declspec(naked) NewDrawingsHook()
 
 void Chao_Init()
 {	
-	static_assert(offsetof(ChaoDataBase, XGradeValue) == 0x59e, "ChaoDataBase: XGradeValue not in right location");
-
 	static_assert(offsetof(ChaoData1, pParamGC) == 0x5C, "ChaoData1:pParamGC got shuffled");
 	static_assert(offsetof(ChaoData1, MotionTable) == 0x0AC, "ChaoData1:MotionTable got shuffled");
 	static_assert(offsetof(ChaoData1, Behavior) == 0x1B4, "ChaoData1:Behavior got shuffled");
@@ -517,11 +516,11 @@ void Chao_Init()
 	WriteData((short*)0x550448, (short)0x800);
 
 	// egg ParamCopy alloc size (2 malloc, 2 memset, and memcpy)
-	WriteData((uint32_t*)0x0057BC0E, uint32_t(sizeof(ChaoData) + 4));
-	WriteData((uint32_t*)0x0057BC61, uint32_t(sizeof(ChaoData) + 4));
-	WriteData((uint32_t*)0x0057BC18, uint32_t(sizeof(ChaoData)));
-	WriteData((uint32_t*)0x0057BC6B, uint32_t(sizeof(ChaoData)));
-	WriteData((uint32_t*)0x0057BC32, uint32_t(sizeof(ChaoData) / 4));
+	WriteData((uint32_t*)0x0057BC0E, uint32_t(sizeof(CHAO_SAVE_INFO) + 4));
+	WriteData((uint32_t*)0x0057BC61, uint32_t(sizeof(CHAO_SAVE_INFO) + 4));
+	WriteData((uint32_t*)0x0057BC18, uint32_t(sizeof(CHAO_SAVE_INFO)));
+	WriteData((uint32_t*)0x0057BC6B, uint32_t(sizeof(CHAO_SAVE_INFO)));
+	WriteData((uint32_t*)0x0057BC32, uint32_t(sizeof(CHAO_SAVE_INFO) / 4));
 
 	AL_Gene_Init();
 	AL_ParameterInit();

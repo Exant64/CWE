@@ -23,7 +23,7 @@ struct CollisionData;
 struct CharObj2Base;
 struct EntityData2;
 struct LaunchConfig_vtable;
-struct ChaoDataBase;
+struct CHAO_PARAM_GC;
 struct ChaoUnknownE;
 struct ChaoDebugData1;
 struct UnknownData2;
@@ -409,7 +409,7 @@ struct __declspec(align(4)) ChaoData1
 	char field_54[12];
 	int field_60;
 	int field_58;
-	ChaoDataBase *pParamGC;
+	CHAO_PARAM_GC *pParamGC;
 	char field_70[40];
 	int field_88;
 	int field_8C;
@@ -890,50 +890,33 @@ struct __declspec(align(4)) KarateOpponent
 };
 #pragma pack(pop)
 
-typedef char AL_NAME[13];
-struct AL_GUEST {
-	ChaoType Type;
-	float Magnitude;
-	float FlySwim;
-	float RunPower;
-	float Alignment;
-	AL_NAME Name;
-	Uint16 Flags;
-};
 
-struct AL_PARAM_ACCESSORY_INFO {
-	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
-	Uint32 Flags;
-	Uint32 ColorFlags;
-	Uint32 ColorSlots[8];
-};
-
-struct ChaoDataBase
+struct CHAO_PARAM_GC
 {
 	char gap_0[18];
-	char Name_[7];
+	char name[7];
 	char field_19;
 	char GBATexture;
 	char field_1B[5];
-	Uint8 StatFractions[8];
-	char StatGrades[8];
-	char StatLevels[8];
-	__int16 StatPoints[8];
+	Uint8 Exp[8];
+	char Abl[8];
+	char Lev[8];
+	__int16 Skill[8];
 	unsigned __int16 GBAPalette[16];
 	char rmsg[16];
 	unsigned int runaway;
 	char dummy[4];
-	ChaoType Type;
-	char Garden;
-	__int16 Happiness;
+	ChaoType type;
+	char place;
+	__int16 like;
 	__int16 InKindergarten;
-	__int16 ClockRollovers;
-	__int16 AdultClockRollovers;
-	__int16 Lifespan;
-	__int16 Lifespan2;
-	__int16 Reincarnations;
+	__int16 age;
+	__int16 old;
+	__int16 life;
+	__int16 LifeMax;
+	__int16 nbSucceed;
 	CHAO_ID ChaoID;
-	int TimescaleTimer;
+	int LifeTimer;
 	float PowerRun;
 	float FlySwim;
 	float Alignment;
@@ -968,49 +951,8 @@ struct ChaoDataBase
 	AL_PARTS partsDX;
 	char paddingRaceDX[16];//AL_RACE_PERSONAL_INFO_DX raceDX;
 	AL_KNOWLEDGE_DX knowledgeDX;
-	char Padding1[114];
-	char ShinyFruitValue_obsolete;
-	char ShinyJewelMonotone;
-	char FreeSpace;
-	char GiftChaoValue; //unused for a while, we might pick this up again some time
-	char FreeSpace_;
-	char LobbyTextureValue; //same here
-	char FreeSpace__;
-	char EyeAlignment;
-	char EyeColor;
-	char AltMouthPatch;
-	char UpgradeCounter;
-	char freeSpace3;
-	char XGradeValue;
-	KarateOpponent motherData;
-	KarateOpponent fatherData;
-	unsigned char IsInitializedAccessory;
-	unsigned char Accessories_old[4];
-	bool DCWings;
-	bool Negative;
-	char padding_cwedna[2];
-	short Birthday;
-	bool ForceReincarnate;
-	unsigned short Accessories_[4];
-	int Flags;
-	int Version;
-	AL_NAME Name;
-	AL_NAME MotherName;
-	AL_NAME FatherName;
-	AL_NAME MGroundMotherName;
-	AL_NAME MGroundFatherName;
-	AL_NAME FGroundMotherName;
-	AL_NAME FGroundFatherName;
-	AL_GUEST Guest;
-	char TypeID[16];
-	//we can't make a knowledge struct cuz we don't really know what we'll put in it in the future, I don't want it to end up like CWEDNA
-	Uint8 MusicFlag_CWE;
-	Uint8 DanceFlag_CWE;
-	AL_PARAM_ACCESSORY_INFO Accessories[4];
-};
 
-static_assert(offsetof(ChaoDataBase, padding_cwedna) == 0x60F);
-static_assert(offsetof(ChaoDataBase, Birthday) == 0x611);
+};
 
 struct ChaoUnknownE
 {
@@ -1192,11 +1134,11 @@ struct ChaoFriendshipEntry
 	char Flags;
 };
 
-struct ChaoData
+struct CHAO_SAVE_INFO
 {
-	ChaoDataBase data;
+	CHAO_PARAM_GC data;
 	
-	char Padding2[0x800 - sizeof(ChaoDataBase)]; //remaining empty space th
+	char Padding2[0x800 - sizeof(CHAO_PARAM_GC)]; //remaining empty space th
 };
 
 struct struct_a1

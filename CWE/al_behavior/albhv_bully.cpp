@@ -628,7 +628,7 @@ void AL_CalcIntentionScore_Bully(task* tp, float* pMaxScore) {
 	const int angerDecrease = max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
 	AL_EmotionAdd(tp, EM_MD_ANGER, angerDecrease);
 
-	const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->StatPoints[3] - GET_CHAOPARAM(tp)->StatPoints[3]) > 500 || 
+	const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->Skill[3] - GET_CHAOPARAM(tp)->Skill[3]) > 500 || 
 		(GET_CHAOPARAM(pVictimChao)->KarateInfo - GET_CHAOPARAM(tp)->KarateInfo) >= 5;
 
 	if (!canDefendThemselves && pStopperChao) {

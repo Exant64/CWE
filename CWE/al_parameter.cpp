@@ -9,11 +9,11 @@ void AL_NameSet(char* lval, char* rval) {
 }
 
 bool AL_IsChild(task* tp) {
-	return GET_CHAOPARAM(tp)->Type == ChaoType_Child;
+	return GET_CHAOPARAM(tp)->type == ChaoType_Child;
 }
 
 bool AL_IsCustomChao(task* tp) {
-	return GET_CHAOPARAM(tp)->Type == 26 || GET_CHAOWK(tp)->IsCustomChaoTypeLoaded;
+	return GET_CHAOPARAM(tp)->type == 26 || GET_CHAOWK(tp)->IsCustomChaoTypeLoaded;
 }
 
 bool AL_IsHero(unsigned __int8 a1) {
@@ -24,34 +24,35 @@ bool AL_IsDark(unsigned __int8 a1) {
 }
 
 bool AL_IsHero2(task* a1) {
-	return AL_IsHero(GET_CHAOPARAM(a1)->Type);
+	return AL_IsHero(GET_CHAOPARAM(a1)->type);
 }
 bool AL_IsDark2(task* a1) {
-	return AL_IsDark(GET_CHAOPARAM(a1)->Type);
+	return AL_IsDark(GET_CHAOPARAM(a1)->type);
 }
 
-bool AL_IsNegative(task* a1) {
-	if (AL_IsCustomChao(a1)) {
+bool AL_IsNegative(task* tp) {
+	if (AL_IsCustomChao(tp)) {
 		return false;
 	}
 
-	bool negative = GET_CHAOPARAM(a1)->Negative;
-	if (ChaoSaveText == 0x4B4C425F)
-	{
+	bool negative = GET_CWEPARAM(tp)->Negative;
+
+	if (ChaoSaveText == 0x4B4C425F) {
 		negative = !negative;
 	}
+
 	return negative;
 }
 
 void AL_ParameterClearAccessory(task* tp, int slot) {
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 
 	memset(&pParam->Accessories[slot], 0, sizeof(pParam->Accessories[slot]));
 }
 
 void AL_ParameterAddAPos(task* a1, float a2)
 {
-	ChaoDataBase* v3; // ecx
+	CHAO_PARAM_GC* v3; // ecx
 	float v4; // [esp+4h] [ebp+4h]
 
 	chaowk* work = GET_CHAOWK(a1);
@@ -98,7 +99,7 @@ void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4
 void IncrementFlySwim(task* a1, float a2)
 {
 	ChaoData1* v2; // edx
-	ChaoDataBase* v3; // ecx
+	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
@@ -116,7 +117,7 @@ void IncrementFlySwim(task* a1, float a2)
 void IncrementPowerRun(task* a1, float a2)
 {
 	ChaoData1* v2; // edx
-	ChaoDataBase* v3; // ecx
+	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
@@ -133,7 +134,7 @@ void IncrementPowerRun(task* a1, float a2)
 }
 
 // levelup function in AL_ParameterGrow, no symbols name :(
-void sub_535E90(ChaoDataBase *a1, int a2) {
+void sub_535E90(CHAO_PARAM_GC *a1, int a2) {
 	static const void* fptr = (void*)0x535E90;
 	__asm {
 		mov edi, a1
@@ -162,15 +163,15 @@ static void AL_CalcParameter_r(task* tp) {
 	//		do something
 	//		write lifetimer 14
 	// so the way i'm rewriting them is that they're supposed to happen per-lifetimer cycle
-	if(!param->TimescaleTimer) {
+	if(!param->LifeTimer) {
 		if(gConfigVal.ChaoAttention) {
 			// intentionally not using the real function (AL_ParameterAddUserLike)
 			// because it has many sideeffects
 
-			param->Happiness--;
+			param->like--;
 
-			if (param->Happiness < -100) {
-				param->Happiness = -100;
+			if (param->like < -100) {
+				param->like = -100;
 			}
 		}
 
@@ -193,19 +194,19 @@ static void AL_CalcParameter_r(task* tp) {
 
 		if (gConfigVal.AutoGenerateStats) {
 			for(size_t i = 0; i < 5; ++i) {
-				if(param->StatLevels[i] >= 10) continue;
+				if(param->Lev[i] >= 10) continue;
 
 				// doing this to prevent overflow
-				int fract = int(param->StatFractions[i]) + 20;
+				int fract = int(param->Exp[i]) + 20;
 
 				if(fract >= 100) {
 					fract -= 100;
-					param->StatLevels[i]++;
+					param->Lev[i]++;
 
 					sub_535E90(param, i);
 				}
 
-				param->StatFractions[i] = fract;
+				param->Exp[i] = fract;
 			}
 		}
 	}

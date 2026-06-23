@@ -52,7 +52,7 @@ struct SAlItem
 
 struct CWESaveFile
 {
-	ChaoData chaoParam[24];
+	CHAO_SAVE_INFO chaoParam[24];
 	ITEM_SAVE_INFO specialItems[30];
 	int TimeOfDay;
 	int Weather;

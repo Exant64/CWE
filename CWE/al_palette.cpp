@@ -196,7 +196,7 @@ void __cdecl alpalSetBank(task* a1, int a2)
 
 	TexPalMap.clear();
 
-	switch (GET_CHAOPARAM(a1)->Type)
+	switch (GET_CHAOPARAM(a1)->type)
 	{
 	case 2:
 		v2 = 0;
@@ -306,7 +306,7 @@ __int16 sub_420F10(unsigned __int8 a1, unsigned __int8 a2, unsigned __int8 a3)
 StdcallFunctionPointer(void, sub_41AB40, (signed int a1), 0x41AB40);
 
 const int UpdateChaoPalettePtr = 0x0534670;
-void __cdecl UpdateChaoPalette(ChaoDataBase* a1, task* a2, int a3)
+void __cdecl UpdateChaoPalette(CHAO_PARAM_GC* a1, task* a2, int a3)
 {
 	__asm
 	{
@@ -318,7 +318,7 @@ void __cdecl UpdateChaoPalette(ChaoDataBase* a1, task* a2, int a3)
 	}
 }
 
-void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, task* a1, int cno, char gPalette[][48 * 4])
+void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno, char gPalette[][48 * 4])
 {
 	ChaoType v3; // dl
 	signed int v4; // ecx
@@ -367,9 +367,9 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, task* a1, int cno, 
 	int v86;
 
 	v34 = (int*)v45;
-	v3 = (ChaoType)chaoData->Type;
-	if (AL_IsHero(v3) && chaoData->LobbyTextureValue > 0) 
-		v3 = (ChaoType)((chaoData->LobbyTextureValue + 1) * 3);
+	v3 = (ChaoType)chaoData->type;
+	if (AL_IsHero(v3) && GET_CWEPARAM(chaoData)->LobbyTextureValue > 0) 
+		v3 = (ChaoType)((GET_CWEPARAM(chaoData)->LobbyTextureValue + 1) * 3);
 	//lobbytextureval = 1 -> v3 = 6
 	//lobbytextureval = 2 -> v3 = 9
 	//formula ^ for chaotype override
@@ -723,7 +723,7 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, task* a1, int cno, 
 		v85 += 32;
 	} while (v86 < 3);
 }
-void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, task* a1, int cno, char gPalette[][256 * 3 * 4])
+void __cdecl AL_PaletteSetColorRatio8bpp(CHAO_PARAM_GC* chaoData, task* a1, int cno, char gPalette[][256 * 3 * 4])
 {
 	ChaoType v3; // dl
 	signed int v4; // ecx
@@ -758,10 +758,12 @@ void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, task* a1, int c
 	int v85;
 	int v86;
 
+	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chaoData);
+	
 	v34 = (int*)v45;
-	v3 = (ChaoType)chaoData->Type;
-	if (AL_IsHero(v3) && chaoData->LobbyTextureValue > 0)
-		v3 = (ChaoType)((chaoData->LobbyTextureValue + 1) * 3);
+	v3 = (ChaoType)chaoData->type;
+	if (AL_IsHero(v3) && pParamCwe->LobbyTextureValue > 0)
+		v3 = (ChaoType)((pParamCwe->LobbyTextureValue + 1) * 3);
 	//lobbytextureval = 1 -> v3 = 6
 	//lobbytextureval = 2 -> v3 = 9
 	//formula ^ for chaotype override
@@ -984,7 +986,7 @@ void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, task* a1, int c
 		v85 += 256 * 2;
 	} while (v86 < 3);
 }
-void __cdecl UpdateChaoPaletteNew(ChaoDataBase* chaoData, task* a1, int cno)
+void __cdecl UpdateChaoPaletteNew(CHAO_PARAM_GC* chaoData, task* a1, int cno)
 {
 	if (AL_IsNegative(a1))
 	{

@@ -207,7 +207,7 @@ void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 		*a2 = 1;
 	}
 
-	if (GET_CHAOPARAM(a1) && GET_CHAOPARAM(a1)->ForceReincarnate)
+	if (GET_CWEPARAM(a1)->ForceReincarnate)
 	{
 		AL_SetBehavior(a1, (BHV_FUNC)0x0568F60);
 		*a2 = 1.0f;

@@ -7,7 +7,7 @@ public:
 
 	using Code::Code;
 
-	void OnChaoData(ChaoDataBase& chao) override;
+	void OnChaoData(CHAO_PARAM_GC& chao) override;
 };
 
 const std::unordered_map<Uint8, Uint8> pcToGc = {
@@ -24,7 +24,7 @@ const std::unordered_map<Uint8, Uint8> pcToGc = {
 	{13, 127},
 };
 
-void GCShinyJewel::OnChaoData(ChaoDataBase& chao) {
+void GCShinyJewel::OnChaoData(CHAO_PARAM_GC& chao) {
 	if (chao.Texture < 1) return;
 	if (!chao.Shiny) return;
 	if (chao.Color >= 16) return; //already transformed probably

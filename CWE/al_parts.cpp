@@ -131,7 +131,7 @@ void AL_SetMinimalParts(task* tp, int PartsKind, int MinimalType) {
 			if (MinimalType >= 0) {
 				//we're using field_CC (pDisplayList, unused field) as a texlist field
 				//first element of CWE_PARTS[2] array is child parts, second is adult parts
-				if (work->pParamGC->Type == 2) {
+				if (work->pParamGC->type == 2) {
 					work->field_524[tree]->animalPart = ModAPI_MiniParts[MinimalType][0].objects[listNumber];
 					work->field_524[tree]->field_CC = (int)ModAPI_MiniParts[MinimalType][0].tex;
 				}
@@ -154,7 +154,7 @@ FunctionPointer(void, sub_566B30, (ChunkObjectPointer* a1), 0x566B30);
 
 static void AL_PartsConversion(task* a1) {
 	ChaoData1* wk = GET_CHAOWK(a1);
-	ChaoDataBase* pParam = wk->pParamGC;
+	CHAO_PARAM_GC* pParam = wk->pParamGC;
 
 	for (size_t i = 0; i < NB_PARTS_KIND; i++) {
 		if (wk->pParamGC->partsDX.MinimalParts[i] > 0) {
@@ -165,7 +165,7 @@ static void AL_PartsConversion(task* a1) {
 
 void sub_566B80(task* tp) {
 	ChaoData1* wk = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 
 	if (!(pParam->Flags & AL_PARAM_FLAG_PARTS_CONVERSION)) {
 		AL_PartsConversion(tp);

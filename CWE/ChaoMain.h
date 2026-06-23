@@ -9,7 +9,7 @@ extern const HelperFunctions* g_HelperFunctions;
 extern IDirect3DDevice9* cwe_device;
 
 void AL_CustomizationInit();
-DataArray(ChaoData*, ChaoSelectData, 0x01DBEE80, 48);
+DataArray(CHAO_SAVE_INFO*, ChaoSelectData, 0x01DBEE80, 48);
 
 DataPointer(char, ControlEnabled, 0x0174AFFE);
 DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
@@ -110,7 +110,7 @@ struct ConfigValues {
 };
 extern ConfigValues gConfigVal;
 
-FunctionPointer(ChaoData*, AL_GetNewChaoSaveInfo, (), 0x00531AA0);
+FunctionPointer(CHAO_SAVE_INFO*, AL_GetNewChaoSaveInfo, (), 0x00531AA0);
 ThiscallFunctionPointer(void*, AL_GetNewItemSaveInfo, (int a1), 0x52F9E0);
 
 extern task* pBirthdayChao;
@@ -191,7 +191,7 @@ struct  ALFSave
 	RaceData RaceData;
 	char field_9D0[32];
 	BlackMarketSaveData BlackMarketData;
-	ChaoData ChaoSlots[24];
+	CHAO_SAVE_INFO ChaoSlots[24];
 	int Checksum[2];
 };
 

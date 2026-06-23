@@ -156,9 +156,9 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.IconType = ICON_TYPE_SPIKY,
 
 		.pEvolveFunc = [](task* tp) {
-			ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 		
-			return pParam->Type == ChaoType_Dark_Power && pParam->EyeColor == SpartoiLensID;
+			return pParam->type == ChaoType_Dark_Power && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
 		},
 
 		.Flags = 0,

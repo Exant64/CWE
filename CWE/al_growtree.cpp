@@ -166,7 +166,7 @@ void __cdecl sub_546670Hook(NJS_VECTOR* a1, ALO_GrowTreeExecutor_Data* a2, int a
     sub_546670(a1, a2, a3);
 }
 
-task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ChaoData* a5)
+task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, CHAO_SAVE_INFO* a5)
 {    
     if(a1 >= SA2BFruit_ChaoGardenFruit && a1 <= SA2BFruit_DarkGardenFruit)
         return ALO_FruitExecutor_Load(a1, position, angle, a4, a5);

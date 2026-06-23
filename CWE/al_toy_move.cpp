@@ -62,7 +62,7 @@ void MoveFunc2(task* a1)
 	}
 }
 static const void* const AddToGlobalChaoThingMaybePtr_ = (void*)0x530750;
-static inline signed int AddToGlobalChaoThingMaybe_(unsigned __int16 a1, task* obj, __int16 a3, ChaoData* data)
+static inline signed int AddToGlobalChaoThingMaybe_(unsigned __int16 a1, task* obj, __int16 a3, CHAO_SAVE_INFO* data)
 {
 	signed int result;
 	__asm
@@ -97,7 +97,7 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 		PrintDebug("AL_Toy_Move_Register: invalid toy area");
 	}
 
-	AddToGlobalChaoThingMaybe_(6, obj, a3, (ChaoData*)info);
+	AddToGlobalChaoThingMaybe_(6, obj, a3, (CHAO_SAVE_INFO*)info);
 	if (info) {
 		obj->twp->pos = info->position;
 		obj->twp->ang.y = info->Age;

@@ -341,7 +341,7 @@ static void RenderAnimal_r(task* tp) {
 
 static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4, int a5) {
     if (a1 >= 21 && a1 < 25) {
-        ALO_ChaosDriveExecutor_Load(a1 - 21, a2, (NJS_VECTOR*)a4, (ChaoData*)a5);
+        ALO_ChaosDriveExecutor_Load(a1 - 21, a2, (NJS_VECTOR*)a4, (CHAO_SAVE_INFO*)a5);
         return;
     }
 

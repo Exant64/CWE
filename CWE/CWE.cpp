@@ -152,7 +152,7 @@ extern "C"
 		return retval;
 	}
 
-	static void GuestChao(ChaoDataBase& param) {
+	static void GuestChao(CHAO_PARAM_GC& param) {
 
 		//to hopefully prevent chao getting capped when inside guest menu
 		if (AL_GetStageNumber() == CHAO_STG_ODEKAKE)
@@ -160,10 +160,11 @@ extern "C"
 
 		if (param.field_19 != 1) return;
 
-		AL_GUEST& Guest = param.Guest;
+		auto pParamCwe = GET_CWEPARAM(&param);
+		AL_GUEST& Guest = pParamCwe->Guest;
 
 		if (Guest.Type == 0) {
-			Guest.Type = param.Type;
+			Guest.Type = param.type;
 			Guest.Alignment = param.Alignment;
 			Guest.Magnitude = param.EvolutionProgress;
 			Guest.FlySwim = param.FlySwim;
@@ -171,37 +172,37 @@ extern "C"
 
 		}
 		else {
-			param.Type = Guest.Type;
+			param.type = Guest.Type;
 			param.Alignment = Guest.Alignment;
 			param.EvolutionProgress = Guest.Magnitude;
 			param.FlySwim = Guest.FlySwim;
 			param.PowerRun = Guest.RunPower;
 		}
 
-		param.Lifespan = 100;
-		param.Lifespan2 = 100;
+		param.life = 100;
+		param.LifeMax = 100;
 
 		param.gap_0[0xC] = 0; //?
 
 		for (int i = 0; i < 5; i++) {
-			param.StatFractions[i] = 0;
+			param.Exp[i] = 0;
 
-			if (param.StatGrades[i] > ChaoGrade_B) {
-				param.StatGrades[i] = ChaoGrade_B;
+			if (param.Abl[i] > ChaoGrade_B) {
+				param.Abl[i] = ChaoGrade_B;
 			}
 
-			if (param.StatPoints[i] > 2000) {
-				param.StatPoints[i] = 2000;
-				param.StatLevels[i] = 109; //lock icon later
+			if (param.Skill[i] > 2000) {
+				param.Skill[i] = 2000;
+				param.Lev[i] = 109; //lock icon later
 			}
 
 			param.Gene.Abl[i][1] = ChaoGrade_E;
 		}
 
-		param.StatGrades[6] = param.StatGrades[7] = 0;
+		param.Abl[6] = param.Abl[7] = 0;
 
-		param.XGradeValue = 0;
-		param.UpgradeCounter = 5;
+		pParamCwe->XGradeValue = 0;
+		pParamCwe->UpgradeCounter = 5;
 	}
 
 	void __cdecl ALW_Control_Main_Hook(task* a1);
@@ -225,14 +226,15 @@ extern "C"
 		original(a1);
 
 		for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
-			AL_ChaoAccessoryConversion(&ChaoInfo::Instance()[i]);
+			AL_ChaoAccessoryConversion(GET_CWEPARAM(&ChaoInfo::Instance()[i]));
 		}
 
 		for (auto& c : CodeManager::Instance()) {
 			for (size_t chaoIndex = 0; chaoIndex < ChaoInfo::Instance().Count(); chaoIndex++) {
 				c->OnChaoData(ChaoInfo::Instance()[chaoIndex]);
 
-				ChaoDataBase* pParam = &ChaoInfo::Instance()[chaoIndex];
+				CHAO_PARAM_CWE* pParam = GET_CWEPARAM(&ChaoInfo::Instance()[chaoIndex]);
+
 				if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
 					for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
 						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
@@ -328,8 +330,8 @@ extern "C"
 				objData[i].Age = 0;
 
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
-			if (ChaoSlots[i].data.Type == 1)
-				ChaoSlots[i].data.UpgradeCounter = 0;
+			if (ChaoSlots[i].data.type == 1)
+				GET_CWEPARAM(&ChaoSlots[i].data)->UpgradeCounter = 0;
 
 			GuestChao(ChaoSlots[i].data);
 		}
@@ -443,10 +445,10 @@ extern "C"
 		const std::string iniPath = std::string(path) + "\\config.ini";
 		IniFile* config = new IniFile(iniPath);
 
-		static_assert(sizeof(ChaoData) == 0x800, "ChaoData incorrect size");
+		static_assert(sizeof(CHAO_SAVE_INFO) == 0x800, "ChaoData incorrect size");
 		static_assert(sizeof(AL_GENE) == 0xA4, "AL_GENE incorrect size");
-		static_assert(offsetof(ChaoDataBase, Gene) == 0x438, "ChaoDataBase DNA incorrect offset");
-		static_assert(offsetof(ChaoDataBase, IsInitializedDX) == 0x4DC, "SA2 chaodatabase size incorrect");
+		static_assert(offsetof(CHAO_PARAM_GC, Gene) == 0x438, "ChaoDataBase DNA incorrect offset");
+		static_assert(offsetof(CHAO_PARAM_GC, IsInitializedDX) == 0x4DC, "SA2 chaodatabase size incorrect");
 
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);

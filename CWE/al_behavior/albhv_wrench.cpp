@@ -88,7 +88,7 @@ int __cdecl ALBHV_BuildStart(task* a1)
 	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[CurrentChaoArea - 1].x, 25, OmoPositions[CurrentChaoArea - 1].z, &a1->twp->Rotation);
 	if (omo->phase == 0 || !AL_KW_IDExists(omo->chaoID))
 	{
-		ChaoDataBase* pParamGC = GET_CHAOPARAM(a1);
+		CHAO_PARAM_GC* pParamGC = GET_CHAOPARAM(a1);
 
 		if (!AL_KW_IDExists(omo->chaoID))
 		{

@@ -217,10 +217,10 @@ ObjectFunc(ALO_ChaosDriveExecutor_Main, 0x5450C0);
 ObjectFunc(ALO_ChaosDriveExecutor_Display, 0x545150);
 FunctionPointer(int, ALO_ChaosDriveExecutor_Unknown, (int), 0x545430);
 ObjectFunc(ALO_ChaosDriveExecutor_Delete, 0x5455B0);
-FunctionPointer(task *, ALO_ChaosDriveExecutor_Load, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, ChaoData *a4), 0x545600);
+FunctionPointer(task *, ALO_ChaosDriveExecutor_Load, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, CHAO_SAVE_INFO *a4), 0x545600);
 ObjectFunc(ALO_FruitExecutor_Main, 0x545E40);
 ObjectFunc(ALO_FruitExecutor_Display, 0x545EE0);
-FunctionPointer(task *, ALO_FruitExecutor_Load, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, ChaoData *a5), 0x546180);
+FunctionPointer(task *, ALO_FruitExecutor_Load, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, CHAO_SAVE_INFO *a5), 0x546180);
 ObjectFunc(ALO_GrowTreeExecutor_Main, 0x546810);
 ObjectFunc(ALO_GrowTreeExecutor_Display, 0x547E70);
 ObjectFunc(ALO_GrowTreeExecutor_Delete, 0x5481E0);
@@ -252,7 +252,7 @@ ObjectFunc(AlgKinderMaster, 0x54E780);
 ObjectFunc(Chao_Main, 0x54FE20);
 ObjectFunc(Chao_Delete, 0x54FF30);
 ObjectFunc(Chao_Display, 0x54FF80);
-FunctionPointer(task *, CreateChao, (ChaoData *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
+FunctionPointer(task *, CreateChao, (CHAO_SAVE_INFO *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
 ObjectFunc(ChaoSelectMenuManager, 0x5542B0);
 ObjectFunc(ALO_EntranceElevatorExecutor_Main, 0x557FC0);
 ObjectFunc(ALO_EntranceElevatorExecutor_Display, 0x558350);
@@ -287,7 +287,7 @@ ObjectFunc(KarateCameraExec, 0x574480);
 ObjectFunc(KarateChaoExec_Main, 0x578D30);
 ObjectFunc(EGG, 0x57B520);
 ObjectFunc(ALO_Delete, 0x57B9B0);
-FunctionPointer(task *, CreateChaoEgg, (const void *a1, ChaoData *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
+FunctionPointer(task *, CreateChaoEgg, (const void *a1, CHAO_SAVE_INFO *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
 ObjectFunc(ALO_RadicaseExecutor_Main, 0x57C840);
 ObjectFunc(ALO_RadicaseExecutor_Display, 0x57CA80);
 ObjectFunc(ALO_RadicaseExecutor_Delete, 0x57CC80);
@@ -905,9 +905,9 @@ static inline void WriteChaoSaveChecksum(char *a1)
 	}
 }
 
-// signed int __usercall@<eax>(unsigned __int16 a1@<cx>, task *obj@<ebx>, __int16 a3, ChaoData *data)
+// signed int __usercall@<eax>(unsigned __int16 a1@<cx>, task *obj@<ebx>, __int16 a3, CHAO_SAVE_INFO *data)
 static const void *const AddToGlobalChaoThingMaybePtr = (void*)0x530750;
-static inline signed int AddToGlobalChaoThingMaybe(unsigned __int16 a1, task *obj, __int16 a3, ChaoData *data)
+static inline signed int AddToGlobalChaoThingMaybe(unsigned __int16 a1, task *obj, __int16 a3, CHAO_SAVE_INFO *data)
 {
 	signed int result;
 	__asm

@@ -149,9 +149,9 @@ int __cdecl ALBHV_Garagara(task* a1)
 		AL_SetMotionLink(a1, 330);
 		AL_FaceChangeEye(a1, 4);
 
-		if(AL_IsHero(GET_CHAOPARAM(a1)->Type))
+		if(AL_IsHero(GET_CHAOPARAM(a1)->type))
 			sub_5669B0(a1, (int)0x012F9994, 11);
-		else if(AL_IsDark(GET_CHAOPARAM(a1)->Type))
+		else if(AL_IsDark(GET_CHAOPARAM(a1)->type))
 			sub_5669B0(a1, (int)0x012F8BA4, 11);
 		else 
 			sub_5669B0(a1, (int)0x012FA174, 11);

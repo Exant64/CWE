@@ -20,8 +20,8 @@ struct __declspec(align(16)) KarateMainExecData
 	task* playerChao;
 	task* pointerToSaveThing;
 	task* PointerToOtherSaveThing;
-	ChaoData* field_18;
-	ChaoData* field_1C;
+	CHAO_SAVE_INFO* field_18;
+	CHAO_SAVE_INFO* field_1C;
 	int field_20;
 	int field_24;
 	int field_28;
@@ -42,7 +42,7 @@ struct __declspec(align(8)) KarateChaoExec_Data2
 	short word6;
 	task* pointerToChao;
 	void* dwordC;
-	ChaoData* chaoDataPointer;
+	CHAO_SAVE_INFO* chaoDataPointer;
 	int field_14;
 	NJS_VECTOR* BaseTranslationPos;
 	NJS_VECTOR* HeadTranslationPos;
