@@ -25,8 +25,8 @@ void BirthdayParty::OnALControl(task* tp) {
 			
 			if (!pBirthdayChao &&
 				param->ClockRollovers > 0 &&
-				param->Birthday > 0 &&
-				(param->ClockRollovers % param->Birthday) == 0)
+				GET_CWEPARAM(pChao)->Birthday > 0 &&
+				(param->ClockRollovers % GET_CWEPARAM(pChao)->Birthday) == 0)
 			{
 				param->ClockRollovers++;
 				pBirthdayChao = pChao;

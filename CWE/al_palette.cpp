@@ -368,8 +368,8 @@ void __cdecl AL_PaletteSetColorRatio(ChaoDataBase* chaoData, task* a1, int cno, 
 
 	v34 = (int*)v45;
 	v3 = (ChaoType)chaoData->Type;
-	if (AL_IsHero(v3) && chaoData->LobbyTextureValue > 0) 
-		v3 = (ChaoType)((chaoData->LobbyTextureValue + 1) * 3);
+	if (AL_IsHero(v3) && GET_CWEPARAM(chaoData)->LobbyTextureValue > 0) 
+		v3 = (ChaoType)((GET_CWEPARAM(chaoData)->LobbyTextureValue + 1) * 3);
 	//lobbytextureval = 1 -> v3 = 6
 	//lobbytextureval = 2 -> v3 = 9
 	//formula ^ for chaotype override
@@ -758,10 +758,12 @@ void __cdecl AL_PaletteSetColorRatio8bpp(ChaoDataBase* chaoData, task* a1, int c
 	int v85;
 	int v86;
 
+	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chaoData);
+	
 	v34 = (int*)v45;
 	v3 = (ChaoType)chaoData->Type;
-	if (AL_IsHero(v3) && chaoData->LobbyTextureValue > 0)
-		v3 = (ChaoType)((chaoData->LobbyTextureValue + 1) * 3);
+	if (AL_IsHero(v3) && pParamCwe->LobbyTextureValue > 0)
+		v3 = (ChaoType)((pParamCwe->LobbyTextureValue + 1) * 3);
 	//lobbytextureval = 1 -> v3 = 6
 	//lobbytextureval = 2 -> v3 = 9
 	//formula ^ for chaotype override

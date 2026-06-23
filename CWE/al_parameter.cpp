@@ -31,21 +31,22 @@ bool AL_IsDark2(task* a1) {
 
 
 DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
-bool AL_IsNegative(task* a1) {
-	if (AL_IsCustomChao(a1)) {
+bool AL_IsNegative(task* tp) {
+	if (AL_IsCustomChao(tp)) {
 		return false;
 	}
 
-	bool negative = GET_CHAOPARAM(a1)->Negative;
-	if (ChaoSaveText == 0x4B4C425F)
-	{
+	bool negative = GET_CWEPARAM(tp)->Negative;
+
+	if (ChaoSaveText == 0x4B4C425F) {
 		negative = !negative;
 	}
+
 	return negative;
 }
 
 void AL_ParameterClearAccessory(task* tp, int slot) {
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 
 	memset(&pParam->Accessories[slot], 0, sizeof(pParam->Accessories[slot]));
 }

@@ -20,28 +20,28 @@ extern "C" __declspec(dllexport) void ALS_LensSpecial(task * chao, task * item)
 {
 	if (item->twp->ang.x == 0)
 	{
-		GET_CHAOPARAM(chao)->EyeColor = 0;
-		GET_CHAOPARAM(chao)->EyeAlignment = 0;
+		GET_CWEPARAM(chao)->EyeColor = 0;
+		GET_CWEPARAM(chao)->EyeAlignment = 0;
 	}
 	else if (item->twp->ang.x >= 1 && item->twp->ang.x <= 3)
 	{
 		//	chao->Data1.Chao->pParamGC->EyeColor = 0;
-		GET_CHAOPARAM(chao)->EyeAlignment = item->twp->ang.x;
+		GET_CWEPARAM(chao)->EyeAlignment = item->twp->ang.x;
 	}
 	else if (item->twp->ang.x >= 4)
 	{
-		GET_CHAOPARAM(chao)->EyeColor = ModAPI_LensColorMap[item->twp->ang.x] + 1;
+		GET_CWEPARAM(chao)->EyeColor = ModAPI_LensColorMap[item->twp->ang.x] + 1;
 		//chao->Data1.Chao->pParamGC->EyeAlignment = 0;
 	}
 }
 void ALS_DCWings(task* chao, task* item)
 {
-	GET_CHAOPARAM(chao)->DCWings = !GET_CHAOPARAM(chao)->DCWings;
+	GET_CWEPARAM(chao)->DCWings = !GET_CWEPARAM(chao)->DCWings;
 }
 
 void ALS_Brush(task* chao, task* item)
 {
-	GET_CHAOPARAM(chao)->LobbyTextureValue = (item->twp->ang.x - (MirrorID + 1)) + 1;
+	GET_CWEPARAM(chao)->LobbyTextureValue = (item->twp->ang.x - (MirrorID + 1)) + 1;
 }
 bool ALS_BrushCondition(task* chao, task* item)
 {
@@ -80,7 +80,7 @@ bool ALS_ReincarnCondition(task* chao, task* item)
 {
 	if (!GET_CHAOPARAM(chao)) return false;
 
-	return GET_CHAOPARAM(chao)->Type > 2 && !GET_CHAOPARAM(chao)->ForceReincarnate;
+	return GET_CHAOPARAM(chao)->Type > 2 && !GET_CWEPARAM(chao)->ForceReincarnate;
 }
 
 void ALS_Reincarn(task* chao, task* item)
@@ -89,7 +89,7 @@ void ALS_Reincarn(task* chao, task* item)
 	GET_CHAOPARAM(chao)->Lifespan2 = 0;
 	GET_CHAOPARAM(chao)->StatGrades[6]++;
 	GET_CHAOPARAM(chao)->StatGrades[5]++;
-	GET_CHAOPARAM(chao)->ForceReincarnate = true;
+	GET_CWEPARAM(chao)->ForceReincarnate = true;
 }
 
 void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
@@ -127,7 +127,7 @@ void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 		texlist_cwe_object,
 		&Negative,
 		[](task* chao, task* item) {
-			GET_CHAOPARAM(chao)->Negative = !GET_CHAOPARAM(chao)->Negative;
+			GET_CWEPARAM(chao)->Negative = !GET_CWEPARAM(chao)->Negative;
 		},
 		nullptr,
 			"Reverse Mirror",

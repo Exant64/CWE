@@ -288,7 +288,7 @@ void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model)
 		GET_CHAOWK(a1)->pParamGC->Color,
 		GET_CHAOWK(a1)->pParamGC->Shiny,
 		GET_CHAOWK(a1)->pParamGC->MonotoneHighlights,
-		GET_CHAOWK(a1)->pParamGC->ShinyJewelMonotone,
+		GET_CWEPARAM(a1)->ShinyJewelMonotone,
 		model);
 }
 
@@ -407,14 +407,12 @@ static bool AL_HasAccessoryInSlot(const task* tp, const EAccessoryType slot) {
 
 static void AL_ValidateAccessory(task* tp, const EAccessoryType slot) {
 	chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* param = GET_CHAOPARAM(tp);
-
 	auto& accessoryIndex = work->AccessoryIndices[slot];
 
 	if (accessoryIndex != -1 && GetAccessoryType(accessoryIndex) >= EAccessoryType::Generic1) {
 		// empty id means no accessory
 		// false id won't get cleared, just missing object
-		param->Accessories[slot].ID[0] = 0;
+		GET_CWEPARAM(tp)->Accessories[slot].ID[0] = 0;
 	}
 }
 
@@ -468,7 +466,7 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 	}
 
 	chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 	const int accessoryIndex = work->AccessoryIndices[slot];
 	const auto& accessory_data = GetAccessoryData(accessoryIndex);
 
@@ -484,7 +482,7 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 
 static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
 	const chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 
 	if (!AL_HasAccessoryInSlot(tp, slot)) {
 		return;
@@ -788,7 +786,7 @@ static uint64_t DrawHideNodes = 0;
 
 static void AL_DrawSetupParams(task* tp, ChunkObjectPointer* chunkObjectPointer) {
 	chaowk* work = GET_CHAOWK(tp);
-	const auto* pParam = GET_CHAOPARAM(tp);
+	const auto* pParam = GET_CWEPARAM(tp);
 
 	DrawHideNodes = 0;
 	BaldFlag = false;
@@ -992,7 +990,7 @@ void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 		&& Chao_NodeIndex != 29)
 		&& (!GET_CHAOPARAM(a1)->HideFeet
 			|| GET_CHAOPARAM(a1)->Type >= (unsigned __int8)CharacterIndex
-			|| (GET_CHAOPARAM(a1)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39)) && Chao_NodeIndex != 6 && Chao_NodeIndex != 13 && Chao_NodeIndex != 8))
+			|| (GET_CWEPARAM(a1)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39)) && Chao_NodeIndex != 6 && Chao_NodeIndex != 13 && Chao_NodeIndex != 8))
 	{
 		if (chunkObjectPointer->animalPart && GET_CHAOPARAM(a1)->Type < CharacterIndex) {
 			if (!(DrawHideNodes & (uint64_t(1) << uint64_t(Chao_NodeIndex)))) {
@@ -1038,10 +1036,10 @@ void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 				break;
 			case 18:
 			case 21:
-				if (GET_CHAOWK(a1)->Face.Flag == 0 || GET_CHAOPARAM(a1)->EyeColor == 0 || (size_t)GET_CHAOPARAM(a1)->EyeColor > ModAPI_EyeColors.size())
+				if (GET_CHAOWK(a1)->Face.Flag == 0 || GET_CWEPARAM(a1)->EyeColor == 0 || (size_t)GET_CWEPARAM(a1)->EyeColor > ModAPI_EyeColors.size())
 					njSetTexture(&AL_EYE_TEXLIST);
 				else
-					njSetTexture(ModAPI_EyeColors[GET_CHAOPARAM(a1)->EyeColor - 1]);
+					njSetTexture(ModAPI_EyeColors[GET_CWEPARAM(a1)->EyeColor - 1]);
 				if (Chao_NodeIndex != 18)
 				{
 					//njTranslate(NULL, -GET_CHAOWK(a1)->Face.EyePosX, GET_CHAOWK(a1)->Face.EyePosY, 0);
@@ -1052,7 +1050,7 @@ void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 			default:
 				AL_SetBodyTexture(a1);
 
-				if (GET_CHAOPARAM(a1)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39))
+				if (GET_CWEPARAM(a1)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39))
 					AL_SetRareMaterial(a1, chunkObjectPointer->base.chunkmodel);
 
 				//alpalSetBank(a1, GET_CHAOWK(a1)->entity.Index);

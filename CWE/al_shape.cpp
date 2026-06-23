@@ -45,8 +45,10 @@ void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, ChaoDataBa
 	*((float*)v4 + 0x1D) = *(v3 - 7) * 0.00009999999747378752f;
 	*((float*)v4 + 0x1E) = *(v3 - 6) * 0.00009999999747378752f;
 	*((float*)v4 + 0x22) = 0.00009999999747378752f * *(v3 - 5);
-	memcpy(data->Name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
-	data->Name[7] = 0;
+	
+	memcpy(GET_CWEPARAM(data)->Name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
+	GET_CWEPARAM(data)->Name[7] = 0;
+
 	memcpy(data->Name_, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
 
 	*(int*)v4 = *(int*)v3;
@@ -127,6 +129,8 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 			CustomChaoEntry& entry = CustomChaoTypeEntries[i];
 
 			if (entry.Data.pEvolveFunc && entry.Data.pEvolveFunc(tp)) {
+				auto pParam = GET_CWEPARAM(tp);
+
 				//set type
 				type = 26;
 				memcpy(pParam->TypeID, entry.Data.ID, sizeof(pParam->TypeID));

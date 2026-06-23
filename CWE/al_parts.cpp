@@ -165,7 +165,7 @@ static void AL_PartsConversion(task* a1) {
 
 void sub_566B80(task* tp) {
 	ChaoData1* wk = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 
 	if (!(pParam->Flags & AL_PARAM_FLAG_PARTS_CONVERSION)) {
 		AL_PartsConversion(tp);

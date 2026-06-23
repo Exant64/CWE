@@ -55,7 +55,7 @@ extern "C" __declspec(dllexport) void AL_SetAccessory(task * a1, int type) {
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
-	auto& accessoryData = GET_CHAOPARAM(a1)->Accessories[slotType];
+	auto& accessoryData = GET_CWEPARAM(a1)->Accessories[slotType];
 
 	memset(&accessoryData, 0, sizeof(accessoryData));
 	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
@@ -68,7 +68,7 @@ void AL_SetAccessory(task* a1, const AccessorySaveInfo* saveInfo, int type) {
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
-	auto& accessoryData = GET_CHAOPARAM(a1)->Accessories[slotType];
+	auto& accessoryData = GET_CWEPARAM(a1)->Accessories[slotType];
 
 	memset(&accessoryData, 0, sizeof(accessoryData));
 	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
@@ -427,7 +427,7 @@ static void __declspec(naked) sub_5691B0Hook()
 
 static void AccessoryRemoveAll(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	auto pParam = GET_CWEPARAM(tp);
 	
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
 		const auto index = work->AccessoryIndices[i];

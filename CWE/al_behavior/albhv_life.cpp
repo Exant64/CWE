@@ -90,7 +90,8 @@ static void __declspec(naked) EggChao_ALO_Delete_Hook()
 }
 void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, ChaoData* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
-	chaoData->data.ForceReincarnate = false;
+	GET_CWEPARAM(chaoData)->ForceReincarnate = false;
+	
 	if (chaoData->data.BodyType == 1)
 	{
 		if (a1)

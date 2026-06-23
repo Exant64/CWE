@@ -10,5 +10,5 @@ public:
 
 void ShinyJewelMonotone::OnChaoData(ChaoDataBase& chao) {
 	if (chao.Reincarnations == 0 && chao.Type == 1)
-		chao.ShinyJewelMonotone = 1;
+		GET_CWEPARAM(&chao)->ShinyJewelMonotone = 1;
 }

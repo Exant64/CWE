@@ -160,7 +160,8 @@ extern "C"
 
 		if (param.field_19 != 1) return;
 
-		AL_GUEST& Guest = param.Guest;
+		auto pParamCwe = GET_CWEPARAM(&param);
+		AL_GUEST& Guest = pParamCwe->Guest;
 
 		if (Guest.Type == 0) {
 			Guest.Type = param.Type;
@@ -200,8 +201,8 @@ extern "C"
 
 		param.StatGrades[6] = param.StatGrades[7] = 0;
 
-		param.XGradeValue = 0;
-		param.UpgradeCounter = 5;
+		pParamCwe->XGradeValue = 0;
+		pParamCwe->UpgradeCounter = 5;
 	}
 
 	void __cdecl ALW_Control_Main_Hook(task* a1);
@@ -225,14 +226,15 @@ extern "C"
 		original(a1);
 
 		for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
-			AL_ChaoAccessoryConversion(&ChaoInfo::Instance()[i]);
+			AL_ChaoAccessoryConversion(GET_CWEPARAM(&ChaoInfo::Instance()[i]));
 		}
 
 		for (auto& c : CodeManager::Instance()) {
 			for (size_t chaoIndex = 0; chaoIndex < ChaoInfo::Instance().Count(); chaoIndex++) {
 				c->OnChaoData(ChaoInfo::Instance()[chaoIndex]);
 
-				ChaoDataBase* pParam = &ChaoInfo::Instance()[chaoIndex];
+				CHAO_PARAM_CWE* pParam = GET_CWEPARAM(&ChaoInfo::Instance()[chaoIndex]);
+
 				if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
 					for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
 						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
@@ -329,7 +331,7 @@ extern "C"
 
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
 			if (ChaoSlots[i].data.Type == 1)
-				ChaoSlots[i].data.UpgradeCounter = 0;
+				GET_CWEPARAM(&ChaoSlots[i].data)->UpgradeCounter = 0;
 
 			GuestChao(ChaoSlots[i].data);
 		}

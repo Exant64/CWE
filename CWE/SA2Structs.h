@@ -888,23 +888,6 @@ struct __declspec(align(4)) KarateOpponent
 };
 #pragma pack(pop)
 
-typedef char AL_NAME[13];
-struct AL_GUEST {
-	ChaoType Type;
-	float Magnitude;
-	float FlySwim;
-	float RunPower;
-	float Alignment;
-	AL_NAME Name;
-	Uint16 Flags;
-};
-
-struct AL_PARAM_ACCESSORY_INFO {
-	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
-	Uint32 Flags;
-	Uint32 ColorFlags;
-	Uint32 ColorSlots[8];
-};
 
 struct ChaoDataBase
 {
@@ -966,49 +949,8 @@ struct ChaoDataBase
 	AL_PARTS partsDX;
 	char paddingRaceDX[16];//AL_RACE_PERSONAL_INFO_DX raceDX;
 	AL_KNOWLEDGE_DX knowledgeDX;
-	char Padding1[114];
-	char ShinyFruitValue_obsolete;
-	char ShinyJewelMonotone;
-	char FreeSpace;
-	char GiftChaoValue; //unused for a while, we might pick this up again some time
-	char FreeSpace_;
-	char LobbyTextureValue; //same here
-	char FreeSpace__;
-	char EyeAlignment;
-	char EyeColor;
-	char AltMouthPatch;
-	char UpgradeCounter;
-	char freeSpace3;
-	char XGradeValue;
-	KarateOpponent motherData;
-	KarateOpponent fatherData;
-	unsigned char IsInitializedAccessory;
-	unsigned char Accessories_old[4];
-	bool DCWings;
-	bool Negative;
-	char padding_cwedna[2];
-	short Birthday;
-	bool ForceReincarnate;
-	unsigned short Accessories_[4];
-	int Flags;
-	int Version;
-	AL_NAME Name;
-	AL_NAME MotherName;
-	AL_NAME FatherName;
-	AL_NAME MGroundMotherName;
-	AL_NAME MGroundFatherName;
-	AL_NAME FGroundMotherName;
-	AL_NAME FGroundFatherName;
-	AL_GUEST Guest;
-	char TypeID[16];
-	//we can't make a knowledge struct cuz we don't really know what we'll put in it in the future, I don't want it to end up like CWEDNA
-	Uint8 MusicFlag_CWE;
-	Uint8 DanceFlag_CWE;
-	AL_PARAM_ACCESSORY_INFO Accessories[4];
-};
 
-static_assert(offsetof(ChaoDataBase, padding_cwedna) == 0x60F);
-static_assert(offsetof(ChaoDataBase, Birthday) == 0x611);
+};
 
 struct ChaoUnknownE
 {

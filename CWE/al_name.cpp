@@ -199,8 +199,13 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 }
 
 // hacky func that offsets the og name pointer to our new one, used for
+
+static char* GetNewChaoDataNameLocation(char* pOriginalName) {
+	return GET_CWEPARAM(pOriginalName - offsetof(ChaoDataBase, Name_))->Name;
+}
+
 static const char* GetNewChaoDataNameLocation(const char* pOriginalName) {
-	return pOriginalName - offsetof(ChaoDataBase, Name_) + offsetof(ChaoDataBase, Name);
+	return GetNewChaoDataNameLocation((char*)pOriginalName);
 }
 
 // this is a function that sits inbetween the draw func to 
@@ -246,16 +251,15 @@ static void __declspec(naked) DisplayChaoName_Hook()
 }
 
 FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
-static void __cdecl sub_58DA30(int a1, int a2)
-{
-	ChaoDataBase* v2; // eax
-	AL_NAME a1a; // [esp+0h] [ebp-1Ch] BYREF
-	__int16 a2a[sizeof(AL_NAME)]; // [esp+8h] [ebp-14h] BYREF
+static void __cdecl sub_58DA30(int a1, int a2) {
+	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(*(task**)(a2 + 8));
 
-	v2 = *(ChaoDataBase**)(*(int*)(*(int*)(a2 + 8) + 52) + 92);
-	memcpy(a1a, v2->Name, sizeof(AL_NAME));
-	sub_57A6F0(a1a, (int)a2a);
-	WcConvFromCStr((int)a1, (int)a2a, TextLanguage == 0);
+	AL_NAME name;
+	__int16 nameConv[sizeof(AL_NAME)];
+
+	memcpy(&name, pParamCwe->Name, sizeof(AL_NAME));
+	sub_57A6F0(name, (int)nameConv);
+	WcConvFromCStr((int)name, (int)nameConv, TextLanguage == 0);
 }
 static void __declspec(naked) sub_58DA30Hook()
 {
@@ -274,7 +278,7 @@ static void __declspec(naked) sub_58DA30Hook()
 }
 static void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)
 {
-	char* name = (char*)((int)a1 + (offsetof(ChaoDataBase, Name) - 0x12));
+	char* name = GetNewChaoDataNameLocation(a1);
 	char* menuStr = (char*)((int)a2 + (0x60 - 0x48));
 	memset(name, 0, sizeof(AL_NAME));
 	memcpy(name, menuStr, strlen(menuStr));
@@ -286,7 +290,7 @@ static void __cdecl OpenNameMenu(char* NazukeyaBuff)
 	NazukeyaBuff[81] = 0;
 	int ptr = (int)NazukeyaBuff;
 	task* chao = *(task**)(ptr + 0x1C);
-	memcpy(&NazukeyaBuff[0x60], GET_CHAOPARAM(chao)->Name, sizeof(AL_NAME));
+	memcpy(&NazukeyaBuff[0x60], GET_CWEPARAM(chao)->Name, sizeof(AL_NAME));
 	NazukeyaBuff[0x4F] = 0;
 	int v4 = strlen((const char*)(&NazukeyaBuff[0x60]));
 	NazukeyaBuff[82] = v4;

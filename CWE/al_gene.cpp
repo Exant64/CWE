@@ -41,27 +41,31 @@ void AL_GeneAnalyzeCommon(AL_GENE* a1, ChaoDataBase* a2)
 // this is where you would add anything that gets applied to the chaodata from the dna
 void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
 {
-	AL_GeneAnalyzeCommon(pGene, pParam);
+	auto pParamCwe = GET_CWEPARAM(pParam);
+	
+	AL_GeneAnalyzeCommon(pGene, pParam);	
 
-	pParam->Flags |= AL_PARAM_FLAG_NEWBORN;
+	pParamCwe->Flags |= AL_PARAM_FLAG_NEWBORN;
+	pParamCwe->Negative = pGene->Negative[0] || pGene->Negative[1];
 
-	pParam->Negative = pGene->Negative[0] || pGene->Negative[1];
+	if (pGene->MotherID.id[0] != 0) {
+		auto motherParam = AL_KW_FindChaoBasedOnId(pGene->MotherID);
+		auto dataID = GET_CWEPARAM(motherParam);
 
-	if (pGene->MotherID.id[0] != 0)
-	{
-		ChaoDataBase* dataID = AL_KW_FindChaoBasedOnId(pGene->MotherID);
-		memcpy(pParam->MotherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParam->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParam->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParam->motherData, dataID);
+		memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
+		memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+		memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+		sub_536450(&pParamCwe->motherData, motherParam);
 	}
-	if (pGene->FatherID.id[0] != 0)
-	{
-		ChaoDataBase* dataID = AL_KW_FindChaoBasedOnId(pGene->FatherID);
-		memcpy(pParam->FatherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParam->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParam->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParam->fatherData, dataID);
+
+	if (pGene->FatherID.id[0] != 0) {
+		auto fatherParam = AL_KW_FindChaoBasedOnId(pGene->FatherID);
+		auto dataID = GET_CWEPARAM(fatherParam);
+
+		memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
+		memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+		memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+		sub_536450(&pParamCwe->fatherData, fatherParam);
 	}
 }
 static void __declspec(naked) AL_GeneAnalyzeCommonHook()
@@ -179,8 +183,8 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 		}
 	}
 	
-	pChildGene->Negative[0] = GET_CHAOPARAM(pMotherTask)->Negative;
-	pChildGene->Negative[1] = GET_CHAOPARAM(pFatherTask)->Negative;
+	pChildGene->Negative[0] = GET_CWEPARAM(pMotherTask)->Negative;
+	pChildGene->Negative[1] = GET_CWEPARAM(pFatherTask)->Negative;
 	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
 	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }

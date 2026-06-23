@@ -51,7 +51,7 @@ void AL_KW_MusicFlagOn(task* pChaoTask, int Kind) {
 
 	//cwe enum
 	if (Kind >= NB_AL_MUSIC) {
-		GET_CHAOPARAM(pChaoTask)->MusicFlag_CWE |= 1 << (Kind - NB_AL_MUSIC);
+		GET_CWEPARAM(pChaoTask)->MusicFlag_CWE |= 1 << (Kind - NB_AL_MUSIC);
 		return;
 	}
 	
@@ -63,7 +63,7 @@ Bool AL_KW_IsMusicFlagOn(task* pChaoTask, int Kind) {
 		
 	//cwe enum
 	if (Kind >= NB_AL_MUSIC) {
-		if (GET_CHAOPARAM(pChaoTask)->MusicFlag_CWE & (1 << (Kind - NB_AL_MUSIC)))
+		if (GET_CWEPARAM(pChaoTask)->MusicFlag_CWE & (1 << (Kind - NB_AL_MUSIC)))
 			return TRUE;
 
 		return FALSE;

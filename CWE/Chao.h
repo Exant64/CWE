@@ -9,8 +9,21 @@
 #include "al_behavior/al_intention.h"
 #include "move.h"
 
+typedef ChaoData1 chaowk;
+
 #define GET_CHAOWK(tp) ((chaowk*)tp->twp)
 #define GET_CHAOPARAM(tp) (GET_CHAOWK(tp)->pParamGC)
+
+// I chose void* because it should work with both ChaoData and ChaoDataBase
+static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const void* pChaoParam) {
+	return (CHAO_PARAM_CWE*)(((ChaoDataBase*)pChaoParam) + 1);
+}
+
+static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const task* tp) {
+	return CWE_GetExtraChaoParam(GET_CHAOPARAM(tp));
+}
+
+#define GET_CWEPARAM(p) (CWE_GetExtraChaoParam(p))
 
 enum AL_PARAM_FLAG
 {
@@ -442,7 +455,7 @@ struct al_model {
 	CNK_VN_VERTEX* pVertex;
 };
 
-void AL_ChaoAccessoryConversion(ChaoDataBase* pParam);
+void AL_ChaoAccessoryConversion(CHAO_PARAM_CWE* pParam);
 void AL_ChaoAccessoryMainCheck(task* tp);
 
 ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (task* a1), 0x56CFF0);
@@ -459,7 +472,6 @@ task* GetClosestChao(task* a1);
 void AL_IconSet(task* a4, char a2, int a3);
 
 void AL_GetRandomAttrPos_0(task* a1);	
-typedef ChaoData1 chaowk;
 typedef int(__cdecl* BHV_FUNC)(task*);
 void sub_54A730(task* a1);
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task* a1);

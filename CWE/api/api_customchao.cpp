@@ -305,9 +305,9 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	bool checkIfAdjacencyNeeded = false;
 
 	if (AL_IsCustomChao(tp)) {
-		int id = AL_CustomChao_SearchID(pParam->TypeID);
+		int id = AL_CustomChao_SearchID(GET_CWEPARAM(tp)->TypeID);
 		if (id == -1) {
-			PrintDebug("AL_ShapeInit_r: couldn't find type %s, using %s as default", pParam->TypeID, DefaultCustomChao);
+			PrintDebug("AL_ShapeInit_r: couldn't find type %s, using %s as default", GET_CWEPARAM(tp)->TypeID, DefaultCustomChao);
 			id = AL_CustomChao_SearchID(DefaultCustomChao);
 		}
 

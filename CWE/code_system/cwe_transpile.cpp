@@ -102,7 +102,7 @@ void ChaoWorldExtendedRequired()
 			//x rank reincarnation stat cap
 			if (ChaoSlots[i].data.Type == 1) //if chao is egg
 			{
-				ChaoSlots[i].data.XGradeValue = 0;
+				GET_CWEPARAM(&ChaoSlots[i])->XGradeValue = 0;
 
 				int cap;
 				switch (ChaoSlots[i].data.Reincarnations) {

@@ -39,10 +39,10 @@ static const char* GBAFruitNames[] = {
 
 
 void CWEFruit_HyperFruit(ChaoData* chaoData, task* fruit) {
-	int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
-	if (chaoData->data.StatGrades[hyperFruitID] == 5 && chaoData->data.XGradeValue == 0)
-	{
-		chaoData->data.XGradeValue = hyperFruitID + 1;
+	const int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
+
+	if (chaoData->data.StatGrades[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
+		GET_CWEPARAM(chaoData)->XGradeValue = hyperFruitID + 1;
 	}
 }
 

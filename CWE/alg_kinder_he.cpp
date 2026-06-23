@@ -146,7 +146,7 @@ void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float Tex
 }
 bool CanStatBeUpgraded(ChaoData1* data1, int stat)
 {
-	if (data1->pParamGC->UpgradeCounter < 3 &&
+	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
 		data1->pParamGC->StatLevels[stat] == 99 &&
 		data1->pParamGC->StatGrades[stat] < ChaoGrade_A &&
 		TotalRings >= GradePurchasePrice[data1->pParamGC->StatGrades[stat]])
@@ -171,17 +171,19 @@ void PurchaseGradesCode(ChaoData1* data1)
 {
 	char buff[256];
 	
-	if (data1->pParamGC->UpgradeCounter < 3 )
+	auto pParamCwe = GET_CWEPARAM(data1->pParamGC);
+
+	if (pParamCwe->UpgradeCounter < 3 )
 	{
 		if (CanChaoUpgrade(data1)) 
 		{
 			if (MenuButtons_Held[0] & Buttons_Y)
-				sprintf(buff, "Upgrades Left: %d", 3 - data1->pParamGC->UpgradeCounter);
+				sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
 			else
 				sprintf(buff, "Hold Y to Upgrade");
 		}
 		else 
-			sprintf(buff, "Upgrades Left: %d", 3 - data1->pParamGC->UpgradeCounter);
+			sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
 	}
 	else 
 		sprintf(buff, "No Upgrades Left");
@@ -206,7 +208,7 @@ void PurchaseGradesCode(ChaoData1* data1)
 				{
 					data1->pParamGC->StatLevels[i] = 1;
 					data1->pParamGC->StatPoints[i] /= 100;
-					data1->pParamGC->UpgradeCounter++;
+					pParamCwe->UpgradeCounter++;
 					SE_Call_TIMER(0x8004, 0x616C7277, 1, 0, 120);
 					SE_Call_TIMER(0x1005, 0x616C7277, 1, 0, 120);
 
@@ -464,7 +466,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu[i], -1);
 
 	if (!noMother && !noFather) {
-		auto pParam = GET_CHAOPARAM(a1->medicalChartChao_);
+		auto pParam = GET_CWEPARAM(a1->medicalChartChao_);
 
 		ConvertName(pParam->MotherName, motherName);
 		ConvertName(pParam->MGroundMotherName, mgmName);
@@ -646,7 +648,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID);
 				if (data == nullptr)
 				{
-					opponentPtr = &GET_CHAOPARAM(TextLocation->medicalChartChao_)->motherData;
+					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->motherData;
 				}
 			}
 
@@ -678,7 +680,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				if (data == nullptr)
 				{
 					//if cant find it, use last "image" of them
-					opponentPtr = &GET_CHAOPARAM(TextLocation->medicalChartChao_)->fatherData;
+					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->fatherData;
 				}
 			}
 
@@ -818,13 +820,13 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		sprintf(
 			buffer,
 			&TextLocation->dword60[*((int*)TextLocation->dword60 + 65)],
-			GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers / GET_CHAOPARAM(TextLocation->field_8)->Birthday
+			GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers / GET_CWEPARAM(TextLocation->field_8)->Birthday
 		);
 		DrawMedicalChartText((const char *)buffer, 288.0, 243.0, 999.0, 20.0, 0);
 		sprintf(
 			buffer,
 			"Birthday in %d Chao days.",
-			GET_CHAOPARAM(TextLocation->field_8)->Birthday - (GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers % GET_CHAOPARAM(TextLocation->field_8)->Birthday)
+			GET_CWEPARAM(TextLocation->field_8)->Birthday - (GET_CHAOPARAM(TextLocation->field_8)->ClockRollovers % GET_CWEPARAM(TextLocation->field_8)->Birthday)
 		);
 		DrawMedicalChartText((const char*)buffer, 288.0, 392, 999.0, 20.0, 0);
 	}
@@ -975,7 +977,7 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 
 	messageValues.clear();
 
-	int age = pParam->ClockRollovers / pParam->Birthday;
+	int age = pParam->ClockRollovers / GET_CWEPARAM(pChaoTask)->Birthday;
 	
 	SETMSGVAR("Your Chao is very healthy.\nPlease take good care of your Chao.");
 	

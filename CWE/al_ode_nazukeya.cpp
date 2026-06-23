@@ -40,7 +40,7 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 		memset(NazukeyaBuff, 0, 0x60 + 4 + sizeof(AL_NAME));
 		NazukeyaBuff[80] = 1;
 		NazukeyaBuff[81] = 1;
-		memcpy(&NazukeyaBuff[0x60], GBAManager_GetChaoDataPointer()->Name, sizeof(AL_NAME));
+		memcpy(&NazukeyaBuff[0x60], GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, sizeof(AL_NAME));
 		NazukeyaBuff[0x4F] = 0;
 		v4 = strlen((const char*)(&NazukeyaBuff[0x60]));
 		NazukeyaBuff[82] = v4;
@@ -59,8 +59,8 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 			nazukeyaObj->exec = DeleteObject_;
 
 			if (NazukeyaBuff[0x51] != 2) {//not "cancel"
-				memset(GBAManager_GetChaoDataPointer()->Name, 0, sizeof(AL_NAME));
-				memcpy(GBAManager_GetChaoDataPointer()->Name, &NazukeyaBuff[0x60], strlen(&NazukeyaBuff[0x60]));
+				memset(GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, 0, sizeof(AL_NAME));
+				memcpy(GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, &NazukeyaBuff[0x60], strlen(&NazukeyaBuff[0x60]));
 			}
 			//njReleaseTexture((NJS_TEXLIST*)0x011D2ACC);
 			a1->mode++;

@@ -334,7 +334,7 @@ void AL_NameDisplayer(task* a1) {
 		for (int i = 0; i < 32; i++) {
 			task* chao = stru_1DC0FC0[i].pointerToOwner;
 			if (chao)
-				AL_NameDisplay_(GET_CHAOPARAM(chao)->Name, &chao->twp->pos);
+				AL_NameDisplay_(GET_CWEPARAM(chao)->Name, &chao->twp->pos);
 		}
 	}
 	else if (a1->twp->mode == 3)
