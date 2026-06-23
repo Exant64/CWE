@@ -63,14 +63,14 @@ struct CHAO_PARAM_CWE {
 };
 #pragma pack(pop)
 
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, Padding1) == 0x520);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, LobbyTextureValue) == 0x597);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, fatherData) == 0x5D4);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, padding_cwedna) == 0x60F);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, Birthday) == 0x611);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, MGroundMotherName) == 0x64B);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, Accessories) == 0x6B1);
-static_assert(sizeof(ChaoDataBase) + offsetof(CHAO_PARAM_CWE, XGradeValue) == 0x59e);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Padding1) == 0x520);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, LobbyTextureValue) == 0x597);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, fatherData) == 0x5D4);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, padding_cwedna) == 0x60F);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Birthday) == 0x611);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, MGroundMotherName) == 0x64B);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Accessories) == 0x6B1);
+static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, XGradeValue) == 0x59e);
 
 void AL_NameSet(char* lval, char* rval);
 bool AL_IsChild(task* tp);

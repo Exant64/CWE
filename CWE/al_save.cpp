@@ -356,12 +356,12 @@ static void __declspec(naked) SaveCWESaveFileHook()
 	}
 }
 
-ChaoData* GetFreeCWESlot()
+CHAO_SAVE_INFO* GetFreeCWESlot()
 {
-	ChaoData* dataPtr = 0;
+	CHAO_SAVE_INFO* dataPtr = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		if (cweSaveFile.chaoParam[i].data.Type == 0)
+		if (cweSaveFile.chaoParam[i].data.type == 0)
 		{
 			dataPtr = &cweSaveFile.chaoParam[i];
 			break;
@@ -375,10 +375,10 @@ char* GetFreeChaoSlot()
 	signed int v0; // esi
 	
 	v0 = 0;
-	ChaoData* dataPtr = 0;
+	CHAO_SAVE_INFO* dataPtr = 0;
 	for(int i = 0; i < 24; i++)
 	{
-		if (ChaoSlots[i].data.Type == 0)
+		if (ChaoSlots[i].data.type == 0)
 		{
 			dataPtr = &ChaoSlots[i];
 			break;
@@ -387,7 +387,7 @@ char* GetFreeChaoSlot()
 	dataPtr = GetFreeCWESlot();
 	if (dataPtr != 0)
 	{
-		memset(dataPtr, 0, sizeof(ChaoData));
+		memset(dataPtr, 0, sizeof(CHAO_SAVE_INFO));
 		return (char*)dataPtr;
 	}
 	else 
@@ -398,7 +398,7 @@ int GetFreeChaoCWE(int a1)
 	int count = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		if (cweSaveFile.chaoParam[i].data.Type && cweSaveFile.chaoParam[i].data.Garden == a1)
+		if (cweSaveFile.chaoParam[i].data.type && cweSaveFile.chaoParam[i].data.place == a1)
 			count++;
 	}
 	return count;
@@ -409,7 +409,7 @@ int GetFreeChaoCWE2()
 	int count = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		if (cweSaveFile.chaoParam[i].data.Type)
+		if (cweSaveFile.chaoParam[i].data.type)
 			count++;
 	}
 	return count;
@@ -421,7 +421,7 @@ int __cdecl sub_5319F0_(int a1)
 	int v2; // edx
 	int v3; // ecx
 
-	v1 = &ChaoSlots[0].data.Garden;
+	v1 = &ChaoSlots[0].data.place;
 	v2 = 0;
 	v3 = 24;
 	do
@@ -458,7 +458,7 @@ int sub_531A20()
 	int v2; // ecx
 	int i; // eax
 	
-	v0 = (char*)&ChaoSlots[0].data.Type;
+	v0 = (char*)&ChaoSlots[0].data.type;
 	v1 = 0;
 	v2 = 24;
 	do
@@ -495,17 +495,17 @@ void SpawnCWEChao()
 	{
 		for (int i = 0; i < 24; i++)
 		{
-			ChaoData* chao = &cweSaveFile.chaoParam[i];
-			if (chao->data.Garden == AL_GetStageNumber()
-				&& chao != *(ChaoData**)0x01A5CA5C)
+			CHAO_SAVE_INFO* chao = &cweSaveFile.chaoParam[i];
+			if (chao->data.place == AL_GetStageNumber()
+				&& chao != *(CHAO_SAVE_INFO**)0x01A5CA5C)
 				//&& chao != (ChaoData*)GBAManager_GetChaoDataPointer())
 			{
 				NJS_VECTOR* spawn = &ProbablyChaoSpawnPoints[16 * AL_GetStageNumber()
 					+ (int)(njRandom() * 15.9f) - 16];
 
-				if (chao->data.Type)
+				if (chao->data.type)
 				{
-					if (chao->data.Type == 1)
+					if (chao->data.type == 1)
 					{
 						CreateChao(chao, 0, 0, spawn, NJM_DEG_ANG(njRandom() * 360.f));
 					}

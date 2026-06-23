@@ -26,9 +26,9 @@ int __cdecl ALBHV_Drown(task* a1)
 int __cdecl ALBHV_StruggleSwim_DrownCheck(task* a1)
 {
 	if (GET_CHAOWK(a1)->Behavior.SubTimer % (3 * 60) == 0) //every 10 seconds
-		GET_CHAOPARAM(a1)->Happiness--;
+		GET_CHAOPARAM(a1)->like--;
 
-	if (GET_CHAOPARAM(a1)->Happiness <= -100)
+	if (GET_CHAOPARAM(a1)->like <= -100)
 	{
 		AL_SetBehavior(a1, ALBHV_Drown);
 		return 0;

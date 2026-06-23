@@ -256,7 +256,7 @@ enum {
 };
 bool AL_EmoteIconRequirement(task* a1, int index)
 {
-	ChaoDataBase* data = GET_CHAOPARAM(a1);
+	CHAO_PARAM_GC* data = GET_CHAOPARAM(a1);
 
 	if (!data)
 		return false;

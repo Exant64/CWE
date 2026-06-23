@@ -46,7 +46,7 @@ void ALS_Brush(task* chao, task* item)
 bool ALS_BrushCondition(task* chao, task* item)
 {
 	if (!GET_CHAOPARAM(chao)) return false;
-	return AL_IsHero(GET_CHAOPARAM(chao)->Type);
+	return AL_IsHero(GET_CHAOPARAM(chao)->type);
 }
 
 const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
@@ -66,7 +66,7 @@ void ALS_Omobuild(task* chao, task* item)
 }
 bool ALS_OmobuildCondition(task* chao, task* item)
 {
-	ChaoDataBase* pParam = GET_CHAOPARAM(chao);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(chao);
 	OMOCHAO_INFO* omo = GetOmoData();
 
 	return (omo->phase == 0 ||
@@ -80,15 +80,15 @@ bool ALS_ReincarnCondition(task* chao, task* item)
 {
 	if (!GET_CHAOPARAM(chao)) return false;
 
-	return GET_CHAOPARAM(chao)->Type > 2 && !GET_CWEPARAM(chao)->ForceReincarnate;
+	return GET_CHAOPARAM(chao)->type > 2 && !GET_CWEPARAM(chao)->ForceReincarnate;
 }
 
 void ALS_Reincarn(task* chao, task* item)
 {
-	GET_CHAOPARAM(chao)->Lifespan = 0;
-	GET_CHAOPARAM(chao)->Lifespan2 = 0;
-	GET_CHAOPARAM(chao)->StatGrades[6]++;
-	GET_CHAOPARAM(chao)->StatGrades[5]++;
+	GET_CHAOPARAM(chao)->life = 0;
+	GET_CHAOPARAM(chao)->LifeMax = 0;
+	GET_CHAOPARAM(chao)->Abl[6]++;
+	GET_CHAOPARAM(chao)->Abl[5]++;
 	GET_CWEPARAM(chao)->ForceReincarnate = true;
 }
 

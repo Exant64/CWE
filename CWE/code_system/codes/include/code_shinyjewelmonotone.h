@@ -5,10 +5,10 @@ public:
 
 	using Code::Code;
 
-	void OnChaoData(ChaoDataBase& chao) override;
+	void OnChaoData(CHAO_PARAM_GC& chao) override;
 };
 
-void ShinyJewelMonotone::OnChaoData(ChaoDataBase& chao) {
-	if (chao.Reincarnations == 0 && chao.Type == 1)
+void ShinyJewelMonotone::OnChaoData(CHAO_PARAM_GC& chao) {
+	if (chao.nbSucceed == 0 && chao.type == 1)
 		GET_CWEPARAM(&chao)->ShinyJewelMonotone = 1;
 }

@@ -201,7 +201,7 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 // hacky func that offsets the og name pointer to our new one, used for
 
 static char* GetNewChaoDataNameLocation(char* pOriginalName) {
-	return GET_CWEPARAM(pOriginalName - offsetof(ChaoDataBase, Name_))->Name;
+	return GET_CWEPARAM(pOriginalName - offsetof(CHAO_PARAM_GC, name))->Name;
 }
 
 static const char* GetNewChaoDataNameLocation(const char* pOriginalName) {

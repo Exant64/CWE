@@ -38,15 +38,15 @@ static const char* GBAFruitNames[] = {
 };
 
 
-void CWEFruit_HyperFruit(ChaoData* chaoData, task* fruit) {
+void CWEFruit_HyperFruit(CHAO_SAVE_INFO* chaoData, task* fruit) {
 	const int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
 
-	if (chaoData->data.StatGrades[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
+	if (chaoData->data.Abl[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
 		GET_CWEPARAM(chaoData)->XGradeValue = hyperFruitID + 1;
 	}
 }
 
-void CWEFruit_Shiny(ChaoData* chaoData, task* fruit) {
+void CWEFruit_Shiny(CHAO_SAVE_INFO* chaoData, task* fruit) {
 	if (chaoData->data.Shiny)
 	{
 		chaoData->data.Shiny = (chaoData->data.Shiny % 2) + 1;

@@ -204,7 +204,7 @@ void __cdecl sub_545C20(task *a1)
 	Data1Ptr v14; // eax
 	ObjUnknownA *v15; // eax
 	task *v16; // eax
-	ChaoDataBase *v17; // ecx
+	CHAO_PARAM_GC *v17; // ecx
 	ChaoSomeUnknownA *v22; // eax
 	ChaoSomeUnknownA *v23; // eax
 	ObjUnknownA *v25; // eax
@@ -337,7 +337,7 @@ void __cdecl sub_545C20(task *a1)
 						break;
 					default:
 						if (lastBiteFruit[v2.Entity->ang.x]) 
-							lastBiteFruit[v2.Entity->ang.x]((ChaoData*)v17, a1);
+							lastBiteFruit[v2.Entity->ang.x]((CHAO_SAVE_INFO*)v17, a1);
 						break;
 					}
 				}

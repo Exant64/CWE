@@ -91,8 +91,8 @@ struct EGGCOLORS {
 };
 
 
-void EggColor::OnChaoData(ChaoDataBase& chao) {
-	if (chao.Type <= 0) return;
+void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
+	if (chao.type <= 0) return;
 
 	if (chao.Texture > 0 && chao.Texture <= 15) {
 		chao.EggColor = 53 + chao.Texture;

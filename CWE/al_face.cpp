@@ -68,7 +68,7 @@ LABEL_10:
 	{
 		v6 = word_8A7AC0[v3->EyeColorNum];
 	}
-	if ((unsigned __int8)(v4->pParamGC->Type - byte_0053A5BC) <= 2u)
+	if ((unsigned __int8)(v4->pParamGC->type - byte_0053A5BC) <= 2u)
 	{
 		if (v5 == 7)
 		{

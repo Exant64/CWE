@@ -54,7 +54,7 @@ int __cdecl ALBHV_Glide(task* a1)
 
 int __cdecl ALBHV_GlideCondition(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->Type == ChaoType_Tails)
+	if (GET_CHAOPARAM(a1)->type == ChaoType_Tails)
 		AL_SetBehavior(a1, ALBHV_Glide);
 	else
 		AL_SetBehavior(a1, (BHV_FUNC)0x005630C0);

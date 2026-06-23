@@ -13,7 +13,7 @@ public:
 	virtual void OnFrame() {};
 	virtual void ChaoObject(task* tp) {};
 	virtual void OnALControl(task* tp) {};
-	virtual void OnChaoData(ChaoDataBase& chao) {};
+	virtual void OnChaoData(CHAO_PARAM_GC& chao) {};
 };
 
 //for codes that only use init

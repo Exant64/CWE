@@ -8,7 +8,7 @@
 #include "ChaoMain.h"
 
 const int sub_536450Ptr = 0x536450;
-void sub_536450(KarateOpponent* a1, ChaoDataBase* a2)
+void sub_536450(KarateOpponent* a1, CHAO_PARAM_GC* a2)
 {
 	__asm
 	{
@@ -27,7 +27,7 @@ void InitChaoDNA_Hook(AL_GENE* a1, int a2, size_t a3) //use this to edit how cha
 }
 
 const int AL_GeneAnalyzeCommmonPtr = 0x00551DA0;
-void AL_GeneAnalyzeCommon(AL_GENE* a1, ChaoDataBase* a2)
+void AL_GeneAnalyzeCommon(AL_GENE* a1, CHAO_PARAM_GC* a2)
 {
 	__asm
 	{
@@ -39,7 +39,7 @@ void AL_GeneAnalyzeCommon(AL_GENE* a1, ChaoDataBase* a2)
 }
 
 // this is where you would add anything that gets applied to the chaodata from the dna
-void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, ChaoDataBase* pParam)
+void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam)
 {
 	auto pParamCwe = GET_CWEPARAM(pParam);
 	
@@ -96,7 +96,7 @@ void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene)
 	}
 }
 
-static void AL_GetMedalGene(const ChaoDataBase* param, AL_GENE& gene) {
+static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
 	if (param->Texture != 0) return;
 	if (param->field_19 == 1) return;
 

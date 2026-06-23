@@ -113,8 +113,8 @@ struct __declspec(align(16)) KarateMainExecData
 	task* playerChao;
 	task* pointerToSaveThing;
 	task* PointerToOtherSaveThing;
-	ChaoData* field_18;
-	ChaoData* field_1C;
+	CHAO_SAVE_INFO* field_18;
+	CHAO_SAVE_INFO* field_1C;
 	int field_20;
 	int field_24;
 	int field_28;
@@ -135,7 +135,7 @@ struct __declspec(align(8)) KarateChaoExec_Data2
 	short word6;
 	task* pointerToChao;
 	void* dwordC;
-	ChaoData* chaoDataPointer;
+	CHAO_SAVE_INFO* chaoDataPointer;
 	int field_14;
 	NJS_VECTOR* BaseTranslationPos;
 	NJS_VECTOR* HeadTranslationPos;
@@ -153,7 +153,7 @@ struct __declspec(align(8)) KarateChaoExec_Data2
 #pragma pack(pop)
 
 DataPointer(KarateMainExecData*, KarateMainExec_Ptr, 0x01A5D148);
-task* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
+task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
 {
 	KarateOpponent* opponent = a3;
 
@@ -165,17 +165,17 @@ task* KarateCreateChao(ChaoData* chaoData, int a2, KarateOpponent* a3, NJS_VECTO
 		opponent->Magnitude = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
 		opponent->FlySwim = (short)(data2->chaoDataPointer->data.FlySwim * 10000.0f);
 		opponent->PowerRun = (short)(data2->chaoDataPointer->data.PowerRun * 10000.0f);
-		opponent->ChaoType = data2->chaoDataPointer->data.Type;
+		opponent->ChaoType = data2->chaoDataPointer->data.type;
 		for (int i = 0; i < 7; i++)
 		{
-			if (data2->chaoDataPointer->data.StatPoints[i] >= 1000)
-				opponent->StatPoints[i] = data2->chaoDataPointer->data.StatPoints[i] - 200;
-			else opponent->StatPoints[i] = data2->chaoDataPointer->data.StatPoints[i];
+			if (data2->chaoDataPointer->data.Skill[i] >= 1000)
+				opponent->StatPoints[i] = data2->chaoDataPointer->data.Skill[i] - 200;
+			else opponent->StatPoints[i] = data2->chaoDataPointer->data.Skill[i];
 		}
 	}
 
 	task* chao = CreateChao(chaoData, a2, opponent, position, angle);
-	ChaoDataBase* fullData = GET_CHAOPARAM(chao);
+	CHAO_PARAM_GC* fullData = GET_CHAOPARAM(chao);
 	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chao);
 
 	for (int i = 0; i < 7; i++)
@@ -347,7 +347,7 @@ static FunctionHook<void, task*> Chao_Main_hook(0x0054FE20, Chao_Main_r);
 static void Chao_Main_r(task* a1)
 {
 	chaowk* work = GET_CHAOWK(a1);
-	ChaoDataBase* pParam = GET_CHAOPARAM(a1);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(a1);
 	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(a1);
 
 	if (!pParam) return;
@@ -371,7 +371,7 @@ static void Chao_Main_r(task* a1)
 		{
 			AL_GENE& Gene = pParam->Gene;
 
-			memcpy(pParamCwe->Name, pParam->Name_, sizeof(pParam->Name_));
+			memcpy(pParamCwe->Name, pParam->name, sizeof(pParam->name));
 			memcpy(pParamCwe->MotherName, Gene.MotherName, sizeof(Gene.MotherName));
 			memcpy(pParamCwe->FatherName, Gene.FatherName, sizeof(Gene.FatherName));
 			memcpy(pParamCwe->MGroundMotherName, Gene.MGroundMotherName, sizeof(Gene.MGroundMotherName));
@@ -395,7 +395,7 @@ static void Chao_Main_r(task* a1)
 		}
 	}
 
-	memcpy(pParam->Name_, pParamCwe->Name, sizeof(pParam->Name_));
+	memcpy(pParam->name, pParamCwe->Name, sizeof(pParam->name));
 
 	if (!(pParamCwe->Flags & AL_PARAM_FLAG_OLD_GUEST_CHECK)) {
 		if ((Uint8)pParamCwe->Name[6] == 0xFB) {
@@ -412,15 +412,15 @@ static void Chao_Main_r(task* a1)
 	{
 		if (pParam->Medal == 8)
 		{
-			if (pParam->Lifespan < 1000) pParam->Lifespan = 1000;
-			if (pParam->Lifespan2 < 1000) pParam->Lifespan2 = 1000;
+			if (pParam->life < 1000) pParam->life = 1000;
+			if (pParam->LifeMax < 1000) pParam->LifeMax = 1000;
 		}
 	}
 
 	//new power climbing
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_CLIMB && GET_CHAOWK(a1)->Behavior.SubTimer == 240)
 	{
-		if (pParam->StatPoints[3] >= 150) //USE GETSTAT THING LATER
+		if (pParam->Skill[3] >= 150) //USE GETSTAT THING LATER
 		{
 			GET_CHAOWK(a1)->Behavior.SubTimer = 0;
 		}
@@ -573,11 +573,11 @@ void Chao_Init()
 	WriteData((short*)0x550448, (short)0x800);
 
 	// egg ParamCopy alloc size (2 malloc, 2 memset, and memcpy)
-	WriteData((uint32_t*)0x0057BC0E, uint32_t(sizeof(ChaoData) + 4));
-	WriteData((uint32_t*)0x0057BC61, uint32_t(sizeof(ChaoData) + 4));
-	WriteData((uint32_t*)0x0057BC18, uint32_t(sizeof(ChaoData)));
-	WriteData((uint32_t*)0x0057BC6B, uint32_t(sizeof(ChaoData)));
-	WriteData((uint32_t*)0x0057BC32, uint32_t(sizeof(ChaoData) / 4));
+	WriteData((uint32_t*)0x0057BC0E, uint32_t(sizeof(CHAO_SAVE_INFO) + 4));
+	WriteData((uint32_t*)0x0057BC61, uint32_t(sizeof(CHAO_SAVE_INFO) + 4));
+	WriteData((uint32_t*)0x0057BC18, uint32_t(sizeof(CHAO_SAVE_INFO)));
+	WriteData((uint32_t*)0x0057BC6B, uint32_t(sizeof(CHAO_SAVE_INFO)));
+	WriteData((uint32_t*)0x0057BC32, uint32_t(sizeof(CHAO_SAVE_INFO) / 4));
 
 	AL_Gene_Init();
 

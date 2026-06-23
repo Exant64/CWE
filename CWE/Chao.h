@@ -16,7 +16,7 @@ typedef ChaoData1 chaowk;
 
 // I chose void* because it should work with both ChaoData and ChaoDataBase
 static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const void* pChaoParam) {
-	return (CHAO_PARAM_CWE*)(((ChaoDataBase*)pChaoParam) + 1);
+	return (CHAO_PARAM_CWE*)(((CHAO_PARAM_GC*)pChaoParam) + 1);
 }
 
 static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const task* tp) {

@@ -7,11 +7,11 @@ public:
 	using Code::Code;
 
 	//maybe change to OnChaoObject?
-	void OnChaoData(ChaoDataBase& chao) override;
+	void OnChaoData(CHAO_PARAM_GC& chao) override;
 };
 
-void DisableLevelLimit::OnChaoData(ChaoDataBase& chao) {
+void DisableLevelLimit::OnChaoData(CHAO_PARAM_GC& chao) {
 	for (int i = 0; i < 5; i++)
-		if (chao.StatLevels[i] == 99)
-			chao.StatLevels[i] = 0;
+		if (chao.Lev[i] == 99)
+			chao.Lev[i] = 0;
 }

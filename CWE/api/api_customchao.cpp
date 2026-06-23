@@ -41,7 +41,7 @@ void AL_CalcIconColor(task* tp)
 }
 void __cdecl AL_CalcIconColorMod(task* tp) {
 	ChaoData1* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = work->pParamGC;
+	CHAO_PARAM_GC* pParam = work->pParamGC;
 	
 	//we put the monster evo fix here because iirc CalcIconColor is called right before the deform crap
 	if (gConfigVal.FixMonsterEvo) {
@@ -83,7 +83,7 @@ Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, AL_IconDraw_r);
 void __cdecl AL_IconDraw_r(task* tp)
 {
 	ChaoData1* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = work->pParamGC;
+	CHAO_PARAM_GC* pParam = work->pParamGC;
 	const auto original = reinterpret_cast<decltype(AL_IconDraw_r)*>(AL_IconDraw_t.Target());
 
 	//if not custom chao just draw the emotion ball
@@ -93,20 +93,20 @@ void __cdecl AL_IconDraw_r(task* tp)
 	}
 
 	CustomChaoEntry& entry = CustomChaoTypeEntries[work->LocalCharacterChaoType];
-	auto typeBackup = pParam->Type;
+	auto typeBackup = pParam->type;
 	//NJS_TEXLIST* iconTexlist = (NJS_TEXLIST*)0x01366ACC;
 	//NJS_TEXNAME* texBackup = iconTexlist->textures;
 
 	//we trick the emotion ball drawing function to think the chao is of specified alignment
 	switch (entry.Data.IconType) {
 	case ICON_TYPE_BALL:
-		pParam->Type = ChaoType_Neutral_Normal;
+		pParam->type = ChaoType_Neutral_Normal;
 		break;
 	case ICON_TYPE_HALO:
-		pParam->Type = ChaoType_Hero_Normal;
+		pParam->type = ChaoType_Hero_Normal;
 		break;
 	case ICON_TYPE_SPIKY:
-		pParam->Type = ChaoType_Dark_Normal;
+		pParam->type = ChaoType_Dark_Normal;
 		break;
 	}
 
@@ -121,7 +121,7 @@ void __cdecl AL_IconDraw_r(task* tp)
 
 	//restore everything
 	//iconTexlist->textures = texBackup;
-	pParam->Type = typeBackup;
+	pParam->type = typeBackup;
 }
 
 static void FillAL_RootObject() {
@@ -298,7 +298,7 @@ static int __cdecl AL_ShapeInit_r(task* tp);
 static Trampoline AL_ShapeInit_Tramp(0x0056C9D0, 0x0056C9D7, AL_ShapeInit_r);
 static int __cdecl AL_ShapeInit_r(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParam = work->pParamGC;
+	CHAO_PARAM_GC* pParam = work->pParamGC;
 
 	work->IsCustomChaoTypeLoaded = false;
 
@@ -336,7 +336,7 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	work->pBaldAdjacencyIndices = NULL;
 	work->BaldAdjacencyIndexCount = 0;
 	
-	switch (pParam->Type) {
+	switch (pParam->type) {
 		case ChaoType_Tails:
 		case ChaoType_Amy:
 			checkIfAdjacencyNeeded = true;
@@ -417,17 +417,17 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 
 void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5, float a6, float a7) {
 	chaowk* work = GET_CHAOWK(a2->field_8);
-	ChaoDataBase* pParam = work->pParamGC;
+	CHAO_PARAM_GC* pParam = work->pParamGC;
 	int msg = (int)a3;
 
-	if (pParam->Type < ChaoType_Tails) {
+	if (pParam->type < ChaoType_Tails) {
 		DrawMedicalChartText((char*)&a2->dword60[*(int*)&a2->dword60[4 * (int)a3]], a4, a5, a6, a7, a1);
 		return;
 	}
 
 	const char* str = "Error";
 
-	switch (pParam->Type) {
+	switch (pParam->type) {
 	case ChaoType_Tails:
 		str = "Tails";
 		break;
@@ -474,7 +474,7 @@ static void __declspec(naked) sub_58D9F0Hook()
 int __cdecl sub_5366E0(task* a1, int a2)
 {
 	auto pParam = GET_CHAOPARAM(a1);
-	switch (pParam->Type)
+	switch (pParam->type)
 	{
 	case ChaoType_Empty:
 	case ChaoType_Good:
@@ -489,10 +489,10 @@ int __cdecl sub_5366E0(task* a1, int a2)
 	case ChaoType_Dark_Chaos:
 		return 7;
 	default:
-		if (pParam->Type >= ChaoType_Tails) 
+		if (pParam->type >= ChaoType_Tails) 
 			return 7;
 
-		return ((unsigned __int8)pParam->Type - 5) / 3 + 2;
+		return ((unsigned __int8)pParam->type - 5) / 3 + 2;
 	}
 }
 
@@ -537,7 +537,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 		int dword30;
 		int dword34;
 		task* PointerToChao;
-		ChaoData* ChaoData;
+		CHAO_SAVE_INFO* ChaoData;
 	};
 #pragma pack(pop)
 	enum
@@ -603,7 +603,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 		if (v5)
 		{
 			*(int*)0x1AED260 = 0;
-			ChaoDataBase* pParam = GET_CHAOPARAM(v5);
+			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(v5);
 			SetChaoHUDThingBColor(pData->alpha, 0.5f, 0.85f, 1.0f);
 
 			ChaoHudThingB custom_type = {
@@ -618,7 +618,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				.TexNum = 33
 			};
 
-			switch (pParam->Type)
+			switch (pParam->type)
 			{
 			case ChaoType_Child:
 				v8 = BBI_CPW_TYPE_CHILD;
@@ -639,7 +639,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				SetChaoHUDThingBColor(1.0f, 1.0f, 1.0f, 1.0f);
 				return;
 			default:
-				v8 = ((unsigned __int8)pParam->Type - 5) / 3 + BBI_CPW_TYPE_NORMAL;
+				v8 = ((unsigned __int8)pParam->type - 5) / 3 + BBI_CPW_TYPE_NORMAL;
 				break;
 			}
 
@@ -651,13 +651,13 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				DrawChaoHudThingB(&AL_ChaoParamWindow_HudThingB[v8], v45, v44, -34.5f, 1, 1, -1, -1);
 			}
 			
-			if (pParam->Type != ChaoType_Child
-				&& ((unsigned __int8)pParam->Type <= ChaoType_Dark_Chaos || (unsigned __int8)pParam->Type > ChaoType_Amy))
+			if (pParam->type != ChaoType_Child
+				&& ((unsigned __int8)pParam->type <= ChaoType_Dark_Chaos || (unsigned __int8)pParam->type > ChaoType_Amy))
 			{
 				float v43 = posX - 96;
 				float v42 = posY - 89;
 				DrawChaoHudThingB(
-					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + ((unsigned __int8)pParam->Type - 5) % 3],
+					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + ((unsigned __int8)pParam->type - 5) % 3],
 					v43,
 					v42,
 					-35,

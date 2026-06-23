@@ -653,12 +653,12 @@ public:
 	void Press(UIController* controller) override {
 		if (!IsSelected()) return;
 
-		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
+		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
 		const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
 		if (index < HatList.size()) {
 			bool canEquip = true;
 			if (pParam->Headgear)
-				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->Garden);
+				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->place);
 
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
@@ -676,7 +676,7 @@ public:
 
 		bool canEquip = true;
 		if (GET_CWEPARAM(pChao)->Accessories[accType].ID[0])
-			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->Garden);
+			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
 
 		if (canEquip) {
 			PlaySoundProbably(0x1007, 0, 0, 0);
@@ -1509,18 +1509,18 @@ public:
 			return;
 		}
 
-		ChaoDataBase* pParam = GBAManager_GetChaoDataPointer();
+		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
 		PlaySoundProbably(0x100A, 0, 0, 0);
 		if (!m_slot)
 		{
 			Uint8& headgear = pParam->Headgear;
-			if (headgear && AL_Customization_CreateHat(headgear, pParam->Garden)) {
+			if (headgear && AL_Customization_CreateHat(headgear, pParam->place)) {
 				headgear = 0;
 			}
 		}
 		else {
 			const auto accessoryIndex = AL_GetAccessory(pChao, m_slot - 1);
-			if (accessoryIndex != -1 && AL_Customization_CreateAcc(accessoryIndex, GET_CWEPARAM(pChao)->Accessories[m_slot - 1], pParam->Garden)) {
+			if (accessoryIndex != -1 && AL_Customization_CreateAcc(accessoryIndex, GET_CWEPARAM(pChao)->Accessories[m_slot - 1], pParam->place)) {
 				AL_ParameterClearAccessory(pChao, m_slot - 1);
 			}
 		}
@@ -1621,7 +1621,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		}
 
 		someUIProjectionCode(&ChaoHatPosition, &posOut);
-		pChao = CreateChao((ChaoData*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
+		pChao = CreateChao((CHAO_SAVE_INFO*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
 		GET_CHAOWK(pChao)->field_B0 &= ~8u;
 		GET_CHAOWK(pChao)->field_B0 &= ~2u;
 		GET_CHAOWK(pChao)->field_B0 &= ~0x10u;

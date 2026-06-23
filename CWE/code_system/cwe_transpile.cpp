@@ -100,12 +100,12 @@ void ChaoWorldExtendedRequired()
 			}
 
 			//x rank reincarnation stat cap
-			if (ChaoSlots[i].data.Type == 1) //if chao is egg
+			if (ChaoSlots[i].data.type == 1) //if chao is egg
 			{
 				GET_CWEPARAM(&ChaoSlots[i])->XGradeValue = 0;
 
 				int cap;
-				switch (ChaoSlots[i].data.Reincarnations) {
+				switch (ChaoSlots[i].data.nbSucceed) {
 				case 0:
 					cap = 0;
 					break;
@@ -122,8 +122,8 @@ void ChaoWorldExtendedRequired()
 
 				if (cap > 0) {
 					for (int j = 0; j < 4; j++) {
-						if (ChaoSlots[i].data.StatPoints[j] > cap)
-							ChaoSlots[i].data.StatPoints[j] = cap;
+						if (ChaoSlots[i].data.Skill[j] > cap)
+							ChaoSlots[i].data.Skill[j] = cap;
 					}
 				}
 			}
@@ -147,7 +147,7 @@ void ChaoWorldExtendedRequired()
 			}
 
 			//swim points
-			if (gConfigVal.EnergyCap && ChaoSlots[i].data.StatPoints[0] <= 99)
+			if (gConfigVal.EnergyCap && ChaoSlots[i].data.Skill[0] <= 99)
 			{
 				//cap energy at 5000 if the chao cant swim yet
 				if (ChaoSlots[i].data.Emotion.Energy > 5000)
@@ -218,7 +218,7 @@ void ChaoWorldExtendedRequired()
 	//more inventory safe guard crap
 	bool saveFull = true;
 	for (int i = 0; i < 24; i++) {
-		if (ChaoSlots[i].data.Type == 0)
+		if (ChaoSlots[i].data.type == 0)
 			saveFull = false;
 	}
 	if (saveFull) {

@@ -4,7 +4,7 @@
 #include "api/api_customchao.h"
 #include "ChaoMain.h"
 
-void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, ChaoDataBase* data)
+void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, CHAO_PARAM_GC* data)
 {
 	signed int v2; // ST00_4
 	__int16* v3; // eax
@@ -14,16 +14,16 @@ void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, ChaoDataBa
 
 	if ((unsigned char)(KarateOpponentData->ChaoType) == 254)
 	{
-		data->Type = ChaoType_Child;
+		data->type = ChaoType_Child;
 		storage = SADXBodyType_Omochao;
 	}
 	else if ((unsigned char)(KarateOpponentData->ChaoType) == 255)
 	{
-		data->Type = ChaoType_Child;
+		data->type = ChaoType_Child;
 		storage = SADXBodyType_EggChao;
 	}
 	else
-		data->Type = KarateOpponentData->ChaoType;
+		data->type = KarateOpponentData->ChaoType;
 	data->BodyType = storage;
 
 	data->EyeType = KarateOpponentData->EyeType;
@@ -40,7 +40,7 @@ void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, ChaoDataBa
 	*(int*)&data->PartsBTL.MinimalParts[4] = *(int*)&KarateOpponentData->SA2BLegType;
 	v2 = KarateOpponentData->PowerRun;
 	v3 = KarateOpponentData->StatPoints;
-	v4 = (char*)data->StatPoints;
+	v4 = (char*)data->Skill;
 	*((float*)v4 + 0x1C) = v2 * 0.00009999999747378752f;
 	*((float*)v4 + 0x1D) = *(v3 - 7) * 0.00009999999747378752f;
 	*((float*)v4 + 0x1E) = *(v3 - 6) * 0.00009999999747378752f;
@@ -49,7 +49,7 @@ void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, ChaoDataBa
 	memcpy(GET_CWEPARAM(data)->Name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
 	GET_CWEPARAM(data)->Name[7] = 0;
 
-	memcpy(data->Name_, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
+	memcpy(data->name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
 
 	*(int*)v4 = *(int*)v3;
 	*((int*)v4 + 1) = *((int*)v3 + 1);
@@ -89,7 +89,7 @@ static int AL_ShapeChangeType(task* a1, int typevalue)
 }
 
 int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 	int mini = 1;
 	int minicount = 21;
 
@@ -100,8 +100,8 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 		}
 	}
 
-	if (gConfigVal.CharacterChaoEvo && mini && pParam->Happiness > 80 && 
-		pParam->Reincarnations >= 2)
+	if (gConfigVal.CharacterChaoEvo && mini && pParam->like > 80 && 
+		pParam->nbSucceed >= 2)
 	{
 		switch (type) {
 		case ChaoType_Neutral_Fly:

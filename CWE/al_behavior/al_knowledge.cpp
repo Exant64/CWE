@@ -162,7 +162,7 @@ bool AL_KW_IDExists(const CHAO_ID& id)
 	return false;
 }
 
-ChaoDataBase* AL_KW_FindChaoBasedOnId(const CHAO_ID& id)
+CHAO_PARAM_GC* AL_KW_FindChaoBasedOnId(const CHAO_ID& id)
 {
 	for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++)
 	{

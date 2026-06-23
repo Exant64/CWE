@@ -23,7 +23,7 @@ struct CollisionData;
 struct CharObj2Base;
 struct EntityData2;
 struct LaunchConfig_vtable;
-struct ChaoDataBase;
+struct CHAO_PARAM_GC;
 struct ChaoUnknownE;
 struct ChaoDebugData1;
 struct UnknownData2;
@@ -409,7 +409,7 @@ struct __declspec(align(4)) ChaoData1
 	char field_54[12];
 	int field_60;
 	int field_58;
-	ChaoDataBase *pParamGC;
+	CHAO_PARAM_GC *pParamGC;
 	char field_70[40];
 	int field_88;
 	int field_8C;
@@ -889,32 +889,32 @@ struct __declspec(align(4)) KarateOpponent
 #pragma pack(pop)
 
 
-struct ChaoDataBase
+struct CHAO_PARAM_GC
 {
 	char gap_0[18];
-	char Name_[7];
+	char name[7];
 	char field_19;
 	char GBATexture;
 	char field_1B[5];
-	char StatFractions[8];
-	char StatGrades[8];
-	char StatLevels[8];
-	__int16 StatPoints[8];
+	char Exp[8];
+	char Abl[8];
+	char Lev[8];
+	__int16 Skill[8];
 	unsigned __int16 GBAPalette[16];
 	char rmsg[16];
 	unsigned int runaway;
 	char dummy[4];
-	ChaoType Type;
-	char Garden;
-	__int16 Happiness;
+	ChaoType type;
+	char place;
+	__int16 like;
 	__int16 InKindergarten;
-	__int16 ClockRollovers;
-	__int16 AdultClockRollovers;
-	__int16 Lifespan;
-	__int16 Lifespan2;
-	__int16 Reincarnations;
+	__int16 age;
+	__int16 old;
+	__int16 life;
+	__int16 LifeMax;
+	__int16 nbSucceed;
 	CHAO_ID ChaoID;
-	int TimescaleTimer;
+	int LifeTimer;
 	float PowerRun;
 	float FlySwim;
 	float Alignment;
@@ -1132,11 +1132,11 @@ struct ChaoFriendshipEntry
 	char Flags;
 };
 
-struct ChaoData
+struct CHAO_SAVE_INFO
 {
-	ChaoDataBase data;
+	CHAO_PARAM_GC data;
 	
-	char Padding2[0x800 - sizeof(ChaoDataBase)]; //remaining empty space th
+	char Padding2[0x800 - sizeof(CHAO_PARAM_GC)]; //remaining empty space th
 };
 
 struct struct_a1

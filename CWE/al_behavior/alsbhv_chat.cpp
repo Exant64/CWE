@@ -542,8 +542,8 @@ void ALS_ChatSassybye(task* social, bool flipped)
 
 float ALS_AngryChance(task* chao, task* otherChao)
 {
-	ChaoDataBase* data = GET_CHAOPARAM(chao);
-	ChaoDataBase* otherData = GET_CHAOPARAM(otherChao);
+	CHAO_PARAM_GC* data = GET_CHAOPARAM(chao);
+	CHAO_PARAM_GC* otherData = GET_CHAOPARAM(otherChao);
 
 	float chance = 0;
 	if (AL_EmotionGetValue(chao, EM_PER_CALM) < -30)

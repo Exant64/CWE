@@ -29,7 +29,7 @@ ThiscallFunctionPointer(void, sub_5A6C20, (ODE_MENU_MASTER_WORK* a1), 0x5A6C20);
 FastcallFunctionPointer(void, sub_5A6F50, (ODE_MENU_MASTER_WORK* a1), 0x5A6F50);
 DataPointer(ODE_MENU_MASTER_WORK*, AL_OdekakeMenuMaster_Data_ptr, 0x01AED324);
 void sub_558BA0(int a1, int a2, int a3, float a4, float a5, float a6);
-ChaoDataBase* __cdecl GBAManager_GetChaoDataPointer();
+CHAO_PARAM_GC* __cdecl GBAManager_GetChaoDataPointer();
 
 void __cdecl sub_582F60_CheckGuest(char* a1);
 void sub_582F60(char* a1);

@@ -109,7 +109,7 @@ static void __declspec(naked) Classroom_GetMsg_hook()
 //for singing and art, it checks all the flags, if any of them aren't it returns false and returns the level in pLessonLevel
 //if none of the flags are on we assume all of them are learned so we return true
 Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
-	ChaoDataBase* pParam = GET_CHAOPARAM(tp);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 
 	*pLessonLevel = 0;
 

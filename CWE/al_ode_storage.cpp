@@ -16,7 +16,7 @@ void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2);
 
 //split this into another file
 struct AL_ChaoSelect {
-	ChaoData* m_chaoData;
+	CHAO_SAVE_INFO* m_chaoData;
 	int m_chaoDataCount;
 
 	std::vector<task*>* m_chaoTasks;
@@ -97,7 +97,7 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 }
 
 //used incase we wanna switch the storage it points to
-void AL_ChaoSelect_UpdateChaoData(AL_ChaoSelect* chaoSelect, ChaoData* pChaoData, int maxChao) {
+void AL_ChaoSelect_UpdateChaoData(AL_ChaoSelect* chaoSelect, CHAO_SAVE_INFO* pChaoData, int maxChao) {
 	chaoSelect->m_chaoData = pChaoData;
 	chaoSelect->m_chaoDataCount = maxChao;
 
@@ -110,7 +110,7 @@ void AL_ChaoSelect_UpdateChaoData(AL_ChaoSelect* chaoSelect, ChaoData* pChaoData
 	AL_ChaoSelect_UpdateList(chaoSelect);
 }
 
-AL_ChaoSelect* Create_AL_ChaoSelect(float x, float y, ChaoData* pChaoData, int maxChao, int nbX, int nbY) {
+AL_ChaoSelect* Create_AL_ChaoSelect(float x, float y, CHAO_SAVE_INFO* pChaoData, int maxChao, int nbX, int nbY) {
 	AL_ChaoSelect* chaoSelect = ALLOC(AL_ChaoSelect);
 
 	chaoSelect->m_posX = x;
@@ -128,12 +128,12 @@ AL_ChaoSelect* Create_AL_ChaoSelect(float x, float y, ChaoData* pChaoData, int m
 	return chaoSelect;
 }
 
-std::vector<ChaoData> LoadedFolderTest;
+std::vector<CHAO_SAVE_INFO> LoadedFolderTest;
 
 void AddChaoFile(const char* fileName) {
 	struct ChaoFile {
 		uint8_t header[64];
-		ChaoData param;
+		CHAO_SAVE_INFO param;
 	};
 
 	auto buffer = std::make_unique<ChaoFile>();

@@ -201,7 +201,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 	ChaoData1* v1; // edi
 	c_colli_hit_info* v2; // eax
 	task* v3; // ebx
-	ChaoDataBase* v5; // ecx
+	CHAO_PARAM_GC* v5; // ecx
 	signed int result; // eax
 	int v7; // eax
 

@@ -24,7 +24,7 @@ ObjectFunc(AL_CloseParameterFukidasiWait, 0x00565BC0);
 //we split this out into a separate function for cleanness, on the original version it was inside
 void ALBHV_Capture_Parts(task* tp, int minitype) {
 	chaowk* work = GET_CHAOWK(tp);
-	ChaoDataBase* pParamGC = work->pParamGC;
+	CHAO_PARAM_GC* pParamGC = work->pParamGC;
 
 	if (minitype >= 21 && minitype <= 24) return;
 
@@ -151,7 +151,7 @@ int ALBHV_Capture(task* tp) {
 			}
 
 			if (pEntryMinimal) {
-				ChaoDataBase* pParamGC = work->pParamGC;
+				CHAO_PARAM_GC* pParamGC = work->pParamGC;
 				task* pMinimal = pEntryMinimal->tp;
 				taskwk* pWorkMinimal = pMinimal->twp;
 				int minitype = pWorkMinimal->btimer;
@@ -184,7 +184,7 @@ int ALBHV_Capture(task* tp) {
 				{
 					if (ChaoGlobal.PartsSetProb > njRandom())
 					{
-						if (pParamGC->Type < (unsigned __int8)ChaoType_Neutral_Chaos)
+						if (pParamGC->type < (unsigned __int8)ChaoType_Neutral_Chaos)
 						{
 							pParamGC->BallType = 1;
 						}

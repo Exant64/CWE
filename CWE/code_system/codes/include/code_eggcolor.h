@@ -5,5 +5,5 @@ public:
 
 	using Code::Code;
 
-	void OnChaoData(ChaoDataBase& chao) override;
+	void OnChaoData(CHAO_PARAM_GC& chao) override;
 };

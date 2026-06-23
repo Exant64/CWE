@@ -21,14 +21,14 @@ void BirthdayParty::OnALControl(task* tp) {
 			task* pChao = GetChaoObject(0, i);
 			if (!pChao) continue;
 
-			ChaoDataBase* param = GET_CHAOPARAM(pChao);
+			CHAO_PARAM_GC* param = GET_CHAOPARAM(pChao);
 			
 			if (!pBirthdayChao &&
-				param->ClockRollovers > 0 &&
+				param->age > 0 &&
 				GET_CWEPARAM(pChao)->Birthday > 0 &&
-				(param->ClockRollovers % GET_CWEPARAM(pChao)->Birthday) == 0)
+				(param->age % GET_CWEPARAM(pChao)->Birthday) == 0)
 			{
-				param->ClockRollovers++;
+				param->age++;
 				pBirthdayChao = pChao;
 			}
 			else {

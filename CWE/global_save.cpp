@@ -15,7 +15,7 @@ using namespace rapidjson;
 
 static const char* GlobalSavePath = "./resource/gd_PC/SAVEDATA/CWE_GLOBAL.json";
 // automated system todo
-static const char* CWE_Version = "9.6";
+static const char* CWE_Version = "9.6.1";
 
 // stolen from modloader's CrashDump.cpp
 

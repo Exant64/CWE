@@ -609,7 +609,7 @@ void DrawOtherChao(task* a1, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT*
 				break;
 			}
 		}
-		if (IsOmochao(a1) && gConfigVal.OmochaoParts && chunkObjectPointer->animalPart && GET_CHAOPARAM(a1)->Type < CharacterIndex)
+		if (IsOmochao(a1) && gConfigVal.OmochaoParts && chunkObjectPointer->animalPart && GET_CHAOPARAM(a1)->type < CharacterIndex)
 		{
 			njSetTexture((NJS_TEXLIST*)chunkObjectPointer->field_CC);
 			chCnkDrawObject(chunkObjectPointer->animalPart);
@@ -769,7 +769,7 @@ void ColorEggModel(NJS_CNK_MODEL* a1, int a2)
 
 void AL_SetBodyTexture(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->Type == 26) {
+	if (GET_CHAOPARAM(a1)->type == 26) {
 		njSetTexture(&AL_BODY);
 		return;
 	}
@@ -953,18 +953,18 @@ void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 	}
 	else if (Chao_NodeIndex == 1)
 	{
-		if (GET_CHAOPARAM(a1)->HideFeet && GET_CHAOPARAM(a1)->Type >= 0 && GET_CHAOPARAM(a1)->Type < (unsigned __int8)ChaoType_Neutral_Chaos)
+		if (GET_CHAOPARAM(a1)->HideFeet && GET_CHAOPARAM(a1)->type >= 0 && GET_CHAOPARAM(a1)->type < (unsigned __int8)ChaoType_Neutral_Chaos)
 		{
 			AL_SetBodyTexture(a1);
 
 			//alpalSetBank(a1, (unsigned __int8)a1->twp->Index);
 			*(int*)(*(int*)(*(int*)(*((int*)GetDllData("ObakeBodyObjectList")
-				+ (unsigned __int8)GET_CHAOPARAM(a1)->Type)
+				+ (unsigned __int8)GET_CHAOPARAM(a1)->type)
 				+ 4)
 				+ 4)
 				+ 4) = *(int*)((__int16*)chunkObjectPointer->base.chunkmodel->plist + 2); //copies mat color onto the ghost model
 			AL_SetRareMaterial(a1, chunkObjectPointer->base.chunkmodel);
-			chCnkDrawObject(((NJS_OBJECT**)GetDllData("ObakeBodyObjectList"))[GET_CHAOPARAM(a1)->Type]);
+			chCnkDrawObject(((NJS_OBJECT**)GetDllData("ObakeBodyObjectList"))[GET_CHAOPARAM(a1)->type]);
 			SetMaterial(0, 0, 0, 0);
 			goto LABEL_95;
 		}
@@ -989,10 +989,10 @@ void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 		&& Chao_NodeIndex != 27
 		&& Chao_NodeIndex != 29)
 		&& (!GET_CHAOPARAM(a1)->HideFeet
-			|| GET_CHAOPARAM(a1)->Type >= (unsigned __int8)CharacterIndex
+			|| GET_CHAOPARAM(a1)->type >= (unsigned __int8)CharacterIndex
 			|| (GET_CWEPARAM(a1)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39)) && Chao_NodeIndex != 6 && Chao_NodeIndex != 13 && Chao_NodeIndex != 8))
 	{
-		if (chunkObjectPointer->animalPart && GET_CHAOPARAM(a1)->Type < CharacterIndex) {
+		if (chunkObjectPointer->animalPart && GET_CHAOPARAM(a1)->type < CharacterIndex) {
 			if (!(DrawHideNodes & (uint64_t(1) << uint64_t(Chao_NodeIndex)))) {
 				njSetTexture((NJS_TEXLIST*)chunkObjectPointer->field_CC);
 				chCnkDrawObject(chunkObjectPointer->animalPart);

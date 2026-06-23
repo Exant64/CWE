@@ -8,11 +8,11 @@ void AL_NameSet(char* lval, char* rval) {
 }
 
 bool AL_IsChild(task* tp) {
-	return GET_CHAOPARAM(tp)->Type == ChaoType_Child;
+	return GET_CHAOPARAM(tp)->type == ChaoType_Child;
 }
 
 bool AL_IsCustomChao(task* tp) {
-	return GET_CHAOPARAM(tp)->Type == 26 || GET_CHAOWK(tp)->IsCustomChaoTypeLoaded;
+	return GET_CHAOPARAM(tp)->type == 26 || GET_CHAOWK(tp)->IsCustomChaoTypeLoaded;
 }
 
 bool AL_IsHero(unsigned __int8 a1) {
@@ -23,10 +23,10 @@ bool AL_IsDark(unsigned __int8 a1) {
 }
 
 bool AL_IsHero2(task* a1) {
-	return AL_IsHero(GET_CHAOPARAM(a1)->Type);
+	return AL_IsHero(GET_CHAOPARAM(a1)->type);
 }
 bool AL_IsDark2(task* a1) {
-	return AL_IsDark(GET_CHAOPARAM(a1)->Type);
+	return AL_IsDark(GET_CHAOPARAM(a1)->type);
 }
 
 
@@ -53,7 +53,7 @@ void AL_ParameterClearAccessory(task* tp, int slot) {
 
 void AL_ParameterAddAPos(task* a1, float a2)
 {
-	ChaoDataBase* v3; // ecx
+	CHAO_PARAM_GC* v3; // ecx
 	float v4; // [esp+4h] [ebp+4h]
 
 	chaowk* work = GET_CHAOWK(a1);
@@ -100,7 +100,7 @@ void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4
 void IncrementFlySwim(task* a1, float a2)
 {
 	ChaoData1* v2; // edx
-	ChaoDataBase* v3; // ecx
+	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
@@ -118,7 +118,7 @@ void IncrementFlySwim(task* a1, float a2)
 void IncrementPowerRun(task* a1, float a2)
 {
 	ChaoData1* v2; // edx
-	ChaoDataBase* v3; // ecx
+	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;

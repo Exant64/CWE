@@ -14,7 +14,7 @@
 #define CWE_API_REGISTER_MSG_VER 1
 
 using OtherItemPtr = void(*)(int ID);
-using LastBiteFruitFuncPtr = void(*)(ChaoData* chaoData, task* fruit);
+using LastBiteFruitFuncPtr = void(*)(CHAO_SAVE_INFO* chaoData, task* fruit);
 using SpecialItemFuncPtr = void(*)(task* chao, task* item);
 using SpecialConditionFuncPtr = bool(*)(task* chao, task* item);
 

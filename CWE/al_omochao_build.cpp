@@ -96,12 +96,12 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 {
 	if (GetOmoData()->phase == 255)
 	{
-		ChaoData* v11 = (ChaoData*)AL_GetNewChaoSaveInfo();
+		CHAO_SAVE_INFO* v11 = (CHAO_SAVE_INFO*)AL_GetNewChaoSaveInfo();
 		if (v11) 
 		{
-			v11->data.Type = ChaoType_Child;
+			v11->data.type = ChaoType_Child;
 			v11->data.BodyType = SADXBodyType_Omochao;
-			v11->data.Garden = AL_GetStageNumber();
+			v11->data.place = AL_GetStageNumber();
 			InitChaoDNA(&v11->data.Gene);
 			v11->data.Gene.Color[0] = GetOmoData()->color;
 			v11->data.Gene.Color[1] = GetOmoData()->color;
