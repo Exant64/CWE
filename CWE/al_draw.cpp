@@ -306,6 +306,9 @@ static void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3) {
 	}
 }
 
+static NJS_MATRIX OnlyDrawHeadMatrix;
+static bool OnlyDrawHead = false;
+
 static NJS_MATRIX StartViewMatrix;
 static NJS_MATRIX DrawMatrices[40];
 static size_t DrawMatrixNodeCount = 0;
@@ -313,6 +316,11 @@ static void AL_DrawGetChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject) {
 	njPushMatrixEx();
 
 	AL_SetMotionMatrix(pObject);
+
+	if (OnlyDrawHead && DrawMatrixNodeCount == 14) {
+		memcpy(_nj_current_matrix_ptr_, &DrawMatrices[0], sizeof(DrawMatrices[0]));
+	}
+
 	memcpy(&DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
 
 	DrawMatrixNodeCount++;
@@ -914,6 +922,7 @@ static void AL_SetupBald(task* tp) {
 		cwe_device->SetVertexShaderConstantF(144, vector, 1);
 	}
 }
+
 void DrawChao(task* tp, AL_OBJECT* pObject)
 {
 	int v36, v44;
@@ -931,6 +940,11 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 	AL_DrawToy(pObject);
 
 	bool hideHat = false;
+
+	if (OnlyDrawHead) {
+		if (Chao_NodeIndex < 14 || Chao_NodeIndex > 33) goto LABEL_98;
+	}
+
 	if (GET_CHAOPARAM(tp)->body.ObakeHead)
 	{
 		//REMOVE WRONG HAT
@@ -1083,6 +1097,20 @@ LABEL_98:
 	task* ChaoDebugDistSelected = NULL;
 	float ChaoDebugDist = 1.f;
 #endif
+
+void OnlyDrawHeadChao(task* tp) {
+	OnlyDrawHead = true;
+	Chao_NodeIndex = 0;
+
+	njSetTexture(&AL_BODY);
+	sub_56E9C0(tp);
+	alpalSetBank(tp, tp->twp->id);
+
+	memcpy(&OnlyDrawHeadMatrix, _nj_current_matrix_ptr_, sizeof(OnlyDrawHeadMatrix));
+
+	DrawChao(tp, GET_CHAOWK(tp)->Shape.pObject);
+	OnlyDrawHead = false;
+}
 
 static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
 static void Chao_Display_r(task* tp) {

@@ -72,6 +72,8 @@ void ChaoColoring(int texture, int color, int shiny, int highlights, int shinyJe
 void AL_SetBodyTexture(task* tp);
 void AL_SetRareMaterial(task* tp, NJS_CNK_MODEL* pModel);
 
+void OnlyDrawHeadChao(task* tp);
+
 extern task* ChaoDebugDistSelected;
 extern float ChaoDebugDist;
 

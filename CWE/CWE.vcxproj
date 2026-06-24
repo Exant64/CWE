@@ -648,6 +648,8 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="al_speechbubble.cpp" />
+    <ClCompile Include="rendertarget.cpp" />
     <ClCompile Include="alg_kinder_bl.cpp" />
     <ClCompile Include="alg_kinder_cl.cpp" />
     <ClCompile Include="alg_kinder_he.cpp" />

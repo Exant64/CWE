@@ -95,6 +95,7 @@
 #include "land_grayscale.h"
 #include "api/api_main.h"
 #include "cwe_c_colli.h"
+#include "rendertarget.h"
 
 const char* PathToModFolder = "";
 
@@ -435,13 +436,8 @@ extern "C"
 		ImGui_Init();
 #endif
 
-#ifdef RENDERTARGET
-		device->CreateRenderTarget(HorizontalResolution, VerticalResolution, D3DFMT_A8R8G8B8, D3DMULTISAMPLE_TYPE::D3DMULTISAMPLE_NONE, 0, false, &RenderTarget, 0);
-		device->CreateDepthStencilSurface(HorizontalResolution, VerticalResolution, D3DFMT_D16,
-			D3DMULTISAMPLE_TYPE::D3DMULTISAMPLE_NONE, 0, false, &FStaticStencil, nullptr);
-		device->CreateTexture(HorizontalResolution, VerticalResolution, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &OutTexture, 0);
-		OutTexture->GetSurfaceLevel(0, &OutSurface);
-#endif
+		InitRenderTarget();
+
 		const std::string iniPath = std::string(path) + "\\config.ini";
 		IniFile* config = new IniFile(iniPath);
 

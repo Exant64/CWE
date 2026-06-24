@@ -241,11 +241,11 @@ void __cdecl sub_6EFF10_(NJS_VECTOR* a1, NJS_VECTOR* a2, float a3)
 		v3->filler5 = 0.0;
 	}
 }
-void AL_Minimal_Timer(task* a1)
+void AL_Minimal_Timer(task* tp)
 {
-	sub_57BD40(a1);
+	sub_57BD40(tp);
 
-	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)a1->twp;
+	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)tp->twp;
 	int* timer = (int*)((char*)&v1->field_F4 + 4);
 	(*timer)++;
 	if (!v1->field_F4 && (*timer & 31) == 1)

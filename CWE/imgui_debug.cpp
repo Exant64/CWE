@@ -17,6 +17,7 @@
 #include <al_behavior/al_behavior.h>
 #include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
+#include <al_speechbubble.h>
 #include <data/more_faces.h>
 
 static int SelectedChaoIndex;
@@ -115,7 +116,7 @@ static void ChaoInfoMenu() {
 
         chaowk* work = GET_CHAOWK(pChao);
         auto pParamCwe = GET_CWEPARAM(pChao);
-        auto* move_work = pChao->mwp;
+        auto* move_work = (MOVE_WORK*)pChao->mwp;
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
@@ -153,8 +154,8 @@ static void ChaoInfoMenu() {
                         "%s (internal data ParamID:%s Data1ID:%s Index: %d)", 
                         slotNames[i],
                         pParamCwe->Accessories[i].ID, 
-                        work->AccessoryCalculatedID[i], 
-                        work->AccessoryIndices[i]
+                        GET_CHAOWK_CWE(pChao)->AccessoryCalculatedID[i], 
+                        GET_CHAOWK_CWE(pChao)->AccessoryIndices[i]
                     );
 
                     size_t count = 0;
@@ -172,9 +173,9 @@ static void ChaoInfoMenu() {
                     }
                     ImGui::PopID();
 
-                    if (work->AccessoryIndices[i] == -1) continue;
+                    if (GET_CHAOWK_CWE(pChao)->AccessoryIndices[i] == -1) continue;
                     
-                    for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
+                    for (size_t j = 0; j < GetAccessoryColorCount(GET_CHAOWK_CWE(pChao)->AccessoryIndices[i]); ++j) {
                         NJS_COLOR* pCol = (NJS_COLOR*) & pParamCwe->Accessories[i].ColorSlots[j];
                         ImGui::PushID(i * 10 + j);
                         float col[3];
@@ -240,6 +241,7 @@ static void ChaoInfoMenu() {
                             AL_SetBehavior(pChao, ALBHV_Talk);
                         }
                         if (ImGui::Button("Gossip")) {
+                            ALW_LockOn(pChao, pOtherChao);
                             ALBHV_Gossip(pChao, pOtherChao);
                         }
                         if (ImGui::Button("Hold Hands")) {
@@ -334,10 +336,10 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Flags")) {
                 {
-                    bool flagEnabled = (work->Flag & 2);
+                    bool flagEnabled = (work->Shape.Flag & 2);
                     if(ImGui::Checkbox("Shape Deform", &flagEnabled)) {
                         if(flagEnabled) {
-                            work->Flag |= 2;
+                            work->Shape.Flag |= 2;
                         }
                     }
                 }
@@ -401,7 +403,7 @@ static void ChaoInfoMenu() {
                 static int animID = 0;
                 int currentAnimID = work->MotionCtrl.curr_num;
                 ImGui::Text("Current Animation: %s (%d)", MotionNames[currentAnimID], currentAnimID);
-                ImGui::Text("Speed: %f %f", work->MotionCtrl.PlaySpeed2, work->MotionCtrl.PlaySpeed);
+                ImGui::Text("Speed: %f %f", work->MotionCtrl.minfo[0].spd, work->MotionCtrl.minfo[1].spd);
 
                 ImGui::Combo("Filter for pose: %s (%d)", &poseFilter, poseNames, IM_ARRAYSIZE(poseNames));
                 if (poseFilter > 0) {
@@ -551,7 +553,7 @@ static void ChaoSoundMenu() {
         }
 
         if (ImGui::Button("Play")) {
-            SE_CallV2(SoundID, &playertwp[0]->pos, 0, 0, 110);
+            SE_CallV2(SoundID, 0, 0, 110, &playertwp[0]->pos);
         }
 
         if (ImGui::Button("Stop Music")) {
@@ -564,7 +566,7 @@ static void ChaoSoundMenu() {
 
 static void TaskListMenu() {
     if (ShowTaskList && ImGui::Begin("Tasks", &ShowTaskList)) {
-        for (size_t i = 0; i < ObjectLists_Length; i++) {
+        for (size_t i = 0; i < btp_Length; i++) {
             char path[40];
             sprintf_s(path, "List %d", int(i));
 
@@ -824,6 +826,29 @@ static void ImGuiMenu() {
         MoreFacesMenu();
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (ImGui::Begin("speech test")) {
+        static int speechID = 0;
+        static int speechSubID;
+        static int chaoID = 0;
+
+        ImGui::SliderInt("Type", &speechID, 0, NB_SPEECH_ENTRY - 1);
+        ImGui::SliderInt("SubType", &speechSubID, 0, 24);
+        ImGui::SliderInt("chao id", &chaoID, 0, 24);
+
+        if (ImGui::Button("create bubble")) {
+            task* pChao = GetChaoObject(0, 0);
+            if (pChao) {
+                task* renderedChao = GetChaoObject(0, chaoID);
+                CHAO_SAVE_INFO* renderedData = NULL;
+                if (renderedChao) {
+                    renderedData = (CHAO_SAVE_INFO*)GET_CHAOWK(renderedChao)->pParamGC;
+                }
+                AL_SpeechBubbleCreate(pChao, renderedData, speechID, speechSubID, SPEECH_POS_TOP, 35, 120);
+            }
+        }
+        ImGui::End();
     }
 
     if (false && ImGui::Begin("rain test")) {

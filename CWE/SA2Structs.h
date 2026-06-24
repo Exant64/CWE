@@ -493,7 +493,7 @@ struct __declspec(align(4)) chaowk
     int32_t RememberNum;
     int32_t pitch;
 	float ClimbFirstPos;
-	int field_58;
+	int IsParamCopy;
 	CHAO_PARAM_GC *pParamGC;
 	TMP_PARAM tmpParam;
 	int Stamina;
