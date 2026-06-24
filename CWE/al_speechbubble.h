@@ -1,0 +1,29 @@
+#pragma once
+#include <Chao.h>
+
+enum eSpeechPos {
+	SPEECH_POS_LEFT,
+	SPEECH_POS_RIGHT,
+	SPEECH_POS_TOP
+};
+
+enum {
+	SPEECH_BUBBLE_FRUIT,
+	SPEECH_BUBBLE_ACCESSORY,
+	SPEECH_BUBBLE_MASK,
+	SPEECH_BUBBLE_SPECIAL,
+	SPEECH_BUBBLE_MEDAL,
+	SPEECH_BUBBLE_LTOY,
+	SPEECH_BUBBLE_STOY,
+	SPEECH_BUBBLE_MUSIC,
+	SPEECH_BUBBLE_MUSIC_CWE,
+	SPEECH_BUBBLE_COCOON,
+	NB_SPEECH_ENTRY,
+};
+
+enum {
+	SPEECH_BUBBLE_FLAG_DISLIKE = BIT_0
+};
+
+void AL_SpeechBubbleSetFlags(task* tp, Uint32 flags);
+task* AL_SpeechBubbleCreate(task* pChao, CHAO_SAVE_INFO* pChaoData, Uint32 entryType, Uint32 entry, eSpeechPos position, Uint32 spawnTimer, Uint32 aliveTimer);

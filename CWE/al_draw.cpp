@@ -302,13 +302,22 @@ static void C_MTXConcat(float* a1, float* a2, float* a3) {
 	}
 }
 
+static float OnlyDrawHeadMatrix[12];
+static bool OnlyDrawHead = false;
+
 static float StartViewMatrix[12];
 static float DrawMatrices[40][12];
 static size_t DrawMatrixNodeCount = 0;
+
 static void AL_DrawGetChaoNodeMatricesSub(task* tp, ChunkObjectPointer* chunkObjectPointer) {
 	njPushMatrixEx();
 
 	AL_SetMotionMatrix(tp, chunkObjectPointer);
+
+	if (OnlyDrawHead && DrawMatrixNodeCount == 14) {
+		memcpy(_nj_current_matrix_ptr_, DrawMatrices[0], sizeof(DrawMatrices[0]));
+	}
+
 	memcpy(DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
 
 	DrawMatrixNodeCount++;
@@ -912,6 +921,7 @@ static void AL_SetupBald(task* tp) {
 		cwe_device->SetVertexShaderConstantF(144, vector, 1);
 	}
 }
+
 void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 {
 	int v36, v44;
@@ -929,6 +939,11 @@ void DrawChao(task* a1, ChunkObjectPointer* chunkObjectPointer)
 	AL_DrawToy(chunkObjectPointer);
 
 	bool hideHat = false;
+
+	if (OnlyDrawHead) {
+		if (Chao_NodeIndex < 14 || Chao_NodeIndex > 33) goto LABEL_98;
+	}
+
 	if (GET_CHAOPARAM(a1)->Headgear)
 	{
 		//REMOVE WRONG HAT
@@ -1084,6 +1099,20 @@ LABEL_98:
 	task* ChaoDebugDistSelected = NULL;
 	float ChaoDebugDist = 1.f;
 #endif
+
+void OnlyDrawHeadChao(task* tp) {
+	OnlyDrawHead = true;
+	Chao_NodeIndex = 0;
+
+	njSetTexture(&AL_BODY);
+	sub_56E9C0(tp);
+	alpalSetBank(tp, tp->twp->id);
+
+	memcpy(&OnlyDrawHeadMatrix, _nj_current_matrix_ptr_, sizeof(OnlyDrawHeadMatrix));
+
+	DrawChao(tp, GET_CHAOWK(tp)->field_510);
+	OnlyDrawHead = false;
+}
 
 static FunctionHook<void, task*> Chao_Display_t(0x0054FF80);
 static void Chao_Display_r(task* tp) {

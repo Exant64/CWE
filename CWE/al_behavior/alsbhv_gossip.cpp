@@ -8,142 +8,351 @@
 #include "../al_social.h"
 #include "../ninja_functions.h"
 #include <random>
+#include <al_speechbubble.h>
+#include <al_behavior/al_knowledge.h>
+#include "albhv.h"
 
-void ALS_GossipFace(SOCIALDATA* data)
-{
-	data->bhvStatus.SubTimer--;
+// gets chao he doesn't know (
+static CHAO_SAVE_INFO* GetGossipDoesntKnowSubject(task* pChao, task* pOtherChao) {
+	chaowk* work = GET_CHAOWK(pChao);
 
-	if (!data->bhvStatus.SubTimer)
-		data->bhvStatus.SubTimer = 60;
+	const size_t maxGossip = 25;
+	CHAO_SAVE_INFO* pGossipList[maxGossip];
+	size_t nbGossip = 0;
 
-	//if (data->bhvStatus.SubTimer % 60 == 0);
-	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
+	const size_t chaoCount = ALW_CountEntry(0);
+	for (size_t i = 0; i < chaoCount; i++) {
+		if (nbGossip >= maxGossip) break;
 
-	if (data->bhvStatus.SubTimer % 30 == 0)
-		AL_FaceSetMouth(data->chaoPointer, ChaoMouth_Open, 15);
-}
-int ALS_Gossip(SOCIALDATA* data)
-{
-	if (data->bhvStatus.Mode == 0)
-	{
-		data->bhvStatus.Mode++;
-		AL_SetMotionLink(data->chaoPointer, data->parameter1 + 404);
-		data->bhvStatus.Timer = 5 * 60;
-		data->bhvStatus.SubTimer = 0;
+		task* tp = GetChaoObject(0, i);
+		if (!tp || tp == pChao || tp == pOtherChao) continue;
+
+		pGossipList[nbGossip++] = (CHAO_SAVE_INFO*)GET_CHAOPARAM(tp);
 	}
-	else
-	{
-		data->bhvStatus.Timer--;
-		if (!data->bhvStatus.Timer)
-		{
-			AL_FaceChangeEye(data->chaoPointer, ChaoEyes_Normal);
-			AL_FaceChangeMouth(data->chaoPointer, GET_CHAOWK(data->chaoPointer)->Face.MouthDefaultNum);
-			//AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405 + 3);
-			return 1;
+
+	if (!nbGossip) return NULL;
+
+	return pGossipList[int(njRandom() * (nbGossip - 0.0001f))];
+}
+
+// gets chao that he personally knows (met with more than once) or parents
+static CHAO_SAVE_INFO* GetGossipKnowsSubject(task* pChao) {
+	chaowk* work = GET_CHAOWK(pChao);
+
+	const size_t maxGossip = 25;
+	CHAO_SAVE_INFO* pGossipList[maxGossip];
+	size_t nbGossip = 0;
+
+	const size_t nbFriends = AL_KW_GetFriendCount(pChao);
+
+	for (size_t i = 0; i < nbFriends; i++) {
+		if (nbGossip >= maxGossip) break;
+		
+		const auto& entry = GET_CHAOPARAM(pChao)->Knowledge.chao[i];
+		if (entry.meet > 1) {
+			CHAO_SAVE_INFO* pParam = (CHAO_SAVE_INFO*)AL_KW_FindChaoBasedOnId(entry.id);
+			if (!pParam) continue;
+
+			pGossipList[nbGossip++] = pParam;
 		}
-		ALS_GossipFace(data);
+	}
+
+	if (!nbGossip) return NULL;
+
+	return pGossipList[int(njRandom() * (nbGossip - 0.0001f))];
+}
+
+static CHAO_SAVE_INFO* GetGossipSubject(task* pChao) {
+	CHAO_SAVE_INFO* pDoesntKnow = GetGossipDoesntKnowSubject(pChao, ALW_GetLockOnTask(pChao));
+	CHAO_SAVE_INFO* pKnows = GetGossipKnowsSubject(pChao);
+
+	CHAO_SAVE_INFO* pPickedChao = NULL;
+	if (!pDoesntKnow || !pKnows) {
+		return !pDoesntKnow ? pKnows : pDoesntKnow;
+	}
+	
+	return (njRandom() < 0.5) ? pDoesntKnow : pKnows;
+}
+
+static const int GossipSpeechSpawnTimer = 45;
+static const int GossipSpeechStayTimer = 90;
+static const int GossipTotalTimer = GossipSpeechSpawnTimer * 2 + GossipSpeechStayTimer;
+
+static void PickAndSpawnTopicGossipChao(task* pChao, CHAO_SAVE_INFO* gossipData, eSpeechPos pos) {
+	auto& param = gossipData->data;
+	const size_t maxEntries = 32;
+	Uint32 registeredEntryPairs[maxEntries][3];
+	size_t nbEntries = 0;
+
+	const auto addEntry = [&](Uint32 type, Uint32 id, Uint32 flags = 0) {
+		if (nbEntries < maxEntries) {
+			registeredEntryPairs[nbEntries][0] = type;
+			registeredEntryPairs[nbEntries][1] = id;
+			registeredEntryPairs[nbEntries][2] = flags;
+
+			nbEntries++;
+		}
+	};
+	
+	#if 0
+	for (size_t i = 0; i < _countof(param.Accessories); i++) {
+		if (!param.Accessories[i].ID[0]) continue;
+
+		addEntry(SPEECH_BUBBLE_ACCESSORY, param.Accessories[i] - 1);
+	}
+	#endif
+
+	if (param.Headgear) {
+		addEntry(SPEECH_BUBBLE_MASK, param.Headgear);
+	}
+
+	if (param.Medal) {
+		addEntry(SPEECH_BUBBLE_MEDAL, param.Medal - 1);
+	}
+
+	for (size_t i = 0; i < NB_AL_STOY; i++) {
+		if (param.Knowledge.SToyFlag & (1 << i)) {
+			addEntry(SPEECH_BUBBLE_STOY, i);
+		}
+	}
+
+	for (size_t i = 0; i < NB_AL_MUSIC; i++) {
+		if (param.Knowledge.MusicFlag & (1 << i)) {
+			addEntry(SPEECH_BUBBLE_MUSIC, i);
+		}
+	}
+
+	const float favoriteFruitTopicChance = 0.4f;
+
+	// this one is random so that chao that don't have too many topics don't always show this
+	if (njRandom() < favoriteFruitTopicChance) {
+		switch (param.Emotion.FavoriteFruit) {
+		case TASTE_LS_DT:
+		case TASTE_LS_DC:
+			addEntry(SPEECH_BUBBLE_FRUIT, SA2BFruit_SquareFruit);
+			break;
+		case TASTE_LC_DT:
+		case TASTE_LC_DS:
+			addEntry(SPEECH_BUBBLE_FRUIT, SA2BFruit_RoundFruit);
+			break;
+		case TASTE_LT_DS:
+		case TASTE_LT_DC:
+			addEntry(SPEECH_BUBBLE_FRUIT, SA2BFruit_TriangleFruit);
+			break;
+		}
+	}
+
+	if (njRandom() < favoriteFruitTopicChance) {
+		switch (param.Emotion.FavoriteFruit) {
+			case TASTE_LS_DT:
+			case TASTE_LC_DT:
+				addEntry(SPEECH_BUBBLE_FRUIT, SA2BFruit_TriangleFruit, SPEECH_BUBBLE_FLAG_DISLIKE);
+				break;
+			case TASTE_LT_DS:
+			case TASTE_LC_DS:
+				addEntry(SPEECH_BUBBLE_FRUIT, SA2BFruit_SquareFruit, SPEECH_BUBBLE_FLAG_DISLIKE);
+				break;
+			case TASTE_LS_DC:
+			case TASTE_LT_DC:
+				addEntry(SPEECH_BUBBLE_FRUIT, SA2BFruit_RoundFruit, SPEECH_BUBBLE_FLAG_DISLIKE);
+				break;
+		}
+	}
+
+	if (param.type == ChaoType_Child) {
+		if (param.EvolutionProgress >= 0.9) {
+			addEntry(SPEECH_BUBBLE_COCOON, 0);
+		}
+	}
+	else if (param.life < 200) {
+		if (param.like < GET_GLOBAL()->SucceedBoundaryUserLike) {
+			addEntry(SPEECH_BUBBLE_COCOON, 2);
+		}
+		else {
+			addEntry(SPEECH_BUBBLE_COCOON, 1);
+		}
+	}
+
+	if (nbEntries > 0) {
+		const auto& pickedEntry = registeredEntryPairs[int(njRandom() * (nbEntries - 0.0001f))];
+		AL_SpeechBubbleCreate(pChao, NULL, pickedEntry[0], pickedEntry[1], pos, GossipSpeechSpawnTimer, GossipSpeechStayTimer);
+	}
+}
+
+static void ALS_GossipFace(SOCIAL_ACTOR* data) {
+	task* pChao = data->chaoPointer;
+	auto& bhv = data->bhvStatus;
+
+	bhv.SubTimer++;
+
+	if (bhv.SubTimer % 100 == 0) {
+		float randval = njRandom();
+		if (randval < 0.33f) {
+			AL_FaceChangeEye(pChao, ChaoEyes_Normal);
+		}
+		else if (randval < 0.66f) {
+			AL_FaceChangeEye(pChao, ChaoEyes_Mean);
+		}
+		else {
+			AL_FaceChangeEye(pChao, ChaoEyes_Tiny);
+		}
+	}
+
+	if (bhv.SubTimer % 120 == 0) {
+		// random gossip sound in range of all gossip sounds
+		PlaySound_XYZ(0x604B + njRandom() * (1 + 0x4F - 0x4B - 0.001f), &pChao->twp->pos, 0, 0, 110);
+	}
+
+	if (bhv.SubTimer % 30 == 0) {
+		AL_FaceSetMouth(pChao, ChaoMouth_Open, 15);
+	}
+}
+
+static int ALS_Gossip(SOCIAL_ACTOR* data) {
+	task* pChao = data->chaoPointer;
+	auto& bhv = data->bhvStatus;
+	CHAO_SAVE_INFO* pGossipChaoData = (CHAO_SAVE_INFO*)bhv.UserData;
+
+	switch (bhv.Mode) {
+		case 0:
+			AL_SetMotionLinkStep(pChao, data->parameter1 + 404, 0x30);
+
+			bhv.UserData = GetGossipSubject(pChao);
+
+			bhv.Timer = 2 * GossipTotalTimer + (3 + njRandom() * 4) * 60;
+			bhv.SubTimer = 0;
+
+			bhv.Mode++;
+			break;
+		// mode 1 and 2 cover talking about a chao and then talking about something related to said chao
+		default:
+			bhv.Timer--;
+
+			if ((bhv.Timer % GossipTotalTimer) == 0) {
+				if (pGossipChaoData) {
+					// first talk about the chao in mode 1
+					// then talk about some trait of chao in mode 2
+					switch (bhv.Mode) {
+					case 1:
+						AL_SpeechBubbleCreate(pChao, pGossipChaoData, -1, 0, SPEECH_POS_TOP, GossipSpeechSpawnTimer, GossipSpeechStayTimer);
+						break;
+					case 2:
+						PickAndSpawnTopicGossipChao(pChao, pGossipChaoData, SPEECH_POS_TOP);
+						break;
+					}
+					
+					bhv.Mode++;
+				}
+			}
+
+			if (!bhv.Timer)
+			{
+				AL_FaceChangeEye(pChao, ChaoEyes_Normal);
+
+				// AL_FaceReturnDefaultMouth
+				AL_FaceChangeMouth(pChao, GET_CHAOWK(pChao)->Face.MouthDefaultNum);
+				return 1;
+			}
+
+			ALS_GossipFace(data);
+			break;
 	}
 
 	return 0;
 }
-int ALS_GossipIdle(SOCIALDATA* data)
-{
-	if (data->bhvStatus.Mode == 0)
-	{
-		data->bhvStatus.Mode++;
-		if (GET_CHAOWK(data->chaoPointer)->MotionTable.AnimID != data->parameter1 + 405)
-			AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405);
+
+static int ALS_GossipIdle(SOCIAL_ACTOR* data) {
+	task* pChao = data->chaoPointer;
+	auto& bhv = data->bhvStatus;
+
+	switch (bhv.Mode) {
+	case 0:
+		if (GET_CHAOWK(pChao)->MotionTable.AnimID != data->parameter1 + 405)
+			AL_SetMotionLinkStep(pChao, data->parameter1 + 405, 0x30);
+		bhv.Mode++;
+		break;
+	case 1:
+		bhv.SubTimer++;
+		if ((bhv.SubTimer % 90) == 0) {
+			float randval = njRandom();
+			if (randval < 0.33f) {
+				AL_FaceChangeEye(pChao, ChaoEyes_Normal);
+			}
+			else if (randval < 0.66f) {
+				AL_FaceChangeEye(pChao, ChaoEyes_Mean);
+			}
+			else {
+				AL_FaceChangeEye(pChao, ChaoEyes_Tiny);
+			}
+
+			if (njRandom() < 0.5) {
+				AL_FaceChangeMouth(pChao, ChaoMouth_ClosedSmile);
+			}
+			else {
+				AL_FaceChangeMouth(pChao, ChaoMouth_Open);
+			}
+		}
+
+		break;
 	}
+
 	return 0;
 }
-void ALS_GossipSetup(task* a1, task* a2)
-{
+
+static void ALS_GossipSetup(task* pChao1, task* pChao2) {
 	task* social = Social_Create(ALS_GossipIdle);
 
-	ALW_CommunicationOff(a1);
+	ALW_CommunicationOff(pChao1);
 
 	//set up "actors"
-	Social_SetActor(social, SOCIAL_CHAO1, a1);
-	Social_SetActor(social, SOCIAL_CHAO2, a2);
+	Social_SetActor(social, SOCIAL_CHAO1, pChao1);
+	Social_SetActor(social, SOCIAL_CHAO2, pChao2);
 
-	Social_SetParameter(social, SOCIAL_CHAO1, 4);
-	Social_SetParameter(social, SOCIAL_CHAO2, 0);
+	Social_SetParameter(social, SOCIAL_CHAO1, 4 + ((njRandom() < 0.5) ? 2 : 0));
+	Social_SetParameter(social, SOCIAL_CHAO2, 0 + ((njRandom() < 0.5) ? 2 : 0));
 
-	bool flipped = false; //this value is so that the conversation goes back and forth
-	for (int i = 0; i < 4 + (njRandom() * 6.0f); i++)
-	{
-		if (njRandom() > 0.5f)
+	const int behaviorCount = 3 + int(njRandom() * 3.0f);
+
+	bool flipped = false;
+	for (int i = 0; i < behaviorCount; i++) {
+		if (njRandom() < 0.5f)
 			flipped = !flipped;
 
 		Social_QueueBehavior(social, !flipped ? SOCIAL_CHAO1 : SOCIAL_CHAO2, ALS_Gossip);
 	}
 }
 
+static int ALBHV_StartGossip(task* tp) {
+	ALS_GossipSetup(tp, ALW_GetLockOnTask(tp));
 
-int ALBHV_GossipTest(task* a1)
-{
-	ALS_GossipSetup(a1, ALW_GetLockOnTask(a1));
-	return 0;
+	return BHV_RET_CONTINUE;
 }
 
-int ALBHV_SnapToGossip(task* a1)
-{
-	task* otherChao = ALW_IsCommunicating(a1)->tp;
-	NJS_VECTOR v8;
-	NJS_VECTOR testVectr = { 3.2f,0,0 };
-	if(GET_CHAOWK(a1)->Behavior.Mode == 0)
-	{
-		sub_54A690(a1);
+static void GreetTest(task* pChao1, task* pChao2) {
+	AL_SetBehavior(pChao2, ALBHV_WaitForSocialToArrive);
+	AL_SetNextBehavior(pChao2, ALBHV_SocialCheck<ALBHV_HandShake>);
+	AL_SetNextBehavior(pChao2, ALBHV_SocialCheck<ALBHV_LockUp>);
 
-		njPushUnitMatrix();
-		njTranslateEx(&otherChao->twp->pos);
-		RotateY(otherChao->twp->ang.y);
-		sub_426CC0(_nj_current_matrix_ptr_, &v8, &testVectr, 0);
-		njPopMatrixEx();
-
-		a1->twp->pos.x = (v8.x - a1->twp->pos.x) * 0.1f + a1->twp->pos.x;
-		a1->twp->pos.y = (v8.y - a1->twp->pos.y) * 0.1f + a1->twp->pos.y;
-		a1->twp->pos.z = (v8.z - a1->twp->pos.z) * 0.1f + a1->twp->pos.z;
-
-		a1->twp->ang.y = AdjustAngle_(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
-
-		v8.y = a1->twp->pos.y;
-		if (CheckDistance(&a1->twp->pos, &v8) <= 0.2)
-			return 1;
-	}
-	return 0;
+	AL_SetBehavior(pChao1, ALBHV_GoToSocial);                 //go to selected chao and turn to it
+	AL_SetNextBehavior(pChao1, ALBHV_SocialCheck<ALBHV_HandShake>);              //shake hands
 }
 
-void ALBHV_Gossip(task* a1, task* a2)
-{
-	task* otherChao = a2; //hardcoded select second chao
-	if (otherChao == a1)
-	{
-		// stop if trying to gossip with self
+void ALBHV_Gossip(task* pChao1, task* pChao2) {
+	// stop if trying to gossip with self
+	if (pChao1 == pChao2) {
 		return;
 	}
-	ALW_LockOn(a1, otherChao);
-	ALW_LockOn(otherChao, a1);
-	ALW_CommunicationOn(a1, otherChao);
 
-	NJS_VECTOR finalPos = { 3,0,0 };
+	ALW_LockOn(pChao1, pChao2);
+	ALW_LockOn(pChao2, pChao1);
+	ALW_CommunicationOn(pChao1, pChao2);
 
-	njPushUnitMatrix();
-	njTranslateEx(&otherChao->twp->pos);
-	RotateY(otherChao->twp->ang.y);
-	sub_426CC0(_nj_current_matrix_ptr_, &a1->EntityData2->Waypoint, &finalPos, 0);
-	//njCalcVector(&test, &otherChao->twp->Position, _nj_current_matrix_ptr_);
-	//TESTcalcpoint(0, &otherChao->twp->Position, &otherChao->twp->Position);
-	njPopMatrixEx();
+	GreetTest(pChao1, pChao2);
 
-	//AL_SetBehavior(otherChao, ALBHV_WaitForSocialArrive); //wait for chao to arrive
-	AL_SetBehavior(otherChao, ALBHV_LockUp);          //wait until other chao inits gossip
+	AL_SetNextBehavior(pChao1, ALBHV_GoNextToSocialNew);                 //go to selected chao and turn to it	
+	AL_SetNextBehavior(pChao1, ALBHV_StartGossip);               //init talking
 
-	AL_SetBehavior(a1, ALBHV_GoNextToSocial);                 //go to selected chao and turn to it	
-	AL_SetNextBehavior(a1, ALBHV_SnapToGossip);
-	AL_SetNextBehavior(a1, ALBHV_GossipTest);               //init talking
-
-	sub_54A690(a1);
-	ALW_SendCommand(a1, ALW_CMD_GO);
-	ALW_SendCommand(otherChao, ALW_CMD_GO);
+	sub_54A690(pChao1);
+	ALW_SendCommand(pChao1, ALW_CMD_GO);
+	ALW_SendCommand(pChao2, ALW_CMD_GO);
 }

@@ -16,6 +16,7 @@
 #include <api/api_accessory.h>
 #include <al_behavior/al_behavior.h>
 #include <al_daynight_rain.h>
+#include <al_speechbubble.h>
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -171,6 +172,7 @@ static void ChaoInfoMenu() {
                             AL_SetBehavior(pChao, ALBHV_Talk);
                         }
                         if (ImGui::Button("Gossip")) {
+                            ALW_LockOn(pChao, pOtherChao);
                             ALBHV_Gossip(pChao, pOtherChao);
                         }
                         if (ImGui::Button("Hold Hands")) {
@@ -753,6 +755,29 @@ static void ImGuiMenu() {
         SoundsMenu();
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (ImGui::Begin("speech test")) {
+        static int speechID = 0;
+        static int speechSubID;
+        static int chaoID = 0;
+
+        ImGui::SliderInt("Type", &speechID, 0, NB_SPEECH_ENTRY - 1);
+        ImGui::SliderInt("SubType", &speechSubID, 0, 24);
+        ImGui::SliderInt("chao id", &chaoID, 0, 24);
+
+        if (ImGui::Button("create bubble")) {
+            task* pChao = GetChaoObject(0, 0);
+            if (pChao) {
+                task* renderedChao = GetChaoObject(0, chaoID);
+                CHAO_SAVE_INFO* renderedData = NULL;
+                if (renderedChao) {
+                    renderedData = (CHAO_SAVE_INFO*)GET_CHAOWK(renderedChao)->pParamGC;
+                }
+                AL_SpeechBubbleCreate(pChao, renderedData, speechID, speechSubID, SPEECH_POS_TOP, 35, 120);
+            }
+        }
+        ImGui::End();
     }
 
     if (true && ImGui::Begin("rain test")) {
