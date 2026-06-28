@@ -9,6 +9,8 @@
 #include <random>
 #include <unordered_map>
 #include "ChaoMain.h"
+#include "api/api_accessory.h"
+#include "al_behavior/al_behavior.h"
 
 const int sub_536450Ptr = 0x536450;
 void sub_536450(KarateOpponent* a1, CHAO_PARAM_GC* a2)
@@ -217,8 +219,39 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	}
 
 	if (gConfigVal.LuckyChao) {
-		if(njRandom() < 6 / 100.f) {
+		const float luckyChaoChance = 1.f / 60.f;
+		if(njRandom() < luckyChaoChance) {
 			pParam->Headgear = 1 + Uint8(njRandom() * (14 - 1 + 0.999f));
+		}
+
+		for(size_t i = 0; i < _countof(pParamCwe->Accessories); ++i) {
+			if(njRandom() < 1.f - luckyChaoChance) {
+				continue;
+			}
+
+			// filtering for type
+			std::vector<size_t> accessoryIndices;
+			for(size_t a = 0; a < GetAccessoryCount(); ++a) {
+				extern NJS_OBJECT object_alo_missing;
+				const auto& accData = GetAccessoryData(a);
+
+				if(accData.pObject == &object_alo_missing) {
+					continue;
+				}
+				
+				if(accData.SlotType == i) {
+					accessoryIndices.push_back(a);
+				}
+			}
+
+			if(accessoryIndices.empty()) {
+				continue;
+			}
+
+			AL_SetAccessory(
+				pParamCwe, 
+				accessoryIndices[Uint32(njRandom() * (float(accessoryIndices.size()) - 0.001f))]
+			);
 		}
 	}
 
