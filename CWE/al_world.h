@@ -35,11 +35,16 @@ task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count);
 int CWE_ALW_CountEntry(ChaoItemCategory category);
 void CWE_ALW_ClearEntry(void);
 
+void ALW_ResetEntry(al_entry_work* pEntry);
+
 task* GetChaoObject(int a1, int a2);
 task* __cdecl AL_GetFoundToyTask(task* a1);
 
 Bool ALW_SetHeldOffset(task* tp, float offset);
 Bool ALW_SetHeldRadius(task* tp, float radius);
+
+Bool ALW_AttentionOn(task* tp1, task* tp2);
+al_entry_work* ALW_IsAttention(task* tp);
 
 ThiscallFunctionPointer(float, ALW_CalcDistFromLockOn, (task* a1), 0x00530580);
 signed int __cdecl ALW_LockOn(task* a1, task* a2);

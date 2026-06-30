@@ -500,8 +500,14 @@ extern "C"
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
 
+		// Hard
+		gConfigVal.ChaoAttention = config->getBool("Hard", "HardChaoAttention", false);
+		gConfigVal.AnnoyingMeanChao = config->getBool("Hard", "HardAnnoyingMeanChao", false);
+		gConfigVal.BullyChao = config->getBool("Hard", "HardBullyChaoRequiresMoreChaoAnimations", false);
+
 		//Easy
 		gConfigVal.EmotionDisplay = config->getBool("Easy", "EmotionDisplay", false);
+		gConfigVal.AutoGenerateStats = config->getBool("Easy", "EasyAutoGenerateStats", false);
 
 		//Advanced
 		gConfigVal.CustomChaoEvo = config->getBool("Chao World Extended", "CustomChaoEvo", true);
@@ -509,8 +515,13 @@ extern "C"
 		gConfigVal.FixMonsterEvo = config->getBool("Advanced", "FixMonsterEvo", false);
 		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
 		gConfigVal.OldName = config->getBool("Advanced", "OldName", false);
+		gConfigVal.ColorMixing = config->getBool("Advanced", "AdvancedMixingColors", false);
+		gConfigVal.NewbornVaryingShades = config->getBool("Advanced", "AdvancedNewbornChaoHaveVaryingShadesofColor", false);
+		gConfigVal.NormalChaoMakeColorChao = config->getBool("Advanced", "AdvancedNormalChaocanmakeColorChao", false);
+		gConfigVal.EyeColorsForNewbornChao = config->getBool("Advanced", "AdvancedEyeColorsforNewbornChao", false);
 
 		//Detail
+		gConfigVal.MoreFaces = config->getBool("Detail", "MoreFaces", CFG_MORE_FACE_PERSONALITY);
 		gConfigVal.MoreSound = config->getBool("Detail", "MoreSound", false);
 		gConfigVal.MoreAnimation = config->getBool("Detail", "MoreAnimation", false);
 		gConfigVal.ClassroomTimerDisplay = config->getBool("Detail", "ClassroomTimerDisplay", true);
@@ -531,6 +542,7 @@ extern "C"
 		gConfigVal.DisableArmsLegs = config->getBool("Misc", "OtherDisableAnimalPartsArmslegs", false);
 		gConfigVal.DisableAllParts = config->getBool("Misc", "OtherDisableAnimalPartsALL", false);
 		gConfigVal.BlackMarketShort = config->getBool("Misc", "BlackMarketShort", false);
+		gConfigVal.LuckyChao = config->getBool("Misc", "BonusLuckyChao", false);
 
 		//Cheat
 		gConfigVal.ToyReset = config->getBool("Cheat", "ToyReset", false);
@@ -560,6 +572,13 @@ extern "C"
 		gConfigVal.NeutGrayscale = config->getBool("Misc", "NeutGrayscale", false);
 		gConfigVal.HeroGrayscale = config->getBool("Misc", "HeroGrayscale", false);
 		gConfigVal.DarkGrayscale = config->getBool("Misc", "DarkGrayscale", false);
+
+		// the other half of this code is in al_parameter.cpp AL_CalcParameter_r
+		// we kinda need a better place for this to be written
+		if (gConfigVal.ChaoAttention) {
+			GET_GLOBAL()->TimeAddGrowthChild *= 2;
+			GET_GLOBAL()->TimeAddGrowthAdult *= 2;
+		}
 
 		if (gConfigVal.DayNightCycleHourFrame <= 0) {
 			MessageBoxA(0, "Day Night Cycle's \"In-Game Hour In Real-Life Seconds\" option cannot be set to zero or lower! Temporarily resetting setting to default.", "Chao World Extended", 0);

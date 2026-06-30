@@ -456,7 +456,6 @@
     <ClInclude Include="chao\al_motion\alm_all.h" />
     <ClInclude Include="chao\al_motion\alm_duck.h" />
     <ClInclude Include="cnk_util.h" />
-    <ClInclude Include="code_system\CodeParser.hpp" />
     <ClInclude Include="code_system\codes\include\advanced\code_gc_shinyjewel.h" />
     <ClInclude Include="code_system\codes\include\bonus\code_babychaolevel.h" />
     <ClInclude Include="code_system\codes\include\bonus\code_mergeherodark.h" />
@@ -661,6 +660,7 @@
     <ClCompile Include="alo_obakehead.cpp" />
     <ClCompile Include="alo_special.cpp" />
     <ClCompile Include="al_behavior\albhv_birthday.cpp" />
+    <ClCompile Include="al_behavior\albhv_bully.cpp" />
     <ClCompile Include="al_behavior\albhv_boat.cpp" />
     <ClCompile Include="al_behavior\albhv_capture.cpp" />
     <ClCompile Include="al_behavior\albhv_coffin.cpp" />
@@ -807,7 +807,6 @@
     <ClCompile Include="Chao.cpp" />
     <ClCompile Include="ChaoMain.cpp" />
     <ClCompile Include="alo_float.cpp" />
-    <ClCompile Include="code_system\CodeParser.cpp" />
     <ClCompile Include="code_system\codes\code_animal_reuse.cpp" />
     <ClCompile Include="code_system\codes\code_birthday.cpp" />
     <ClCompile Include="code_system\codes\code_dccocoon.cpp" />
@@ -821,6 +820,7 @@
     <ClCompile Include="code_system\codes\code_personality.cpp" />
     <ClCompile Include="code_system\codes\code_playerspeed.cpp" />
     <ClCompile Include="code_system\codes\code_sick.cpp" />
+    <ClCompile Include="code_system\codes\code_karatemedal.cpp" />
     <ClCompile Include="code_system\cwe_patch.cpp" />
     <ClCompile Include="code_system\cwe_transpile.cpp" />
     <ClCompile Include="collision_debug.cpp" />

@@ -1,6 +1,7 @@
 #pragma once
 #include "../al_world.h"
 #include "albhv_music.h"
+#include "albhv_bully.h"
 
 int ALBHV_PostureChangeStand(task* tp);
 int ALBHV_PostureChangeSit(task* tp);

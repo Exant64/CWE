@@ -143,6 +143,25 @@ void ALW_CommunicationOn(task* a1, task* a2)
 		call sub_530640Ptr
 	}
 }
+
+Bool ALW_AttentionOn(task* tp1, task* tp2) {
+	static int CommuID = 0;
+
+    al_entry_work* pEntry1 = ALW_ENTRY_WORK(tp1);
+    al_entry_work* pEntry2 = ALW_ENTRY_WORK(tp2);
+    if (pEntry1 && pEntry2) {
+        pEntry1->pCommu = pEntry2;
+        pEntry1->CommuID = CommuID;
+        CommuID++;
+        if (CommuID >= 0x100)
+            CommuID = 0;
+
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 al_entry_work* __cdecl ALW_IsCommunicating(task* a1)
 {
 	al_entry_work* v1; // ecx
@@ -203,17 +222,15 @@ bool __cdecl ALW_IsSheAttentionOtherOne(task* a1, task* a2)
 	}
 	return result;
 }
-al_entry_work* ALW_IsAttention(task* tp)
-{
-	al_entry_work* v1; // r11
-	al_entry_work* result; // r3
 
-	v1 = (al_entry_work*)tp->UnknownA_ptr;
-	if (v1)
-		result = v1->pCommu;
-	else
-		result = 0;
-	return result;
+al_entry_work* ALW_IsAttention(task* tp) {
+    al_entry_work* pEntry = ALW_ENTRY_WORK(tp);
+
+    if (pEntry) {
+        return pEntry->pCommu;
+	}
+
+    return NULL;
 }
 
 Bool ALW_SetHeldOffset(task* tp, float offset) {
@@ -328,7 +345,7 @@ Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSave
 	return FALSE;
 }
 
-static void ALW_ResetEntry(al_entry_work* pEntry) {
+void ALW_ResetEntry(al_entry_work* pEntry) {
 	if (!pEntry)
 		return;
 

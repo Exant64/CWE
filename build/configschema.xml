@@ -147,7 +147,7 @@
     </Group>
     <Group name="Hard" display="04 - Hard Mode">
       <Property name="HardBullyChaoRequiresMoreChaoAnimations" type="bool" defaultvalue="False" display="Bully Chao">
-        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Requires “More Chao Animations” turned on to work.</HelpText>
+        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Combine with "More Chao Anger" to amplify its likeliness.</HelpText>
       </Property>
       <Property name="ChaoDrown" type="bool" defaultvalue="False" display="Chao Drown">
         <HelpText>If the Chao can't swim, they will slowly lose Happiness, and if it reaches -100, they Drown.</HelpText>
@@ -155,8 +155,11 @@
       <Property name="HardEnableSpinDashandSomersault" type="bool" defaultvalue="False" display="Enable SpinDash and Somersault">
         <HelpText>Enables Spindash and Somersault in the Chao Gardens. Be careful, you could hurt your Chao!</HelpText>
       </Property>
+      <Property name="MoreAnger" type="bool" defaultvalue="False" display="More Chao Anger">
+        <HelpText>Chao get angry more easily through negative animations, such as overfeeding, hunger, uncomfortable holding, or crying animations. Anger gain is amplified through Energetic personality.</HelpText>
+      </Property>
       <Property name="ChaoHunger" type="bool" defaultvalue="False" display="Chao Hunger">
-        <HelpText>When Chao are Starving, they will start Crying, being Angry, and losing happiness. This also Boost Stamina by 25% for Fruit Garden.</HelpText>
+        <HelpText>When Chao are starving, they will start to cry and lose happiness. This code also boosts Stamina gain by 25% for garden fruit.</HelpText>
       </Property>
       <Property name="HardChaoAttention" type="bool" defaultvalue="False" display="Chao Attention">
         <HelpText>Chao will lose happiness if you don’t give them attention for a while.</HelpText>
@@ -253,7 +256,7 @@
         <HelpText>The rate at which Chao will grow, evolve, and reincarnate depends on how many Chao are in the garden. Less Chao per garden makes them grow faster.</HelpText>
       </Property>
       <Property name="BonusLuckyChao" type="bool" defaultvalue="False" display="Lucky Chao">
-        <HelpText>Gives a 1/60 chance that Chao will be born with a Hat, Toy, or Lesson.</HelpText>
+        <HelpText>Gives a 1/60 chance that Chao will be born with random hats and accessories (1/60 chance per accessory slot).</HelpText>
       </Property>
       <Property name="BonusStayBabyChaoUntilalllvl.10" type="bool" defaultvalue="False" display="Stay Baby Chao Until lvl.10">
         <HelpText>A Baby Chao will not evolve unless all the stats reach level 10, or Stamina reaches level 99.</HelpText>
@@ -269,9 +272,6 @@
       </Property>
       <Property name="OtherSADXChaoAlignment" type="bool" defaultvalue="False" display="SADX Chao Alignment">
         <HelpText>A Chao’s hero/dark alignment can only be changed with Hero and Dark fruits like in SADX.</HelpText>
-      </Property>
-      <Property name="OtherMoreandRandomChaoFace" type="bool" defaultvalue="False" display="More faces for newborn Chao">
-        <HelpText>Adds lots of new random face combinations for newborn Chao. Also restores some unused mouths.</HelpText>
       </Property>
       <Property name="OtherRemoveDarkChao'sMeanEyesOverride" type="bool" defaultvalue="False" display="Remove Dark Chao's Mean Eyes Override">
         <HelpText>A Chao evolving into a Dark Chao will keep its original eyes instead of being overwritten with the classic Dark Chao Mean Eyes.</HelpText>
@@ -299,8 +299,8 @@
       </Property>
     </Group>
     <Group name="Detail" display="07 - Detail Settings">
-      <Property name="DetailFittingPersonality" type="bool" defaultvalue="False" display="Fitting Personality">
-        <HelpText>Personalities are tied to more Chao Faces.</HelpText>
+      <Property name="MoreFaces" type="Face" defaultvalue="1" display="More Chao Faces">
+        <HelpText>Adds more Chao faces for a Chao to be born with. The "Personality" option calculates the Chao's face through it's personality values, similar to vanilla faces. The "Random" option picks the face completely randomly.</HelpText>
       </Property>
       <Property name="DetailDoctorChaogivemoreInformationEN" type="bool" defaultvalue="False" display="Doctor Chao gives more Information">
         <HelpText>Adds more things for the Chao Doctor to say. (English only)</HelpText>
@@ -322,14 +322,12 @@
       </Property>
     </Group>
     <Group name="Input" display="08 - Input Codes">
-      <Property name="ControllerOnlyBetterCameraControl" type="bool" defaultvalue="False" display="(Controller) Better Camera Control">
-        <HelpText>Use the D-Pad and C Stick to have better control of the camera in the Chao Garden. Use L+R to reset the camera back to default.</HelpText>
-      </Property>
-      <Property name="KeyboardwithNumpadBetterCameraControl" type="bool" defaultvalue="False" display="(Numpad) Better Camera Control">
-        <HelpText>Use the Keyboard numpad (-, +, *, Page Up, Page Down, Home, End) to have better control of the camera in the Chao Garden. Use / to reset the camera back to default.</HelpText>
-      </Property>
-      <Property name="KeyboardwithoutNumpadBetterCameraControl" type="bool" defaultvalue="False" display="(Keyboard) Better Camera Control">
-        <HelpText>Use the Keyboard numpad (-, +, *, R, F, T, G) to have better control of the camera in the Chao Garden. Use BackSpace to reset the camera back to default.</HelpText>
+      <Property name="CameraControl" type="Camera" defaultvalue="0" display="Better Camera Control">
+        <HelpText>
+          Controller: Use the D-Pad and C Stick to have better control of the camera in the Chao Garden. Use L+R to reset the camera back to default.
+          Keyboard (without numpad): Use the Keyboard numpad (-, +, *, R, F, T, G) to have better control of the camera in the Chao Garden. Use BackSpace to reset the camera back to default.
+          Keyboard (with numpad): Use the Keyboard numpad (-, +, *, Page Up, Page Down, Home, End) to have better control of the camera in the Chao Garden. Use / to reset the camera back to default.
+        </HelpText>
       </Property>
       <Property name="SaveHoldXtoLoadNegativeChaoSave" type="bool" defaultvalue="False" display="Hold X to Load Negative Chao Save">
         <HelpText>Hold down X (or Blue Input for Keyboard) while Chao World is loading to load an alternate save file in which Chao have opposite textures (i.e. Hero Chao are dark colored and Dark Chao are light colored).</HelpText>
@@ -419,6 +417,17 @@
       <EnumMember name="3" display="Triple"></EnumMember>
       <EnumMember name="4" display="Double (w/o hunger)"></EnumMember>
       <EnumMember name="5" display="Triple (w/o hunger)"></EnumMember>
+    </Enum>
+    <Enum name="Face">
+      <EnumMember name="0" display="Off/Disabled"></EnumMember>
+      <EnumMember name="1" display="Personality"></EnumMember>
+      <EnumMember name="2" display="Random"></EnumMember>
+    </Enum>
+    <Enum name="Camera">
+      <EnumMember name="0" display="Off/Disabled"></EnumMember>
+      <EnumMember name="1" display="Keyboard (without Numpad)"></EnumMember>
+      <EnumMember name="2" display="Keyboard (with Numpad)"></EnumMember>
+      <EnumMember name="3" display="Controller"></EnumMember>
     </Enum>
   </Enums>
 </ConfigSchema>

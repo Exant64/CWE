@@ -481,6 +481,8 @@ struct __declspec(align(4)) ChaoData1
 	bool BaldHideHead;
 	Uint16* pBaldAdjacencyIndices;
 	size_t BaldAdjacencyIndexCount;
+
+	void* BhvUserData[16];
 };
 #pragma pack(pop)
 
@@ -896,7 +898,7 @@ struct CHAO_PARAM_GC
 	char field_19;
 	char GBATexture;
 	char field_1B[5];
-	char Exp[8];
+	Uint8 Exp[8];
 	char Abl[8];
 	char Lev[8];
 	__int16 Skill[8];

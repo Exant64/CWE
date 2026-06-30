@@ -50,17 +50,54 @@ void AL_SetNextBehavior(task* a1, BHV_FUNC a2)
 	Chao_BehaviourQueue(a1, (int)a2);
 }
 
-extern "C" __declspec(dllexport) void AL_SetAccessory(task * a1, int type) {
+void* AL_BehaviorGetUserData(task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+	AL_BEHAVIOR* bhv = &work->Behavior;
+
+	return work->BhvUserData[bhv->CurrBhvFuncNum];
+}
+
+void AL_SetNextBehaviorWithUserData(task* tp, BHV_FUNC Func, void* pUserData) {
+	chaowk* work = GET_CHAOWK(tp);
+	AL_BEHAVIOR* bhv = &work->Behavior;
+
+	if (bhv->nbBhvFuncEntry < 15) {
+		work->BhvUserData[bhv->nbBhvFuncEntry] = pUserData;
+	}
+
+	Chao_BehaviourQueue(tp, (int)Func);
+}
+
+void AL_BehaviorSetFreeWork(task* tp, int info) {
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    bhv->FreeWork = info;
+}
+
+int AL_BehaviorGetFreeWork(task* tp) {
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    return bhv->FreeWork;
+}
+
+void AL_SetBehaviorWithFreeWork(task* tp, BHV_FUNC Func, int info) {
+    AL_SetBehavior(tp, Func);
+    AL_BehaviorSetFreeWork(tp, info);
+}
+
+void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, int type) {
 	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
-	auto& accessoryData = GET_CWEPARAM(a1)->Accessories[slotType];
+	auto& accessoryData = pParamCwe->Accessories[slotType];
 
 	memset(&accessoryData, 0, sizeof(accessoryData));
 	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
 	memcpy(accessoryData.ColorSlots, GetAccessoryData(type).DefaultColors, sizeof(accessoryData.ColorSlots));
 	accessoryData.ColorFlags = 0;
+}
+
+extern "C" __declspec(dllexport) void AL_SetAccessory(task * a1, int type) {
+	AL_SetAccessory(GET_CWEPARAM(a1), type);
 }
 
 void AL_SetAccessory(task* a1, const AccessorySaveInfo* saveInfo, int type) {

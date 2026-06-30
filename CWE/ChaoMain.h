@@ -12,6 +12,7 @@ void AL_CustomizationInit();
 DataArray(CHAO_SAVE_INFO*, ChaoSelectData, 0x01DBEE80, 48);
 
 DataPointer(char, ControlEnabled, 0x0174AFFE);
+DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
 
 void AL_NameDisplayCreate();
 task* AL_LargeTitleBar_Create();
@@ -21,6 +22,12 @@ FunctionPointer(void, ProjectToScreen, (float screenX, float screenY, float worl
 ThiscallFunctionPointer(DWORD*, sub_52F9E0, (int a1), 0x52F9E0);
 DataArray(int, nbWorldEntry, 0x1DC0F80, 5); //length is not actually 5 but good for now
 DataArray(int, nbMaxEntry, 0x008AB838, 5);
+
+enum {
+	CFG_MORE_FACE_NONE,
+	CFG_MORE_FACE_PERSONALITY,
+	CFG_MORE_FACE_RANDOM
+};
 
 struct ConfigValues {
 	bool BrightFixEnabled;
@@ -36,6 +43,20 @@ struct ConfigValues {
 	bool MoreAnimation;
 	bool ClassroomTimerDisplay;
 	bool OldName;
+
+	bool AutoGenerateStats;
+	bool LuckyChao;
+
+	bool ChaoAttention;
+	bool AnnoyingMeanChao;
+	bool BullyChao;
+
+	bool ColorMixing;
+	bool NewbornVaryingShades;
+	bool NormalChaoMakeColorChao;
+	bool EyeColorsForNewbornChao;
+
+	uint32_t MoreFaces;
 
 	bool DayNightCycle;
 	bool DayNightShinyTex;
