@@ -37,6 +37,8 @@ struct CWE_API_MOD_ENTRY {
     std::string m_id;
     std::string m_name;
 
+    size_t m_index;
+
     InitPtr m_earlyInit;
     InitPtr m_lateInit;
 
@@ -44,8 +46,10 @@ struct CWE_API_MOD_ENTRY {
     APILoadPtr m_load;
 
 public:
-    static std::optional<CWE_API_MOD_ENTRY> Create(const Mod* pMod) {
+    static std::optional<CWE_API_MOD_ENTRY> Create(const size_t modIndex, const Mod* pMod) {
         CWE_API_MOD_ENTRY entry;
+
+        entry.m_index = modIndex;
 
         entry.m_earlyInit = reinterpret_cast<InitPtr>(GetProcAddress(pMod->DLLHandle, "CWEAPI_EarlyInit"));
         entry.m_lateInit = reinterpret_cast<InitPtr>(GetProcAddress(pMod->DLLHandle, "CWEAPI_LateInit"));
@@ -74,7 +78,7 @@ void CWE_API_FindMods() {
     for(size_t i = 0; i < g_HelperFunctions->Mods->size(); ++i) {
         const auto& mod = g_HelperFunctions->Mods->at(i);
 
-        const auto result = CWE_API_MOD_ENTRY::Create(&mod);
+        const auto result = CWE_API_MOD_ENTRY::Create(i, &mod);
         if(result) {
             ModEntries.push_back(*result);
         }
@@ -99,6 +103,8 @@ void CWE_API_LateInit() {
 
 void CWE_API_EarlyLoad() {
     for(const auto& mod : ModEntries) {
+        AccessoryModIndexSetter setter {mod.m_index};
+
         if(mod.m_earlyLoad) {
             mod.m_earlyLoad(&CWE_API_Main);
         }
@@ -107,6 +113,8 @@ void CWE_API_EarlyLoad() {
 
 void CWE_API_Load() {
     for(const auto& mod : ModEntries) {
+        AccessoryModIndexSetter setter {mod.m_index};
+
         if(mod.m_load) {
             mod.m_load(&CWE_API_Main);
         }

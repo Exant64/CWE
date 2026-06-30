@@ -20,6 +20,7 @@ protected:
 		}
 	}
 private:
+	std::unordered_map<size_t, size_t> m_modIndexMap[ChaoItemCategory_Count];
 	std::vector<BlackMarketItemAttributes> m_attributes[ChaoItemCategory_Count];
 	
 	void UpdatePointers(ChaoItemCategory cat) {
@@ -37,8 +38,16 @@ public:
 		return &m_attributes[cat][index];
 	}
 
-	int Size(ChaoItemCategory cat) {
+	int Size(ChaoItemCategory cat) const {
 		return m_attributes[cat].size();
+	}
+
+	void SetModIndex(ChaoItemCategory category, size_t index, size_t modIndex) {
+		m_modIndexMap[category][index] = modIndex;
+	}
+
+	size_t GetModIndex(ChaoItemCategory category, size_t index) {
+		return m_modIndexMap[category][index];
 	}
 
 	void Add(ChaoItemCategory category, const BlackMarketItemAttributes* attrib, const char* name, const char* description) {

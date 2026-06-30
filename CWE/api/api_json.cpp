@@ -579,6 +579,7 @@ void LoadCWEJSONData(size_t index) {
 			continue;
 		}
 
+		AccessoryModIndexSetter setter {modEntry.ModIndex};
 		ParseJSONEntry(entry, modEntry);
 	}
 }
@@ -590,6 +591,7 @@ void LoadJSONData(size_t index) {
 			continue;
 		}
 
+        AccessoryModIndexSetter setter {modEntry.ModIndex};
 		ParseJSONEntry(entry, modEntry);
 	}
 }

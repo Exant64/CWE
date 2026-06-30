@@ -289,7 +289,25 @@ static void AL_ModAPI_UpdatePtr() {
 
 static void CallRegisteredHooks() {
 	for (size_t i = 0; i < RegisterDataHooks.size(); i++) {
-		RegisterDataHooks[i](&CWE_API_Legacy);
+		const auto hook = RegisterDataHooks[i];
+
+		// identifying mod handle per datahook
+		HMODULE module = nullptr;
+
+		if (!GetModuleHandleExA(
+			GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+			GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+			static_cast<LPCSTR>((void*)hook),
+			&module))
+		{
+			assert(false);
+		}
+
+		const auto mod = g_HelperFunctions->Mods->find_by_dll(module);
+		const auto modIndex = std::distance(g_HelperFunctions->Mods->begin(), mod);
+
+		AccessoryModIndexSetter setter {size_t(modIndex)};
+		hook(&CWE_API_Legacy);
 	}
 }
 
