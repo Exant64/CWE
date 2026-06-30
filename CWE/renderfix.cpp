@@ -80,7 +80,7 @@ void rfCnkNormalDrawModel(NJS_CNK_MODEL* pModel) {
 
 extern "C" __declspec(dllexport)
 int32_t RFAPI_Init(const RFAPI_CORE* pApi, const char* puPath, const HelperFunctions* pHelpFuncs, size_t ixMod) {
-    if ( RFAPI_CHECKVER( pApi, 1,5,3,0 ) ) {
+    if ( RFAPI_CHECKVER( pApi, 1,5,4,0 ) ) {
 		rfapi_core = pApi;
 	}
 	
