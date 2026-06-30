@@ -77,6 +77,9 @@ void njInitTextureBuffer(void* result)
 
 void __cdecl ExpandTextureBuffer()
 {
+	const int nj_texmanagenum = *(int*)0x0267058C;
+	if(nj_texmanagenum > 2048) return;
+	
 	//nj_texmanage
 	void* v0 = syMalloc(0xC000 * 2, "..\\..\\src\\main_gc.c", 2091);
 	*(void**)0x1934B00 = v0;
