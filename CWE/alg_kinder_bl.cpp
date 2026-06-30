@@ -283,6 +283,61 @@ void FBuyListGenericUpdateSeed(float change = 0.75f) {
 	}
 }
 
+static void FBuyListUpdateAccessory() {
+	auto attrib = BlackMarketAttributes::Get();
+
+	// to not generate duplicate accessories, we store the used ones
+	std::set<size_t> setMods;
+	std::vector<size_t> allMods;
+	std::unordered_map<size_t, std::vector<size_t>> allAccessories;
+
+	for(size_t i = 0; i < attrib->Size(ChaoItemCategory_Accessory); ++i) {
+		if (EmblemCount < attrib->Attrib(ChaoItemCategory_Accessory, i)->RequiredEmblems) {
+			continue;
+		}
+
+		const auto modIndex = attrib->GetModIndex(ChaoItemCategory_Accessory, i);
+		
+		if(!setMods.contains(modIndex)) {
+			setMods.insert(modIndex);
+			allMods.push_back(modIndex);
+		}
+
+		if(!allAccessories.contains(modIndex)) {
+			allAccessories[modIndex] = {};
+		}
+		allAccessories[modIndex].push_back(i);
+	}
+
+	const size_t totalCount = min(BlackMarketInventorySize, size_t(6.f + njRandom() * 26.999f));
+	for(size_t i = 0; i < totalCount; ++i) {
+		if(allMods.empty()) {
+			break;
+		}
+
+		if (cweSaveFile.marketInventoryCount[ChaoItemCategory_Accessory] >= BlackMarketInventorySize) {
+			break;
+		}
+
+		const auto modEntryIndex = size_t(njRandom() * (float(allMods.size()) - 0.0001f));
+		const auto selectedMod = allMods[modEntryIndex];
+		auto& accessoryEntries = allAccessories[selectedMod];
+
+		assert(!accessoryEntries.empty());
+		
+		const auto entryIndex = size_t(njRandom() * (float(accessoryEntries.size()) - 0.0001f));
+		const auto selectedAcc = accessoryEntries[entryIndex];
+
+		BlackMarketAddInventory(ChaoItemCategory_Accessory, selectedAcc);
+
+		accessoryEntries.erase(accessoryEntries.begin() + entryIndex);
+
+		if(accessoryEntries.empty()) {
+			allMods.erase(allMods.begin() + modEntryIndex);
+		}
+	}
+}
+
 void FBuyListUpdate()
 {
 	int v3; // edi
@@ -479,7 +534,7 @@ void FBuyListUpdate()
 
 	FBuyListGenericUpdateSeed();
 
-	FBuyListGenericUpdate(ChaoItemCategory_Accessory);
+	FBuyListUpdateAccessory();
 	FBuyListGenericUpdate(ChaoItemCategory_Special);
 
 	RareFruit();
