@@ -34,13 +34,13 @@ int ALBHV_Hug1(task* a1)
 		AL_IconSet(otherChao, 4, 90);
 
 		wk->Behavior.Mode++;
+		wk->Behavior.Timer = 180 + int(njRandom() * 60 * 4.f);
 		//sub_54A690(a1);
 		break;
 
 	case 1:
 		ALW_TurnToLockOn(a1, 384);
-		wk->Behavior.Timer++;
-		if (wk->Behavior.Timer > 90)
+		if (!--wk->Behavior.Timer)
 			return 1;
 		break;
 	}
