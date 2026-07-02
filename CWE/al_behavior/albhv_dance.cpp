@@ -21,7 +21,7 @@ int ALBHV_DanceHero(task* tp) {
 	    bhv->Mode++;
 	}
 
-    if (ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE))
+    if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE))
         return BHV_RET_CONTINUE;
     else
         return BHV_RET_FINISH;
@@ -36,7 +36,7 @@ int __cdecl ALBHV_DanceDark(task* tp) {
         bhv->Mode++;
     }
 
-    if (ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE))
+    if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE))
         return BHV_RET_CONTINUE;
     else
         return BHV_RET_FINISH;
@@ -60,7 +60,7 @@ int ALBHV_BreakDance(task* tp)
         break;
     }
     
-    if (ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE))
+    if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE))
         return BHV_RET_CONTINUE;
     else
         return BHV_RET_FINISH;
@@ -115,7 +115,7 @@ void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
     Uint32 trigger = ChaoGlobal.IntentionHimaTrigger;
     float score = 0;
     Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
-    task* pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE);
+    task* pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE);
 
     if (*pMaxScore < 1) {
         if (pField) {

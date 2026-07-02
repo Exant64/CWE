@@ -75,7 +75,7 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 			RotateY(v2->ang.y);
 			njPushMatrixEx();
 			njScale(NULL, a2, a2, a2);
-			if (ALO_Field_Find_(v1, 1, 150))
+			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 			{
 				njControl3D |= 0x2400u;
 			}
@@ -85,7 +85,7 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 			njPopMatrixEx();
 
 			if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float *)&v1->UnknownA_ptr->field_30) {
-				if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
+				if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 				{
 					njTranslate(NULL, 0, -1.85f, 0);
 				}

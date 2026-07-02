@@ -38,14 +38,14 @@ void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
 			njTranslate(NULL, 0, -0.35f, 0);
 		RotateY(work->ang.y);
 		njPushMatrixEx();
-		if (ALO_Field_Find_(v1, 1, 150))
+		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 			njControl3D |= 0x2400u;
 		ALO_ObakeHeadDraw<true>(work->ang.x);
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
 		if (flt_1312CBC > (double)*(float *)&v1->UnknownA_ptr->field_30)
 		{
-			if (ALO_Field_Find_(v1, 1, 150))
+			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 			{
 				v28 = 0.1f;
 			}

@@ -307,8 +307,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		RotateY(v2->entity.ang.y);
 		njPushMatrixEx();
 
-		if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
-		{
+		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
 			njControl3D |= 0x2400u;
 		}
 
@@ -328,19 +327,17 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
 
-
 		if (!v1->UnknownA_ptr) PrintDebug("unknown_a == 0, problem incoming");
 
 		if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
 		{
-			if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
-			{
+			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
 				njTranslate(NULL, 0, 0.01f, 0);
 			}
-			else
-			{
+			else {
 				njTranslate(NULL, 0, 0.5f, 0);
 			}
+
 			rfapi_core->pDraw->AL_ShadowDraw();
 		}
 		njPopMatrixEx();

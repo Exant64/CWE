@@ -121,7 +121,7 @@ void ALO_Boat_Main(task* a1)
 		break;
 	}
 	//ALO_Boat_Displayer(a1);
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
 

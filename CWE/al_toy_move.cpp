@@ -312,7 +312,7 @@ void __cdecl AddToColliListToy(task* a1)
 	//else
 	//	a1->twp->Status &= ~0x240u;
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
 static void __declspec(naked) AddToCollisionListHook()
@@ -365,7 +365,7 @@ void __cdecl AL_Toy_Update(task* a1)
 		a1->twp->flag &= ~0x240u;
 
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
 static void __declspec(naked) AL_Toy_UpdateHook()

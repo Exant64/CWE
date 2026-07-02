@@ -44,7 +44,7 @@ static bool FoundDrawDistanceMod = false;
 
 void CWE_CCL_Entry(task* tp) {
     if(FoundDrawDistanceMod) {
-        AddToCollisionList(tp);
+        CCL_Entry(tp);
         return;
     }
 

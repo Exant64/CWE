@@ -72,7 +72,7 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 	v10 = 0.0;
 	v2 = ChaoGlobal.IntentionHimaTrigger >> 1;
 	value = AL_EmotionGetValue(a1, EM_ST_TEDIOUS);
-	v3 = ALO_Field_Find_(a1, 1, CI_KIND_AL_RANDOM_STOY);
+	v3 = AL_IsHitKindWithNum(a1, 1, CI_KIND_AL_RANDOM_STOY);
 	v9 = 0;
 	if (*a2 < 1)
 	{

@@ -134,7 +134,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 	else 
 		CCL_Disable(a1,0);
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 	if (GetOmoData()->phase & MANNEQUIN)
 		sub_540FD0(&a1->twp->pos, 0.235f);
 }

@@ -201,14 +201,12 @@ void AL_CalcIntentionScore_Mayua(task* a2, float* a1) {
 }
 void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 {
-	if (ALO_Field_Find_(a1, 1, 151))
-	{
+	if (AL_IsHitKindWithNum(a1, 1, CI_KIND_AL_ONARA)) {
 		AL_SetBehavior(a1, ALBHV_FartReaction);
 		*a2 = 1;
 	}
 
-	if (GET_CWEPARAM(a1)->ForceReincarnate)
-	{
+	if (GET_CWEPARAM(a1)->ForceReincarnate) {
 		AL_SetBehavior(a1, (BHV_FUNC)0x0568F60);
 		*a2 = 1.0f;
 	}

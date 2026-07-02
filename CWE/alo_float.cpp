@@ -132,7 +132,7 @@ void ALO_Float_Main(task* a1)
 		break;
 	}
 	//ALO_Float_Displayer(a1);
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 CollisionData floatColl =
 { 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };

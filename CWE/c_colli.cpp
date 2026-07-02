@@ -21,3 +21,22 @@ void CCL_Disable(task* a1, int a2)
 		call CCL_DisablePtr
 	}
 }
+
+#pragma warning(push)
+#pragma warning(disable: 4409)
+const int ALO_Field_Find_Ptr = 0x054B1F0;
+task* AL_IsHitKindWithNum(task *a1, int a2, Uint8 a3)
+{
+	task* retval;
+	__asm
+	{
+		push a3
+		mov ecx, a2
+		mov edx, a1
+		call ALO_Field_Find_Ptr
+		add esp, 4
+		mov retval, eax
+	}
+	return retval;
+}
+#pragma warning(pop)

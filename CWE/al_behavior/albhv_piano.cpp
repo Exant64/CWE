@@ -61,7 +61,7 @@ static int ALBHV_PlayPiano(task* tp) {
 			timer);
 		break;
 	case 1:
-		if (!ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
+		if (!AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
 			bhv->IntervalTimer[INT_TIMER_LTOY] = 1800 + (njRandom() * 1801.f);
 			return BHV_RET_FINISH;
 		}
@@ -120,7 +120,7 @@ int ALBHV_GoToPiano(task* tp) {
 	NJS_POINT3 toyPos;
 
 	//if theres already a piano field or if any chao is playing the piano
-	if (!pToy || ALW_IsSheAttentionOtherOne(tp, pToy) || ALO_Field_Find_(tp, 1, CI_KIND_AL_PIANO))
+	if (!pToy || ALW_IsSheAttentionOtherOne(tp, pToy) || AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_PIANO))
 	{
 		return BHV_RET_FINISH;
 	}

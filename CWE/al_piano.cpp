@@ -94,7 +94,7 @@ const std::array<const char*, 4> OrganSongs = {
 
 void Piano_Main(task * a1)
 {
-	if (ALO_Field_Find_(a1,0, CI_KIND_AL_PIANO))
+	if (AL_IsHitKindWithNum(a1,0, CI_KIND_AL_PIANO))
 	{
 		a1->twp->flag &= ~0x240u;
 
@@ -142,7 +142,7 @@ void Piano_Main(task * a1)
 
 	AL_Toy_Move_Update(a1);
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
 CollisionData ALO_RadicaseExecutor_collision[] = {

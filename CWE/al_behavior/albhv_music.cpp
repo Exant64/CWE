@@ -46,7 +46,7 @@ int ALBHV_Guitar(task* tp) {
 		break;
 	}
 
-	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;//if the band/music field is gone, end the action
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;//if the band/music field is gone, end the action
 }
 
 int ALBHV_Triangle(task* tp) {
@@ -69,7 +69,7 @@ int ALBHV_Triangle(task* tp) {
 		}
 		break;
 	}
-	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL; //if the band/music field is gone, end the action
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL; //if the band/music field is gone, end the action
 }
 
 int ALBHV_Accordion(task* tp) {
@@ -92,7 +92,7 @@ int ALBHV_Accordion(task* tp) {
 		break;
 	}
 
-	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
 }
 
 extern "C" __declspec(dllexport) const BHV_FUNC ALBHV_MusicFunc_CWE[NB_AL_MUSIC_CWE] = {
@@ -116,7 +116,7 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 	int count = 0;
 
 	//removed the redundant CCL_ClearSearch call	
-	if (!ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
+	if (!AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
 		int i;
 		for (i = 0; i < NB_AL_MUSIC_CWE; i++) {
 			if (AL_KW_IsMusicFlagOn(tp, i)) {
@@ -147,7 +147,7 @@ void AL_CalcIntentionScore_JoinMusic(task* tp, float* pMaxScore) {
 	float score = 0.0f;
 	Uint32 trigger = GET_GLOBAL()->IntentionHimaTrigger >> 1; //div by 2?
 	Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
-	task* pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC);
+	task* pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC);
 
 	int InstList[NB_AL_MUSIC_CWE];
 	int count = 0;

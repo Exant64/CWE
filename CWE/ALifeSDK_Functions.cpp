@@ -2,25 +2,6 @@
 #include "stdafx.h"
 #include "ALifeSDK_Functions.h"
 
-#pragma warning(push)
-#pragma warning(disable: 4409)
-const int ALO_Field_Find_Ptr = 0x054B1F0;
-task* ALO_Field_Find_(task *a1, int a2, Uint8 a3)
-{
-	task* retval;
-	__asm
-	{
-		push a3
-		mov ecx, a2
-		mov edx, a1
-		call ALO_Field_Find_Ptr
-		add esp, 4
-		mov retval, eax
-	}
-	return retval;
-}
-#pragma warning(pop)
-
 const int sub_534F80Ptr = 0x534F80;
 void sub_534F80(int a1, NJS_VECTOR* a2, signed int a3)
 {
