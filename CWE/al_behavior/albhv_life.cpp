@@ -73,7 +73,7 @@ static void __declspec(naked) sub_550620Hook()
 void __cdecl EggChao_ALO_Delete(task* a1)
 {
 	if (GET_CHAOPARAM(a1)->BodyType != 1)
-		ALO_Delete(a1);
+		ALW_CancelEntry(a1);
 }
 static void __declspec(naked) EggChao_ALO_Delete_Hook()
 {

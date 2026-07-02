@@ -286,7 +286,7 @@ ObjectFunc(CnkWaterManagerExecutor, 0x56B1B0);
 ObjectFunc(KarateCameraExec, 0x574480);
 ObjectFunc(KarateChaoExec_Main, 0x578D30);
 ObjectFunc(EGG, 0x57B520);
-ObjectFunc(ALO_Delete, 0x57B9B0);
+ObjectFunc(ALW_CancelEntry, 0x57B9B0);
 FunctionPointer(task *, CreateChaoEgg, (const void *a1, CHAO_SAVE_INFO *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
 ObjectFunc(ALO_RadicaseExecutor_Main, 0x57C840);
 ObjectFunc(ALO_RadicaseExecutor_Display, 0x57CA80);

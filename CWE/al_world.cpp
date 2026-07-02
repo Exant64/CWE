@@ -407,7 +407,7 @@ Bool CWE_ALW_CancelEntry(task* tp) {
 	task* pBackup = pEntry->tp;
 	pEntry->tp = NULL;
 
-	ALO_Delete(tp);
+	ALW_CancelEntry(tp);
 
 	pEntry->tp = pBackup;
 

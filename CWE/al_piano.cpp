@@ -159,7 +159,7 @@ void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	task *piano;
 
 	piano = CreateElementalTask(4, "ALO_Piano", ALO_Piano_Init, LoadObj_Data1);
-	piano->dest = ALO_Delete;
+	piano->dest = ALW_CancelEntry;
 	piano->disp = Piano_Display;
 
 	piano->twp->btimer = index;
