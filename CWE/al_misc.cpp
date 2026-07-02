@@ -36,3 +36,23 @@ void __cdecl AL_Brake(task* a1, float a2)
 		v2->velocity.z *= a2;
 	}
 }
+
+const int Scaletask_XYZPtr = 0x0054AC70;
+Bool AL_IsOnScreen3(task *tp, float radius, float HalfHeight, float OffsetY) {
+	int retval;
+	__asm
+	{
+		push OffsetY
+		push HalfHeight
+		push radius
+		mov eax, tp
+		call Scaletask_XYZPtr
+		add esp, 12
+		mov retval, eax
+	}
+	return retval;
+}
+
+Bool AL_IsOnScreen2(task *tp, float radius, float OffsetY) {
+	return AL_IsOnScreen3(tp, radius, radius, OffsetY);
+}

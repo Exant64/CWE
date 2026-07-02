@@ -28,8 +28,8 @@ void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
 
 	v1 = a1;
 	taskwk* work = a1->twp;
-	if (Scaletask_XYZ(a1, 2.5f, 2.5f, 2.0f))
-	{
+	
+	if (AL_IsOnScreen2(a1, 2.5f, 2.0f)) {
 		njSetTexture(&AL_BODY);
 		DoLighting(LightIndex);
 		njPushMatrixEx();

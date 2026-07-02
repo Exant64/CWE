@@ -25,23 +25,6 @@ void sub_561740(int a1)
 	}
 }
 
-const int Scaletask_XYZPtr = 0x0054AC70;
-int Scaletask_XYZ(task* a1, float a2, float a3, float a4)
-{
-	int retval;
-	__asm
-	{
-		push a4
-		push a3
-		push a2
-		mov eax, a1
-		call Scaletask_XYZPtr
-		add esp, 12
-		mov retval, eax
-	}
-	return retval;
-}
-
 void DrawToyTransform(task *a1, int a2, int a3)
 {
 	int asd = 0x0566A20;

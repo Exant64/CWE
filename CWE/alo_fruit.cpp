@@ -32,8 +32,7 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 	//Rotation.z = fruit size (like the "bites" value)
 	//rotation.y is actually the y rotation lol
 	//i store the "visible onscreen" flag inside Index as you can see below here
-	if (Scaletask_XYZ(eax0, 2.5, 2.5, 2.0))
-	{
+	if (AL_IsOnScreen2(eax0, 2.5, 2.0)) {
 		v2->btimer = 1;
 		v13 = v2->ang.z * 0.3f + 0.3f;
 		if (v2->ang.x == 9)

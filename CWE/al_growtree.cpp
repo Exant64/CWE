@@ -191,8 +191,7 @@ void __cdecl ALO_SeedExecutor_Display_(task* eax0)
     taskwk* v1; // esi
 
     v1 = eax0->twp;
-    if (Scaletask_XYZ(eax0, 1.5f, 1.5f, 1.0f))
-    {
+    if (AL_IsOnScreen2(eax0, 1.5f, 1.0f)) {
         DoLighting(LightIndex);
        
         njPushMatrixEx();

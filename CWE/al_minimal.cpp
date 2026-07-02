@@ -288,8 +288,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 
 	v1 = a1;
 	v2 = (AL_MinimalExecutor_Data1*)a1->twp;
-	if (Scaletask_XYZ(a1, 3, 3, 2))
-	{
+	if (AL_IsOnScreen2(a1, 3, 2)) {
 		v2->field_34 = 200;
 		if (v2->entity.flag >= 0)
 		{

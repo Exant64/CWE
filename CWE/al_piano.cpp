@@ -27,7 +27,7 @@ bool __cdecl SetPianoWaypoint(task* a2, NJS_VECTOR* a1)
 
 void Piano_Display(task * a1)
 {
-	if (Scaletask_XYZ(a1, 5.2f, 4.5f, 2.9f)) 
+	if (AL_IsOnScreen3(a1, 5.2f, 4.5f, 2.9f)) 
 	{
 		njPushMatrixEx();
 		njSetTexture(&AL_TOY_TEXLIST);
