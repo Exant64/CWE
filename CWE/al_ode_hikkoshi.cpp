@@ -316,9 +316,9 @@ static void AL_HikkoshiMenuDisplayer(task* a1) {
 }
 
 static void AL_HikkoshiMenu() {
-	task* a1 = CreateElementalTask(3, "HikkoshiMenuExecutor", AL_HikkoshiMenuExecutor, LoadObj_Data1);
-	a1->disp = AL_HikkoshiMenuDisplayer;
-	a1->twp->scl.x = 0;
+	task* tp = CreateElementalTask(LoadObj_Data1, 3, AL_HikkoshiMenuExecutor, "HikkoshiMenuExecutor");
+	tp->disp = AL_HikkoshiMenuDisplayer;
+	tp->twp->scl.x = 0;
 }
 
 static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {

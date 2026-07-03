@@ -158,7 +158,7 @@ void ALO_Piano_Init(task *a1)
 void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	task *piano;
 
-	piano = CreateElementalTask(4, "ALO_Piano", ALO_Piano_Init, LoadObj_Data1);
+	piano = CreateElementalTask(LoadObj_Data1, 4, ALO_Piano_Init, "ALO_Piano");
 	piano->dest = ALW_CancelEntry;
 	piano->disp = Piano_Display;
 

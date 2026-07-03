@@ -31,7 +31,7 @@ void ButtonGuideExec(task* tp) {
 }
 
 void CreateButtonGuide(int _flags) {
-	task* pTask = CreateElementalTask(4, "ButtonGuide", ButtonGuideExec, LoadObj_Data1);
+	task* pTask = CreateElementalTask(LoadObj_Data1, 4, ButtonGuideExec, "ButtonGuide");
 	pTask->twp->btimer = _flags;
 	pTask->disp = ButtonGuideDisp;
 }

@@ -782,7 +782,7 @@ static inline int GetPlayerNumber(task *a1)
 
 // task *__usercall@<eax>(int list@<ecx>, char *name@<eax>, void (__cdecl *mainSub)(task *)@<edi>, LoadObj flags)
 static const void *const LoadObjectPtr = (void*)0x46F610;
-static inline task * CreateElementalTask(int list, const char *name, void(__cdecl *mainSub)(task *), LoadObj flags)
+static inline task * CreateElementalTask(LoadObj flags, int list, void(__cdecl *mainSub)(task *), const char *name)
 {
 	task * result;
 	__asm

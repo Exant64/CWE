@@ -138,7 +138,7 @@ void ALO_Boat_Init(task *a1)
 
 
 void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
-	task* p = CreateElementalTask(4, "ALO_Boat", ALO_Boat_Init, LoadObj_Data1);
+	task* p = CreateElementalTask(LoadObj_Data1, 4, ALO_Boat_Init, "ALO_Boat");
 	//InitCollision(p, (CollisionData*)&boatColliT, 2, 4);
 
 	p->disp = ALO_Boat_Displayer;

@@ -144,7 +144,7 @@ void ALO_Float_Load(task* a1)
 }
 
 void ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
-	task* p = CreateElementalTask(4, "ALO_Float", ALO_Float_Load, LoadObj_Data1);
+	task* p = CreateElementalTask(LoadObj_Data1, 4, ALO_Float_Load, "ALO_Float");
 	//InitCollision(p, (CollisionData*)colli_info, 2, 4);
 
 	p->disp = ALO_Float_Displayer_;

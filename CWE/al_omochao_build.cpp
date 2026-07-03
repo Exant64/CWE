@@ -142,7 +142,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 
 CollisionData omoColli = { 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
-	task* obj = CreateElementalTask(4, "AL_OmoBuild", AL_OmoBuild_Main, LoadObj_Data1);
+	task* obj = CreateElementalTask(LoadObj_Data1, 4, AL_OmoBuild_Main, "AL_OmoBuild");
 	InitCollision(obj, (CollisionData*)&omoColli, 1, 5);
 	obj->twp->pos = *pPos;
 	obj->twp->ang.y = ang;

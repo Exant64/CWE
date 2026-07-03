@@ -40,7 +40,7 @@ void AL_ChaoCounterDisp(task* a1)
 }
 
 void AL_ChaoCounterCreate() {
-	task* tp = CreateElementalTask(4, "AL_ChaoCounter", [] (task*) {}, (LoadObj)0);
+	task* tp = CreateElementalTask((LoadObj)0, 4, [] (task*) {}, "AL_ChaoCounter");
 
 	tp->disp = AL_ChaoCounterDisp;
 }

@@ -418,6 +418,6 @@ void AL_NameDisplay_Main(task* a1)
 }
 
 void AL_NameDisplayCreate() {
-	task* p = CreateElementalTask(2, "AL_NameDisplay", AL_NameDisplay_Main, LoadObj_Data1);
+	task* p = CreateElementalTask(LoadObj_Data1, 2, AL_NameDisplay_Main, "AL_NameDisplay");
 	p->field_28 = AL_NameDisplayer;
 }

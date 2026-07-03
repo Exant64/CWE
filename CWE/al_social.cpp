@@ -147,7 +147,7 @@ task* Social_GetActor(task* a1, int a2)
 }
 task* Social_Create(SBHV_FUNC idleFunc)
 {
-	task* social = CreateElementalTask(5, "AL_Social", Social_Main, (LoadObj)0);
+	task* social = CreateElementalTask((LoadObj)0, 5, Social_Main, "AL_Social");
 
 	social->Data2.Undefined = syMalloc(sizeof(socialwk), "al_social.cpp", __LINE__);
 	memset(social->Data2.Undefined, 0, sizeof(socialwk));

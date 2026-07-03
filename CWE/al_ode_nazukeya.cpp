@@ -50,7 +50,7 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 		*(short*)& NazukeyaBuff[88] = 16;
 		*(short*)& NazukeyaBuff[90] = 0;
 		*(short*)& NazukeyaBuff[92] = 0;
-		nazukeyaObj = CreateElementalTask(4, "Nazukeya", Nazukeya_Main, (LoadObj)0);
+		nazukeyaObj = CreateElementalTask((LoadObj)0, 4, Nazukeya_Main, "Nazukeya");
 		nazukeyaObj->field_1C = Nazukeya_Display;
 		//obj->field_1C 
 		break;

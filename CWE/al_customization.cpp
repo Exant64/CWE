@@ -1718,12 +1718,14 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		CreateButtonGuide(SELECT | CONFIRM | BACK);
 		LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 
-		pCustomizationControllerTask = CreateElementalTask(3,
-			"CustomizeUIController",
+		pCustomizationControllerTask = CreateElementalTask(
+			LoadObj_Data1,
+			3,
 			[](task*) {
 				customizationController->Exec();
 			},
-			LoadObj_Data1);
+			"CustomizeUIController"
+		);
 		pCustomizationControllerTask->disp = [](task*) {
 			customizationController->Disp();
 		};
