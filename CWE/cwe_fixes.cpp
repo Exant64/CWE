@@ -131,7 +131,7 @@ signed int __cdecl AL_CheckBallFix(task* tp) {
 	auto pParam = GET_CHAOPARAM(tp);
 
 	if (AL_EmotionGetValue(tp, EM_ST_TEDIOUS) <= 4000
-		|| CheckDistance(&work->entity.pos, &ALO_BallPtr->twp->pos) >= 50)
+		|| CheckDistance(&work->pos, &ALO_BallPtr->twp->pos) >= 50)
 	{
 		return 0;
 	}

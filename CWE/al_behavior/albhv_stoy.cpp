@@ -48,9 +48,9 @@ signed int __cdecl AL_DecideBehaviorSToy(task* a1)
 		return BHV_RET_CONTINUE;
 
 	NJS_VECTOR a3;
-	a3.x = njSin(GET_CHAOWK(a1)->entity.ang.y) * 8 + GET_CHAOWK(a1)->entity.pos.x;
-	a3.y = GET_CHAOWK(a1)->entity.pos.y;
-	a3.z = njCos(GET_CHAOWK(a1)->entity.ang.y) * 8 + GET_CHAOWK(a1)->entity.pos.z;
+	a3.x = njSin(GET_CHAOWK(a1)->ang.y) * 8 + GET_CHAOWK(a1)->pos.x;
+	a3.y = GET_CHAOWK(a1)->pos.y;
+	a3.z = njCos(GET_CHAOWK(a1)->ang.y) * 8 + GET_CHAOWK(a1)->pos.z;
 
 	AL_SetBehavior(
 		a1,
@@ -108,7 +108,7 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 						GET_CHAOPARAM(a1)->Knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
 						return;
 
-					MOV_SetAimPos(a1, &GET_CHAOWK(v3)->entity.pos);
+					MOV_SetAimPos(a1, &GET_CHAOWK(v3)->pos);
 					AL_SetBehavior(a1, (BHV_FUNC)0x56B500);
 
 					AL_SetNextBehavior(
@@ -133,7 +133,7 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 
 int __cdecl ALBHV_Garagara(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	int v3; // eax
 
 	v1 = GET_CHAOWK(a1);

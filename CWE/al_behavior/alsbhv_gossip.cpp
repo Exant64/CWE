@@ -51,7 +51,7 @@ int ALS_GossipIdle(SOCIALDATA* data)
 	if (data->bhvStatus.Mode == 0)
 	{
 		data->bhvStatus.Mode++;
-		if (GET_CHAOWK(data->chaoPointer)->MotionTable.AnimID != data->parameter1 + 405)
+		if (GET_CHAOWK(data->chaoPointer)->MotionCtrl.curr_num != data->parameter1 + 405)
 			AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405);
 	}
 	return 0;

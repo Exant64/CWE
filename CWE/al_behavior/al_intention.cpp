@@ -85,7 +85,7 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 		{
 			if (func == ALBHV_TalkAllowed[j])
 			{
-				float dist = CheckDistance(&wk->entity.pos, &pChao->twp->pos);
+				float dist = CheckDistance(&wk->pos, &pChao->twp->pos);
 				if (dist < 50.0f && njRandom() < 0.5f)
 					pSelectedChao = pChao;
 				break;
@@ -157,9 +157,9 @@ void sub_562800(float* a1, task* a2)
 
 signed int __cdecl ALBHV_FartReaction(task* a1)
 {
-	ChaoData1* v2;
+	chaowk* v2;
 
-	v2 = (ChaoData1*)GET_CHAOWK(a1);
+	v2 = GET_CHAOWK(a1);
 	if (!v2->Behavior.Mode)
 	{
 		AL_SetMotionLink(a1, 565);

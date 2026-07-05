@@ -32,7 +32,7 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 			a3.x = njSin(a1->twp->ang.y) * 3.0f + a1->twp->pos.x;
 			a3.y = a1->twp->pos.y;
 			a3.z = njCos(a1->twp->ang.y) * 3.0f + a1->twp->pos.z;
-			GET_CHAOWK(a1)->task_ptr1 = SandHole_Load(&a3);
+			GET_CHAOWK(a1)->pBooktask = SandHole_Load(&a3);
 		}
 		break;
 	case 2:
@@ -41,14 +41,14 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		{
 			GET_CHAOWK(a1)->Behavior.Mode++;
 			GET_CHAOWK(a1)->Behavior.Timer = (int)(180 + (njRandom() * 121.f));
-			GET_CHAOWK(a1)->task_ptr1->twp->btimer++;
+			GET_CHAOWK(a1)->pBooktask->twp->btimer++;
 		}
 		break;
 	case 3:
 		GET_CHAOWK(a1)->Behavior.Timer--;
 		if (GET_CHAOWK(a1)->Behavior.Timer <= 0)
 		{
-			GET_CHAOWK(a1)->task_ptr1 = 0;
+			GET_CHAOWK(a1)->pBooktask = 0;
 			return BHV_RET_FINISH;
 		}
 		break;

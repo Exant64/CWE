@@ -67,7 +67,7 @@ void AL_ParameterAddAPos(task* a1, float a2)
 	{
 		v3->Alignment = -1.0;
 	}
-	work->Flag |= 2u;
+	work->Shape.Flag |= 2u;
 }
 
 const int sub_536320Ptr = 0x536320;
@@ -98,7 +98,7 @@ void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4
 
 void IncrementFlySwim(task* a1, float a2)
 {
-	ChaoData1* v2; // edx
+	chaowk* v2; // edx
 	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
@@ -112,11 +112,11 @@ void IncrementFlySwim(task* a1, float a2)
 	{
 		v3->FlySwim = -*(float*)0x1312C88;
 	}
-	v2->Flag |= 2u;
+	v2->Shape.Flag |= 2u;
 }
 void IncrementPowerRun(task* a1, float a2)
 {
-	ChaoData1* v2; // edx
+	chaowk* v2; // edx
 	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
@@ -130,7 +130,7 @@ void IncrementPowerRun(task* a1, float a2)
 	{
 		v3->PowerRun = -*(float*)0x1312C88;
 	}
-	v2->Flag |= 2u;
+	v2->Shape.Flag |= 2u;
 }
 
 // levelup function in AL_ParameterGrow, no symbols name :(

@@ -20,8 +20,8 @@ void  SetChunkTextureID_(NJS_CNK_MODEL* a1, int a2)
 // todo: refactor with decomp
 void __cdecl AL_FaceSetEyeCWE(task* a3, int a2, int a1)
 {
-	ChaoFacialData* v3; // esi
-	ChaoData1* v4; // ecx
+	AL_FACE_CTRL* v3; // esi
+	chaowk* v4; // ecx
 	int v5; // eax
 	__int16 v6; // di
 	NJS_OBJECT* v7; // eax

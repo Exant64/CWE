@@ -144,7 +144,7 @@ void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float Tex
 		add esp, 20
 	}
 }
-bool CanStatBeUpgraded(ChaoData1* data1, int stat)
+bool CanStatBeUpgraded(chaowk* data1, int stat)
 {
 	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
 		data1->pParamGC->Lev[stat] == 99 &&
@@ -156,7 +156,7 @@ bool CanStatBeUpgraded(ChaoData1* data1, int stat)
 
 	return false;
 }
-bool CanChaoUpgrade(ChaoData1* data1)
+bool CanChaoUpgrade(chaowk* data1)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -167,7 +167,7 @@ bool CanChaoUpgrade(ChaoData1* data1)
 	}
 	return false;
 }
-void PurchaseGradesCode(ChaoData1* data1)
+void PurchaseGradesCode(chaowk* data1)
 {
 	char buff[256];
 	
@@ -661,11 +661,11 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				opponentPtr,
 				&pos,
 				0);
-			GET_CHAOWK(pMother)->field_B0 &= ~8u;
-			GET_CHAOWK(pMother)->field_B0 &= ~2u;
-			GET_CHAOWK(pMother)->field_B0 |= 0x2000;
-			GET_CHAOWK(pMother)->field_B0 &= ~0x10;
-			GET_CHAOWK(pMother)->field_B0 &= ~0x20000;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~8u;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~2u;
+			GET_CHAOWK(pMother)->ChaoFlag |= 0x2000;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~0x10;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~0x20000;
 
 			noFather = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID.id[0] == 0;
 			if (noFather) //if id is invalid then dont do anything
@@ -690,11 +690,11 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				opponentPtr,
 				&pos,
 				0);
-			GET_CHAOWK(pFather)->field_B0 &= ~8u;
-			GET_CHAOWK(pFather)->field_B0 &= ~2u;
-			GET_CHAOWK(pFather)->field_B0 |= 0x2000;
-			GET_CHAOWK(pFather)->field_B0 &= ~0x10;
-			GET_CHAOWK(pFather)->field_B0 &= ~0x20000;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~8u;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~2u;
+			GET_CHAOWK(pFather)->ChaoFlag |= 0x2000;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~0x10;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~0x20000;
 
 			pDisplaySub = pMother->disp;
 			pField20Sub = pMother->field_20;

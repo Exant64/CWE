@@ -99,9 +99,9 @@ Bool AL_DecideBehaviorDance(task* tp)
         return FALSE;
     }
 
-    center.x = njSin(GET_CHAOWK(tp)->entity.ang.y) * 8 + GET_CHAOWK(tp)->entity.pos.x;
-    center.y = GET_CHAOWK(tp)->entity.pos.y;
-    center.z = njCos(GET_CHAOWK(tp)->entity.ang.y) * 8 + GET_CHAOWK(tp)->entity.pos.z;
+    center.x = njSin(GET_CHAOWK(tp)->ang.y) * 8 + GET_CHAOWK(tp)->pos.x;
+    center.y = GET_CHAOWK(tp)->pos.y;
+    center.z = njCos(GET_CHAOWK(tp)->ang.y) * 8 + GET_CHAOWK(tp)->pos.z;
     
     //i overcomplicated it like this with a switch case to support the original DanceFunc array if any other mod overwrites it
     int kind = InstList[(unsigned int)(njRandom() * ((double)nb - 0.0001f))];

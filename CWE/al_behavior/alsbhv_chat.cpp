@@ -317,7 +317,7 @@ int ALS_Talk(SOCIALDATA* data)
 	}
 	else
 	{
-		GET_CHAOWK(data->chaoPointer)->MotionTable.frameIncreaseSpeed_ = 0.75f + (((AL_EmotionGetValue(data->chaoPointer, EM_PER_AGRESSIVE) + 100) / 200.0f) * 0.45f);
+		GET_CHAOWK(data->chaoPointer)->MotionCtrl.multi_spd = 0.75f + (((AL_EmotionGetValue(data->chaoPointer, EM_PER_AGRESSIVE) + 100) / 200.0f) * 0.45f);
 		if (njRandom() < 0.005f)
 			AL_SetMotionLink(data->chaoPointer, data->parameter1 + 2);
 		data->bhvStatus.Timer--;

@@ -113,7 +113,7 @@ int ALBHV_Capture(task* tp) {
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
 		if (CurrentChaoArea == NextChaoArea)
 		{
-			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->entity.pos, 0, 0, 0);
+			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->pos, 0, 0, 0);
 		}
 		CreateChildTask(LoadObj_Data1, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
@@ -128,11 +128,11 @@ int ALBHV_Capture(task* tp) {
 			work->Behavior.Mode = 2;
 			if (CurrentChaoArea == NextChaoArea)
 			{
-				PlaySound_XYZ(4101, &GET_CHAOWK(tp)->entity.pos, 0, 0, 0);
+				PlaySound_XYZ(4101, &GET_CHAOWK(tp)->pos, 0, 0, 0);
 			}
 
 			for (int i = 0; i < 40; i++) {
-				NJS_POINT3* pos = &work->entity.pos;
+				NJS_POINT3* pos = &work->pos;
 				int ang = NJM_DEG_ANG(9) * i; //40 steps around a circle
 
 				NJS_POINT3 ppos = {

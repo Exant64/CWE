@@ -40,7 +40,7 @@ void AL_CalcIconColor(task* tp)
 	}
 }
 void __cdecl AL_CalcIconColorMod(task* tp) {
-	ChaoData1* work = GET_CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	CHAO_PARAM_GC* pParam = work->pParamGC;
 	
 	//we put the monster evo fix here because iirc CalcIconColor is called right before the deform crap
@@ -82,7 +82,7 @@ void __cdecl AL_IconDraw_r(task* a1);
 Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, AL_IconDraw_r);
 void __cdecl AL_IconDraw_r(task* tp)
 {
-	ChaoData1* work = GET_CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	CHAO_PARAM_GC* pParam = work->pParamGC;
 	const auto original = reinterpret_cast<decltype(AL_IconDraw_r)*>(AL_IconDraw_t.Target());
 
@@ -349,7 +349,7 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	// we do that by finding the lowest vertex index, which is part of the head usually
 	// then finding all indices that don't belong to the same "connected mesh" as that vertex
 	if (checkIfAdjacencyNeeded) {
-		const NJS_CNK_MODEL* pModel = work->field_524[16]->base.chunkmodel;
+		const NJS_CNK_MODEL* pModel = (NJS_CNK_MODEL*)work->Shape.CurrObjectList[16]->pModel;
 		const Sint32* pVertex = pModel->vlist;
 		const Sint32 nbVertex = pModel->vlist[1] >> 16;
 
@@ -408,8 +408,8 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 	for (size_t i = 0; i < work->BaldAdjacencyIndexCount; ++i) {
 		const auto index = work->pBaldAdjacencyIndices[i];
 
-		auto* model = work->field_524[16]->base.chunkmodel;
-		auto* points = (NJS_POINT3*)(model->vlist + 2);
+		auto* model = work->Shape.CurrObjectList[16]->pModel;
+		auto* points = (NJS_POINT3*)(model->VList + 2);
 
 		points[index * 2] = { 0,0,0 };
 	}

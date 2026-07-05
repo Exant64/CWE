@@ -9,8 +9,6 @@
 #include "al_behavior/al_intention.h"
 #include "move.h"
 
-typedef ChaoData1 chaowk;
-
 #define GET_CHAOWK(tp) ((chaowk*)tp->twp)
 #define GET_CHAOPARAM(tp) (GET_CHAOWK(tp)->pParamGC)
 
@@ -424,6 +422,7 @@ enum ALW_KIND
 	//CWE STARTS HERE
 	ALW_KIND_BOAT = 0x9,
 	ALW_KIND_UKIWA = 10,
+	ALW_KIND_COFFIN = 11,
 	NB_ALW_KIND
 };
 
@@ -438,22 +437,6 @@ struct LAND_ATTR_INDEX
 	POS_XZ pos[512];
 };
 DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
-
-struct CNK_VN_VERTEX {
-	NJS_POINT3 Pos;
-	NJS_POINT3 Normal;
-};
-
-struct al_model {
-	int* VList;
-	__int16* PList;
-	NJS_POINT3 Center;
-	float Radius;
-	__int16 OrgTexId[4];
-	int PListSize;
-	int nbVertex;
-	CNK_VN_VERTEX* pVertex;
-};
 
 void AL_ChaoAccessoryConversion(CHAO_PARAM_CWE* pParam);
 void AL_ChaoAccessoryMainCheck(task* tp);

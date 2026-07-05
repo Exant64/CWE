@@ -40,6 +40,18 @@ static task* GetSelectedOtherChao() {
     return GetChaoObject(0, SelectedOtherChaoIndex);
 }
 
+static int SetMusicBhv(task* tp) {
+    ((task_exec)0x0059D410)(tp);
+
+    return BHV_RET_CONTINUE;
+}
+
+static int SetSToyBhv(task* tp) {
+    ((task_exec)0x55E7A0)(tp);
+
+    return BHV_RET_CONTINUE;
+}
+
 static void MoreFacesMenu() {
     if(!ShowMoreFacesMenu) return;
     if(!MainCharObj2[0]);
@@ -107,7 +119,7 @@ static void ChaoInfoMenu() {
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
-                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->entity.pos, 3);
+                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
 
                 static bool ChaoDebugDistEnabled = false;
                 ImGui::Checkbox("Distance Debug", &ChaoDebugDistEnabled);
@@ -207,6 +219,12 @@ static void ChaoInfoMenu() {
                     if (ImGui::Button("Float")) {
                         AL_SetBehavior(pChao, ALBHV_GoToFloat);
                     }
+                    if (ImGui::Button("Music")) {
+                        AL_SetBehavior(pChao, SetMusicBhv);
+                    }
+                    if (ImGui::Button("SToy")) {
+                        AL_SetBehavior(pChao, SetSToyBhv);
+                    }
 
                     ImGui::TreePop();
                 }
@@ -238,11 +256,11 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Perception")) {
                 const AL_PERCEPTION_INFO* perceptionList[] = {
-                    &work->PlayerObjects,
-                    &work->ChaoObjects,
-                    &work->FruitObjects,
-                    &work->TreeObjects,
-                    &work->ToyObjects
+                    &work->Perception.Player,
+                    &work->Perception.Chao,
+                    &work->Perception.Fruit,
+                    &work->Perception.Tree,
+                    &work->Perception.Toy
                 };
 
                 const char* const perceptionDropDownNames[] = {
@@ -261,11 +279,11 @@ static void ChaoInfoMenu() {
                     ImGui::Separator();
                 }
                 
-                ImGui::Text("SightRange: %f", work->ObjectListInfo.SightRange);
-                ImGui::Text("SightAngle: %d (%f deg)", work->ObjectListInfo.SightAngle, NJM_ANG_DEG(work->ObjectListInfo.SightAngle));
-                ImGui::Text("SightAngleHalf: %d (%f deg)", work->ObjectListInfo.SightAngleHalf, NJM_ANG_DEG(work->ObjectListInfo.SightAngleHalf));
-                ImGui::Text("HearRange: %f", work->ObjectListInfo.HearRange);
-                ImGui::Text("SmellRange: %f", work->ObjectListInfo.SmellRange);
+                ImGui::Text("SightRange: %f", work->Perception.SightRange);
+                ImGui::Text("SightAngle: %d (%f deg)", work->Perception.SightAngle, NJM_ANG_DEG(work->Perception.SightAngle));
+                ImGui::Text("SightAngleHalf: %d (%f deg)", work->Perception.SightAngleHalf, NJM_ANG_DEG(work->Perception.SightAngleHalf));
+                ImGui::Text("HearRange: %f", work->Perception.HearRange);
+                ImGui::Text("SmellRange: %f", work->Perception.SmellRange);
 
                 for (size_t i = 0; i < _countof(perceptionList); i++) {
                     const AL_PERCEPTION_INFO* perception = perceptionList[i];
@@ -353,13 +371,13 @@ static void ChaoInfoMenu() {
                 static_assert(_countof(flagsStrings) == _countof(bits));
 
                 for (size_t i = 0; i < _countof(flagsStrings); i++) {
-                    bool flagEnabled = (work->field_B0 & bits[i]);
+                    bool flagEnabled = (work->ChaoFlag & bits[i]);
                     ImGui::Checkbox(flagsStrings[i], &flagEnabled);
                     if (!flagEnabled) {
-                        work->field_B0 &= ~bits[i];
+                        work->ChaoFlag &= ~bits[i];
                     }
                     else {
-                        work->field_B0 |= bits[i];
+                        work->ChaoFlag |= bits[i];
                     }
                 }
 
@@ -378,12 +396,12 @@ static void ChaoInfoMenu() {
 
                 static int poseFilter = 0;
 
-                ImGui::Text("Pose: %s (%d)", poseNames[work->MotionTable.gap2 + 1], work->MotionTable.gap2);
+                ImGui::Text("Pose: %s (%d)", poseNames[work->MotionCtrl.posture + 1], work->MotionCtrl.posture);
 
                 static int animID = 0;
-                int currentAnimID = work->MotionTable.AnimID;
+                int currentAnimID = work->MotionCtrl.curr_num;
                 ImGui::Text("Current Animation: %s (%d)", MotionNames[currentAnimID], currentAnimID);
-                ImGui::Text("Speed: %f %f", work->MotionTable.PlaySpeed2, work->MotionTable.PlaySpeed);
+                ImGui::Text("Speed: %f %f", work->MotionCtrl.PlaySpeed2, work->MotionCtrl.PlaySpeed);
 
                 ImGui::Combo("Filter for pose: %s (%d)", &poseFilter, poseNames, IM_ARRAYSIZE(poseNames));
                 if (poseFilter > 0) {
@@ -424,9 +442,9 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Vertices")) {
-                ChunkObjectPointer* pHead = work->field_524[1];
+                AL_OBJECT* pHead = work->Shape.CurrObjectList[1];
                 if(pHead) {
-                    al_model* pModel = (al_model*)pHead->base.model;
+                    al_model* pModel = (al_model*)pHead->pModel;
 
                     for(size_t i = 0; i < pModel->nbVertex; ++i) {
                         CNK_VN_VERTEX* pVert = (CNK_VN_VERTEX*)(pModel->VList + 2) + i;

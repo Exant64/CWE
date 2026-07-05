@@ -144,7 +144,7 @@ signed int sub_5691B0(task* a1)
 //putting accessory on
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task * a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	int v2; // eax
 	AL_BEHAVIOR* v3; // esi
 	int v4; // eax
@@ -201,7 +201,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task * a
 }
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(task * a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	int v2; // eax
 	AL_BEHAVIOR* v3; // esi
 	al_entry_work* v6; // eax
@@ -235,7 +235,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(tas
 }
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task * a1)
 {
-	ChaoData1* v1; // edi
+	chaowk* v1; // edi
 	c_colli_hit_info* v2; // eax
 	task* v3; // ebx
 	CHAO_PARAM_GC* v5; // ecx
@@ -362,7 +362,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnSpecial(task* tp)
 	return BHV_RET_CONTINUE;
 }
 extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(task * tp) {
-	ChaoData1* v1 = GET_CHAOWK(tp);
+	chaowk* v1 = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &v1->Behavior;
 
 	switch (bhv->Mode) {
@@ -476,7 +476,7 @@ static void AccessoryRemoveAll(task* tp) {
 			saveinfo->UsedColors = accessoryChaoData.ColorFlags;
 			memcpy(saveinfo->Colors, accessoryChaoData.ColorSlots, sizeof(saveinfo->Colors));
 			
-			Accessory_Load(index, &work->entity.pos, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
+			Accessory_Load(index, &work->pos, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
 			AL_ParameterClearAccessory(tp, EAccessoryType(i));
 		}
 	}

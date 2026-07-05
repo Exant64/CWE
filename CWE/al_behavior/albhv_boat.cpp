@@ -10,7 +10,7 @@
 
 signed int __cdecl ALBHV_GoToWaterWithBoat(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	int v2; // eax
 	AL_BEHAVIOR* v3; // esi
 	float a2; // ST08_4
@@ -64,7 +64,7 @@ signed int __cdecl ALBHV_GoToWaterWithBoat(task* a1)
 }
 signed int ALBHV_RideBoat(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	AL_BEHAVIOR* v3; // esi
 
 	v1 = GET_CHAOWK(a1);

@@ -181,15 +181,15 @@ int __cdecl ALW_CountEntry(unsigned __int16 index)
 }
 al_perception_link* __cdecl AL_GetFoundTree(task* a1)
 {
-	ChaoData1* v1; // ecx
+	chaowk* v1; // ecx
 	int v2; // edx
 	AL_PERCEPTION_INFO* v3; // ecx
 	al_perception_link* result; // eax
 	__int16 v5; // dx
 
 	v1 = GET_CHAOWK(a1);
-	v2 = v1->TreeObjects.InSightFlag;
-	v3 = &v1->TreeObjects;
+	v2 = v1->Perception.Tree.InSightFlag;
+	v3 = &v1->Perception.Tree;
 	result = 0;
 	if (v2)
 	{
@@ -262,15 +262,15 @@ bool ALW_LockOnPickedUp(task* a1)
 
 al_perception_link* __cdecl GetToyObjects(task* a1)
 {
-	ChaoData1* v1; // ecx
+	chaowk* v1; // ecx
 	int v2; // edx
 	AL_PERCEPTION_INFO* v3; // ecx
 	al_perception_link* result; // eax
 	__int16 v5; // dx
 
 	v1 = GET_CHAOWK(a1);
-	v2 = v1->ToyObjects.InSightFlag;
-	v3 = &v1->ToyObjects;
+	v2 = v1->Perception.Toy.InSightFlag;
+	v3 = &v1->Perception.Toy;
 	result = 0;
 	if (v2)
 	{

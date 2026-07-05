@@ -33,7 +33,7 @@ int ALBHV_Guitar(task* tp) {
 		//al_toy, the function got automatically optimized to always use al_toy inside the code
 		//so i gotta do it manually
 		//todo: fix with decomp function in al_parts or something		
-		GET_CHAOWK(tp)->field_524[AL_PART_HAND_R]->toy.texlist = texlist_cwe_object;
+		GET_CHAOWK(tp)->Shape.CurrObjectList[AL_PART_HAND_R]->pItemTexlist = texlist_cwe_object;
 		
 		++bhv->Mode;
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
@@ -129,10 +129,10 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 			NJS_POINT3 music_center;
 			Uint32 kind = InstList[(int)(njRandom() * (count - 0.00001f))];
 
-			int ang = work->entity.ang.y;
-			music_center.x = njSin(ang) * 8 + work->entity.pos.x;
-			music_center.y = work->entity.pos.y;
-			music_center.z = njCos(ang) * 8 + work->entity.pos.z;
+			int ang = work->ang.y;
+			music_center.x = njSin(ang) * 8 + work->pos.x;
+			music_center.y = work->pos.y;
+			music_center.z = njCos(ang) * 8 + work->pos.z;
 
 			AL_SetBehavior(tp, ALBHV_MusicFunc_CWE[kind]);
 			ALOField_Load(tp, CI_KIND_AL_RANDOM_MUSIC, &music_center, 20, (int)(1800 + (njRandom() * 2401.f)));

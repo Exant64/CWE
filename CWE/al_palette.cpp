@@ -424,7 +424,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCP];
 		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
 		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
-		v28 = (unsigned short*)GET_CHAOWK(a1)->palette;
+		v28 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
 		v33 = chaoData->Alignment;
 		if (evolution > 1)
 		{
@@ -598,7 +598,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		v14 = gPalette[v13];
 		v15 = gPalette[v13 + 5];
 		v16 = gPalette[v13 + 3];
-		v37 = (unsigned short*)GET_CHAOWK(a1)->palette;
+		v37 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
 		powerruna = chaoData->PowerRun;
 		if (Magnitude > 1)
 		{
@@ -708,7 +708,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 			--AL_HCNb;
 		} while (AL_HCNb);
 	}
-	v85 = (int)GET_CHAOWK(a1)->palette;
+	v85 = (int)GET_CHAOWK(a1)->Shape.palette;
 	v86 = 0;
 	do
 	{
@@ -804,7 +804,7 @@ void __cdecl AL_PaletteSetColorRatio8bpp(CHAO_PARAM_GC* chaoData, task* a1, int 
 		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCP];
 		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
 		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
-		v28 = (unsigned short*)GET_CHAOWK(a1)->palette;
+		v28 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
 		v33 = chaoData->Alignment;
 		if (evolution > 1.0)
 		{
@@ -971,7 +971,7 @@ void __cdecl AL_PaletteSetColorRatio8bpp(CHAO_PARAM_GC* chaoData, task* a1, int 
 
 	}
 
-	v85 = (int)GET_CHAOWK(a1)->palette;
+	v85 = (int)GET_CHAOWK(a1)->Shape.palette;
 	v86 = 0;
 	do
 	{

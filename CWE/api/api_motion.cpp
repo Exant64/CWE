@@ -87,7 +87,7 @@ void Chao_RegAnimation(task* a1, const std::string& name) {
     AL_SetMotionLink(a1, IDMotionMap[name]);
 }
 
-void Chao_RegAnimationTbl(MotionTableData* a1, const std::string& name) {
+void Chao_RegAnimationTbl(MOTION_CTRL* a1, const std::string& name) {
     Chao_Animation(a1, IDMotionMap[name]);
 }
 

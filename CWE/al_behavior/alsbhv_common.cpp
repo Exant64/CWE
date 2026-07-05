@@ -86,7 +86,7 @@ signed int __cdecl ALBHV_GoNextToSocial(task* a1)
 		break;
 	case 2:
 
-		v1->entity.ang.y = AdjustAngle_(v1->entity.ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
+		v1->ang.y = AdjustAngle_(v1->ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
 		if (v3->Timer++ > 30)
 			return 1;
 		break;

@@ -117,7 +117,7 @@ static int ALBHV_HitChao(task* tp) {
                     break;
             }
 
-			PlaySound_XYZ(0x601E, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+			PlaySound_XYZ(0x601E, &GET_CHAOWK(tp)->pos, 0, 0, 110);
 
 			// this may feel hacky, but I decided it's the best way to sync up the sequence
 			// if you think about it, it's the same thing as a behaviorinterrupt
@@ -188,7 +188,7 @@ static int ALBHV_WaitForStopper(task* tp) {
 				AL_FaceChangeEye(tp, ChaoEyes_Painful);
 
 				if(njRandom() < 0.7f) {
-					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->pos, 0, 0, 110);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -236,10 +236,10 @@ static int ALBHV_GetHit(task* tp) {
 
 			
             if(njRandom() < 0.5f) {
-				PlaySound_XYZ(24617, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+				PlaySound_XYZ(24617, &GET_CHAOWK(tp)->pos, 0, 0, 110);
             }
             else {
-				PlaySound_XYZ(24685, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+				PlaySound_XYZ(24685, &GET_CHAOWK(tp)->pos, 0, 0, 110);
             }
 
             bhv->Mode++;
@@ -347,7 +347,7 @@ static int ALBHV_AfraidWait(task* tp) {
 		case AFRAIDWAIT_TURN: 
 			if (ALW_TurnToLockOn(tp, 384) < 384) {
 				if(njRandom() < 0.7f) {
-					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->pos, 0, 0, 110);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -481,7 +481,7 @@ static task* FindChaoToBully(task* tp) {
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				float dist = CheckDistance(&work->entity.pos, &pChao->twp->pos);
+				float dist = CheckDistance(&work->pos, &pChao->twp->pos);
 
 				if (dist < 100.f) {
 					pSelectedChao = pChao;
@@ -516,7 +516,7 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->entity.pos, &work->entity.pos);
+				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->pos, &work->pos);
 
 				if (dist < distClosest) {
 					pSelectedChao = pChao;

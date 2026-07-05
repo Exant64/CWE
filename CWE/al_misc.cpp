@@ -4,25 +4,25 @@
 
 void __cdecl AL_ForwardAcc(task* a1, float a2)
 {
-	ChaoData1* v2; // esi
+	chaowk* v2; // esi
 	UnknownData2* v3; // edi
 
 	v2 = GET_CHAOWK(a1);
 	v3 = a1->EntityData2;
-	v3->speed.x = njSin(v2->entity.ang.y) * a2;
-	v3->speed.z = njCos(v2->entity.ang.y) * a2;
+	v3->speed.x = njSin(v2->ang.y) * a2;
+	v3->speed.z = njCos(v2->ang.y) * a2;
 }
 void __cdecl AL_ForwardSpd(task* a1, float a2)
 {
-	ChaoData1* v2; // esi
+	chaowk* v2; // esi
 	float v3; // st7
 	Angle v4; // ecx
 
 	v2 = GET_CHAOWK(a1);
-	v3 = njSin(v2->entity.ang.y);
-	v4 = v2->entity.ang.y;
-	v2->entity.pos.x = v3 * a2 + v2->entity.pos.x;
-	v2->entity.pos.z = njCos(v4) * a2 + v2->entity.pos.z;
+	v3 = njSin(v2->ang.y);
+	v4 = v2->ang.y;
+	v2->pos.x = v3 * a2 + v2->pos.x;
+	v2->pos.z = njCos(v4) * a2 + v2->pos.z;
 }
 void __cdecl AL_Brake(task* a1, float a2)
 {

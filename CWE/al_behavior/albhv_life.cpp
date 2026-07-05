@@ -7,7 +7,7 @@
 
 int __cdecl ALBHV_EggChao(task* a1)
 {
-	ChaoData1* wk = GET_CHAOWK(a1);
+	chaowk* wk = GET_CHAOWK(a1);
 	AL_BEHAVIOR* bhv = &wk->Behavior;
 
 	switch (bhv->Mode)
@@ -106,9 +106,9 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 		CreateChaoEgg(a1, chaoData, a3, position, a5);
 }
 
-void __cdecl EggChaoCrawl(MotionTableData* a1, int a2)
+void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
 {
-	ChaoData1* data1 = (ChaoData1*)((int)a1 - 0xAC);
+	chaowk* data1 = (chaowk*)((int)a1 - 0xAC);
 	if (data1->pParamGC->BodyType == 1)
 		Chao_RegAnimationTbl(a1, "alm_egg_crawl_start");
 	else

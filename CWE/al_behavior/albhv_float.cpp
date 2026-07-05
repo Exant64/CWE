@@ -11,11 +11,11 @@
 
 signed int ALBHV_RideFloat(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	AL_BEHAVIOR* v3; // esi
 	float v2;
 
-	v1 = (ChaoData1*)GET_CHAOWK(a1);
+	v1 = (chaowk*)GET_CHAOWK(a1);
 	v3 = &v1->Behavior;
 
 	//SWIM CONTROL

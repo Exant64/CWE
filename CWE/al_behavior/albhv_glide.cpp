@@ -7,7 +7,7 @@ int __cdecl ALBHV_Glide(task* a1)
 {
 	task* v2; // ebx
 	UnknownData2* v3; // esi
-	ChaoData1* v4; // edi
+	chaowk* v4; // edi
 
 	v2 = a1;
 	v3 = a1->EntityData2;
@@ -27,10 +27,10 @@ int __cdecl ALBHV_Glide(task* a1)
 		{
 			v3->speed.y = 0;
 			v3->velocity.y = 0.25f;
-			//v4->entity.Position.y += 0.05f;
-			if (v4->entity.pos.y > 25)
+			//v4->Position.y += 0.05f;
+			if (v4->pos.y > 25)
 			{
-				v4->entity.pos.y = 25;
+				v4->pos.y = 25;
 			}
 			v4->Behavior.Timer--;
 			if (v4->Behavior.Timer <= 0)

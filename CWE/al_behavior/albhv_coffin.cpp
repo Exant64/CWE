@@ -11,7 +11,7 @@
 
 signed int ALBHV_RideCoffin(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	AL_BEHAVIOR* v3; // esi
 	float v2;
 

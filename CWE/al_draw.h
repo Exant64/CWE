@@ -64,21 +64,13 @@ enum ChunkMaterialFlagsEnum
 	UseChunkObjectColor = 0x8,
 };
 
-void AL_RenderAccessory(const task* tp, const EAccessoryType slot);
-void AL_SetMotionMatrix(task* a1, ChunkObjectPointer* ptr);
-void AL_ValidateAccessory(task* a1, EAccessoryType type);
-void AL_RenderRigAccessory(task* a1, ChunkObjectPointer* chunkObjectPointer, EAccessoryType type);
 void AL_Draw_Init();
 void AnimateChao(int a1);
 void sub_56E9C0(task* a1);
-void DrawAccessory(task* a1, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT* traverseAccessory);
 void ChaoColoring(int texture, int color, int shiny, int highlights, int shinyJewelMonotone, NJS_CNK_MODEL* model);
 
 void AL_SetBodyTexture(task* a1);
 void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model);
-
-void __cdecl DrawEggChao(task* a1);
-void AL_DrawToy(ChunkObjectPointer* chunkObjectPointer);
 
 extern task* ChaoDebugDistSelected;
 extern float ChaoDebugDist;

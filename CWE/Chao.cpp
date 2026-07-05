@@ -296,7 +296,7 @@ static void Chao_Main_r(task* a1)
 	if (!pParam) return;
 
 	//some timer
-	if (GET_CHAOWK(a1)->gap_30 <= 2u)
+	if (GET_CHAOWK(a1)->Timer <= 2u)
 	{
 		if (pParam->field_19 == 2)
 			pParam->field_19 = 0;
@@ -395,7 +395,7 @@ static void Chao_Main_r(task* a1)
 	// if disable jiggle was enabled or disabled rerun fittobaseobject
 	// to prevent the jiggled vertices to be frozen
 	if(work->JiggleFlagChanged) {
-		AL_FitToBaseObject(a1, work->field_510);
+		AL_FitToBaseObject(a1, work->Shape.pObject);
 		work->JiggleFlagChanged = false;
 	}
 }
@@ -413,8 +413,8 @@ static void AL_Deform_r(task* tp) {
 	AL_Deform_t.Original(tp);
 
 	chaowk* work = GET_CHAOWK(tp);
-	if(!(work->field_B0 & 0x20)) {
-		AL_FitToBaseObject(tp, work->field_510);
+	if(!(work->ChaoFlag & 0x20)) {
+		AL_FitToBaseObject(tp, work->Shape.pObject);
 	}
 }
 
@@ -493,21 +493,22 @@ static void __declspec(naked) NewDrawingsHook()
 
 void Chao_Init()
 {	
-	static_assert(offsetof(ChaoData1, pParamGC) == 0x5C, "ChaoData1:pParamGC got shuffled");
-	static_assert(offsetof(ChaoData1, MotionTable) == 0x0AC, "ChaoData1:MotionTable got shuffled");
-	static_assert(offsetof(ChaoData1, Behavior) == 0x1B4, "ChaoData1:Behavior got shuffled");
-	static_assert(offsetof(ChaoData1, field_510) == 0x510, "ChaoData1:field_510 (AL_SHAPE) got shuffled");
-	static_assert(offsetof(ChaoData1, Face) == 0x68C, "ChaoData1:Face got shuffled");
-	static_assert(offsetof(ChaoData1, gap6EC) == 0x6EC, "ChaoData1:gap6EC (AL_ICON) got shuffled");
-	static_assert(offsetof(ChaoData1, ObjectListInfo) == 0x7CC, "ChaoData1:ObjectListInfo got shuffled");
-	static_assert(offsetof(ChaoData1, LocalCharacterChaoType) == 0x1D74, "ChaoData1: new fields dont start at vanilla size");
-	static_assert(sizeof(ChaoData1) >= 0x1D74, "ChaoData1 size lower than vanilla, something's up");
+	static_assert(offsetof(chaowk, pParamGC) == 0x5C, "chaowk:pParamGC got shuffled");
+	static_assert(offsetof(chaowk, ChaoFlag) == 0xA0, "chaowk:ChaoFlag got shuffled");
+	static_assert(offsetof(chaowk, MotionCtrl) == 0x0AC, "chaowk:MotionCtrl got shuffled");
+	static_assert(offsetof(chaowk, Behavior) == 0x1B4, "chaowk:Behavior got shuffled");
+	static_assert(offsetof(chaowk, Shape) == 0x510, "chaowk:Shape.pObject (AL_SHAPE) got shuffled");
+	static_assert(offsetof(chaowk, Face) == 0x68C, "chaowk:Face got shuffled");
+	static_assert(offsetof(chaowk, Icon) == 0x6EC, "chaowk:Icon got shuffled");
+	static_assert(offsetof(chaowk, Perception) == 0x7CC, "chaowk:Perception got shuffled");
+	static_assert(offsetof(chaowk, LocalCharacterChaoType) == 0x1D74, "chaowk: new fields dont start at vanilla size");
+	static_assert(sizeof(chaowk) >= 0x1D74, "chaowk size lower than vanilla, something's up");
 
 	AL_Name_Init();
 
-	//expand ChaoData1 alloc
-	WriteData((int*)0x00550288, (int)sizeof(ChaoData1) + 4);
-	WriteData((int*)0x00550294, (int)sizeof(ChaoData1));
+	//expand chaowk alloc
+	WriteData((int*)0x00550288, (int)sizeof(chaowk) + 4);
+	WriteData((int*)0x00550294, (int)sizeof(chaowk));
 	//memalloc = sizeof(ChaoData)
 	WriteData((short*)0x55040E, (short)0x200);
 	WriteData((short*)0x5503DD, (short)0x804);

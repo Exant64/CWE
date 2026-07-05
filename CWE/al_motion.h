@@ -9,8 +9,8 @@ enum eAL_PST {
 	AL_PST_OTHERS = 4
 };
 
-void Chao_Animation(MotionTableData* a1, int a2);
-void  Chao_PlayAnimationSpeed(MotionTableData* result, int a2, unsigned __int16 a3);
+void Chao_Animation(MOTION_CTRL* a1, int a2);
+void  Chao_PlayAnimationSpeed(MOTION_CTRL* result, int a2, unsigned __int16 a3);
 
 unsigned int __cdecl AL_IsMotionStop(task* a1);
 void AL_SetMotionLink(task* a1, int index);

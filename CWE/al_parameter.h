@@ -14,7 +14,7 @@ struct AL_GUEST {
 };
 
 struct AL_PARAM_ACCESSORY_INFO {
-	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
+	char ID[sizeof(chaowk::AccessoryCalculatedID[0])];
 	Uint32 Flags;
 	Uint32 ColorFlags;
 	Uint32 ColorSlots[8];

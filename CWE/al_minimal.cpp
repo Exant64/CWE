@@ -270,7 +270,7 @@ void SetAnimalTexEntity(taskwk* data)
 }
 
 const int sub_793F90Ptr = 0x793F90;
-void sub_793F90(NJS_OBJECT* a1, MotionTableData* a2)
+void sub_793F90(NJS_OBJECT* a1, MOTION_CTRL* a2)
 {
 	__asm
 	{
