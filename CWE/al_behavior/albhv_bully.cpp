@@ -476,7 +476,7 @@ static task* FindChaoToBully(task* tp) {
 		BHV_FUNC func = AL_GetBehavior(pChao);
 
 		//not in water 
-		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->WaterY) continue;
 
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
@@ -509,7 +509,7 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 		if (!AL_IsHero2(pChao) && AL_EmotionGetValue(pChao, EM_PER_KINDNESS) < 10) continue;
 		
 		//not in water 
-		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->WaterY) continue;
 
 		const BHV_FUNC func = AL_GetBehavior(pChao);
 		

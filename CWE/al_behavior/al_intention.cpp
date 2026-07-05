@@ -78,7 +78,7 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 		BHV_FUNC func = AL_GetBehavior(pChao);
 
 		//not in water 
-		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->WaterY) continue;
 
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_TalkAllowed); j++)

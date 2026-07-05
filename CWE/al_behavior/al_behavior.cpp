@@ -476,7 +476,7 @@ static void AccessoryRemoveAll(task* tp) {
 			saveinfo->UsedColors = accessoryChaoData.ColorFlags;
 			memcpy(saveinfo->Colors, accessoryChaoData.ColorSlots, sizeof(saveinfo->Colors));
 			
-			Accessory_Load(index, &work->pos, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->velocity, saveinfo);
+			Accessory_Load(index, &work->pos, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->Velo, saveinfo);
 			AL_ParameterClearAccessory(tp, EAccessoryType(i));
 		}
 	}

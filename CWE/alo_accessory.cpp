@@ -66,23 +66,23 @@ FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
 	task* tp = CreateElementalTask(LoadObj_Data1, 4, ALO_ObakeHeadExecutor_Main, "ALO_Accessory");
 	taskwk* work = tp->twp;
-	UnknownData2* move = AllocateUnknownData2(tp);
+	MOVE_WORK* move = MOV_Init(tp);
 
 	work->pos = *pPos;
 	work->ang.y = AngY;
 
 	if (pVelo) {
-		move->velocity = *pVelo;
+		move->Velo = *pVelo;
 	}
 
 	work->ang.x = ID;
 
-	move->gravity = -0.05f;
-	move->field_AC = 3; // Offset.y
-	move->field_C8 = 0.8f; // BoundFloor
-	move->field_D0 = 0.7f; // BoundFriction
+	move->Gravity = -0.05f;
+	move->Offset.y = 3;
+	move->BoundFloor = 0.8f;
+	move->BoundFriction = 0.7f;
 
-	move->field_30 = (int)sub_57A7A0(4.0);// rad
+	move->unk = (int)sub_57A7A0(4.0);// rad
 
 	InitCollision(tp, ALO_ObakeHeadExecutor_collision, 3, 5u);
 	ObjectMovableInitialize(work, 10);

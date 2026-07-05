@@ -17,7 +17,6 @@ static int GetPianoType (task* pToy) {
 static int ALBHV_PlayPiano(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &work->Behavior;
-	UnknownData2* move = tp->Data2.Unknown_Chao;
 
 	task* pToy;
 	NJS_POINT3 toyPos;
@@ -95,8 +94,8 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 		{
 			const float speed = GET_GLOBAL()->WalkAcc * 0.8f;
-			tp->EntityData2->speed.x = njSin(work->ang.y) * speed;
-			tp->EntityData2->speed.z = njCos(work->ang.y) * speed;
+			tp->EntityData2->Acc.x = njSin(work->ang.y) * speed;
+			tp->EntityData2->Acc.z = njCos(work->ang.y) * speed;
 		}
 		
 		if (MOV_DistFromAimXZ(tp) < 0.5f) {

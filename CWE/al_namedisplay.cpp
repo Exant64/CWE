@@ -288,7 +288,7 @@ void AL_NameDisplayer(task* a1) {
 			task* chao = stru_1DC0FC0[i].pointerToOwner;
 			if (chao &&
 				chao->EntityData2 &&
-				chao->twp->pos.y + 2 >= chao->EntityData2->field_DC)
+				chao->twp->pos.y + 2 >= chao->EntityData2->WaterY)
 			{
 				NJS_VECTOR asd;
 				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->twp->pos, 0);

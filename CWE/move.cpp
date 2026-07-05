@@ -2,7 +2,7 @@
 
 float MOV_DistFromAimXZ(task* tp) {
 	NJS_POINT3* pos = &tp->twp->pos;
-	NJS_POINT3* aimPos = &tp->EntityData2->Waypoint;
+	NJS_POINT3* aimPos = &tp->EntityData2->AimPos;
 
 	NJS_VECTOR v = {
 		pos->x - aimPos->x,
@@ -35,10 +35,10 @@ void MOV_SetAimPos(task* tp, NJS_POINT3* pPos) {
 		return;
 	}
 
-	tp->EntityData2->Waypoint = *pPos;
+	tp->EntityData2->AimPos = *pPos;
 }
 
 void MOV_SetVelo(task* tp, NJS_VECTOR* pVelo) {
-	UnknownData2* pMove = tp->EntityData2;
-	pMove->velocity = *pVelo;
+	MOVE_WORK* pMove = tp->EntityData2;
+	pMove->Velo = *pVelo;
 }

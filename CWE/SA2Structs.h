@@ -26,7 +26,7 @@ struct LaunchConfig_vtable;
 struct CHAO_PARAM_GC;
 struct ChaoUnknownE;
 struct ChaoDebugData1;
-struct UnknownData2;
+struct MOVE_WORK;
 struct chaowk;
 struct ObjUnknownA;
 struct ObjUnknownB;
@@ -56,7 +56,7 @@ union Data2Ptr
 	ObjUnknownB *UnknownB;
 	EntityData2 *Entity;
 	CharObj2Base *Character;
-	UnknownData2 *Unknown_Chao;
+	MOVE_WORK *Unknown_Chao;
 };
 
 struct task
@@ -75,7 +75,7 @@ struct task
 	void *field_2C;
 	SETObjectData *SETData;
 	taskwk* twp;
-	UnknownData2 *EntityData2;
+	MOVE_WORK *EntityData2;
 	ObjUnknownA *UnknownA_ptr;
 	Data2Ptr Data2;
 	char *Name;
@@ -539,52 +539,55 @@ struct UnknownData2_B
 	NJS_VECTOR field_14;
 };
 
-struct UnknownData2
-{
-	NJS_VECTOR velocity;
-	NJS_VECTOR speed;
-	char gap18[4];
-	int field_1C;
-	char gap20[8];
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	char gap38[4];
-	int field_3C;
-	__int16 field_40;
-	__int16 Index;
-	char gap44[4];
-	float gravity;
-	int gap_4C;
-	int field_50;
-	NJS_VECTOR Waypoint;
-	NJS_VECTOR some_vector;
-	char gap6C[4];
-	float field_70;
-	char gap74[28];
-	float field_90;
-	float field_94;
-	float field_98;
-	float field_9C;
-	float field_A0;
-	float field_A4;
-	float field_A8;
-	float field_AC;
-	char gapB0[4];
-	float field_B4;
-	float field_B8;
-	float field_BC;
-	float field_C0;
-	float field_C4;
-	float field_C8;
-	float field_CC;
-	float field_D0;
-	char gapD4[4];
-	float field_D8;
-	float field_DC;
-	NJS_VECTOR field_E0;
-	UnknownData2_B WeirdStructures[12];
+typedef struct {
+    int32_t findflag;
+    int32_t objatt;
+    Angle angx;
+    Angle angz;
+    float onpos;
+    NJS_POINT3 normal;
+} xssunit;
+
+typedef struct {
+    NJS_POINT3 pos;
+    xssunit hit[6];
+    xssunit pre_hit[6];
+} XYZ_SHADOW_WORK;
+
+struct MOVE_WORK {
+	NJS_VECTOR Velo;
+	NJS_VECTOR Acc;
+	Angle3 AimAng;
+    Angle3 RotSpd;
+	int unk;
+	float rad;
+	float height;
+	float weight;
+	Uint16 Flag;
+	Uint16 Timer;
+	float Spd;
+	float Gravity;
+	int ViewAngle;
+	float ViewRange;
+	NJS_POINT3 AimPos;
+	NJS_POINT3 PrePos;
+	NJS_POINT3 HomePos;
+	Angle3 HomeAng;
+    Angle3 Phase;
+	NJS_LINE FrontWall;
+	NJS_POINT3 Offset;
+	float Top;
+	float Side;
+	float Bottom;
+	float CliffHeight;
+	float BoundSide;
+	float BoundFloor;
+	float BoundCeiling;
+	float BoundFriction;
+	float TopY;
+	float BottomY;
+	float WaterY;
+	XYZ_SHADOW_WORK Shadow;
 };
 
 struct ObjUnknownA

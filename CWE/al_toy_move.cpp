@@ -183,9 +183,9 @@ void AL_Toy_Move_Update(task *a1)
 		if (a1->twp->flag & 1)
 		{
 			NJS_VECTOR veloVec;
-			veloVec.x = a1->EntityData2->velocity.x;
+			veloVec.x = a1->EntityData2->Velo.x;
 			veloVec.y = 0.0;
-			veloVec.z = a1->EntityData2->velocity.z;
+			veloVec.z = a1->EntityData2->Velo.z;
 			//if it has velocity, reset timer to 0
 			if (njScalor(&veloVec) >= 0.01f)
 			{
@@ -198,13 +198,13 @@ void AL_Toy_Move_Update(task *a1)
 				toyMove->timer++;
 				if (toyMove->timer > 30)
 				{
-					UnknownData2* v8 = a1->EntityData2;
-					v8->velocity.x = 0.0;
-					v8->velocity.y = 0.0;
-					v8->velocity.z = 0.0;
-					v8->speed.x = 0.0;
-					v8->speed.y = 0.0;
-					v8->speed.z = 0.0;
+					MOVE_WORK* v8 = a1->EntityData2;
+					v8->Velo.x = 0.0;
+					v8->Velo.y = 0.0;
+					v8->Velo.z = 0.0;
+					v8->Acc.x = 0.0;
+					v8->Acc.y = 0.0;
+					v8->Acc.z = 0.0;
 					toyMove->flag = 0;
 					toyMove->timer = 0;
 					toyMove->state = TOY_MOVE_STATIC;
@@ -242,42 +242,42 @@ void AL_Toy_Move_Update(task *a1)
 		break;
 	}
 
-	a1->EntityData2->some_vector = a1->twp->pos;
+	a1->EntityData2->PrePos = a1->twp->pos;
 	
 }
-UnknownData2* __cdecl AllocateUnknownData2New(task* obj)
+MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 {
-	UnknownData2* data2; // esi
+	MOVE_WORK* data2; // esi
 
-	data2 = (UnknownData2*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
+	data2 = (MOVE_WORK*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
 	obj->EntityData2 = data2;                   // different offset than SADX
 
-	data2->field_B4 = 3.0f;
-	data2->field_28 = 256;                      // different offset than SADX
-	data2->field_B8 = 2.2f;	
-	data2->field_BC = -3.0f;
-	data2->field_C0 = 40.0f;
-	data2->field_C4 = 0.80000001f;
-	data2->field_C8 = 0.89999998f;
-	data2->field_CC = 0.2f;
-	data2->field_D0 = 0.80000001f;
-	data2->field_AC = 3.0f;
+	data2->Top = 3.0f;
+	data2->RotSpd.y = 256;                      // different offset than SADX
+	data2->Side = 2.2f;	
+	data2->Bottom = -3.0f;
+	data2->CliffHeight = 40.0f;
+	data2->BoundSide = 0.80000001f;
+	data2->BoundFloor = 0.89999998f;
+	data2->BoundCeiling = 0.2f;
+	data2->BoundFriction = 0.80000001f;
+	data2->Offset.y = 3.0f;
 	return data2;
 }
 
 void AL_Toy_Move_Init(task* p, CCL_INFO* col)
 {
-	UnknownData2* mov = AllocateUnknownData2New(p);
+	MOVE_WORK* mov = AllocateUnknownData2New(p);
 
 	// this pointer's purpose is explained at the declaration
 	pLastToyTask = p;
 
-	mov->gravity = -0.05f;
-	mov->field_AC = 3.0f;
-	mov->field_C8 = 0.7f;
-	mov->field_D0 = 0.7f;
-	mov->field_30 = 3;
-	mov->field_40 |= 8;
+	mov->Gravity = -0.05f;
+	mov->Offset.y = 3.0f;
+	mov->BoundFloor = 0.7f;
+	mov->BoundFriction = 0.7f;
+	mov->unk = 3;
+	mov->Flag |= 8;
 
 	GetToyMove(p)->floatVal = 1.0f;
 
@@ -338,7 +338,7 @@ CCL_INFO ALO_BoxExecutor_collision = { '\0', '\0', 'w', '\f', 32768u, {  0,  1.6
 void __cdecl AL_TV_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &stru_8A5C10);
-	a1->EntityData2->field_AC = 1.75f;
+	a1->EntityData2->Offset.y = 1.75f;
 }
 
 static void __declspec(naked) AL_TV_Init_Hook()
@@ -405,7 +405,7 @@ static void __declspec(naked) AL_Box_Init_Hook()
 void __cdecl AL_Radio_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &RadioCol);
-	a1->EntityData2->field_AC = 1.6f;
+	a1->EntityData2->Offset.y = 1.6f;
 }
 
 static void __declspec(naked) AL_Radio_Init_Hook()

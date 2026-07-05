@@ -61,7 +61,7 @@ int __cdecl ALBHV_GoToRadicase(task* tp)
 	if (!v2 || !ALO_GetRadicaseListenPos(&v4))
 		return BHV_RET_FINISH;
 	ALW_LockOn(tp, v2);
-	tp->EntityData2->Waypoint = v4;
+	tp->EntityData2->AimPos = v4;
 	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);
@@ -81,7 +81,7 @@ int __cdecl ALBHV_GoToTV(task* tp)
 	if (!v2 || !ALO_GetTVWatchPos(&v4))
 		return BHV_RET_FINISH;
 	ALW_LockOn(tp, v2);
-	tp->EntityData2->Waypoint = v4;
+	tp->EntityData2->AimPos = v4;
 	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);

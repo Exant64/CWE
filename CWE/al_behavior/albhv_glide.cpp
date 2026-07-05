@@ -6,7 +6,7 @@
 int __cdecl ALBHV_Glide(task* a1)
 {
 	task* v2; // ebx
-	UnknownData2* v3; // esi
+	MOVE_WORK* v3; // esi
 	chaowk* v4; // edi
 
 	v2 = a1;
@@ -25,8 +25,8 @@ int __cdecl ALBHV_Glide(task* a1)
 		MOV_TurnToAim2(v2, 256);
 		if (v4->Behavior.Mode == 1)
 		{
-			v3->speed.y = 0;
-			v3->velocity.y = 0.25f;
+			v3->Acc.y = 0;
+			v3->Velo.y = 0.25f;
 			//v4->Position.y += 0.05f;
 			if (v4->pos.y > 25)
 			{
@@ -43,10 +43,10 @@ int __cdecl ALBHV_Glide(task* a1)
 		}
 		else if (v4->Behavior.Mode == 2)
 		{
-			if (v3->field_40 & 0x400)
+			if (v3->Flag & 0x400)
 				AL_SetBehaviorWithTimer(a1, (int)0x00562D20, -1); //00562D20 = albhv_move
 
-			v3->speed.y = v3->gravity * 0.05f;
+			v3->Acc.y = v3->Gravity * 0.05f;
 		}
 	}
 	return BHV_RET_CONTINUE;

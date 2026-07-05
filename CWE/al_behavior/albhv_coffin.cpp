@@ -22,7 +22,7 @@ signed int ALBHV_RideCoffin(task* a1)
 
 	if (!(v1->Behavior.Flag & 4))
 	{
-		if (a1->EntityData2->field_40 & 0x400)
+		if (a1->EntityData2->Flag & 0x400)
 		{
 			//AL_ForwardAcc(a1, 0.1f);
 			AL_ForwardSpd(a1, 1);
@@ -30,7 +30,7 @@ signed int ALBHV_RideCoffin(task* a1)
 		}
 	}
 
-	if (a1->EntityData2->field_40 & 0x4000)
+	if (a1->EntityData2->Flag & 0x4000)
 	{
 		c_colli_hit_info* v6 = CCL_IsHitKindEx(a1, 0xCB);
 		if (v6 && v6->hit_twp)
@@ -69,12 +69,12 @@ signed int ALBHV_RideCoffin(task* a1)
 		if (MOV_DistFromAim(a1) < 36.0)
 			sub_561740((int)a1);
 
-		a1->twp->pos.y = a1->EntityData2->field_DC;
+		a1->twp->pos.y = a1->EntityData2->WaterY;
 		MOV_TurnToAim2(a1, 100);
 		float v8 = 0.005f;
-		a1->EntityData2->speed.y = -a1->EntityData2->gravity - a1->EntityData2->velocity.y * 0.1f;
-		a1->EntityData2->speed.x = njSin(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.x * 0.05f;
-		a1->EntityData2->speed.z = njCos(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.z * 0.05f;
+		a1->EntityData2->Acc.y = -a1->EntityData2->Gravity - a1->EntityData2->Velo.y * 0.1f;
+		a1->EntityData2->Acc.x = njSin(a1->twp->ang.y) * v8 - a1->EntityData2->Velo.x * 0.05f;
+		a1->EntityData2->Acc.z = njCos(a1->twp->ang.y) * v8 - a1->EntityData2->Velo.z * 0.05f;
 
 
 		//AL_ForwardAcc(a1, ChaoGlobal.WalkAcc * 0.8f);
@@ -105,7 +105,7 @@ signed int __cdecl ALBHV_GoToCoffin(task* a1)
 	ALW_LockOn(a1, v1);
 	AL_EmotionAdd(a1, EM_ST_THIRSTY, 100);
 
-	sub_534F80((int)& stru_1A15938[9], &a1->EntityData2->Waypoint, stru_1A15938[9].nbIndex);
+	sub_534F80((int)& stru_1A15938[9], &a1->EntityData2->AimPos, stru_1A15938[9].nbIndex);
 
 	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);

@@ -394,7 +394,7 @@ FunctionPointer(void *, MemoryManager__AllocateArray, (int count, int size), 0x7
 FunctionPointer(void, MemoryManager__Deallocate2, (AllocatedMem *a1, size_t count), 0x77DFE0);
 VoidFunc(UpdateControllers, 0x77E780);
 
-FunctionPointer(UnknownData2 *, AllocateUnknownData2, (task *obj), 0x7966D0);
+FunctionPointer(MOVE_WORK *, MOV_Init, (task *tp), 0x7966D0);
 VoidFunc(nullsub_1, 0x6FE430);
 FunctionPointer(int, nullsub_2, (), 0x7B4AEF);
 FunctionPointer(int, nullsub_3, (), 0x7F4700);

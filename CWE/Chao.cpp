@@ -74,7 +74,7 @@ void AL_GetRandomAttrPos_0(task* a1)
 {
 	if (stru_1A15938[1].nbIndex > 0)
 	{
-		sub_534F80alt((int)&stru_1A15938[1], &a1->EntityData2->Waypoint, stru_1A15938[1].nbIndex);
+		sub_534F80alt((int)&stru_1A15938[1], &a1->EntityData2->AimPos, stru_1A15938[1].nbIndex);
 	}
 }
 const int sub_55A920Ptr = 0x55A920;

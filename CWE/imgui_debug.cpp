@@ -434,7 +434,7 @@ static void ChaoInfoMenu() {
             }
             
             if (ImGui::BeginTabItem("Move")) {
-                ImGui::Text("Aim: %f %f %f", move_work->Waypoint.x, move_work->Waypoint.y, move_work->Waypoint.z);
+                ImGui::Text("Aim: %f %f %f", move_work->AimPos.x, move_work->AimPos.y, move_work->AimPos.z);
                 ImGui::Text("DistFromAim: %f", MOV_DistFromAim(pChao));
                 ImGui::Text("DistFromAimXZ: %f", MOV_DistFromAimXZ(pChao));
 

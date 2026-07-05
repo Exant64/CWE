@@ -131,7 +131,7 @@ void ALBHV_Gossip(task* a1, task* a2)
 	njPushUnitMatrix();
 	njTranslateEx(&otherChao->twp->pos);
 	RotateY(otherChao->twp->ang.y);
-	sub_426CC0(_nj_current_matrix_ptr_, &a1->EntityData2->Waypoint, &finalPos, 0);
+	sub_426CC0(_nj_current_matrix_ptr_, &a1->EntityData2->AimPos, &finalPos, 0);
 	//njCalcVector(&test, &otherChao->twp->Position, _nj_current_matrix_ptr_);
 	//TESTcalcpoint(0, &otherChao->twp->Position, &otherChao->twp->Position);
 	njPopMatrixEx();

@@ -98,8 +98,8 @@ int ALBHV_TreeShake(task* a1)
 				return BHV_RET_FINISH;
 
 			//maps -1 to 1 to 0-1
-			tree->EntityData2->speed.x = njSin(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
-			tree->EntityData2->speed.z = njCos(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
+			tree->EntityData2->Acc.x = njSin(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
+			tree->EntityData2->Acc.z = njCos(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
 			wk->Behavior.SubTimer += 1024 + 512;
 		}
 		break;
@@ -119,7 +119,7 @@ int ALBHV_GoToAimTree(task* tp) {
 	AL_BEHAVIOR* bhv = &work->Behavior;
 	int v2 = bhv->Mode;
 
-	((UnknownData2*)tp->EntityData2)->Waypoint.y = tp->twp->pos.y; //DISGUSTING hack
+	((MOVE_WORK*)tp->EntityData2)->AimPos.y = tp->twp->pos.y; //DISGUSTING hack
 
 	if (v2)
 	{
