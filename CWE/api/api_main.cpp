@@ -20,10 +20,18 @@ static CWE_API_REGISTER CWE_API_Register = {
     .pMotion = &AL_ModAPI_Motion
 };
 
+static CWE_API_PARAM_ACCESSORY CWE_API_ParamAccessory = {
+    .Version = CWE_API_PARAM_ACCESSORY_VER,
+
+    .GetAccessory = CWE_ParamGetAccessory,
+    .SetAccessory = CWE_ParamSetAccessory
+};
+
 CWE_API CWE_API_Main = {
     .Version = CWE_API_VER,
 
-    .pRegister = &CWE_API_Register
+    .pRegister = &CWE_API_Register,
+    .pParamAccessory = &CWE_API_ParamAccessory
 };
 
 // a lot of AL_ModApi.cpp stuff will end up here too

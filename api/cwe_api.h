@@ -7,14 +7,16 @@
 
 #include <string>
 
-#define CWE_API_VER 1
+#define CWE_API_VER 2
 #define CWE_API_REGISTER_VER 1
 #define CWE_API_REGISTER_MOTION_VER 1
 #define CWE_API_REGISTER_TEXTURE_VER 1
 #define CWE_API_REGISTER_MSG_VER 1
 
+#define CWE_API_PARAM_ACCESSORY_VER 1
+
 using OtherItemPtr = void(*)(int ID);
-using LastBiteFruitFuncPtr = void(*)(CHAO_SAVE_INFO* chaoData, task* fruit);
+using LastBiteFruitFuncPtr = void(*)(task* tp, CHAO_SAVE_INFO* chaoData, task* fruit);
 using SpecialItemFuncPtr = void(*)(task* chao, task* item);
 using SpecialConditionFuncPtr = bool(*)(task* chao, task* item);
 
@@ -161,8 +163,17 @@ struct CWE_API_REGISTER {
 	CWE_API_REGISTER_MOTION* pMotion;
 };
 
+struct CWE_API_PARAM_ACCESSORY {
+	int Version;
+
+	size_t (*GetAccessory)(task* tp, uint32_t slot);
+	void (*SetAccessory)(task* tp, uint32_t slot, uint32_t kind);
+};
+
 struct CWE_API {
 	int Version;
 
 	CWE_API_REGISTER* pRegister;
+
+	CWE_API_PARAM_ACCESSORY* pParamAccessory;
 };

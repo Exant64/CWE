@@ -83,17 +83,24 @@ void AL_SetBehaviorWithFreeWork(task* tp, BHV_FUNC Func, int info) {
     AL_BehaviorSetFreeWork(tp, info);
 }
 
+void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, uint32_t slot, uint32_t kind) {
+	char id[METADATA_ID_SIZE];
+	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, kind, id)) return;
+
+	auto& accessoryData = pParamCwe->Accessories[slot];
+
+	memset(&accessoryData, 0, sizeof(accessoryData));
+	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
+	memcpy(accessoryData.ColorSlots, GetAccessoryData(kind).DefaultColors, sizeof(accessoryData.ColorSlots));
+	accessoryData.ColorFlags = 0;
+}
+
 void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, int type) {
 	char id[METADATA_ID_SIZE];
 	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
-	auto& accessoryData = pParamCwe->Accessories[slotType];
-
-	memset(&accessoryData, 0, sizeof(accessoryData));
-	memcpy(accessoryData.ID, id, sizeof(accessoryData.ID));
-	memcpy(accessoryData.ColorSlots, GetAccessoryData(type).DefaultColors, sizeof(accessoryData.ColorSlots));
-	accessoryData.ColorFlags = 0;
+	AL_SetAccessory(pParamCwe, slotType, type);
 }
 
 extern "C" __declspec(dllexport) void AL_SetAccessory(task * a1, int type) {
