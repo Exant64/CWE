@@ -510,7 +510,7 @@ extern "C"
 		gConfigVal.AutoGenerateStats = config->getBool("Easy", "EasyAutoGenerateStats", false);
 
 		//Advanced
-		gConfigVal.CustomChaoEvo = config->getBool("Chao World Extended", "CustomChaoEvo", true);
+		gConfigVal.CustomChaoEvo = config->getBool("Advanced", "CustomChaoEvo", true);
 		gConfigVal.MedalChaoCanMakeColorChao = config->getBool("Advanced", "AdvancedMedalChaocanmakeJewelChao", false);
 		gConfigVal.FixMonsterEvo = config->getBool("Advanced", "FixMonsterEvo", false);
 		gConfigVal.AccUpdateDraw = config->getBool("Advanced", "AccUpdateDraw", false);
