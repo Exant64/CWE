@@ -18,7 +18,7 @@ static int ALBHV_DakkoDislike_r(task* tp) {
     if(!bhv->Mode) {
         const float aggressive = max(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) / 100.f;
 
-        AL_EmotionAdd(tp, EM_MD_ANGER, int(3 + njRandom() * 3 + aggressive * 10));
+        AL_EmotionAdd(tp, EM_MD_ANGER, 3 * int(3 + njRandom() * 3 + aggressive * 10));
     }
 
     return ALBHV_DakkoDislike_t.Original(tp);
@@ -35,7 +35,7 @@ static int ALBHV_Eat_r(task* tp) {
     if(bhv->Mode == MD_SUTERU_START) {
         const float aggressive = max(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) / 100.f;
 
-        AL_EmotionAdd(tp, EM_MD_ANGER, int(njRandom() * 5 + njRandom() * 35 * aggressive));
+        AL_EmotionAdd(tp, EM_MD_ANGER, 3 * int(njRandom() * 5 + njRandom() * 35 * aggressive));
     }
 
     return ALBHV_Eat_t.Original(tp);
@@ -47,7 +47,7 @@ static int ALBHV_Akanbe_r(task* tp) {
     if(!bhv->Mode) {
         const float aggressive = max(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) / 100.f;
 
-        AL_EmotionAdd(tp, EM_MD_ANGER, int(5 + njRandom() * 15 * aggressive));
+        AL_EmotionAdd(tp, EM_MD_ANGER, 3 * int(5 + njRandom() * 15 * aggressive));
     }
 
     return ALBHV_Akanbe_t.Original(tp);
@@ -59,7 +59,7 @@ static int ALBHV_MesoMeso_r(task* tp) {
     if(!bhv->Mode && njRandom() < 0.2f) {
         const float aggressive = max(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) / 100.f;
 
-        AL_EmotionAdd(tp, EM_MD_ANGER, int(15 + njRandom() * 25 + 30 * aggressive));
+        AL_EmotionAdd(tp, EM_MD_ANGER, 3 * int(15 + njRandom() * 25 + 30 * aggressive));
     }
 
     return ALBHV_MesoMeso_t.Original(tp);
@@ -71,7 +71,7 @@ static int ALBHV_HungryDada_r(task* tp) {
     if(!bhv->Mode && njRandom() < 0.2f) {
         const float aggressive = max(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) / 100.f;
 
-        AL_EmotionAdd(tp, EM_MD_ANGER, int(10 + njRandom() * 5 + njRandom() * 30 * aggressive));
+        AL_EmotionAdd(tp, EM_MD_ANGER, 3 * int(10 + njRandom() * 5 + njRandom() * 30 * aggressive));
     }
 
     return ALBHV_HungryDada_t.Original(tp);
