@@ -1314,7 +1314,7 @@ static void AL_DayNightCycle_Init(task* tp) {
 
 	const auto& skyboxFilename = gDayNightManager.GetTextureFileName();
 	if (skyboxFilename) {
-		work.pTexlist = LoadCharTextures((char*)skyboxFilename->c_str());
+		work.pTexlist = texCreateTexlist((char*)skyboxFilename->c_str());
 	}
 
 	// for phases that don't have light specified we fallback to the original index 0 light
@@ -1794,7 +1794,7 @@ static void AL_DayNightCycleDestructor(task* tp) {
 		FREE(work.pVertexColorTableChunk);
 	}
 
-	// the texlist was created with LoadCharTextures which auto-allocates the texlist
+	// the texlist was created with texCreateTexlist which auto-allocates the texlist
 	// so alongside releasing the textures in the texlist, we also need to release the texlist itself
 	// note that we don't need to release the texnames because it's allocated "with" the texlist
 	if (work.pTexlist) {

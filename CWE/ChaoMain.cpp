@@ -30,7 +30,7 @@ int BeeID;
 int MirrorID;
 
 const int LoadChaoTexlistPtr = 0x00530280;
-void LoadChaoTexlist(const char* a2, NJS_TEXLIST* texlist, int a1)
+void AL_LoadTex(const char* a2, NJS_TEXLIST* texlist, int a1)
 {
 	__asm
 	{
@@ -48,10 +48,10 @@ VoidFunc(Load_al_palette, 0x00534350);
 extern "C" __declspec(dllexport) void ChaoMain_Constructor_Hook()
 {
 	for(const auto& load: TexlistLoads) {
-		LoadChaoTexlist(load.first, load.second, 0);
+		AL_LoadTex(load.first, load.second, 0);
 	}
 
-	LoadChaoTexlist("AL_MINI_PARTS_TEX", (NJS_TEXLIST*)0x01366AE4, 0);
+	AL_LoadTex("AL_MINI_PARTS_TEX", (NJS_TEXLIST*)0x01366AE4, 0);
 }
 
 VoidFunc(sub_52E400, 0x52E400);

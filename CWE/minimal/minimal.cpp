@@ -357,10 +357,10 @@ static void InitLevelThings_r() {
         for (const auto& load : TexlistLoads) {
             if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 
-            LoadTextureList((char*)load.first, load.second);
+            texLoadTexturePvmFile((char*)load.first, load.second);
         }
 
-        LoadTextureList((char*)"CWE_UI", &CWE_UI_TEXLIST);
+        texLoadTexturePvmFile((char*)"CWE_UI", &CWE_UI_TEXLIST);
     }
 
     InitLevelThings_hook.Original();

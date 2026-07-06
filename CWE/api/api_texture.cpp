@@ -48,7 +48,7 @@ NJS_TEXLIST* AddAutoTextureLoad(const char* pTextureName) {
 		return TextureLoadPairs[pTextureName];
 	}
 
-	NJS_TEXLIST* pTexlist = LoadCharTextures((char*)pTextureName);
+	NJS_TEXLIST* pTexlist = texCreateTexlist((char*)pTextureName);
 	njReleaseTexture(pTexlist);
 
 	TextureLoadPairs[pTextureName] = pTexlist;

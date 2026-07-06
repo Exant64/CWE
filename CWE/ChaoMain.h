@@ -210,4 +210,4 @@ extern int MirrorID;
 void ShinyJewelSpace_Init();
 VoidFunc(AL_PlayerControlManager_Load, 0x0052BA00);
 void ChaoMain_Init();
-void LoadChaoTexlist(const char* a2, NJS_TEXLIST* texlist, int a1);
+void AL_LoadTex(const char* a2, NJS_TEXLIST* texlist, int a1);

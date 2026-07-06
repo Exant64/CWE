@@ -35,7 +35,7 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 	switch (a1->mode)
 	{
 	case 0:
-		LoadTextureList((char*)"al_stg_kinder_ad_tex", (NJS_TEXLIST*)0x011D2ACC);
+		texLoadTexturePvmFile((char*)"al_stg_kinder_ad_tex", (NJS_TEXLIST*)0x011D2ACC);
 		a1->mode++;
 		memset(NazukeyaBuff, 0, 0x60 + 4 + sizeof(AL_NAME));
 		NazukeyaBuff[80] = 1;
