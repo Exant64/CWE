@@ -15,7 +15,7 @@ size_t RegisterAlItemString(const char* str) {
 
 void OverwriteAlItemString(size_t id, const char* str) {
 	if (id >= MsgAlItem.size()) {
-		PrintDebug("OverwriteAlItemString: invalid id %d, size of MsgAlItem is %d", id, MsgAlItem.size());
+		___OutputDebugString("OverwriteAlItemString: invalid id %d, size of MsgAlItem is %d", id, MsgAlItem.size());
 		return;
 	}
 

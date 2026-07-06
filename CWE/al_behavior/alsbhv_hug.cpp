@@ -80,7 +80,7 @@ signed int __cdecl ALBHV_GoToHug(task* a1)
 	double v5; // st7
 	
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
-		PrintDebug("ALW_CMD_CHANGE");
+		___OutputDebugString("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
 

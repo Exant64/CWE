@@ -363,7 +363,7 @@ static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 			updateCurrentSave = false;
 			FILE* f = fopen__(selectedSavePath, "rb");
 			if (f)  {
-				PrintDebug("save index: %c", GetMultiSaveIndex());
+				___OutputDebugString("save index: %c", GetMultiSaveIndex());
 
 				// this magic int disables the second selection menu (the big X)
 				// if the selected savefile is the same one as the current one

@@ -144,7 +144,7 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 	ITEM_SAVE_INFO* v9 = (ITEM_SAVE_INFO*)AL_GetNewItemSaveInfo(9);
 	if (v9 == nullptr)
 	{
-		PrintDebug("HatAccRender: no hat slots left");
+		___OutputDebugString("HatAccRender: no hat slots left");
 		return false;
 	}
 
@@ -161,7 +161,7 @@ bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Ga
 
 	auto save = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
 	if (!save) {
-		PrintDebug("HatAccRender: no hat slots left");
+		___OutputDebugString("HatAccRender: no hat slots left");
 		return false;
 	}
 
@@ -1617,7 +1617,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		BigMedals[15] = (NJS_CNK_OBJECT*)0x012e586c;
 
 		if (customizationController) {
-			while (1) PrintDebug("customizationController not 0, what happened?");
+			while (1) ___OutputDebugString("customizationController not 0, what happened?");
 		}
 
 		someUIProjectionCode(&ChaoHatPosition, &posOut);

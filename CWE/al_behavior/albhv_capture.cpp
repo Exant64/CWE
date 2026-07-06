@@ -159,7 +159,7 @@ int ALBHV_Capture(task* tp) {
 				float addform;
 
 				if (minitype < 0 || minitype >= (int)ModAPI_MinimalInfluence.size()) {
-					PrintDebug("ALBHV_Capture: animal type (%d) out of bounds when checking influence, exiting bhv", minitype);
+					___OutputDebugString("ALBHV_Capture: animal type (%d) out of bounds when checking influence, exiting bhv", minitype);
 					return BHV_RET_FINISH;
 				}
 

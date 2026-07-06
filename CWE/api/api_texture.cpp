@@ -16,7 +16,7 @@ FunctionPointer(int, njReleaseTexture, (NJS_TEXLIST* arg0), 0x0077F9F0);
 extern "C" __declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, NJS_TEXLIST* load)
 {
 	if(TextureRegisteredCheck.contains(load)) {
-		PrintDebug("RegisterChaoTexlistLoad: %s already registered, skipping...", name);
+		___OutputDebugString("RegisterChaoTexlistLoad: %s already registered, skipping...", name);
 		return;
 	}
 
@@ -39,7 +39,7 @@ extern "C" __declspec(dllexport) void RegisterChaoTexlistLoad(const char* name, 
 NJS_TEXLIST* AddAutoTextureLoad(const char* pTextureName) {
 	for(const auto& pair : TexlistLoads) {
 		if(!strcmp(pair.first, pTextureName)) {
-			PrintDebug("AddAutoTextureLoad: %s already registered as TexlistLoad, skipping...", pTextureName);
+			___OutputDebugString("AddAutoTextureLoad: %s already registered as TexlistLoad, skipping...", pTextureName);
 			return pair.second;
 		}
 	}

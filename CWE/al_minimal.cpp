@@ -326,7 +326,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
 
-		if (!v1->fwp) PrintDebug("unknown_a == 0, problem incoming");
+		if (!v1->fwp) ___OutputDebugString("unknown_a == 0, problem incoming");
 
 		if (RenderFix_IsEnabled() && v1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{

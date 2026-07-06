@@ -32,7 +32,7 @@ int MOV_TurnToAim2(task* tp, int ang)
 
 void MOV_SetAimPos(task* tp, NJS_POINT3* pPos) {
 	if (!pPos || !tp || !tp->mwp) {
-		PrintDebug("MOV_SetAimPos error");
+		___OutputDebugString("MOV_SetAimPos error");
 		return;
 	}
 

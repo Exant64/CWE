@@ -153,7 +153,7 @@ Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
 		return TRUE;
 	}
 	
-	PrintDebug("IsLessonLearned: invalid lesson! %d", LessonKind);
+	___OutputDebugString("IsLessonLearned: invalid lesson! %d", LessonKind);
 	return TRUE;
 }
 

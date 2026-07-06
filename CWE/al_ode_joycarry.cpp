@@ -45,7 +45,7 @@ void JoyCarry_Display(task* a1)
 	for (int i = 0; i < 25; i++)
 		if (JoyCarryModels[i])
 			chCnkDrawObject(JoyCarryModels[i]);
-		else PrintDebug("%d \n", i);
+		else ___OutputDebugString("%d \n", i);
 	njPopMatrixEx();
 }
 void JoyCarry_Main(task *a1){}

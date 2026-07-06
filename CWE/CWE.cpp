@@ -341,7 +341,7 @@ extern "C"
 				MenuButtons_Held[0] & Buttons_A && 
 				MenuButtons_Held[0] & Buttons_L) 
 			{
-				PrintDebug("toys have been reset");
+				___OutputDebugString("toys have been reset");
 				ToyResetTimer = 120;
 				for (int i = 0; i < NB_ALW_KIND * 3; i++) {
 					cweSaveFile.cweToyInfo[i].place = 0;
@@ -622,7 +622,7 @@ extern "C"
 
 		if (gConfigVal.UnusedToys)
 		{
-			PrintDebug("Load UnusedToys");
+			___OutputDebugString("Load UnusedToys");
 
 			//unused rattles
 			WriteJump((void*)0x55DDE0, ALBHV_Garagara);

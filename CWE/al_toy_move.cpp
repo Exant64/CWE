@@ -94,7 +94,7 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 		}
 	}
 	else {
-		PrintDebug("AL_Toy_Move_Register: invalid toy area");
+		___OutputDebugString("AL_Toy_Move_Register: invalid toy area");
 	}
 
 	AddToGlobalChaoThingMaybe_(6, obj, a3, (CHAO_SAVE_INFO*)info);
@@ -564,7 +564,7 @@ void SaveToyPos() {
 			else if (!AL_IsGarden())
 			{
 				v5->place = 0;
-				PrintDebug( "trying to save item in invalid area");
+				___OutputDebugString( "trying to save item in invalid area");
 			}
 			else 
 				v5->place = 0;

@@ -30,7 +30,7 @@ static int CheckTreeVertexCount(NJS_CNK_OBJECT* pSaplingObj, NJS_CNK_OBJECT* pAd
 	//if only one of them is null then that means it has an extra child/sibling
 	bool null_check = NoneNullOrAll(pSaplingObj, pAdultObj, pDeadObj);
 	if (!null_check) {
-		PrintDebug("AddChaoTree: hierarchy of all 3 tree types doesn't match!");
+		___OutputDebugString("AddChaoTree: hierarchy of all 3 tree types doesn't match!");
 		return 1;
 	}
 
@@ -41,7 +41,7 @@ static int CheckTreeVertexCount(NJS_CNK_OBJECT* pSaplingObj, NJS_CNK_OBJECT* pAd
 	
 	bool model_null_check = NoneNullOrAll(pSaplingObj->model, pAdultObj->model, pDeadObj->model);
 	if (!model_null_check) {
-		PrintDebug("AddChaoTree: one of the tree models has an extra chunkmodel on a node!");
+		___OutputDebugString("AddChaoTree: one of the tree models has an extra chunkmodel on a node!");
 		return 1;
 	}
 
@@ -52,7 +52,7 @@ static int CheckTreeVertexCount(NJS_CNK_OBJECT* pSaplingObj, NJS_CNK_OBJECT* pAd
 		Sint16 dead_vtx_count = GetVertexCount(pDeadObj->model);
 
 		if (sapling_vtx_count != adult_vtx_count || adult_vtx_count != dead_vtx_count || sapling_vtx_count != dead_vtx_count) {
-			PrintDebug("AddChaoTree: one or more tree types don't have matching vertex counts!");
+			___OutputDebugString("AddChaoTree: one or more tree types don't have matching vertex counts!");
 			return 1;
 		}
 	}
@@ -71,12 +71,12 @@ size_t AddChaoTree(const CWE_API_TREE_DATA& tree_data, BlackMarketItemAttributes
 	FruitLeafCounter = 0;
 
 	if (CheckTreeVertexCount(tree_data.pSaplingObj, tree_data.pAdultObj, tree_data.pDeadObj)) {
-		PrintDebug("AddChaoTree: CheckTreeVertexCount failed");
+		___OutputDebugString("AddChaoTree: CheckTreeVertexCount failed");
 		return -1;
 	}
 
 	if (FruitLeafCounter != 3) {
-		PrintDebug("AddChaoTree: Tree has more or less than 3 fruit nodes (%d)", FruitLeafCounter);
+		___OutputDebugString("AddChaoTree: Tree has more or less than 3 fruit nodes (%d)", FruitLeafCounter);
 		return -1;
 	}
 

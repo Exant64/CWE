@@ -16,7 +16,7 @@
 void Social_ErrorCheck(task* a1)
 {
 #ifdef SOCIALDEBUG
-	if (!a1->Data2) PrintDebug("Social error: socialwk is 0");
+	if (!a1->Data2) ___OutputDebugString("Social error: socialwk is 0");
 #endif
 }
 

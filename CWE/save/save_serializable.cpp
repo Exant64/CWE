@@ -19,7 +19,7 @@ void Parse(NJS_VECTOR& a, Value& d) {
 void Parse(SAlItemCwe& a, Value& d) {
 	if (!d.HasMember("mCategory") ||
 		!d.HasMember("mType")) {
-		PrintDebug("SAlItem doesnt have correct members");
+		___OutputDebugString("SAlItem doesnt have correct members");
 		return;
 	}
 	a.mCategory = d["mCategory"].GetInt();

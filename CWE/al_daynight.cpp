@@ -918,12 +918,12 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_CNK_OBJECT* 
 }
 
 static void dumpGjParameter(const SA2B_Model* pModel) {
-	PrintDebug("--start dump--");
+	___OutputDebugString("--start dump--");
 	const auto test = [](SA2B_GeometryData* geom, int count) {
 		for (size_t i = 0; i < count; i++) {
 			for (size_t j = 0; j < geom[i].ParameterCount; j++) {
 				if (geom[i].ParameterOffset[j].ParameterType == 8) {
-					PrintDebug("PARAM TEX %x", geom[i].ParameterOffset[j].Data);
+					___OutputDebugString("PARAM TEX %x", geom[i].ParameterOffset[j].Data);
 				}
 			}
 		}

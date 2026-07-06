@@ -14,19 +14,19 @@ void Write(PrettyWriter<FileWriteStream>& d, SAlItemCwe& a);
 template <typename T, int max>
 void LoadMember(Document& d, std::array<T, max>& result, const char* jsonName) {
 	if (!d.HasMember(jsonName)) {
-		PrintDebug("%s doesnt exist", jsonName);
+		___OutputDebugString("%s doesnt exist", jsonName);
 		return;
 	}
 
 	auto& arr = d[jsonName];
 	if (!arr.IsArray()) {
-		PrintDebug("%s isnt an array", jsonName);
+		___OutputDebugString("%s isnt an array", jsonName);
 		return;
 	}
-	PrintDebug("%d", arr.Size());
+	___OutputDebugString("%d", arr.Size());
 	for (size_t i = 0; i < arr.Size(); i++) {
 		if (i >= max) {
-			PrintDebug("%s has more items than the specified max", jsonName);
+			___OutputDebugString("%s has more items than the specified max", jsonName);
 			break;
 		}
 		

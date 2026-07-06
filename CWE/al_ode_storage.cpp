@@ -78,7 +78,7 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 		someUIProjectionCode(&posIn, &posOut);
 
 		if (chaoSelect->m_chaoTasks->at(i)) {
-			PrintDebug("AL_ChaoSelect_UpdateList: the vector should be empty, returning");
+			___OutputDebugString("AL_ChaoSelect_UpdateList: the vector should be empty, returning");
 			return;
 		}
 
@@ -91,7 +91,7 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 			chaoSelect->m_chaoTasks->at(i) = obj;
 		}
 		else {
-			PrintDebug("AL_ChaoSelect_UpdateList: couldn't create chao at slot %d in %x", i, chaoSelect->m_chaoData);
+			___OutputDebugString("AL_ChaoSelect_UpdateList: couldn't create chao at slot %d in %x", i, chaoSelect->m_chaoData);
 		}
 	}
 }

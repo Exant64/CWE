@@ -141,9 +141,9 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	// checks vertex chunk type (so that its vertex+normal)
 	__int16 vertChunkType = (__int16)*(int*)model->vlist;
 	if (vertChunkType != NJD_CV_VN) {
-		PrintDebug("--------------------------------------ERROR-----------------------------------------------");
-		PrintDebug("invalid vertex chunk type (probably using vertex colors), cancelling custom chao register!");
-		PrintDebug("------------------------------------------------------------------------------------------");
+		___OutputDebugString("--------------------------------------ERROR-----------------------------------------------");
+		___OutputDebugString("invalid vertex chunk type (probably using vertex colors), cancelling custom chao register!");
+		___OutputDebugString("------------------------------------------------------------------------------------------");
 		return 1;
 	}
 
@@ -154,9 +154,9 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	{
 		//if texCount out of bounds
 		if ((foundChunk[1] & 0x1FFF) >= texCount) {
-			PrintDebug("------------------------------ERROR------------------------------------");
-			PrintDebug("texture index is out of bounds (%d), cancelling custom chao register!", (foundChunk[1] & 0x1FFF));
-			PrintDebug("-----------------------------------------------------------------------");
+			___OutputDebugString("------------------------------ERROR------------------------------------");
+			___OutputDebugString("texture index is out of bounds (%d), cancelling custom chao register!", (foundChunk[1] & 0x1FFF));
+			___OutputDebugString("-----------------------------------------------------------------------");
 
 			return 1;
 		}
@@ -167,9 +167,9 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	}
 
 	if (NodeCounter == 27 && texChunkCount != 2) {
-		PrintDebug("---------------------------------ERROR---------------------------------------");
-		PrintDebug("Mouth (node 27) doesn't have 2 materials, cancelling custom chao register!");
-		PrintDebug("-----------------------------------------------------------------------------");
+		___OutputDebugString("---------------------------------ERROR---------------------------------------");
+		___OutputDebugString("Mouth (node 27) doesn't have 2 materials, cancelling custom chao register!");
+		___OutputDebugString("-----------------------------------------------------------------------------");
 
 		return 1;
 	}
@@ -206,7 +206,7 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	size_t newChaoType = (AL_RootObject.size() / 6) + 2;
 
 	if (!pData->Name) {
-		PrintDebug("Custom Chao's name is null!");
+		___OutputDebugString("Custom Chao's name is null!");
 		return -1;
 	}
 
@@ -215,24 +215,24 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	name_buffer[sizeof(pData->ID) - 1] = '\0';
 
 	if (strlen(name_buffer) == 0) {	
-		PrintDebug("Custom Chao ID is an empty string, please set a proper one!");
+		___OutputDebugString("Custom Chao ID is an empty string, please set a proper one!");
 		return -1;
 	}
 
 	//check if ID is already used
 	for (const auto& entry : CustomChaoTypeEntries) {
 		if (strcmp(pData->ID, entry.Data.ID) == 0) {
-			PrintDebug("------------------ERROR-------------------");
-			PrintDebug("Custom Chao ID %s is already used by %s", pData->ID, entry.Data.Name);
-			PrintDebug("------------------------------------------");
+			___OutputDebugString("------------------ERROR-------------------");
+			___OutputDebugString("Custom Chao ID %s is already used by %s", pData->ID, entry.Data.Name);
+			___OutputDebugString("------------------------------------------");
 			return -1;
 		}
 	}
 
 	if (pData->TextureCount <= 0) {
-		PrintDebug("-------------------------------ERROR---------------------------------------");
-		PrintDebug("Custom Chao ID %s has negative (or zero) texture count, cancelling register", pData->ID);
-		PrintDebug("---------------------------------------------------------------------------");
+		___OutputDebugString("-------------------------------ERROR---------------------------------------");
+		___OutputDebugString("Custom Chao ID %s has negative (or zero) texture count, cancelling register", pData->ID);
+		___OutputDebugString("---------------------------------------------------------------------------");
 	}
 
 	for (int i = 0; i < pData->TextureCount; i++) {
@@ -245,9 +245,9 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	}
 
 	if (NodeCounter != AL_PART_END) {
-		PrintDebug("-------------------------------ERROR---------------------------------------");
-		PrintDebug("The number of nodes is not 40 (it's %d), cancelling character chao register!", NodeCounter);
-		PrintDebug("---------------------------------------------------------------------------");
+		___OutputDebugString("-------------------------------ERROR---------------------------------------");
+		___OutputDebugString("The number of nodes is not 40 (it's %d), cancelling character chao register!", NodeCounter);
+		___OutputDebugString("---------------------------------------------------------------------------");
 		return -1;
 	}
 
@@ -307,7 +307,7 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	if (AL_IsCustomChao(tp)) {
 		int id = AL_CustomChao_SearchID(GET_CWEPARAM(tp)->TypeID);
 		if (id == -1) {
-			PrintDebug("AL_ShapeInit_r: couldn't find type %s, using %s as default", GET_CWEPARAM(tp)->TypeID, DefaultCustomChao);
+			___OutputDebugString("AL_ShapeInit_r: couldn't find type %s, using %s as default", GET_CWEPARAM(tp)->TypeID, DefaultCustomChao);
 			id = AL_CustomChao_SearchID(DefaultCustomChao);
 		}
 
