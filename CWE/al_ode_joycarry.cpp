@@ -34,7 +34,7 @@ const char* JoyCarryFiles[] =
 	"Clock3"
 };
 
-NJS_OBJECT* JoyCarryModels[32];
+NJS_CNK_OBJECT* JoyCarryModels[32];
 
 void JoyCarry_Display(task* a1)
 {

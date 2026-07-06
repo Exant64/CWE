@@ -38,7 +38,7 @@ extern "C"
 	extern void EggEndHook();
 }
 
-const std::array<std::pair<int, NJS_OBJECT*>, 6> OmochaoPartModels = {{
+const std::array<std::pair<int, NJS_CNK_OBJECT*>, 6> OmochaoPartModels = {{
 	{HANDS, &object_omobuild_arms},
 	{MOUTH, &object_omobuild_mouth},
 	{LEGS, &object_omobuild_legs},
@@ -62,7 +62,7 @@ void __cdecl AL_OmoBuild_Display(task* a1)
 		if (!(omoinf->phase & LEGS))
 			njTranslate(NULL, 0, -0.575f, 0);
 
-		ChaoColoring(omoinf->jewel, omoinf->color, omoinf->shiny, omoinf->monotone, 0, object_omobuild_base.chunkmodel);
+		ChaoColoring(omoinf->jewel, omoinf->color, omoinf->shiny, omoinf->monotone, 0, object_omobuild_base.model);
 		chCnkDrawObject(&object_omobuild_base);
 		SetChunkTexIndexNull(2);
 		ChunkMatEnable = 0;

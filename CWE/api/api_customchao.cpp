@@ -22,7 +22,7 @@ static const char* DefaultCustomChao = "cwe_spartoi";
 static std::vector <NJS_TEXNAME> AL_BODY_TEXNAMES;
 
 //AL_RootObject buffer to store the 'type 26' model in
-static std::vector<NJS_OBJECT*> AL_RootObject;
+static std::vector<NJS_CNK_OBJECT*> AL_RootObject;
 
 //node counter for checking the number of nodes and the current node when traversing the char chao's hierarchy in EditChunkObjectTexture
 static int NodeCounter;
@@ -125,7 +125,7 @@ void __cdecl AL_IconDraw_r(task* tp)
 }
 
 static void FillAL_RootObject() {
-	NJS_OBJECT** chaoModels = (NJS_OBJECT**)GetDllData("AL_RootObject");
+	NJS_CNK_OBJECT** chaoModels = (NJS_CNK_OBJECT**)GetDllData("AL_RootObject");
 	for (int i = 0; i < 144; i++) {
 		AL_RootObject.push_back(chaoModels[i]);
 	}
@@ -177,12 +177,12 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	return 0;
 }
 
-static int EditChunkObjectTexture(NJS_OBJECT* obj, int baseTexture, int texCount)
+static int EditChunkObjectTexture(NJS_CNK_OBJECT* obj, int baseTexture, int texCount)
 {
 	do
 	{
-		if (obj->chunkmodel) {
-			if (EditChunkModelTexture(obj->chunkmodel, baseTexture, texCount)) {
+		if (obj->model) {
+			if (EditChunkModelTexture(obj->model, baseTexture, texCount)) {
 				//if there's an error, return with error (wow what an insight)
 				return 1;
 			}

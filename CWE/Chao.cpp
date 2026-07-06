@@ -380,9 +380,9 @@ static void Chao_Main_r(task* a1)
 	if (pParam->FlySwim < -1 || pParam->FlySwim > 1 ||
 		pParam->PowerRun < -1 || pParam->PowerRun > 1)
 	{
-		if (GET_CHAOWK(a1)->Face.pMouthObject && GET_CHAOWK(a1)->Face.pMouthObject->chunkmodel)
+		if (GET_CHAOWK(a1)->Face.pMouthObject && GET_CHAOWK(a1)->Face.pMouthObject->model)
 		{
-			__int32* color = (__int32*)GET_CHAOWK(a1)->Face.pMouthObject->chunkmodel->plist;
+			__int32* color = (__int32*)GET_CHAOWK(a1)->Face.pMouthObject->model->plist;
 			color[1] = 0xFFFFFFFF;
 		}
 	}

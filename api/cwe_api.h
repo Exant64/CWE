@@ -7,6 +7,10 @@
 
 #include <string>
 
+#if defined(SA2MODLOADER_H) && !defined(CWEV9)
+typedef NJS_OBJECT NJS_CNK_OBJECT;
+#endif
+
 #define CWE_API_VER 2
 #define CWE_API_REGISTER_VER 1
 #define CWE_API_REGISTER_MOTION_VER 1
@@ -21,11 +25,11 @@ using SpecialItemFuncPtr = void(*)(task* chao, task* item);
 using SpecialConditionFuncPtr = bool(*)(task* chao, task* item);
 
 struct CWE_API_TREE_DATA {
-	NJS_OBJECT* pSeedObj;
+	NJS_CNK_OBJECT* pSeedObj;
 
-	NJS_OBJECT* pSaplingObj;
-	NJS_OBJECT* pAdultObj;
-	NJS_OBJECT* pDeadObj;
+	NJS_CNK_OBJECT* pSaplingObj;
+	NJS_CNK_OBJECT* pAdultObj;
+	NJS_CNK_OBJECT* pDeadObj;
 
 	NJS_TEXLIST* pTexlist;
 
@@ -40,7 +44,7 @@ struct CWE_API_TREE_DATA {
 
 //animal stuff
 struct CWE_PARTS {
-	NJS_OBJECT** objects;
+	NJS_CNK_OBJECT** objects;
 	NJS_TEXLIST* tex;
 };
 
@@ -55,7 +59,7 @@ enum {
 struct CWE_MINIMAL {
 	CWE_PARTS child;
 	CWE_PARTS adult;
-	NJS_OBJECT* animalObject;
+	NJS_CNK_OBJECT* animalObject;
 	const char* texlistName;
 	NJS_TEXLIST* animalTexlist;
 	NJS_MOTION* motions[4];
@@ -84,14 +88,14 @@ struct CWE_REGAPI {
 	void(*RegisterOtherItemFunc)(int ID, OtherItemPtr func); //things like "themes", we don't really support this properly yet though, we just did it to code the themes
 	void(*SetRebuyFlag)(int Category, int ID, bool rebuy);
 
-	size_t(*AddChaoHat)(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
+	size_t(*AddChaoHat)(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
 
 	//fruit functions
-	int(*RegisterChaoFruit)(NJS_OBJECT* model, NJS_TEXLIST* texlist, ChaoItemStats* stats, BlackMarketItemAttributes* attrib, LastBiteFruitFuncPtr funcPtr, const char* name, const char* description);
+	int(*RegisterChaoFruit)(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, ChaoItemStats* stats, BlackMarketItemAttributes* attrib, LastBiteFruitFuncPtr funcPtr, const char* name, const char* description);
 	void(*SetFruitTexlist)(int ID, NJS_TEXLIST* texlist); //used to override the textures of a fruit, i honestly don't remember why we did this at all
 
 	//accessory functions
-	int(*RegisterChaoAccessory)(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
+	int(*RegisterChaoAccessory)(EAccessoryType type, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
 	void(*AccessoryMakeBald)(int accessory_id);
 	void(*AccessoryDisableJiggle)(int accessory_id);
 
@@ -99,7 +103,7 @@ struct CWE_REGAPI {
 	size_t(*AddChaoTree)(const CWE_API_TREE_DATA& tree_data, BlackMarketItemAttributes* attrib, const char* name, const char* description);
 
 	//specials
-	int(*RegisterChaoSpecial)(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, SpecialItemFuncPtr func, SpecialConditionFuncPtr cond, const char* name, const char* description, bool isAction);
+	int(*RegisterChaoSpecial)(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, SpecialItemFuncPtr func, SpecialConditionFuncPtr cond, const char* name, const char* description, bool isAction);
 	size_t(*RegisterEyeColor)(const char* textureName, NJS_TEXLIST* texlist, int specialID); //lens, to be used in conjunction with specials
 
 	//custom chao

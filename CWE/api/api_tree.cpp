@@ -5,8 +5,8 @@
 #include "api_tree.h"
 
 std::vector<NJS_TEXLIST*> ModAPI_SeedTexlists;
-std::vector<NJS_OBJECT*> ModAPI_TreeModels;
-std::vector<NJS_OBJECT*> ModAPI_SeedModels;
+std::vector<NJS_CNK_OBJECT*> ModAPI_TreeModels;
+std::vector<NJS_CNK_OBJECT*> ModAPI_SeedModels;
 
 std::vector<CWE_REG_TREE_ENTRY> ModAPI_TreeEntries;
 
@@ -26,7 +26,7 @@ static inline bool NoneNullOrAll(void* p1, void* p2, void* p3) {
 	return p1 && p2 && p3;
 }
 
-static int CheckTreeVertexCount(NJS_OBJECT* pSaplingObj, NJS_OBJECT* pAdultObj, NJS_OBJECT* pDeadObj) {
+static int CheckTreeVertexCount(NJS_CNK_OBJECT* pSaplingObj, NJS_CNK_OBJECT* pAdultObj, NJS_CNK_OBJECT* pDeadObj) {
 	//if only one of them is null then that means it has an extra child/sibling
 	bool null_check = NoneNullOrAll(pSaplingObj, pAdultObj, pDeadObj);
 	if (!null_check) {
@@ -47,9 +47,9 @@ static int CheckTreeVertexCount(NJS_OBJECT* pSaplingObj, NJS_OBJECT* pAdultObj, 
 
 	//same thing here
 	if (pSaplingObj->model) {
-		Sint16 sapling_vtx_count = GetVertexCount(pSaplingObj->chunkmodel);
-		Sint16 adult_vtx_count = GetVertexCount(pAdultObj->chunkmodel);
-		Sint16 dead_vtx_count = GetVertexCount(pDeadObj->chunkmodel);
+		Sint16 sapling_vtx_count = GetVertexCount(pSaplingObj->model);
+		Sint16 adult_vtx_count = GetVertexCount(pAdultObj->model);
+		Sint16 dead_vtx_count = GetVertexCount(pDeadObj->model);
 
 		if (sapling_vtx_count != adult_vtx_count || adult_vtx_count != dead_vtx_count || sapling_vtx_count != dead_vtx_count) {
 			PrintDebug("AddChaoTree: one or more tree types don't have matching vertex counts!");
@@ -130,8 +130,8 @@ void AL_ModAPI_Tree_Update() {
 }
 
 void AL_ModAPI_Tree_Init() {
-	DataArray(NJS_OBJECT*, Seeds, 0x012E537C, 7);
-	DataArray(NJS_OBJECT*, TreeModels, 0x132913C, 24);
+	DataArray(NJS_CNK_OBJECT*, Seeds, 0x012E537C, 7);
+	DataArray(NJS_CNK_OBJECT*, TreeModels, 0x132913C, 24);
 
 	//seed
 	for (int i = 0; i < BlackMarketCategories[ChaoItemCategory_Seed].Count; i++) {

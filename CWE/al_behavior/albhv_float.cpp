@@ -59,7 +59,7 @@ signed int ALBHV_RideFloat(task* a1)
 		//AL_SetMotionLink(a1, 148 - 3);
 		Chao_RegAnimation(a1, "alm_float");
 		//AL_SetItem(a1, 0x22, &object_00F005A0, &AL_TOY_TEXLIST); //0x22
-		AL_SetItem(a1, 0, (NJS_OBJECT*)0x013005A0, (NJS_TEXLIST*)0x01366AFC);
+		AL_SetItem(a1, 0, (NJS_CNK_OBJECT*)0x013005A0, (NJS_TEXLIST*)0x01366AFC);
 		//AL_SetItem(a1, 0, (NJS_CNK_OBJECT*)0x03898530, &AL_TOY_TEXLIST); //coffin test
 
 		//AL_SetMotionLink(a1, 260);

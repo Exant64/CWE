@@ -10,7 +10,7 @@
 #include "al_behavior/al_intention.h"
 #include "renderfix.h"
 
-extern NJS_OBJECT object_alo_mannequin;
+extern NJS_CNK_OBJECT object_alo_mannequin;
 void __cdecl ALO_Special_Display(task* a1)
 {
 	DoLighting(LightIndex);

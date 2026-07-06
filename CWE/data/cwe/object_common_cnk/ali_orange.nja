@@ -5,4 +5,4 @@ Sint16 cnk_obj_ali_orange_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0xF
 
 NJS_CNK_MODEL cnk_obj_ali_orange = { cnk_obj_ali_orange_vtx, cnk_obj_ali_orange_poly, { 0, -0.2641847f, 0 }, 1.113663f };
 
-NJS_OBJECT obj_ali_orange = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_obj_ali_orange, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT obj_ali_orange = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_obj_ali_orange, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };

@@ -65,9 +65,9 @@ static const NJS_POINT3 ChaoColorEditPosition = { 400, 300 + 50, -12 };
 static const NJS_POINT3 ChaoMedalsPosition = { 110, 300 + 50, -12 };
 
 //models
-DataArray(NJS_OBJECT*, BigMedals, 0x012E58F8, 16);
-extern NJS_OBJECT object_ala_full_mannequin;
-extern NJS_OBJECT object_alo_mannequin;
+DataArray(NJS_CNK_OBJECT*, BigMedals, 0x012E58F8, 16);
+extern NJS_CNK_OBJECT object_ala_full_mannequin;
+extern NJS_CNK_OBJECT object_alo_mannequin;
 
 static task* pChao = NULL;
 
@@ -1610,11 +1610,11 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 		//setup sadx medal models
 		BigMedals[0] = &NoMedal_Main;
-		BigMedals[11] = (NJS_OBJECT*)0x012E365C;
-		BigMedals[12] = (NJS_OBJECT*)0x012E390C;
-		BigMedals[13] = (NJS_OBJECT*)0x012E43C4;
-		BigMedals[14] = (NJS_OBJECT*)0x012e4e1c;
-		BigMedals[15] = (NJS_OBJECT*)0x012e586c;
+		BigMedals[11] = (NJS_CNK_OBJECT*)0x012E365C;
+		BigMedals[12] = (NJS_CNK_OBJECT*)0x012E390C;
+		BigMedals[13] = (NJS_CNK_OBJECT*)0x012E43C4;
+		BigMedals[14] = (NJS_CNK_OBJECT*)0x012e4e1c;
+		BigMedals[15] = (NJS_CNK_OBJECT*)0x012e586c;
 
 		if (customizationController) {
 			while (1) PrintDebug("customizationController not 0, what happened?");

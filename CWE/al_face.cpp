@@ -24,9 +24,9 @@ void __cdecl AL_FaceSetEyeCWE(task* a3, int a2, int a1)
 	chaowk* v4; // ecx
 	int v5; // eax
 	__int16 v6; // di
-	NJS_OBJECT* v7; // eax
+	NJS_CNK_OBJECT* v7; // eax
 	NJS_CNK_MODEL* v8; // eax
-	NJS_OBJECT* v9; // esi
+	NJS_CNK_OBJECT* v9; // esi
 	NJS_CNK_MODEL* v10; // ecx
 
 	v3 = &GET_CHAOWK(a3)->Face;
@@ -178,7 +178,7 @@ LABEL_10:
 	v7 = v3->pEyeObject[0];
 	if (v7)
 	{
-		v8 = (NJS_CNK_MODEL*)v7->chunkmodel;
+		v8 = (NJS_CNK_MODEL*)v7->model;
 		if (v8)
 		{
 			SetChunkTextureID_(v8, v6);
@@ -187,7 +187,7 @@ LABEL_10:
 	v9 = v3->pEyeObject[1];
 	if (v9)
 	{
-		v10 = (NJS_CNK_MODEL*)v9->chunkmodel;
+		v10 = (NJS_CNK_MODEL*)v9->model;
 		if (v10)
 		{
 			SetChunkTextureID_(v10, v6);

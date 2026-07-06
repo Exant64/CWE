@@ -20,8 +20,8 @@
 DataPointer(CHAO_SAVE_INFO*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
 FunctionPointer(void, sub_782780, (int a1, int a2, float a3), 0x782780);
-DataArray(NJS_OBJECT*, dword_171A240, 0x171A240, 4);
-DataArray(NJS_OBJECT*, off_12E537C, 0x12E537C, 7);
+DataArray(NJS_CNK_OBJECT*, dword_171A240, 0x171A240, 4);
+DataArray(NJS_CNK_OBJECT*, off_12E537C, 0x12E537C, 7);
 
 const int sub_42D690Ptr = 0x42D690;
 void sub_42D690(int a1)
@@ -55,7 +55,7 @@ void __cdecl sub_58F980(task* a1)
 				njScale(NULL, 1.2f, 1.2f, 1.2f);
 				njTranslate(NULL, 0.0f, flt_B18F54, 0.0f);
 				njSetTexture(&CHAOSDRIVE_TEXLIST);
-				njCnkDrawObject((NJS_OBJECT*)dword_171A240[v1]);
+				njCnkDrawObject((NJS_CNK_OBJECT*)dword_171A240[v1]);
 			}
 			else
 			{

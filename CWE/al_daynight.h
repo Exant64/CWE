@@ -26,7 +26,7 @@ struct DAYNIGHT_SKYBOX_TEXMAP_TABLE {
 struct DAYNIGHT_SKYBOX_TABLE {
 	bool isChunk;
 	bool isCopied;
-	NJS_OBJECT* pObj;
+	NJS_CNK_OBJECT* pObj;
 	DAYNIGHT_SKYBOX_TEXMAP_TABLE* pTexMap;
 	size_t texMapCount;
 };
@@ -45,7 +45,7 @@ struct DAYNIGHT_WORK {
 
 	bool isChunkLandTable;
 
-	SA2B_VertexData** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
+	GJS_ARRAY** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
 	Uint32** pVertexColorTableChunk;
 
 	NJS_TEXLIST* pTexlist;
@@ -144,7 +144,7 @@ struct CWE_API_DAYNIGHT_REGISTER {
 	Uint32 Version;
 
 	// Version >= 1
-	void(*RegisterECWSkybox)(const char* pGardenID, NJS_OBJECT* pObj);
+	void(*RegisterECWSkybox)(const char* pGardenID, NJS_CNK_OBJECT* pObj);
 	void(*RegisterTimeManager)(const char* pGardenID, DAYNIGHT_TIME_MANAGER_FUNC pFunc);
 	void(*RegisterRenderManager)(const char* pGardenID, DAYNIGHT_RENDER_MANAGER_FUNC pFunc);
 };

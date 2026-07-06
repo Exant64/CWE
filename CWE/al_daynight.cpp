@@ -60,11 +60,11 @@ bool& AL_DayNightCycle_GetSaveIsRain() {
 
 #pragma region API
 
-static std::unordered_map<std::string, std::vector<NJS_OBJECT*>> gDayNightSkyboxListMap;
+static std::unordered_map<std::string, std::vector<NJS_CNK_OBJECT*>> gDayNightSkyboxListMap;
 static std::unordered_map<std::string, DAYNIGHT_TIME_MANAGER_FUNC> gDayNightTimeManagerMap;
 static std::unordered_map<std::string, DAYNIGHT_RENDER_MANAGER_FUNC> gDayNightRenderManagerMap;
 
-void RegisterECWSkybox(const char* pGardenID, NJS_OBJECT* pObj) {
+void RegisterECWSkybox(const char* pGardenID, NJS_CNK_OBJECT* pObj) {
 	if(!gDayNightSkyboxListMap.contains(pGardenID)) {
 		gDayNightSkyboxListMap[pGardenID] = {};
 	}
@@ -101,7 +101,7 @@ static size_t AL_DayNightCycle_GetDayFrameCount() {
 	return 24 * AL_DayNightCycle_GetHourFrameCount();
 }
 
-FunctionPointer(void, gjDrawObject, (NJS_OBJECT* a1), 0x0042B530);
+FunctionPointer(void, gjDrawObject, (NJS_CNK_OBJECT* a1), 0x0042B530);
 
 DataPointer(int, nj_cnk_blend_mode, 0x025F0264);
 
@@ -758,14 +758,14 @@ static bool AL_DayNightCycle_ChangeTextures(DAYNIGHT_SKYBOX_TABLE& skybox, int p
 #pragma endregion
 
 // TexMap table populating for chunk models
-static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObject, NJS_OBJECT*& pDstObject, std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE>& texMapTableList, bool& showMixedTexlistError) {
+static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_CNK_OBJECT* pObject, NJS_CNK_OBJECT*& pDstObject, std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE>& texMapTableList, bool& showMixedTexlistError) {
 	bool needsOriginalTexlist[NB_PHASE] = { false };
 	size_t tinyTIDCount = 0;
 
 	// plist parsing code yoinked from shaddatic, credit to them
 	// i aped the code a little, sorry shad
 	int type;
-	Sint16* plist = pObject->chunkmodel->plist;
+	Sint16* plist = pObject->model->plist;
 
 	while (1)
 	{
@@ -855,7 +855,7 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 	// it's the only way we can enable material colors on it
 	if (texMapTableList.size() > 0) {
 		// first we need to find the end of the vertexchunk
-		Uint32* pSrcSearchEnd = (Uint32*)pObject->chunkmodel->vlist;
+		Uint32* pSrcSearchEnd = (Uint32*)pObject->model->vlist;
 		Uint8 chunkType = pSrcSearchEnd[0] & 0xFF;
 
 		size_t vertexChunkCount = 0;
@@ -875,18 +875,18 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_Chunk(const NJS_OBJECT* pObj
 		}
 
 		// if it has vertex colors we will get here and it doesn't return there above
-		pDstObject = ALLOC(NJS_OBJECT);
+		pDstObject = ALLOC(NJS_CNK_OBJECT);
 		*pDstObject = *pObject;
 
-		pDstObject->chunkmodel = ALLOC(NJS_CNK_MODEL);
-		*pDstObject->chunkmodel = *pObject->chunkmodel;
+		pDstObject->model = ALLOC(NJS_CNK_MODEL);
+		*pDstObject->model = *pObject->model;
 	
 		const size_t vlistSize = (vertexChunkCount + 1) * 2 + totalVertexCount * 6 + 1;
-		pDstObject->chunkmodel->vlist = ALLOC_ARRAY(vlistSize, Sint32);
-		memset(pDstObject->chunkmodel->vlist, 0, vlistSize * sizeof(Uint32));
+		pDstObject->model->vlist = ALLOC_ARRAY(vlistSize, Sint32);
+		memset(pDstObject->model->vlist, 0, vlistSize * sizeof(Uint32));
 
-		Uint32* pSrcSearch = (Uint32*)pObject->chunkmodel->vlist;
-		Uint32* pDstSearch = (Uint32*)pDstObject->chunkmodel->vlist;
+		Uint32* pSrcSearch = (Uint32*)pObject->model->vlist;
+		Uint32* pDstSearch = (Uint32*)pDstObject->model->vlist;
 		
 		while ((Uint8)(pSrcSearch[0] & 0xFF) != 0xFF) {
 			pDstSearch[0] = pSrcSearch[0];
@@ -934,11 +934,11 @@ static void dumpGjParameter(const SA2B_Model* pModel) {
 }
 
 // TexMap table populating for GC models
-static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel, std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE>& texMapTableList, bool& showMixedTexlistError) {
+static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const GJS_MODEL* pModel, std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE>& texMapTableList, bool& showMixedTexlistError) {
 	bool needsOriginalTexlist[NB_PHASE] = { false };
 	size_t textureParamCount = 0;
 	
-	const auto checkAndAddGeo = [&](const SA2B_GeometryData* pGeo) {
+	const auto checkAndAddGeo = [&](const GJS_MESHSET* pGeo) {
 		// since these separate "geometries" can be sorta interpreted as separate materials
 		// basically we're checking if the material's texture matches anything we're looking for
 		// if yes, then let's store the pointer to the texture ID, and also the lighting info so we can switch it later on
@@ -951,9 +951,9 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 		const DAYNIGHT_SKYBOX* pSkyboxEntry = NULL;
 		uint32_t* pTexID = NULL;
 
-		for (size_t i = 0; i < pGeo->ParameterCount; i++) {
-			auto& para = pGeo->ParameterOffset[i];
-			const auto type = para.ParameterType;
+		for (size_t i = 0; i < pGeo->nbMat; i++) {
+			auto& para = pGeo->mats[i];
+			const auto type = para.id;
 
 #ifndef _DEBUG
 			if (pSkyboxEntry && pLightingParameter) {
@@ -962,15 +962,15 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 #endif
 
 			if (type == 2) { //"lighting" parameter type
-				pLightingParameter = &para.Data;
-				origLightingParameter = para.Data;
+				pLightingParameter = &para.setting;
+				origLightingParameter = para.setting;
 			}
 
 			if (type == 8) { // "texture" parameter type
-				const auto texID = para.Data & 0xFFFF;
+				const auto texID = para.setting & 0xFFFF;
 				textureParamCount++;
 
-				pTexID = &para.Data;
+				pTexID = &para.setting;
 
 				const DAYNIGHT_SKYBOX* pResultSkyboxEntry;
 				if (AL_DayNightCycle_FindSkyboxTexID(texID, &pResultSkyboxEntry)) {
@@ -1024,18 +1024,18 @@ static void AL_DayNightCycle_CheckAndPopulateSkybox_GC(const SA2B_Model* pModel,
 		}
 	};
 
-	for (size_t i = 0; i < pModel->OpaqueGeometryCount; i++) {
-		checkAndAddGeo(&pModel->OpaqueGeoData[i]);
+	for (size_t i = 0; i < pModel->nbOpaque; i++) {
+		checkAndAddGeo(&pModel->opaque[i]);
 	}
 
-	for (size_t i = 0; i < pModel->TranslucentGeometryCount; i++) {
-		checkAndAddGeo(&pModel->TranslucentGeoData[i]);
+	for (size_t i = 0; i < pModel->nbTrans; i++) {
+		checkAndAddGeo(&pModel->transparent[i]);
 	}
 }
 
 // Checks if the COL's model has any skybox textures, if yes then it fills the list of texture IDs to change
 // (and what to change it to)
-static bool AL_DayNightCycle_CheckSkybox(bool isGC, NJS_OBJECT* pSrcObj, DAYNIGHT_SKYBOX_TABLE& entry) {
+static bool AL_DayNightCycle_CheckSkybox(bool isGC, NJS_CNK_OBJECT* pSrcObj, DAYNIGHT_SKYBOX_TABLE& entry) {
 	static APIErrorUtil error("Error in CheckSkybox: ");
 
 	// for GC models we could "predict" the max size in advance easily, but for chunk it requires parsing it twice
@@ -1043,13 +1043,14 @@ static bool AL_DayNightCycle_CheckSkybox(bool isGC, NJS_OBJECT* pSrcObj, DAYNIGH
 	std::vector <DAYNIGHT_SKYBOX_TEXMAP_TABLE> texMapTableList;
 
 	bool mixedTexlistError = false;
-	NJS_OBJECT* pDstChunkObj = NULL;
+	NJS_CNK_OBJECT* pDstChunkObj = NULL;
 
 	if (isGC) {
-		const SA2B_Model* pModel = pSrcObj->sa2bmodel;
+		const GJS_OBJECT* pSrcObjGC = (GJS_OBJECT*)pSrcObj;
+		const auto pModel = pSrcObjGC->model;
 
 		// reserve the max possible amount beforehand, since we can easily calculate it in advance
-		const size_t sumGeoCount = pModel->OpaqueGeometryCount + pModel->TranslucentGeometryCount;
+		const size_t sumGeoCount = pModel->nbOpaque + pModel->nbTrans;
 		texMapTableList.reserve(sumGeoCount);
 
 		AL_DayNightCycle_CheckAndPopulateSkybox_GC(pModel, texMapTableList, mixedTexlistError);
@@ -1091,14 +1092,14 @@ static bool AL_DayNightCycle_CheckSkybox(bool isGC, NJS_OBJECT* pSrcObj, DAYNIGH
 
 // Copies the vertex data of the source model (for the colors) and gets the pointer to the vertex colors to not have to look for them again
 // and also returns if it had vertex colors at all, if it doesn't it won't bother to copy
-static bool AL_DayNightCycle_CopyGCModel(SA2B_VertexData** pVertexColorTable, SA2B_VertexData* pSrcVertices, SA2B_VertexData*& pDstVertices) {
+static bool AL_DayNightCycle_CopyGCModel(GJS_ARRAY** pVertexColorTable, GJS_ARRAY* pSrcVertices, GJS_ARRAY*& pDstVertices) {
 	// we only need to clone the vertex colors, so we loop through the vertex types until we find it
-	const SA2B_VertexData* pSrcVert = pSrcVertices;
+	const GJS_ARRAY* pSrcVert = pSrcVertices;
 	size_t vertexColorIndex = -1;
 
 	// we first need the size of the whole thing
-	while (pSrcVert->DataType != -1) {
-		if ((pSrcVert->DataType & 0xF) == 3) { // vertex color datatype == 3
+	while (pSrcVert->id != 0xFF) {
+		if ((pSrcVert->id & 0xF) == 3) { // vertex color datatype == 3
 			vertexColorIndex = pSrcVert - pSrcVertices;
 		}
 		pSrcVert++;
@@ -1109,11 +1110,11 @@ static bool AL_DayNightCycle_CopyGCModel(SA2B_VertexData** pVertexColorTable, SA
 	}
 
 	const size_t vertexDataCount = (pSrcVert + 1 - pSrcVertices);
-	pDstVertices = ALLOC_ARRAY(vertexDataCount, SA2B_VertexData);
-	memcpy(pDstVertices, pSrcVertices, sizeof(SA2B_VertexData) * vertexDataCount);
+	pDstVertices = ALLOC_ARRAY(vertexDataCount, GJS_ARRAY);
+	memcpy(pDstVertices, pSrcVertices, sizeof(GJS_ARRAY) * vertexDataCount);
 
-	SA2B_VertexData& pVertexColorData = pDstVertices[vertexColorIndex];
-	pVertexColorData.Data = ALLOC_ARRAY(pVertexColorData.DataSize, uint8_t);
+	GJS_ARRAY& pVertexColorData = pDstVertices[vertexColorIndex];
+	pVertexColorData.base_ptr = ALLOC_ARRAY(pVertexColorData.size, uint8_t);
 	//memcpy(pVertexColorData.Data, (pSrc->Vertices + vertexColorIndex)->Data, pVertexColorData.DataSize);
 
 	pVertexColorTable[VERTEX_COLOR_TABLE_SRC] = pSrcVertices + vertexColorIndex;
@@ -1123,25 +1124,25 @@ static bool AL_DayNightCycle_CopyGCModel(SA2B_VertexData** pVertexColorTable, SA
 }
 
 // Copies the COL and its vertex colors for GC models
-static void AL_DayNightCycle_CopyCOLObject_GC(const COL* pSrc, COL* pDst, SA2B_VertexData** pVertexColorTable) {
+static void AL_DayNightCycle_CopyCOLObject_GC(const COL* pSrc, COL* pDst, GJS_ARRAY** pVertexColorTable) {
 	// !!! we assume there are no children or siblings, DrawLandtable doesn't support hierarchies (thanks shad) !!!
 
-	const SA2B_Model* pSrcModel = pSrc->Model->sa2bmodel;
+	const GJS_MODEL* pSrcModel = ((GJS_OBJECT*)pSrc->Model)->model;
 	if (!pSrcModel) return;
 	
-	SA2B_VertexData* pDstVertices;
-	if (!AL_DayNightCycle_CopyGCModel(pVertexColorTable, pSrcModel->Vertices, pDstVertices)) return;
+	GJS_ARRAY* pDstVertices;
+	if (!AL_DayNightCycle_CopyGCModel(pVertexColorTable, pSrcModel->arrays, pDstVertices)) return;
 
-	// little disorienting naming scheme, the COL's Model refers to it's NJS_OBJECT, not the sa2b_model
-	pDst->Model = ALLOC(NJS_OBJECT);
-	*pDst->Model = *pSrc->Model;
+	// little disorienting naming scheme, the COL's Model refers to it's NJS_CNK_OBJECT, not the sa2b_model
+	pDst->Model = (NJS_CNK_OBJECT*)ALLOC(GJS_OBJECT);
+	*(GJS_OBJECT*)pDst->Model = *(GJS_OBJECT*)pSrc->Model;
 	
-	SA2B_Model* pDstModel = ALLOC(SA2B_Model);
-	pDst->Model->sa2bmodel = pDstModel;
+	GJS_MODEL* pDstModel = ALLOC(GJS_MODEL);
+	((GJS_OBJECT*)pDst->Model)->model = pDstModel;
 
 	*pDstModel = *pSrcModel;
 
-	pDstModel->Vertices = pDstVertices;
+	pDstModel->arrays = pDstVertices;
 }
 
 // Copies the vertex data of the source model (for the colors) 
@@ -1176,18 +1177,18 @@ static bool AL_DayNightCycle_CopyVertexChunk(Uint32** pVertexColorTable, Uint32*
 static void AL_DayNightCycle_CopyCOLObject_Chunk(const COL* pSrc, COL* pDst, Uint32** pVertexColorTable) {
 	// !!! we assume there are no children or siblings, DrawLandtable doesn't support hierarchies (thanks shad) !!!
 
-	const NJS_CNK_MODEL* pSrcModel = pSrc->Model->chunkmodel;
+	const NJS_CNK_MODEL* pSrcModel = pSrc->Model->model;
 	if (!pSrcModel) return;
 
 	Uint32* pDstVertices;
 	if (!AL_DayNightCycle_CopyVertexChunk(pVertexColorTable, (Uint32*)pSrcModel->vlist, pDstVertices)) return;
 
-	// little disorienting naming scheme, the COL's Model refers to it's NJS_OBJECT, not the sa2b_model
-	pDst->Model = ALLOC(NJS_OBJECT);
+	// little disorienting naming scheme, the COL's Model refers to it's NJS_CNK_OBJECT, not the sa2b_model
+	pDst->Model = ALLOC(NJS_CNK_OBJECT);
 	*pDst->Model = *pSrc->Model;
 
 	NJS_CNK_MODEL* pDstModel = ALLOC(NJS_CNK_MODEL);
-	pDst->Model->chunkmodel = pDstModel;
+	pDst->Model->model = pDstModel;
 
 	*pDstModel = *pSrcModel;
 
@@ -1223,8 +1224,8 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 	// table of src and dst pointers for each col, to not have to find them every frame
 	// we also depend on this to know which COLs we can lerp or not
 	if (!work.isChunkLandTable) {	
-		work.pVertexColorTableGC = ALLOC_ARRAY(pointerCount, SA2B_VertexData*);
-		memset(work.pVertexColorTableGC, NULL, sizeof(SA2B_VertexData*) * pointerCount);
+		work.pVertexColorTableGC = ALLOC_ARRAY(pointerCount, GJS_ARRAY*);
+		memset(work.pVertexColorTableGC, NULL, sizeof(GJS_ARRAY*) * pointerCount);
 	}
 	else {
 		work.pVertexColorTableChunk = ALLOC_ARRAY(pointerCount, Uint32*);
@@ -1380,22 +1381,22 @@ static void AL_DayNightCycle_ApplyVertexColor_Chunk(const NJS_ARGB& mulColor, co
 }
 
 // Applies the color we want to the destination vertexdata, using the source vertexdata as the base color (for GC model)
-static void AL_DayNightCycle_ApplyVertexColor_GC(const NJS_ARGB& mulColor, const SA2B_VertexData* pSrcVertexColorData, SA2B_VertexData* pDstVertexColorData) {
+static void AL_DayNightCycle_ApplyVertexColor_GC(const NJS_ARGB& mulColor, const GJS_ARRAY* pSrcVertexColorData, GJS_ARRAY* pDstVertexColorData) {
 	// technically NJS_COLOR isn't good, because in the GC models it's ARGB not BGRA
 	// but we're dirty little cheaters and use NJS_COLOR anyways (we write to GRA instead of RGB)
-	NJS_COLOR* pSrcColors = reinterpret_cast<NJS_COLOR*>(pSrcVertexColorData->Data);
-	NJS_COLOR* pDstColors = reinterpret_cast<NJS_COLOR*>(pDstVertexColorData->Data);
+	NJS_COLOR* pSrcColors = reinterpret_cast<NJS_COLOR*>(pSrcVertexColorData->base_ptr);
+	NJS_COLOR* pDstColors = reinterpret_cast<NJS_COLOR*>(pDstVertexColorData->base_ptr);
 
 	// this is the data type part of the data type, not the struct type (aka the one telling us it's vcolor)
 	// apparently this means it could theoretically be RGB565 or other formats but i'm really hoping it can't happen
 	// just to be safe there's an assert here so i can catch it if it does in any vanilla gardens
-	const size_t dataType = (pSrcVertexColorData->DataType >> 4) & 0xF;
+	const size_t dataType = (pSrcVertexColorData->id >> 4) & 0xF;
 	assert(dataType == 0);
-	assert(pSrcVertexColorData->ElementCount == pSrcVertexColorData->DataSize / 4);
-	assert(pSrcVertexColorData->ElementCount != 0);
-	assert(pSrcVertexColorData->ElementCount == pDstVertexColorData->ElementCount);
+	assert(pSrcVertexColorData->count == pSrcVertexColorData->size / 4);
+	assert(pSrcVertexColorData->count != 0);
+	assert(pSrcVertexColorData->count == pDstVertexColorData->count);
 
-	for (size_t i = 0; i < pSrcVertexColorData->ElementCount; i++) {
+	for (size_t i = 0; i < pSrcVertexColorData->count; i++) {
 		NJS_COLOR& color = pDstColors[i];
 
 		color = pSrcColors[i];	
@@ -1420,8 +1421,8 @@ static void AL_DayNightCycle_ApplyColorToLandTable(task* tp) {
 			AL_DayNightCycle_ApplyVertexColor_Chunk(work.appliedColor, pSrcVertices, pDstVertices);
 		}
 		else {
-			const SA2B_VertexData* pSrcVertices = work.pVertexColorTableGC[colIndex * 2 + VERTEX_COLOR_TABLE_SRC];
-			SA2B_VertexData* pDstVertices = work.pVertexColorTableGC[colIndex * 2 + VERTEX_COLOR_TABLE_DST];
+			const GJS_ARRAY* pSrcVertices = work.pVertexColorTableGC[colIndex * 2 + VERTEX_COLOR_TABLE_SRC];
+			GJS_ARRAY* pDstVertices = work.pVertexColorTableGC[colIndex * 2 + VERTEX_COLOR_TABLE_DST];
 
 			if (!pDstVertices) continue;
 
@@ -1733,29 +1734,29 @@ static void AL_DayNightCycle_RestoreAll(task* tp) {
 }
 
 // Frees the copied object, the sa2bmodel, and the vertex colors it copies
-static void AL_DayNightCycle_FreeObject_Chunk(NJS_OBJECT* pObj, Uint32** pColorTable) {
+static void AL_DayNightCycle_FreeObject_Chunk(NJS_CNK_OBJECT* pObj, Uint32** pColorTable) {
 	if (!pObj) return;
 
 	// if we have vertex colors for the node that means we copied everything up to that point 
 	// so free them
 	if (pColorTable[VERTEX_COLOR_TABLE_DST]) {
-		FREE(pObj->chunkmodel->vlist);
-		FREE(pObj->chunkmodel);
+		FREE(pObj->model->vlist);
+		FREE(pObj->model);
 		FREE(pObj);
 	}
 }
 
 // Frees the copied object, the sa2bmodel, and the vertex colors it copies
-static void AL_DayNightCycle_FreeObject_GC(NJS_OBJECT* pObj, SA2B_VertexData** pColorTable) {
+static void AL_DayNightCycle_FreeObject_GC(GJS_OBJECT* pObj, GJS_ARRAY** pColorTable) {
 	if (!pObj) return;
 
 	// if we have vertex colors for the node that means we copied everything up to that point 
 	// so free them
 	auto pDstColors = pColorTable[VERTEX_COLOR_TABLE_DST];
 	if (pDstColors) {
-		FREE(pDstColors->Data);
-		FREE(pObj->sa2bmodel->Vertices);
-		FREE(pObj->sa2bmodel);
+		FREE(pDstColors->base_ptr);
+		FREE(pObj->model->arrays);
+		FREE(pObj->model);
 		FREE(pObj);
 	}
 }
@@ -1770,7 +1771,7 @@ static void AL_DayNightCycle_FreeLandTableCOLAndObjects(task* tp) {
 			AL_DayNightCycle_FreeObject_Chunk(pLand->COLList[i].Model, &work.pVertexColorTableChunk[i * 2]);
 		}
 		else {
-			AL_DayNightCycle_FreeObject_GC(pLand->COLList[i].Model, &work.pVertexColorTableGC[i * 2]);
+			AL_DayNightCycle_FreeObject_GC((GJS_OBJECT*)pLand->COLList[i].Model, &work.pVertexColorTableGC[i * 2]);
 		}
 	}
 
@@ -1807,8 +1808,8 @@ static void AL_DayNightCycleDestructor(task* tp) {
 			FREE(skybox.pTexMap);
 
 			if (skybox.isChunk && skybox.isCopied) {
-				FREE(skybox.pObj->chunkmodel->vlist);
-				FREE(skybox.pObj->chunkmodel);
+				FREE(skybox.pObj->model->vlist);
+				FREE(skybox.pObj->model);
 				FREE(skybox.pObj);
 			}
 		}

@@ -86,8 +86,8 @@ static void chCnkDrawModelWrapper(NJS_CNK_MODEL* a1) {
 FunctionPointer(signed int, njPushMatrixEx, (), 0x00429710);
 FunctionPointer(signed int, njPopMatrixEx, (), 0x00429000);
 //FunctionPointer(void, njScale, (float a1, float a2, float a3), 0x00427750);
-FunctionPointer(void, njCnkDrawObjectOrig, (NJS_OBJECT *a1), 0x42E730);
-static void njCnkDrawObject(NJS_OBJECT* a1) {
+FunctionPointer(void, njCnkDrawObjectOrig, (NJS_CNK_OBJECT *a1), 0x42E730);
+static void njCnkDrawObject(NJS_CNK_OBJECT* a1) {
 	njCnkDrawObjectOrig(a1);
 }
 FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
@@ -112,7 +112,7 @@ void  njTranslate(float *a1, float a2, float a3, float a4);
 void  njTranslateEx(NJS_VECTOR* a1);
 
 const int njCnkDrawObjectPtr = 0x0056E210;
-void chCnkDrawObject(NJS_OBJECT* a1);
+void chCnkDrawObject(NJS_CNK_OBJECT* a1);
 
 void njCnkDrawModel(NJS_CNK_MODEL* a1);
 
@@ -130,7 +130,7 @@ void DrawQuadTexture(int a1, float a2);
 void njSetTextureNum(int texid);
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered = false);
 
-FunctionPointer(void, njCnkMotion, (NJS_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
+FunctionPointer(void, njCnkMotion, (NJS_CNK_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
 
 VoidFunc(SaveControl3D, 0x446D00);
 VoidFunc(LoadControl3D, 0x446D10);

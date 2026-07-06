@@ -25,7 +25,7 @@ void AL_PartsMinimalFlagOn_DX(task* tp, int MinimalType);
 
 int  AL_PartsIsMinimalFlagOn(task* tp, int MinimalType);
 
-void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist);
+void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist);
 
 
 bool AL_IsExistPartsChild(int MinimalNum, int PartsKind);
@@ -37,7 +37,7 @@ void AL_RemoveMinimalParts(task* tp, int PartsType);
 
 void AL_Parts_Init();
 void sub_566B80(task *a1);
-DataArray(NJS_OBJECT**, ChildAnimalParts, 0x012E59A0, SA2BAnimal_Phoenix);
-DataArray(NJS_OBJECT**, AdultAnimalParts, 0x012E5938, SA2BAnimal_Phoenix);
-extern NJS_OBJECT** SADXChildAnimalParts[15];
-extern NJS_OBJECT** SADXAdultAnimalParts[15];
+DataArray(NJS_CNK_OBJECT**, ChildAnimalParts, 0x012E59A0, SA2BAnimal_Phoenix);
+DataArray(NJS_CNK_OBJECT**, AdultAnimalParts, 0x012E5938, SA2BAnimal_Phoenix);
+extern NJS_CNK_OBJECT** SADXChildAnimalParts[15];
+extern NJS_CNK_OBJECT** SADXAdultAnimalParts[15];

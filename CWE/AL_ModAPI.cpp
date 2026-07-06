@@ -36,7 +36,7 @@
 #include "data/alo_missing_tree.nja"
 #pragma warning(pop)
 
-extern NJS_OBJECT object_alo_missing;
+extern NJS_CNK_OBJECT object_alo_missing;
 
 std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
 std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
@@ -47,7 +47,7 @@ std::unordered_set<int> ModAPI_SpecialAction;
 
 std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 
-size_t AddChaoHat(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+size_t AddChaoHat(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	size_t ret = MaskObjObjectList.size();
 	if (model == nullptr)
 		MaskObjObjectList.push_back(std::make_pair(&object_alo_missing, texlist_cwe_object));
@@ -79,7 +79,7 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 extern "C"
 {
 	//COMPATBILITY LAYER
-	__declspec(dllexport) int RegisterChaoHat(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description, bool hideHead) {
+	__declspec(dllexport) int RegisterChaoHat(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description, bool hideHead) {
 		if (!hideHead) {
 			return CWE_API_Legacy.RegisterChaoAccessory(EAccessoryType::Head, model, texlist, attrib, name, description);
 		}
@@ -125,7 +125,7 @@ extern "C"
 		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Set(ID, texlist);
 	}
 
-	__declspec(dllexport) int RegisterChaoFruit(NJS_OBJECT* model, NJS_TEXLIST* texlist, ChaoItemStats* stats, BlackMarketItemAttributes* attrib, LastBiteFruitFuncPtr funcPtr, const char* name, const char* description)
+	__declspec(dllexport) int RegisterChaoFruit(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, ChaoItemStats* stats, BlackMarketItemAttributes* attrib, LastBiteFruitFuncPtr funcPtr, const char* name, const char* description)
 	{
 		int ret = ObjectRegistry::Get(ChaoItemCategory_Fruit)->Size();
 
@@ -153,7 +153,7 @@ extern "C"
 	{
 		OtherItemFuncs.insert(std::make_pair(ID, (int)func));
 	}
-	__declspec(dllexport) int RegisterChaoSpecial(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, SpecialItemFuncPtr func, SpecialConditionFuncPtr cond, const char* name, const char* description, bool isAction)
+	__declspec(dllexport) int RegisterChaoSpecial(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, SpecialItemFuncPtr func, SpecialConditionFuncPtr cond, const char* name, const char* description, bool isAction)
 	{
 		int ret = ObjectRegistry::Get(ChaoItemCategory_Special)->Size();
 

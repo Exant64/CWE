@@ -21,7 +21,7 @@ enum
 	MD_FLOAT_FLY_DOWN_START,
 	MD_FLOAT_FLY_DOWN
 };
-//extern NJS_OBJECT object_00F005A0;
+//extern NJS_CNK_OBJECT object_00F005A0;
 void ALO_Float_Displayer_(task* a1)
 {
 	if (a1->twp->wtimer)
@@ -41,7 +41,7 @@ void ALO_Float_Displayer_(task* a1)
 		njTranslateEx(&a1->twp->pos);
 		njRotateY(NULL, a1->twp->ang.y);
 		njTranslate(NULL, 0, 0, -2.65f);
-		chCnkDrawObject((NJS_OBJECT*)0x013005A0);//0x03898530 - coffin
+		chCnkDrawObject((NJS_CNK_OBJECT*)0x013005A0);//0x03898530 - coffin
 		
 		if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
 			njTranslate(NULL, 0, 0.4f, 2.65f);

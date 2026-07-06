@@ -28,7 +28,7 @@
 #include <optional>
 #include <renderfix.h>
 
-extern NJS_OBJECT object_alo_missing;
+extern NJS_CNK_OBJECT object_alo_missing;
 
 const int AnimateChaoPtr = 0x0056EF80;
 void AnimateChao(int a1)
@@ -63,22 +63,22 @@ const char* MaskObjObjectListDllNames[OBAKE_HEAD_PARTS_EGG][4] = {
 	MASK_OBJ_STR("object_al_mask_wool_c_mask_wool_c"),
 	MASK_OBJ_STR("object_al_mzsk_teethingring_mzsk_teethingring")
 };
-static NJS_OBJECT* VanillaMaskObjObjectList[OBAKE_HEAD_PARTS_EGG][4];
-static NJS_OBJECT* object_al_egghead_egghead;
-static NJS_OBJECT* object_al_egghead_eye_egghead_eye;
-static NJS_OBJECT* object_al_egghead_jaw_egghead_jaw;
+static NJS_CNK_OBJECT* VanillaMaskObjObjectList[OBAKE_HEAD_PARTS_EGG][4];
+static NJS_CNK_OBJECT* object_al_egghead_egghead;
+static NJS_CNK_OBJECT* object_al_egghead_eye_egghead_eye;
+static NJS_CNK_OBJECT* object_al_egghead_jaw_egghead_jaw;
 
 static void AL_Mask_Init() {
-	object_al_egghead_egghead = (NJS_OBJECT*)GetDllData("object_al_egghead_egghead");
-	object_al_egghead_eye_egghead_eye = (NJS_OBJECT*)GetDllData("object_al_egghead_eye_egghead_eye");
-	object_al_egghead_jaw_egghead_jaw = (NJS_OBJECT*)GetDllData("object_al_egghead_jaw_egghead_jaw");
+	object_al_egghead_egghead = (NJS_CNK_OBJECT*)GetDllData("object_al_egghead_egghead");
+	object_al_egghead_eye_egghead_eye = (NJS_CNK_OBJECT*)GetDllData("object_al_egghead_eye_egghead_eye");
+	object_al_egghead_jaw_egghead_jaw = (NJS_CNK_OBJECT*)GetDllData("object_al_egghead_jaw_egghead_jaw");
 
 	for (size_t i = 0; i < LengthOfArray(MaskObjObjectListDllNames); i++) {
-		NJS_OBJECT** pObjList = VanillaMaskObjObjectList[i];
+		NJS_CNK_OBJECT** pObjList = VanillaMaskObjObjectList[i];
 		const char** namesPtr = MaskObjObjectListDllNames[i];
 
 		while (*namesPtr != nullptr) {
-			*pObjList = (NJS_OBJECT*)GetDllData(*namesPtr);
+			*pObjList = (NJS_CNK_OBJECT*)GetDllData(*namesPtr);
 
 			namesPtr++;
 			pObjList++;
@@ -86,7 +86,7 @@ static void AL_Mask_Init() {
 	}
 }
 void AL_DrawMaskSub(int iMask, DrawObjectFunc pDrawFunc) {
-	NJS_OBJECT** pObjList = VanillaMaskObjObjectList[iMask];
+	NJS_CNK_OBJECT** pObjList = VanillaMaskObjObjectList[iMask];
 	while (*pObjList != nullptr) {
 		pDrawFunc(*pObjList);
 		pObjList++;
@@ -124,10 +124,10 @@ void AL_DrawMask(int iMask) {
 
 		if (iMask >= 16 && iMask <= 0x54)
 		{
-			NJS_OBJECT* eggModel = object_al_egghead_egghead;
+			NJS_CNK_OBJECT* eggModel = object_al_egghead_egghead;
 			njPushMatrixEx();
 			njTranslate(NULL, 0.0, eggModel->pos[1], 0.0);
-			ColorEggModel(eggModel->chunkmodel, iMask - 16);
+			ColorEggModel(eggModel->model, iMask - 16);
 			njPopMatrixEx();
 			chCnkDrawObject(object_al_egghead_eye_egghead_eye);
 			chCnkDrawObject(object_al_egghead_jaw_egghead_jaw);
@@ -159,7 +159,7 @@ static void AL_DrawToy(AL_OBJECT* pObject) {
 	}
 
 	njScale(NULL, pObject->ItemScale, pObject->ItemScale, pObject->ItemScale);
-	chCnkDrawObject((NJS_OBJECT*)pObject->pItemObject);
+	chCnkDrawObject(pObject->pItemObject);
 
 	njPopMatrixEx();
 
@@ -327,7 +327,7 @@ static void AL_DrawGetChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject) {
 	}
 }
 
-static void AL_DrawGetOtherChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject, NJS_OBJECT* pOriginalObj) {
+static void AL_DrawGetOtherChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj) {
 	njPushMatrixEx();
 
 	if (DrawMatrixNodeCount == 34) {
@@ -381,7 +381,7 @@ static void AL_DrawGetChaoNodeMatrices(task* tp, AL_OBJECT* pObject) {
 	njPopMatrixEx();
 }
 
-static void AL_DrawGetOtherChaoNodeMatrices(task* tp, AL_OBJECT* pObject, NJS_OBJECT* pOriginalObj) {
+static void AL_DrawGetOtherChaoNodeMatrices(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj) {
 	memcpy(StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
 
 	DrawMatrixNodeCount = 0;
@@ -429,9 +429,9 @@ static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) 
 }
 
 static size_t AccessoryNodeIndex = 0;
-static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao, bool rfNormalDraw) {
-	if (pObject->chunkmodel) {
-		pObject->chunkmodel->r = 0.0f;
+static void AL_DrawRigAccessorySub(NJS_CNK_OBJECT* pObject, bool isOmoChao, bool rfNormalDraw) {
+	if (pObject->model) {
+		pObject->model->r = 0.0f;
 		// hack i added, if its an omochao it needs scaling
 		// matrix multiplication is associative, so in theory this is equivalent to the scale + SetMotionMatrix-ing
 		if (isOmoChao) {
@@ -444,10 +444,10 @@ static void AL_DrawRigAccessorySub(NJS_OBJECT* pObject, bool isOmoChao, bool rfN
 		}
 
 		if(!rfNormalDraw) {
-			RenderFixBackwardsCompatibilityDrawModel(pObject->chunkmodel);
+			RenderFixBackwardsCompatibilityDrawModel(pObject->model);
 		}
 		else {
-			rfCnkNormalDrawModel(pObject->chunkmodel);
+			rfCnkNormalDrawModel(pObject->model);
 		}
 		njPopMatrixEx();
 	}
@@ -532,7 +532,7 @@ bool EggChaoFeetCheck(task* a1) {
 		(!GET_CHAOPARAM(a1)->HideFeet || (Chao_NodeIndex != AL_PART_REG_L && Chao_NodeIndex != AL_PART_REG_R));
 }
 
-void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_OBJECT* pOriginalObj)
+void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj)
 {
 	signed int v36; // esi
 	int v44; // [esp+28h] [ebp-38h]
@@ -549,7 +549,7 @@ void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_OBJECT* pOriginalObj)
 		case AL_PART_FEELER_L:
 		case AL_PART_FEELER_R:
 		case AL_PART_MOUTH:
-			pOriginalObj->chunkmodel = nullptr;
+			pOriginalObj->model = nullptr;
 			break;
 		}
 	}
@@ -617,34 +617,34 @@ void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_OBJECT* pOriginalObj)
 			njSetTexture((NJS_TEXLIST*)pObject->DisplayList);
 			chCnkDrawObject(pObject->pPartsObject);
 		}
-		else if (pOriginalObj->chunkmodel && EggChaoFeetCheck(tp))
+		else if (pOriginalObj->model && EggChaoFeetCheck(tp))
 		{
 			if (IsOmochao(tp) && (Chao_NodeIndex == 18 || Chao_NodeIndex == 21))
 			{
 				njSetTexture(&OMO_EYE_TEXLIST);
 
 				Sint16* texchunk = FindChunk(pObject->pModel->PList, NJD_CT_TID);
-				pOriginalObj->chunkmodel->plist[7] = texchunk[1]; //copy eye ID
+				pOriginalObj->model->plist[7] = texchunk[1]; //copy eye ID
 			}
 
 			if (IsEggChao(tp)) {
 				//copy shiny jewel (material color)
 				if (Chao_NodeIndex == 1 && GET_CHAOPARAM(tp)->Color > 0)
-					*(int*)((__int16*)pOriginalObj->chunkmodel->plist + 2) = *(int*)((__int16*)pObject->pModel->PList + 2);
+					*(int*)((__int16*)pOriginalObj->model->plist + 2) = *(int*)((__int16*)pObject->pModel->PList + 2);
 
 				//copy feet color and texture onto egg chao feet
 				if (Chao_NodeIndex == 6 || Chao_NodeIndex == 13)
 				{
-					pOriginalObj->chunkmodel->plist[7] = pObject->pModel->PList[7];
-					*(int*)((__int16*)pOriginalObj->chunkmodel->plist + 2) = *(int*)((__int16*)pObject->pModel->PList + 2);
+					pOriginalObj->model->plist[7] = pObject->pModel->PList[7];
+					*(int*)((__int16*)pOriginalObj->model->plist + 2) = *(int*)((__int16*)pObject->pModel->PList + 2);
 				}
 			}
 
 			if ((IsEggChao(tp) && (Chao_NodeIndex == 1 || Chao_NodeIndex == 6 || Chao_NodeIndex == 13)) ||
 				(IsOmochao(tp) && (Chao_NodeIndex == 1 || Chao_NodeIndex == 16)))
-				AL_SetRareMaterial(tp, pOriginalObj->chunkmodel);
+				AL_SetRareMaterial(tp, pOriginalObj->model);
 
-			chCnkDrawModel(pOriginalObj->chunkmodel);
+			chCnkDrawModel(pOriginalObj->model);
 
 			//reset shaders
 			SetPixelShaderFloat(78, 0);
@@ -658,7 +658,7 @@ void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_OBJECT* pOriginalObj)
 
 			//reset material color on eggchao model
 			if (IsEggChao(tp) && (Chao_NodeIndex == 1 || Chao_NodeIndex == 6 || Chao_NodeIndex == 13))
-				*(int*)((__int16*)pOriginalObj->chunkmodel->plist + 2) = 0xFFFFFFFF;
+				*(int*)((__int16*)pOriginalObj->model->plist + 2) = 0xFFFFFFFF;
 		}
 
 	LABEL_98:
@@ -967,7 +967,7 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 				+ 4)
 				+ 4) = *(int*)((__int16*)pObject->pModel->PList + 2); //copies mat color onto the ghost model
 			AL_SetRareMaterial(tp, (NJS_CNK_MODEL*)pObject->pModel);
-			chCnkDrawObject(((NJS_OBJECT**)GetDllData("ObakeBodyObjectList"))[GET_CHAOPARAM(tp)->type]);
+			chCnkDrawObject(((NJS_CNK_OBJECT**)GetDllData("ObakeBodyObjectList"))[GET_CHAOPARAM(tp)->type]);
 			SetMaterial(0, 0, 0, 0);
 			goto LABEL_95;
 		}

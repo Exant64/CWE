@@ -182,7 +182,7 @@ void  njTranslateEx(NJS_VECTOR* a1)
 	}
 }
 
-void chCnkDrawObject(NJS_OBJECT* a1)
+void chCnkDrawObject(NJS_CNK_OBJECT* a1)
 {
 	__asm
 	{

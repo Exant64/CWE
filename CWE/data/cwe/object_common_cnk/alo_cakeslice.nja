@@ -5,4 +5,4 @@ Sint16 cnk_alo_cakeslice_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0xFF
 
 NJS_CNK_MODEL cnk_alo_cakeslice = { cnk_alo_cakeslice_vtx, cnk_alo_cakeslice_poly, { 0.0002169737f, -0.0397777f, 0.04734522f }, 1.670851f };
 
-NJS_OBJECT object_alo_cakeslice = { NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_alo_cakeslice, 0.0002169737f, 0.01212978f, -0.001383126f, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT object_alo_cakeslice = { NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_alo_cakeslice, 0.0002169737f, 0.01212978f, -0.001383126f, 0, 0, 0, 1, 1, 1, NULL, NULL };

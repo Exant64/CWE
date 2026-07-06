@@ -6,19 +6,19 @@
 #include <functional>
 #include <array>
 #include "ninja_functions.h"
-using DrawObjectFunc = void(*)(NJS_OBJECT*);
+using DrawObjectFunc = void(*)(NJS_CNK_OBJECT*);
 class ObjectRegistry {
 private:
-	std::vector<NJS_OBJECT*> m_objects;
+	std::vector<NJS_CNK_OBJECT*> m_objects;
 	std::vector<NJS_TEXLIST*> m_texlists;
 
 public:
-	NJS_OBJECT* GetObj(int index) const;
+	NJS_CNK_OBJECT* GetObj(int index) const;
 	NJS_TEXLIST* GetTex(int index) const;
 	int Size() const;
-	void Set(int index, NJS_OBJECT* obj);
+	void Set(int index, NJS_CNK_OBJECT* obj);
 	void Set(int index, NJS_TEXLIST* tex);
-	void Add(NJS_OBJECT* obj, NJS_TEXLIST* tex);
+	void Add(NJS_CNK_OBJECT* obj, NJS_TEXLIST* tex);
 	
 	static ObjectRegistry* Get(ChaoItemCategory cat) {
 		if (cat < 0 || (size_t)cat >= m_instance.size()) throw;
@@ -42,8 +42,8 @@ public:
 		auto* models = Get(cat);
 
 		njSetTexture(models->GetTex(index));
-		if (models->GetObj(index)->chunkmodel)
-			func(models->GetObj(index)->chunkmodel);
+		if (models->GetObj(index)->model)
+			func(models->GetObj(index)->model);
 		else {
 
 		}

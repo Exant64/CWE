@@ -444,7 +444,7 @@ void AL_ChaoAccessoryMainCheck(task* tp);
 ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (task* a1), 0x56CFF0);
 task* __cdecl AL_GetFoundToyTask(task* a1);
 
-void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist);
+void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist);
 FastcallFunctionPointer(signed int, AL_TraceHoldingPosition, (int a1, task* a2), 0x56D170);
 task* sub_55A920(int a1, NJS_VECTOR* a2, task* parent, Uint8 a4, float a5);
 void sub_54A690(task* a1);

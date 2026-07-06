@@ -8,7 +8,7 @@ enum ePIANOTYPE {
 	PIANOTYPE_ORGAN = 1
 };
 
-DataPointer(NJS_OBJECT, Piano, 0x01304754);
-DataPointer(NJS_OBJECT, Organ, 0x0135E3CC);
+DataPointer(NJS_CNK_OBJECT, Piano, 0x01304754);
+DataPointer(NJS_CNK_OBJECT, Organ, 0x0135E3CC);
 bool __cdecl SetPianoWaypoint(task* a2, NJS_VECTOR* a1);
 void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang);

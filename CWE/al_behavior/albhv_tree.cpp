@@ -54,9 +54,9 @@ struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
 	int garden;
 	void* pMySaveInfo;
 	NJS_TEXLIST* texlist;
-	NJS_OBJECT* pLocalObject;
-	NJS_OBJECT* pShadowObject;
-	NJS_OBJECT* pCopyObject;
+	NJS_CNK_OBJECT* pLocalObject;
+	NJS_CNK_OBJECT* pShadowObject;
+	NJS_CNK_OBJECT* pCopyObject;
 };
 #pragma pack(pop)
 

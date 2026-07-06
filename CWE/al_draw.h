@@ -77,7 +77,7 @@ extern float ChaoDebugDist;
 
 DataPointer(unsigned char, CharacterIndex, 0x540212);
 DataArray(int, dword_1298448, 0x01298448, 20);
-DataArray(NJS_OBJECT*, dword_12E58B8, 0x12E58B8, 12);
+DataArray(NJS_CNK_OBJECT*, dword_12E58B8, 0x12E58B8, 12);
 DataPointer(int, Chao_NodeIndex, 0x01A259D8);
 DataPointer(int, ChunkMatEnable, 0x01AED2CC);
 DataPointer(int, ChunkMatFlag, 0x01A27594);

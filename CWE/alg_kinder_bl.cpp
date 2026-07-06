@@ -609,8 +609,8 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 			{
 				auto object = ObjectRegistry::Get((ChaoItemCategory)item->mCategory)->GetObj(item->mType);
 
-				if (item->mCategory != ChaoItemCategory_Accessory && object->chunkmodel) {
-					float radius = object->chunkmodel->r;
+				if (item->mCategory != ChaoItemCategory_Accessory && object->model) {
+					float radius = object->model->r;
 					OrthoScreenTranslate(SELECTION_ITEM_OX, (v45 - 13), 1.5f / radius);
 				}
 				else
@@ -619,10 +619,10 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (item->mCategory != ChaoItemCategory_Accessory) {
 					if (!(object->evalflags & NJD_EVAL_UNIT_POS))
 						njTranslate(NULL, 0, -object->pos[1], 0);
-					if (object->chunkmodel)
-						njTranslate(NULL, 0, -object->chunkmodel->center.y, 0);
-					else if (object->child && object->child->chunkmodel) {
-						float y = -object->child->chunkmodel->center.y;
+					if (object->model)
+						njTranslate(NULL, 0, -object->model->center.y, 0);
+					else if (object->child && object->child->model) {
+						float y = -object->child->model->center.y;
 						njTranslate(NULL, 0, y, 0);
 					}
 				}
@@ -637,8 +637,8 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				njSetTexture(ModAPI_SeedTexlists[item->mType]);
 				sub_42D340();
-				if (ModAPI_SeedModels[item->mType]->chunkmodel)
-					sub_42D500(ModAPI_SeedModels[item->mType]->chunkmodel);
+				if (ModAPI_SeedModels[item->mType]->model)
+					sub_42D500(ModAPI_SeedModels[item->mType]->model);
 				break;
 			case ChaoItemCategory_Hat:
 				if (item->mType >= SA2BHat_NormalEggShell && item->mType < 85)
@@ -677,7 +677,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-				njCnkDrawObject(((NJS_OBJECT**)0x011D291C)[item->mType]);
+				njCnkDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mType]);
 				break;
 			default:
 				break;
@@ -765,8 +765,8 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njSetTexture(ModAPI_SeedTexlists[item->mType]);
-				if (ModAPI_SeedModels[item->mType]->chunkmodel) {
-					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mType]->chunkmodel);
+				if (ModAPI_SeedModels[item->mType]->model) {
+					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mType]->model);
 				}
 				break;
 			case ChaoItemCategory_Hat:
@@ -811,7 +811,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-				RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x011D291C)[item->mType]);
+				RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mType]);
 				break;
 			default:
 				break;
@@ -897,7 +897,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		{
 			njScale(NULL, 1.2f, 1.2f, 1.2f);
 			njSetTexture((NJS_TEXLIST*)0x01717DAC);
-			RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x0171A294)[type - 21]);
+			RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x0171A294)[type - 21]);
 		}
 		else if (type >= 0 && type < ModAPI_MinimalModels.size()) //since the black market entry check isn't active for animals we have to safety check the animal here
 		{
@@ -922,7 +922,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -0.8f, 0);
 		njSetTexture(ModAPI_SeedTexlists[type]);
-		RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->chunkmodel);
+		RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->model);
 		break;
 	case ChaoItemCategory_Hat:
 		if (type >= 16 && type <= 84)
@@ -932,7 +932,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			RotateY(a1->mItemDescAngY);
 			njTranslate(NULL, 0, -1.4f, 0);
 			njSetTexture(&AL_BODY);
-			ColorEggModel((((NJS_OBJECT**)GetDllData("MaskObjObjectList"))[16]->chunkmodel), type - 16);
+			ColorEggModel((((NJS_CNK_OBJECT**)GetDllData("MaskObjObjectList"))[16]->model), type - 16);
 		}
 		else
 		{
@@ -969,7 +969,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		njScale(NULL, 1, 1, *(float*)0x173B43C);
 		njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-		RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x011D291C)[type]);
+		RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[type]);
 		break;
 	default:
 		break;
@@ -1509,7 +1509,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			{
 				njScale(NULL, 1.2f, 1.2f, 1.2f);
 				njSetTexture((NJS_TEXLIST*)0x01717DAC);
-				RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x0171A294)[type - 21]);
+				RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x0171A294)[type - 21]);
 			}
 			else
 			{
@@ -1520,7 +1520,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 					if ((size_t)type < ModAPI_MinimalTexlists.size())
 						njSetTexture(ModAPI_MinimalTexlists[type]);
 
-					NJS_OBJECT* obj = ModAPI_MinimalModels[type];
+					NJS_CNK_OBJECT* obj = ModAPI_MinimalModels[type];
 					NJS_MOTION* mot = ModAPI_MinimalMotion0[type];
 					if ((size_t)type < ModAPI_MinimalModels.size() && obj && mot)
 						njCnkMotion(obj, mot, 0);
@@ -1543,7 +1543,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -0.8f, 0);
 			njSetTexture(ModAPI_SeedTexlists[type]);
-			RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->chunkmodel);
+			RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->model);
 			break;
 		case ChaoItemCategory_Hat:
 			if (type >= 16 && type <= 84)
@@ -1553,7 +1553,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 				RotateY(rot.y);
 				njTranslate(NULL, 0, -1.4f, 0);
 				njSetTexture(&AL_BODY);
-				ColorEggModel((((NJS_OBJECT**)GetDllData("MaskObjObjectList"))[16]->chunkmodel), type - 16);
+				ColorEggModel((((NJS_CNK_OBJECT**)GetDllData("MaskObjObjectList"))[16]->model), type - 16);
 			}
 			else
 			{
@@ -1590,7 +1590,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			njScale(NULL, 1, 1, *(float*)0x173B43C);
 			njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-			RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x011D291C)[type]);
+			RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[type]);
 			break;
 		default:
 			break;

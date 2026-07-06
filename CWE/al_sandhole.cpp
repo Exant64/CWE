@@ -14,7 +14,7 @@ __declspec(naked) void DoLighting(int a1)
 	}
 }
 
-NJS_OBJECT* object_sandpit[] = {
+NJS_CNK_OBJECT* object_sandpit[] = {
 	&object_8D65212E6E079DB20DD,
 	& object_8D6521312A3FB5E8953
 };

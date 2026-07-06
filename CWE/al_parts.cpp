@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist)
+void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist)
 {
 	chaowk* v4; // eax
 	AL_OBJECT* v5; // edx
@@ -80,8 +80,8 @@ int AL_GetMinimalPart(task* tp, int PartsKind)
 
 std::vector<std::array<CWE_PARTS,2>> ModAPI_MiniParts;
 
-NJS_OBJECT emptyNJSOBJECT = { NJD_EVAL_HIDE | NJD_EVAL_BREAK , NULL, 0,0,0, 0,0,0, 0,0,0, NULL, NULL };
-NJS_OBJECT* emptyArray[13];
+NJS_CNK_OBJECT emptyNJSOBJECT = { NJD_EVAL_HIDE | NJD_EVAL_BREAK , NULL, 0,0,0, 0,0,0, 0,0,0, NULL, NULL };
+NJS_CNK_OBJECT* emptyArray[13];
 
 int PartsObjectTreeNumber[8][2] = {
 	{3, 10},
@@ -205,8 +205,8 @@ void AL_Parts_Init()
 	AdultAnimalParts[SA2BAnimal_Raccoon][0] = &RaccoonArmsRight;
 	AdultAnimalParts[SA2BAnimal_Raccoon][1] = &RaccoonArmsLeft;
 
-	ChildAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_OBJECT*)0x012BB6F4;//raccoon tail
-	AdultAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_OBJECT*)0x0129A16C;
+	ChildAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_CNK_OBJECT*)0x012BB6F4;//raccoon tail
+	AdultAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_CNK_OBJECT*)0x0129A16C;
 
 	//sa2 parts
 	for (int i = 0; i < 21; i++) {

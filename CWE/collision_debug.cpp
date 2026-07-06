@@ -13,14 +13,14 @@ Sint16 poly_8D92D450B41AF90F4DD[] = { 0x8, 0x0, 0x2515, 0x4, 0xDCDCu, 0x9664u, 0
 
 NJS_CNK_MODEL attach_0050D518_cnk = { vertex_8D92D450B41AF90ED15, poly_8D92D450B41AF90F4DD, { 0 }, 14.14213f };
 
-NJS_OBJECT Cylinder_debug = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK, &attach_0050D518_cnk, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT Cylinder_debug = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK, &attach_0050D518_cnk, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
 #pragma warning(pop)
 
 DataPointer(float, GlobalMatColorR, 0x25EFFD4);
 DataPointer(float, GlobalMatColorG, 0x25EFFD8);
 DataPointer(float, GlobalMatColorB, 0x25EFFDC);
 DataPointer(float, GlobalMatColorA, 0x25EFFD0);
-FunctionPointer(void, DrawObject, (NJS_OBJECT* a1), 0x42E730);
+FunctionPointer(void, DrawObject, (NJS_CNK_OBJECT* a1), 0x42E730);
 bool isColDebug = false;
 void SetMaterialColorOffset(float r, float g, float b, float a)
 {

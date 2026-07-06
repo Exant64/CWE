@@ -39,17 +39,17 @@ extern "C" {
 		GXSetProjection(0x025EFF00);
 	}
 
-	__declspec(dllexport) void OrthoDraw(NJS_OBJECT* obj, DrawObjectFunc draw = njCnkDrawObject) {
+	__declspec(dllexport) void OrthoDraw(NJS_CNK_OBJECT* obj, DrawObjectFunc draw = njCnkDrawObject) {
 		OrthoDrawBegin();
 		draw(obj);
 		OrthoDrawEnd();
 	}
 
-	__declspec(dllexport) void njOrthoCnkDrawObject(NJS_OBJECT* obj) {
+	__declspec(dllexport) void njOrthoCnkDrawObject(NJS_CNK_OBJECT* obj) {
 		OrthoDraw(obj, njCnkDrawObject);
 	}
 
-	__declspec(dllexport) void chOrthoCnkDrawObject(NJS_OBJECT* obj) {
+	__declspec(dllexport) void chOrthoCnkDrawObject(NJS_CNK_OBJECT* obj) {
 		OrthoDraw(obj, chCnkDrawObject);
 	}
 

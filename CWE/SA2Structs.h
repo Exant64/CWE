@@ -164,8 +164,8 @@ struct AL_OBJECT
     float Friction;
     int32_t NoBuyoFlag;
     int32_t CalcBuyoPosFlag;
-	NJS_OBJECT *pPartsObject;
-	NJS_OBJECT* pItemObject;
+	NJS_CNK_OBJECT *pPartsObject;
+	NJS_CNK_OBJECT* pItemObject;
 	NJS_TEXLIST* pItemTexlist;
     float ItemScale;
     int32_t ItemActiveFlag;
@@ -192,8 +192,8 @@ struct __declspec(align(4)) AL_FACE_CTRL
 	float EyeSclX;
 	float EyeSclY;
 	unsigned int Flag;
-	NJS_OBJECT* pEyeObject[2];
-	NJS_OBJECT* pMouthObject;
+	NJS_CNK_OBJECT* pEyeObject[2];
+	NJS_CNK_OBJECT* pMouthObject;
 	int EyeLidBlinkMode;
 	int EyeLidBlinkTimer;
 	int EyeLidBlinkAng;
@@ -412,12 +412,12 @@ typedef struct {
 #pragma pack(pop)
 
 typedef struct al_group_object_list {
-    NJS_OBJECT* child[40];
-    NJS_OBJECT* normal[40];
-    NJS_OBJECT* swim[40];
-    NJS_OBJECT* fly[40];
-    NJS_OBJECT* run[40];
-    NJS_OBJECT* power[40];
+    NJS_CNK_OBJECT* child[40];
+    NJS_CNK_OBJECT* normal[40];
+    NJS_CNK_OBJECT* swim[40];
+    NJS_CNK_OBJECT* fly[40];
+    NJS_CNK_OBJECT* run[40];
+    NJS_CNK_OBJECT* power[40];
 } AL_GROUP_OBJECT_LIST;
 
 typedef struct AL_SHAPE {
@@ -441,12 +441,12 @@ typedef struct AL_SHAPE {
     NJS_VECTOR RightEyePos;
     NJS_VECTOR RightEyeVec;
 
-	NJS_OBJECT* pLeftHandItemObject;
+	NJS_CNK_OBJECT* pLeftHandItemObject;
 	NJS_TEXLIST* pLeftHandItemTexlist;
 	float LeftHandItemScale;
 	float LeftHandItemActiveFlag;
 
-	NJS_OBJECT* pRightHandItemObject;
+	NJS_CNK_OBJECT* pRightHandItemObject;
 	NJS_TEXLIST* pRightHandItemTexlist;
 	float RightHandItemScale;
 	float RightHandItemActiveFlag;
@@ -1012,7 +1012,7 @@ struct SonicCharObj2
 struct ModelIndex
 {
 	int Index;
-	NJS_OBJECT *Model;
+	NJS_CNK_OBJECT *Model;
 };
 
 struct AnimationIndex
@@ -1071,7 +1071,7 @@ struct COL
 {
 	NJS_VECTOR Center;
 	float Radius;
-	NJS_OBJECT *Model;
+	NJS_CNK_OBJECT *Model;
 	int field_14;
 	int field_18;
 	int Flags;
@@ -1254,7 +1254,7 @@ struct CharacterVoiceBank
 struct DeathZone
 {
 	int Flags;
-	NJS_OBJECT *Model;
+	NJS_CNK_OBJECT *Model;
 };
 
 struct AnalogThing
@@ -1446,7 +1446,7 @@ struct EventFileHeader
 	void *field_10;
 	void *field_14;
 	void *field_18;
-	NJS_OBJECT **field_1C;
+	NJS_CNK_OBJECT **field_1C;
 	void *field_20;
 	void *field_24;
 	int field_28;

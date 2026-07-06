@@ -11,7 +11,7 @@
 DataPointer(float, flt_1312CBC, 0x1312CBC);
 DataArray(int, dword_19468A0, 0x19468A0, 4);
 
-std::vector<std::pair<NJS_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
+std::vector<std::pair<NJS_CNK_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
 
 bool IsAltDrawHead(int headgear) {
 	return headgear == SA2BHat_Bucket ||

@@ -191,9 +191,9 @@ void CWE_Fixes() {
 	WriteJump((void*)0x00530596, (void*)0x005305B6);//calcdistfromlockon
 
 	//chaos chao animal ear fix
-	NJS_OBJECT** ChaoObjects = (NJS_OBJECT**)GetDllData("AL_RootObject");
-	NJS_OBJECT* ChaosChaoRoot = ChaoObjects[108];
-	NJS_OBJECT* EarObject = ChaosChaoRoot->child->child->sibling->sibling->sibling->sibling->sibling->child->child->child->sibling->sibling->sibling->sibling->sibling;
+	NJS_CNK_OBJECT** ChaoObjects = (NJS_CNK_OBJECT**)GetDllData("AL_RootObject");
+	NJS_CNK_OBJECT* ChaosChaoRoot = ChaoObjects[108];
+	NJS_CNK_OBJECT* EarObject = ChaosChaoRoot->child->child->sibling->sibling->sibling->sibling->sibling->child->child->child->sibling->sibling->sibling->sibling->sibling;
 	EarObject->ang[1] = 0;
 
 	//egg bright shell fix
@@ -216,6 +216,6 @@ void CWE_Fixes() {
 	HatBMAttributes[SA2BHat_PearlEggShell].SalePrice = 8000;
 
 	//trumpet fix
-	((NJS_OBJECT*)0x11C830C)->pos[1] = -0.4f; //adjustment
-	((NJS_OBJECT*)0x11C830C)->evalflags &= ~NJD_EVAL_UNIT_POS; //dont ignore position
+	((NJS_CNK_OBJECT*)0x11C830C)->pos[1] = -0.4f; //adjustment
+	((NJS_CNK_OBJECT*)0x11C830C)->evalflags &= ~NJD_EVAL_UNIT_POS; //dont ignore position
 }

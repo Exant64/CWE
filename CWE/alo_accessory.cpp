@@ -15,8 +15,8 @@
 
 #include <renderfix.h>
 
-extern NJS_OBJECT object_ala_full_mannequin;
-extern NJS_OBJECT object_alo_mannequin;
+extern NJS_CNK_OBJECT object_ala_full_mannequin;
+extern NJS_CNK_OBJECT object_alo_mannequin;
 
 void Accessory_Display(task* a1) {
 	const AccessorySaveInfo* save = (const AccessorySaveInfo*)AL_GetItemSaveInfo(a1);

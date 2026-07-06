@@ -13,7 +13,7 @@ extern std::vector< int> ModAPI_MinimalInfluence;
 extern std::vector< ChaoItemStats> ModAPI_MinimalStats;
 extern std::vector<const char*>  ModAPI_MinimalNames;
 extern std::vector< NJS_TEXLIST*>  ModAPI_MinimalTexlists;
-extern std::vector< NJS_OBJECT*>   ModAPI_MinimalModels;
+extern std::vector< NJS_CNK_OBJECT*>   ModAPI_MinimalModels;
 extern std::vector< NJS_MOTION*>   ModAPI_MinimalMotion0;
 extern std::vector< NJS_MOTION*>   ModAPI_MinimalMotion1;
 extern std::vector< NJS_MOTION*>   ModAPI_MinimalMotion2;

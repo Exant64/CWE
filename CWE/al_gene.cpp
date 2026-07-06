@@ -232,7 +232,7 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 			// filtering for type
 			std::vector<size_t> accessoryIndices;
 			for(size_t a = 0; a < GetAccessoryCount(); ++a) {
-				extern NJS_OBJECT object_alo_missing;
+				extern NJS_CNK_OBJECT object_alo_missing;
 				const auto& accData = GetAccessoryData(a);
 
 				if(accData.pObject == &object_alo_missing) {

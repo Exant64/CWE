@@ -16,7 +16,7 @@ enum
 	MD_COFFIN_FLY_DOWN_START,
 	MD_COFFIN_FLY_DOWN
 };
-//extern NJS_OBJECT object_00F005A0;
+//extern NJS_CNK_OBJECT object_00F005A0;
 void ALO_Coffin_Displayer_(task* a1)
 {
 	if (a1->twp->wtimer)
@@ -40,7 +40,7 @@ void ALO_Coffin_Displayer_(task* a1)
 		//*(float*)0x3D0857C = -0.5f;
 		njTranslate(NULL, a1->twp->pos.x, a1->twp->pos.y, a1->twp->pos.z - 2.65f);
 		njRotateY(NULL, a1->twp->ang.y);
-		chCnkDrawObject((NJS_OBJECT*)0x01301BB4);//0x03898530 - coffin
+		chCnkDrawObject((NJS_CNK_OBJECT*)0x01301BB4);//0x03898530 - coffin
 		//chCnkDrawObject(&object_0349A900);
 		njPopMatrixEx();
 

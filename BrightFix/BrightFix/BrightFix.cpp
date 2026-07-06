@@ -362,14 +362,14 @@ extern "C"
 		ChunkMatEnable = 0;
 	}
 
-	void ToyFix(NJS_OBJECT* obj)
+	void ToyFix(NJS_CNK_OBJECT* obj)
 	{
 		SetFlag(1);
 		njCnkDrawObject(obj);
 		SetFlag(0);
 	}
 
-	void MedalWrap(NJS_OBJECT* object, int(__cdecl* callback)(NJS_CNK_MODEL*))
+	void MedalWrap(NJS_CNK_OBJECT* object, int(__cdecl* callback)(NJS_CNK_MODEL*))
 	{
 		SetFlag(1);
 		ProcessChunkModelsWithCallback(object, ProcessChunkModel);
@@ -563,8 +563,8 @@ extern "C"
 
 	DataPointer(NJS_ARGB, GlobalColorThing, 0x025EFFD0);
 
-	FunctionPointer(void, __cdecl sub_42E730, (NJS_OBJECT* a1), 0x42E730);
-	void HatHookTest(NJS_OBJECT* obj)
+	FunctionPointer(void, __cdecl sub_42E730, (NJS_CNK_OBJECT* a1), 0x42E730);
+	void HatHookTest(NJS_CNK_OBJECT* obj)
 	{
 		SetFlag(1);
 		sub_42E730(obj);

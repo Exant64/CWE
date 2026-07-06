@@ -149,7 +149,7 @@ static uint32_t* AccessoryFindMaterial(NJS_CNK_MODEL* pModel, size_t materialInd
 }
 
 static int IterateNodeCount = 0;
-static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupTable, NJS_OBJECT* pObject) {
+static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupTable, NJS_CNK_OBJECT* pObject) {
 	while (pObject) {
 		for (size_t i = 0; i < data.Data.ColorEntryCount; ++i) {
 			const auto& entry = data.Data.pColorEntries[i];
@@ -157,11 +157,11 @@ static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupT
 				continue;
 			}
 			
-			if (!pObject->chunkmodel) {
+			if (!pObject->model) {
 				return false;
 			}
 
-			uint32_t* pMaterial = AccessoryFindMaterial(pObject->chunkmodel, entry.MaterialIndex);
+			uint32_t* pMaterial = AccessoryFindMaterial(pObject->model, entry.MaterialIndex);
 			if (!pMaterial) {
 				return false;
 			}
@@ -317,7 +317,7 @@ CWE_API_REGISTER_ACCESSORY AL_ModAPI_Accessory = {
 	.GetAccessoryIndex = GetAccessoryID
 };
 
-extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	APIErrorUtil error("Error in legacy RegisterChaoAccessory: ");
 
 	#define SHIFT_MSG "If this is your first 9.6 bootup, you may experience the accessories being shifted. Note that this is a onetime process."

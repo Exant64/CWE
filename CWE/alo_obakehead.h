@@ -6,7 +6,7 @@
 #include <vector>
 #include "renderfix.h"
 
-extern std::vector<std::pair<NJS_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
+extern std::vector<std::pair<NJS_CNK_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
 
 bool IsAltDrawHead(int headgear);
 template <bool UseGardenModel = false, bool AltDrawCheck = true>
@@ -19,7 +19,7 @@ void ALO_ObakeHeadDraw(int headgear) {
 	else
 	{
 		njSetTexture(&AL_BODY);
-		NJS_OBJECT** list = (NJS_OBJECT**)GetDllData("MaskObjObjectList");
+		NJS_CNK_OBJECT** list = (NJS_CNK_OBJECT**)GetDllData("MaskObjObjectList");
 		if (headgear >= SA2BHat_NormalEggShell && headgear < 85)
 		{
 			if (UseGardenModel) {
@@ -28,7 +28,7 @@ void ALO_ObakeHeadDraw(int headgear) {
 				ColorEggModel((NJS_CNK_MODEL*)0x125CC14, headgear - SA2BHat_NormalEggShell);
 			}
 			else
-				ColorEggModel(list[16]->chunkmodel, headgear - SA2BHat_NormalEggShell);
+				ColorEggModel(list[16]->model, headgear - SA2BHat_NormalEggShell);
 		}
 		else if(list[headgear])
 		{

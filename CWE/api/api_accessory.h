@@ -26,7 +26,7 @@ const bool IsAccessoryRFSupported(const int id);
 bool AccessoryCheckID(const char* ID);
 size_t GetAccessoryID(const char* pID);
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData);
-extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
+extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
 
 void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind);
 size_t CWE_ParamGetAccessory(task* tp, uint32_t slot);

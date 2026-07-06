@@ -4,7 +4,7 @@
 
 extern "C" {
 	void OrthoInit(float orthoZoom = 100);
-	void OrthoDraw(NJS_OBJECT* obj, DrawObjectFunc draw = njCnkDrawObject);
+	void OrthoDraw(NJS_CNK_OBJECT* obj, DrawObjectFunc draw = njCnkDrawObject);
 	void OrthoDrawBegin();
 	void OrthoDrawEnd();
 	void OrthoTranslate(float x, float y, float mulScale = 1);

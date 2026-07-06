@@ -7,5 +7,5 @@ Sint16 cnk_Plane_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0xFF, 0x8, 0
 
 NJS_CNK_MODEL cnk_Plane = { cnk_Plane_vtx, cnk_Plane_poly, { 0.3689817f, 0.07760705f, 0.5993667f }, 1.359951f };
 
-NJS_OBJECT object_alo_guitar = { NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Plane, 0.3133035f, 0.02490209f, 0.6099079f, 0x2FA5, 0xE371, 0x42B1/*0x382F, 0xEF05, 0x3F0F*/, 1.2f, 1.2f, 1.2f, NULL, NULL };
+NJS_CNK_OBJECT object_alo_guitar = { NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Plane, 0.3133035f, 0.02490209f, 0.6099079f, 0x2FA5, 0xE371, 0x42B1/*0x382F, 0xEF05, 0x3F0F*/, 1.2f, 1.2f, 1.2f, NULL, NULL };
 #pragma warning(pop)

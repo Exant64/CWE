@@ -56,9 +56,9 @@ struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
     int garden;
     void* pMySaveInfo;
     NJS_TEXLIST* texlist;
-    NJS_OBJECT* pLocalObject;
-    NJS_OBJECT* pShadowObject;
-    NJS_OBJECT* pCopyObject;
+    NJS_CNK_OBJECT* pLocalObject;
+    NJS_CNK_OBJECT* pShadowObject;
+    NJS_CNK_OBJECT* pCopyObject;
 };
 #pragma pack(pop)
 
@@ -75,7 +75,7 @@ enum eTREE_STATE
 
 DataArray(int, dword_12E8AEC, 0x12E8AEC,10);
 DataArray(int, dword_13291B4, 0x13291B4, 10);
-void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_OBJECT* a2)
+void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_CNK_OBJECT* a2)
 {
     double v7; // st7
     int v9; // edx
@@ -142,7 +142,7 @@ void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_OBJECT* a2)
         }
         v7 = njSin(a1->LeafRotAng + dword_12E8AEC[a1->LeafDispNum]) * a1->LeafWidth;
         RotateX(NJM_DEG_ANG(v7));
-        chCnkDrawModel(a2->chunkmodel);
+        chCnkDrawModel(a2->model);
         ++a1->LeafDispNum;
     LABEL_34:
         if (a2->child)
@@ -204,7 +204,7 @@ void __cdecl ALO_SeedExecutor_Display_(task* eax0)
         njScale(NULL, 1.5f, 1.5f, 1.5f);
         njControl3D |= 0x2400u;
         njSetTexture(ModAPI_SeedTexlists[v1->ang.x]);
-        chCnkDrawModel(ModAPI_SeedModels[v1->ang.x]->chunkmodel);
+        chCnkDrawModel(ModAPI_SeedModels[v1->ang.x]->model);
         njControl3D &= ~0x2400;
 
         if(RenderFix_IsEnabled()) {

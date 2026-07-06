@@ -9,6 +9,6 @@ Sint16 cnk_attach_0001525C_001_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0x7FFF,
 
 NJS_CNK_MODEL cnk_attach_0001525C_001 = { cnk_attach_0001525C_001_vtx, cnk_attach_0001525C_001_poly, { -0.0000005960464f, 1.450378f, -0.02332044f }, 1.736623f };
 
-NJS_OBJECT object_alo_mannequin = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_attach_0001525C_001, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT object_alo_mannequin = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_attach_0001525C_001, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
 
 #pragma warning(pop)

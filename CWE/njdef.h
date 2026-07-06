@@ -227,7 +227,7 @@
 #define OBJECT_END
 
 /* Chunk */
-#define CNKOBJECT            NJS_OBJECT
+#define CNKOBJECT            NJS_CNK_OBJECT
 
 #define CNKOBJECT_START
 #define CNKOBJECT_END

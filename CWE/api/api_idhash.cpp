@@ -4,9 +4,9 @@
 #include <cnk_util.h>
 
 // Finds the first vlist and plist in the object tree, expects the out variables to be NULL initialized beforehand
-static void FindFirstChunkModelLists(const NJS_OBJECT* pObj, Sint32*& outVlist, Sint16*& outPlist) {
+static void FindFirstChunkModelLists(const NJS_CNK_OBJECT* pObj, Sint32*& outVlist, Sint16*& outPlist) {
 	while (!outVlist || !outPlist) {
-        const NJS_CNK_MODEL* pModel = pObj->chunkmodel;
+        const NJS_CNK_MODEL* pModel = pObj->model;
 
         if (pModel) {
             if (!outVlist && pModel->vlist) outVlist = pModel->vlist;
@@ -23,7 +23,7 @@ static void FindFirstChunkModelLists(const NJS_OBJECT* pObj, Sint32*& outVlist, 
 	}
 }
 
-uint32_t GenerateHashForChunkObject(const NJS_OBJECT* pObj) {
+uint32_t GenerateHashForChunkObject(const NJS_CNK_OBJECT* pObj) {
 	uint32_t myseed = 0;
 	XXHash32 myhash(myseed);
 

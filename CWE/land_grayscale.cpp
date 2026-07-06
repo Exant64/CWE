@@ -122,14 +122,14 @@ static void ECW_ColorSaturate255(NJS_BGRA* col, float saturation) {
 static void GreyscaleLandtable(LandTable* pLandTable) {
     for (size_t i = 0; i < pLandTable->ChunkModelCount; i++) {
 		const auto pCOL = &pLandTable->COLList[i];
+        const auto pGJS = (GJS_OBJECT*)pCOL->Model;
+        auto pVertex = pGJS->model->arrays;
 
-        auto pVertex = pCOL->Model->getsa2bmodel()->Vertices;
+        while(pVertex->id != 0xFF) {
+            if(pVertex->id == 3) {
+                NJS_BGRA* pBgra = (NJS_BGRA*)pVertex->base_ptr;
 
-        while(pVertex->DataType != -1) {
-            if(pVertex->DataType == 3) {
-                NJS_BGRA* pBgra = (NJS_BGRA*)pVertex->Data;
-
-                for(size_t j = 0; j < pVertex->ElementCount; ++j) {
+                for(size_t j = 0; j < pVertex->count; ++j) {
                     ECW_ColorSaturate255(&pBgra[j], 0);
                 }
             }
