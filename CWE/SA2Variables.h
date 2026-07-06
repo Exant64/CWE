@@ -212,7 +212,7 @@ DataPointer(int, CurrentMenu, 0x1D7BB10);
 DataPointer(int, CurrentSubMenu, 0x1D7BB14);
 DataPointer(char*, SomeSFDStrings, 0x1DB0C00);
 DataPointer(int, BlackMarketItemCount, 0x1DBED90);
-DataArray(BlackMarketItem, BlackMarketInventory, 0x1DBEDC0,0x20);
+DataArray(SAlItem, BlackMarketInventory, 0x1DBEDC0,0x20);
 DataArray(char, MemoryCard, 0x1DBEE00, 104);
 DataPointer(CHAO_SAVE_INFO **, ChaoDataArray, 0x1DC0FC8);
 DataPointer(task **, ChaoObjectArray, 0x1DC0FFC);

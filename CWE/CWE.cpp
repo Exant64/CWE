@@ -278,8 +278,8 @@ extern "C"
 			cweSaveFile.purchasedItemCount = PurchasedItemCount;
 			for (int i = 0; i < PurchasedItemCount; i++)
 			{
-				save::CWE_PurchasedItems[i].mCategory = PurchasedItems[i].Category;
-				save::CWE_PurchasedItems[i].mType = PurchasedItems[i].Type;
+				save::CWE_PurchasedItems[i].mCategory = PurchasedItems[i].mCategory;
+				save::CWE_PurchasedItems[i].mType = PurchasedItems[i].mType;
 			}
 			PurchasedItemCount = 0;
 		}

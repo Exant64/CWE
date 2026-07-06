@@ -6,10 +6,10 @@
 using namespace rapidjson;
 
 void Parse(NJS_VECTOR& a, Value& d);
-void Parse(SAlItem& a, Value& d);
+void Parse(SAlItemCwe& a, Value& d);
 void Parse(ITEM_SAVE_INFO& a, Value& d);
 
-void Write(PrettyWriter<FileWriteStream>& d, SAlItem& a);
+void Write(PrettyWriter<FileWriteStream>& d, SAlItemCwe& a);
 
 template <typename T, int max>
 void LoadMember(Document& d, std::array<T, max>& result, const char* jsonName) {

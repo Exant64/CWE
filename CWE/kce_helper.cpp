@@ -24,7 +24,7 @@ struct KCE_HELPER {
 
 	CWESaveFile* pCweSave;
 
-	SAlItem* pPurchasedItems;
+	SAlItemCwe* pPurchasedItems;
 
 	int* pLensSpecialMap;
 	size_t LensSpecialMapSize;

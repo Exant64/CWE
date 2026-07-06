@@ -55,7 +55,7 @@ struct BlackMarketData
 	Sint8 mItemDescShow;
 	Sint8 mItemDescSell;
 	Sint8 mItemDescWinExplOn;
-	SAlItem mItemDescItem;
+	SAlItemCwe mItemDescItem;
 	BlackMarketItemAttributes* mItemDescInfo;
 	KinderCoMessageThing mItemDescWinExpl;
 	int mItemDescAngX;
@@ -108,7 +108,7 @@ DataArray(BlackMarketCategoryAttribute, BlackMarketCategories, 0x008A8728, 17);
 DataArray(ItemChance_old, GeneralFruitChances, 0x008A3548, 4);
 
 DataPointer(int, PurchasedItemCount, 0x01DBEDAC);
-DataArray(BlackMarketItem, PurchasedItems, 0x01DBEDA0, 10);
+DataArray(SAlItem, PurchasedItems, 0x01DBEDA0, 10);
 
 extern std::vector<ItemChance> GeneralFruitMarket;
 extern std::vector<ItemChance> RareFruitMarket;
@@ -117,4 +117,4 @@ extern std::unordered_map<int, int> OtherItemFuncs;
 
 void BlackMarketAddInventory(int cat, int item);
 void alg_kinder_bl_Init();
-extern "C" __declspec(dllexport) void DrawItem(float x, float y, float scl, const Angle3 & rot, const SAlItem & CurrentItem);
+extern "C" __declspec(dllexport) void DrawItem(float x, float y, float scl, const Angle3 & rot, const SAlItemCwe & CurrentItem);

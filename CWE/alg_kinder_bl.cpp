@@ -82,7 +82,7 @@ struct ALK_SWINDOW_TABLE
 };
 
 std::array<std::unordered_set<int>, ChaoItemCategory_Count> AlItemRebuyable;
-bool AlItemIsRebuyable(const SAlItem& pItem) {
+bool AlItemIsRebuyable(const SAlItemCwe& pItem) {
 	const auto& rebuyflags = AlItemRebuyable[pItem.mCategory];
 	if (rebuyflags.contains(pItem.mType)) //check if dict has the item
 		return true;
@@ -91,7 +91,7 @@ bool AlItemIsRebuyable(const SAlItem& pItem) {
 }
 
 void BlackMarketAddInventory(int cat, int item);
-SAlItem* BM_GetInv(BlackMarketData* a1, int a2)
+SAlItemCwe* BM_GetInv(BlackMarketData* a1, int a2)
 {
 	if (a2 < 0)
 		a2 = a1->mBuyListCursor;
@@ -99,7 +99,7 @@ SAlItem* BM_GetInv(BlackMarketData* a1, int a2)
 	return &GetMarketInventory(TabCategory)[a2];
 }
 
-SAlItem* BM_GetSelectedItem(BlackMarketData* a1) {
+SAlItemCwe* BM_GetSelectedItem(BlackMarketData* a1) {
 	return &GetMarketInventory(TabCategory)[a1->mBuyListCursor];
 }
 int BM_GetInvSize(BlackMarketData* a1)
@@ -239,7 +239,7 @@ static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const s
 	}
 }
 
-SAlItem* __cdecl sub_58B120(SAlItem* result)
+SAlItemCwe* __cdecl sub_58B120(SAlItemCwe* result)
 {
 	result->mCategory = AL_GetHoldingItemCategory();
 	result->mType = AL_GetHoldingItemKind();
@@ -698,7 +698,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 	njPushMatrixEx();
 
 	float v45 = SELECTION_ITEM_OY;
-	SAlItem* item = BM_GetInv(a1, a1->mBuyListScroll);
+	SAlItemCwe* item = BM_GetInv(a1, a1->mBuyListScroll);
 	int index = a1->mBuyListScroll;
 
 	for (float v45 = SELECTION_ITEM_OY; v45 < SELECTION_ITEM_OY + (ITEMSINBUYLIST * DISTANCEBUYLIST); v45 += DISTANCEBUYLIST)
@@ -980,7 +980,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 	DoLighting(LightIndexBackupMaybe);
 }
 
-BlackMarketItemAttributes* __cdecl AlItemGetInfo(SAlItem* a1)
+BlackMarketItemAttributes* __cdecl AlItemGetInfo(SAlItemCwe* a1)
 {
 	BlackMarketItemAttributes* result; // eax
 	BlackMarketCategoryAttribute* v4; // edx
@@ -1439,7 +1439,7 @@ void DrawTimer()
 Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1, 0.5f, {  1,  1,  1 } };
 #define Translate(x,y,z) OrthoScreenTranslate(x, y, (-26.0f) / z * scl)
 
-extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Angle3& rot, const SAlItem& mItemDescItem) {
+extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Angle3& rot, const SAlItemCwe& mItemDescItem) {
 	njPushMatrixEx();
 	njUnitMatrix(0);
 
@@ -1724,7 +1724,7 @@ const char* BlackMarketGetDescMsg(BlackMarketData const* a1, BlackMarketItemAttr
 	return BlackMarket_GetItemMsg(a1, a2->Descriptions);
 }
 
-void __cdecl FItemDescSet(SAlItem* a1, BlackMarketData* a2) {	
+void __cdecl FItemDescSet(SAlItemCwe* a1, BlackMarketData* a2) {	
 	a2->mItemDescItem = *a1;
 	a2->mItemDescInfo = AlItemGetInfo(a1);
 	a2->mItemDescScl = 1;
@@ -1766,7 +1766,7 @@ static void __declspec(naked) FItemDescSetHook()
 
 void __cdecl FSellListStart(BlackMarketData* a1)
 {
-	SAlItem item; // [esp+10h] [ebp-C4h] BYREF
+	SAlItemCwe item; // [esp+10h] [ebp-C4h] BYREF
 	ALK_SWINDOW_TABLE swindow; // [esp+14h] [ebp-C0h] BYREF
 	AL_KinderPMessage v19; // [esp+1Ch] [ebp-B8h] BYREF
 	int v20[33]; // [esp+48h] [ebp-8Ch] BYREF
@@ -2130,8 +2130,8 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 			if (v29 < cweSaveFile.marketInventoryCount[TabCategory])
 			{
-				SAlItem* v31 = &cweSaveFile.marketInventory[TabCategory][v29];
-				SAlItem* v32 = &cweSaveFile.marketInventory[TabCategory][v29 + 1];
+				SAlItemCwe* v31 = &cweSaveFile.marketInventory[TabCategory][v29];
+				SAlItemCwe* v32 = &cweSaveFile.marketInventory[TabCategory][v29 + 1];
 				for (int i = v30 - v29; i; --i)
 				{
 					*v31++ = *v32++;

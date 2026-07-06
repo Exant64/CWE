@@ -173,7 +173,7 @@ static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
     njDrawTexture(4, 44657590, (int)vtx, 1);
 
     const Angle3 rot = { 0, -4000, 0 };
-    const SAlItem item = { 2, type };
+    const SAlItemCwe item = { 2, type };
     
     const float scale = 1.65f;
     NJS_POINT3 center;

@@ -39,12 +39,12 @@ static struct {
 // (i really hate this part of the code lol)
 namespace save {
 	// todo: refactor to be static and create helper function that returns span
-	std::array<SAlItem, 10> CWE_PurchasedItems;
+	std::array<SAlItemCwe, 10> CWE_PurchasedItems;
 
 	// yes, i know that we already have an SAlItem with that terrible awful "save_serializable" stuff
 	// for now i'll keep the new one here, i don't plan to support that system
 	// with how infrequently we add stuff here, its enough to just do it the ugly way
-	static bool ReadSAlItem(const rapidjson::Value& value, SAlItem& outItem) {
+	static bool ReadSAlItem(const rapidjson::Value& value, SAlItemCwe& outItem) {
 		const char* categoryStr = value["category"].GetString();
 		outItem.mCategory = -1;
 		for (size_t i = 0; i < _countof(CategoryKeyValuePairs); i++) {
@@ -76,7 +76,7 @@ namespace save {
 	}
 
 	template <typename T>
-	static bool SaveSAlItem(rapidjson::PrettyWriter<T>& writer, const SAlItem& item) {
+	static bool SaveSAlItem(rapidjson::PrettyWriter<T>& writer, const SAlItemCwe& item) {
 		const char* categoryString = NULL;
 		for (size_t i = 0; i < _countof(CategoryKeyValuePairs); ++i) {
 			const auto& pair = CategoryKeyValuePairs[i];
@@ -137,7 +137,7 @@ namespace save {
 			Document d;
 			d.ParseStream(is);
 
-			LoadMember<SAlItem, 10>(d, CWE_PurchasedItems, "PurchasedItems");
+			LoadMember<SAlItemCwe, 10>(d, CWE_PurchasedItems, "PurchasedItems");
 
 			if (d.HasMember("daynight")) {
 				const auto& daynightMember = d["daynight"];
@@ -208,7 +208,7 @@ namespace save {
 
 			writer.StartObject();
 
-			SaveMember<SAlItem, 10>(writer, CWE_PurchasedItems, "PurchasedItems");
+			SaveMember<SAlItemCwe, 10>(writer, CWE_PurchasedItems, "PurchasedItems");
 
 			writer.Key("daynight");
 			writer.StartObject();
@@ -257,7 +257,7 @@ namespace save {
 	}
 }
 
-SAlItem* GetMarketInventory(int category)
+SAlItemCwe* GetMarketInventory(int category)
 {
 	return cweSaveFile.marketInventory[category];
 }
@@ -450,7 +450,7 @@ static void __declspec(naked) sub_5319F0()
 		retn
 	}
 }
-DataArray(BlackMarketItem, PurchasedInventory, 0x01DBEDA0, 6);
+DataArray(SAlItem, PurchasedInventory, 0x01DBEDA0, 6);
 int sub_531A20()
 {
 	char* v0; // eax
@@ -473,7 +473,7 @@ int sub_531A20()
 	v1 += GetFreeChaoCWE2();
 	for (i = 0; i < *(int*)0x01DBEDAC; ++i)
 	{
-		if (PurchasedInventory[i].Category == 1)
+		if (PurchasedInventory[i].mCategory == 1)
 		{
 			++v1;
 		}

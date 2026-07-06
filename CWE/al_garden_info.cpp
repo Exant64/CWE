@@ -352,7 +352,7 @@ int AL_GetLocalChaoCount(int a1)
 	return retVal;
 }
 
-static bool AL_CreatePurchasedCustomItem(const SAlItem& item, NJS_POINT3& position, NJS_VECTOR& velocity) {
+static bool AL_CreatePurchasedCustomItem(const SAlItemCwe& item, NJS_POINT3& position, NJS_VECTOR& velocity) {
 	if (!CWE_IsCustomItemSaveInfoCategory(ChaoItemCategory(item.mCategory))) {
 		return false;
 	}
@@ -374,8 +374,8 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 	int v27; // eax
 	int v28; // ecx
 	int v29; // eax
-	SAlItem* v30; // esi
-	SAlItem* v31; // edi
+	SAlItemCwe* v30; // esi
+	SAlItemCwe* v31; // edi
 	int v32; // [esp+8h] [ebp-D0h]
 	NJS_VECTOR position; // [esp+Ch] [ebp-CCh]
 	NJS_VECTOR output; // [esp+18h] [ebp-C0h]

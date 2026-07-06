@@ -766,7 +766,7 @@ public:
 
 				Angle3 rot = { 0, 0, 0 };
 
-				SAlItem _item;
+				SAlItemCwe _item;
 
 				if (index < HatList.size()) {
 					_item = {
@@ -1461,7 +1461,7 @@ public:
 
 		Angle3 rot = { 0, IsSelected() ? m_rotY : 0, 0 };
 
-		SAlItem _item = {
+		SAlItemCwe _item = {
 			(m_slot > 0) ? ChaoItemCategory_Accessory : ChaoItemCategory_Hat,
 			(Uint16)item
 		};

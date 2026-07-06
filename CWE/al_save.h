@@ -44,7 +44,7 @@ struct OMOCHAO_INFO
 	CHAO_ID chaoID;
 };
 
-struct SAlItem
+struct SAlItemCwe
 {
 	Sint8 mCategory;
 	Uint16 mType;
@@ -59,20 +59,20 @@ struct CWESaveFile
 	OMOCHAO_INFO omochao[3];
 	int transporterFlag;
 	int marketInventoryCount[ChaoItemCategory_Count];
-	SAlItem marketInventory[ChaoItemCategory_Count][32];
+	SAlItemCwe marketInventory[ChaoItemCategory_Count][32];
 	int purchasedItemCount;
-	SAlItem PurchasedItems[5]; //deprecated, ALW_Control_Main moves it to save::CWE_PurchasedItems
+	SAlItemCwe PurchasedItems[5]; //deprecated, ALW_Control_Main moves it to save::CWE_PurchasedItems
 	ITEM_SAVE_INFO cweToyInfo[NB_ALW_KIND * 3];
 };
 
 namespace save {
-	extern std::array<SAlItem,10> CWE_PurchasedItems;
+	extern std::array<SAlItemCwe,10> CWE_PurchasedItems;
 }
 
 void ReadCWESaveFiles();
 void SaveCWESaveFiles();
 
-SAlItem* GetMarketInventory(int category);
+SAlItemCwe* GetMarketInventory(int category);
 int GetMarketInvSize(int category);
 
 extern CWESaveFile cweSaveFile;

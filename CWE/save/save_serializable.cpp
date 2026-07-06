@@ -16,7 +16,7 @@ void Parse(NJS_VECTOR& a, Value& d) {
 	a.z = d[2].GetFloat();
 }
 
-void Parse(SAlItem& a, Value& d) {
+void Parse(SAlItemCwe& a, Value& d) {
 	if (!d.HasMember("mCategory") ||
 		!d.HasMember("mType")) {
 		PrintDebug("SAlItem doesnt have correct members");
@@ -41,7 +41,7 @@ void Parse(ITEM_SAVE_INFO& a, Value& d) {
 	a.Type = d["Type"].GetInt();
 }
 
-void Write(PrettyWriter<FileWriteStream>& d, SAlItem& a) {
+void Write(PrettyWriter<FileWriteStream>& d, SAlItemCwe& a) {
 	d.Key("mCategory");
 	d.Int(a.mCategory);
 	d.Key("mType");

@@ -156,7 +156,7 @@ struct __declspec(align(4)) BlackMarketSaveData
 	int dword1C;
 	int ItemCount;
 	int dword24;
-	BlackMarketItem Items[20];
+	SAlItem Items[20];
 	int field_50;
 	int field_54;
 	int field_58;

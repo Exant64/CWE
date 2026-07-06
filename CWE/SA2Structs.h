@@ -965,12 +965,6 @@ struct CHAO_PARAM_GC
 	AL_PARTS partsDX;
 	char paddingRaceDX[16];//AL_RACE_PERSONAL_INFO_DX raceDX;
 	AL_KNOWLEDGE_DX knowledgeDX;
-
-};
-
-struct ChaoUnknownE
-{
-	char pad[960];
 };
 
 struct AnimationInfo
@@ -1220,10 +1214,10 @@ struct LevelRankTimes
 	MinSec ARank;
 };
 
-struct BlackMarketItem
+struct SAlItem
 {
-	ChaoItemCategory Category;
-	Sint8 Type;
+	Sint8 mCategory;
+	Sint8 mType;
 };
 
 struct LevelEndPosition
