@@ -93,7 +93,7 @@ int ALBHV_SnapToGossip(task* a1)
 	NJS_VECTOR testVectr = { 3.2f,0,0 };
 	if(GET_CHAOWK(a1)->Behavior.Mode == 0)
 	{
-		sub_54A690(a1);
+		AL_FixPosition(a1);
 
 		njPushUnitMatrix();
 		njTranslateEx(&otherChao->twp->pos);
@@ -143,7 +143,7 @@ void ALBHV_Gossip(task* a1, task* a2)
 	AL_SetNextBehavior(a1, ALBHV_SnapToGossip);
 	AL_SetNextBehavior(a1, ALBHV_GossipTest);               //init talking
 
-	sub_54A690(a1);
+	AL_FixPosition(a1);
 	ALW_SendCommand(a1, ALW_CMD_GO);
 	ALW_SendCommand(otherChao, ALW_CMD_GO);
 }

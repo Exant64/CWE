@@ -17,13 +17,13 @@ void SpoiledFruits::OnFrame() {
         return;
     }
 
-    ChaoObjectData* objData = (ChaoObjectData*)ChaoFruitSlots;
+    ITEM_SAVE_INFO* objData = (ITEM_SAVE_INFO*)ChaoFruitSlots;
     for (size_t i = 0; i < 24; i++) {
-        if(objData[i].Age != 6) continue;
+        if(objData[i].nbVisit != 6) continue;
 
         // turn certain fruit into spoiled variant
-        if (objData[i].Type >= 0 && objData[i].Type <= 4) {
-            objData[i].Type += 24;
+        if (objData[i].kind >= 0 && objData[i].kind <= 4) {
+            objData[i].kind += 24;
         }
     }
 }

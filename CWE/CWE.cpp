@@ -297,11 +297,11 @@ extern "C"
 		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
 		for (size_t j = 0; j < 24; ++j) {
 			auto& originalItem = items[j];
-			if (originalItem.Type < 256) {
+			if (originalItem.kind < 256) {
 				continue;
 			}
 
-			const auto accessoryIndex = originalItem.Type - 256;
+			const auto accessoryIndex = originalItem.kind - 256;
 
 			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
 			// if we don't have space to convert, stop the conversion checks
@@ -312,8 +312,8 @@ extern "C"
 			if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
 				memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
 				pNewInfo->IndexID = accessoryIndex;
-				pNewInfo->Garden = originalItem.Garden;
-				pNewInfo->Position = originalItem.position;
+				pNewInfo->Garden = originalItem.place;
+				pNewInfo->Position = originalItem.pos;
 			}
 
 			// even if it does become an invalid id, we omit the original item
@@ -325,9 +325,9 @@ extern "C"
 		for (int i = 0; i < 24; i++)
 		{
 			//HYPER FRUIT CHECK, dont age hyper fruit
-			ChaoObjectData* objData = (ChaoObjectData*)ChaoFruitSlots;
-			if (objData[i].Type >= 29 && objData[i].Type <= 32)
-				objData[i].Age = 0;
+			ITEM_SAVE_INFO* objData = (ITEM_SAVE_INFO*)ChaoFruitSlots;
+			if (objData[i].kind >= 29 && objData[i].kind <= 32)
+				objData[i].nbVisit = 0;
 
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
 			if (ChaoSlots[i].data.type == 1)
@@ -344,7 +344,7 @@ extern "C"
 				PrintDebug("toys have been reset");
 				ToyResetTimer = 120;
 				for (int i = 0; i < NB_ALW_KIND * 3; i++) {
-					cweSaveFile.cweToyInfo[i].Garden = 0;
+					cweSaveFile.cweToyInfo[i].place = 0;
 				}
 			}
 		}

@@ -88,7 +88,7 @@ struct AccessorySaveComparator {
 
 struct ItemSaveComparator {
 	bool operator()(const ITEM_SAVE_INFO* a, const ITEM_SAVE_INFO* b) const {
-		return a->Type < b->Type;
+		return a->kind < b->kind;
 	}
 };
 
@@ -117,7 +117,7 @@ static void UpdateHatAccVector() {
 	ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
 	for (int j = 0; j < 24; j++)
 	{
-		if (items[j].Type > 0) {
+		if (items[j].kind > 0) {
 			HatListCount[& items[j]]++;
 		}
 	}
@@ -148,9 +148,9 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 		return false;
 	}
 
-	v9->Garden = Garden;
-	v9->Type = ID;
-	v9->position = ProbablyChaoSpawnPoints[(Garden - 1) * 16 + (int)(njRandom() * 15.f)];
+	v9->place = Garden;
+	v9->kind = ID;
+	v9->pos = ProbablyChaoSpawnPoints[(Garden - 1) * 16 + (int)(njRandom() * 15.f)];
 	UpdateHatAccVector();
 
 	return true;
@@ -662,7 +662,7 @@ public:
 
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
-				pParam->Headgear = Uint8(HatList[index]->Type);
+				pParam->Headgear = Uint8(HatList[index]->kind);
 				AL_ClearItemSaveInfo(HatList[index]);
 				UpdateHatAccVector();
 			}
@@ -771,7 +771,7 @@ public:
 				if (index < HatList.size()) {
 					_item = {
 						ChaoItemCategory_Hat,
-						Uint16(HatList[index]->Type)
+						Uint16(HatList[index]->kind)
 					};
 				}
 				else {

@@ -54,14 +54,14 @@ void CheckAndSetColColor(CCL_INFO* Col) {
 
 void __cdecl DrawCollisionInfo(colliwk* ColInfo)
 {
-	CollisionData* Col; // esi
+	CCL_INFO* Col; // esi
 	task* Obj; // eax
 	taskwk* data; // edi
 	int v4; // ebx
 
 	if (ColInfo)
 	{
-		Col = ColInfo->CollisionArray;
+		Col = ColInfo->info;
 		Obj = ColInfo->Object;
 		if (ColInfo->nbInfo)
 		{
@@ -77,7 +77,7 @@ void __cdecl DrawCollisionInfo(colliwk* ColInfo)
 							v4 = ColInfo->nbInfo;
 							do
 							{
-								DrawCol((CCL_INFO*)Col++, data);
+								DrawCol(Col++, data);
 								--v4;
 							} while (v4);
 						}

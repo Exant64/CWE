@@ -30,7 +30,7 @@ void sub_46E5B0(task* a1, int a2)
 }
 
 DataPointer(int, HeldItemType, 0x19F6450);
-DataPointer(ChaoObjectData*, dword_19F6454, 0x19F6454);
+DataPointer(ITEM_SAVE_INFO*, dword_19F6454, 0x19F6454);
 
 void* AL_GetHoldingItemSaveInfo() {
 	return dword_19F6454;
@@ -48,7 +48,7 @@ int AL_GetHoldingItemKind() {
 		return ((ItemSaveInfoBase*)dword_19F6454)->IndexID;
 	}
 
-	return dword_19F6454->Type;
+	return dword_19F6454->kind;
 }
 
 ChaoItemCategory AL_GetHoldingItemCategory() {
@@ -56,11 +56,11 @@ ChaoItemCategory AL_GetHoldingItemCategory() {
 }
 
 void AL_ClearItemSaveInfo(ITEM_SAVE_INFO* pSaveInfo) {
-	pSaveInfo->Type = -1;
-	pSaveInfo->position = { 0, 0, 0 };
-	pSaveInfo->Garden = -1;
-	pSaveInfo->Age = 0;
-	pSaveInfo->Size = 0;
+	pSaveInfo->kind = -1;
+	pSaveInfo->pos = { 0, 0, 0 };
+	pSaveInfo->place = -1;
+	pSaveInfo->nbVisit = 0;
+	pSaveInfo->status = 0;
 }
 
 void AL_ClearItemSaveInfo(ItemSaveInfoBase* pSaveInfo) {
@@ -94,8 +94,8 @@ void AL_SetItemOnTheGarden(int a1)
 	double v2; // st7
 	ALFSave* result; // eax
 	int v4; // ebx
-	ChaoObjectData* v5; // edi
-	ChaoObjectData* v6; // ebp
+	ITEM_SAVE_INFO* v5; // edi
+	ITEM_SAVE_INFO* v6; // ebp
 	NJS_VECTOR* v8; // esi
 	int v10; // [esp+18h] [ebp-10h]
 	NJS_VECTOR a4; // [esp+1Ch] [ebp-Ch]
@@ -113,7 +113,7 @@ void AL_SetItemOnTheGarden(int a1)
 		case 2:
 			result = (ALFSave*)GetChaoSavePointer();
 			v5 = result->ChaoAnimalSlots;
-			v6 = (ChaoObjectData*)&result->RaceData;
+			v6 = (ITEM_SAVE_INFO*)&result->RaceData;
 			break;
 		case 3:
 			result = (ALFSave*)GetChaoSavePointer();
@@ -127,8 +127,8 @@ void AL_SetItemOnTheGarden(int a1)
 			break;
 		case 10:
 			result = (ALFSave*)GetChaoSavePointer();
-			v5 = (ChaoObjectData*)cweSaveFile.specialItems;
-			v6 = (ChaoObjectData*)&cweSaveFile.specialItems[30];
+			v5 = (ITEM_SAVE_INFO*)cweSaveFile.specialItems;
+			v6 = (ITEM_SAVE_INFO*)&cweSaveFile.specialItems[30];
 			break;
 		case 9:
 			result = (ALFSave*)GetChaoSavePointer();
@@ -143,17 +143,17 @@ void AL_SetItemOnTheGarden(int a1)
 		}
 		if (v5 < v6)
 		{
-			v8 = &v5->position;
+			v8 = &v5->pos;
 			do
 			{
-				result = (ALFSave*)(unsigned __int16)v5->Type;
-				if ((signed __int16)v5->Type < 0)
+				result = (ALFSave*)(unsigned __int16)v5->kind;
+				if ((signed __int16)v5->kind < 0)
 				{
 					goto LABEL_30;
 				}
-				if (v5->Garden == AL_GetStageNumber())
+				if (v5->place == AL_GetStageNumber())
 				{
-					if (v5 != (ChaoObjectData*)dword_19F6454)
+					if (v5 != (ITEM_SAVE_INFO*)dword_19F6454)
 					{
 						a4.x = 0.0f;
 						a4.y = 0.0f;
@@ -161,24 +161,24 @@ void AL_SetItemOnTheGarden(int a1)
 						switch (a1)
 						{
 						case 2:
-							if (v5->Type >= 21 && v5->Type < 25)
+							if (v5->kind >= 21 && v5->kind < 25)
 							{
 								ALO_ChaosDriveExecutor_Load(
-									LOBYTE(v5->Type) - 21,
+									LOBYTE(v5->kind) - 21,
 									v8,
 									&a4,
 									(CHAO_SAVE_INFO*)v5);
 							}
 							else
 							{
-								AL_MinimalExecutor_Load((char)v5->Type, v8, v4, &a4, (int)v5);
+								AL_MinimalExecutor_Load((char)v5->kind, v8, v4, &a4, (int)v5);
 							}
 							break;
 						case 3:
-							if (v5->Size)
+							if (v5->status)
 							{
 								ALO_FruitExecutor_Load(
-									v5->Type,
+									v5->kind,
 									v8,
 									v4,
 									&a4,
@@ -190,21 +190,21 @@ void AL_SetItemOnTheGarden(int a1)
 							}
 							break;
 						case 7:
-							ALO_SeedExecutor_Load(v5->Type, v8, &a4, (int)v5);
+							ALO_SeedExecutor_Load(v5->kind, v8, &a4, (int)v5);
 							break;
 						case ChaoItemCategory_Special:
 
 							ALO_Special_Load(
-								v5->Type,
+								v5->kind,
 								v8,
 								v4,
 								&a4,
 								(short*)v5);
 							break;
 						case 9:
-							if (v5->Type > 0) {
+							if (v5->kind > 0) {
 								ALO_ObakeHeadExecutor_Load(
-									v5->Type,
+									v5->kind,
 									v8,
 									v4,
 									&a4,
@@ -217,7 +217,7 @@ void AL_SetItemOnTheGarden(int a1)
 					}
 					goto LABEL_27;
 				}
-				if (v5->Garden <= 0 || v5->Garden > 3)
+				if (v5->place <= 0 || v5->place > 3)
 				{
 				LABEL_30:
 					AL_ClearItemSaveInfo(v5);
@@ -259,11 +259,11 @@ static void AL_CreateCustomHoldingItem() {
 }
 
 static void AL_CreateHoldingItem() {
-	ChaoObjectData* v1; // esi
+	ITEM_SAVE_INFO* v1; // esi
 	taskwk* v2; // edi
 	int v3; // ebx
 	task* v6; // esi
-	ChaoObjectData* v7; // [esp+8h] [ebp-1Ch]
+	ITEM_SAVE_INFO* v7; // [esp+8h] [ebp-1Ch]
 	NJS_VECTOR a2; // [esp+Ch] [ebp-18h]
 	NJS_VECTOR a4; // [esp+18h] [ebp-Ch]
 
@@ -283,7 +283,7 @@ static void AL_CreateHoldingItem() {
 	case ChaoItemCategory_Seed:
 	case ChaoItemCategory_Hat:
 	case ChaoItemCategory_Special:
-		if (dword_19F6454 && dword_19F6454->Type >= 0 && MainCharObj1[0])
+		if (dword_19F6454 && dword_19F6454->kind >= 0 && MainCharObj1[0])
 		{
 			v2 = MainCharObj1[0];
 
@@ -301,26 +301,26 @@ static void AL_CreateHoldingItem() {
 			switch (HeldItemType)
 			{
 			case 2:
-				if (v1->Type >= 21 && v1->Type < 25)
+				if (v1->kind >= 21 && v1->kind < 25)
 				{
-					v6 = ALO_ChaosDriveExecutor_Load(LOBYTE(v1->Type) - 21, &a2, &a4, (CHAO_SAVE_INFO*)v1);
+					v6 = ALO_ChaosDriveExecutor_Load(LOBYTE(v1->kind) - 21, &a2, &a4, (CHAO_SAVE_INFO*)v1);
 				}
 				else
 				{
-					v6 = AL_MinimalExecutor_Load((char)v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
+					v6 = AL_MinimalExecutor_Load((char)v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
 				}
 				break;
 			case 3:
-				v6 = ALO_FruitExecutor_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (CHAO_SAVE_INFO*)v1);
+				v6 = ALO_FruitExecutor_Load(v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (CHAO_SAVE_INFO*)v1);
 				break;
 			case 7:
-				v6 = ALO_SeedExecutor_Load(v1->Type, &a2, &a4, (int)v1);
+				v6 = ALO_SeedExecutor_Load(v1->kind, &a2, &a4, (int)v1);
 				break;
 			case 9:
-				v6 = ALO_ObakeHeadExecutor_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
+				v6 = ALO_ObakeHeadExecutor_Load(v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
 				break;
 			case ChaoItemCategory_Special:
-				v6 = ALO_Special_Load(v1->Type, &a2, MainCharObj1[0]->ang.y, &a4, (short*)v1);
+				v6 = ALO_Special_Load(v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (short*)v1);
 				break;
 			default:
 				throw std::exception("CWE: holding incorrect item");
@@ -329,7 +329,7 @@ static void AL_CreateHoldingItem() {
 
 			if (AL_IsGarden())
 			{
-				v7->Garden = AL_GetStageNumber();
+				v7->place = AL_GetStageNumber();
 			}
 			sub_46E5B0(v6, 0);
 		}

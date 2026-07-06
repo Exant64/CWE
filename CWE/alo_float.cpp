@@ -134,8 +134,7 @@ void ALO_Float_Main(task* a1)
 	//ALO_Float_Displayer(a1);
 	CCL_Entry(a1);
 }
-CollisionData floatColl =
-{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+
 void ALO_Float_Load(task* a1)
 {
 	a1->exec = ALO_Float_Main;
@@ -144,14 +143,15 @@ void ALO_Float_Load(task* a1)
 }
 
 void ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
+	static const CCL_INFO float_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+
 	task* p = CreateElementalTask(LoadObj_Data1, 4, ALO_Float_Load, "ALO_Float");
-	//InitCollision(p, (CollisionData*)colli_info, 2, 4);
 
 	p->disp = ALO_Float_Displayer_;
 	p->twp->wtimer = 1; //enable display
 	p->twp->pos = *pPos;
 	p->twp->ang.y = ang;
 	p->twp->scl = p->twp->pos; //scale = default pos
-	//p->Data1->Position = { 10,0,0 };
-	AL_Toy_Move_Init(p, (CCL_INFO*)&floatColl);
+	
+	AL_Toy_Move_Init(p, &float_colli_info);
 }

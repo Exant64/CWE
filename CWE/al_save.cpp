@@ -535,7 +535,7 @@ void* AL_GetSpecialItemSave()
 {
 	for (int i = 0; i < 30; i++)
 	{
-		if (cweSaveFile.specialItems[i].Type == -1)
+		if (cweSaveFile.specialItems[i].kind == -1)
 			return &cweSaveFile.specialItems[i];
 	}
 	return 0;
@@ -558,7 +558,7 @@ void AL_SaveInit()
 	// no mem leftover (just to be safe)
 	memset(&cweSaveFile, 0, sizeof(CWESaveFile));
 	for (int i = 0; i < 30; i++)
-		cweSaveFile.specialItems[i].Type = -1;
+		cweSaveFile.specialItems[i].kind = -1;
 	WriteCall((void*)0x0052DF4C, ReadCWESaveFileHook);
 
 	//i hook every single save file load, which also means the second memory card load for karate/transporter which fails on PC

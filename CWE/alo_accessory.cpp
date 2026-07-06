@@ -55,7 +55,7 @@ void Accessory_Display(task* a1) {
 	njPopMatrixEx();
 }
 
-DataArray(CollisionData, ALO_ObakeHeadExecutor_collision, 0x008A6F68, 3);
+DataArray(CCL_INFO, ALO_ObakeHeadExecutor_collision, 0x008A6F68, 3);
 
 static void ALO_AccessoryDelete(task* tp) {
 	CWE_ALW_CancelEntry(tp);
@@ -84,10 +84,10 @@ task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const
 
 	move->unk = (int)sub_57A7A0(4.0);// rad
 
-	InitCollision(tp, ALO_ObakeHeadExecutor_collision, 3, 5u);
+	CCL_Init(tp, ALO_ObakeHeadExecutor_collision, 3, 5u);
 	ObjectMovableInitialize(work, 10);
 
-	*(unsigned char*)&work->cwp->CollisionArray[2].field_0 = CI_KIND_AL_ACCESSORY;
+	work->cwp->info[2].kind = CI_KIND_AL_ACCESSORY;
 
 	tp->disp = Accessory_Display;
 	tp->dest = ALO_AccessoryDelete;

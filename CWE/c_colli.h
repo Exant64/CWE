@@ -21,22 +21,6 @@ struct c_colli_hit_info {
 	task* hit_twp;
 };
 
-struct CCL_INFO {
-	char kind;
-	char form;
-	char push;
-	char damage;
-	int attr;
-	NJS_POINT3 center;
-	float a;
-	float b;
-	float c;
-	float d;
-	int angx;
-	int angy;
-	int angz;
-};
-
 #define CCL_SPHERE(kind, push, damage, attr, cx, cy, cz, a, b, c) \
     { kind, CI_FORM_SPHERE, push, damage, attr, { cx, cy, cz }, a, b, c, 0, 0, 0, 0 }
 #define CCL_CYLINDER(kind, push, damage, attr, cx, cy, cz, a, b, c) \

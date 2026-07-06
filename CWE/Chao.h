@@ -451,7 +451,7 @@ task* __cdecl AL_GetFoundToyTask(task* a1);
 void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist);
 FastcallFunctionPointer(signed int, AL_TraceHoldingPosition, (int a1, task* a2), 0x56D170);
 task* sub_55A920(int a1, NJS_VECTOR* a2, task* parent, Uint8 a4, float a5);
-void sub_54A690(task* a1);
+void AL_FixPosition(task* a1);
 void LoadCocoon(task* a1, char a2);
 void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer);
 

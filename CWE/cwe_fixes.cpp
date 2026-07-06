@@ -95,7 +95,7 @@ void __cdecl ExpandTextureBuffer()
 
 static void __cdecl BreedPatch(task* a1)
 {
-	sub_54A690(a1);
+	AL_FixPosition(a1);
 	//attentionoff
 	ALW_ENTRY_WORK* v1 = GET_ALW_ENTRY_WORK(a1);
 	if (v1)

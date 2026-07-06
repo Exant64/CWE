@@ -165,14 +165,14 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS
 	return chao;
 }
 
-void sub_54A690(task* a1)
+void AL_FixPosition(task* a1)
 {
 	taskwk* v1; // eax
 	colliwk* v2; // eax
 
 	if (a1 && (v1 = a1->twp) != 0 && (v2 = v1->cwp) != 0)
 	{
-		v2->CollisionArray[1].field_2 |= 0x70u;
+		v2->info[1].push |= 0x70u;
 	}
 }
 void sub_54A730(task* tp)

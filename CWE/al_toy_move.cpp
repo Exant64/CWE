@@ -87,10 +87,10 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 		saveIndex += (AL_GetStageNumber() - 1);
 
 		info = &cweSaveFile.cweToyInfo[saveIndex];
-		if (info->Garden == 0) {
-			info->Garden = AL_GetStageNumber();
-			info->position = obj->twp->pos;
-			info->Age = obj->twp->ang.y;
+		if (info->place == 0) {
+			info->place = AL_GetStageNumber();
+			info->pos = obj->twp->pos;
+			info->nbVisit = obj->twp->ang.y;
 		}
 	}
 	else {
@@ -99,8 +99,8 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 
 	AddToGlobalChaoThingMaybe_(6, obj, a3, (CHAO_SAVE_INFO*)info);
 	if (info) {
-		obj->twp->pos = info->position;
-		obj->twp->ang.y = info->Age;
+		obj->twp->pos = info->pos;
+		obj->twp->ang.y = info->nbVisit;
 	}
 }
 
@@ -268,7 +268,7 @@ MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 	return data2;
 }
 
-void AL_Toy_Move_Init(task* p, CCL_INFO* col)
+void AL_Toy_Move_Init(task* p, const CCL_INFO* col)
 {
 	MOVE_WORK* mov = AllocateUnknownData2New(p);
 
@@ -299,7 +299,7 @@ void AL_Toy_Move_Init(task* p, CCL_INFO* col)
 	collisions[1].c = collisions[2].c;
 	collisions[1].d = collisions[2].d;
 
-	InitCollision(p, (CollisionData*)collisions, 3, 5);
+	CCL_Init(p, collisions, 3, 5);
 	if (p->mwp)
 	{
 		ObjectMovableInitialize(p->twp, 10);
@@ -541,33 +541,33 @@ void SaveToyPos() {
 				}
 			}
 
-			v5->position = v6->twp->pos;
-			v5->Age = v6->twp->ang.y;
+			v5->pos = v6->twp->pos;
+			v5->nbVisit = v6->twp->ang.y;
 			if (AL_IsGarden())
 			{
-				v5->Garden = AL_GetStageNumber();
+				v5->place = AL_GetStageNumber();
 			}
 
 			if (v6->twp->flag >= 0)
 			{
-				if (v5->position.y >= -100.0)
+				if (v5->pos.y >= -100.0)
 				{
 					c_colli_hit_info* v9 = CCL_IsHitKindEx(v6, CI_KIND_AL_STAGE_CHANGER);
 					if (v9 && v9->hit_twp)
 					{
-						v5->Garden = 0;
+						v5->place = 0;
 					}
 				}
 				else 
-					v5->Garden = 0;
+					v5->place = 0;
 			}
 			else if (!AL_IsGarden())
 			{
-				v5->Garden = 0;
+				v5->place = 0;
 				PrintDebug( "trying to save item in invalid area");
 			}
 			else 
-				v5->Garden = 0;
+				v5->place = 0;
 			goto LABEL_25;
 		}
 	}

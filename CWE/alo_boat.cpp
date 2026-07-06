@@ -125,10 +125,6 @@ void ALO_Boat_Main(task* a1)
 }
 
 
-CollisionData baotColli =
-{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
-
-
 void ALO_Boat_Init(task *a1)
 {
 	a1->exec = ALO_Boat_Main;
@@ -138,14 +134,15 @@ void ALO_Boat_Init(task *a1)
 
 
 void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
+	static const CCL_INFO boat_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+
 	task* p = CreateElementalTask(LoadObj_Data1, 4, ALO_Boat_Init, "ALO_Boat");
-	//InitCollision(p, (CollisionData*)&boatColliT, 2, 4);
 
 	p->disp = ALO_Boat_Displayer;
 	p->twp->pos = *pPos;
 	p->twp->ang.y = ang;
 	p->twp->scl = p->twp->pos; //scale = default pos
-	//p->Data1->Position = { 10,0,0 };
-	AL_Toy_Move_Init(p, (CCL_INFO*)&baotColli);
+
+	AL_Toy_Move_Init(p, &boat_colli_info);
 
 }

@@ -34,11 +34,11 @@ void Parse(ITEM_SAVE_INFO& a, Value& d) {
 		!d.HasMember("Type") || 
 		!d.HasMember("position"))
 		return;
-	a.Age = d["Age"].GetInt();
-	a.Garden = d["Garden"].GetInt();
-	Parse(a.position, d["Position"]);
-	a.Size = d["Size"].GetInt();
-	a.Type = d["Type"].GetInt();
+	a.nbVisit = d["Age"].GetInt();
+	a.place = d["Garden"].GetInt();
+	Parse(a.pos, d["Position"]);
+	a.status = d["Size"].GetInt();
+	a.kind = d["Type"].GetInt();
 }
 
 void Write(PrettyWriter<FileWriteStream>& d, SAlItemCwe& a) {

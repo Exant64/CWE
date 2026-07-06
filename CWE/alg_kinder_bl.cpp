@@ -1328,7 +1328,7 @@ int __cdecl AL_GetExistItemNum(const int a1)
 	{
 		int ret = 0;
 		for (int i = 0; i < 30; i++)
-			if (cweSaveFile.specialItems[i].Type != -1) ret++;
+			if (cweSaveFile.specialItems[i].kind != -1) ret++;
 		return ret;
 	}
 	else

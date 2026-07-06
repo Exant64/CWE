@@ -2,8 +2,6 @@
 #include "al_texlist.h"
 #include <d3d9.h>
 
-typedef ITEM_SAVE_INFO ChaoObjectData;
-
 extern const HelperFunctions* g_HelperFunctions;
 
 extern IDirect3DDevice9* cwe_device;
@@ -183,11 +181,11 @@ struct  ALFSave
 	int field_18;
 	int TotalResetTriggered;
 	TreeData ChaoTreeSlots[21];
-	ChaoObjectData ChaoFruitSlots[24];
-	ChaoObjectData ChaoUnknownSlots[16];
-	ChaoObjectData ChaoSeedSlots[12];
-	ChaoObjectData ChaoHatSlots[24];
-	ChaoObjectData ChaoAnimalSlots[10];
+	ITEM_SAVE_INFO ChaoFruitSlots[24];
+	ITEM_SAVE_INFO ChaoUnknownSlots[16];
+	ITEM_SAVE_INFO ChaoSeedSlots[12];
+	ITEM_SAVE_INFO ChaoHatSlots[24];
+	ITEM_SAVE_INFO ChaoAnimalSlots[10];
 	RaceData RaceData;
 	char field_9D0[32];
 	BlackMarketSaveData BlackMarketData;

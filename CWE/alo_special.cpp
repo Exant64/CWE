@@ -35,7 +35,7 @@ void __cdecl ALO_Special_Display(task* a1)
 extern "C" __declspec(dllexport) task* ALO_Special_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
 {
 	task* obj = ALO_ObakeHeadExecutor_Load(ID, position, rotY, velocity, (int)savedata);
-	*(unsigned char*)&obj->twp->cwp->CollisionArray[2].field_0 = CI_KIND_AL_SPECIAL;
+	obj->twp->cwp->info[2].kind = CI_KIND_AL_SPECIAL;
 	obj->twp->ang.x = ID;
 	obj->disp = ALO_Special_Display;
 	GET_ALW_ENTRY_WORK(obj)->category = ChaoItemCategory_Special;

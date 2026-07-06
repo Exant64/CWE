@@ -46,7 +46,7 @@ signed int __cdecl ALBHV_GoToWaterWithBoat(task* a1)
 		//AL_FaceChangeEye(a1, 4);
 		v7 = v3->Timer;
 		v3->Timer = v7 + 1;
-		sub_54A690(a1);
+		AL_FixPosition(a1);
 
 		if (v7 > 30)
 		{

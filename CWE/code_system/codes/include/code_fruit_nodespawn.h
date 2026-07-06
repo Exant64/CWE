@@ -12,7 +12,7 @@ public:
 
 void FruitsDontDespawn::OnALControl(task* tp) {
 	for (size_t i = 0; i < 40; i++) {
-		ChaoObjectData* objData = (ChaoObjectData*)ChaoFruitSlots;
-		objData[i].Age = 0;
+		ITEM_SAVE_INFO* objData = (ITEM_SAVE_INFO*)ChaoFruitSlots;
+		objData[i].nbVisit = 0;
 	}
 }

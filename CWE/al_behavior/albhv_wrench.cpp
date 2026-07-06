@@ -46,7 +46,7 @@ int __cdecl ALBHV_Wrench(task* a1)
 		}
 		break;
 	case 2:
-		sub_54A690(a1);
+		AL_FixPosition(a1);
 		sub_54A730(a1);
 		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
 		Chao_RegAnimation(a1, "alm_wrench_start");//AL_SetMotionLink(a1, 231);

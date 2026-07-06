@@ -225,7 +225,7 @@ void __cdecl sub_545C20(task *a1)
 			v6 = v2->cwp;
 			if (v6)
 			{
-				v6->CollisionArray->field_4 &= 0xFFFFFFEF;
+				v6->info->attr &= 0xFFFFFFEF;
 			}
 		}
 		if (v2)
@@ -233,7 +233,7 @@ void __cdecl sub_545C20(task *a1)
 			v8 = v2->cwp;
 			if (v8)
 			{
-				v8->CollisionArray[1].field_4 |= 0x10u;
+				v8->info[1].attr |= 0x10u;
 			}
 		}
 		if (v2)
@@ -241,7 +241,7 @@ void __cdecl sub_545C20(task *a1)
 			v10 = v2->cwp;
 			if (v10)
 			{
-				v10->CollisionArray[2].field_4 |= 0x10u;
+				v10->info[2].attr |= 0x10u;
 			}
 		}
 		++a1->twp->smode;

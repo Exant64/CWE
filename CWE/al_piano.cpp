@@ -145,9 +145,10 @@ void Piano_Main(task * a1)
 	CCL_Entry(a1);
 }
 
-CollisionData ALO_RadicaseExecutor_collision[] = {
-	{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  1.5,  0.0,  0.0, 0, 0, 0, 0 }
+static const CCL_INFO ALO_RadicaseExecutor_collision[] = {
+	{ 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  1.5,  0.0,  0.0, 0, 0, 0, 0 }
 };
+
 void ALO_Piano_Init(task *a1)
 {
 	a1->exec = Piano_Main;
@@ -166,6 +167,5 @@ void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	piano->twp->pos = *pPos;
 	piano->twp->ang.y = ang;
 
-	//InitCollision(piano, (CollisionData*)&ALO_RadicaseExecutor_collision, 2, 4);
-	AL_Toy_Move_Init(piano, (CCL_INFO*)ALO_RadicaseExecutor_collision);
+	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision);
 }

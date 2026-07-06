@@ -19,7 +19,7 @@ struct colliwk;
 struct struct_0;
 struct AnimationIndex;
 struct AnimationInfo;
-struct CollisionData;
+struct CCL_INFO;
 struct CharObj2Base;
 struct EntityData2;
 struct LaunchConfig_vtable;
@@ -706,8 +706,8 @@ struct colliwk
 	__int16 field_2;
 	uint16_t flag;
 	uint16_t nbInfo;
-	float field_8;
-	CollisionData *CollisionArray;
+	float colli_range;
+	CCL_INFO *info;
 	uint8_t f10[140];
 	task *Object;
 	__int16 field_A0;
@@ -936,19 +936,20 @@ struct AnimationInfo
 	float AnimationSpeed;
 };
 
-struct CollisionData
-{
-	__int16 field_0;
-	__int16 field_2;
-	int field_4;
-	NJS_VECTOR some_vector;
-	float anonymous_1;
-	float anonymous_2;
-	float anonymous_3;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
+struct CCL_INFO {
+	char kind;
+	char form;
+	char push;
+	char damage;
+	int attr;
+	NJS_POINT3 center;
+	float a;
+	float b;
+	float c;
+	float d;
+	int angx;
+	int angy;
+	int angz;
 };
 
 struct SonicCharObj2
