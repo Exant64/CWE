@@ -141,16 +141,16 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 
 static void AL_OdeScrollArrowDisplayer(task* tp) {
 	SetShaders(1);
-	SetChaoHUDThingBColor(tp->twp->scl.z, 1, 1, 1);
+	chSetBillboardColor(tp->twp->scl.z, 1, 1, 1);
 
-	static ChaoHudThingB UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
-	static ChaoHudThingB GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, &CWE_UI_TEXLIST, 34 };
-	static ChaoHudThingB DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, &CWE_UI_TEXLIST, 34 };
-	static ChaoHudThingB GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
+	static CHS_BILL_INFO UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
+	static CHS_BILL_INFO GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, &CWE_UI_TEXLIST, 34 };
+	static CHS_BILL_INFO DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, &CWE_UI_TEXLIST, 34 };
+	static CHS_BILL_INFO GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
 
 	float scl = tp->twp->scl.x;
-	DrawChaoHudThingB(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
-	DrawChaoHudThingB(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
+	chDrawBillboardSR(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
+	chDrawBillboardSR(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
 }
 
 static void AL_CreateOdeScrollArrow(task* pParent) {
@@ -210,19 +210,19 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 
 static void NewButtonDraw(task* a1) {
 	taskwk* v1 = a1->twp;
-	SetChaoHUDThingBColor(*(float*)&v1->ang.z, 1, 1, 1);
+	chSetBillboardColor(*(float*)&v1->ang.z, 1, 1, 1);
 
 	float v15, v23, v13, a1a, v22;
 	a1a = *(float*)&v1->ang.x;
 	v22 = *(float*)&v1->ang.y;
-	ChaoHudThingB* v12 = odekakeMenuEntries[v1->id].ButtonText;
+	CHS_BILL_INFO* v12 = odekakeMenuEntries[v1->id].ButtonText;
 	if (!*(int*)(*(int*)(&v1->scl.y)))
 	{
 		v12 = odekakeMenuEntries[v1->id].GreyButtonText;
 	}
 	v23 = v22 - 5;
 	v13 = a1a - 44;
-	DrawChaoHudThingB(v12, v13, v23, -100, 1, 1, -1, 1);
+	chDrawBillboardSR(v12, v13, v23, -100, 1, 1, -1, 1);
 
 	if (!*(int*)(*(int*)(&v1->scl.y)))
 	{
@@ -238,8 +238,8 @@ static void NewButtonDraw(task* a1) {
 	float v19 = 2 - v17;
 	float a4 = v18;
 	float a1b = a1a - 72;
-	DrawChaoHudThingB(odekakeMenuEntries[v1->id].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
-	SetChaoHUDThingBColor(1, 1, 1, 1);
+	chDrawBillboardSR(odekakeMenuEntries[v1->id].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
+	chSetBillboardColor(1, 1, 1, 1);
 }
 
 static void ButtonDraw(task* tp) {
@@ -254,7 +254,7 @@ static void ButtonDraw(task* tp) {
 	*rotZAlphaThing *= tp->twp->scl.z;
 
 	// set our one alpha
-	SetChaoHUDThingBColor(tp->twp->scl.z, 1, 1, 1);
+	chSetBillboardColor(tp->twp->scl.z, 1, 1, 1);
 	sub_5AC010(tp);
 	NewButtonDraw(tp);
 

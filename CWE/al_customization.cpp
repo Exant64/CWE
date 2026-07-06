@@ -220,9 +220,9 @@ private:
 
 	Uint32 m_timer = 0; // this is only used to track to only create tween once
 
-	ChaoHudThingB m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
 public:
 	enum LeftBarType : int {
 		HatAcc = 0,
@@ -260,7 +260,7 @@ public:
 		}
 	}
 
-	static void DrawAsSprite(ChaoHudThingB& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z, const NJS_COLOR rightColor = (NJS_COLOR)-1) {
+	static void DrawAsSprite(CHS_BILL_INFO& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z, const NJS_COLOR rightColor = (NJS_COLOR)-1) {
 		const float x1 = -sclX * pHud.wd / 2.f;
 		const float y1 = -sclY * pHud.ht / 2.f;
 		const float x2 = -x1;
@@ -367,7 +367,7 @@ public:
 		}
 	}
 
-	const ChaoHudThingB GetTextSprite() {
+	const CHS_BILL_INFO GetTextSprite() {
 		switch (m_buttonType) {
 			case LeftBarType::HatAcc:
 				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 5 };
@@ -378,7 +378,7 @@ public:
 		}
 	}
 
-	const ChaoHudThingB GetIconSprite() {
+	const CHS_BILL_INFO GetIconSprite() {
 		switch (m_buttonType) {
 		case LeftBarType::HatAcc:
 			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
@@ -390,7 +390,7 @@ public:
 	}
 
 	void Disp() override {
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 
 		const float middle_width = 140;
 		auto& originalIconSprite = IsSelected() ? m_selectedIcon : m_icon;
@@ -450,7 +450,7 @@ public:
 		NJS_COLOR rightSideColor = (NJS_COLOR)-1;
 		rightSideColor.argb.a = Uint8(progress * 255.f);
 
-		ChaoHudThingB text = GetTextSprite();
+		CHS_BILL_INFO text = GetTextSprite();
 		text.s1 = text.s0 + m_textProgress * (text.wd / 256.f);
 		DrawAsSprite(
 			text,
@@ -473,8 +473,8 @@ public:
 
 class BaseCustomizeBox : public UISelectable {
 private:
-	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 public:
 	float m_sclX = 1;
 	float m_sclY = 1;
@@ -487,10 +487,10 @@ public:
 	void Disp() override {
 		BeforeBoxDisp();
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 		ColorSet();
 
-		DrawChaoHudThingB(IsBoxSelected() ? &m_selectedSprite : & m_sprite, m_posX, m_posY, -2.2f, m_sclX, m_sclY, -1, -1);
+		chDrawBillboardSR(IsBoxSelected() ? &m_selectedSprite : & m_sprite, m_posX, m_posY, -2.2f, m_sclX, m_sclY, -1, -1);
 
 		BoxContentDisp();
 	}
@@ -546,9 +546,9 @@ public:
 
 	void ColorSet() override {
 		if (GBAManager_GetChaoDataPointer()->Medal == m_index)
-			SetChaoHUDThingBColor(1, 1, 0x96 / 255.0f, 0x7F / 255.0f); //light green, current medal
+			chSetBillboardColor(1, 1, 0x96 / 255.0f, 0x7F / 255.0f); //light green, current medal
 		if (!AL_Customization_MedalUnlocked(m_index))
-			SetChaoHUDThingBColor(1, 0x49 / 255.0f, 0x5E / 255.0f, 0xAF / 255.0f); //light grey, not available
+			chSetBillboardColor(1, 0x49 / 255.0f, 0x5E / 255.0f, 0xAF / 255.0f); //light grey, not available
 	}
 	void BoxContentDisp() override {
 		DoLighting(0);
@@ -585,19 +585,19 @@ private:
 	int m_uiSelectX = 0;
 	int m_uiSelectY = 0;
 
-	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 5 };
 
 	const size_t GetItemCount() const {
 		return HatList.size() + AccessoryList.size();
 	}
 
 	void ScrollDisp(float posX, float posY, float length){
-		DrawChaoHudThingB(
+		chDrawBillboardSR(
 			&m_scrollTop,
 			posX,
 			posY,
@@ -611,7 +611,7 @@ private:
 		auto scrollMiddle = m_scrollMiddle;
 		scrollMiddle.ht = length;
 
-		DrawChaoHudThingB(
+		chDrawBillboardSR(
 			&scrollMiddle,
 			posX,
 			posY + m_scrollTop.ht,
@@ -622,7 +622,7 @@ private:
 			-1
 		);
 
-		DrawChaoHudThingB(
+		chDrawBillboardSR(
 			&m_scrollBottom,
 			posX,
 			posY + m_scrollTop.ht + scrollMiddle.ht,
@@ -688,7 +688,7 @@ public:
 
 	void Disp() override {
 		const auto setColor = [this](float a, float r, float g, float b) {
-			SetChaoHUDThingBColor(a * m_alpha, r, g, b);
+			chSetBillboardColor(a * m_alpha, r, g, b);
 		};
 
 		setColor(1, 1, 1, 1);
@@ -739,7 +739,7 @@ public:
 				else 
 					setColor(1, 1, 1, 1);
 
-				DrawChaoHudThingB(sprite, m_visualPosX + x * horizSpacing, m_visualPosY + (float(y) + m_scrollOffsetY) * verticalSpacing, -2.2f, 1, 1, -1, -1);
+				chDrawBillboardSR(sprite, m_visualPosX + x * horizSpacing, m_visualPosY + (float(y) + m_scrollOffsetY) * verticalSpacing, -2.2f, 1, 1, -1, -1);
 
 				if (index >= GetItemCount()) continue;
 
@@ -861,22 +861,22 @@ class ColorEditor : public UISelectable {
 private:
 	std::optional<EAccessoryType> m_accessoryType;
 
-	ChaoHudThingB m_colorPanel = { 1, 211, 213, 0, 0, 1, 1, &CWE_UI_TEXLIST, 37 };
+	CHS_BILL_INFO m_colorPanel = { 1, 211, 213, 0, 0, 1, 1, &CWE_UI_TEXLIST, 37 };
 
-	ChaoHudThingB m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 5 };
 
 	std::optional<int> m_colorSlotIndex = std::nullopt;
 	bool m_inSliderMenu = false;
@@ -958,38 +958,38 @@ private:
 		float gray,
 		const NJS_ARGB& overlayColors, 
 		const NJS_ARGB& rightColors,
-		ChaoHudThingB& overlaySprite
+		CHS_BILL_INFO& overlaySprite
 	) {
 		const float sliderLength = GetSliderLength();
-		DrawChaoHudThingB(&m_genericSliderLeft, posX, posY, -2.2f, 1, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.2f, sliderLength, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderLeft, posX, posY, -2.2f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.2f, sliderLength, 1, -1, -1);
 
-		SetChaoHUDThingBColor(rightColors.a, rightColors.r, rightColors.g, rightColors.b);
-		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.2f, 1, 1, -1, -1);
+		chSetBillboardColor(rightColors.a, rightColors.r, rightColors.g, rightColors.b);
+		chDrawBillboardSR(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.2f, 1, 1, -1, -1);
 
-		SetChaoHUDThingBColor(overlayColors.a, overlayColors.r, overlayColors.g, overlayColors.b);
+		chSetBillboardColor(overlayColors.a, overlayColors.r, overlayColors.g, overlayColors.b);
 		overlaySprite.wd = 1;
-		DrawChaoHudThingB(&overlaySprite, posX + m_genericSliderLeft.wd, posY + 1.5f, -2.1f, sliderLength, 1, -1, -1);
+		chDrawBillboardSR(&overlaySprite, posX + m_genericSliderLeft.wd, posY + 1.5f, -2.1f, sliderLength, 1, -1, -1);
 
 		if (selected) {
-			SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
+			chSetBillboardColor(m_alpha, 0, 1, 0);
 		}
 		else {
-			SetChaoHUDThingBColor(m_alpha, gray, gray, gray);
+			chSetBillboardColor(m_alpha, gray, gray, gray);
 		}
 		const float sliderPos = m_genericSliderLeft.wd + sliderLength + m_genericSliderRight.wd - m_sliderPicker.wd;
-		DrawChaoHudThingB(&m_sliderPicker, posX + sliderPos * sliderVal, posY - 2, -0.5f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_sliderPicker, posX + sliderPos * sliderVal, posY - 2, -0.5f, 1, 1, -1, -1);
 	}
 
 	void SliderShadowDisp(
 		float posX,
 		float posY
 	) {
-		SetChaoHUDThingBColor(m_alpha * 0.3f, 0, 0, 0);
+		chSetBillboardColor(m_alpha * 0.3f, 0, 0, 0);
 		const float sliderLength = GetSliderLength();
-		DrawChaoHudThingB(&m_genericSliderLeft, posX, posY, -2.4f, 1, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.4f, sliderLength, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.4f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderLeft, posX, posY, -2.4f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.4f, sliderLength, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.4f, 1, 1, -1, -1);
 	}
 
 	// sets sliders based on input rgb
@@ -1057,7 +1057,7 @@ private:
 	}
 
 	void DrawColorSlots(float panelMiddleX) {
-		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
+		chSetBillboardColor(m_alpha, 1, 1, 1);
 
 		const auto slotCount = GetColorSlotCount();
 
@@ -1097,13 +1097,13 @@ private:
 			}
 
 			// shadow
-			SetChaoHUDThingBColor(m_alpha * 0.3f, 0, 0, 0);
-			DrawChaoHudThingB(&m_colorSlot, x + GetShadowOffset(), m_posY + y + GetShadowOffset(), -2.5f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
+			chSetBillboardColor(m_alpha * 0.3f, 0, 0, 0);
+			chDrawBillboardSR(&m_colorSlot, x + GetShadowOffset(), m_posY + y + GetShadowOffset(), -2.5f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
 
 			// color slot
 			NJS_COLOR color = GetSlotColor(i);
-			SetChaoHUDThingBColor(m_alpha, color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
-			DrawChaoHudThingB(&m_colorSlot, x, m_posY + y, -2.1f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
+			chSetBillboardColor(m_alpha, color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
+			chDrawBillboardSR(&m_colorSlot, x, m_posY + y, -2.1f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
 		}
 	}
 	
@@ -1159,42 +1159,42 @@ public:
 		if (!m_alpha) return;
 
 		// panel sprites
-		ChaoHudThingB lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-		ChaoHudThingB lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
 
-		ChaoHudThingB lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
 
-		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
+		chSetBillboardColor(m_alpha, 1, 1, 1);
 
 		const float panelWidth = GetPanelWidth();
 		const float panelBasePosX = m_posX + lu.wd / 2.f + 4;
 		const float panelBasePosY = m_posY + lu.ht;
 		const size_t heightPanelCount = (GetVerticalSlotCount() > 1) ? 15 : 11;
 
-		DrawChaoHudThingB(&lu, panelBasePosX + 0.5f, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Right);
-		DrawChaoHudThingB(&cu, panelBasePosX + panelWidth / 2.f, panelBasePosY, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Right);
-		DrawChaoHudThingB(&ru, panelBasePosX + panelWidth, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Right);
+		chDrawBillboardSR(&lu, panelBasePosX + 0.5f, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Right);
+		chDrawBillboardSR(&cu, panelBasePosX + panelWidth / 2.f, panelBasePosY, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Right);
+		chDrawBillboardSR(&ru, panelBasePosX + panelWidth, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Right);
 
-		DrawChaoHudThingB(&lb, panelBasePosX + 0.5f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Left);
-		DrawChaoHudThingB(&cb, panelBasePosX + panelWidth / 2.f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Left);
-		DrawChaoHudThingB(&rb, panelBasePosX + panelWidth, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Left);
+		chDrawBillboardSR(&lb, panelBasePosX + 0.5f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Left);
+		chDrawBillboardSR(&cb, panelBasePosX + panelWidth / 2.f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Left);
+		chDrawBillboardSR(&rb, panelBasePosX + panelWidth, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Left);
 
 		for (size_t i = 0; i < heightPanelCount; ++i) {
 			const float py = panelBasePosY + float(i) * lm.ht;
 
-			DrawChaoHudThingB(&lm, panelBasePosX + 0.5f, py, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Top);
-			DrawChaoHudThingB(&cm, panelBasePosX + panelWidth / 2.f, py, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Top);
-			DrawChaoHudThingB(&rm, panelBasePosX + panelWidth, py, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Top);
+			chDrawBillboardSR(&lm, panelBasePosX + 0.5f, py, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Top);
+			chDrawBillboardSR(&cm, panelBasePosX + panelWidth / 2.f, py, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Top);
+			chDrawBillboardSR(&rm, panelBasePosX + panelWidth, py, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Top);
 		}
 
-		DrawChaoHudThingB(&m_colorsText, panelBasePosX + panelWidth / 2.f, m_posY, -2.3f, 1, 1, DrawAncorV_Center, DrawAncorV_Center);
+		chDrawBillboardSR(&m_colorsText, panelBasePosX + panelWidth / 2.f, m_posY, -2.3f, 1, 1, DrawAncorV_Center, DrawAncorV_Center);
 		DrawColorSlots(panelBasePosX + panelWidth / 2.f);
 
 		const size_t sliderSelectionStart = GetVerticalSlotCount();
@@ -1206,7 +1206,7 @@ public:
 		// hue slider
 		{
 			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + GetShadowOffset());
-			SetChaoHUDThingBColor(m_alpha, grayOut, 0, 0);
+			chSetBillboardColor(m_alpha, grayOut, 0, 0);
 			SliderDisp(sliderX, m_posY + sliderStartY, m_hsl[0], m_selectionY == sliderSelectionStart, grayOut, { m_alpha,grayOut ,grayOut ,grayOut }, { m_alpha,grayOut,0,0 }, m_hueColors);
 		}
 
@@ -1224,7 +1224,7 @@ public:
 			satSliderEndColor.b *= grayOut;
 
 			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + sliderPad + GetShadowOffset());
-			SetChaoHUDThingBColor(m_alpha, satSliderStartColor.r, satSliderStartColor.g, satSliderStartColor.b);
+			chSetBillboardColor(m_alpha, satSliderStartColor.r, satSliderStartColor.g, satSliderStartColor.b);
 			SliderDisp(sliderX, m_posY + sliderStartY + sliderPad, m_hsl[1], m_selectionY == sliderSelectionStart + 1, grayOut, satSliderEndColor, satSliderEndColor, m_overlayColor);
 		}
 
@@ -1245,10 +1245,10 @@ public:
 			const auto lightSliderEndColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 1));
 
 			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + sliderPad * 2 + GetShadowOffset());
-			SetChaoHUDThingBColor(m_alpha, lightSliderStartColor.argb.r / 255.f, lightSliderStartColor.argb.g / 255.f, lightSliderStartColor.argb.b / 255.f);
-			DrawChaoHudThingB(&m_genericSliderLeft, sliderX, m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
-			SetChaoHUDThingBColor(m_alpha, lightSliderEndColor.argb.r / 255.f, lightSliderEndColor.argb.g / 255.f, lightSliderEndColor.argb.b / 255.f);
-			DrawChaoHudThingB(&m_genericSliderRight, sliderX + m_genericSliderLeft.wd + GetSliderLength(), m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
+			chSetBillboardColor(m_alpha, lightSliderStartColor.argb.r / 255.f, lightSliderStartColor.argb.g / 255.f, lightSliderStartColor.argb.b / 255.f);
+			chDrawBillboardSR(&m_genericSliderLeft, sliderX, m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
+			chSetBillboardColor(m_alpha, lightSliderEndColor.argb.r / 255.f, lightSliderEndColor.argb.g / 255.f, lightSliderEndColor.argb.b / 255.f);
+			chDrawBillboardSR(&m_genericSliderRight, sliderX + m_genericSliderLeft.wd + GetSliderLength(), m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
 
 			const float u0 = 117 / 256.f;
 			const float v0 = 91 / 256.f;
@@ -1273,13 +1273,13 @@ public:
 			njDrawTextureEx(vertices, 4, 1);
 
 			if (m_selectionY == sliderSelectionStart + 2) {
-				SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
+				chSetBillboardColor(m_alpha, 0, 1, 0);
 			}
 			else {
-				SetChaoHUDThingBColor(m_alpha, grayOut, grayOut, grayOut);
+				chSetBillboardColor(m_alpha, grayOut, grayOut, grayOut);
 			}
 			const float sliderPos = m_genericSliderLeft.wd + GetSliderLength() + m_genericSliderRight.wd - m_sliderPicker.wd;
-			DrawChaoHudThingB(&m_sliderPicker, sliderX + sliderPos * m_hsl[2], m_posY + sliderStartY + sliderPad * 2 - 2, -0.5f, 1, 1, -1, -1);
+			chDrawBillboardSR(&m_sliderPicker, sliderX + sliderPos * m_hsl[2], m_posY + sliderStartY + sliderPad * 2 - 2, -0.5f, 1, 1, -1, -1);
 		}
 	}
 
@@ -1410,9 +1410,9 @@ private:
 	}
 public:
 	void BeforeBoxDisp() override {
-		ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
 
 		bool hasColorSlots = false;
@@ -1424,16 +1424,16 @@ public:
 			}
 		}
 
-		DrawChaoHudThingB(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
+		chDrawBillboardSR(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
-		ChaoHudThingB greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		DrawChaoHudThingB(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
+		chSetBillboardColor(1, 1, 1, 1);
+		CHS_BILL_INFO greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		chDrawBillboardSR(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
 	}
 
 	void BoxContentDisp() override {
-		ChaoHudThingB slotSprite;
+		CHS_BILL_INFO slotSprite;
 		switch (m_slot) {
 			case 0: // hat
 				slotSprite = { 1, 56 * .65f, 65 * .65f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
@@ -1452,9 +1452,9 @@ public:
 				break;
 		}
 
-		DrawChaoHudThingB(&slotSprite, m_posX + GetWidth() * m_sclX / 2.f, m_posY + GetHeight() * m_sclY / 2.f, -2.f, m_sclX, m_sclY, 0, 0);
+		chDrawBillboardSR(&slotSprite, m_posX + GetWidth() * m_sclX / 2.f, m_posY + GetHeight() * m_sclY / 2.f, -2.f, m_sclX, m_sclY, 0, 0);
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 
 		int item = GetItem();
 		if (item < 0) return;
@@ -1476,7 +1476,7 @@ public:
 
 		DrawItem(m_posX + 20, m_posY + 20, 0.75f, rot, _item);
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 	}
 
 	bool CanUnselect(Direction direction) const override {
@@ -1499,9 +1499,9 @@ public:
 
 	void ColorSet() override {
 		if (!HasHeadgear() && !HasAccessory())
-			SetChaoHUDThingBColor(1, 0.5f, 0.5f, 0.5f);
+			chSetBillboardColor(1, 0.5f, 0.5f, 0.5f);
 		else
-			SetChaoHUDThingBColor(1, 1, 1, 1);
+			chSetBillboardColor(1, 1, 1, 1);
 	}
 
 	void Press(UIController* controller) override {

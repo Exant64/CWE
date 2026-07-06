@@ -1107,11 +1107,11 @@ NJS_TEXANIM BuyListBasePanel[] = {
 NJS_SPRITE BuyListPanel = { {},1,1,0,&CWE_UI_TEXLIST, (NJS_TEXANIM*)BuyListBasePanel };
 
 //ChaoHudThing kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (121 / 256.0f) * 4096.0f,(127 / 256.0f) * 4096.0f,(192 / 256.0f) * 4096.0f,	(192 / 256.0f) * 4096.0f };
-const ChaoHudThing kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (120 / 256.0f) * 4096.0f,(120 / 256.0f) * 4096.0f,(197 / 256.0f) * 4096.0f,	(197 / 256.0f) * 4096.0f };
-const ChaoHudThing kWinQuad_BuyListCursor_0_0 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2632, 2632 ,  1032, 1144 };
-const ChaoHudThing kWinQuad_BuyListCursor_0_1 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2760, 2760 ,  1032, 1144 };
+const SAlgKinderOrthoQuad kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (120 / 256.0f) * 4096.0f,(120 / 256.0f) * 4096.0f,(197 / 256.0f) * 4096.0f,	(197 / 256.0f) * 4096.0f };
+const SAlgKinderOrthoQuad kWinQuad_BuyListCursor_0_0 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2632, 2632 ,  1032, 1144 };
+const SAlgKinderOrthoQuad kWinQuad_BuyListCursor_0_1 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2760, 2760 ,  1032, 1144 };
 
-const ChaoHudThing stru_8A33E8[6] =
+const SAlgKinderOrthoQuad stru_8A33E8[6] =
 {
   {  0,   16 ,								   0, SELECTION_BOX_SY / 2,					2568, 2808 ,  1160, 1512  }, //top half left
   {  16,  SELECTION_BOX_SX - 16,			   0, 4 ,									2824, 2824 ,  1160, 1208  }, //top half middle
@@ -1127,7 +1127,7 @@ void DrawTimer();
 VoidFunc(sub_42C170, 0x42C170);
 void __cdecl FBuyListDisp(BlackMarketData* a1)
 {
-	ChaoHudThing const* buyListCursor;
+	SAlgKinderOrthoQuad const* buyListCursor;
 
 	if (!a1->mBuyListShow) {
 		if (!a1->mSellListShow) {
@@ -1643,7 +1643,7 @@ void DrawPurchasedItem() {
 		}
 
 		const float size = 32;
-		const ChaoHudThingB hud = { 1,size,size,0,0,1,1,&CWE_UI_TEXLIST, 27 };
+		const CHS_BILL_INFO hud = { 1,size,size,0,0,1,1,&CWE_UI_TEXLIST, 27 };
 
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
 			SetShaders(1);
@@ -1662,16 +1662,16 @@ void DrawPurchasedItem() {
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++)
 		{
 			float opacity = 0.5f;
-			SetChaoHUDThingBColor(opacity, 1, 1, 1);
-			DrawChaoHudThingB(
-				(ChaoHudThingB*) & hud,
+			chSetBillboardColor(opacity, 1, 1, 1);
+			chDrawBillboardSR(
+				(CHS_BILL_INFO*) & hud,
 				i * *(float*)0x1A13BE0 + *(float*)0x1A13BE8,
 				i * *(float*)0x1A13BF0 + *(float*)0x1A13BF4,
 				-1,
 				2, 2,
 				0, 0
 			);
-			SetChaoHUDThingBColor(1, 1, 1, 1);
+			chSetBillboardColor(1, 1, 1, 1);
 		}				
 		break;
 	}

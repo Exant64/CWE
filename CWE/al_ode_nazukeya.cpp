@@ -8,7 +8,7 @@
 #include "al_ode_menu.h"
 #include "al_texlist.h"
 
-static ChaoHudThingB NameMenuSprites[] = {
+static CHS_BILL_INFO NameMenuSprites[] = {
 	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &NAME_ODE_TEXLIST, 0}, //text
 	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &NAME_ODE_TEXLIST, 0}, //grey text
 	{1, 32, 32, 0.01f, 0.01f, 0.99f, 1, &NAME_ODE_TEXLIST, 1} //icon

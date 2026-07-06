@@ -12,7 +12,7 @@
 
 static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1);
 
-static ChaoHudThingB GuestMenu[] = {
+static CHS_BILL_INFO GuestMenu[] = {
 	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //text
 	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //grey text
 	{1, 40, 40, 0, 0, 0.99f, 1, &AL_ODE_GUEST_TEXLIST, 1}, //icon

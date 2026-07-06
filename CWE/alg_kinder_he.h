@@ -33,9 +33,9 @@ FastcallFunctionPointer(void, AL_HealthCenter_SetMessage, (HealthCenter* a1, int
 void __fastcall InitDoctorHook(HealthCenter* a1, int a2);
 void __fastcall DoctorMessage(HealthCenter* a1, int a2);
 
-DataArray(ChaoHudThing, HealthCenter_MenuBlue, 0x008A1DC0, 20);
-DataArray(ChaoHudThing, HealthCenter_MenuYellow, 0x008A2150, 20);
-DataArray(ChaoHudThing, HealthCenter_MenuPink, 0x008A2480, 20);
+DataArray(SAlgKinderOrthoQuad, HealthCenter_MenuBlue, 0x008A1DC0, 20);
+DataArray(SAlgKinderOrthoQuad, HealthCenter_MenuYellow, 0x008A2150, 20);
+DataArray(SAlgKinderOrthoQuad, HealthCenter_MenuPink, 0x008A2480, 20);
 
 void __cdecl sub_58F980(task *a1);
 void DisplayHealthCenterMedicalChartCall();

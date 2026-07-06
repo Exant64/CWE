@@ -52,7 +52,7 @@ CHAO_PARAM_GC* GBAManager_GetChaoDataPointer() {
 
 void sub_558BA0(int a1, int a2, int a3, float a4, float a5, float a6)
 {
-	DrawChaoHudThingB((ChaoHudThingB*)a3, a4, a5, a6, 1, 1, a2, a1);
+	chDrawBillboardSR((CHS_BILL_INFO*)a3, a4, a5, a6, 1, 1, a2, a1);
 }
 
 void NewBarDraw(task *a1)
@@ -65,23 +65,23 @@ void NewBarDraw(task *a1)
 	
 	if (v1->id == 0)
 	{
-		SetChaoHUDThingBColor(1, 0, 0.5f, 0.7f);
+		chSetBillboardColor(1, 0, 0.5f, 0.7f);
 	}
 	else 
 	{
-		SetChaoHUDThingBColor(odekakeMenuEntries[v1->id - 1].BarColorA, odekakeMenuEntries[v1->id - 1].BarColorR, odekakeMenuEntries[v1->id - 1].BarColorG, odekakeMenuEntries[v1->id - 1].BarColorB);
+		chSetBillboardColor(odekakeMenuEntries[v1->id - 1].BarColorA, odekakeMenuEntries[v1->id - 1].BarColorR, odekakeMenuEntries[v1->id - 1].BarColorG, odekakeMenuEntries[v1->id - 1].BarColorB);
 	}
 	float v12 = a2 - v11 * 18;
-	DrawChaoHudThingB(&stru_11BA528[28], a2, a3, -99.5f, 2, 0.74375004f, -1, 0);
+	chDrawBillboardSR(&stru_11BA528[28], a2, a3, -99.5f, 2, 0.74375004f, -1, 0);
 	a2 = *(float*)& v1->ang.x;
 	v11 = v1->pos.x;
 	a5 = v11 * 0.2f + 0.8f;
 	float a6 = a5 * 0.85f;
 	v12 = a2 - v11 * 18;
 	a3 = *(float*)& v1->ang.y;
-	DrawChaoHudThingB(&stru_11BA528[26], v12, a3, -99.5f, a6, a6, 0, 0);
+	chDrawBillboardSR(&stru_11BA528[26], v12, a3, -99.5f, a6, a6, 0, 0);
 
-	SetChaoHUDThingBColor(*(float*)& v1->ang.z, 1, 1, 1);
+	chSetBillboardColor(*(float*)& v1->ang.z, 1, 1, 1);
 	int v5 = 2 * (unsigned __int8)v1->id + 16;
 	int v7;
 	if (v5 != 16)
@@ -95,7 +95,7 @@ void NewBarDraw(task *a1)
 		sub_558BA0(0, 0, (int)&stru_11BA528[v5], v6, a3, -99);
 	}
 	v7 = 2 * (unsigned __int8)v1->id + 17;
-	SetChaoHUDThingBColor(1, 1, 1, 1);
+	chSetBillboardColor(1, 1, 1, 1);
 	if (v7 == 19)
 	{
 		v7 = 25;
@@ -103,9 +103,9 @@ void NewBarDraw(task *a1)
 	float a4 = a3;
 	float v15 = a2 + 32;
 	if(v7 == 17)
-		DrawChaoHudThingB(&stru_11BA528[v7], v15, a4, -99, 1, 1, -1, 0);
+		chDrawBillboardSR(&stru_11BA528[v7], v15, a4, -99, 1, 1, -1, 0);
 	else
-		DrawChaoHudThingB(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
+		chDrawBillboardSR(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
 }
 ObjectFunc(sub_5ABA70, 0x5ABA70);
 void BarDraw(task* a1)

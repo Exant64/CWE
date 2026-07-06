@@ -101,7 +101,7 @@ __int16 word_8A2754[] = { 3464, 2824, 3464, 3464, 2824, 3464, 2184, 3464, 1544, 
 
 //                             E    D       C    B      A        S         X 
 int GradePurchasePrice[] = { 10000,20000,30000,40000, 9999999,9999999 ,9999999 };
-ChaoHudThing plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4096,0, 4096 };
+SAlgKinderOrthoQuad plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4096,0, 4096 };
 
 int UpgradeButtons[] = { Buttons_Up, Buttons_Down, Buttons_Right, Buttons_Left, Buttons_L};
 
@@ -217,7 +217,7 @@ void PurchaseGradesCode(chaowk* data1)
 				}
 				plusHUD.y0 = 32 * i + 262;
 				plusHUD.y1 = 32 * i + 282;
-				DrawChaoHudThing(&plusHUD, -1);
+				AlgKinderOrthoQuadDraw(&plusHUD, -1);
 			}
 
 		}
@@ -463,7 +463,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 	njSetTextureNum(7, 0, 0, 0);
 	for (size_t i = 0; i < LengthOfArray(HealthCenter_DNAMenu); i++)
-		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu[i], -1);
+		AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&HealthCenter_DNAMenu[i], -1);
 
 	if (!noMother && !noFather) {
 		auto pParam = GET_CWEPARAM(a1->medicalChartChao_);
@@ -476,7 +476,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 		ConvertName(pParam->FGroundFatherName, fgfName);
 
 		for (size_t i = 0; i < LengthOfArray(HealthCenter_DNAMenu2); i++)
-			DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu2[i], -1);
+			AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&HealthCenter_DNAMenu2[i], -1);
 
 		DrawMedicalChartText("Parents", 444, 83.5f, 999, 20.0f, 5);
 
@@ -571,7 +571,7 @@ void HealthCenterFriendsMenu(HealthCenter* a1)
 	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 	njSetTextureNum(7, 0, 0, 0);
 	for (size_t i = 0; i < LengthOfArray(HealthCenter_FriendMenu); i++)
-		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_FriendMenu[i], -1);
+		AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&HealthCenter_FriendMenu[i], -1);
 	DrawMedicalChartText("Friends", 444, 83.5f, 999, 20.0f, 5);
 	char friendCountStr[8];
 	sprintf_s(friendCountStr, "(%d/%d)", FriendsSelection + 1, AL_KW_GetFriendCount(a1->medicalChartChao_));
@@ -750,7 +750,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				njSetTextureNum(7, 0, 0, 0);
 
 				{
-					ChaoHudThing gradeElem;
+					SAlgKinderOrthoQuad gradeElem;
 					gradeElem.x0 = 558;
 					gradeElem.x1 = 578;
 					for (int i = 0; i < 5; i++)
@@ -780,17 +780,17 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 						}
 						gradeElem.y0 = 32 * i + 262;
 						gradeElem.y1 = 32 * i + 282;
-						DrawChaoHudThing(&gradeElem, -1);       // grades	
+						AlgKinderOrthoQuadDraw(&gradeElem, -1);       // grades	
 					}
 				}
 				sub_583C60();
 				njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 				njSetTextureNum(7, 0, 0, 0);
-				DrawChaoHudThing((ChaoHudThing*)&bar1, -1);
-				DrawChaoHudThing((ChaoHudThing*)&bar2, -1);
+				AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&bar1, -1);
+				AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&bar2, -1);
 
-				DataArray(ChaoHudThingB, stru_13128B0, 0x13128B0, 10);
-				ChaoHudThingB lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
+				DataArray(CHS_BILL_INFO, stru_13128B0, 0x13128B0, 10);
+				CHS_BILL_INFO lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
 				//ChaoHudThing lifespan = { {0x132, (264 + 32 * 5.25f)}, {}, {0,0}, {4096, 4096} };
 				sub_536770(
 					(Uint32)((GET_CHAOPARAM(TextLocation->field_8)->life / 3900.0f) * 1000),
@@ -801,9 +801,9 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 					1.0f
 				);
 				sub_5369F0(GET_CHAOPARAM(TextLocation->field_8)->life, 476, (264 + 32 * 5), 1.0f);
-				DrawChaoHudThingB(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
-				SetChaoHUDThingBColor(1, 0.72f, 1, 0);
-				DrawChaoHudThingB(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
+				chDrawBillboardSR(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
+				chSetBillboardColor(1, 0.72f, 1, 0);
+				chDrawBillboardSR(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
 
 			}
 		}

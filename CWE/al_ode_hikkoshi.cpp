@@ -267,7 +267,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 	
 }
 
-static ChaoHudThingB HikkoshiUI[] = {
+static CHS_BILL_INFO HikkoshiUI[] = {
 	{0, 21, 16, 152 ,			 65 * 2,		 (152 + 21 * 1) , (65 + 16) * 2, (NJS_TEXLIST*)0x01314058 , 6},//the numbers ~~mason~~
 	{0, 21, 16, (152 + 21 * 1) , 65 * 2,		 (152 + 21 * 2) , (65 + 16) * 2 , (NJS_TEXLIST*)0x01314058 , 6},
 	{0, 21, 16, (152 + 21 * 2) , 65 * 2,		 (152 + 21 * 3) , (65 + 16) * 2, (NJS_TEXLIST*)0x01314058 , 6},
@@ -282,14 +282,14 @@ static ChaoHudThingB HikkoshiUI[] = {
 };
 
 // the generic menu sprite array used throughout the odekake menus
-DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
+DataArray(CHS_BILL_INFO, MenuArray, 0x11BA528, 0x61);
 
 static void AL_HikkoshiMenuDisplayer(task* a1) {
 	*(char*)0x25EFFCC = 0;
 
 	//DrawChaoHudThingB(MenuArray[2], 472, 399, -1.2f, 1, 1, 0, 0); //the middle arrow thing
 	float scale = njSin(a1->twp->ang.x) * 0.1f + 0.85f;
-	DrawChaoHudThingB((ChaoHudThingB*)0x011BB0D4, 320, 272, -1.2f, scale, scale, 0,0); //the middle arrow thing
+	chDrawBillboardSR((CHS_BILL_INFO*)0x011BB0D4, 320, 272, -1.2f, scale, scale, 0,0); //the middle arrow thing
 	
 	float v14 = 340;
 	float a3 = 424;
@@ -297,21 +297,21 @@ static void AL_HikkoshiMenuDisplayer(task* a1) {
 	float v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1.0f;
 	float sizeX = 40.0f;
 
-	DrawChaoHudThingB(&MenuArray[40], 458 + 18 - 60,  145, -1, 1,     1, 1,  1);  //button1 
-	DrawChaoHudThingB(&MenuArray[41], 458 + 18,		  145, -1, 60 + 60, 1, 0,  1);  //button2
-	DrawChaoHudThingB(&MenuArray[42], 458 + 18 + 60,  145, -1, 1,     1, -1, 1); //button3
+	chDrawBillboardSR(&MenuArray[40], 458 + 18 - 60,  145, -1, 1,     1, 1,  1);  //button1 
+	chDrawBillboardSR(&MenuArray[41], 458 + 18,		  145, -1, 60 + 60, 1, 0,  1);  //button2
+	chDrawBillboardSR(&MenuArray[42], 458 + 18 + 60,  145, -1, 1,     1, -1, 1); //button3
 
-	DrawChaoHudThingB(&HikkoshiUI[10],				  458,      135, -1.2f, 1, 1, 0, 0); //number
-	DrawChaoHudThingB(&HikkoshiUI[selectedMultiSave], 458 + 75, 135, -1.2f, 1, 1, 0, 0); //number
+	chDrawBillboardSR(&HikkoshiUI[10],				  458,      135, -1.2f, 1, 1, 0, 0); //number
+	chDrawBillboardSR(&HikkoshiUI[selectedMultiSave], 458 + 75, 135, -1.2f, 1, 1, 0, 0); //number
 
-	DrawChaoHudThingB(&MenuArray[40], v14 - sizeX, a3, -1, 1, 1, 1,1); //button1
-	DrawChaoHudThingB(&MenuArray[41], v14        , a3, -1, sizeX+sizeX, 1.0, 0, 1); //button2
-	DrawChaoHudThingB(&MenuArray[42], v14 + sizeX, a3, -1, 1, 1, -1, 1); //button3
+	chDrawBillboardSR(&MenuArray[40], v14 - sizeX, a3, -1, 1, 1, 1,1); //button1
+	chDrawBillboardSR(&MenuArray[41], v14        , a3, -1, sizeX+sizeX, 1.0, 0, 1); //button2
+	chDrawBillboardSR(&MenuArray[42], v14 + sizeX, a3, -1, 1, 1, -1, 1); //button3
 	v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1.0f;
 	float newVal = 2 - v7;
-	DrawChaoHudThingB(&MenuArray[2],  v14 + 8,   v9, -1, v7, newVal, 0, 1); //back text
+	chDrawBillboardSR(&MenuArray[2],  v14 + 8,   v9, -1, v7, newVal, 0, 1); //back text
 	v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1; //HACK: patches bug that happens to what im assuming the compiler trying to preserve on stack but failing 
-	DrawChaoHudThingB(&MenuArray[34], v14 - 42,  v9, -1, v7, 2 - v7, 0, 1); //swirly quit
+	chDrawBillboardSR(&MenuArray[34], v14 - 42,  v9, -1, v7, 2 - v7, 0, 1); //swirly quit
 	*(char*)0x25EFFCC = 1;
 }
 

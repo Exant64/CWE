@@ -514,7 +514,7 @@ static void __declspec(naked) sub_5366E0Hook()
 
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp);
 static Trampoline AL_ChaoParamWindowExecutorDisplay_t(0x005928A0, 0x005928A8, AL_ChaoParamWindowExecutorDisplay_r);
-DataArray(ChaoHudThingB, AL_ChaoParamWindow_HudThingB, 0x011D1658, 1);
+DataArray(CHS_BILL_INFO, AL_ChaoParamWindow_HudThingB, 0x011D1658, 1);
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 #pragma pack(push, 8)
 	struct __declspec(align(16)) AL_ChaoParamWindowExecutor_Data
@@ -604,9 +604,9 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 		{
 			*(int*)0x1AED260 = 0;
 			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(v5);
-			SetChaoHUDThingBColor(pData->alpha, 0.5f, 0.85f, 1.0f);
+			chSetBillboardColor(pData->alpha, 0.5f, 0.85f, 1.0f);
 
-			ChaoHudThingB custom_type = {
+			CHS_BILL_INFO custom_type = {
 				.adjust = 1,
 				.wd = 119 * 0.5f,
 				.ht = 41 * 0.5f,
@@ -635,8 +635,8 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				break;
 			case 26:
 				//custom sprite drawn here
-				DrawChaoHudThingB(&custom_type, posX - 96, posY - 89, -34.5f, 1, 1, -1, -1);
-				SetChaoHUDThingBColor(1.0f, 1.0f, 1.0f, 1.0f);
+				chDrawBillboardSR(&custom_type, posX - 96, posY - 89, -34.5f, 1, 1, -1, -1);
+				chSetBillboardColor(1.0f, 1.0f, 1.0f, 1.0f);
 				return;
 			default:
 				v8 = ((unsigned __int8)pParam->type - 5) / 3 + BBI_CPW_TYPE_NORMAL;
@@ -648,7 +648,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				float v45 = posX - 96;
 				float v44 = posY - 72;
 				
-				DrawChaoHudThingB(&AL_ChaoParamWindow_HudThingB[v8], v45, v44, -34.5f, 1, 1, -1, -1);
+				chDrawBillboardSR(&AL_ChaoParamWindow_HudThingB[v8], v45, v44, -34.5f, 1, 1, -1, -1);
 			}
 			
 			if (pParam->type != ChaoType_Child
@@ -656,7 +656,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 			{
 				float v43 = posX - 96;
 				float v42 = posY - 89;
-				DrawChaoHudThingB(
+				chDrawBillboardSR(
 					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + ((unsigned __int8)pParam->type - 5) % 3],
 					v43,
 					v42,
@@ -670,7 +670,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 	}
 
 	//back to default
-	SetChaoHUDThingBColor(1.0f, 1.0f, 1.0f, 1.0f);
+	chSetBillboardColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void AL_ModAPI_CharacterChao_Init() {

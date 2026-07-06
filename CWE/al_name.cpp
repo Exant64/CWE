@@ -99,7 +99,7 @@ static Float CalculateStringXPos(const char* pName, float xpos, float xsize, siz
 void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
 	const size_t length = strlen(pName);
 
-	SetChaoHUDThingBColor(
+	chSetBillboardColor(
 		col.argb.a / 255.f, 
 		col.argb.b / 255.f,
 		col.argb.g / 255.f,
@@ -130,7 +130,7 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 		ypos += (ysize / 2.f) * (1.f - sizeRatio);
 	}
 
-	ChaoHudThingB bbi;
+	CHS_BILL_INFO bbi;
 
 	if(gConfigVal.OldName) {
 		bbi.pTexlist = (NJS_TEXLIST*)0x01366ABC;
@@ -172,7 +172,7 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 			bbi.s1 = (loc_x + 22.0f * spacingRatio) / 512.0f;
 			bbi.t1 = (loc_y + 22.0f - .2f) / 256.0f;
 
-			DrawChaoHudThingB(
+			chDrawBillboardSR(
 				&bbi,
 				x,
 				ypos,
@@ -383,7 +383,7 @@ static void NameMenuDisplayHook(char* work) {
 	if (work[0x5C] < 20) {
 		njSetTexture((NJS_TEXLIST*)0x011D2ACC); // al_stg_kinder_ad_tex
 		njSetTextureNum(1, 0, 0, 0);
-		ChaoHudThing bar;
+		SAlgKinderOrthoQuad bar;
 		bar.x0 = CalculateStringXPos(namePointer, 431, 22.f, nameLength, work[0x52]) + 1; // work[0x52] is the selection with the arrows
 		bar.x1 = bar.x0 + 2;
 		bar.y0 = 130;

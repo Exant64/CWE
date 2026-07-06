@@ -5,7 +5,7 @@
 #include "alg_kinder_ortho.h"
 #include "ALifeSDK_Functions.h"
 
-DataArray(ChaoHudThingB, StatText, 0x13128B0, 10);
+DataArray(CHS_BILL_INFO, StatText, 0x13128B0, 10);
 void AL_ChaoCounterDisp(task* a1)
 {
 	if (GameState == GameStates_Pause && !(MenuButtons_Held[0] & Buttons_X && MenuButtons_Held[0] & Buttons_Y))
@@ -30,10 +30,10 @@ void AL_ChaoCounterDisp(task* a1)
 		int chaoCount = *(int*)0x1DC0F80;
 		float v12 = 30;
 		float v16 = 400;
-		SetChaoHUDThingBColor(1, 1.0, 1.0, 1.0);
-		DrawChaoHudThingB(&StatText[chaoCount / 10], v12, v16, -1.5, 1.0, 1.0, 0, -1);
+		chSetBillboardColor(1, 1.0, 1.0, 1.0);
+		chDrawBillboardSR(&StatText[chaoCount / 10], v12, v16, -1.5, 1.0, 1.0, 0, -1);
 		float v40 = v12 + 12;
-		DrawChaoHudThingB(&StatText[chaoCount % 10], v40, v16, -1.5, 1.0, 1.0, 0, -1);
+		chDrawBillboardSR(&StatText[chaoCount % 10], v40, v16, -1.5, 1.0, 1.0, 0, -1);
 
 		SetShaders(shaderBackup);
 	}

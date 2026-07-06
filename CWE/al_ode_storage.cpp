@@ -168,7 +168,7 @@ void LoadChaoFiles() {
 	}
 }
 
-DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
+DataArray(CHS_BILL_INFO, MenuArray, 0x11BA528, 0x61);
 void BackButtonDisp(task* a1) {
 
 	float v14 = 320;
