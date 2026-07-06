@@ -805,51 +805,17 @@ struct AL_GENE
 
 struct  AL_EMOTION
 {
-	__int16 field_124;
-	__int16 Category1Timer;
-	__int16 SicknessTimer;
-	__int16 Category2Timer;
-	char Joy;
-	Uint8 Anger;
-	Uint8 UrgeToCry;
-	char Fear;
-	Uint8 Surprise;
-	Uint8 Dizziness;
-	char Relax;
-	char Total;
-	__int16 Sleepiness;
-	__int16 Tiredness;
-	__int16 Hunger;
-	__int16 MateDesire;
-	__int16 Boredom;
-	__int16 Lonely;
-	__int16 Tire;
-	__int16 Stress;
-	__int16 Nourish;
-	__int16 Conditn;
-	__int16 Energy;
-	char Normal_Curiosity;
-	char Kindness;
-	char CryBaby_Energetic;
-	char Naive_Normal;
-	char Solitude;
-	char Vitality;
-	char Glutton;
-	char Regain;
-	char Skillful;
-	char Charm;
-	char Chatty;
-	char Normal_Carefree;
-	char Fickle;
-	char FavoriteFruit;
-	char field_34;
-	char field_35;
-	char CoughLevel;
-	char ColdLevel;
-	char RashLevel;
-	char RunnyNoseLevel;
-	char HiccupsLevel;
-	char StomachAcheLevel;
+	Uint16 Flag;
+	Uint16 MoodTimer;
+	Uint16 IllTimer;
+	Uint16 Timer;
+	Uint8 Mood[8];
+    Uint16 State[11];
+    Sint8 Personality[13];
+	char Taste;
+	char Tv;
+	char Music;
+	Sint8 IllState[6];
 };
 
 

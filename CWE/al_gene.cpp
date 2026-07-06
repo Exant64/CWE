@@ -158,7 +158,7 @@ static void AL_GeneAnalyzeMoreFaces(CHAO_PARAM_GC* pParam) {
 			const auto persKind = entry.PersonalityKinds[j];
 			const auto persRange = entry.PersonalityCheckRanges[j];
 	
-			const auto pers = (&pParam->Emotion.Normal_Curiosity)[persKind - EM_PER_CURIOSITY];
+			const auto pers = pParam->Emotion.Personality[persKind - EM_PER_CURIOSITY];
 			const bool persLow = pers < -40;
 			const bool persHigh = pers > 40;
 

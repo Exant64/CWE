@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-
+#if 0
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
@@ -135,3 +135,4 @@ void ALO_Coffin_Create(NJS_VECTOR* a1, int rotY)
 	//p->Data1->Position = { 10,0,0 };
 
 }
+#endif

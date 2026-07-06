@@ -460,10 +460,6 @@ extern "C"
 
 		KCE_Init();
 
-		//DEBUG LENS THING
-		//WriteCall((void*)0x0056D696, SetChunkTexIndexPrimaryHook);
-		//WriteCall((void*)0x0056D6B8, SetChunkTexIndexPrimaryHook);
-		//AL_Lua_Init();
 		CWE_Codes_Init(path, config);
 
 		CWE_Fixes();
@@ -475,16 +471,6 @@ extern "C"
 		OrthoInit();
 		AL_SaveInit();
 		AL_Palette_Init();
-
-		DataArray(int, LessonArray, 0x011D2DC8, 21);
-		//11 - trumpet
-		//12 - tambourine 
-		//13 - organ
-		//14 - piano
-
-		//classroom thingy
-		//LessonArray[5] = 13;
-		//LessonArray[14] = 14;
 		
 		//Main
 		gConfigVal.CharacterChaoEvo = config->getBool("Chao World Extended", "CharacterChaoEvo", true);

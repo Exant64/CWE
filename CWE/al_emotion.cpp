@@ -2,69 +2,76 @@
 #include "usercall.h"
 #include "Chao.h"
 
-// todo: refactor with decomp
+void AL_EmotionAdd(task* tp, Uint32 EmotionNum, int add) {
+    int value;
+    AL_EMOTION* emotion;
 
-int(*AL_EmotionGetValue)(task* tp, int emotion) = GenerateUsercallWrapper<int(*)(task* tp, int emotion)>(rEAX, 0x0054E930, rEAX, rECX);
+    // this is odd, but i can't match it any other way
+    if (emotion = &GET_CHAOPARAM(tp)->Emotion, EmotionNum <= 7) {
+        value = add + (Uint8)emotion->Mood[EmotionNum];
 
-void* __cdecl Chao_GetFeelingPtr(task* a1, int a2)
-{
-	AL_EMOTION* v2; // ecx
+        if (value > 200)
+            value = 200;
+        if (value < 0)
+            value = 0;
+        emotion->Mood[EmotionNum] = value;
+    } else if (EmotionNum >= 8 && EmotionNum <= 18) {
+        value = add + emotion->State[EmotionNum - 8];
 
-	v2 = &GET_CHAOWK(a1)->pParamGC->Emotion;
-	if ((unsigned int)a2 <= 7)
-	{
-		return ((unsigned __int8*)&v2->Joy + a2);
-	}
-	if ((unsigned int)a2 >= 8 && (unsigned int)a2 <= 18)
-	{
-		return ((unsigned __int16*)&v2->field_124 + a2);// tiredness if 9
-	}
-	if ((unsigned int)a2 >= 19 || (unsigned int)a2 <= 31)
-	{
-		return ((char*)&v2->Tiredness + a2 + 1);
-	}
-	return nullptr;
+        if (value > 10000)
+            value = 10000;
+        if (value < 0)
+            value = 0;
+        emotion->State[EmotionNum - 8] = value;
+    } else if (EmotionNum >= 19 && EmotionNum <= 31) {
+        value = add + emotion->Personality[EmotionNum - 19];
+
+        if (value > 100)
+            value = 100;
+        if (value < -100)
+            value = -100;
+        emotion->Personality[EmotionNum - 19] = value;
+    }
 }
 
+void AL_EmotionSetValue(task* tp, Uint32 EmotionNum, int value) {
+    AL_EMOTION* emotion;
+    emotion = &GET_CHAOPARAM(tp)->Emotion;
 
-void AL_EmotionAdd(task* a1, int a2, int a3)
-{
-	void* ptr = Chao_GetFeelingPtr(a1, a2);
-	if ((unsigned int)a2 <= 7)
-	{
-		int val = *(unsigned char*)ptr + a3;
-		if (val > 200) val = 200;
-		if (val < 0) val = 0;
-		*(unsigned char*)ptr = val;
-	}
-	else if ((unsigned int)a2 >= 8 && (unsigned int)a2 <= 18)
-	{
-		*(short*)ptr += a3;
-		if (*(short*)ptr > 10000)
-			*(short*)ptr = 10000;
-		if (*(short*)ptr < 0)
-			*(short*)ptr = 0;
-	}
-	else {
-		*(char*)ptr += a3;
-		if (*(char*)ptr > 100)
-			*(char*)ptr = 100;
-		if (*(char*)ptr < -100)
-			*(char*)ptr = -100;
-	}
+    if (EmotionNum <= 7) {
+        if (value > 200)
+            value = 200;
+        if (value < 0)
+            value = 0;
+        emotion->Mood[EmotionNum] = value;
+    } else if (EmotionNum >= 8 && EmotionNum <= 18) {
+        if (value > 10000)
+            value = 10000;
+        if (value < 0)
+            value = 0;
+        emotion->State[EmotionNum - 8] = value;
+    } else if (EmotionNum >= 19 && EmotionNum <= 31) {
+        if (value > 100)
+            value = 100;
+        if (value < -100)
+            value = -100;
+        emotion->Personality[EmotionNum - 19] = value;
+    }
 }
 
-void AL_EmotionSet(task* a1, int a2, int a3)
-{
-	void* ptr = Chao_GetFeelingPtr(a1, a2);
-	if ((unsigned int)a2 <= 7) {
-		*(unsigned char*)ptr = a3;
-	}
-	else if ((unsigned int)a2 >= 8 && (unsigned int)a2 <= 18) {
-		*(short*)ptr = a3;
-	}
-	else {
-		*(char*)ptr = a3;
-	}
-}
+int AL_EmotionGetValue(task* tp, Uint32 EmotionNum) {
+    AL_EMOTION* emotion;
+    emotion = &GET_CHAOPARAM(tp)->Emotion;
 
+    if (EmotionNum <= 7) {
+        return (Uint8)emotion->Mood[EmotionNum];
+    } else if (EmotionNum >= 8 && EmotionNum <= 18) {
+        return emotion->State[EmotionNum - 8];
+    } else if (EmotionNum >= 19 && EmotionNum <= 31) {
+        return emotion->Personality[EmotionNum - 19];
+    }
+
+	assert(false);
+	
+	return 0;
+}

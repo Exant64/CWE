@@ -212,35 +212,6 @@ static void __declspec(naked) AL_FaceSetEyeHook()
 	}
 }
 
-unsigned __int8 eye_default_num[3][3][3] =
-{
-  { { ChaoEyes_HalfClosed, 0u, 0u }, { ChaoEyes_HalfClosed, 0u, 0u }, { 0u, 0u, 0u } },
-  { { ChaoEyes_HalfClosed, 0u, 0u }, { 0u, 0u, ChaoEyes_ClosedUp }, { 0u, 0u, ChaoEyes_ClosedUp } },
-  { { ChaoEyes_Mean, ChaoEyes_Mean, ChaoEyes_Mean }, { ChaoEyes_HalfClosed, 0u, ChaoEyes_ClosedUp }, { 0u, ChaoEyes_ClosedUp, ChaoEyes_ClosedUp } }
-};
-
-unsigned __int8 mouse_default_num[3][3][3] =
-{
-	//aggressive < -45
-	{
-		{ ChaoMouth_Squiggly, 0u, ChaoMouth_ClosedFrown },							//kindness < -45
-		{ ChaoMouth_Squiggly, ChaoMouth_ClosedFrown, ChaoMouth_ClosedFrown },		//kindness >= -45 && kindness < 45
-		{ ChaoMouth_Squiggly, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }		//kindness >= 45 
-	},
-	//aggressive >= -45 && aggressive < 45
-	{
-		{ 0u, ChaoMouth_ToothySmile, ChaoMouth_ToothySmile },						//kindness < -45
-		{ ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }, 	//kindness >= -45 && kindness < 45
-		{ 0u, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }						//kindness >= 45 
-	},
-	//aggressive >= 45
-	{
-		{ 0u, ChaoMouth_ToothySmile, ChaoMouth_ToothySmile },						//kindness < -45
-		{ 0u, ChaoMouth_ClosedFrown, ChaoMouth_ClosedFrown },						//kindness >= -45 && kindness < 45
-		{ ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }		//kindness >= 45 
-	}
-};
-
 const int Chao_SetMouthPtr = 0x0053A5A0;
 void AL_FaceSetMouth(task* a2, int a3, int a1)
 {

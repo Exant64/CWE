@@ -104,7 +104,7 @@ signed int ALBHV_RideBoat(task* a1)
 		GET_CHAOWK(a1)->Behavior.SubTimer++;
 		if (GET_CHAOWK(a1)->Behavior.SubTimer % 600 == 0)
 			if (njRandom() > 0.5)
-				AL_EmotionSet(a1, EM_ST_THIRSTY, 0);
+				AL_EmotionSetValue(a1, EM_ST_THIRSTY, 0);
 
 		if (MOV_DistFromAim(a1) < 36.0)
 			sub_561740((int)a1);

@@ -127,34 +127,6 @@ void ChaoWorldExtendedRequired()
 					}
 				}
 			}
-
-			//cap emotions (im guessing emotions that get edited by lst)
-			if (ChaoSlots[i].data.Emotion.Dizziness > 200)
-			{
-				ChaoSlots[i].data.Emotion.Dizziness = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.Surprise > 200)
-			{
-				ChaoSlots[i].data.Emotion.Surprise = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.UrgeToCry > 200)
-			{
-				ChaoSlots[i].data.Emotion.UrgeToCry = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.Anger > 200)
-			{
-				ChaoSlots[i].data.Emotion.Anger = 200;
-			}
-
-			//swim points
-			if (gConfigVal.EnergyCap && ChaoSlots[i].data.Skill[0] <= 99)
-			{
-				//cap energy at 5000 if the chao cant swim yet
-				if (ChaoSlots[i].data.Emotion.Energy > 5000)
-				{
-					ChaoSlots[i].data.Emotion.Energy = 5000;
-				}
-			}
 		}
 	}
 

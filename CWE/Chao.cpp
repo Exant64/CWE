@@ -369,6 +369,13 @@ static void Chao_Main_r(task* a1)
 		}
 	}
 
+	// cap energy at 5000 if the chao cant swim yet
+	if (gConfigVal.EnergyCap && pParam->Skill[0] <= 99) {
+		if (AL_EmotionGetValue(a1, EM_ST_THIRSTY) > 5000) {
+			AL_EmotionSetValue(a1, EM_ST_THIRSTY, 5000);
+		}
+	}
+
 	//monster transparency fix
 	if (pParam->FlySwim < -1 || pParam->FlySwim > 1 ||
 		pParam->PowerRun < -1 || pParam->PowerRun > 1)

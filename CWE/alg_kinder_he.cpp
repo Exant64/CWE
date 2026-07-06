@@ -907,7 +907,7 @@ signed int AL_HealthCenter_GetSickness(task* a1)
 
 	v1 = &GET_CHAOPARAM(a1)->Emotion;
 	v2 = 0;
-	while (*(&v1->CoughLevel + v2) >= 0)
+	while (v1->IllState[v2] >= 0)
 	{
 	LABEL_4:
 		if (++v2 >= 6)
@@ -915,7 +915,7 @@ signed int AL_HealthCenter_GetSickness(task* a1)
 			return -1;
 		}
 	}
-	*(&v1->CoughLevel + v2) = 100;
+	v1->IllState[v2] = 100;
 	switch (v2)
 	{
 	case 0:
