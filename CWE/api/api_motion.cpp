@@ -113,6 +113,6 @@ void AL_ModAPI_Motion_Update() {
 }
 
 void AL_ModAPI_Motion_Init() {
-	MOTION_TABLE* al_motion_table = (MOTION_TABLE*)GetDllData("al_motion_table");
+	MOTION_TABLE* al_motion_table = (MOTION_TABLE*)GetDataDllProcAddr("al_motion_table");
 	al_motion_table_api.insert(al_motion_table_api.end(), al_motion_table, &al_motion_table[622]);
 }

@@ -125,7 +125,7 @@ void __cdecl AL_IconDraw_r(task* tp)
 }
 
 static void FillAL_RootObject() {
-	NJS_CNK_OBJECT** chaoModels = (NJS_CNK_OBJECT**)GetDllData("AL_RootObject");
+	NJS_CNK_OBJECT** chaoModels = (NJS_CNK_OBJECT**)GetDataDllProcAddr("AL_RootObject");
 	for (int i = 0; i < 144; i++) {
 		AL_RootObject.push_back(chaoModels[i]);
 	}

@@ -932,7 +932,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			RotateY(a1->mItemDescAngY);
 			njTranslate(NULL, 0, -1.4f, 0);
 			njSetTexture(&AL_BODY);
-			ColorEggModel((((NJS_CNK_OBJECT**)GetDllData("MaskObjObjectList"))[16]->model), type - 16);
+			ColorEggModel((((NJS_CNK_OBJECT**)GetDataDllProcAddr("MaskObjObjectList"))[16]->model), type - 16);
 		}
 		else
 		{
@@ -1553,7 +1553,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 				RotateY(rot.y);
 				njTranslate(NULL, 0, -1.4f, 0);
 				njSetTexture(&AL_BODY);
-				ColorEggModel((((NJS_CNK_OBJECT**)GetDllData("MaskObjObjectList"))[16]->model), type - 16);
+				ColorEggModel((((NJS_CNK_OBJECT**)GetDataDllProcAddr("MaskObjObjectList"))[16]->model), type - 16);
 			}
 			else
 			{

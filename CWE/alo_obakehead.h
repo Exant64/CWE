@@ -19,7 +19,7 @@ void ALO_ObakeHeadDraw(int headgear) {
 	else
 	{
 		njSetTexture(&AL_BODY);
-		NJS_CNK_OBJECT** list = (NJS_CNK_OBJECT**)GetDllData("MaskObjObjectList");
+		NJS_CNK_OBJECT** list = (NJS_CNK_OBJECT**)GetDataDllProcAddr("MaskObjObjectList");
 		if (headgear >= SA2BHat_NormalEggShell && headgear < 85)
 		{
 			if (UseGardenModel) {

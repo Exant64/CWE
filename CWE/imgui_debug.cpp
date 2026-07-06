@@ -407,7 +407,7 @@ static void ChaoInfoMenu() {
                 if (poseFilter > 0) {
                     int pose = poseFilter - 1;
                     if (ImGui::TreeNode("Filter results")) {
-                        MotionTableAction* entries = (MotionTableAction*)GetDllData("al_motion_table");
+                        MotionTableAction* entries = (MotionTableAction*)GetDataDllProcAddr("al_motion_table");
                         for (size_t i = 0; i <= ALM_TAIL; i++) {
                             if (entries[i].field_6 != pose) continue;
                             ImGui::Text("%s (%d)", MotionNames[i], i);

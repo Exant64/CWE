@@ -572,8 +572,8 @@ extern "C"
 		}
 
 		if (gConfigVal.FixHeroSky) {
-			*(NJS_CNK_OBJECT*)GetDllData("object_ghero_nk_kumofront_kumofront") = object_ghero_nk_kumofront_kumofront;
-			*(NJS_CNK_OBJECT*)GetDllData("object_ghero_nk_kumoback_kumoback") = object_ghero_nk_kumoback_kumoback;
+			*(NJS_CNK_OBJECT*)GetDataDllProcAddr("object_ghero_nk_kumofront_kumofront") = object_ghero_nk_kumofront_kumofront;
+			*(NJS_CNK_OBJECT*)GetDataDllProcAddr("object_ghero_nk_kumoback_kumoback") = object_ghero_nk_kumoback_kumoback;
 		}
 
 		if (gConfigVal.NeutSet) {

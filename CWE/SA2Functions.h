@@ -388,7 +388,7 @@ FunctionPointer(void, LoadMechTails, (int playerNum), 0x740EB0);
 FunctionPointer(void, LoadChaoWalker, (int playerNum), 0x741110);
 FunctionPointer(void, LoadDarkChaoWalker, (int playerNum), 0x7412F0);
 
-FunctionPointer(int, GetDllData, (LPCSTR lpProcName), 0x77DEF0);
+FunctionPointer(int, GetDataDllProcAddr, (LPCSTR lpProcName), 0x77DEF0);
 FunctionPointer(void *, MemoryManager__Allocate, (int size, char *file, int line), 0x77DFA0);
 FunctionPointer(void *, MemoryManager__AllocateArray, (int count, int size), 0x77DFB0);
 FunctionPointer(void, MemoryManager__Deallocate2, (AllocatedMem *a1, size_t count), 0x77DFE0);

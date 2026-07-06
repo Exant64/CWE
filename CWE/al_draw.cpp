@@ -69,16 +69,16 @@ static NJS_CNK_OBJECT* object_al_egghead_eye_egghead_eye;
 static NJS_CNK_OBJECT* object_al_egghead_jaw_egghead_jaw;
 
 static void AL_Mask_Init() {
-	object_al_egghead_egghead = (NJS_CNK_OBJECT*)GetDllData("object_al_egghead_egghead");
-	object_al_egghead_eye_egghead_eye = (NJS_CNK_OBJECT*)GetDllData("object_al_egghead_eye_egghead_eye");
-	object_al_egghead_jaw_egghead_jaw = (NJS_CNK_OBJECT*)GetDllData("object_al_egghead_jaw_egghead_jaw");
+	object_al_egghead_egghead = (NJS_CNK_OBJECT*)GetDataDllProcAddr("object_al_egghead_egghead");
+	object_al_egghead_eye_egghead_eye = (NJS_CNK_OBJECT*)GetDataDllProcAddr("object_al_egghead_eye_egghead_eye");
+	object_al_egghead_jaw_egghead_jaw = (NJS_CNK_OBJECT*)GetDataDllProcAddr("object_al_egghead_jaw_egghead_jaw");
 
 	for (size_t i = 0; i < LengthOfArray(MaskObjObjectListDllNames); i++) {
 		NJS_CNK_OBJECT** pObjList = VanillaMaskObjObjectList[i];
 		const char** namesPtr = MaskObjObjectListDllNames[i];
 
 		while (*namesPtr != nullptr) {
-			*pObjList = (NJS_CNK_OBJECT*)GetDllData(*namesPtr);
+			*pObjList = (NJS_CNK_OBJECT*)GetDataDllProcAddr(*namesPtr);
 
 			namesPtr++;
 			pObjList++;
@@ -961,13 +961,13 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 			AL_SetBodyTexture(tp);
 
 			//alpalSetBank(a1, (unsigned __int8)a1->twp->Index);
-			*(int*)(*(int*)(*(int*)(*((int*)GetDllData("ObakeBodyObjectList")
+			*(int*)(*(int*)(*(int*)(*((int*)GetDataDllProcAddr("ObakeBodyObjectList")
 				+ (unsigned __int8)GET_CHAOPARAM(tp)->type)
 				+ 4)
 				+ 4)
 				+ 4) = *(int*)((__int16*)pObject->pModel->PList + 2); //copies mat color onto the ghost model
 			AL_SetRareMaterial(tp, (NJS_CNK_MODEL*)pObject->pModel);
-			chCnkDrawObject(((NJS_CNK_OBJECT**)GetDllData("ObakeBodyObjectList"))[GET_CHAOPARAM(tp)->type]);
+			chCnkDrawObject(((NJS_CNK_OBJECT**)GetDataDllProcAddr("ObakeBodyObjectList"))[GET_CHAOPARAM(tp)->type]);
 			SetMaterial(0, 0, 0, 0);
 			goto LABEL_95;
 		}

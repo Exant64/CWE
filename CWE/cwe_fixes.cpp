@@ -191,7 +191,7 @@ void CWE_Fixes() {
 	WriteJump((void*)0x00530596, (void*)0x005305B6);//calcdistfromlockon
 
 	//chaos chao animal ear fix
-	NJS_CNK_OBJECT** ChaoObjects = (NJS_CNK_OBJECT**)GetDllData("AL_RootObject");
+	NJS_CNK_OBJECT** ChaoObjects = (NJS_CNK_OBJECT**)GetDataDllProcAddr("AL_RootObject");
 	NJS_CNK_OBJECT* ChaosChaoRoot = ChaoObjects[108];
 	NJS_CNK_OBJECT* EarObject = ChaosChaoRoot->child->child->sibling->sibling->sibling->sibling->sibling->child->child->child->sibling->sibling->sibling->sibling->sibling;
 	EarObject->ang[1] = 0;
