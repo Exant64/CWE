@@ -40,12 +40,12 @@ enum {
 struct DAYNIGHT_WORK {
 	int mode;
 
-	LandTable* pNewLandtable;
-	LandTable* pOldLandtable;
+	OBJ_LANDTABLE* pNewLandtable;
+	OBJ_LANDTABLE* pOldLandtable;
 
 	bool isChunkLandTable;
 
-	GJS_ARRAY** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ChunkModelCount * 2 amount of pointers)
+	GJS_ARRAY** pVertexColorTableGC; // pair of src and dst vertexcolor entries (ssDispCount * 2 amount of pointers)
 	Uint32** pVertexColorTableChunk;
 
 	NJS_TEXLIST* pTexlist;

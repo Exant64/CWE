@@ -11,7 +11,7 @@ typedef NJS_VECTOR Vector3;
 
 struct taskwk;
 struct ObjectListEntry;
-struct COL;
+struct OBJ_LANDENTRY;
 struct ModelIndex;
 struct SETEntry;
 struct SETObjectData;
@@ -1052,29 +1052,31 @@ struct LevelItemData
 };
 
 
-struct LandTable
+struct OBJ_LANDTABLE
 {
-	__int16 COLCount;
-	__int16 ChunkModelCount;
-	__int16 field_4;
-	__int16 field_6;
-	__int16 field_8;
-	__int16 field_A;
-	float field_C;
-	COL *COLList;
+	__int16 ssCount;
+	__int16 ssDispCount;
+	__int16 ssDirectDispCount;
+	__int16 ssMotCount;
+	__int16 ssAttribute;
+	__int16 ssLoadFlag;
+	float fFarClipping;
+	OBJ_LANDENTRY *pLandEntry;
 	float *field_14;
-	char *TextureName;
-	NJS_TEXLIST *TextureList;
+	char *pPvmFileName;
+	NJS_TEXLIST *pTexList;
 };
 
-struct COL
+struct OBJ_LANDENTRY
 {
-	NJS_VECTOR Center;
-	float Radius;
-	NJS_CNK_OBJECT *Model;
+	float xCenter;
+	float yCenter;
+	float zCenter;
+	float radius;
+	NJS_CNK_OBJECT *pObject;
 	int field_14;
-	int field_18;
-	int Flags;
+	int blockbit;
+	int slAttribute;
 };
 
 struct StartPosition

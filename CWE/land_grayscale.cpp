@@ -119,10 +119,10 @@ static void ECW_ColorSaturate255(NJS_BGRA* col, float saturation) {
     col->g = Uint8(argb.b * 255.f);
 }
 
-static void GreyscaleLandtable(LandTable* pLandTable) {
-    for (size_t i = 0; i < pLandTable->ChunkModelCount; i++) {
-		const auto pCOL = &pLandTable->COLList[i];
-        const auto pGJS = (GJS_OBJECT*)pCOL->Model;
+static void GreyscaleLandtable(OBJ_LANDTABLE* pLandTable) {
+    for (size_t i = 0; i < pLandTable->ssDispCount; i++) {
+		const auto pCOL = &pLandTable->pLandEntry[i];
+        const auto pGJS = (GJS_OBJECT*)pCOL->pObject;
         auto pVertex = pGJS->model->arrays;
 
         while(pVertex->id != 0xFF) {
@@ -150,6 +150,6 @@ void GrayscalifyCurrentLandtable() {
     if(!(GreyscaledAlreadyFlag & flag)) {
         GreyscaledAlreadyFlag |= flag;
 
-        GreyscaleLandtable(CurrentLandTable);
+        GreyscaleLandtable(pObjLandTable);
     }
 }

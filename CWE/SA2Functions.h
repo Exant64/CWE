@@ -121,7 +121,7 @@ ObjectFunc(PSubCallSEWithWait, 0x476EA0);
 ObjectFunc(LoopSECallForTheMode, 0x476F20);
 FunctionPointer(signed int, ScreenFadeIn, (), 0x478690);
 FunctionPointer(signed int, ScreenFadeOut, (), 0x4786E0);
-FunctionPointer(signed int, LoadLandManager, (LandTable *a1), 0x47BD30);
+FunctionPointer(signed int, LoadLandManager, (OBJ_LANDTABLE *a1), 0x47BD30);
 ObjectFunc(LandManager_Main, 0x47C180);
 FunctionPointer(signed int, LoadSetObject, (ObjectListHead *list, void *setfile), 0x487E40);
 FunctionPointer(int, DeleteSetObject, (), 0x487F00);
