@@ -103,7 +103,7 @@ struct CNK_VN_VERTEX {
 	NJS_POINT3 Normal;
 };
 
-struct al_model {
+struct AL_MODEL {
 	int* VList;
 	__int16* PList;
 	NJS_POINT3 Center;
@@ -130,7 +130,7 @@ typedef struct {
 struct AL_OBJECT
 {
 	Uint32 EvalFlags;
-	al_model *pModel;
+	AL_MODEL *pModel;
 	Float Pos[3];
 	Angle Ang[3];
 	Float Scl[3];

@@ -444,7 +444,7 @@ static void ChaoInfoMenu() {
             if (ImGui::BeginTabItem("Vertices")) {
                 AL_OBJECT* pHead = work->Shape.CurrObjectList[1];
                 if(pHead) {
-                    al_model* pModel = (al_model*)pHead->pModel;
+                    AL_MODEL* pModel = (AL_MODEL*)pHead->pModel;
 
                     for(size_t i = 0; i < pModel->nbVertex; ++i) {
                         CNK_VN_VERTEX* pVert = (CNK_VN_VERTEX*)(pModel->VList + 2) + i;
