@@ -186,13 +186,13 @@ void AL_CalcIntentionScore_JoinMusic(task* tp, float* pMaxScore) {
 					AL_EmotionAdd(tp, EM_ST_LONELY, -4000);
 					//AL_ClearIntention(tp);
 
-					if (pField->Parent) {
-						AL_EmotionAdd(pField->Parent, EM_ST_LONELY, -4000);
+					if (pField->ptp) {
+						AL_EmotionAdd(pField->ptp, EM_ST_LONELY, -4000);
 					}
 				}
 				else {
-					if (pField->Parent) {
-						MOV_SetAimPos(tp, &pField->Parent->twp->pos);
+					if (pField->ptp) {
+						MOV_SetAimPos(tp, &pField->ptp->twp->pos);
 					}
 					AL_SetBehavior(tp, ALBHV_TurnToAim);
 					AL_SetNextBehavior(tp, ALBHV_PostureChangeSit);

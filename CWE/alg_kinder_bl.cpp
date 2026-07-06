@@ -2334,7 +2334,7 @@ void alg_kinder_bl_Init()
 
 	//draw inventory
 	WriteJump((void*)0x005341D0, DrawPurchasedItem);
-	WriteData((char*)0x0052AE5B, (char)0x1C); //set purchased item displayer from DisplaySub to field_1C
+	WriteData((char*)0x0052AE5B, (char)0x1C); //set purchased item displayer from DisplaySub to disp_dely
 	//if cwe inventory is empty, force a black market reload
 	//also move ring display position
 	WriteCall((void*)0x0058B810, LoadRingDisplayHook);

@@ -587,11 +587,11 @@ public:
 } static gDayNightManager;
 
 static DAYNIGHT_WORK& GetWork(task* tp) {
-	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->Data2.Undefined);
+	return *reinterpret_cast<DAYNIGHT_WORK*>(tp->awp);
 }
 
 bool AL_DayNightCycle_IsRain() {
-	if (!pDayNightTask || !pDayNightTask->Data2.Undefined) return false;
+	if (!pDayNightTask || !pDayNightTask->awp) return false;
 
 	auto& work = GetWork(pDayNightTask);
 	return work.isRain;
@@ -2007,9 +2007,9 @@ void AL_CreateDayNightCycle() {
 
 	AL_CreateDayNightCycleManager();
 
-	tp->Data2.Undefined = ALLOC(DAYNIGHT_WORK);
+	tp->awp = ALLOC(DAYNIGHT_WORK);
 
-	memset(tp->Data2.Undefined, 0, sizeof(DAYNIGHT_WORK));
+	memset(tp->awp, 0, sizeof(DAYNIGHT_WORK));
 
 	auto& work = GetWork(tp);
 

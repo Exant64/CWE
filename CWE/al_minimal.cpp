@@ -326,9 +326,9 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
 
-		if (!v1->UnknownA_ptr) PrintDebug("unknown_a == 0, problem incoming");
+		if (!v1->fwp) PrintDebug("unknown_a == 0, problem incoming");
 
-		if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && v1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{
 			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
 				njTranslate(NULL, 0, 0.01f, 0);

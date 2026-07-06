@@ -129,8 +129,8 @@ void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
             }
             if (score > *pMaxScore) {
                 int kind = -1;
-                if (pField->Parent) {
-                    BHV_FUNC func = AL_GetBehavior(pField->Parent);
+                if (pField->ptp) {
+                    BHV_FUNC func = AL_GetBehavior(pField->ptp);
 
                     for (size_t i = 0; i < NB_AL_DANCE_CWE; i++) {
                         if (func == ALBHV_DanceFunc_CWE[i]) {
@@ -156,13 +156,13 @@ void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
                     AL_EmotionAdd(tp, EM_ST_TEDIOUS, -4000);
                     AL_EmotionAdd(tp, EM_ST_LONELY, -4000);
                     
-                    if (pField->Parent) {
-                        AL_EmotionAdd(pField->Parent, EM_ST_LONELY, -3000);
+                    if (pField->ptp) {
+                        AL_EmotionAdd(pField->ptp, EM_ST_LONELY, -3000);
                     }
                 }
                 else {
-                    if (pField->Parent) {
-                        MOV_SetAimPos(tp, &pField->Parent->twp->pos);
+                    if (pField->ptp) {
+                        MOV_SetAimPos(tp, &pField->ptp->twp->pos);
                     }
 
                     AL_SetBehavior(tp, ALBHV_TurnToAim);

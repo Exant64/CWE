@@ -107,7 +107,7 @@ void AL_EggPresenterExecutor(task* tp) {
 	}
 }
 void AL_EggPresenterDisplayer(task* tp) {
-	if (tp->twp->mode && *(int*)dword_1A5AF18->Data2.Undefined < 10 && tp->twp->scl.x > 0.001f) {
+	if (tp->twp->mode && *(int*)dword_1A5AF18->awp < 10 && tp->twp->scl.x > 0.001f) {
 		SetShaders(1);
 		DoLighting(0);
 		Angle3 rot = { 0,tp->twp->ang.y,0 };

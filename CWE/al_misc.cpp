@@ -8,7 +8,7 @@ void __cdecl AL_ForwardAcc(task* a1, float a2)
 	MOVE_WORK* v3; // edi
 
 	v2 = GET_CHAOWK(a1);
-	v3 = a1->EntityData2;
+	v3 = GET_MOVE_WORK(a1);
 	v3->Acc.x = njSin(v2->ang.y) * a2;
 	v3->Acc.z = njCos(v2->ang.y) * a2;
 }
@@ -28,7 +28,7 @@ void __cdecl AL_Brake(task* a1, float a2)
 {
 	MOVE_WORK* v2; // eax
 
-	v2 = (MOVE_WORK*)a1->EntityData2;
+	v2 = GET_MOVE_WORK(a1);
 	if (v2->Flag & 4)
 	{
 		v2->Velo.x *= a2;

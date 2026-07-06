@@ -590,7 +590,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 	auto original = reinterpret_cast<decltype(AL_ChaoParamWindowExecutorDisplay_r)*>(AL_ChaoParamWindowExecutorDisplay_t.Target());
 	original(tp);
 
-	auto* pData = (AL_ChaoParamWindowExecutor_Data*)tp->Data2.Undefined;
+	auto* pData = (AL_ChaoParamWindowExecutor_Data*)tp->awp;
 	if (pData->Action) {
 		char v2 = pData->byte4;
 		float posX = (float)pData->posX;

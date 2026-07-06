@@ -181,7 +181,7 @@ void BackButtonDisp(task* a1) {
 }
 
 void CreateBackButton() {
-	CreateElementalTask(LoadObj_Data1, 4, [](task*) {}, "back")->field_1C = BackButtonDisp;
+	CreateElementalTask(LoadObj_Data1, 4, [](task*) {}, "back")->disp_dely = BackButtonDisp;
 }
 
 void AL_OdekakeStorage(ODE_MENU_MASTER_WORK* a1)

@@ -24,7 +24,7 @@ struct SA2CAMERADATA
 
 #define FALL_FRAMES 35
 
-#define GET_WORK(tp) ((RAIN_WORK*)tp->Data2.Undefined)
+#define GET_WORK(tp) ((RAIN_WORK*)tp->awp)
 
 static char
 SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
@@ -268,7 +268,7 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 	tp->disp = AL_DayNightRainDisplayer;
 
 	RAIN_WORK* work = ALLOC(RAIN_WORK);
-	tp->Data2.Undefined = work;
+	tp->awp = work;
 
 	memset(work, 0, sizeof(RAIN_WORK));
 

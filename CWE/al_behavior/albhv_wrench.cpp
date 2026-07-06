@@ -29,7 +29,7 @@ int __cdecl ALBHV_Wrench(task* a1)
 			if (MOV_DistFromAim(a1) < 4.0)
 			{
 				++GET_CHAOWK(a1)->Behavior.Mode;
-				al_entry_work* v7 = ALW_IsCommunicating(a1);
+				ALW_ENTRY_WORK* v7 = ALW_IsCommunicating(a1);
 
 				//failsafe
 				if (!v7 || !v7->tp)

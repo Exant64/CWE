@@ -238,7 +238,7 @@ NJS_TEXANIM texanim2[] = {
 	{256,256,128,128,0,0,256,256,2,0}
 };
 NJS_SPRITE dayNightUI = { {320,220,0}, 0.5f,0.5f, 0, &CWE_UI_TEXLIST, texanim2 };
-DataArray(ChaoSomeUnknownA, stru_1DC0FC0, 0x1DC0FC0, 32);
+DataArray(ALW_ENTRY_WORK, stru_1DC0FC0, 0x1DC0FC0, 32);
 NJS_TEXTURE_VTX emoIcon[4] =
 {
 	{ -1, -1.0, 0, 0, 0, 0xFFFFFFFF },
@@ -284,10 +284,10 @@ void AL_NameDisplayer(task* a1) {
 	if (a1->twp->mode == 0 && gConfigVal.EmotionDisplay)
 	{
 		for (int i = 0; i < 32; i++) {
-			task* chao = stru_1DC0FC0[i].pointerToOwner;
+			task* chao = stru_1DC0FC0[i].tp;
 			if (chao &&
-				chao->EntityData2 &&
-				chao->twp->pos.y + 2 >= chao->EntityData2->WaterY)
+				chao->mwp &&
+				chao->twp->pos.y + 2 >= ((MOVE_WORK*)chao->mwp)->WaterY)
 			{
 				NJS_VECTOR asd;
 				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->twp->pos, 0);
@@ -331,7 +331,7 @@ void AL_NameDisplayer(task* a1) {
 	else if (a1->twp->mode == 2)
 	{
 		for (int i = 0; i < 32; i++) {
-			task* chao = stru_1DC0FC0[i].pointerToOwner;
+			task* chao = stru_1DC0FC0[i].tp;
 			if (chao)
 				AL_NameDisplay_(GET_CWEPARAM(chao)->Name, &chao->twp->pos);
 		}
@@ -418,5 +418,5 @@ void AL_NameDisplay_Main(task* a1)
 
 void AL_NameDisplayCreate() {
 	task* p = CreateElementalTask(LoadObj_Data1, 2, AL_NameDisplay_Main, "AL_NameDisplay");
-	p->field_28 = AL_NameDisplayer;
+	p->disp_last = AL_NameDisplayer;
 }

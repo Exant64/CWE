@@ -22,7 +22,7 @@ void __cdecl ALO_Special_Display(task* a1)
 	//ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Special, a1->twp->Rotation.x);
 	ObjectRegistry::DrawObject(ChaoItemCategory_Special, a1->twp->ang.x);
 
-	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
+	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 		njTranslate(NULL, 0, 0.4f, 0);
 		njScale(NULL, 1, 0.7f, 1);
 
@@ -38,6 +38,6 @@ extern "C" __declspec(dllexport) task* ALO_Special_Load(int ID, NJS_VECTOR* posi
 	*(unsigned char*)&obj->twp->cwp->CollisionArray[2].field_0 = CI_KIND_AL_SPECIAL;
 	obj->twp->ang.x = ID;
 	obj->disp = ALO_Special_Display;
-	((ChaoSomeUnknownA*)obj->UnknownA_ptr)->index = ChaoItemCategory_Special;
+	GET_ALW_ENTRY_WORK(obj)->category = ChaoItemCategory_Special;
 	return obj;
 }

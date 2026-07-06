@@ -106,12 +106,13 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 
 AL_TOY_MOVE* GetToyMove(task* a1)
 {
-	return (AL_TOY_MOVE*)((int)a1->EntityData2 + 0x26C);
+	return (AL_TOY_MOVE*)((int)a1->mwp + 0x26C);
 }
 
-void AL_Toy_Move_Update(task *a1)
-{
+void AL_Toy_Move_Update(task *a1) {
+	MOVE_WORK* move = GET_MOVE_WORK(a1);
 	AL_TOY_MOVE* toyMove = GetToyMove(a1);
+
 	//todo: "nextaction" for collision changes?
 	switch (toyMove->state)
 	{
@@ -182,10 +183,12 @@ void AL_Toy_Move_Update(task *a1)
 
 		if (a1->twp->flag & 1)
 		{
+
 			NJS_VECTOR veloVec;
-			veloVec.x = a1->EntityData2->Velo.x;
+			veloVec.x = move->Velo.x;
 			veloVec.y = 0.0;
-			veloVec.z = a1->EntityData2->Velo.z;
+			veloVec.z = move->Velo.z;
+
 			//if it has velocity, reset timer to 0
 			if (njScalor(&veloVec) >= 0.01f)
 			{
@@ -198,13 +201,13 @@ void AL_Toy_Move_Update(task *a1)
 				toyMove->timer++;
 				if (toyMove->timer > 30)
 				{
-					MOVE_WORK* v8 = a1->EntityData2;
-					v8->Velo.x = 0.0;
-					v8->Velo.y = 0.0;
-					v8->Velo.z = 0.0;
-					v8->Acc.x = 0.0;
-					v8->Acc.y = 0.0;
-					v8->Acc.z = 0.0;
+					move->Velo.x = 0.0;
+					move->Velo.y = 0.0;
+					move->Velo.z = 0.0;
+					move->Acc.x = 0.0;
+					move->Acc.y = 0.0;
+					move->Acc.z = 0.0;
+
 					toyMove->flag = 0;
 					toyMove->timer = 0;
 					toyMove->state = TOY_MOVE_STATIC;
@@ -242,7 +245,7 @@ void AL_Toy_Move_Update(task *a1)
 		break;
 	}
 
-	a1->EntityData2->PrePos = a1->twp->pos;
+	move->PrePos = a1->twp->pos;
 	
 }
 MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
@@ -250,7 +253,7 @@ MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 	MOVE_WORK* data2; // esi
 
 	data2 = (MOVE_WORK*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
-	obj->EntityData2 = data2;                   // different offset than SADX
+	obj->mwp = data2;                   // different offset than SADX
 
 	data2->Top = 3.0f;
 	data2->RotSpd.y = 256;                      // different offset than SADX
@@ -297,7 +300,7 @@ void AL_Toy_Move_Init(task* p, CCL_INFO* col)
 	collisions[1].d = collisions[2].d;
 
 	InitCollision(p, (CollisionData*)collisions, 3, 5);
-	if (p->EntityData2)
+	if (p->mwp)
 	{
 		ObjectMovableInitialize(p->twp, 10);
 	}
@@ -338,7 +341,7 @@ CCL_INFO ALO_BoxExecutor_collision = { '\0', '\0', 'w', '\f', 32768u, {  0,  1.6
 void __cdecl AL_TV_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &stru_8A5C10);
-	a1->EntityData2->Offset.y = 1.75f;
+	GET_MOVE_WORK(a1)->Offset.y = 1.75f;
 }
 
 static void __declspec(naked) AL_TV_Init_Hook()
@@ -405,7 +408,7 @@ static void __declspec(naked) AL_Box_Init_Hook()
 void __cdecl AL_Radio_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &RadioCol);
-	a1->EntityData2->Offset.y = 1.6f;
+	GET_MOVE_WORK(a1)->Offset.y = 1.6f;
 }
 
 static void __declspec(naked) AL_Radio_Init_Hook()
@@ -494,9 +497,9 @@ void ALO_Ball_Hook() {
 
 DataArray(int, dword_1DC0F80, 0x1DC0F80, 1);
 const int sub_530470Ptr = 0x530470;
-al_entry_work* sub_530470(int a1, int a2)
+ALW_ENTRY_WORK* sub_530470(int a1, int a2)
 {
-	al_entry_work* result;
+	ALW_ENTRY_WORK* result;
 	__asm
 	{
 		mov edx, a1
@@ -510,7 +513,7 @@ al_entry_work* sub_530470(int a1, int a2)
 void SaveToyPos() {
 	ITEM_SAVE_INFO* v5;
 	task* v6;
-	al_entry_work* v4 = 0;
+	ALW_ENTRY_WORK* v4 = 0;
 	if (AL_IsGarden())
 	{
 		int v2 = dword_1DC0F80[6];

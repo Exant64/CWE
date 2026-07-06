@@ -10,7 +10,7 @@ int __cdecl ALBHV_Glide(task* a1)
 	chaowk* v4; // edi
 
 	v2 = a1;
-	v3 = a1->EntityData2;
+	v3 = GET_MOVE_WORK(a1);
 	v4 = GET_CHAOWK(a1);
 
 	if (!v4->Behavior.Mode)

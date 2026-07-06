@@ -94,8 +94,8 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 		{
 			const float speed = GET_GLOBAL()->WalkAcc * 0.8f;
-			tp->EntityData2->Acc.x = njSin(work->ang.y) * speed;
-			tp->EntityData2->Acc.z = njCos(work->ang.y) * speed;
+			GET_MOVE_WORK(tp)->Acc.x = njSin(work->ang.y) * speed;
+			GET_MOVE_WORK(tp)->Acc.z = njCos(work->ang.y) * speed;
 		}
 		
 		if (MOV_DistFromAimXZ(tp) < 0.5f) {

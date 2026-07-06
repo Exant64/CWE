@@ -74,7 +74,7 @@ void AL_GetRandomAttrPos_0(task* a1)
 {
 	if (stru_1A15938[1].nbIndex > 0)
 	{
-		sub_534F80alt((int)&stru_1A15938[1], &a1->EntityData2->AimPos, stru_1A15938[1].nbIndex);
+		sub_534F80alt((int)&stru_1A15938[1], &GET_MOVE_WORK(a1)->AimPos, stru_1A15938[1].nbIndex);
 	}
 }
 const int sub_55A920Ptr = 0x55A920;
@@ -103,7 +103,7 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS
 	if (opponent->StatPoints[7] == 1)
 	{
 		task* player = KarateMainExec_Ptr->pointerToSaveThing;
-		KarateChaoExec_Data2* data2 = (KarateChaoExec_Data2*)player->Data2.Undefined;
+		KarateChaoExec_Data2* data2 = (KarateChaoExec_Data2*)player->awp;
 		opponent->Alignment = (short)(data2->chaoDataPointer->data.Alignment * 10000.0f);
 		opponent->Magnitude = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
 		opponent->FlySwim = (short)(data2->chaoDataPointer->data.FlySwim * 10000.0f);
@@ -167,10 +167,10 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS
 
 void sub_54A690(task* a1)
 {
-	Data1Ptr v1; // eax
+	taskwk* v1; // eax
 	colliwk* v2; // eax
 
-	if (a1 && (v1.Undefined = (taskwk*)a1->twp) != 0 && (v2 = v1.Entity->cwp) != 0)
+	if (a1 && (v1 = a1->twp) != 0 && (v2 = v1->cwp) != 0)
 	{
 		v2->CollisionArray[1].field_2 |= 0x70u;
 	}

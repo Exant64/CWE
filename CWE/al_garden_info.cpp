@@ -498,7 +498,7 @@ static void AL_PackageCustomItemSaveInfo(const ChaoItemCategory category) {
 		if (tp) {
 			const auto stage = AL_GetStageNumber();
 			taskwk* work = tp->twp;
-			ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)(((al_entry_work*)tp->UnknownA_ptr)->pSaveInfo);
+			ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)(((ALW_ENTRY_WORK*)tp->fwp)->pSaveInfo);
 			
 			// not held (! & 0x8000) most likely
 			if (work->flag >= 0) {

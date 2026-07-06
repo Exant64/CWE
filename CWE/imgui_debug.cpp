@@ -115,7 +115,7 @@ static void ChaoInfoMenu() {
 
         chaowk* work = GET_CHAOWK(pChao);
         auto pParamCwe = GET_CWEPARAM(pChao);
-        auto* move_work = pChao->EntityData2;
+        auto* move_work = pChao->mwp;
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
@@ -275,7 +275,7 @@ static void ChaoInfoMenu() {
 
                 task* pToy = AL_GetFoundToyTask(pChao);
                 if (pToy) {
-                    ImGui::Text("Toy Name: %s", pToy->Name);
+                    ImGui::Text("Toy Name: %s", pToy->name);
                     ImGui::Separator();
                 }
                 
@@ -317,7 +317,7 @@ static void ChaoInfoMenu() {
                                     ImGui::Text("No al_entry_work->tp?");
                                 }
                                 else {
-                                    const char* taskName = link->pEntry->tp->Name;
+                                    const char* taskName = link->pEntry->tp->name;
                                     ImGui::Text("Name: %s", !taskName ? "(no name)" : taskName);
                                 }
 
@@ -472,7 +472,7 @@ static void DayNightMenu() {
     if (!pDayNightTask) return;
    
     if (ShowDNC && ImGui::Begin("DayNight Cycle", &ShowDNC)) {
-        auto& work = *reinterpret_cast<DAYNIGHT_WORK*>(pDayNightTask->Data2.Undefined);
+        auto& work = *reinterpret_cast<DAYNIGHT_WORK*>(pDayNightTask->awp);
         ImGui::SliderInt("Timer", (int*) & work.timer, 0, 24 * gConfigVal.DayNightCycleHourFrame);
         ImGui::Text("Phase: %d", work.phase);
         ImGui::Text("Day: %d", work.day);
@@ -572,8 +572,8 @@ static void TaskListMenu() {
                 auto* obj = ObjectLists[i];
                 if (obj) {
                     do {
-                        ImGui::Text(!obj->Name ? "" : obj->Name);
-                        obj = obj->NextObject;
+                        ImGui::Text(!obj->name ? "" : obj->name);
+                        obj = obj->last;
                     } while (obj != ObjectLists[i]);
                 }
 
@@ -836,7 +836,7 @@ static void ImGuiMenu() {
         }
 
         if (raintp) {
-            auto* work = (RAIN_WORK*)raintp->Data2.Undefined;
+            auto* work = (RAIN_WORK*)raintp->awp;
             
             for (size_t i = 0; i < DROP_COUNT; i++) {
                 if (!work->drops[i].lifeCount) {

@@ -227,7 +227,7 @@ void ALO_Butterfly_Load()
 	for (int i = 0; i < count; i++)
 	{
 		task* loaded = CreateElementalTask((LoadObj)0, 4, ALO_Butterfly_Main, "ALO_Butterfly");
-		loaded->field_1C = ALO_Butterfly_Display;
+		loaded->disp_dely = ALO_Butterfly_Display;
 		// loaded->twp = AllocateArray(sizeof(butterflywk), 1, (char*)__FILE__, __LINE__);
 	}
 }

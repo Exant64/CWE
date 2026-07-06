@@ -73,7 +73,7 @@ int ALBHV_HoldHands_Left(task* a1)
 		otherChao->twp->pos.y = backupY;
 		otherChao->twp->ang.y = a1->twp->ang.y;
 
-		((MOVE_WORK*)a1->EntityData2)->AimPos.y = a1->twp->pos.y; //DISGUSTING hack
+		((MOVE_WORK*)a1->mwp)->AimPos.y = a1->twp->pos.y; //DISGUSTING hack
 
 		MOV_TurnToAim2(a1, 384);
 		float a2 = ChaoGlobal.WalkAcc * 0.4f;

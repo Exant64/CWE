@@ -43,7 +43,7 @@ void ALO_Float_Displayer_(task* a1)
 		njTranslate(NULL, 0, 0, -2.65f);
 		chCnkDrawObject((NJS_CNK_OBJECT*)0x013005A0);//0x03898530 - coffin
 		
-		if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
+		if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 			njTranslate(NULL, 0, 0.4f, 2.65f);
 			njScale(NULL, 1.5f, 0.7f, 1.5f);
 

@@ -122,7 +122,7 @@ int ALBHV_Capture(task* tp) {
 			return BHV_RET_FINISH;
 		}
 		if (AL_IsMotionEnd(tp)) {
-			al_entry_work* pEntryMinimal = ALW_IsCommunication(tp);
+			ALW_ENTRY_WORK* pEntryMinimal = ALW_IsCommunication(tp);
 
 			AL_SetMotionLink(tp, 204);
 			work->Behavior.Mode = 2;

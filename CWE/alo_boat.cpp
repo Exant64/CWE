@@ -38,7 +38,7 @@ void ALO_Boat_Displayer(task* a1)
 	njRotateY(NULL, a1->twp->ang.y);
 	chCnkDrawObject((NJS_CNK_OBJECT*)0x0130111C);
 
-	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
+	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 		njTranslate(NULL, 0, 0.4f, 0);
 		njScale(NULL, 1.5f, 0.7f, 2.25f);
 		

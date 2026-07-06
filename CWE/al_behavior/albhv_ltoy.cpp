@@ -13,19 +13,19 @@
 DataPointer(task*, TVObject, 0x1AED288);
 int ALO_GetTVWatchPos(NJS_VECTOR* a1)
 {
-	Data1Ptr v2; // edi
+	taskwk* v2; // edi
 	float v3; // ST08_4
 	signed int v4; // esi
 	if (TVObject)
 	{
-		v2.Entity = (taskwk*)TVObject->twp;
+		v2 = (taskwk*)TVObject->twp;
 		v3 = njRandom() * 3.0f + 10.0f;
-		v4 = v2.Entity->ang.y
+		v4 = v2->ang.y
 			- (signed int)((njRandom() * 80.0f - 40.0f) * -182.0444488525391f)
 			+ 0x8000;
-		a1->x = njSin(v4) * v3 + v2.Entity->pos.x;
-		a1->y = v2.Entity->pos.y;
-		a1->z = njCos(v4) * v3 + v2.Entity->pos.z;
+		a1->x = njSin(v4) * v3 + v2->pos.x;
+		a1->y = v2->pos.y;
+		a1->z = njCos(v4) * v3 + v2->pos.z;
 		return 1;
 	}
 	return 0;
@@ -34,19 +34,19 @@ int ALO_GetTVWatchPos(NJS_VECTOR* a1)
 DataPointer(task*, pRadicaseTask, 0x01AED2E0);
 int ALO_GetRadicaseListenPos(NJS_VECTOR* a1)
 {
-	Data1Ptr v2; // edi
+	taskwk* v2; // edi
 	float v3; // ST08_4
 	signed int v4; // esi
 	if (pRadicaseTask)
 	{
-		v2.Entity = (taskwk*)pRadicaseTask->twp;
+		v2 = (taskwk*)pRadicaseTask->twp;
 		v3 = njRandom() * 3.0f + 10.0f;
-		v4 = v2.Entity->ang.y
+		v4 = v2->ang.y
 			- (signed int)((njRandom() * 80.0f - 40.0f) * -182.0444488525391f)
 			+ 0x8000;
-		a1->x = njSin(v4) * v3 + v2.Entity->pos.x;
-		a1->y = v2.Entity->pos.y;
-		a1->z = njCos(v4) * v3 + v2.Entity->pos.z;
+		a1->x = njSin(v4) * v3 + v2->pos.x;
+		a1->y = v2->pos.y;
+		a1->z = njCos(v4) * v3 + v2->pos.z;
 		return 1;
 	}
 	return 0;
@@ -61,7 +61,7 @@ int __cdecl ALBHV_GoToRadicase(task* tp)
 	if (!v2 || !ALO_GetRadicaseListenPos(&v4))
 		return BHV_RET_FINISH;
 	ALW_LockOn(tp, v2);
-	tp->EntityData2->AimPos = v4;
+	GET_MOVE_WORK(tp)->AimPos = v4;
 	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);
@@ -81,7 +81,8 @@ int __cdecl ALBHV_GoToTV(task* tp)
 	if (!v2 || !ALO_GetTVWatchPos(&v4))
 		return BHV_RET_FINISH;
 	ALW_LockOn(tp, v2);
-	tp->EntityData2->AimPos = v4;
+	MOV_SetAimPos(tp, &v4);
+
 	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
 	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x0056BA80>);
@@ -146,7 +147,7 @@ void __cdecl  AL_CalcIntentionScore_LToy(task* a1, float* a2)
 			AL_ScoreRandomize(&v11);
 			if (*a2 < (double)v11)
 			{
-				al_entry_work* entry = (al_entry_work*)v3->UnknownA_ptr;
+				ALW_ENTRY_WORK* entry = (ALW_ENTRY_WORK*)v3->fwp;
 				switch (entry->kind)
 				{
 				case ALW_KIND_TV:

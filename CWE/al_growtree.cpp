@@ -208,7 +208,7 @@ void __cdecl ALO_SeedExecutor_Display_(task* eax0)
         njControl3D &= ~0x2400;
 
         if(RenderFix_IsEnabled()) {
-            if (eax0->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev1 > *(float*)&eax0->UnknownA_ptr->field_30) {
+            if (eax0->fwp && ChaoGlobal.CamDistShadowCutLev1 > GET_ALW_ENTRY_WORK(eax0)->CamDist) {
                 njScale(NULL, 0.38f, 0.7f, 0.38f);
                 njTranslate(NULL, 0, 0.1f, 0);
                 rfapi_core->pDraw->AL_ShadowDraw();

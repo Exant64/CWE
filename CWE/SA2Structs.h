@@ -43,42 +43,26 @@ struct AllocatedMem
 	void *Data;
 };
 
-union __declspec(align(2)) Data1Ptr
-{
-	void *Undefined;
-	taskwk *Entity;
-	ChaoDebugData1 *ChaoDebug;
-};
-
-union Data2Ptr
-{
-	void *Undefined;
-	ObjUnknownB *UnknownB;
-	EntityData2 *Entity;
-	CharObj2Base *Character;
-	MOVE_WORK *Unknown_Chao;
-};
-
 struct task
 {
-	task *PrevObject;
-	task *NextObject;
-	task *Parent;
-	task *Child;
+	task *next;
+	task *last;
+	task *ptp;
+	task *ctp;
 	task_exec exec;
 	task_exec disp;
 	task_exec dest;
-	task_exec field_1C;
-	task_exec field_20;
-	task_exec SomethingSub;
-	task_exec field_28;
+	task_exec disp_dely;
+	task_exec disp_sort;
+	task_exec disp_late;
+	task_exec disp_last;
 	void *field_2C;
 	SETObjectData *SETData;
 	taskwk* twp;
-	MOVE_WORK *EntityData2;
-	ObjUnknownA *UnknownA_ptr;
-	Data2Ptr Data2;
-	char *Name;
+	void *mwp;
+	void *fwp;
+	void* awp;
+	char *name;
 	char *NameAgain;
 	void *field_4C;
 };
@@ -289,7 +273,7 @@ struct __declspec(align(4)) AL_BEHAVIOR
 };
 #pragma pack(pop)
 
-struct al_entry_work
+struct ALW_ENTRY_WORK
 {
 	unsigned __int16 category;
 	unsigned __int16 num;
@@ -306,33 +290,8 @@ struct al_entry_work
 	__int16 command_value;
 	int state;
 	task* tp;
-	al_entry_work* pCommu;
-	al_entry_work* pLockOn;
-};
-
-
-struct ChaoSomeUnknownA
-{
-	__int16 index;
-	__int16 index2;
-	__int16 ID;
-	__int16 someFlag;
-	int saveData;
-	int field_C;
-	NJS_VECTOR locationVector;
-	int field_1C;
-	int field_20;
-	int field_24;
-	float field_28;
-	float field_2C;
-	float playerDistance;
-	__int16 setSomeIndex;
-	__int16 field_36;
-	__int16 field_38;
-	__int16 field_3A;
-	task* pointerToOwner;
-	ChaoSomeUnknownA* heldBy;
-	ChaoSomeUnknownA* field_44;
+	ALW_ENTRY_WORK* pCommu;
+	ALW_ENTRY_WORK* pLockOn;
 };
 
 #pragma pack(push, 8)
@@ -343,7 +302,7 @@ struct __declspec(align(4)) al_perception_link
 	int InSightFlag;
 	int HearFlag;
 	int SmellFlag;
-	al_entry_work* pEntry;
+	ALW_ENTRY_WORK* pEntry;
 };
 #pragma pack(pop)
 

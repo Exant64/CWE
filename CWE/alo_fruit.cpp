@@ -83,7 +83,7 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 			LoadControl3D();
 			njPopMatrixEx();
 
-			if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float *)&v1->UnknownA_ptr->field_30) {
+			if (RenderFix_IsEnabled() && v1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(eax0)->CamDist) {
 				if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 				{
 					njTranslate(NULL, 0, -1.85f, 0);
@@ -137,11 +137,10 @@ void ALO_FruitExecutor_Main_r(task *a1)
 			//if no bites left, delete object
 			ALW_SendCommand(a1, ALW_CMD_FINISH);
 
-			ChaoSomeUnknownA *v23 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-			if (v23 && v23->saveData)
+			if (AL_GetItemSaveInfo(a1))
 			{
-				AL_ClearItemSaveInfo((ChaoObjectData*)v23->saveData);
-				v23->saveData = 0;
+				AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)AL_GetItemSaveInfo(a1));
+				AL_ClearItemSaveInfoPtr(a1);
 			}
 
 			a1->exec = DeleteObject_;
@@ -190,68 +189,56 @@ void sub_545790(task *a1, unsigned __int8 a2, int a3)
 FastcallFunctionPointer(signed int, sub_56D170, (int a1, task *a2), 0x56D170);
 void __cdecl sub_545C20(task *a1)
 {
-	ChaoSomeUnknownA *v1; // eax
-	Data1Ptr v2; // ebx
-	ChaoSomeUnknownA *v3; // ecx
+	ALW_ENTRY_WORK *v1; // eax
+	taskwk* v2; // ebx
+	int v3; // ecx
 	int v4; // edx
-	Data1Ptr v5; // eax
 	colliwk *v6; // eax
-	Data1Ptr v7; // eax
 	colliwk *v8; // eax
-	Data1Ptr v9; // eax
 	colliwk *v10; // eax
 	__int16 v11; // ax
-	ChaoSomeUnknownA *v12; // eax
-	ChaoSomeUnknownA *v13; // edi
-	Data1Ptr v14; // eax
+	ALW_ENTRY_WORK *v12; // eax
+	ALW_ENTRY_WORK *v13; // edi
+	taskwk* v14; // eax
 	ObjUnknownA *v15; // eax
 	task *v16; // eax
 	CHAO_PARAM_GC *v17; // ecx
-	ChaoSomeUnknownA *v22; // eax
-	ChaoSomeUnknownA *v23; // eax
+	ALW_ENTRY_WORK *v22; // eax
+	ALW_ENTRY_WORK *v23; // eax
 	ObjUnknownA *v25; // eax
-	ChaoSomeUnknownA *v26; // eax
-	ChaoSomeUnknownA *v27; // ecx
+	ALW_ENTRY_WORK *v26; // eax
+	ALW_ENTRY_WORK *v27; // ecx
 
-	v1 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-	v2.Entity = (taskwk *)a1->twp;
+	v1 = (ALW_ENTRY_WORK *)a1->fwp;
+	v2 = a1->twp;
 
 	//to stop warning 
 	if (!a1->twp) return;
 
-	v3 = 0;
-	if (v1)
-	{
-		v3 = (ChaoSomeUnknownA *)(unsigned __int16)v1->setSomeIndex;
-		v1->setSomeIndex = 0;
-	}
+	v3 = ALW_RecieveCommand(a1);
 
 	v4 = (int)v3;
-	if (!v2.Entity->smode)
+	if (!v2->smode)
 	{
-		v5.Entity = (taskwk *)a1->twp;
-		if (v5.Entity)
+		if (v2)
 		{
-			v6 = v5.Entity->cwp;
+			v6 = v2->cwp;
 			if (v6)
 			{
 				v6->CollisionArray->field_4 &= 0xFFFFFFEF;
 			}
 		}
-		v7.Entity = (taskwk *)a1->twp;
-		v3 = (ChaoSomeUnknownA *)16;
-		if (v7.Undefined)
+		if (v2)
 		{
-			v8 = v7.Entity->cwp;
+			v8 = v2->cwp;
 			if (v8)
 			{
 				v8->CollisionArray[1].field_4 |= 0x10u;
 			}
 		}
-		v9.Entity = (taskwk *)a1->twp;
-		if (v9.Entity)
+		if (v2)
 		{
-			v10 = v9.Entity->cwp;
+			v10 = v2->cwp;
 			if (v10)
 			{
 				v10->CollisionArray[2].field_4 |= 0x10u;
@@ -262,71 +249,62 @@ void __cdecl sub_545C20(task *a1)
 	}
 	if (v4 == 2)
 	{
-		v11 = v2.Entity->wtimer;
-		v3 = (ChaoSomeUnknownA *)180;
-		v2.Entity->wtimer = v11 + 1;
-		if ((unsigned __int16)v11 > 0xB4u)
+		v11 = v2->wtimer;
+		v2->wtimer = v11 + 1;
+		if ((unsigned __int16)v11 > 180)
 		{
-			v3 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-			if (v3 && (v12 = v3->heldBy) != 0 && v12->heldBy == v3 && !v12->index)
-			{
-				v13 = v3->heldBy;
-			}
-			else
-			{
-				v13 = 0;
-			}
-			--v2.Entity->ang.z;
-			v2.Entity->wtimer = 0;
+			v13 = ALW_IsCommunicationEx(a1, 0);
+
+			--v2->ang.z;
+			v2->wtimer = 0;
+
 			if (v13)
 			{
-				sub_545790(v13->pointerToOwner, v2.Entity->ang.x, v2.Entity->ang.z == 0); //PROBLEMATIC CALL, POSSIBLE STACK PROBLEM WATCH OUT YOURE GONNA CRASH AHHHH!!!
+				sub_545790(v13->tp, v2->ang.x, v2->ang.z == 0); //PROBLEMATIC CALL, POSSIBLE STACK PROBLEM WATCH OUT YOURE GONNA CRASH AHHHH!!!
 			}
-			v14.Entity = (taskwk *)a1->twp;
-			if (v14.Undefined)
+
+			v14 = (taskwk *)a1->twp;
+			if (v2)
 			{
-				v14.Entity = (taskwk *)v14.Entity->cwp;
-				if (v14.Undefined)
+				v14 = (taskwk *)v2->cwp;
+				if (v14)
 				{
-					v14.Entity = (taskwk *)(v14.Entity->ang.y + 48);
+					v14 = (taskwk *)(v14->ang.y + 48);
 				}
 			}
 
-			if(v14.Entity)
-				v14.Entity->pos.x = v2.Entity->ang.z * 0.5f;
+			if(v14)
+				v14->pos.x = v2->ang.z * 0.5f;
 
-			v15 = a1->UnknownA_ptr;
-			if (v15)
+			ALW_SetHeldRadius(a1, 0.5f * v2->ang.z);
+
+			if (v2->ang.x >= 24 && v2->ang.x <= 28 && v13)
 			{
-				v15->field_28 = 0.5f * v2.Entity->ang.z;
-			}
-			if (v2.Entity->ang.x >= 24 && v2.Entity->ang.x <= 28 && v13)
-			{
-				v16 = v13->pointerToOwner;
+				v16 = v13->tp;
 				v17 = GET_CHAOPARAM(v16);
 				v17->EvolutionProgress -= 0.05f;
 				if (v17->EvolutionProgress < 0)
 					v17->EvolutionProgress = 0;
 			}
-			if (v2.Entity->ang.x == SA2BFruit_Mushroom || v2.Entity->ang.x == SA2BFruit_MushroomAlt)
+			if (v2->ang.x == SA2BFruit_Mushroom || v2->ang.x == SA2BFruit_MushroomAlt)
 			{
 				if (v13) 
 				{
-					v16 = v13->pointerToOwner;
+					v16 = v13->tp;
 					v17 = GET_CHAOPARAM(v16);
-					if (v2.Entity->ang.x == SA2BFruit_Mushroom)
+					if (v2->ang.x == SA2BFruit_Mushroom)
 						v17->EvolutionProgress += 0.05f;
 					else v17->EvolutionProgress += 0.10f;
 				}
 			}
-			if (!v2.Entity->ang.z)
+			if (!v2->ang.z)
 			{
 				if (v13)
 				{
-					v16 = v13->pointerToOwner;
+					v16 = v13->tp;
 					v17 = GET_CHAOPARAM(v16);
 					
-					switch (v2.Entity->ang.x)
+					switch (v2->ang.x)
 					{
 					case SA2BFruit_HeroFruit:
 						AL_ParameterAddAPos(v16, 0.15f);
@@ -338,73 +316,42 @@ void __cdecl sub_545C20(task *a1)
 						AL_EmotionAdd(v16, EM_ST_BREED, 10000);
 						break;
 					default:
-						if (lastBiteFruit[v2.Entity->ang.x]) 
-							lastBiteFruit[v2.Entity->ang.x](v16, (CHAO_SAVE_INFO*)v17, a1);
+						if (lastBiteFruit[v2->ang.x]) 
+							lastBiteFruit[v2->ang.x](v16, (CHAO_SAVE_INFO*)v17, a1);
 						break;
 					}
 				}
 			
-				v22 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-				if (v22)
-				{
-					v3 = v22->heldBy;
-					if (v3)
-					{
-						if (v3->heldBy == v22)
-						{
-							v3->setSomeIndex = 4;
-						}
-					}
+				ALW_SendCommand(a1, 4);
+
+				if (AL_GetItemSaveInfo(a1)) {
+					AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)AL_GetItemSaveInfo(a1));
+					AL_ClearItemSaveInfoPtr(a1);
 				}
-				v23 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-				if (v23 && v23->saveData)
-				{
-					AL_ClearItemSaveInfo((ChaoObjectData*)v23->saveData);
-					v25 = a1->UnknownA_ptr;
-					if (v25)
-					{
-						v25->field_8 = 0;
-					}
-				}
+
 				a1->exec = DeleteObject_;
 				goto LABEL_54;
 			}
 		}
 	}
 LABEL_54:
-	if (v2.Entity->flag < 0)
+	if (v2->flag < 0)
 	{
-		v26 = (ChaoSomeUnknownA *)a1->UnknownA_ptr;
-		if (v26)
-		{
-			v27 = v26->heldBy;
-			if (v27)
-			{
-				if (v27->heldBy == v26)
-				{
-					v27->setSomeIndex = 6;
-				}
-			}
-		}
+		ALW_SendCommand(a1, 6);
 		sub_530690(a1);
-		v2.Entity->mode = 3;
-		v2.Entity->smode = 0;
+		v2->mode = 3;
+		v2->smode = 0;
 	}
 	if (!sub_56D170((int)v3, a1))
 	{
-		v2.Entity->mode = 2;
-		v2.Entity->smode = 0;
+		v2->mode = 2;
+		v2->smode = 0;
 	}
 }
 
 void ALO_Fruit_Init()
 {
-	static_assert(offsetof(ChaoSomeUnknownA, pointerToOwner) == 0x3c, "pointerToOwner");
-	static_assert(offsetof(ChaoSomeUnknownA, heldBy) == 0x40, "heldBy");
-	static_assert(offsetof(ChaoSomeUnknownA, setSomeIndex) == 0x34, "setSomeIndex");
-
 	FruitModels[SA2BFruit_MushroomAlt] = &object_02FC056C;
 	WriteJump(ALO_FruitExecutor_Display, ALO_FruitExecutor_DisplayHack);
 	WriteJump((void*)0x545C20, sub_545C20);
-	
 }

@@ -155,7 +155,7 @@ static void AL_OdeScrollArrowDisplayer(task* tp) {
 
 static void AL_CreateOdeScrollArrow(task* pParent) {
 	task* tp = CreateChildTask(LoadObj_Data1, AL_OdeScrollArrowExecutor, pParent);
-	tp->field_1C = AL_OdeScrollArrowDisplayer;
+	tp->disp_dely = AL_OdeScrollArrowDisplayer;
 
 	tp->twp->scl.x = 0.0f;
 	tp->twp->scl.z = 1.0f;
@@ -195,7 +195,7 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 		);
 
 		// hack to get the last spawned object (button is in objectlist 3)
-		pOdeButtons[i] = ObjectLists[3]->NextObject;
+		pOdeButtons[i] = ObjectLists[3]->last;
 		// default alpha with 1 if supposed to be on screen when spawned, 0 if not
 		pOdeButtons[i]->twp->scl.z = i > 5 ? 0.0f : 1.0f;
 	}

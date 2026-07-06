@@ -18,11 +18,13 @@ signed int ALBHV_RideFloat(task* a1)
 	v1 = (chaowk*)GET_CHAOWK(a1);
 	v3 = &v1->Behavior;
 
+	MOVE_WORK* move = GET_MOVE_WORK(a1);
+
 	//SWIM CONTROL
 	ALW_CommunicationOn(a1, ALW_GetLockOnTask(a1));
 	if (!(v1->Behavior.Flag & 4))
 	{
-		if (a1->EntityData2->Flag & 0x400)
+		if (move->Flag & 0x400)
 		{
 			//AL_ForwardAcc(a1, 0.1f);
 			AL_ForwardSpd(a1, 1);
@@ -30,7 +32,7 @@ signed int ALBHV_RideFloat(task* a1)
 		}
 	}
 
-	if (AL_EmotionGetValue(a1, EM_ST_THIRSTY) < 1000 && a1->EntityData2->Flag & 0x4000)
+	if (AL_EmotionGetValue(a1, EM_ST_THIRSTY) < 1000 && move->Flag & 0x4000)
 	{
 		c_colli_hit_info* v6 = CCL_IsHitKindEx(a1, 0xCB);
 		if (v6 && v6->hit_twp)
@@ -74,12 +76,12 @@ signed int ALBHV_RideFloat(task* a1)
 		if (MOV_DistFromAim(a1) < 36.0)
 			sub_561740((int)a1);
 
-		a1->twp->pos.y = a1->EntityData2->WaterY;
+		a1->twp->pos.y = move->WaterY;
 		MOV_TurnToAim2(a1, 100);
 		float v8 = 0.005f;
-		a1->EntityData2->Acc.y = -a1->EntityData2->Gravity - a1->EntityData2->Velo.y * 0.1f;
-		a1->EntityData2->Acc.x = njSin(a1->twp->ang.y) * v8 - a1->EntityData2->Velo.x * 0.05f;
-		a1->EntityData2->Acc.z = njCos(a1->twp->ang.y) * v8 - a1->EntityData2->Velo.z * 0.05f;
+		move->Acc.y = -move->Gravity - move->Velo.y * 0.1f;
+		move->Acc.x = njSin(a1->twp->ang.y) * v8 - move->Velo.x * 0.05f;
+		move->Acc.z = njCos(a1->twp->ang.y) * v8 - move->Velo.z * 0.05f;
 
 
 		//AL_ForwardAcc(a1, ChaoGlobal.WalkAcc * 0.8f);

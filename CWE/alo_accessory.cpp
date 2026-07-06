@@ -44,7 +44,7 @@ void Accessory_Display(task* a1) {
 		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, a1->twp->ang.x);
 	}
 
-	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
+	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
 	{
 		njTranslate(NULL, 0, 0.4f, 0);
 	

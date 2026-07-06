@@ -155,8 +155,8 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task * a
 	int v2; // eax
 	AL_BEHAVIOR* v3; // esi
 	int v4; // eax
-	al_entry_work* v6; // eax
-	al_entry_work* v7; // esi
+	ALW_ENTRY_WORK* v6; // eax
+	ALW_ENTRY_WORK* v7; // esi
 	task* v8; // eax
 	void* v9; // eax
 
@@ -211,8 +211,8 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(tas
 	chaowk* v1; // esi
 	int v2; // eax
 	AL_BEHAVIOR* v3; // esi
-	al_entry_work* v6; // eax
-	al_entry_work* v7; // esi
+	ALW_ENTRY_WORK* v6; // eax
+	ALW_ENTRY_WORK* v7; // esi
 	task* v8; // eax
 	void* v9; // eax
 
@@ -322,7 +322,7 @@ signed int __cdecl AL_CheckAccessory(task* a1)
 	{
 		return 0;
 	}
-	al_entry_work* v4 = (al_entry_work*)v3->UnknownA_ptr;
+	ALW_ENTRY_WORK* v4 = (ALW_ENTRY_WORK*)v3->fwp;
 	if (v4)
 	{
 		if (v4->flag & 2)
@@ -343,7 +343,7 @@ extern "C" __declspec(dllexport) bool CanSpecialRun(task * chao, task * special)
 }
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnSpecial(task* tp)
 {
-	al_entry_work* pSpecialEntry = ALW_IsCommunication(tp);
+	ALW_ENTRY_WORK* pSpecialEntry = ALW_IsCommunication(tp);
 	if (!pSpecialEntry) return BHV_RET_FINISH;
 	
 	task* pSpecial = pSpecialEntry->tp;
@@ -435,7 +435,7 @@ signed int __cdecl AL_CheckSpecial(task* a1)
 	{
 		return 0;
 	}
-	al_entry_work* v4 = (al_entry_work*)v3->UnknownA_ptr;
+	ALW_ENTRY_WORK* v4 = (ALW_ENTRY_WORK*)v3->fwp;
 	if (v4)
 	{
 		if (v4->flag & 2)
@@ -483,7 +483,7 @@ static void AccessoryRemoveAll(task* tp) {
 			saveinfo->UsedColors = accessoryChaoData.ColorFlags;
 			memcpy(saveinfo->Colors, accessoryChaoData.ColorSlots, sizeof(saveinfo->Colors));
 			
-			Accessory_Load(index, &work->pos, NJM_DEG_ANG(njRandom() * 360.f), &tp->EntityData2->Velo, saveinfo);
+			Accessory_Load(index, &work->pos, NJM_DEG_ANG(njRandom() * 360.f), &GET_MOVE_WORK(tp)->Velo, saveinfo);
 			AL_ParameterClearAccessory(tp, EAccessoryType(i));
 		}
 	}

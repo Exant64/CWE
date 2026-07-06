@@ -37,15 +37,15 @@ void __cdecl sub_58F980(task* a1)
 {
 	signed int v1; // ebp
 	float a3; // ST20_4
-	Data2Ptr v9; // edx
+	void* v9; // edx
 
-	v9.Undefined = (void*)a1->Data2.Undefined;
-	if (*((char*)v9.Undefined + 40))
+	v9 = (void*)a1->awp;
+	if (*((char*)v9 + 40))
 	{
 		v1 = AL_GetHoldingItemKind();
 
 		njPushMatrixEx();
-		a3 = *((float*)v9.Undefined + 11) + 3.284631013870239f;
+		a3 = *((float*)v9 + 11) + 3.284631013870239f;
 		njTranslate(NULL, 0.34388199f, a3, -2.164542f);
 		switch (AL_GetHoldingItemCategory())
 		{
@@ -60,7 +60,7 @@ void __cdecl sub_58F980(task* a1)
 			else
 			{
 				njSetTexture(ModAPI_MinimalTexlists[v1]);
-				char* v5 = (char*)v9.Undefined;
+				char* v5 = (char*)v9;
 				sub_782780((int)ModAPI_MinimalModels[v1], (int)ModAPI_MinimalMotion0[v1], *(float*)(v5 + 52));
 			}
 			break;
@@ -697,13 +697,13 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			GET_CHAOWK(pFather)->ChaoFlag &= ~0x20000;
 
 			pDisplaySub = pMother->disp;
-			pField20Sub = pMother->field_20;
+			pField20Sub = pMother->disp_sort;
 			if (!pDisplaySub) pDisplaySub = (task_exec)nullsub_1;
 			if (!pField20Sub) pField20Sub = (task_exec)nullsub_1;
 			pMother->disp = 0;
-			pMother->field_20 = 0;
+			pMother->disp_sort = 0;
 			pFather->disp = 0;
-			pFather->field_20 = 0;
+			pFather->disp_sort = 0;
 		}
 		HealthCenterDNAMenu(TextLocation);
 	}

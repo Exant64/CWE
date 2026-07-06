@@ -306,7 +306,7 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 	pTask->twp->ang.x = (int)syMalloc(strlen(pMsg) + 15, __FILE__, __LINE__);
 	pTask->twp->ang.y = (int)pMsg;
 	pTask->twp->ang.z = a2->color;
-	pTask->field_1C = AL_KinderMessageTimerDisp;
+	pTask->disp_dely = AL_KinderMessageTimerDisp;
 	pTask->dest = AL_KinderMessageTimerDest;
 
 	return pTask;

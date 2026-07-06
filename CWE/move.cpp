@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include "move.h"
 
 float MOV_DistFromAimXZ(task* tp) {
 	NJS_POINT3* pos = &tp->twp->pos;
-	NJS_POINT3* aimPos = &tp->EntityData2->AimPos;
+	NJS_POINT3* aimPos = &GET_MOVE_WORK(tp)->AimPos;
 
 	NJS_VECTOR v = {
 		pos->x - aimPos->x,
@@ -30,15 +31,14 @@ int MOV_TurnToAim2(task* tp, int ang)
 }
 
 void MOV_SetAimPos(task* tp, NJS_POINT3* pPos) {
-	if (!pPos || !tp || !tp->EntityData2) {
+	if (!pPos || !tp || !tp->mwp) {
 		PrintDebug("MOV_SetAimPos error");
 		return;
 	}
 
-	tp->EntityData2->AimPos = *pPos;
+	GET_MOVE_WORK(tp)->AimPos = *pPos;
 }
 
 void MOV_SetVelo(task* tp, NJS_VECTOR* pVelo) {
-	MOVE_WORK* pMove = tp->EntityData2;
-	pMove->Velo = *pVelo;
+	GET_MOVE_WORK(tp)->Velo = *pVelo;
 }

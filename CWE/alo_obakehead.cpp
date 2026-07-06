@@ -43,7 +43,7 @@ void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
 		ALO_ObakeHeadDraw<true>(work->ang.x);
 		njControl3D &= ~0x2400u;
 		njPopMatrixEx();
-		if (flt_1312CBC > (double)*(float *)&v1->UnknownA_ptr->field_30)
+		if (flt_1312CBC > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{
 			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 			{

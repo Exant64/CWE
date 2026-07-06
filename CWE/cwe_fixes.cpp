@@ -97,7 +97,7 @@ static void __cdecl BreedPatch(task* a1)
 {
 	sub_54A690(a1);
 	//attentionoff
-	al_entry_work* v1 = (al_entry_work*)a1->UnknownA_ptr;
+	ALW_ENTRY_WORK* v1 = GET_ALW_ENTRY_WORK(a1);
 	if (v1)
 	{
 		v1->flag = 0;

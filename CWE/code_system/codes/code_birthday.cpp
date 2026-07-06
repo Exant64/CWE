@@ -39,7 +39,7 @@ void BirthdayParty::OnALControl(task* tp) {
 		if (pBirthdayChao && njRandom() < 0.50f) //50% chance
 		{
 			//is underwater
-			if (pBirthdayChao->twp->pos.y + 2.0 < pBirthdayChao->EntityData2->WaterY) return;
+			if (pBirthdayChao->twp->pos.y + 2.0 < ((MOVE_WORK*)pBirthdayChao->mwp)->WaterY) return;
 
 			AL_SetBehavior(pBirthdayChao, ALBHV_Birthday);
 			for (task* chao : otherChao)

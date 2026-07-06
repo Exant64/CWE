@@ -261,7 +261,7 @@ static void __declspec(naked) njDrawTextureHook2()
 
 static void RenderAnimal_r(task* tp) {
 	const float someFloat = *(float*)0xB18F54;
-	auto* v3 = (MinimalData2*)tp->Data2.Undefined;
+	auto* v3 = (MinimalData2*)tp->awp;
 	
 	if (v3->table > SA2BAnimal_PurpleChaosDrive) {
 		const size_t id = v3->table;
@@ -312,7 +312,7 @@ static void sub_48ACD0_r(int i, int a1, float a2, float a3, float a4) {
         const size_t animalCount = gConfigVal.StageAnimalMinCount + size_t(njRandom() * (gConfigVal.StageAnimalMaxCount - gConfigVal.StageAnimalMinCount + 0.99999f));
         for (size_t i = 0; i < animalCount; ++i) {
             task* pMinimal = sub_48AAD0(a2, a3, a4, 0, 4);
-            auto* work = (MinimalData2*)pMinimal->Data2.Undefined;
+            auto* work = (MinimalData2*)pMinimal->awp;
             
             const int startIndex = gConfigVal.StageAnimalIncludeSADX ? (SA2BAnimal_PurpleChaosDrive + 1) : 40;
             work->table = startIndex + int(njRandom() * (ModAPI_MinimalInfluence.size() - startIndex));

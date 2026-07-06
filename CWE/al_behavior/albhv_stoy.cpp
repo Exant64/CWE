@@ -119,9 +119,9 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 					AL_EmotionAdd(a1, EM_ST_TEDIOUS, -7500);
 					AL_EmotionAdd(a1, EM_ST_LONELY, -4000);
 					//AL_ClearIntention(a1);
-					if (v3->Parent)
+					if (v3->ptp)
 					{
-						AL_EmotionAdd(v3->Parent, EM_ST_LONELY, -4000);
+						AL_EmotionAdd(v3->ptp, EM_ST_LONELY, -4000);
 					}
 					*a2 = 0.99f;
 				}
