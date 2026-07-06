@@ -12,7 +12,6 @@
 #include <string>
 #include "ninja_functions.h"
 #include "../include/brightfixapi.h"
-#include <ninja_functions.h>
 #include <ALifeSDK_Functions.h>
 
 const RFAPI_CORE* RenderFixAPI;

@@ -10,6 +10,7 @@
 #include <cnk_util.h>
 #include "api_util.h"
 #include <renderfix.h>
+#include <al_behavior/al_behavior.h>
 
 struct AccessoryInternalData {
 	CWE_API_ACCESSORY_DATA Data;
@@ -354,4 +355,12 @@ extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, 
 	strcpy_s(accessory_data.ID, hash_id);
 
 	return int(AddChaoAccessory(&accessory_data));
+}
+
+void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind) {
+	AL_SetAccessory(GET_CWEPARAM(tp), slot, kind);
+}
+
+size_t CWE_ParamGetAccessory(task* tp, uint32_t slot) {
+	return GET_CHAOWK(tp)->AccessoryIndices[slot];
 }

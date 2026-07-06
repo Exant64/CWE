@@ -127,5 +127,5 @@ void KCE_Init() {
 
 	WriteData((int*)0x53FF04, (int)&kce_helper);
 
-	WriteData((int*)0x53FF00, (int)CWE_VER_DEF(9, 6, 0, 0));
+	WriteData((int*)0x53FF00, (int)CWE_VER_DEF(9, 6, 1, 0));
 }

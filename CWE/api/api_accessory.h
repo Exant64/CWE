@@ -28,6 +28,9 @@ size_t GetAccessoryID(const char* pID);
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData);
 extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
 
+void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind);
+size_t CWE_ParamGetAccessory(task* tp, uint32_t slot);
+
 // helper RAII to store all accessories in range to belong to a mod index
 // bit hacky, but for now accessories are the only API that warrant this
 // system, so I will not make anything more generalized for it until 
