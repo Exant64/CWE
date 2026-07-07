@@ -16,7 +16,7 @@
 #define CWE_API_PARAM_ACCESSORY_VER 1
 
 using OtherItemPtr = void(*)(int ID);
-using LastBiteFruitFuncPtr = void(*)(task* tp, CHAO_SAVE_INFO* chaoData, task* fruit);
+using LastBiteFruitFuncPtr = void(*)(CHAO_SAVE_INFO* chaoData, task* pFruitTask, task* pChaoTask);
 using SpecialItemFuncPtr = void(*)(task* chao, task* item);
 using SpecialConditionFuncPtr = bool(*)(task* chao, task* item);
 

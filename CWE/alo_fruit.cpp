@@ -340,7 +340,7 @@ void __cdecl sub_545C20(task *a1)
 						break;
 					default:
 						if (lastBiteFruit[v2.Entity->ang.x]) 
-							lastBiteFruit[v2.Entity->ang.x](v16, (CHAO_SAVE_INFO*)v17, a1);
+							lastBiteFruit[v2.Entity->ang.x]((CHAO_SAVE_INFO*)v17, a1, v16);
 						break;
 					}
 				}
