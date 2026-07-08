@@ -874,6 +874,27 @@ typedef struct
 }
 AL_BODY_INFO;
 
+typedef struct
+{
+    AL_TIME PersonalRecord[10];
+    uint8_t nbWin[10];
+    uint16_t MedalFlag;
+}
+AL_RACE_PERSONAL_INFO;
+
+typedef struct
+{
+    uint8_t rank;
+    uint8_t level;
+    uint8_t tournament;
+    uint8_t UNDEF0;
+    uint16_t nbBattle;
+    uint16_t nbWin;
+    uint16_t nbLose;
+    uint16_t nbDraw;
+}
+AL_KARATE_PERSONAL_INFO;
+
 struct CHAO_PARAM_GC
 {
 	char gap_0[18];
@@ -892,7 +913,8 @@ struct CHAO_PARAM_GC
 	Uint8 type;
 	char place;
 	__int16 like;
-	__int16 InKindergarten;
+	Sint8 ClassNum;
+	Sint8 _pad_;
 	__int16 age;
 	__int16 old;
 	__int16 life;
@@ -901,10 +923,9 @@ struct CHAO_PARAM_GC
 	CHAO_ID ChaoID;
 	int LifeTimer;
 	AL_BODY_INFO body;
-	char field_DF[40];
-	__int16 DoctorMedal;
-	char KarateInfo;
-	char field_10A[13];
+	AL_RACE_PERSONAL_INFO race;
+	AL_KARATE_PERSONAL_INFO karate;
+	char field_10A[2];
 	AL_PARTS PartsBTL;
 	AL_EMOTION Emotion;
 	AL_KNOWLEDGE Knowledge;

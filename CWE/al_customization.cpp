@@ -506,8 +506,8 @@ private:
 	int m_rotY = 0;
 
 	bool AL_Customization_MedalUnlocked(int index) {
-		int medal = GBAManager_GetChaoDataPointer()->DoctorMedal;
-		int karateInfo = GBAManager_GetChaoDataPointer()->KarateInfo;
+		int medal = GBAManager_GetChaoDataPointer()->race.MedalFlag;
+		int karateInfo = GBAManager_GetChaoDataPointer()->karate.rank;
 		switch (index)
 		{
 		case 0:

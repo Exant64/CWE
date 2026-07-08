@@ -509,7 +509,7 @@ void SpawnCWEChao()
 					{
 						CreateChaoExtra(chao, 0, 0, spawn, NJM_DEG_ANG(njRandom() * 360.f));
 					}
-					else if (*(char*)&chao->data.InKindergarten == -1)
+					else if (chao->data.ClassNum == -1)
 					{
 						task* task = CreateChaoExtra(
 							chao,
