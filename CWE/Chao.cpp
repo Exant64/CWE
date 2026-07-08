@@ -96,24 +96,24 @@ void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer)
 	sub_55A920(timer, a3, a1, a2, a4);
 }
 
-task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS_VECTOR* position, Angle angle)
+task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, AL_SHAPE_ELEMENT* a3, NJS_VECTOR* position, Angle angle)
 {
-	KarateOpponent* opponent = a3;
+	AL_SHAPE_ELEMENT* opponent = a3;
 
-	if (opponent->StatPoints[7] == 1)
+	if (opponent->Skill[7] == 1)
 	{
 		task* player = KarateMainExec_Ptr->pointerToSaveThing;
 		KarateChaoExec_Data2* data2 = (KarateChaoExec_Data2*)player->awp;
-		opponent->Alignment = (short)(data2->chaoDataPointer->data.Alignment * 10000.0f);
-		opponent->Magnitude = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
-		opponent->FlySwim = (short)(data2->chaoDataPointer->data.FlySwim * 10000.0f);
-		opponent->PowerRun = (short)(data2->chaoDataPointer->data.PowerRun * 10000.0f);
-		opponent->ChaoType = data2->chaoDataPointer->data.type;
+		opponent->APos = (short)(data2->chaoDataPointer->data.Alignment * 10000.0f);
+		opponent->Growth = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
+		opponent->VPos = (short)(data2->chaoDataPointer->data.FlySwim * 10000.0f);
+		opponent->HPos = (short)(data2->chaoDataPointer->data.PowerRun * 10000.0f);
+		opponent->type = data2->chaoDataPointer->data.type;
 		for (int i = 0; i < 7; i++)
 		{
 			if (data2->chaoDataPointer->data.Skill[i] >= 1000)
-				opponent->StatPoints[i] = data2->chaoDataPointer->data.Skill[i] - 200;
-			else opponent->StatPoints[i] = data2->chaoDataPointer->data.Skill[i];
+				opponent->Skill[i] = data2->chaoDataPointer->data.Skill[i] - 200;
+			else opponent->Skill[i] = data2->chaoDataPointer->data.Skill[i];
 		}
 	}
 
@@ -122,46 +122,43 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS
 	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chao);
 
 	for (int i = 0; i < 7; i++)
-		fullData->partsDX.MinimalParts[i] = opponent->Name[i];
+		fullData->partsDX.MinimalParts[i] = opponent->name[i];
 	fullData->partsDX.MinimalParts[7] = SADXAnimal_Seal;
 
-	if (opponent->Shiny == 3)
-	{
+	if (opponent->MultiNum == 3) {
 		fullData->Shiny = 1;
 		pParamCwe->ShinyJewelMonotone = 1;
 	}
 
-	if (opponent->f13 == 0)
-	{
+	const auto eyeValue = opponent->name[7];
+
+	if (eyeValue == 0) {
 		pParamCwe->EyeAlignment = 0;
 		pParamCwe->EyeColor = 0;
 	}
-	else if (opponent->f13 >= 1 && opponent->f13 <= 6)
-	{
+	else if (eyeValue >= 1 && eyeValue <= 6) {
 		pParamCwe->EyeAlignment = 1;
-		pParamCwe->EyeColor = opponent->f13 - 1;
+		pParamCwe->EyeColor = eyeValue - 1;
 	}
-	else if (opponent->f13 >= 7 && opponent->f13 <= 12)
-	{
+	else if (eyeValue >= 7 && eyeValue <= 12) {
 		pParamCwe->EyeAlignment = 2;
-		pParamCwe->EyeColor = opponent->f13 - 7;
+		pParamCwe->EyeColor = eyeValue - 7;
 	}
-	else if (opponent->f13 >= 13 && opponent->f13 <= 18)
-	{
+	else if (eyeValue >= 13 && eyeValue <= 18) {
 		pParamCwe->EyeAlignment = 3;
-		pParamCwe->EyeColor = opponent->f13 - 13;
+		pParamCwe->EyeColor = eyeValue - 13;
 	}
-	else if (opponent->f13 >= 20 && opponent->f13 <= 22)
-	{
-		pParamCwe->EyeAlignment = opponent->f13 - 20;
+	else if (eyeValue >= 20 && eyeValue <= 22) {
+		pParamCwe->EyeAlignment = eyeValue - 20;
 		pParamCwe->EyeColor = 7;
 	}
-	else if (opponent->f13 >= 23 && opponent->f13 <= 25)
-	{
-		pParamCwe->EyeAlignment = (opponent->f13 - 23) + 1;
+	else if (eyeValue >= 23 && eyeValue <= 25) {
+		pParamCwe->EyeAlignment = (eyeValue - 23) + 1;
 		pParamCwe->EyeColor = 8;
 	}
+
 	sub_566B80(chao);
+
 	return chao;
 }
 

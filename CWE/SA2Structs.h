@@ -831,38 +831,32 @@ struct AL_KNOWLEDGE_DX
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) KarateOpponent
+struct __declspec(align(4)) AL_SHAPE_ELEMENT
 {
-	ChaoType ChaoType;
-	char EyeType;
-	char MouthType;
-	char BallType;
-	char Headgear;
-	char HideFeet;
-	char Medal;
-	char Color;
-	char Monotone;
-	char Texture;
-	char Shiny;
-	SA2BAnimal SA2BArmType;
-	SA2BAnimal SA2BEarType;
-	SA2BAnimal SA2BForeheadType;
-	SA2BAnimal SA2BHornType;
-	SA2BAnimal SA2BLegType;
-	SA2BAnimal SA2BTailType;
-	SA2BAnimal SA2BWingType;
-	SA2BAnimal SA2BFaceType;
-	char f13;
-	__int16 PowerRun;
-	__int16 FlySwim;
-	__int16 Alignment;
-	__int16 Magnitude;
-	char Name[7]; //name?
-	char unusedPossibly;
-	__int16 StatPoints[8];
+	Uint8 type;
+	Uint8 DefaultEyeNum;
+	Uint8 DefaultMouthNum;
+	Uint8 HonbuNum;
+	Uint8 ObakeHead;
+	Uint8 ObakeBody;
+	Uint8 MedalNum;
+	Uint8 ColorNum;
+	Uint8 NonTex;
+	Uint8 JewelNum;
+	Uint8 MultiNum;
+	Sint8 MinimalParts[8];
+	Sint16 HPos;
+	Sint16 VPos;
+	Sint16 APos;
+	Sint16 Growth;
+	Sint8 name[8];
+	Uint16 Skill[8];
 };
 #pragma pack(pop)
 
+static_assert(sizeof(AL_SHAPE_ELEMENT) == 0x34);
+static_assert(offsetof(AL_SHAPE_ELEMENT, MultiNum) == 0xA);
+static_assert(offsetof(AL_SHAPE_ELEMENT, HPos) == 0x14);
 
 struct CHAO_PARAM_GC
 {
@@ -879,7 +873,7 @@ struct CHAO_PARAM_GC
 	char rmsg[16];
 	unsigned int runaway;
 	char dummy[4];
-	ChaoType type;
+	Uint8 type;
 	char place;
 	__int16 like;
 	__int16 InKindergarten;

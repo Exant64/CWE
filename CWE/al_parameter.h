@@ -4,7 +4,7 @@
 #pragma pack(push, 1)
 typedef char AL_NAME[13];
 struct AL_GUEST {
-	ChaoType Type;
+	Uint8 Type;
 	float Magnitude;
 	float FlySwim;
 	float RunPower;
@@ -35,8 +35,8 @@ struct CHAO_PARAM_CWE {
 	char UpgradeCounter;
 	char freeSpace3;
 	char XGradeValue;
-	KarateOpponent motherData;
-	KarateOpponent fatherData;
+	AL_SHAPE_ELEMENT motherData;
+	AL_SHAPE_ELEMENT fatherData;
 	unsigned char IsInitializedAccessory;
 	unsigned char Accessories_old[4];
 	bool DCWings;

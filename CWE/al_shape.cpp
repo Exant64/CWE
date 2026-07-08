@@ -4,59 +4,43 @@
 #include "api/api_customchao.h"
 #include "ChaoMain.h"
 
-void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, CHAO_PARAM_GC* data)
-{
-	signed int v2; // ST00_4
-	__int16* v3; // eax
-	char* v4; // ecx
-
-	SADXBodyType storage = SADXBodyType_Normal;
-
-	if ((unsigned char)(KarateOpponentData->ChaoType) == 254)
-	{
-		data->type = ChaoType_Child;
-		storage = SADXBodyType_Omochao;
+void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
+	if (pElement->type == 254) {
+		pParam->type = ChaoType_Child;
+		pParam->BodyType = SADXBodyType_Omochao;
 	}
-	else if ((unsigned char)(KarateOpponentData->ChaoType) == 255)
-	{
-		data->type = ChaoType_Child;
-		storage = SADXBodyType_EggChao;
+	else if (pElement->type == 255) {
+		pParam->type = ChaoType_Child;
+		pParam->BodyType = SADXBodyType_EggChao;
 	}
-	else
-		data->type = KarateOpponentData->ChaoType;
-	data->BodyType = storage;
+	else {
+		pParam->type = pElement->type;
+		pParam->BodyType = SADXBodyType_Normal;
+	}
 
-	data->EyeType = KarateOpponentData->EyeType;
-	data->MouthType = KarateOpponentData->MouthType;
-	data->BallType = KarateOpponentData->BallType;
-	data->Headgear = KarateOpponentData->Headgear;
-	data->HideFeet = KarateOpponentData->HideFeet;
-	data->Medal = KarateOpponentData->Medal;
-	data->Color = KarateOpponentData->Color;
-	data->MonotoneHighlights = KarateOpponentData->Monotone;
-	data->Texture = KarateOpponentData->Texture;
-	data->Shiny = KarateOpponentData->Shiny;
-	*(int*)&data->PartsBTL.MinimalParts[0] = *(int*)&KarateOpponentData->SA2BArmType;
-	*(int*)&data->PartsBTL.MinimalParts[4] = *(int*)&KarateOpponentData->SA2BLegType;
-	v2 = KarateOpponentData->PowerRun;
-	v3 = KarateOpponentData->StatPoints;
-	v4 = (char*)data->Skill;
-	*((float*)v4 + 0x1C) = v2 * 0.00009999999747378752f;
-	*((float*)v4 + 0x1D) = *(v3 - 7) * 0.00009999999747378752f;
-	*((float*)v4 + 0x1E) = *(v3 - 6) * 0.00009999999747378752f;
-	*((float*)v4 + 0x22) = 0.00009999999747378752f * *(v3 - 5);
-	
-	memcpy(GET_CWEPARAM(data)->Name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
-	GET_CWEPARAM(data)->Name[7] = 0;
+	pParam->EyeType = pElement->DefaultEyeNum;
+	pParam->MouthType = pElement->DefaultMouthNum;
+	pParam->BallType = pElement->HonbuNum;
+	pParam->Headgear = pElement->ObakeHead;
+	pParam->HideFeet = pElement->ObakeBody;
+	pParam->Medal = pElement->MedalNum;
+	pParam->Color = pElement->ColorNum;
+	pParam->MonotoneHighlights = pElement->NonTex;
+	pParam->Texture = pElement->JewelNum;
+	pParam->Shiny = pElement->MultiNum;
 
-	memcpy(data->name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
+	memcpy(pParam->PartsBTL.MinimalParts, pElement->MinimalParts, sizeof(pElement->MinimalParts));
 
-	*(int*)v4 = *(int*)v3;
-	*((int*)v4 + 1) = *((int*)v3 + 1);
-	*((int*)v4 + 2) = *((int*)v3 + 2);
-	*((short*)v4 + 6) = v3[6];
+ 	pParam->PowerRun = pElement->HPos / 10000.f;
+    pParam->FlySwim = pElement->VPos / 10000.f;
+    pParam->Alignment = pElement->APos / 10000.f;
+    pParam->EvolutionProgress = pElement->Growth / 10000.f;
 
+	memcpy(GET_CWEPARAM(pParam)->Name, pElement->name, sizeof(pElement->name));
+	GET_CWEPARAM(pParam)->Name[7] = 0;
+	memcpy(pParam->name, pElement->name, sizeof(pParam->name));
 
+	memcpy(pParam->Skill, pElement->Skill, sizeof(pParam->Skill));
 }
 static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
 {

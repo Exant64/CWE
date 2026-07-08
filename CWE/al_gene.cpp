@@ -13,7 +13,7 @@
 #include "al_behavior/al_behavior.h"
 
 const int sub_536450Ptr = 0x536450;
-void sub_536450(KarateOpponent* a1, CHAO_PARAM_GC* a2)
+void sub_536450(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2)
 {
 	__asm
 	{

@@ -634,7 +634,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			noMother = false;
 			noFather = false;
 			CHAO_PARAM_GC* data = nullptr;
-			KarateOpponent* opponentPtr = nullptr;
+			AL_SHAPE_ELEMENT* opponentPtr = nullptr;
 
 			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID.id[0] == 0;
 			if (noMother)

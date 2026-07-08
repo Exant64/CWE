@@ -290,7 +290,7 @@ void __cdecl UpdateChaoPalette(CHAO_PARAM_GC* a1, task* a2, int a3)
 
 void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno, char gPalette[][48 * 4])
 {
-	ChaoType v3; // dl
+	Uint8 v3; // dl
 	signed int v4; // ecx
 	float flyswim; // st7
 	NJS_BGRA* AL_NC00; // edi
@@ -337,14 +337,14 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	int v86;
 
 	v34 = (int*)v45;
-	v3 = (ChaoType)chaoData->type;
+	v3 = chaoData->type;
 	if (AL_IsHero(v3) && GET_CWEPARAM(chaoData)->LobbyTextureValue > 0) 
-		v3 = (ChaoType)((GET_CWEPARAM(chaoData)->LobbyTextureValue + 1) * 3);
+		v3 = (GET_CWEPARAM(chaoData)->LobbyTextureValue + 1) * 3;
 	//lobbytextureval = 1 -> v3 = 6
 	//lobbytextureval = 2 -> v3 = 9
 	//formula ^ for chaotype override
 
-	switch ((unsigned __int8)v3)
+	switch (v3)
 	{
 	case ChaoType_Child:
 		v4 = PVP_NCZ;

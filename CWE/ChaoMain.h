@@ -132,7 +132,7 @@ void sub_46E5E0(int a1, int a2);
 struct RaceTimeData
 {
 	int set;
-	KarateOpponent Data;
+	AL_SHAPE_ELEMENT Data;
 };
 #pragma pack(pop)
 
