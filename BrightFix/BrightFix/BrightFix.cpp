@@ -61,7 +61,7 @@ extern "C"
 		int v6; // edx
 		int v7; // ecx
 
-		v3 = Has_texlist_batadvPlayerChara_in_it[8];
+		v3 = (int)_nj_curr_ctx_->texlist;
 		index_ = 12 * index;
 		v5 = *(int*)(*(int*)(*(int*)v3 + 12 * index + 8) + 12) + 4;
 		v6 = *(int*)(v5 + 24) >> 31;
@@ -443,7 +443,7 @@ extern "C"
 		case SA2BEggColour_PurpleShiny_MonoTone:
 		case SA2BEggColour_OrangeShiny_MonoTone:
 		case SA2BEggColour_BlackShiny_MonoTone:
-			Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
+			njSetTexture(&AL_BODY);
 			v5 = dword_12983DC[a2];
 			ChunkMatFlag = UseChunkObjectColor | SecondTextureEnvironmentMap | HasSecondTexture | DontUseTexture;
 			ChunkObjectColor = v5;
@@ -464,7 +464,7 @@ extern "C"
 		case SA2BEggColour_PurpleShiny_TwoTone:
 		case SA2BEggColour_OrangeShiny_TwoTone:
 		case SA2BEggColour_BlackShiny_TwoTone:
-			Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
+			njSetTexture(&AL_BODY);
 			v6 = dword_12983A8[a2];
 			ChunkMatFlag = UseChunkObjectColor | SecondTextureEnvironmentMap | HasSecondTexture;
 			ChunkObjectColor = v6;
@@ -492,7 +492,7 @@ extern "C"
 			ChunkObjectColor = -1;
 			ChunkMatEnable = 1;
 			ChunkMatFlag = 12; //also fixed the egg problem , i made a patch for this before but now it's "baked" into this.
-			Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
+			njSetTexture(&AL_BODY);
 			SetChunkTexIndexPrimary(a2 - 36, 1, 1);
 			break;
 		default:

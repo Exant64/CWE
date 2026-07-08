@@ -9,6 +9,8 @@
 #include <brightfixapi.h>
 #include <al_draw.h>
 
+#include "ninja_functions.h"
+
 char gPaletteNegative[PVP_COUNT][192];
 char gPaletteRegular[PVP_COUNT][192];
 //#define gPalette byte_1A13BF8
@@ -144,38 +146,6 @@ void alpalSetBank(task* a1, int a2)
 }
 #endif
 
-#pragma pack(push, 8)
-struct __declspec(align(4)) NJS_TEXSURFACE_
-{
-	Uint32 Type;
-	Uint32 BitDepth;
-	Uint32 PixelFormat;
-	Uint32 nWidth;
-	Uint32 nHeight;
-	Uint32 TextureSize;
-	Uint32 fSurfaceFlags;
-	Uint32* pSurface;
-};
-#pragma pack(pop)
-
-
-struct NJS_TEXSYSTEM
-{
-	Uint32 globalIndex;
-	NJS_TEXSURFACE_ texsurface;
-	Int count;
-};
-
-struct NJS_TEXMANAGE
-{
-	Uint32 tspparam;
-	Uint32 texparam;
-	Uint32 bank;
-	NJS_TEXSYSTEM* texsys;
-	Int count;
-	Uint32 texflag;
-};
-
 int dword_1365D30[] = 
 { 
 	0, 1, 2, //child chao
@@ -232,7 +202,7 @@ void __cdecl alpalSetBank(task* a1, int a2)
 	default:
 		return;
 	}
-	currentTexlist = (NJS_TEXLIST*)(Has_texlist_batadvPlayerChara_in_it[8]);
+	currentTexlist = _nj_curr_ctx_->texlist;
 	for (int i = 0; i < 3; i++) {
 		int texIndex = dword_1365D30[v2 * 3 + i];
 		NJS_TEXMANAGE* pTexManage = (NJS_TEXMANAGE*)(currentTexlist->textures[texIndex].texaddr);

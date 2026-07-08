@@ -30,7 +30,7 @@ void ALO_Boat_Displayer(task* a1)
 
 	//EnableChunkMaterialFlags();
 	//SetChunkMaterialFlags(8);
-	Has_texlist_batadvPlayerChara_in_it[3] = Has_texlist_batadvPlayerChara_in_it[3] & 0x3FFFFFF | 0x94000000;
+	_nj_curr_ctx_->texmode = _nj_curr_ctx_->texmode & 0x3FFFFFF | 0x94000000;
 	//*(int*)0x03D0856C = 0xFFFFFFFF;
 	*(float *)0x01AED2D0 = (-(a1->twp->ang.x / 335.0f));
 
