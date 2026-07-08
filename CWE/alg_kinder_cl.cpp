@@ -290,7 +290,7 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 	a2->flags |= 4;
 	task* orig = AL_KinderPMessageExec_Load(a1, a2);
 
-	task* pTask = CreateChildTask(LoadObj_Data1, AL_KinderMessageTimerExec, a1);
+	task* pTask = CreateChildTask(IM_TWK, AL_KinderMessageTimerExec, a1);
 	pTask->twp->scl.x = orig->twp->scl.x;
 	pTask->twp->pos = orig->twp->pos;
 

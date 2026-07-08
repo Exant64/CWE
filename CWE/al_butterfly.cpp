@@ -226,7 +226,7 @@ void ALO_Butterfly_Load()
 	int count = (int)(njRandom() * 3.f) + 2;
 	for (int i = 0; i < count; i++)
 	{
-		task* loaded = CreateElementalTask((LoadObj)0, 4, ALO_Butterfly_Main, "ALO_Butterfly");
+		task* loaded = CreateElementalTask(0, 4, ALO_Butterfly_Main, "ALO_Butterfly");
 		loaded->disp_dely = ALO_Butterfly_Display;
 		// loaded->twp = AllocateArray(sizeof(butterflywk), 1, (char*)__FILE__, __LINE__);
 	}

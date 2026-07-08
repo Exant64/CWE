@@ -235,12 +235,11 @@ enum SA2BAnimal : __int8
 	SA2BAnimal_PurpleChaosDrive = 0x18,
 };
 
-enum LoadObj : __int8
-{
-	LoadObj_Data2 = 0x1,
-	LoadObj_Data1 = 0x2,
-	LoadObj_UnknownA = 0x4,
-	LoadObj_UnknownB = 0x8,
+enum {
+	IM_MWK = 0x1,
+	IM_TWK = 0x2,
+	IM_FWK = 0x4,
+	IM_AWK = 0x8,
 };
 
 enum PowerupBits

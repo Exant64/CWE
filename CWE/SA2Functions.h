@@ -112,7 +112,7 @@ FunctionPointer(taskwk *, AllocateEntityData1, (), 0x470B40);
 FunctionPointer(EntityData2 *, AllocateEntityData2, (), 0x470B70);
 FunctionPointer(ObjUnknownA *, AllocateObjUnknownA, (), 0x470BA0);
 FunctionPointer(ObjUnknownB *, AllocateObjUnknownB, (), 0x470BD0);
-FunctionPointer(task *, CreateChildTask, (LoadObj a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
+FunctionPointer(task *, CreateChildTask, (__int8 a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
 ObjectFunc(DeleteChildObjects, 0x470C80);
 ObjectFunc(StageNameDisplayExecutor_Main, 0x4724C0);
 FunctionPointer(int, DamagePlayer, (taskwk *data1, CharObj2Base *data2), 0x473800);
@@ -782,7 +782,7 @@ static inline int GetPlayerNumber(task *a1)
 
 // task *__usercall@<eax>(int list@<ecx>, char *name@<eax>, void (__cdecl *mainSub)(task *)@<edi>, LoadObj flags)
 static const void *const LoadObjectPtr = (void*)0x46F610;
-static inline task * CreateElementalTask(LoadObj flags, int list, void(__cdecl *mainSub)(task *), const char *name)
+static inline task * CreateElementalTask(__int8 flags, int list, void(__cdecl *mainSub)(task *), const char *name)
 {
 	task * result;
 	__asm

@@ -165,7 +165,7 @@ void WinJewelChaoInRace() {
 
 			cweSaveFile.purchasedItemCount++;
 
-			//task* eggPresent = LoadObject(2, "AL_EggPresenter", AL_EggPresenterExecutor, LoadObj_Data1);
+			//task* eggPresent = LoadObject(2, "AL_EggPresenter", AL_EggPresenterExecutor, IM_TWK);
 			//eggPresent->DisplaySub = AL_EggPresenterDisplayer;
 			//eggPresent->twp->Rotation.x = 54 + texture - 1;
 		}

@@ -154,7 +154,7 @@ static void AL_OdeScrollArrowDisplayer(task* tp) {
 }
 
 static void AL_CreateOdeScrollArrow(task* pParent) {
-	task* tp = CreateChildTask(LoadObj_Data1, AL_OdeScrollArrowExecutor, pParent);
+	task* tp = CreateChildTask(IM_TWK, AL_OdeScrollArrowExecutor, pParent);
 	tp->disp_dely = AL_OdeScrollArrowDisplayer;
 
 	tp->twp->scl.x = 0.0f;

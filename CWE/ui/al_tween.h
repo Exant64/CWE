@@ -99,10 +99,10 @@ task* CreateTween(task* parent, const EASE_TYPE easingMode, const INTERP_TYPE in
 	task* tp;
 
 	if (parent == nullptr) {
-		tp = CreateElementalTask((LoadObj)0, 4, TweenExecutor<T>, "AL_Tween");
+		tp = CreateElementalTask(0, 4, TweenExecutor<T>, "AL_Tween");
 	}
 	else {
-		tp = CreateChildTask((LoadObj)0, TweenExecutor<T>, parent);
+		tp = CreateChildTask(0, TweenExecutor<T>, parent);
 	}
 
 	tp->awp = ALLOC(TweenData<T>);

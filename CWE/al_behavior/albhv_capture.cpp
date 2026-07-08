@@ -115,7 +115,7 @@ int ALBHV_Capture(task* tp) {
 		{
 			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->pos, 0, 0, 0);
 		}
-		CreateChildTask(LoadObj_Data1, (task_exec)0x566CF0, tp);
+		CreateChildTask(IM_TWK, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
 	case 1:
 		if (!AL_MoveHoldingObject(tp)) {

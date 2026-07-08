@@ -1992,7 +1992,7 @@ static void AL_DayNightCycleManagerDestructor(task* tp) {
 // this serves the purpose of deleting the regular daynight cycle task, since its in object list 1
 // and those don't autodestruct on level change
 static void AL_CreateDayNightCycleManager() {
-	task* tp = CreateElementalTask((LoadObj)0, 4, [](task* tp){}, "AL_DayNightCycleManager");
+	task* tp = CreateElementalTask(0, 4, [](task* tp){}, "AL_DayNightCycleManager");
 	tp->dest = AL_DayNightCycleManagerDestructor;
 }
 
@@ -2002,7 +2002,7 @@ void AL_CreateDayNightCycle() {
 	if (!AL_DayNightCycle_CheckECWSafety()) return;
 	if (!gDayNightManager.LoadConfig(AL_DayNightCycle_GetGardenID())) return;
 	
-	task* tp = CreateElementalTask(LoadObj_Data1, 1, AL_DayNightCycleExecutor, "AL_DayNightCycle");
+	task* tp = CreateElementalTask(IM_TWK, 1, AL_DayNightCycleExecutor, "AL_DayNightCycle");
 	pDayNightTask = tp;
 
 	AL_CreateDayNightCycleManager();

@@ -145,7 +145,7 @@ void ALO_Float_Load(task* a1)
 void ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
 	static const CCL_INFO float_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 
-	task* p = CreateElementalTask(LoadObj_Data1, 4, ALO_Float_Load, "ALO_Float");
+	task* p = CreateElementalTask(IM_TWK, 4, ALO_Float_Load, "ALO_Float");
 
 	p->disp = ALO_Float_Displayer_;
 	p->twp->wtimer = 1; //enable display

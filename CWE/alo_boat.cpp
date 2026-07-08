@@ -136,7 +136,7 @@ void ALO_Boat_Init(task *a1)
 void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
 	static const CCL_INFO boat_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 
-	task* p = CreateElementalTask(LoadObj_Data1, 4, ALO_Boat_Init, "ALO_Boat");
+	task* p = CreateElementalTask(IM_TWK, 4, ALO_Boat_Init, "ALO_Boat");
 
 	p->disp = ALO_Boat_Displayer;
 	p->twp->pos = *pPos;

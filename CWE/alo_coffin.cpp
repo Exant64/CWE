@@ -124,7 +124,7 @@ void ALO_Coffin_Load(task* a1)
 
 void ALO_Coffin_Create(NJS_VECTOR* a1, int rotY)
 {
-	task* p = CreateElementalTask(4, "ALO_Coffin", ALO_Coffin_Load, LoadObj_Data1);
+	task* p = CreateElementalTask(4, "ALO_Coffin", ALO_Coffin_Load, IM_TWK);
 	InitCollision(p, &coffinColl, 1, 4);
 
 	p->disp = ALO_Coffin_Displayer_;

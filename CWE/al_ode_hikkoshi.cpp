@@ -316,7 +316,7 @@ static void AL_HikkoshiMenuDisplayer(task* a1) {
 }
 
 static void AL_HikkoshiMenu() {
-	task* tp = CreateElementalTask(LoadObj_Data1, 3, AL_HikkoshiMenuExecutor, "HikkoshiMenuExecutor");
+	task* tp = CreateElementalTask(IM_TWK, 3, AL_HikkoshiMenuExecutor, "HikkoshiMenuExecutor");
 	tp->disp = AL_HikkoshiMenuDisplayer;
 	tp->twp->scl.x = 0;
 }

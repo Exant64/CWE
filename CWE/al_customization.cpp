@@ -1719,7 +1719,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 
 		pCustomizationControllerTask = CreateElementalTask(
-			LoadObj_Data1,
+			IM_TWK,
 			3,
 			[](task*) {
 				customizationController->Exec();

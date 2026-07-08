@@ -984,7 +984,7 @@ struct ObjectListHead
 
 struct ObjectListEntry
 {
-	LoadObj LoadFlags;
+	Uint8 LoadFlags;
 	char List;
 	__int16 ObjectFlags;
 	float DistanceMaybe;

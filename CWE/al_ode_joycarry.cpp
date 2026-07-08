@@ -59,5 +59,5 @@ void JoyCarry_Init()
 		//JoyCarryModels[i] = info->getmodel();
 	}
 	texLoadTexturePvmFile((char*)"JOYobj", &JOBJ_TEXLIST);
-	CreateElementalTask(LoadObj_Data1, 5, JoyCarry_Main, "JoyCarryTest")->disp = JoyCarry_Display;
+	CreateElementalTask(IM_TWK, 5, JoyCarry_Main, "JoyCarryTest")->disp = JoyCarry_Display;
 }
