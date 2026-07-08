@@ -118,7 +118,6 @@ enum ChaoIcon : __int8
 	ChaoIcon_Spiral = 0x5,
 };
 
-
 enum eHEAD_PARTS
 {
 	OBAKE_HEAD_PARTS_NONE = 0x0,
@@ -422,13 +421,16 @@ enum ALW_KIND
 	ALW_KIND_PIANO = 0x5,
 	ALW_KIND_ORGAN = 0x6,
 	ALW_KIND_HORSE = 0x7,
-	ALW_KIND_BOX = 0x8,
-	//CWE STARTS HERE
+	ALW_KIND_BOX = 0x8
+};
+
+// ALW_KIND enum extension
+enum {
 	ALW_KIND_BOAT = 0x9,
 	ALW_KIND_UKIWA = 10,
 	ALW_KIND_COFFIN = 11,
 	NB_ALW_KIND
-};
+}
 
 struct POS_XZ
 {
