@@ -259,7 +259,7 @@ static void __cdecl sub_58DA30(int a1, int a2) {
 
 	memcpy(&name, pParamCwe->Name, sizeof(AL_NAME));
 	sub_57A6F0(name, (int)nameConv);
-	WcConvFromCStr((int)a1, (int)nameConv, TextLanguage == 0);
+	WcConvFromCStr((int)a1, (int)nameConv, Language == 0);
 }
 static void __declspec(naked) sub_58DA30Hook()
 {

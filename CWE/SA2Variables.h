@@ -52,7 +52,7 @@ DataPointer(char *, CurrentSavePath, 0x173D070);
 DataArray(int, PortNumbers, 0x173D158, 4);
 DataPointer(NJS_TEXLIST, PRESSSTART_TEXLIST, 0x174A9E0);
 DataPointer(char, isLoading, 0x174AFC0);
-DataPointer(char, TextLanguage, 0x174AFD1);
+DataPointer(char, Language, 0x174AFD1);
 DataPointer(char, PlayerPaused, 0x174AFD7);
 DataPointer(char, TimerMinutes, 0x174AFDB);
 DataPointer(char, TimerSeconds, 0x174AFDC);

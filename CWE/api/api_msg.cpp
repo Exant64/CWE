@@ -87,7 +87,7 @@ void LoadMsgMemIntoVec(int* pFile, std::vector<const char*>& vec) {
 
 void LoadMsgFileIntoVec(const char* filename, std::vector<const char*>& vec)
 {
-	int* loadedFile = sub_57A5D0(TextLanguage, filename);
+	int* loadedFile = sub_57A5D0(Language, filename);
 	LoadMsgMemIntoVec(loadedFile, vec);
 	//FREE(loadedFile);
 }

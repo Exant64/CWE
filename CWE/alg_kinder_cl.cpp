@@ -267,7 +267,7 @@ void AL_KinderMessageTimerDisp(task* tp) {
 	//tp->twp->Rotation.z;
 
 	*(int*)0x01A267D0 = textColor.color;
-	AlMsgFontCreateCStr(TextLanguage == 0, (int)ourMsg, (int)&messageBuffer, 999);
+	AlMsgFontCreateCStr(Language == 0, (int)ourMsg, (int)&messageBuffer, 999);
 
 	AlMsgFontDrawRegionScale2(-1, (MessageFontThing*)&messageBuffer, pPos->x, pPos->y, pPos->z, 32, 0, tp->twp->scl.x, tp->twp->scl.x);
 

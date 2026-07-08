@@ -441,7 +441,7 @@ void ConvertName(char* original_, char* output)
 	buffer[7] = 0;
 
 	sub_57A6F0(buffer, wcbuffer);
-	WcConvFromCStr((int)output, (int)wcbuffer, TextLanguage == 0);
+	WcConvFromCStr((int)output, (int)wcbuffer, Language == 0);
 }
 
 task* pMother = 0;
@@ -897,7 +897,7 @@ void __fastcall InitDoctorHook(HealthCenter* a1, int a2)
 void __fastcall AL_HealthCenter_SetMessageStr(HealthCenter* a1, const char* a2)
 {
 	*(uint32_t*)0x01A267D0 = 0xFFFFFFFF;
-	AlMsgWinAddLineC(a1->pkindercomessagething3C, a2, TextLanguage == 0);
+	AlMsgWinAddLineC(a1->pkindercomessagething3C, a2, Language == 0);
 }
 signed int AL_HealthCenter_GetSickness(task* a1)
 {

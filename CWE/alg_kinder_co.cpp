@@ -55,7 +55,7 @@ void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 {
 	if (pCoData->enteringRoom == 6)
 		AlMsgFontCreateCStr(
-			TextLanguage == 0,
+			Language == 0,
 			(int)"Credits",
 			(int)pCoData->dword1C,
 			640);
@@ -68,7 +68,7 @@ void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 		sprintf(BlockedString, "%s %s", titleString, suffix);
 
 		AlMsgFontCreateCStr(
-			TextLanguage == 0,
+			Language == 0,
 			(int)BlockedString,
 			(int)pCoData->dword1C,
 			640);

@@ -1064,7 +1064,7 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 			*(Uint32*)0x01A267D0 = 0xFFFF6AFF;
 		}
 
-		AlMsgFontCreateCStr(TextLanguage == 0, (int)nameStr, (int)&messageBuffer, 999);
+		AlMsgFontCreateCStr(Language == 0, (int)nameStr, (int)&messageBuffer, 999);
 		if (((Uint16*)&messageBuffer)[1] >= 190)
 			AlMsgFontDrawRegionScale2(-1, &messageBuffer, SELECTION_TEXT_OX, SELECTION_TEXT_OY + DISTANCEBUYLIST * i, -1, 32, 0, (190.0f / ((Uint16*)&messageBuffer)[1]), 1);
 		else
@@ -1744,7 +1744,7 @@ void __cdecl FItemDescSet(SAlItemCwe* a1, BlackMarketData* a2) {
 		AlMsgWinSetSize(&msg, 240, 50);
 		AlMsgWinOpen(&msg);
 		*(Uint32*)0x01A267D0 = 255;
-		AlMsgWinAddLineC(&msg, BlackMarketGetDescMsg(a2, a2->mItemDescInfo), TextLanguage == 0);
+		AlMsgWinAddLineC(&msg, BlackMarketGetDescMsg(a2, a2->mItemDescInfo), Language == 0);
 		a2->mItemDescWinExplOn = 1;
 	}
 }
@@ -1806,11 +1806,11 @@ void __cdecl FSellListStart(BlackMarketData* a1)
 	a1->SellKinder[3] = AL_KinderPMessageExec_Load(a1->mTask, &v19);
 
 	*(Uint32*)0x01A267D0 = -1;
-	AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 26), TextLanguage == 0);
+	AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 26), Language == 0);
 
 	sprintf((char*)v20, BlackMarket_GetBlMsg(a1, 24), a1->mItemDescInfo->SalePrice);
 	*(Uint32*)0x01A267D0 = -1;
-	AlMsgWinAddLineC(a1->mMainWin, (const char*)v20, TextLanguage == 0);
+	AlMsgWinAddLineC(a1->mMainWin, (const char*)v20, Language == 0);
 }
 int _ebxBackup;
 static void __declspec(naked) FSellListStartHook()
@@ -2204,7 +2204,7 @@ void __cdecl sub_58A170(BlackMarketData* a1)
 
 	*(Uint32*)0x01A267D0 = 0xFFFFFFFF;
 	if (!NoText)
-		AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 15), TextLanguage == 0);
+		AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 15), Language == 0);
 }
 static void __declspec(naked) sub_58A170Hook()
 {

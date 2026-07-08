@@ -50,7 +50,7 @@ static void AlMsgWarnAddLineC(int winid, const char* str)
 	AlMsgWinAddLineC(
 		AL_MSGWarnKinderMessageArray[winid].mWin,
 		str,
-		TextLanguage == 0);
+		Language == 0);
 }
 static void AlMsgWarnWaitClose(int winid)
 {
