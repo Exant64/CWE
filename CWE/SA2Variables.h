@@ -103,7 +103,7 @@ DataPointer(char, IsNotPauseHide, 0x1934B06);
 DataPointer(__int16, CurrentLevel, 0x1934B70);
 DataPointer(int, CurrentCharacter, 0x1934B80);
 DataPointer(__int16, LastLevel, 0x1934B84);
-DataPointer(__int16, GameState, 0x1934BE0);
+DataPointer(__int16, ssGameMode, 0x1934BE0);
 DataPointer(int, CurrentCharacter2P, 0x1934BE4);
 DataPointer(__int16, NextLevel, 0x1934BEC);
 DataPointer(int*, MenuButtons_RepeatTimer, 0x1934BF0);

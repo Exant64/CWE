@@ -697,7 +697,7 @@ void __cdecl DrawEggChao(task* a1)
 	RotateX(data1->ang.x);
 	RotateY(data1->ang.y);
 
-	if (GameState != GameStates_Pause && GET_CHAOPARAM(a1)->BodyType == 1)
+	if (ssGameMode != MD_GAME_PAUSE && GET_CHAOPARAM(a1)->BodyType == 1)
 	{
 		if (GET_CHAOWK(a1)->scl.y < 1.0f)
 			GET_CHAOWK(a1)->scl.y += 0.06f;

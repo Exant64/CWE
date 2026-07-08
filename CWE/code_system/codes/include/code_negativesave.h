@@ -8,7 +8,7 @@ ONFRAME_CODE(NegativeSave);
 void NegativeSave::OnFrame() {
 	// mostly a direct port but with negative texture/palette filename writing removed
     
-    if(GameState != 0) return;
+    if(ssGameMode != 0) return;
 
     const auto vanillaSaveSuffix = 0x464C415F;
     const auto negativeSaveSuffix = 0x4B4C425F;

@@ -161,7 +161,7 @@ bool BetterCameraControl::ResetPressed() const {
 
 void BetterCameraControl::OnFrame() {
     if(!pCamTask) return;
-    if(GameState != GameStates_Ingame) return;
+    if(ssGameMode != MD_GAME_MAIN) return;
 
     AL_NormalCameraExecutor_Data1* work = (AL_NormalCameraExecutor_Data1*)pCamTask->twp;
 

@@ -420,59 +420,17 @@ enum Buttons : int
 	makemasks(Button, L)
 };
 
-enum GameStates : __int16
+enum /* ssGameMode */
 {
-	GameStates_Inactive = 0,
-	GameStates_Loading = 1,
-	GameStates_LoadItems = 2,
-	GameStates_LoadLevel = 3,
-	GameStates_ReturnToMenu_1 = 4,
-	GameStates_ReloadCharacter = 5,
-	GameStates_ReturnToMenu_2 = 6,
-	GameStates_LoadFinished = 7,
-	GameStates_Exit_1 = 8,
-	GameStates_RestartLevel_NoLifeLost = 9,
-	GameStates_Exit_2 = 10,
-	GameStates_Exit_3 = 11,
-	GameStates_RestartLevel_1 = 12,
-	GameStates_NormalRestart = 13,
-	GameStates_NormalExit = 14,
-	GameStates_ReturnRing = 15,
-	GameStates_Ingame = 16,
-	GameStates_Pause = 17,
-	GameStates_MemoryCard = 18,
-	GameStates_GoToNextLevel = 19,
-	GameStates_14 = 20,
-	GameStates_15 = 21,
-	GameStates_16 = 22,
-	GameStates_17 = 23,
-	GameStates_18 = 24,
-	GameStates_19 = 25,
-	GameStates_1A = 26,
-	GameStates_1B = 27,
-	GameStates_1C = 28,
-	GameStates_1D = 29,
-	GameStates_1E = 30,
-	GameStates_1F = 31,
-	GameStates_20 = 32,
-	GameStates_21 = 33,
-	GameStates_22 = 34,
-	GameStates_23 = 35,
-	GameStates_24 = 36,
-	GameStates_25 = 37,
-	GameStates_26 = 38,
-	GameStates_27 = 39,
-	GameStates_28 = 40,
-	GameStates_29 = 41,
-	GameStates_2A = 42,
-	GameStates_2B = 43,
-	GameStates_2C = 44,
-	GameStates_2D = 45,
-	GameStates_2E = 46,
-	GameStates_2F = 47,
-	GameStates_30 = 48,
-	GameStates_31 = 49,
-	GameStates_32 = 50,
+    MD_GAME_NONE,                   /* not currently in-game (eg. in menu or event) */
+    MD_GAME_INIT,                   /* stage loading                                */
+    MD_GAME_FADEIN = 0x07,          /* screen fading in                             */
+    MD_GAME_FADEOUT_CLEAR = 0x08,   /* screen fading out after clearing stage       */
+    MD_GAME_FADEOUT_MISS,
+    MD_GAME_FADEOUT_RESTART = 0x0D, /* screen fading out for restart                */
+    MD_GAME_MAIN  = 0x10,           /* game playing as normal                       */
+    MD_GAME_PAUSE = 0x11,           /* game paused                                  */
+    NUM_GAMEMD = 0x32,
 };
 
 enum StatusBits
