@@ -124,19 +124,19 @@ extern "C"
 
 		if (gConfigVal.UnusedToys)
 		{
-			if (CurrentChaoArea == 1)
+			if (ChaoStageNumber == 1)
 			{
 				NJS_POINT3 pos = { -51, 0.448f, -16 };
 				ALO_BoatCreate(&pos, 0);
 			}
-			if (CurrentChaoArea == 2)
+			if (ChaoStageNumber == 2)
 			{
 				NJS_POINT3 pos = { 88, 0, 50 };
 				ALO_FloatCreate(&pos, 0);
 			}
 			if (
-				(CurrentChaoArea == 2 && (ChaoToysUnlocked[0] & 0x400)) || 
-				(CurrentChaoArea == 3 && (ChaoToysUnlocked[0] & 0x800))
+				(ChaoStageNumber == 2 && (ChaoToysUnlocked[0] & 0x400)) || 
+				(ChaoStageNumber == 3 && (ChaoToysUnlocked[0] & 0x800))
 				)
 			{
 				NJS_VECTOR GCPos[] = { {-45, 0, 6}, {-102, 0.05f, 4.5f} };

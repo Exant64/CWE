@@ -261,7 +261,7 @@ void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 		data->bhvStatus.SubTimer = 60 * multiplier;
 
 	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (CurrentChaoArea == NextChaoArea)
+		if (ChaoStageNumber == ChaoNextStageNumber)
 			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
 	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
 
@@ -297,7 +297,7 @@ void __cdecl ALS_TalkFace(SOCIALDATA* data)
 		//data->bhvStatus.SubTimer = 60 * multiplier;
 
 	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (CurrentChaoArea == NextChaoArea)
+		if (ChaoStageNumber == ChaoNextStageNumber)
 			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
 	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
 

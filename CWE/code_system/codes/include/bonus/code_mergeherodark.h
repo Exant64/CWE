@@ -8,7 +8,7 @@ class MergeHeroDark : public Code {
 };
 
 void MergeHeroDark::OnChaoData(CHAO_PARAM_GC& param) {
-	switch (NextChaoArea) {
+	switch (ChaoNextStageNumber) {
 	case CHAO_STG_HERO:
 		if (param.place == CHAO_STG_DARK)
 			param.place = CHAO_STG_HERO;

@@ -85,7 +85,7 @@ int __cdecl ALBHV_BuildStart(task* a1)
 
 	MOV_SetAimPos(a1, &OmoPositions[AL_GetStageNumber() - 1]);
 	
-	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[CurrentChaoArea - 1].x, 25, OmoPositions[CurrentChaoArea - 1].z, &a1->twp->Rotation);
+	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[ChaoStageNumber - 1].x, 25, OmoPositions[ChaoStageNumber - 1].z, &a1->twp->Rotation);
 	if (omo->phase == 0 || !AL_KW_IDExists(omo->chaoID))
 	{
 		CHAO_PARAM_GC* pParamGC = GET_CHAOPARAM(a1);

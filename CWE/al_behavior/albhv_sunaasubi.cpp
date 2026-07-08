@@ -54,7 +54,7 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		break;
 	}
 	GET_CHAOWK(a1)->Behavior.SubTimer++;
-	if ((GET_CHAOWK(a1)->Behavior.SubTimer % 180) == 0 && njRandom() < 0.5f && CurrentChaoArea == NextChaoArea)
+	if ((GET_CHAOWK(a1)->Behavior.SubTimer % 180) == 0 && njRandom() < 0.5f && ChaoStageNumber == ChaoNextStageNumber)
 	{
 		PlaySound_XYZ((24576 + 164), &a1->twp->pos, 0, 0, 56);
 	}

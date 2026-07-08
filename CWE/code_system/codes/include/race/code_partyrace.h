@@ -33,7 +33,7 @@ void PartyRace::OnFrame() {
     // from lst code: hack to prevent timer from reaching 480
     *(uint8_t*)0x01A5CE14 = 50;
 
-    if(NextChaoArea == CHAO_STG_RACE) {
+    if(ChaoNextStageNumber == CHAO_STG_RACE) {
         if(RaceMainType <= 1) {
             RaceMainType = 5;
             RaceLevel = 0;

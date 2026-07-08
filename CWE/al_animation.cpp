@@ -851,7 +851,7 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 			AL_SetMotionLink(tp, 187);
 
 			if (gConfigVal.MoreSound) {
-				if (CurrentChaoArea == NextChaoArea) {
+				if (ChaoStageNumber == ChaoNextStageNumber) {
 					PlaySound_XYZ(SOUNDBANK6(129), &work->pos, 0, 0, 110);
 				}
 			}
@@ -860,7 +860,7 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 			AL_SetMotionLink(tp, 188);
 
 			if (gConfigVal.MoreSound) {
-				if (CurrentChaoArea == NextChaoArea) {
+				if (ChaoStageNumber == ChaoNextStageNumber) {
 					if (njRandom() < 0.5f) {
 						PlaySound_XYZ(SOUNDBANK6(147), &work->pos, 0, 0, 110);
 					}
@@ -871,7 +871,7 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 			}
 		}
 
-		if (CurrentChaoArea == NextChaoArea) {
+		if (ChaoStageNumber == ChaoNextStageNumber) {
 			PlaySound_XYZ(4097, &work->pos, 0, 0, 0);
 		}
 

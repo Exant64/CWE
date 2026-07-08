@@ -13,7 +13,7 @@ class SpoiledFruits : public Code {
 
 void SpoiledFruits::OnFrame() {
     // why? (this is ported from the LST)
-    if(NextChaoArea <= 3) {
+    if(ChaoNextStageNumber <= 3) {
         return;
     }
 

@@ -39,7 +39,7 @@ int ALBHV_Guitar(task* tp) {
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && CurrentChaoArea == NextChaoArea)
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
 		{
 			PlaySound_XYZ((24576 + 162), &tp->twp->pos, 0, 0, 56);
 		}
@@ -63,7 +63,7 @@ int ALBHV_Triangle(task* tp) {
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5f && CurrentChaoArea == NextChaoArea)
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5f && ChaoStageNumber == ChaoNextStageNumber)
 		{
 			PlaySound_XYZ((24576 + 163), &tp->twp->pos, 0, 0, 75);
 		}
@@ -85,7 +85,7 @@ int ALBHV_Accordion(task* tp) {
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && CurrentChaoArea == NextChaoArea)
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
 		{
 			PlaySound_XYZ((24576 + 161), &tp->twp->pos, 0, 0, 56);
 		}

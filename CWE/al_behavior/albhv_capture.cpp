@@ -111,7 +111,7 @@ int ALBHV_Capture(task* tp) {
 		AL_SetMotionLink(tp, 203);
 		work->Behavior.Mode = 1;
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
-		if (CurrentChaoArea == NextChaoArea)
+		if (ChaoStageNumber == ChaoNextStageNumber)
 		{
 			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->pos, 0, 0, 0);
 		}
@@ -126,7 +126,7 @@ int ALBHV_Capture(task* tp) {
 
 			AL_SetMotionLink(tp, 204);
 			work->Behavior.Mode = 2;
-			if (CurrentChaoArea == NextChaoArea)
+			if (ChaoStageNumber == ChaoNextStageNumber)
 			{
 				PlaySound_XYZ(4101, &GET_CHAOWK(tp)->pos, 0, 0, 0);
 			}
