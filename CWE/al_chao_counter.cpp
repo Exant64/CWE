@@ -8,7 +8,7 @@
 DataArray(CHS_BILL_INFO, StatText, 0x13128B0, 10);
 void AL_ChaoCounterDisp(task* a1)
 {
-	if (ssGameMode == MD_GAME_PAUSE && !(SWDATA[0] & Buttons_X && SWDATA[0] & Buttons_Y))
+	if (ssGameMode == MD_GAME_PAUSE && !(SWDATA[0] & BTN_X && SWDATA[0] & BTN_Y))
 	{
 		int shaderBackup = *(int*)0x01A5579C;
 		NJS_QUAD_TEXTURE v9;

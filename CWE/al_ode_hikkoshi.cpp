@@ -200,7 +200,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 
 	// move button pressed
 	if (SelectMenuManager->cursor.x == 4 && SelectMenuManager->cursor.y == 2) {
-		if(SWDATAE[0] & Buttons_A) {
+		if(SWDATAE[0] & BTN_A) {
 			CHAO_SAVE_INFO* data1 = ChaoSelectData[((SelectMenuManager->slot[0].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[0].multiselect - 1) >> 3)];
 			CHAO_SAVE_INFO* data2 = ChaoSelectData[((SelectMenuManager->slot[1].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[1].multiselect - 1) >> 3) + 24];
 			if (data1 || data2)
@@ -344,10 +344,10 @@ static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 	case 1:
 		previousSelected = selectedMultiSave;
 
-		if (SWDATAE[0] & Buttons_X && selectedMultiSave > 0) {
+		if (SWDATAE[0] & BTN_X && selectedMultiSave > 0) {
 			selectedMultiSave--;
 		}
-		if (SWDATAE[0] & Buttons_Y && selectedMultiSave < 9)  {
+		if (SWDATAE[0] & BTN_Y && selectedMultiSave < 9)  {
 			selectedMultiSave ++;
 		}
 			

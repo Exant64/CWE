@@ -205,11 +205,11 @@ public:
 		return false;
 	}
 
-	const std::array<std::pair<Buttons, Direction>, 4> m_buttonDirectionPair = {
-		std::make_pair(Buttons_Up, Direction::Up),
-		std::make_pair(Buttons_Down, Direction::Down),
-		std::make_pair(Buttons_Left, Direction::Left),
-		std::make_pair(Buttons_Right, Direction::Right)
+	const std::array<std::pair<uint32_t, Direction>, 4> m_buttonDirectionPair = {
+		std::make_pair(BTN_UP, Direction::Up),
+		std::make_pair(BTN_DOWN, Direction::Down),
+		std::make_pair(BTN_LEFT, Direction::Left),
+		std::make_pair(BTN_RIGHT, Direction::Right)
 	};
 	void Exec() {
 		//the first added layer will always run
@@ -237,7 +237,7 @@ public:
 			}
 		}
 
-		if (SWDATAE[0] & Buttons_A && m_selected)
+		if (SWDATAE[0] & BTN_A && m_selected)
 			m_selected->Press(this);
 	}
 

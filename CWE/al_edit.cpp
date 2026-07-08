@@ -41,20 +41,20 @@ void BlackMarketDebug(BlackMarketData *a1)
 	switch (mode)
 	{
 	case MD_IDLE:
-		if (SWDATA[0] & Buttons_X && SWDATA[0] & Buttons_Y) 
+		if (SWDATA[0] & BTN_X && SWDATA[0] & BTN_Y) 
 		{
 			selection = 0;
 			mode = MD_CATEGORY;
 		}
 		break;
 	case MD_CATEGORY:
-		if (SWDATAE[0] & Buttons_Up) {
+		if (SWDATAE[0] & BTN_UP) {
 			selection--;
 		}
 		if (selection < 0) {
 			selection = 0;
 		}
-		if (SWDATAE[0] & Buttons_Down) {
+		if (SWDATAE[0] & BTN_DOWN) {
 			selection++;
 		}
 		if (selection >= LengthOfArray(BMDebug)) {
@@ -70,12 +70,12 @@ void BlackMarketDebug(BlackMarketData *a1)
 				g_HelperFunctions->DisplayDebugString(i + 5 | 0x00150000, BMDebug[i]);
 		}
 
-		if (SWDATAE[0] & Buttons_A && selection != 2 && CategoryAttribs[selection].Count > 0 && CategoryAttribs[selection].attrib) {
+		if (SWDATAE[0] & BTN_A && selection != 2 && CategoryAttribs[selection].Count > 0 && CategoryAttribs[selection].attrib) {
 			category = selection;
 			selection = 0;
 			mode = MD_ITEM;
 		}
-		if (SWDATAE[0] & Buttons_B) {
+		if (SWDATAE[0] & BTN_B) {
 			mode = MD_IDLE;
 		}
 
@@ -84,16 +84,16 @@ void BlackMarketDebug(BlackMarketData *a1)
 		ControllerPointers[0]->press = 0;
 		break;
 	case MD_ITEM:
-		if (SWDATAE[0] & Buttons_Up) 
+		if (SWDATAE[0] & BTN_UP) 
 			selection--;
 		if (selection < 0)
 			selection = CategoryAttribs[category].Count - 1;
-		if (SWDATAE[0] & Buttons_Down) 
+		if (SWDATAE[0] & BTN_DOWN) 
 			selection++;
 		if (selection >= CategoryAttribs[category].Count) 
 			selection = 0;
 
-		if (SWDATAE[0] & Buttons_A) {
+		if (SWDATAE[0] & BTN_A) {
 			mode = MD_SETINV;
 		}
 
@@ -117,7 +117,7 @@ void BlackMarketDebug(BlackMarketData *a1)
 				g_HelperFunctions->DisplayDebugString(i + 5 | 0x00150000, "-----");
 		}
 
-		if (SWDATAE[0] & Buttons_B)
+		if (SWDATAE[0] & BTN_B)
 			mode = MD_CATEGORY;
 
 		SWDATAE[0] = 0;

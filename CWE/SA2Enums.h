@@ -398,27 +398,22 @@ enum ButtonBits
 	ButtonBits_L
 };
 
-enum Buttons : int
-{
-	makemasks(Button, C),
-	makemasks(Button, B),
-	makemasks(Button, A),
-	makemasks(Button, Start),
-	makemasks(Button, Up),
-	makemasks(Button, Down),
-	makemasks(Button, Left),
-	makemasks(Button, Right),
-	makemasks(Button, Z),
-	makemasks(Button, Y),
-	makemasks(Button, X),
-	makemasks(Button, D),
-	makemasks(Button, Up2),
-	makemasks(Button, Down2),
-	makemasks(Button, Left2),
-	makemasks(Button, Right2),
-	makemasks(Button, R),
-	makemasks(Button, L)
-};
+#define BTN_L               PDD_DGT_TL
+#define BTN_R               PDD_DGT_TR
+#define BTN_X               PDD_DGT_TX
+#define BTN_Y               PDD_DGT_TY
+#define BTN_RIGHT           PDD_DGT_KR
+#define BTN_LEFT            PDD_DGT_KL
+#define BTN_DOWN            PDD_DGT_KD
+#define BTN_UP              PDD_DGT_KU
+#define BTN_START           PDD_DGT_ST
+#define BTN_A               PDD_DGT_TA
+#define BTN_B               PDD_DGT_TB
+
+/****** Extended Buttons ************************************************************/
+#define BTN_ZL              PDD_DGT_TC
+#define BTN_ZR              PDD_DGT_TZ
+#define BTN_BACK            PDD_DGT_TD
 
 enum /* ssGameMode */
 {

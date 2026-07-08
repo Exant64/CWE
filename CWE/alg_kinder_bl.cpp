@@ -1878,7 +1878,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 	
 	a1->mBuyListAngY += 256;
 
-	if (ControllerPointers[0]->on & Buttons_Y) {
+	if (ControllerPointers[0]->on & BTN_Y) {
 		return;
 	}
 		
@@ -1901,21 +1901,21 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	switch (a1->mBuyListMode) {
 	case 0:
-		if (SWDATAE[0] & Buttons_L) {
+		if (SWDATAE[0] & BTN_L) {
 			for (int i = a1->currentTab - 1; i >= 0; i--) {
 				if (SetTabIfItHasItem(i))
 					break;
 			}
 		}
 
-		if (SWDATAE[0] & Buttons_R) {
+		if (SWDATAE[0] & BTN_R) {
 			for (int i = a1->currentTab + 1; i < MarketTabCount; i++) {
 				if (SetTabIfItHasItem(i))
 					break;
 			}
 		}
 
-		if (SWDATAE[0] & Buttons_Up)
+		if (SWDATAE[0] & BTN_UP)
 		{
 			if (a1->mBuyListCursor > 0)
 			{
@@ -1929,7 +1929,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				PlaySoundProbably(0x8000, 0, 0, 0);
 			}
 		}
-		if (SWDATAE[0] & Buttons_Down)
+		if (SWDATAE[0] & BTN_DOWN)
 		{
 			if (a1->mBuyListCursor < cweSaveFile.marketInventoryCount[TabCategory] - 1) {
 				a1->mBuyListCursor++;
@@ -1943,7 +1943,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			}
 		}
 
-		if (ControllerPointers[0]->press & Buttons_A)
+		if (ControllerPointers[0]->press & BTN_A)
 		{
 			if (TotalRings >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mType < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
 			{
@@ -1993,7 +1993,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				PlaySoundProbably(32777, 0, 0, 0);
 			}
 		}
-		else if (ControllerPointers[0]->press & Buttons_B)
+		else if (ControllerPointers[0]->press & BTN_B)
 		{
 			a1->currentTab = 0;
 			a1->mMode = 9;

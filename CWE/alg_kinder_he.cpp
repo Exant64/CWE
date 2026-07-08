@@ -103,7 +103,7 @@ __int16 word_8A2754[] = { 3464, 2824, 3464, 3464, 2824, 3464, 2184, 3464, 1544, 
 int GradePurchasePrice[] = { 10000,20000,30000,40000, 9999999,9999999 ,9999999 };
 SAlgKinderOrthoQuad plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4096,0, 4096 };
 
-int UpgradeButtons[] = { Buttons_Up, Buttons_Down, Buttons_Right, Buttons_Left, Buttons_L};
+int UpgradeButtons[] = { BTN_UP, BTN_DOWN, BTN_RIGHT, BTN_LEFT, BTN_L};
 
 const int SE_Call_TIMERPtr = 0x04374D0;
 void SE_Call_TIMER(int a1, int a2, char a3, char a4, __int16 a5)
@@ -177,7 +177,7 @@ void PurchaseGradesCode(chaowk* data1)
 	{
 		if (CanChaoUpgrade(data1)) 
 		{
-			if (SWDATA[0] & Buttons_Y)
+			if (SWDATA[0] & BTN_Y)
 				sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
 			else
 				sprintf(buff, "Hold Y to Upgrade");
@@ -198,7 +198,7 @@ void PurchaseGradesCode(chaowk* data1)
 	sub_583C60();
 	njSetTexture(&CWE_UI_TEXLIST);
 	njSetTextureNum(25, 0, 0, 0);
-	if (SWDATA[0] & Buttons_Y)
+	if (SWDATA[0] & BTN_Y)
 	{
 		for (int i = 0; i < 5; i++)
 		{
@@ -562,9 +562,9 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 int FriendsSelection = 0;
 void HealthCenterFriendsMenu(HealthCenter* a1)
 {
-	if (FriendsSelection > 0 && SWDATAE[0] & Buttons_Left)
+	if (FriendsSelection > 0 && SWDATAE[0] & BTN_LEFT)
 		FriendsSelection--;
-	if (FriendsSelection < AL_KW_GetFriendCount(a1->medicalChartChao_) && SWDATAE[0] & Buttons_Right)
+	if (FriendsSelection < AL_KW_GetFriendCount(a1->medicalChartChao_) && SWDATAE[0] & BTN_RIGHT)
 		FriendsSelection++;
 
 	sub_583C60();
@@ -617,13 +617,13 @@ DataArray(char, byte_8A274C, 0x008A274C, 8);
 
 void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 {
-	if (SWDATAE[0] & Buttons_Up)
+	if (SWDATAE[0] & BTN_UP)
 		isInDNAMenu = 0;
-	else if (SWDATAE[0] & Buttons_Down)
+	else if (SWDATAE[0] & BTN_DOWN)
 		isInDNAMenu = 1;
-	//if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(MenuButtons_Held[0] & Buttons_Y) && MenuButtons_Held[0] & Buttons_Up)
+	//if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(MenuButtons_Held[0] & BTN_Y) && MenuButtons_Held[0] & BTN_UP)
 		//TextLocation->medicalChartMenu = 4;
-	if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(SWDATA[0] & Buttons_Y) && SWDATA[0] & Buttons_Down)
+	if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(SWDATA[0] & BTN_Y) && SWDATA[0] & BTN_DOWN)
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup < 0) {
 			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType;
@@ -810,7 +810,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	}
 	if (TextLocation->medicalChartMenu == 4)
 	{
-		if (SWDATAE[0] & Buttons_Down)
+		if (SWDATAE[0] & BTN_DOWN)
 			TextLocation->medicalChartMenu = 0;
 		HealthCenterFriendsMenu(TextLocation);
 	}
@@ -859,9 +859,9 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 {
 	if (a1->openedMedicalChart)
 	{
-		if (!(a1->medicalChartMenu == 0 && SWDATA[0] & Buttons_Y)) 
+		if (!(a1->medicalChartMenu == 0 && SWDATA[0] & BTN_Y)) 
 		{
-			if ((ControllerPointers[0]->press & Buttons_L) != 0 || (SWDATAE[0] & 0x40) != 0)
+			if ((ControllerPointers[0]->press & BTN_L) != 0 || (SWDATAE[0] & 0x40) != 0)
 			{
 				if (--a1->medicalChartMenu < 0)
 				{
@@ -869,7 +869,7 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				}
 				PlaySoundProbably(0x8000, 0, 0, 0);
 			}
-			if ((ControllerPointers[0]->press & (Buttons_R | Buttons_A)) != 0 || ControllerPointers[0]->press & 0x80)
+			if ((ControllerPointers[0]->press & (BTN_R | BTN_A)) != 0 || ControllerPointers[0]->press & 0x80)
 			{
 				if (++a1->medicalChartMenu == 3)
 				{

@@ -196,7 +196,7 @@ void AL_Odekake_Init()
 
 	//disable "X" being a back button in chao select menu
 	//X is used for the multisave selection in move menu
-	WriteData((int*)0x005541EE, (int)Buttons_B); 
+	WriteData((int*)0x005541EE, (int)BTN_B); 
 
 	// fixes id on bar (goodbye bar needs to use "CurrStage" instead of baked in "1") 
 	WriteCall((void*)0x05A6F8E, GoodbyeBar);

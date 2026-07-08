@@ -337,9 +337,9 @@ extern "C"
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {
-			if (SWDATA[0] & Buttons_X && 
-				SWDATA[0] & Buttons_A && 
-				SWDATA[0] & Buttons_L) 
+			if (SWDATA[0] & BTN_X && 
+				SWDATA[0] & BTN_A && 
+				SWDATA[0] & BTN_L) 
 			{
 				___OutputDebugString("toys have been reset");
 				ToyResetTimer = 120;
