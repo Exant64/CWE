@@ -233,7 +233,7 @@ DataPointer(Angle, GravityAngle_X, 0x1DE949C);
 DataPointer(NJS_VECTOR, Gravity, 0x1DE94A0);
 DataPointer(int, GravityAngle_Z, 0x1DE94AC);
 DataPointer(int, ArbitraryGravityAngle_Z, 0x1DE94B0);
-DataArray(CharObj2Base *, MainCharObj2, 0x1DE9600, 2);
+DataArray(playerwk *, playerpwp, 0x1DE9600, 2);
 DataArray(ModelIndex, CharacterModels, 0x1DE9620, 532);
 DataArray(taskwk *, MainCharObj1, 0x1DEA6C0, 2);
 DataArray(task *, MainCharacter, 0x1DEA6E0, 2);

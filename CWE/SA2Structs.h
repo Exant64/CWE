@@ -20,7 +20,7 @@ struct struct_0;
 struct AnimationIndex;
 struct AnimationInfo;
 struct CCL_INFO;
-struct CharObj2Base;
+struct playerwk;
 struct EntityData2;
 struct LaunchConfig_vtable;
 struct CHAO_PARAM_GC;
@@ -577,7 +577,7 @@ struct ObjUnknownB
 
 struct EntityData2
 {
-	CharObj2Base *CharacterData;
+	playerwk *CharacterData;
 	int field_4;
 	int field_8;
 	int field_C;
@@ -601,7 +601,7 @@ struct PhysicsData
 	float anonymous_0;
 	float HSpeedCap;
 	float VSpeedCap;
-	float BaseSpeed;
+	float max_x_spd;
 	float anonymous_4;
 	float InitialJumpSpeed;
 	float anonymous_6;
@@ -614,10 +614,10 @@ struct PhysicsData
 	float JumpHoldSpeed;
 	float GroundAccel;
 	float AirAccel;
-	float GroundDecel;
-	float BrakeSpeed;
-	float AirBrakeSpeed;
-	float AirDecel;
+	float slow_down;
+	float run_break;
+	float air_break;
+	float air_resist_air;
 	float anonymous_20;
 	float anonymous_21;
 	float anonymous_22;
@@ -658,16 +658,16 @@ struct CharAnimInfo
 	NJS_MOTION *motion;
 };
 
-struct CharObj2Base
+struct playerwk
 {
 	char PlayerNum;
 	char CharID;
 	char Costume;
-	char CharID2;
+	char character;
 	char ActionWindowItems[8];
 	char ActionWindowItemCount;
 	char field_D[3];
-	__int16 Powerups;
+	__int16 item;
 	int field_12;
 	__int16 UnderwaterTime;
 	__int16 IdleTime;
@@ -679,12 +679,12 @@ struct CharObj2Base
 	int field_4C[6];
 	NJS_VECTOR Speed;
 	char gap_70[36];
-	task *HeldObject;
+	task *htp;
 	char gap_98[4];
 	task *HoldTarget;
 	char gap_A0[28];
 	NJS_MOTION **Animation;
-	PhysicsData PhysData;
+	PhysicsData p;
 	int field_144[12];
 	CharAnimInfo AnimInfo;
 	int field_1A0[7];
@@ -948,7 +948,7 @@ struct CCL_INFO {
 
 struct SonicCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[428];
 	__int16 SpindashCounter;
 	char field_36A[42];
@@ -1241,7 +1241,7 @@ struct EmeManThing
 
 struct KnucklesCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[564];
 	NJS_TEXLIST *TextureList;
 	NJS_TEXLIST *EffectTextureList;
@@ -1252,7 +1252,7 @@ struct KnucklesCharObj2
 
 struct EggmanCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[420];
 	NJS_TEXLIST *TextureList;
 	ModelIndex *ModelList;
@@ -1261,7 +1261,7 @@ struct EggmanCharObj2
 
 struct MechEggmanCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[128];
 	float field_23C;
 	char field_240[4];
@@ -1320,7 +1320,7 @@ struct MechEggmanCharObj2
 
 struct TailsCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[500];
 	NJS_TEXLIST *TextureList;
 	ModelIndex *ModelList;
@@ -1330,7 +1330,7 @@ struct TailsCharObj2
 
 struct SuperSonicCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[436];
 	NJS_TEXLIST *TextureList;
 	ModelIndex *ModelList;

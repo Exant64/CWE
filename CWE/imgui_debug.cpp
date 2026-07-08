@@ -54,9 +54,9 @@ static int SetSToyBhv(task* tp) {
 
 static void MoreFacesMenu() {
     if(!ShowMoreFacesMenu) return;
-    if(!MainCharObj2[0]);
+    if(!playerpwp[0]);
 
-    task* pHeld = MainCharObj2[0]->HeldObject;
+    task* pHeld = playerpwp[0]->htp;
     if(!pHeld) return;
     if(pHeld->exec != ChaoExecutor) return;
     

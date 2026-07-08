@@ -4,25 +4,27 @@
 #define makemask(enumname,membername) enumname##_##membername = (1 << enumname##Bits_##membername)
 #define makemasks(enumname,membername) enumname##s_##membername = (1 << enumname##Bits_##membername)
 
-enum Characters
+enum
 {
-	Characters_Sonic,
-	Characters_Shadow,
-	Characters_Tails,
-	Characters_Eggman,
-	Characters_Knuckles,
-	Characters_Rouge,
-	Characters_MechTails,
-	Characters_MechEggman,
-	Characters_Amy,
-	Characters_SuperSonic,
-	Characters_SuperShadow,
-	Characters_B,
-	Characters_MetalSonic,
-	Characters_ChaoWalker,
-	Characters_DarkChaoWalker,
-	Characters_Tikal,
-	Characters_Chaos
+    PLNO_SONIC,                     /* sonic the hedgehog                                       */
+    PLNO_SHADOW,                    /* shadow the hedgehog                                      */
+    PLNO_MILES,                     /* miles "tails" prower                                     */
+    PLNO_EGGMAN,                    /* eggman                                                   */
+    PLNO_KNUCKLES,                  /* knuckles the echidna                                     */
+    PLNO_ROUGE,                     /* rouge the bat                                            */
+    PLNO_TAILS_WALKER,              /* tails walker                                             */
+    PLNO_EGG_WALKER,                /* egg walker                                               */
+    PLNO_AMY,                       /* amy rose         : basechar = sonic                      */
+    PLNO_SUPER_SONIC,               /* super sonic                                              */
+    PLNO_SUPER_SHADOW,              /* super shadow                                             */
+    PLNO_DUMMY,                     /* dummy                                                    */
+    PLNO_METAL_SONIC,               /* metal sonic      : basechar = shadow                     */
+    PLNO_CHAO_WALKER,               /* chao walker      : basechar = tails walker               */
+    PLNO_DARK_WALKER,               /* dark walker      : basechar = egg walker                 */
+    PLNO_TICAL,                     /* tikal            : basechar = knuckles                   */
+    PLNO_CHAOS0,                    /* chaos 0          : basechar = rouge                      */
+
+    NB_PLNO,                        /* enum count                                               */
 };
 
 enum LevelIDs

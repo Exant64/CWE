@@ -241,11 +241,11 @@ static void AL_CreateCustomHoldingItem() {
 	const NJS_VECTOR velocity = { 0,0,0 };
 	ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)dword_19F6454;
 
-	if (MainCharObj2[0])
+	if (playerpwp[0])
 	{
-		sub_46E5E0(0, (int)MainCharObj2[0]);
+		sub_46E5E0(0, (int)playerpwp[0]);
 	}
-	MainCharObj2[0]->HeldObject = 0;
+	playerpwp[0]->htp = 0;
 
 	task* tp = NULL;
 
@@ -297,7 +297,7 @@ static void AL_CreateHoldingItem() {
 			{
 				sub_46E5E0(0, (int)v2);
 			}
-			MainCharObj2[0]->HeldObject = 0;
+			playerpwp[0]->htp = 0;
 			switch (HeldItemType)
 			{
 			case 2:

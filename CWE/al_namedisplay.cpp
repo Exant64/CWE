@@ -357,7 +357,7 @@ void AL_NameDisplay_Main(task* a1)
 	case 0:
 		if ((SWDATA[0] & BTN_X) &&
 			(SWDATA[0] & BTN_Y) &&
-			MainCharObj2[0] && !MainCharObj2[0]->HeldObject)
+			playerpwp[0] && !playerpwp[0]->htp)
 		{
 			if (gConfigVal.DayNightCheat)
 				a1->twp->mode = 1;

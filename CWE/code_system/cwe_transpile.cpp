@@ -1174,9 +1174,9 @@ void ChaoWorldExtendedRequired()
 	}
 
 	//invincibility on maincharobj if chao world 
-	if (CurrentLevel == 90 && MainCharObj2[0])
+	if (CurrentLevel == 90 && playerpwp[0])
 	{
-		MainCharObj2[0]->Powerups = 1;
+		playerpwp[0]->item = 1;
 	}
 
 	//REMOVED: that weird Y pos check thing

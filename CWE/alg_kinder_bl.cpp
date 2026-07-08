@@ -2293,14 +2293,14 @@ static void __declspec(naked) sub_589850Hook()
 }
 
 static void SellHeldItem() {
-	task* pHeld = MainCharObj2[0]->HeldObject;
+	task* pHeld = playerpwp[0]->htp;
 	if (pHeld)
 	{
 		pHeld->exec = DestroyTask;
 		if (MainCharObj1[0]) {
 			sub_46E5E0(0, (int)MainCharObj1[0]);
 		}
-		MainCharObj2[0]->HeldObject = 0;
+		playerpwp[0]->htp = 0;
 	}
 
 	void* pSave = AL_GetHoldingItemSaveInfo();
