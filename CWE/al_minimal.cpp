@@ -307,7 +307,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		njPushMatrixEx();
 
 		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
-			njControl3D |= 0x2400u;
+			_nj_control_3d_flag_ |= 0x2400u;
 		}
 
 		// mega jank, im in a rush rn
@@ -323,7 +323,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 			g_HelperFunctions->PopInterpolationFix();
 		}
 
-		njControl3D &= ~0x2400u;
+		_nj_control_3d_flag_ &= ~0x2400u;
 		njPopMatrixEx();
 
 		if (!v1->fwp) ___OutputDebugString("unknown_a == 0, problem incoming");

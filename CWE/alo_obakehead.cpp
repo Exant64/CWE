@@ -39,9 +39,9 @@ void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
 		RotateY(work->ang.y);
 		njPushMatrixEx();
 		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
-			njControl3D |= 0x2400u;
+			_nj_control_3d_flag_ |= 0x2400u;
 		ALO_ObakeHeadDraw<true>(work->ang.x);
-		njControl3D &= ~0x2400u;
+		_nj_control_3d_flag_ &= ~0x2400u;
 		njPopMatrixEx();
 		if (flt_1312CBC > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{

@@ -30,12 +30,12 @@ extern "C" {
 
 	__declspec(dllexport) void OrthoDrawBegin() {
 		Renderer_SetMatrix(*(int*)0x1A557C0, 0, 8, (int)&ortho);
-		njControl3DBackup = njControl3D;
-		njControl3D &= ~0x100;
+		__control_3d_flag_ = _nj_control_3d_flag_;
+		_nj_control_3d_flag_ &= ~0x100;
 	}
 
 	__declspec(dllexport) void OrthoDrawEnd() {
-		njControl3D = njControl3DBackup;
+		_nj_control_3d_flag_ = __control_3d_flag_;
 		GXSetProjection(0x025EFF00);
 	}
 

@@ -95,8 +95,8 @@ FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
 DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 FunctionPointer(int, njPushUnitMatrix, (), 0x44B210);
 
-DataPointer(int, njControl3D, 0x025F02D8);
-DataPointer(int, njControl3DBackup, 0x01DEB6A4);
+DataPointer(int, _nj_control_3d_flag_, 0x025F02D8);
+DataPointer(int, __control_3d_flag_, 0x01DEB6A4);
 DataPointer(float*, _nj_current_matrix_ptr_, 0x01A557FC);
 void  njCalcVector(NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_MATRIX_PTR a3);
 void  njSetTexture(NJS_TEXLIST* texlist);
@@ -154,14 +154,14 @@ DataArray(LightGC, LightsGC, 0x01DE4420, 12);
 
 struct Control3D {
 	Control3D(uint32_t on, uint32_t off)  {
-		m_backup = njControl3D;
+		m_backup = _nj_control_3d_flag_;
 
-		njControl3D |= on;
-		njControl3D &= ~off;
+		_nj_control_3d_flag_ |= on;
+		_nj_control_3d_flag_ &= ~off;
 	}
 
 	~Control3D() {
-		njControl3D = m_backup;
+		_nj_control_3d_flag_ = m_backup;
 	}
 private:
 	uint32_t m_backup;

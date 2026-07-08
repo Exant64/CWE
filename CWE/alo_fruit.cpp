@@ -76,10 +76,10 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 			njScale(NULL, a2, a2, a2);
 			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
 			{
-				njControl3D |= 0x2400u;
+				_nj_control_3d_flag_ |= 0x2400u;
 			}
 			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Fruit, v2->ang.x);
-			njControl3D &= ~0x2400u;
+			_nj_control_3d_flag_ &= ~0x2400u;
 			LoadControl3D();
 			njPopMatrixEx();
 

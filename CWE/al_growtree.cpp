@@ -202,10 +202,10 @@ void __cdecl ALO_SeedExecutor_Display_(task* eax0)
         njTranslateEx(&v1->pos);
         RotateY( v1->ang.y);
         njScale(NULL, 1.5f, 1.5f, 1.5f);
-        njControl3D |= 0x2400u;
+        _nj_control_3d_flag_ |= 0x2400u;
         njSetTexture(ModAPI_SeedTexlists[v1->ang.x]);
         chCnkDrawModel(ModAPI_SeedModels[v1->ang.x]->model);
-        njControl3D &= ~0x2400;
+        _nj_control_3d_flag_ &= ~0x2400;
 
         if(RenderFix_IsEnabled()) {
             if (eax0->fwp && ChaoGlobal.CamDistShadowCutLev1 > GET_ALW_ENTRY_WORK(eax0)->CamDist) {
