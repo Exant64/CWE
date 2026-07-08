@@ -119,7 +119,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 			v11->data.Gene.Jewel[1] = GetOmoData()->jewel;
 			v11->data.Texture		= GetOmoData()->jewel;
 
-			CreateChao(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
+			CreateChaoExtra(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
 			memset(GetOmoData(), 0, sizeof(OMOCHAO_INFO));
 			a1->exec = DestroyTask;
 			return;

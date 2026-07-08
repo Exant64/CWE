@@ -40,7 +40,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 		}
 		chaoData->data.type = ChaoType_Child;
 		chaoData->data.InKindergarten = -1;
-		task* chao = CreateChao(chaoData, 0, 0, position, a5);
+		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
 		chaoData->data.BodyType = SADXBodyType_EggChao;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}

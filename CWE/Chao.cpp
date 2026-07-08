@@ -117,7 +117,7 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, KarateOpponent* a3, NJS
 		}
 	}
 
-	task* chao = CreateChao(chaoData, a2, opponent, position, angle);
+	task* chao = CreateChaoExtra(chaoData, a2, opponent, position, angle);
 	CHAO_PARAM_GC* fullData = GET_CHAOPARAM(chao);
 	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chao);
 

@@ -252,7 +252,7 @@ ObjectFunc(AlgKinderMaster, 0x54E780);
 ObjectFunc(Chao_Main, 0x54FE20);
 ObjectFunc(Chao_Delete, 0x54FF30);
 ObjectFunc(Chao_Display, 0x54FF80);
-FunctionPointer(task *, CreateChao, (CHAO_SAVE_INFO *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
+FunctionPointer(task *, CreateChaoExtra, (CHAO_SAVE_INFO *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
 ObjectFunc(ChaoSelectMenuManager, 0x5542B0);
 ObjectFunc(ALO_EntranceElevatorExecutor_Main, 0x557FC0);
 ObjectFunc(ALO_EntranceElevatorExecutor_Display, 0x558350);

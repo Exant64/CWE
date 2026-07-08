@@ -1621,7 +1621,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		}
 
 		someUIProjectionCode(&ChaoHatPosition, &posOut);
-		pChao = CreateChao((CHAO_SAVE_INFO*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
+		pChao = CreateChaoExtra((CHAO_SAVE_INFO*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
 		GET_CHAOWK(pChao)->ChaoFlag &= ~8u;
 		GET_CHAOWK(pChao)->ChaoFlag &= ~2u;
 		GET_CHAOWK(pChao)->ChaoFlag &= ~0x10u;

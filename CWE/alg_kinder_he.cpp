@@ -655,7 +655,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			//init
 			NJS_VECTOR pos = { 0,0,0 };
 
-			pMother = CreateChao(
+			pMother = CreateChaoExtra(
 				(CHAO_SAVE_INFO*)data,
 				1,
 				opponentPtr,
@@ -684,7 +684,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				}
 			}
 
-			pFather = CreateChao(
+			pFather = CreateChaoExtra(
 				(CHAO_SAVE_INFO*)data,
 				1,
 				opponentPtr,
