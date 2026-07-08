@@ -7,15 +7,15 @@
 void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
 	if (pElement->type == 254) {
 		pParam->type = TYPE_CHILD;
-		pParam->body.FormNum = SADXBodyType_Omochao;
+		pParam->body.FormNum = AL_FORM_OMOCHAO;
 	}
 	else if (pElement->type == 255) {
 		pParam->type = TYPE_CHILD;
-		pParam->body.FormNum = SADXBodyType_EggChao;
+		pParam->body.FormNum = AL_FORM_EGG_FOOT;
 	}
 	else {
 		pParam->type = pElement->type;
-		pParam->body.FormNum = SADXBodyType_Normal;
+		pParam->body.FormNum = AL_FORM_NORMAL;
 	}
 
 	pParam->body.DefaultEyeNum = pElement->DefaultEyeNum;

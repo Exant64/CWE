@@ -627,7 +627,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup < 0) {
 			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum;
-			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = (SADXBodyType)9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = 9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
 		}
 		if (!pMother)
 		{
@@ -710,7 +710,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	else
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup >= 0) {
-			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = (SADXBodyType)bodyTypeBackup;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = bodyTypeBackup;
 			bodyTypeBackup = -1;
 		}
 

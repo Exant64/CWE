@@ -41,7 +41,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 		chaoData->data.type = TYPE_CHILD;
 		chaoData->data.ClassNum = -1;
 		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
-		chaoData->data.body.FormNum = SADXBodyType_EggChao;
+		chaoData->data.body.FormNum = AL_FORM_EGG_FOOT;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}
 	else
@@ -100,7 +100,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 		}
 		chaoData->data.type = TYPE_CHILD;
 		chaoData->data.ClassNum = -1;
-		chaoData->data.body.FormNum = SADXBodyType_EggChao;
+		chaoData->data.body.FormNum = AL_FORM_EGG_FOOT;
 	}
 	else
 		CreateChaoEgg(a1, chaoData, a3, position, a5);

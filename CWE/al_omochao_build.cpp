@@ -100,7 +100,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 		if (v11) 
 		{
 			v11->data.type = TYPE_CHILD;
-			v11->data.body.FormNum = SADXBodyType_Omochao;
+			v11->data.body.FormNum = AL_FORM_OMOCHAO;
 			v11->data.place = AL_GetStageNumber();
 			InitChaoDNA(&v11->data.Gene);
 			v11->data.Gene.Color[0] = GetOmoData()->color;

@@ -139,12 +139,13 @@ enum {
     TYPE_EGG_FOOT,
 };
 
-enum SADXBodyType : __int8
+enum
 {
-	SADXBodyType_Normal = 0x0,
-	SADXBodyType_EggChao = 0x1,
-	SADXBodyType_Omochao = 0x2,
-	SADXBodyType_None = 0x3,
+    AL_FORM_NORMAL,
+    AL_FORM_EGG_FOOT,
+    AL_FORM_OMOCHAO,
+    AL_FORM_MINIMAL,
+    AL_FORM_CHIBI,
 };
 
 enum SA2BAnimal : __int8
