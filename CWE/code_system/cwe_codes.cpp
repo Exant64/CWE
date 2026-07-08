@@ -57,7 +57,7 @@ void CWE_Codes_OnFrame() {
 		c->OnFrame();
 	}
 
-	if (CurrentLevel == 90) {
+	if (ssStageNumber == 90) {
 		//if the texlist is loaded at all
 		if (texlist_cwe_object && texlist_cwe_object->textures[0].texaddr) {
 			if (texlist_cwe_object->nbTexture < 67 || !texlist_cwe_object->textures[62].texaddr) {

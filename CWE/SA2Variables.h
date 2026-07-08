@@ -100,7 +100,7 @@ DataPointer(int, IsFullscreen, 0x1933EAC);
 DataPointer(char, PauseSelection, 0x1933EB1);
 DataPointer(char, PauseOptionCount, 0x1933EB2);
 DataPointer(char, IsNotPauseHide, 0x1934B06);
-DataPointer(__int16, CurrentLevel, 0x1934B70);
+DataPointer(__int16, ssStageNumber, 0x1934B70);
 DataPointer(int, CurrentCharacter, 0x1934B80);
 DataPointer(__int16, LastLevel, 0x1934B84);
 DataPointer(__int16, ssGameMode, 0x1934BE0);

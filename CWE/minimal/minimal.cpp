@@ -353,7 +353,7 @@ static FunctionHook<void> InitLevelThings_hook(0x439610);
 static FunctionHook<void> LoadLevelDestroy_hook(0x454CC0);
 
 static void InitLevelThings_r() {
-    if(CurrentLevel != LevelIDs_ChaoWorld) {
+    if(ssStageNumber != STAGE_CHAOWORLD) {
         for (const auto& load : TexlistLoads) {
             if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 
@@ -367,7 +367,7 @@ static void InitLevelThings_r() {
 }
 
 static void LoadLevelDestroy_r() {
-    if(CurrentLevel != LevelIDs_ChaoWorld) {
+    if(ssStageNumber != STAGE_CHAOWORLD) {
         for (const auto& load : TexlistLoads) {
             if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 

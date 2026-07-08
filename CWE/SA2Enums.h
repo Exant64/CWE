@@ -27,80 +27,84 @@ enum
     NB_PLNO,                        /* enum count                                               */
 };
 
-enum LevelIDs
+enum
 {
-	LevelIDs_BasicTest,
-	LevelIDs_KnucklesTest,
-	LevelIDs_SonicTest,
-	LevelIDs_GreenForest,
-	LevelIDs_WhiteJungle,
-	LevelIDs_PumpkinHill,
-	LevelIDs_SkyRail,
-	LevelIDs_AquaticMine,
-	LevelIDs_SecurityHall,
-	LevelIDs_PrisonLane,
-	LevelIDs_MetalHarbor,
-	LevelIDs_IronGate,
-	LevelIDs_WeaponsBed,
-	LevelIDs_CityEscape,
-	LevelIDs_RadicalHighway,
-	LevelIDs_WeaponsBed2P,
-	LevelIDs_WildCanyon,
-	LevelIDs_MissionStreet,
-	LevelIDs_DryLagoon,
-	LevelIDs_SonicVsShadow1,
-	LevelIDs_TailsVsEggman1,
-	LevelIDs_SandOcean,
-	LevelIDs_CrazyGadget,
-	LevelIDs_HiddenBase,
-	LevelIDs_EternalEngine,
-	LevelIDs_DeathChamber,
-	LevelIDs_EggQuarters,
-	LevelIDs_LostColony,
-	LevelIDs_PyramidCave,
-	LevelIDs_TailsVsEggman2,
-	LevelIDs_FinalRush,
-	LevelIDs_GreenHill,
-	LevelIDs_MeteorHerd,
-	LevelIDs_KnucklesVsRouge,
-	LevelIDs_CannonsCoreS,
-	LevelIDs_CannonsCoreE,
-	LevelIDs_CannonsCoreT,
-	LevelIDs_CannonsCoreR,
-	LevelIDs_CannonsCoreK,
-	LevelIDs_MissionStreet2P,
-	LevelIDs_FinalChase,
-	LevelIDs_WildCanyon2P,
-	LevelIDs_SonicVsShadow2,
-	LevelIDs_CosmicWall,
-	LevelIDs_MadSpace,
-	LevelIDs_SandOcean2P,
-	LevelIDs_DryLagoon2P,
-	LevelIDs_PyramidRace,
-	LevelIDs_HiddenBase2P,
-	LevelIDs_PoolQuest,
-	LevelIDs_PlanetQuest,
-	LevelIDs_DeckRace,
-	LevelIDs_DowntownRace,
-	LevelIDs_CosmicWall2P,
-	LevelIDs_GrindRace,
-	LevelIDs_LostColony2P,
-	LevelIDs_EternalEngine2P,
-	LevelIDs_MetalHarbor2P,
-	LevelIDs_IronGate2P,
-	LevelIDs_DeathChamber2P,
-	LevelIDs_BigFoot,
-	LevelIDs_HotShot,
-	LevelIDs_FlyingDog,
-	LevelIDs_KingBoomBoo,
-	LevelIDs_EggGolemS,
-	LevelIDs_Biolizard,
-	LevelIDs_FinalHazard,
-	LevelIDs_EggGolemE,
-	LevelIDs_Route101280 = 70,
-	LevelIDs_KartRace,
-	LevelIDs_ChaoWorld = 90,
-	LevelIDs_Invalid
+    STAGE_BASICTEST,            /* Basic Test                                       */
+    STAGE_KNUCKLESTEST,         /* Knuckles Test                                    */
+    STAGE_SONICTEST,            /* Sonic Test                                       */
+
+    STAGE_JUNGLE,               /* Green Forest                                (JG) */
+    STAGE_FOGJUNGLE,            /* White Jungle                                (FG) */
+    STAGE_PUMPKIN,              /* Pumpkin Hill                                (PP) */
+    STAGE_MOUNTAIN,             /* Sky Rail                                    (PM) */
+    STAGE_COALMINE,             /* Aquatic Mine                                (CM) */
+    STAGE_SECURITYHALL,         /* Security Hall                               (SH) */
+    STAGE_TAILSPRISON,          /* Prison Lane                                 (PR) */
+    STAGE_METALHARBOR,          /* Metal Harbor                                (MH) */
+    STAGE_PRISON,               /* Iron Gate                                   (RN) */
+    STAGE_WEAPONSBED,           /* Weapons Bed                                 (WB) */
+    STAGE_CITYESCAPE,           /* City Escape                                 (CE) */
+    STAGE_HIGHWAY,              /* Radical Highway                             (RH) */
+    STAGE_WEAPONSBED_2P,        /* Weapons Bed 2P                             (WB2) */
+    STAGE_WILDCANYON,           /* Wild Canyon                                 (WC) */
+    STAGE_MISSION,              /* Mission Street                              (MS) */
+    STAGE_DRYLAGOON,            /* Dry Lagoon                                  (DL) */
+    STAGE_SONICVSSHADOW,        /* Sonic vs Shadow 1                                */
+    STAGE_EWVSTW,               /* Tails vs Eggman 1                                */
+    STAGE_SANDOCEAN,            /* Sand Ocean                                  (SO) */
+    STAGE_CRAZYGADGET,          /* Crazy Gadget                                (CG) */
+    STAGE_HIDDENBASE,           /* Hidden Base                                 (HB) */
+    STAGE_ETERNALENGINE,        /* Eternal Engine                              (EE) */
+    STAGE_DEATHCHAMBER,         /* Death Chamber                               (DC) */
+    STAGE_EGGQUATER,            /* Egg Quaters                                 (EQ) */
+    STAGE_LOSTCOLONY,           /* Lost Colony                                 (LC) */
+    STAGE_PYRAMIDCAVE,          /* Pyramid Cave                                (PC) */
+    STAGE_EWVSTW2,              /* Tails vs Eggman 2                                */
+    STAGE_FINALRUSH,            /* Final Rush                                  (FR) */
+    STAGE_GREENHILL,            /* Green Hill                                  (GH) */
+    STAGE_METEORHERD,           /* Meteor Herd                                 (MD) */
+    STAGE_KNUCKLESVSROUGE,      /* Knuckles vs Rouge                                */
+    STAGE_CANNONSCORESONIC,     /* Cannons Core: Sonic                         (CC) */
+    STAGE_CANNONSCOREEGGMAN,    /* Cannons Core: Eggman                        (CC) */
+    STAGE_CANNONSCORETAILS,     /* Cannons Core: Tails                         (CC) */
+    STAGE_CANNONSCOREROUGE,     /* Cannons Core: Rouge                        (CC2) */
+    STAGE_CANNONSCOREKNUCKLES,  /* Cannons Core: Knuckles                      (CC) */
+    STAGE_MISSION_2P,           /* Mission Street 2P                          (MS2) */
+    STAGE_FINALCHASE,           /* Final Chase                                 (FC) */
+    STAGE_WILDCANYON_2P,        /* Wild Canyon 2P                             (WC2) */
+    STAGE_SONICVSSHADOW2,       /* Sonic vs Shadow 2                                */
+    STAGE_COSMICWALL,           /* Cosmic Wall                                 (CW) */
+    STAGE_MADSPACE,             /* Mad Space                                   (MS) */
+    STAGE_SANDOCEAN_2P,         /* Sand Ocean                                 (SO2) */
+
+    STAGE_DRYLAGOON_2P,         /* Dry lagoon 2P                              (DL2) */
+    STAGE_SHORTPYRAMID_2P,      /* Pyramid Race                                     */
+    STAGE_HIDDENBASE_2P,        /* Hidden Base 2P                                   */
+    STAGE_AQUATICMINE_2P,       /* Pool Quest                                       */
+    STAGE_MADSPACE_2P,          /* Mad Space 2P                                     */
+    STAGE_SHORTDECK_2P,         /* Deck Race                                        */
+    STAGE_SHORTCITY_2P,         /* Downtown Race                                    */
+    STAGE_COSMICWALL_2P,        /* Cosmic Wall 2P                                   */
+    STAGE_PYRAMIDCAVE_2P,       /* Grind Race                                       */
+    STAGE_LOSTCOLONY_2P,        /* Lost Colony 2P                                   */
+    STAGE_ETERNALENGINE_2P,     /* Eternal Engine 2P                                */
+    STAGE_METALHARBOR_2P,       /* Metal Harbor 2P                                  */
+    STAGE_IRONGATE_2P,          /* Iron Gate 2P                                (I2) */
+    STAGE_DEATHCHAMBER_2P,      /* Death Chamber 2P                           (DC2) */
+
+    STAGE_B_BIGFOOT       = 60, /* Boss Big Foot                                    */
+    STAGE_B_HOTSHOT,            /* Boss Hot Shot                                    */
+    STAGE_B_FDOG,               /* Boss Flying Dog                                  */
+    STAGE_B_BIGBOGY,            /* Boss King Boom Boo                               */
+    STAGE_B_GOLEM,              /* Boss Egg Golem                                   */
+    STAGE_B_LAST1,              /* Boss Biolizard                                   */
+    STAGE_B_LAST2,              /* Boss Biohazard                                   */
+    STAGE_B_GOLEM_E,            /* Boss Egg Golem Eggman                            */
+
+    STAGE_CART            = 70, /* Route 101/280                                    */
+    STAGE_CARTMINI,             /* Cart Minigames Beginner/Standard/Expert          */
+
+    STAGE_CHAOWORLD       = 90, /* Chao World                                       */
 };
 
 enum {

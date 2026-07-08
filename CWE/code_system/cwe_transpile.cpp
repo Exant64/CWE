@@ -9,7 +9,7 @@ int Regs[16];
 void ChaoWorldExtendedRequired()
 {
 	//fix this later to not be 24 for future proofing (function from symbols that "return 24")
-	if (CurrentLevel == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
+	if (ssStageNumber == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
 		for (int i = 0; i < 24; i++) {
 			//REMOVED: shiny fruit value for FCE hack (FCE is not very common anymore)
 
@@ -1174,7 +1174,7 @@ void ChaoWorldExtendedRequired()
 	}
 
 	//invincibility on maincharobj if chao world 
-	if (CurrentLevel == 90 && playerpwp[0])
+	if (ssStageNumber == 90 && playerpwp[0])
 	{
 		playerpwp[0]->item = 1;
 	}
