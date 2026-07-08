@@ -38,7 +38,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 		{
 			chaoData->data.Gene = *a1;
 		}
-		chaoData->data.type = ChaoType_Child;
+		chaoData->data.type = TYPE_CHILD;
 		chaoData->data.InKindergarten = -1;
 		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
 		chaoData->data.BodyType = SADXBodyType_EggChao;
@@ -98,7 +98,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 		{
 			chaoData->data.Gene = *a1;
 		}
-		chaoData->data.type = ChaoType_Child;
+		chaoData->data.type = TYPE_CHILD;
 		chaoData->data.InKindergarten = -1;
 		chaoData->data.BodyType = SADXBodyType_EggChao;
 	}

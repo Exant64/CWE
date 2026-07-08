@@ -100,13 +100,13 @@ void __cdecl AL_IconDraw_r(task* tp)
 	//we trick the emotion ball drawing function to think the chao is of specified alignment
 	switch (entry.Data.IconType) {
 	case ICON_TYPE_BALL:
-		pParam->type = ChaoType_Neutral_Normal;
+		pParam->type = TYPE_N_NORMAL;
 		break;
 	case ICON_TYPE_HALO:
-		pParam->type = ChaoType_Hero_Normal;
+		pParam->type = TYPE_H_NORMAL;
 		break;
 	case ICON_TYPE_SPIKY:
-		pParam->type = ChaoType_Dark_Normal;
+		pParam->type = TYPE_D_NORMAL;
 		break;
 	}
 
@@ -337,8 +337,8 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	work->BaldAdjacencyIndexCount = 0;
 	
 	switch (pParam->type) {
-		case ChaoType_Tails:
-		case ChaoType_Amy:
+		case TYPE_TAILS:
+		case TYPE_AMY:
 			checkIfAdjacencyNeeded = true;
 			break;
 	}
@@ -420,7 +420,7 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 	CHAO_PARAM_GC* pParam = work->pParamGC;
 	int msg = (int)a3;
 
-	if (pParam->type < ChaoType_Tails) {
+	if (pParam->type < TYPE_TAILS) {
 		DrawMedicalChartText((char*)&a2->dword60[*(int*)&a2->dword60[4 * (int)a3]], a4, a5, a6, a7, a1);
 		return;
 	}
@@ -428,13 +428,13 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 	const char* str = "Error";
 
 	switch (pParam->type) {
-	case ChaoType_Tails:
+	case TYPE_TAILS:
 		str = "Tails";
 		break;
-	case ChaoType_Knuckles:
+	case TYPE_KNUCKLES:
 		str = "Knuckles";
 		break;
-	case ChaoType_Amy:
+	case TYPE_AMY:
 		str = "Amy";
 		break;
 	case 26:
@@ -476,20 +476,20 @@ int __cdecl sub_5366E0(task* a1, int a2)
 	auto pParam = GET_CHAOPARAM(a1);
 	switch (pParam->type)
 	{
-	case ChaoType_Empty:
-	case ChaoType_Good:
-	case ChaoType_Bad:
+	case TYPE_NONE:
+	case TYPE_DUMMY1:
+	case TYPE_DUMMY2:
 		return -1;
-	case ChaoType_Egg:
+	case TYPE_EGG:
 		return 0;
-	case ChaoType_Child:
+	case TYPE_CHILD:
 		return 1;
-	case ChaoType_Neutral_Chaos:
-	case ChaoType_Hero_Chaos:
-	case ChaoType_Dark_Chaos:
+	case TYPE_N_CHAOS:
+	case TYPE_H_CHAOS:
+	case TYPE_D_CHAOS:
 		return 7;
 	default:
-		if (pParam->type >= ChaoType_Tails) 
+		if (pParam->type >= TYPE_TAILS) 
 			return 7;
 
 		return ((unsigned __int8)pParam->type - 5) / 3 + 2;
@@ -620,17 +620,17 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 
 			switch (pParam->type)
 			{
-			case ChaoType_Child:
+			case TYPE_CHILD:
 				v8 = BBI_CPW_TYPE_CHILD;
 				break;
-			case ChaoType_Neutral_Chaos:
-			case ChaoType_Hero_Chaos:
-			case ChaoType_Dark_Chaos:
+			case TYPE_N_CHAOS:
+			case TYPE_H_CHAOS:
+			case TYPE_D_CHAOS:
 				v8 = BBI_CPW_TYPE_CHAOS;
 				break;
-			case ChaoType_Tails:
-			case ChaoType_Knuckles:
-			case ChaoType_Amy:
+			case TYPE_TAILS:
+			case TYPE_KNUCKLES:
+			case TYPE_AMY:
 				v8 = -1;
 				break;
 			case 26:
@@ -651,13 +651,13 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				chDrawBillboardSR(&AL_ChaoParamWindow_HudThingB[v8], v45, v44, -34.5f, 1, 1, -1, -1);
 			}
 			
-			if (pParam->type != ChaoType_Child
-				&& ((unsigned __int8)pParam->type <= ChaoType_Dark_Chaos || (unsigned __int8)pParam->type > ChaoType_Amy))
+			if (pParam->type != TYPE_CHILD
+				&& (pParam->type <= TYPE_D_CHAOS || pParam->type > TYPE_AMY))
 			{
 				float v43 = posX - 96;
 				float v42 = posY - 89;
 				chDrawBillboardSR(
-					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + ((unsigned __int8)pParam->type - 5) % 3],
+					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + (pParam->type - 5) % 3],
 					v43,
 					v42,
 					-35,

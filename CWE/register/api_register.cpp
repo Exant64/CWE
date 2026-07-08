@@ -160,7 +160,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.pEvolveFunc = [](task* tp) {
 			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 		
-			return pParam->type == ChaoType_Dark_Power && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
+			return pParam->type == TYPE_D_POWER && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
 		},
 
 		.Flags = 0,

@@ -363,7 +363,7 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 	const auto param = GET_CHAOPARAM(tp);
 
 	// if not normal colored or not regular adult chao
-	if(param->Color || param->type < 5 || param->type >= ChaoType_Neutral_Chaos) {
+	if(param->Color || param->type < 5 || param->type >= TYPE_N_CHAOS) {
 		return;
 	}
 

@@ -956,7 +956,7 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 	}
 	else if (Chao_NodeIndex == 1)
 	{
-		if (GET_CHAOPARAM(tp)->HideFeet && GET_CHAOPARAM(tp)->type >= 0 && GET_CHAOPARAM(tp)->type < (unsigned __int8)ChaoType_Neutral_Chaos)
+		if (GET_CHAOPARAM(tp)->HideFeet && GET_CHAOPARAM(tp)->type >= 0 && GET_CHAOPARAM(tp)->type < TYPE_N_CHAOS)
 		{
 			AL_SetBodyTexture(tp);
 

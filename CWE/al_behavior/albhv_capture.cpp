@@ -184,7 +184,7 @@ int ALBHV_Capture(task* tp) {
 				{
 					if (ChaoGlobal.PartsSetProb > njRandom())
 					{
-						if (pParamGC->type < (unsigned __int8)ChaoType_Neutral_Chaos)
+						if (pParamGC->type < TYPE_N_CHAOS)
 						{
 							pParamGC->BallType = 1;
 						}

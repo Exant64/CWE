@@ -6,11 +6,11 @@
 
 void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
 	if (pElement->type == 254) {
-		pParam->type = ChaoType_Child;
+		pParam->type = TYPE_CHILD;
 		pParam->BodyType = SADXBodyType_Omochao;
 	}
 	else if (pElement->type == 255) {
-		pParam->type = ChaoType_Child;
+		pParam->type = TYPE_CHILD;
 		pParam->BodyType = SADXBodyType_EggChao;
 	}
 	else {
@@ -88,22 +88,22 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 		pParam->nbSucceed >= 2)
 	{
 		switch (type) {
-		case ChaoType_Neutral_Fly:
-		case ChaoType_Hero_Fly:
-		case ChaoType_Dark_Fly:
-			type = ChaoType_Tails;
+		case TYPE_N_FLY:
+		case TYPE_H_FLY:
+		case TYPE_D_FLY:
+			type = TYPE_TAILS;
 			break;
 
-		case ChaoType_Neutral_Power:
-		case ChaoType_Hero_Power:
-		case ChaoType_Dark_Power:
-			type = ChaoType_Knuckles;
+		case TYPE_N_POWER:
+		case TYPE_H_POWER:
+		case TYPE_D_POWER:
+			type = TYPE_KNUCKLES;
 			break;
 
-		case ChaoType_Neutral_Run:
-		case ChaoType_Hero_Run:
-		case ChaoType_Dark_Run:
-			type = ChaoType_Amy;
+		case TYPE_N_RUN:
+		case TYPE_H_RUN:
+		case TYPE_D_RUN:
+			type = TYPE_AMY;
 			break;
 		}
 	}

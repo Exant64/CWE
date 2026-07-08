@@ -192,10 +192,10 @@ void __cdecl alpalSetBank(task* a1, int a2)
 		break;
 #endif
 #ifdef DARKPALETTE
-	case ChaoType_Dark_Fly:
+	case TYPE_D_FLY:
 		v2 = 7;
 		break;
-	case ChaoType_Dark_Normal:
+	case TYPE_D_NORMAL:
 		v2 = 8;
 		break;
 #endif
@@ -346,22 +346,22 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 
 	switch (v3)
 	{
-	case ChaoType_Child:
+	case TYPE_CHILD:
 		v4 = PVP_NCZ;
 		break;
-	case ChaoType_Hero_Normal:
+	case TYPE_H_NORMAL:
 		v4 = PVP_HNZ;
 		break;
-	case ChaoType_Hero_Swim:
+	case TYPE_H_SWIM:
 		v4 = PVP_HSZ;
 		break;
-	case ChaoType_Hero_Fly:
+	case TYPE_H_FLY:
 		v4 = PVP_HFZ;
 		break;
-	case ChaoType_Hero_Run:
+	case TYPE_H_RUN:
 		v4 = PVP_HRZ;
 		break;
-	case ChaoType_Hero_Power:
+	case TYPE_H_POWER:
 		v4 = PVP_HPZ;
 		break;
 #ifdef NEUTPALETTE
@@ -370,10 +370,10 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		break;
 #endif
 #ifdef DARKPALETTE
-	case ChaoType_Dark_Fly:
+	case TYPE_D_FLY:
 		v4 = PVP_DFZ;
 		break;
-	case ChaoType_Dark_Normal:
+	case TYPE_D_NORMAL:
 		v4 = PVP_DNZ;
 		break;
 #endif
@@ -383,7 +383,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	
 
 	flyswim = chaoData->FlySwim;
-	if (v3 == ChaoType_Child)
+	if (v3 == TYPE_CHILD)
 	{
 		evolution = chaoData->EvolutionProgress;
 		powerrun = chaoData->PowerRun;

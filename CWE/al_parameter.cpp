@@ -9,7 +9,7 @@ void AL_NameSet(char* lval, char* rval) {
 }
 
 bool AL_IsChild(task* tp) {
-	return GET_CHAOPARAM(tp)->type == ChaoType_Child;
+	return GET_CHAOPARAM(tp)->type == TYPE_CHILD;
 }
 
 bool AL_IsCustomChao(task* tp) {

@@ -99,7 +99,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 		CHAO_SAVE_INFO* v11 = (CHAO_SAVE_INFO*)AL_GetNewChaoSaveInfo();
 		if (v11) 
 		{
-			v11->data.type = ChaoType_Child;
+			v11->data.type = TYPE_CHILD;
 			v11->data.BodyType = SADXBodyType_Omochao;
 			v11->data.place = AL_GetStageNumber();
 			InitChaoDNA(&v11->data.Gene);
