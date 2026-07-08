@@ -53,7 +53,7 @@ void __cdecl sub_550620(task* a1)
 	if (GET_CHAOPARAM(a1)->BodyType != 1)
 	{
 		memset(GET_CHAOPARAM(a1), 0, sizeof(CHAO_PARAM_GC));
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 	}
 }
 static void __declspec(naked) sub_550620Hook()
@@ -138,7 +138,7 @@ void __cdecl EggChao_KeepOrDie(task* a1)
 		AL_SetBehavior(a1, ALBHV_Think);
 	}
 	else
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 }
 
 

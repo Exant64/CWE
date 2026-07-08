@@ -300,7 +300,7 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 		pTask->twp->btimer = a1->twp->id + 1;
 	}
 
-	DeleteObject_(orig);
+	DestroyTask(orig);
 
 	//15 extra characters have to be enough right 
 	pTask->twp->ang.x = (int)syMalloc(strlen(pMsg) + 15, __FILE__, __LINE__);

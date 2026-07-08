@@ -2031,10 +2031,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				{
 					goto LABEL_57;
 				}
-				a1->BuylistKinder[0]->exec = DeleteObject_;
-				a1->BuylistKinder[1]->exec = DeleteObject_;
-				a1->BuylistKinder[2]->exec = DeleteObject_;
-				a1->BuylistKinder[3]->exec = DeleteObject_;
+				a1->BuylistKinder[0]->exec = DestroyTask;
+				a1->BuylistKinder[1]->exec = DestroyTask;
+				a1->BuylistKinder[2]->exec = DestroyTask;
+				a1->BuylistKinder[3]->exec = DestroyTask;
 				goto LABEL_56;
 			}
 			if (a1->mItemDescItem.mCategory == 16)
@@ -2058,10 +2058,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				{
 					FMainWinAddLineId(a1, 21);
 					FMainWinWaitClose(a1);
-					a1->BuylistKinder[0]->exec = DeleteObject_;
-					a1->BuylistKinder[1]->exec = DeleteObject_;
-					a1->BuylistKinder[2]->exec = DeleteObject_;
-					a1->BuylistKinder[3]->exec = DeleteObject_;
+					a1->BuylistKinder[0]->exec = DestroyTask;
+					a1->BuylistKinder[1]->exec = DestroyTask;
+					a1->BuylistKinder[2]->exec = DestroyTask;
+					a1->BuylistKinder[3]->exec = DestroyTask;
 
 					goto LABEL_56;
 				}
@@ -2073,10 +2073,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 						save::CWE_PurchasedItems.size());
 					FMainWinAddLineStr(a1, buff);
 					FMainWinWaitClose(a1);
-					a1->BuylistKinder[0]->exec = DeleteObject_;
-					a1->BuylistKinder[1]->exec = DeleteObject_;
-					a1->BuylistKinder[2]->exec = DeleteObject_;
-					a1->BuylistKinder[3]->exec = DeleteObject_;
+					a1->BuylistKinder[0]->exec = DestroyTask;
+					a1->BuylistKinder[1]->exec = DestroyTask;
+					a1->BuylistKinder[2]->exec = DestroyTask;
+					a1->BuylistKinder[3]->exec = DestroyTask;
 
 					goto LABEL_56;
 				}
@@ -2095,10 +2095,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			FMainWinWaitClose(a1);
 			ALO_RingWinAdd(-a1->mItemDescInfo->PurchasePrice);
 
-			a1->BuylistKinder[0]->exec = DeleteObject_;
-			a1->BuylistKinder[1]->exec = DeleteObject_;
-			a1->BuylistKinder[2]->exec = DeleteObject_;
-			a1->BuylistKinder[3]->exec = DeleteObject_;
+			a1->BuylistKinder[0]->exec = DestroyTask;
+			a1->BuylistKinder[1]->exec = DestroyTask;
+			a1->BuylistKinder[2]->exec = DestroyTask;
+			a1->BuylistKinder[3]->exec = DestroyTask;
 
 			if (!AlItemIsRebuyable(a1->mItemDescItem))
 			{
@@ -2296,7 +2296,7 @@ static void SellHeldItem() {
 	task* pHeld = MainCharObj2[0]->HeldObject;
 	if (pHeld)
 	{
-		pHeld->exec = DeleteObject_;
+		pHeld->exec = DestroyTask;
 		if (MainCharObj1[0]) {
 			sub_46E5E0(0, (int)MainCharObj1[0]);
 		}

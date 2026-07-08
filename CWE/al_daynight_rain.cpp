@@ -67,7 +67,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 	work->angle = lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
 
 	if (work->timer++ >= work->timerLimit) {
-		DeleteObject_(tp);
+		DestroyTask(tp);
 		return;
 	}
 

@@ -58,7 +58,7 @@ static void TweenExecutor(task* tp) {
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);
 
 	if (tween->Timer == tween->FrameCount + 1) {
-		tp->exec = DeleteObject_;
+		tp->exec = DestroyTask;
 
 		if (tween->TweenPointer) {
 			*tween->TweenPointer = NULL;

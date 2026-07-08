@@ -1985,7 +1985,7 @@ static bool AL_DayNightCycle_CheckECWSafety() {
 
 static void AL_DayNightCycleManagerDestructor(task* tp) {
 	if (pDayNightTask) {
-		DeleteObject_(pDayNightTask);
+		DestroyTask(pDayNightTask);
 	}
 }
 

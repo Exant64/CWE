@@ -49,7 +49,7 @@ void CWE_CCL_Entry(task* tp) {
     }
 
 
-    if(!tp->twp->cwp || tp->exec == DeleteObject_)  {
+    if(!tp->twp->cwp || tp->exec == DestroyTask)  {
         return;
     }
 

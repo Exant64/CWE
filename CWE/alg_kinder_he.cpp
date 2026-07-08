@@ -717,9 +717,9 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		if (pMother)
 		{
 			//deinit
-			pMother->exec = DeleteObject_;
+			pMother->exec = DestroyTask;
 			pMother = 0;
-			pFather->exec = DeleteObject_;
+			pFather->exec = DestroyTask;
 			pFather = 0;
 		}
 

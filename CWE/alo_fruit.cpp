@@ -143,7 +143,7 @@ void ALO_FruitExecutor_Main_r(task *a1)
 				AL_ClearItemSaveInfoPtr(a1);
 			}
 
-			a1->exec = DeleteObject_;
+			a1->exec = DestroyTask;
 		}
 		//purple chaos drive is the last vanilla animal, after that comes the new ones
 		int type = SA2BAnimal_PurpleChaosDrive + 1; 
@@ -329,7 +329,7 @@ void __cdecl sub_545C20(task *a1)
 					AL_ClearItemSaveInfoPtr(a1);
 				}
 
-				a1->exec = DeleteObject_;
+				a1->exec = DestroyTask;
 				goto LABEL_54;
 			}
 		}

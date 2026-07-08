@@ -38,7 +38,7 @@ static void BullyStopperScenario (task* tp) {
 			pEntry[j].pCommu->pCommu = nullptr;
 		}
 
-		DeleteObject_(tp);
+		DestroyTask(tp);
 		break;
 	}
 }

@@ -132,7 +132,7 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 		0.0f,
 		30,
 		[](task* pParent) {
-			DeleteObject_(pParent);
+			DestroyTask(pParent);
 		}
 	);
 

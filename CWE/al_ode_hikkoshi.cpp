@@ -185,7 +185,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 	if (a1->twp->mode == 0) {
 		if (*(int*)0x1AED254 == 2) { // menu is quitting 
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
-			a1->exec = DeleteObject_;
+			a1->exec = DestroyTask;
 			return;
 		}
 	}

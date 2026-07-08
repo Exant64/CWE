@@ -26,7 +26,7 @@ void ButtonGuideDisp(task* tp) {
 
 void ButtonGuideExec(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr || AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
-		DeleteObject_(tp);
+		DestroyTask(tp);
 	}
 }
 

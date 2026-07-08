@@ -320,12 +320,12 @@ public:
 			break;
 		case ButtonMode::ToSelected:
 			if (m_iconTween) {
-				DeleteObject_(m_iconTween);
+				DestroyTask(m_iconTween);
 				m_iconTween = NULL;
 			}
 
 			if (m_textTween) {
-				DeleteObject_(m_textTween);
+				DestroyTask(m_textTween);
 				m_textTween = NULL;
 			}
 
@@ -353,12 +353,12 @@ public:
 			break;
 		case ButtonMode::ToUnselected:
 			if (m_iconTween) {
-				DeleteObject_(m_iconTween);
+				DestroyTask(m_iconTween);
 				m_iconTween = NULL;
 			}
 
 			if (m_textTween) {
-				DeleteObject_(m_textTween);
+				DestroyTask(m_textTween);
 				m_textTween = NULL;
 			}
 
@@ -1749,8 +1749,8 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		}
 		break;
 	case 4:
-		DeleteObject_(pChao); pChao = NULL;
-		DeleteObject_(pCustomizationControllerTask); pCustomizationControllerTask = NULL;
+		DestroyTask(pChao); pChao = NULL;
+		DestroyTask(pCustomizationControllerTask); pCustomizationControllerTask = NULL;
 
 		delete customizationController;
 		customizationController = NULL;

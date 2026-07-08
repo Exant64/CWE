@@ -200,7 +200,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task * a
 			else {
 				AL_SetAccessory(a1, v8->twp->ang.x);
 			}
-			v7->tp->exec = DeleteObject_;
+			v7->tp->exec = DestroyTask;
 		}
 	}
 	AL_SetMotionLinkStep(a1, 203, 35);
@@ -235,7 +235,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(tas
 			else {
 				AL_SetAccessory(a1, v8->twp->ang.x);
 			}
-			v7->tp->exec = DeleteObject_;
+			v7->tp->exec = DestroyTask;
 		}
 	}
 	return 1;
@@ -362,7 +362,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnSpecial(task* tp)
 			AL_ClearItemSaveInfoPtr(pSpecial);
 		}
 
-		pSpecial->exec = DeleteObject_;
+		pSpecial->exec = DestroyTask;
 		return BHV_RET_FINISH;
 	}	
 

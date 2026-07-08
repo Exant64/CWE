@@ -41,7 +41,7 @@ int __cdecl ALBHV_Wrench(task* a1)
 					AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)v9);
 					AL_ClearItemSaveInfoPtr(v7->tp);
 				}
-				v7->tp->exec = DeleteObject_;
+				v7->tp->exec = DestroyTask;
 			}
 		}
 		break;

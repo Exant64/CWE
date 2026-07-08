@@ -56,7 +56,7 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 		break;
 	case 1:	
 		if (!NazukeyaBuff[80]) {
-			nazukeyaObj->exec = DeleteObject_;
+			nazukeyaObj->exec = DestroyTask;
 
 			if (NazukeyaBuff[0x51] != 2) {//not "cancel"
 				memset(GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, 0, sizeof(AL_NAME));

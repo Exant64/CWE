@@ -103,7 +103,7 @@ void Social_Main(task* a1)
 		}
 
 		//kill
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 		return;
 	}
 	

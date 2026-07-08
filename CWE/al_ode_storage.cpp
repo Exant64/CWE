@@ -32,7 +32,7 @@ void AL_ChaoSelect_DeleteChao(AL_ChaoSelect* chaoSelect) {
 
 	for (size_t i = 0; i < vec.size(); i++) {
 		if (vec[i]) {
-			DeleteObject_(vec[i]);
+			DestroyTask(vec[i]);
 			vec[i] = 0;
 		}
 	}

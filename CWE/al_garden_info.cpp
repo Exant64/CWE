@@ -406,7 +406,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 		v7 = cweSaveFile.purchasedItemCount;
 		if (cweSaveFile.purchasedItemCount <= 0)
 		{
-			a2->exec = DeleteObject_;
+			a2->exec = DestroyTask;
 		}
 		else
 		{

@@ -104,7 +104,7 @@ ObjectFunc(PlayerSpeedUp_Main, 0x46DF80);
 ObjectFunc(PlayerSpeedUp_Delete, 0x46DFC0);
 ObjectFunc(PlayerSpeedUp, 0x46E000);
 FunctionPointer(Bool, CheckBreakObject, (task *_this, task *other), 0x46EC00);
-ObjectFunc(DeleteObject_, 0x46F720);
+ObjectFunc(DestroyTask, 0x46F720);
 FunctionPointer(void, RunObjectIndex, (int index), 0x46F8C0);
 FunctionPointer(int, RunMostObjects, (), 0x46FBA0);
 VoidFunc(UpdateObjects, 0x470010);
