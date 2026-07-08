@@ -58,7 +58,7 @@ static void MoreFacesMenu() {
 
     task* pHeld = MainCharObj2[0]->HeldObject;
     if(!pHeld) return;
-    if(pHeld->exec != Chao_Main) return;
+    if(pHeld->exec != ChaoExecutor) return;
     
     static int index = 0;
 

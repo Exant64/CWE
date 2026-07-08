@@ -53,7 +53,7 @@ void ChaoDisplayHookTest(task* tp) {
 
 	NJS_VECTOR backupPos = tp->twp->pos;
 	tp->twp->pos = { 0,0,0 };
-	Chao_Display(tp);
+	ChaoDisplayer(tp);
 	tp->twp->pos = backupPos;
 
 	OrthoDrawEnd();

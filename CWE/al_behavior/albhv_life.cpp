@@ -134,7 +134,7 @@ void __cdecl EggChao_KeepOrDie(task* a1)
 {
 	if (GET_CHAOPARAM(a1)->BodyType == 1)
 	{
-		a1->exec = Chao_Main;
+		a1->exec = ChaoExecutor;
 		AL_SetBehavior(a1, ALBHV_Think);
 	}
 	else
