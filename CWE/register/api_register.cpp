@@ -61,6 +61,8 @@ const char* JewelEggs[] = {
 
 void ThemeUnlockFunc(int ID)
 {
+	DataPointer(char, SonicLightShoesGot, 0x1DEB300);
+
 	if (ID)
 	{
 		if (ID == 1)
