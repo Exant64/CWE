@@ -230,14 +230,14 @@ public:
 		}
 
 		for (auto& pair : m_buttonDirectionPair) {
-			if (MenuButtons_Pressed[0] & pair.first) {
+			if (SWDATAE[0] & pair.first) {
 				if (UpdateSelection(pair.second)) {
 					PlaySelectSound();
 				}
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_A && m_selected)
+		if (SWDATAE[0] & Buttons_A && m_selected)
 			m_selected->Press(this);
 	}
 

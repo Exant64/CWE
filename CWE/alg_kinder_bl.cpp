@@ -1901,21 +1901,21 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	switch (a1->mBuyListMode) {
 	case 0:
-		if (MenuButtons_Pressed[0] & Buttons_L) {
+		if (SWDATAE[0] & Buttons_L) {
 			for (int i = a1->currentTab - 1; i >= 0; i--) {
 				if (SetTabIfItHasItem(i))
 					break;
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_R) {
+		if (SWDATAE[0] & Buttons_R) {
 			for (int i = a1->currentTab + 1; i < MarketTabCount; i++) {
 				if (SetTabIfItHasItem(i))
 					break;
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Up)
+		if (SWDATAE[0] & Buttons_Up)
 		{
 			if (a1->mBuyListCursor > 0)
 			{
@@ -1929,7 +1929,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				PlaySoundProbably(0x8000, 0, 0, 0);
 			}
 		}
-		if (MenuButtons_Pressed[0] & Buttons_Down)
+		if (SWDATAE[0] & Buttons_Down)
 		{
 			if (a1->mBuyListCursor < cweSaveFile.marketInventoryCount[TabCategory] - 1) {
 				a1->mBuyListCursor++;
@@ -2005,12 +2005,12 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 		{
 			a1->mBuyListSelect = 0;
 		}
-		if ((MenuButtons_Pressed[0] & 0x10) && a1->mBuyListSelect == 1)
+		if ((SWDATAE[0] & 0x10) && a1->mBuyListSelect == 1)
 		{
 			a1->mBuyListSelect = 0;
 			PlaySoundProbably(0x8000, 0, 0, 0);
 		}
-		if ((MenuButtons_Pressed[0] & 0x20) && !a1->mBuyListSelect)
+		if ((SWDATAE[0] & 0x20) && !a1->mBuyListSelect)
 		{
 			a1->mBuyListSelect = 1;
 			PlaySoundProbably(0x8000, 0, 0, 0);

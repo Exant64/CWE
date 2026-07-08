@@ -265,7 +265,7 @@ static void ButtonDraw(task* tp) {
 void AL_Odekake_MenuMaster_Selection() {
 	task* tp = AL_OdekakeMenuMaster_Data_ptr->tp;
 
-	if (MenuButtons_Pressed[0] & Buttons_Up) {
+	if (SWDATAE[0] & Buttons_Up) {
 		--AL_OdekakeMenuMaster_Data_ptr->cursorY;
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY < 0) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
@@ -276,7 +276,7 @@ void AL_Odekake_MenuMaster_Selection() {
 		ScrollingLogic(tp);
 	}
 
-	if (MenuButtons_Pressed[0] & Buttons_Down) {
+	if (SWDATAE[0] & Buttons_Down) {
 		++AL_OdekakeMenuMaster_Data_ptr->cursorY;
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY > odekakeMenuEntries.size() - 1) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = 0;
@@ -288,7 +288,7 @@ void AL_Odekake_MenuMaster_Selection() {
 		ScrollingLogic(tp);
 	}
 
-	if (MenuButtons_Pressed[0] & Buttons_B) {
+	if (SWDATAE[0] & Buttons_B) {
 		AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 
 		// trigger scrolling when jumping to exit button

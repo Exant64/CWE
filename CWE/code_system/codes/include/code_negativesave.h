@@ -14,12 +14,12 @@ void NegativeSave::OnFrame() {
     const auto negativeSaveSuffix = 0x4B4C425F;
 
     if(ChaoSaveText == vanillaSaveSuffix) {
-        if(MenuButtons_Held[0] & Buttons_X) {
+        if(SWDATA[0] & Buttons_X) {
             ChaoSaveText = negativeSaveSuffix;
         }
     }
     else if(ChaoSaveText == negativeSaveSuffix) {
-        if(!(MenuButtons_Held[0] & Buttons_X)) {
+        if(!(SWDATA[0] & Buttons_X)) {
             ChaoSaveText = vanillaSaveSuffix;
         }
     }

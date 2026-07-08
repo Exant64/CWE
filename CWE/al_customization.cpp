@@ -804,26 +804,26 @@ public:
 
 		if (IsSelected()) {
 			bool doTween = false;
-			if (MenuButtons_Pressed[0] & Buttons_Up) {
+			if (SWDATAE[0] & Buttons_Up) {
 				if (m_uiSelectY >= 1) {
 					m_uiSelectY--;
 					doTween = true;
 				}
 			}
-			if (MenuButtons_Pressed[0] & Buttons_Down) {
+			if (SWDATAE[0] & Buttons_Down) {
 				if (m_uiSelectY < GetItemCount() - 1) {
 					m_uiSelectY++;
 					doTween = true;
 				}
 			}
 
-			if (MenuButtons_Pressed[0] & Buttons_Left) {
+			if (SWDATAE[0] & Buttons_Left) {
 				if (m_uiSelectX >= 1) {
 					m_uiSelectX--;
 					if (!m_uiSelectX) m_canUnselect = false;
 				}
 			}
-			if (MenuButtons_Pressed[0] & Buttons_Right) {
+			if (SWDATAE[0] & Buttons_Right) {
 				if (m_uiSelectX < m_horizItemCount - 1) m_uiSelectX++;
 			}
 
@@ -1131,11 +1131,11 @@ private:
 	}
 
 	float GetSliderSpeed() const {
-		if (MenuButtons_Held[0] & Buttons_L) {
+		if (SWDATA[0] & Buttons_L) {
 			return 0.005f;
 		}
 
-		if (MenuButtons_Held[0] & Buttons_R) {
+		if (SWDATA[0] & Buttons_R) {
 			return 0.1f;
 		}
 
@@ -1293,7 +1293,7 @@ public:
 		// only animate the sine scaling if the elastic scaling from clicking on the slot finished
 		if(m_colorSlotScaleAnim <= 0.f) m_sineAng += 512;
 
-		if (!m_inSliderMenu && (MenuButtons_Pressed[0] & Buttons_B)) {
+		if (!m_inSliderMenu && (SWDATAE[0] & Buttons_B)) {
 			// exits the color menu
 			PlaySoundProbably(0x100A, 0, 0, 0);
 			ColorMenuOpened = false;
@@ -1306,17 +1306,17 @@ public:
 		const int minSelectionY = m_inSliderMenu ? sliderSelectionStart : 0;
 		const int maxSelectionY = !m_inSliderMenu ? (sliderSelectionStart - 1) : (sliderSelectionStart + 2); // color slots + 3 sliders - 1 (max not count)
 
-		if (MenuButtons_Pressed[0] & Buttons_Up) {
+		if (SWDATAE[0] & Buttons_Up) {
 			if (--m_selectionY < minSelectionY) m_selectionY = minSelectionY;
 			m_selectionX = 0;
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Down) {
+		if (SWDATAE[0] & Buttons_Down) {
 			if (++m_selectionY > maxSelectionY) m_selectionY = maxSelectionY;
 			m_selectionX = 0;
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Left) {
+		if (SWDATAE[0] & Buttons_Left) {
 			if (m_selectionY >= sliderSelectionStart) {
 				float& val = m_hsl[m_selectionY - sliderSelectionStart];
 				val -= GetSliderSpeed();
@@ -1330,7 +1330,7 @@ public:
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Right) {
+		if (SWDATAE[0] & Buttons_Right) {
 			if (m_selectionY >= sliderSelectionStart) {
 				float& val = m_hsl[m_selectionY - sliderSelectionStart];
 				val += GetSliderSpeed();
@@ -1350,7 +1350,7 @@ public:
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_A && m_selectionY < sliderSelectionStart) {
+		if (SWDATAE[0] & Buttons_A && m_selectionY < sliderSelectionStart) {
 			PlaySoundProbably(0x1007, 0, 0, 0);
 
 			const auto slotCount = GetColorSlotCount();
@@ -1360,7 +1360,7 @@ public:
 			CreateTween(NULL, EASE_OUT, INTERP_ELASTIC, &m_colorSlotScaleAnim, 1.f, 15, NULL);
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_B && m_inSliderMenu) {
+		if (SWDATAE[0] & Buttons_B && m_inSliderMenu) {
 			PlaySoundProbably(0x100A, 0, 0, 0);
 
 			m_inSliderMenu = false;
@@ -1549,22 +1549,22 @@ public:
 			if (IsSelected() && slotAccIndex != -1) {
 				if (!ColorMenuOpened) {
 					if (hasColorSlots) {
-						if (MenuButtons_Pressed[0] & Buttons_Left) {
+						if (SWDATAE[0] & Buttons_Left) {
 							m_editSelected = true;
 						}
-						if (MenuButtons_Pressed[0] & Buttons_Right) {
+						if (SWDATAE[0] & Buttons_Right) {
 							m_editSelected = false;
 							m_preventRightSelect = true;
 						}
 					}
 					else {
-						if (MenuButtons_Pressed[0] & Buttons_Left) {
+						if (SWDATAE[0] & Buttons_Left) {
 							PlaySoundProbably(0x8009, 0, 0, 0);
 						}
 					}
 
 					if (m_editSelected) {
-						if (!ColorMenuOpened && MenuButtons_Pressed[0] & Buttons_A) {
+						if (!ColorMenuOpened && SWDATAE[0] & Buttons_A) {
 							ColorMenuOpened = true;
 
 							PlaySoundProbably(0x1007, 0, 0, 0);
@@ -1636,7 +1636,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 				}
 
 				// if we're in the color menu we can't exit until we're out
-				if (ColorMenuOpened || !(MenuButtons_Pressed[0] & Buttons_B)) {
+				if (ColorMenuOpened || !(SWDATAE[0] & Buttons_B)) {
 					return;
 				}
 				

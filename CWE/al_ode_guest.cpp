@@ -64,7 +64,7 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 		a1->mode++;
 		break;
 	case 1:
-		if (MenuButtons_Pressed[0] & Buttons_B) {
+		if (SWDATAE[0] & Buttons_B) {
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
 
 			//DeleteObject_(pGuestChao);

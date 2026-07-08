@@ -355,8 +355,8 @@ void AL_NameDisplay_Main(task* a1)
 	switch (a1->twp->mode)
 	{
 	case 0:
-		if ((MenuButtons_Held[0] & Buttons_X) &&
-			(MenuButtons_Held[0] & Buttons_Y) &&
+		if ((SWDATA[0] & Buttons_X) &&
+			(SWDATA[0] & Buttons_Y) &&
 			MainCharObj2[0] && !MainCharObj2[0]->HeldObject)
 		{
 			if (gConfigVal.DayNightCheat)
@@ -368,13 +368,13 @@ void AL_NameDisplay_Main(task* a1)
 	case 1:
 		ControlEnabled = 0;
 
-		if (MenuButtons_Pressed[0] & Buttons_Up)
+		if (SWDATAE[0] & Buttons_Up)
 			a1->twp->smode = 0;
-		else if (MenuButtons_Pressed[0] & Buttons_Down)
+		else if (SWDATAE[0] & Buttons_Down)
 			a1->twp->smode = 1;
 
 
-		if (MenuButtons_Pressed[0] & Buttons_A)
+		if (SWDATAE[0] & Buttons_A)
 		{
 			ControlEnabled = 1;
 			a1->twp->mode = 2 + a1->twp->smode;
@@ -393,18 +393,18 @@ void AL_NameDisplay_Main(task* a1)
 	case 3:
 		ControlEnabled = 0;
 
-		if (MenuButtons_Pressed[0] & Buttons_Left)
+		if (SWDATAE[0] & Buttons_Left)
 			gDayNightCheatPhase = PHASE_DAY;
-		else if (MenuButtons_Pressed[0] & Buttons_Right)
+		else if (SWDATAE[0] & Buttons_Right)
 			gDayNightCheatPhase = PHASE_EVE;
-		else if (MenuButtons_Pressed[0] & Buttons_Down)
+		else if (SWDATAE[0] & Buttons_Down)
 			gDayNightCheatPhase = PHASE_NGT;
 
 		bool isDay = gDayNightCheatPhase == PHASE_CLD || gDayNightCheatPhase == PHASE_DAY;
-		if (isDay && (MenuButtons_Pressed[0] & Buttons_Y))
+		if (isDay && (SWDATAE[0] & Buttons_Y))
 			gDayNightCheatPhase = (gDayNightCheatPhase == PHASE_CLD) ? PHASE_DAY : PHASE_CLD;
 
-		if (MenuButtons_Pressed[0] & Buttons_A)
+		if (SWDATAE[0] & Buttons_A)
 		{
 			a1->twp->wtimer = 0;
 			a1->twp->mode = 0;

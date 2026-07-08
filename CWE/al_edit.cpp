@@ -41,20 +41,20 @@ void BlackMarketDebug(BlackMarketData *a1)
 	switch (mode)
 	{
 	case MD_IDLE:
-		if (MenuButtons_Held[0] & Buttons_X && MenuButtons_Held[0] & Buttons_Y) 
+		if (SWDATA[0] & Buttons_X && SWDATA[0] & Buttons_Y) 
 		{
 			selection = 0;
 			mode = MD_CATEGORY;
 		}
 		break;
 	case MD_CATEGORY:
-		if (MenuButtons_Pressed[0] & Buttons_Up) {
+		if (SWDATAE[0] & Buttons_Up) {
 			selection--;
 		}
 		if (selection < 0) {
 			selection = 0;
 		}
-		if (MenuButtons_Pressed[0] & Buttons_Down) {
+		if (SWDATAE[0] & Buttons_Down) {
 			selection++;
 		}
 		if (selection >= LengthOfArray(BMDebug)) {
@@ -70,30 +70,30 @@ void BlackMarketDebug(BlackMarketData *a1)
 				g_HelperFunctions->DisplayDebugString(i + 5 | 0x00150000, BMDebug[i]);
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_A && selection != 2 && CategoryAttribs[selection].Count > 0 && CategoryAttribs[selection].attrib) {
+		if (SWDATAE[0] & Buttons_A && selection != 2 && CategoryAttribs[selection].Count > 0 && CategoryAttribs[selection].attrib) {
 			category = selection;
 			selection = 0;
 			mode = MD_ITEM;
 		}
-		if (MenuButtons_Pressed[0] & Buttons_B) {
+		if (SWDATAE[0] & Buttons_B) {
 			mode = MD_IDLE;
 		}
 
-		MenuButtons_Pressed[0] = 0;
+		SWDATAE[0] = 0;
 		ControllerPointers[0]->on = 0;
 		ControllerPointers[0]->press = 0;
 		break;
 	case MD_ITEM:
-		if (MenuButtons_Pressed[0] & Buttons_Up) 
+		if (SWDATAE[0] & Buttons_Up) 
 			selection--;
 		if (selection < 0)
 			selection = CategoryAttribs[category].Count - 1;
-		if (MenuButtons_Pressed[0] & Buttons_Down) 
+		if (SWDATAE[0] & Buttons_Down) 
 			selection++;
 		if (selection >= CategoryAttribs[category].Count) 
 			selection = 0;
 
-		if (MenuButtons_Pressed[0] & Buttons_A) {
+		if (SWDATAE[0] & Buttons_A) {
 			mode = MD_SETINV;
 		}
 
@@ -117,10 +117,10 @@ void BlackMarketDebug(BlackMarketData *a1)
 				g_HelperFunctions->DisplayDebugString(i + 5 | 0x00150000, "-----");
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_B)
+		if (SWDATAE[0] & Buttons_B)
 			mode = MD_CATEGORY;
 
-		MenuButtons_Pressed[0] = 0;
+		SWDATAE[0] = 0;
 		ControllerPointers[0]->on = 0;
 		ControllerPointers[0]->press = 0;
 		break;
