@@ -1205,7 +1205,7 @@ static inline int XInputToDreamcastButtons(int buttons)
 
 // double __usercall@<st0>(NJS_VECTOR *a1@<eax>, NJS_VECTOR *a2@<ecx>)
 static const void *const CheckDistancePtr = (void*)0x77FBD0;
-static inline float CheckDistance(NJS_VECTOR *a1, NJS_VECTOR *a2)
+static inline float njDistanceP2P(NJS_VECTOR *a1, NJS_VECTOR *a2)
 {
 	float result;
 	__asm

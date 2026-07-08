@@ -85,7 +85,7 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 		{
 			if (func == ALBHV_TalkAllowed[j])
 			{
-				float dist = CheckDistance(&wk->pos, &pChao->twp->pos);
+				float dist = njDistanceP2P(&wk->pos, &pChao->twp->pos);
 				if (dist < 50.0f && njRandom() < 0.5f)
 					pSelectedChao = pChao;
 				break;

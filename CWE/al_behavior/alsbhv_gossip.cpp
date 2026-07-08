@@ -108,7 +108,7 @@ int ALBHV_SnapToGossip(task* a1)
 		a1->twp->ang.y = AdjustAngle_(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
 
 		v8.y = a1->twp->pos.y;
-		if (CheckDistance(&a1->twp->pos, &v8) <= 0.2)
+		if (njDistanceP2P(&a1->twp->pos, &v8) <= 0.2)
 			return 1;
 	}
 	return 0;

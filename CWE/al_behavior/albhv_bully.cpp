@@ -481,7 +481,7 @@ static task* FindChaoToBully(task* tp) {
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				float dist = CheckDistance(&work->pos, &pChao->twp->pos);
+				float dist = njDistanceP2P(&work->pos, &pChao->twp->pos);
 
 				if (dist < 100.f) {
 					pSelectedChao = pChao;
@@ -516,7 +516,7 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->pos, &work->pos);
+				const float dist = njDistanceP2P(&GET_CHAOWK(pBullyChao)->pos, &work->pos);
 
 				if (dist < distClosest) {
 					pSelectedChao = pChao;

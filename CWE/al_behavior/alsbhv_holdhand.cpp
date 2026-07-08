@@ -56,7 +56,7 @@ int ALBHV_HoldHands_Left(task* a1)
 		otherChao->twp->ang.y = AdjustAngle_(otherChao->twp->ang.y, a1->twp->ang.y, 1024);
 
 		v8.y = otherChao->twp->pos.y;
-		if(CheckDistance(&v8, &otherChao->twp->pos) <= 0.2)
+		if(njDistanceP2P(&v8, &otherChao->twp->pos) <= 0.2)
 			wk->Behavior.Mode++;
 		break;
 	case 2:
