@@ -165,18 +165,18 @@ extern "C"
 
 		if (Guest.Type == 0) {
 			Guest.Type = param.type;
-			Guest.Alignment = param.Alignment;
-			Guest.Magnitude = param.EvolutionProgress;
-			Guest.FlySwim = param.FlySwim;
-			Guest.RunPower = param.PowerRun;
+			Guest.Alignment = param.body.APos;
+			Guest.Magnitude = param.body.growth;
+			Guest.FlySwim = param.body.VPos;
+			Guest.RunPower = param.body.HPos;
 
 		}
 		else {
 			param.type = Guest.Type;
-			param.Alignment = Guest.Alignment;
-			param.EvolutionProgress = Guest.Magnitude;
-			param.FlySwim = Guest.FlySwim;
-			param.PowerRun = Guest.RunPower;
+			param.body.APos = Guest.Alignment;
+			param.body.growth = Guest.Magnitude;
+			param.body.VPos = Guest.FlySwim;
+			param.body.HPos = Guest.RunPower;
 		}
 
 		param.life = 100;

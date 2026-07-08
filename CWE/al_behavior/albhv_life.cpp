@@ -41,7 +41,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 		chaoData->data.type = TYPE_CHILD;
 		chaoData->data.InKindergarten = -1;
 		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
-		chaoData->data.BodyType = SADXBodyType_EggChao;
+		chaoData->data.body.FormNum = SADXBodyType_EggChao;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}
 	else
@@ -50,7 +50,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 
 void __cdecl sub_550620(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType != 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
 	{
 		memset(GET_CHAOPARAM(a1), 0, sizeof(CHAO_PARAM_GC));
 		a1->exec = DestroyTask;
@@ -72,7 +72,7 @@ static void __declspec(naked) sub_550620Hook()
 
 void __cdecl EggChao_ALO_Delete(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType != 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
 		ALW_CancelEntry(a1);
 }
 static void __declspec(naked) EggChao_ALO_Delete_Hook()
@@ -92,7 +92,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 {
 	GET_CWEPARAM(chaoData)->ForceReincarnate = false;
 	
-	if (chaoData->data.BodyType == 1)
+	if (chaoData->data.body.FormNum == 1)
 	{
 		if (a1)
 		{
@@ -100,7 +100,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 		}
 		chaoData->data.type = TYPE_CHILD;
 		chaoData->data.InKindergarten = -1;
-		chaoData->data.BodyType = SADXBodyType_EggChao;
+		chaoData->data.body.FormNum = SADXBodyType_EggChao;
 	}
 	else
 		CreateChaoEgg(a1, chaoData, a3, position, a5);
@@ -109,7 +109,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
 {
 	chaowk* data1 = (chaowk*)((int)a1 - 0xAC);
-	if (data1->pParamGC->BodyType == 1)
+	if (data1->pParamGC->body.FormNum == 1)
 		Chao_RegAnimationTbl(a1, "alm_egg_crawl_start");
 	else
 		Chao_Animation(a1, a2);
@@ -132,7 +132,7 @@ static void __declspec(naked) EggChaoCrawlHook()
 
 void __cdecl EggChao_KeepOrDie(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType == 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum == 1)
 	{
 		a1->exec = ChaoExecutor;
 		AL_SetBehavior(a1, ALBHV_Think);

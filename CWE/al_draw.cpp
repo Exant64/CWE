@@ -167,11 +167,11 @@ static void AL_DrawToy(AL_OBJECT* pObject) {
 }
 
 static bool IsOmochao(const task* tp) {
-	return GET_CHAOPARAM(tp)->BodyType == 2;
+	return GET_CHAOPARAM(tp)->body.FormNum == 2;
 }
 
 static bool IsEggChao(const task* tp) {
-	return GET_CHAOPARAM(tp)->BodyType == 1;
+	return GET_CHAOPARAM(tp)->body.FormNum == 1;
 }
 
 void AL_SetMotionMatrix(AL_OBJECT* pObject) {
@@ -287,10 +287,10 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model)
 {
 	ChaoColoring(
-		GET_CHAOWK(a1)->pParamGC->Texture,
-		GET_CHAOWK(a1)->pParamGC->Color,
-		GET_CHAOWK(a1)->pParamGC->Shiny,
-		GET_CHAOWK(a1)->pParamGC->MonotoneHighlights,
+		GET_CHAOWK(a1)->pParamGC->body.JewelNum,
+		GET_CHAOWK(a1)->pParamGC->body.ColorNum,
+		GET_CHAOWK(a1)->pParamGC->body.MultiNum,
+		GET_CHAOWK(a1)->pParamGC->body.NonTex,
 		GET_CWEPARAM(a1)->ShinyJewelMonotone,
 		model);
 }
@@ -525,7 +525,7 @@ bool EggChaoFeetCheck(task* a1) {
 	//if doesnt have hidefeet stop
 	//but if it does, make sure youre not rendering arm_l and arm_r
 	return !IsEggChao(a1) ||
-		(!GET_CHAOPARAM(a1)->HideFeet || (Chao_NodeIndex != AL_PART_REG_L && Chao_NodeIndex != AL_PART_REG_R));
+		(!GET_CHAOPARAM(a1)->body.ObakeBody || (Chao_NodeIndex != AL_PART_REG_L && Chao_NodeIndex != AL_PART_REG_R));
 }
 
 void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj)
@@ -555,33 +555,33 @@ void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj)
 
 		AL_DrawToy(pObject);
 
-		if (IsOmochao(tp) && !GET_CHAOPARAM(tp)->Headgear && Chao_NodeIndex == 27 && GET_CHAOWK(tp)->Face.MouthCurrNum != 0) {
+		if (IsOmochao(tp) && !GET_CHAOPARAM(tp)->body.ObakeHead && Chao_NodeIndex == 27 && GET_CHAOWK(tp)->Face.MouthCurrNum != 0) {
 			njSetTexture(&AL_BODY);
 			chCnkDrawObject(&omochao_mouth);
 		}
 
-		if (IsOmochao(tp) && GET_CHAOPARAM(tp)->Headgear && (Chao_NodeIndex == 29 || Chao_NodeIndex == 18 || Chao_NodeIndex == 21))
+		if (IsOmochao(tp) && GET_CHAOPARAM(tp)->body.ObakeHead && (Chao_NodeIndex == 29 || Chao_NodeIndex == 18 || Chao_NodeIndex == 21))
 			goto LABEL_98;
 
 		if ((Chao_NodeIndex == 16 && IsOmochao(tp)) || (Chao_NodeIndex == 1 && IsEggChao(tp)))
 		{
-			if (IsOmochao(tp) && GET_CHAOPARAM(tp)->Headgear) {
+			if (IsOmochao(tp) && GET_CHAOPARAM(tp)->body.ObakeHead) {
 				njSetTexture(&AL_BODY);
-				AL_DrawMask(GET_CHAOPARAM(tp)->Headgear);
+				AL_DrawMask(GET_CHAOPARAM(tp)->body.ObakeHead);
 				goto LABEL_98;
 			}
 		}
-		else if (Chao_NodeIndex == 35 && GET_CHAOPARAM(tp)->Medal)
+		else if (Chao_NodeIndex == 35 && GET_CHAOPARAM(tp)->body.MedalNum)
 		{
 			njPushMatrixEx();
 			//njScale(2, 2, 2);
 			njSetTexture((NJS_TEXLIST*)0x1366AD4);
-			njCnkDrawObject(dword_12E58B8[GET_CHAOPARAM(tp)->Medal]);
+			njCnkDrawObject(dword_12E58B8[GET_CHAOPARAM(tp)->body.MedalNum]);
 			njPopMatrixEx();
 		}
 
 		njSetTexture(&AL_BODY);
-		if (IsOmochao(tp) && !GET_CHAOPARAM(tp)->Headgear)
+		if (IsOmochao(tp) && !GET_CHAOPARAM(tp)->body.ObakeHead)
 		{
 			v36 = GET_CHAOWK(tp)->Face.EyeLidExpressionCurrSlopeAng;
 			v44 = GET_CHAOWK(tp)->Face.EyeLidExpressionCurrCloseAng + GET_CHAOWK(tp)->Face.EyeLidBlinkAng - 0x4000;
@@ -625,7 +625,7 @@ void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj)
 
 			if (IsEggChao(tp)) {
 				//copy shiny jewel (material color)
-				if (Chao_NodeIndex == 1 && GET_CHAOPARAM(tp)->Color > 0)
+				if (Chao_NodeIndex == 1 && GET_CHAOPARAM(tp)->body.ColorNum > 0)
 					*(int*)((__int16*)pOriginalObj->model->plist + 2) = *(int*)((__int16*)pObject->pModel->PList + 2);
 
 				//copy feet color and texture onto egg chao feet
@@ -693,7 +693,7 @@ void __cdecl DrawEggChao(task* a1)
 	RotateX(data1->ang.x);
 	RotateY(data1->ang.y);
 
-	if (ssGameMode != MD_GAME_PAUSE && GET_CHAOPARAM(a1)->BodyType == 1)
+	if (ssGameMode != MD_GAME_PAUSE && GET_CHAOPARAM(a1)->body.FormNum == 1)
 	{
 		if (GET_CHAOWK(a1)->scl.y < 1.0f)
 			GET_CHAOWK(a1)->scl.y += 0.06f;
@@ -712,9 +712,9 @@ void __cdecl DrawEggChao(task* a1)
 	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 
 	Chao_NodeIndex = 0;
-	if (GET_CHAOPARAM(a1)->BodyType == 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum == 1)
 		DrawOtherChao(a1, data1->Shape.pObject, &object_0023CC1C);
-	else if (GET_CHAOPARAM(a1)->BodyType == 2)
+	else if (GET_CHAOPARAM(a1)->body.FormNum == 2)
 		DrawOtherChao(a1, data1->Shape.pObject, &object_00254A0C);
 
 	LoadControl3D();
@@ -929,31 +929,31 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 	AL_DrawToy(pObject);
 
 	bool hideHat = false;
-	if (GET_CHAOPARAM(tp)->Headgear)
+	if (GET_CHAOPARAM(tp)->body.ObakeHead)
 	{
 		//REMOVE WRONG HAT
-		if (GET_CHAOPARAM(tp)->Headgear >= 85)
+		if (GET_CHAOPARAM(tp)->body.ObakeHead >= 85)
 		{
-			int index = GET_CHAOPARAM(tp)->Headgear - 85;
+			int index = GET_CHAOPARAM(tp)->body.ObakeHead - 85;
 			if (MaskObjObjectList[index].first == &object_alo_missing)
-				GET_CHAOPARAM(tp)->Headgear = 0;
+				GET_CHAOPARAM(tp)->body.ObakeHead = 0;
 		}
 
 		hideHat = true;
 	}
 
 	if (Chao_NodeIndex == 16) {
-		if (GET_CHAOPARAM(tp)->Headgear)
+		if (GET_CHAOPARAM(tp)->body.ObakeHead)
 		{
 			njSetTexture(&AL_BODY);
-			AL_DrawMask(GET_CHAOPARAM(tp)->Headgear);
+			AL_DrawMask(GET_CHAOPARAM(tp)->body.ObakeHead);
 
 			goto LABEL_98;
 		}
 	}
 	else if (Chao_NodeIndex == 1)
 	{
-		if (GET_CHAOPARAM(tp)->HideFeet && GET_CHAOPARAM(tp)->type >= 0 && GET_CHAOPARAM(tp)->type < TYPE_N_CHAOS)
+		if (GET_CHAOPARAM(tp)->body.ObakeBody && GET_CHAOPARAM(tp)->type >= 0 && GET_CHAOPARAM(tp)->type < TYPE_N_CHAOS)
 		{
 			AL_SetBodyTexture(tp);
 
@@ -969,10 +969,10 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 			goto LABEL_95;
 		}
 	}
-	else if (Chao_NodeIndex == 35 && GET_CHAOPARAM(tp)->Medal)
+	else if (Chao_NodeIndex == 35 && GET_CHAOPARAM(tp)->body.MedalNum)
 	{
 		njSetTexture(&stru_1366AD4);
-		njCnkDrawObject(dword_12E58B8[GET_CHAOPARAM(tp)->Medal]);
+		njCnkDrawObject(dword_12E58B8[GET_CHAOPARAM(tp)->body.MedalNum]);
 		goto LABEL_98;
 	}
 	if (((!hideHat)
@@ -988,7 +988,7 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 		&& Chao_NodeIndex != 31
 		&& Chao_NodeIndex != 27
 		&& Chao_NodeIndex != 29)
-		&& (!GET_CHAOPARAM(tp)->HideFeet
+		&& (!GET_CHAOPARAM(tp)->body.ObakeBody
 			|| GET_CHAOPARAM(tp)->type >= (unsigned __int8)CharacterIndex
 			|| (GET_CWEPARAM(tp)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39)) && Chao_NodeIndex != 6 && Chao_NodeIndex != 13 && Chao_NodeIndex != 8))
 	{
@@ -1144,7 +1144,7 @@ static void EggDisplayer_r(task* tp) {
 	const auto backupTex = AL_DayNightCycle_PreDrawSetupShinyTexture();
 
 	// if the egg is shiny
-	const auto eggType = GET_CHAOPARAM(tp)->EggColor;
+	const auto eggType = GET_CHAOPARAM(tp)->body.EggColor;
 	if (eggType >= ChaoEggColor_NormalShiny && eggType <= ChaoEggColor_BlackShiny_TwoTone) {
 		AL_DayNightCycle_SetLerpShinyTexture();
 	}

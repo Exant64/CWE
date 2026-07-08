@@ -123,7 +123,7 @@ LABEL_10:
 		break;
 	}
 
-	if (v4->pParamGC->BodyType != 2) 
+	if (v4->pParamGC->body.FormNum != 2) 
 	{
 		//colors
 		if (GET_CWEPARAM(a3)->EyeColor)

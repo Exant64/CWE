@@ -58,7 +58,7 @@ void ALBHV_Capture_Parts(task* tp, int minitype) {
 				//	Chao_InitAnimalParts(v1, v17, -1);
 				if (part == PARTS_KIND_REG && minitype != SA2BAnimal_Bat)
 				{
-					pParamGC->HideFeet = 0;
+					pParamGC->body.ObakeBody = 0;
 				}
 			}
 		}
@@ -78,7 +78,7 @@ void ALBHV_Capture_Parts(task* tp, int minitype) {
 
 				if (part == 4 && minitype != 17)
 				{
-					pParamGC->HideFeet = 0;
+					pParamGC->body.ObakeBody = 0;
 				}
 			}
 		}
@@ -178,7 +178,7 @@ int ALBHV_Capture(task* tp) {
 
 				if (ChaoGlobal.PartsRemoveProb > njRandom() && minitype != SA2BAnimal_HalfFish)
 				{
-					pParamGC->BallType = 0;
+					pParamGC->body.HonbuNum = 0;
 				}
 				if (minitype == SA2BAnimal_HalfFish)
 				{
@@ -186,13 +186,13 @@ int ALBHV_Capture(task* tp) {
 					{
 						if (pParamGC->type < TYPE_N_CHAOS)
 						{
-							pParamGC->BallType = 1;
+							pParamGC->body.HonbuNum = 1;
 						}
 					}
 				}
 				else if (minitype == SA2BAnimal_Bat && ChaoGlobal.PartsSetProb > njRandom())
 				{
-					pParamGC->HideFeet = 1;
+					pParamGC->body.ObakeBody = 1;
 				}
 				
 				if (AL_IsChild(tp)) {

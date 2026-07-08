@@ -54,12 +54,12 @@ static void AL_GeneColorMixing(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	// darky said this was because it was different for some reason on photoshop too
 	// and he didn't mind because it was a happy accident, so we'll keep it for now too
 	if(pGene->Color[0] == 2 && pGene->Color[1] == 7) {
-		pParam->Color = 43;
+		pParam->body.ColorNum = 43;
 		return;
 	}
 
 	if(pGene->Color[0] == 13 && pGene->Color[1] == 7) {
-		pParam->Color = 54;
+		pParam->body.ColorNum = 54;
 		return;
 	}
 
@@ -70,7 +70,7 @@ static void AL_GeneColorMixing(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 		const bool checkPair2 = pGene->Color[1] == entry.color_a && pGene->Color[0] == entry.color_b;
 
 		if(checkPair1 || checkPair2) {
-			pParam->Color = entry.color_result;
+			pParam->body.ColorNum = entry.color_result;
 			break;
 		}
 	}
@@ -135,13 +135,13 @@ static void AL_GeneVaryingShades(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	// add the original shade to the pool aswell
 	shades.push_back(color);
 
-	pParam->Color = shades[size_t(njRandom() * (shades.size() - 0.001f))];
+	pParam->body.ColorNum = shades[size_t(njRandom() * (shades.size() - 0.001f))];
 }
 
 static void AL_GeneAnalyzeMoreFaces(CHAO_PARAM_GC* pParam) {
 	if(gConfigVal.MoreFaces == CFG_MORE_FACE_RANDOM) {
-		pParam->EyeType = Uint8(njRandom() * (float(ChaoEyes_Mean) + 0.999f));
-		pParam->MouthType = Uint8(njRandom() * (float(0x10) + 0.999f));
+		pParam->body.DefaultEyeNum = Uint8(njRandom() * (float(ChaoEyes_Mean) + 0.999f));
+		pParam->body.DefaultMouthNum = Uint8(njRandom() * (float(0x10) + 0.999f));
 
 		return;
 	}
@@ -195,8 +195,8 @@ static void AL_GeneAnalyzeMoreFaces(CHAO_PARAM_GC* pParam) {
 
 		const auto& entry = NewFaceEntries[acceptedEntryIndices[index - 1]];
 
-		pParam->EyeType = entry.Eye;
-		pParam->MouthType = entry.Mouth;
+		pParam->body.DefaultEyeNum = entry.Eye;
+		pParam->body.DefaultMouthNum = entry.Mouth;
 	}
 }
 
@@ -221,7 +221,7 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	if (gConfigVal.LuckyChao) {
 		const float luckyChaoChance = 1.f / 60.f;
 		if(njRandom() < luckyChaoChance) {
-			pParam->Headgear = 1 + Uint8(njRandom() * (14 - 1 + 0.999f));
+			pParam->body.ObakeHead = 1 + Uint8(njRandom() * (14 - 1 + 0.999f));
 		}
 
 		for(size_t i = 0; i < _countof(pParamCwe->Accessories); ++i) {
@@ -312,10 +312,10 @@ void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene)
 }
 
 static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
-	if (param->Texture != 0) return;
+	if (param->body.JewelNum != 0) return;
 	if (param->field_19 == 1) return;
 
-	switch (param->Medal) {
+	switch (param->body.MedalNum) {
 	case ChaoMedal_Aquamarine:
 	case ChaoMedal_Sapphire:
 		gene.Jewel[0] = ChaoTexture_SkyBlueJewel;
@@ -363,14 +363,14 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 	const auto param = GET_CHAOPARAM(tp);
 
 	// if not normal colored or not regular adult chao
-	if(param->Color || param->type < 5 || param->type >= TYPE_N_CHAOS) {
+	if(param->body.ColorNum || param->type < 5 || param->type >= TYPE_N_CHAOS) {
 		return;
 	}
 
 	gene.Color[0] = 0;
 	gene.Color[1] = 0;
 
-	if(param->EvolutionProgress < 0.8f) {
+	if(param->body.growth < 0.8f) {
 		return;
 	}
 
@@ -413,8 +413,8 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 
 	const auto& entry = ColorEntries[param->type - 5];
 
-	if(param->PowerRun > 0.8f) {
-		if(param->PowerRun < 1.5f) {
+	if(param->body.HPos > 0.8f) {
+		if(param->body.HPos < 1.5f) {
 			gene.Color[0] = gene.Color[1] = entry.power;
 		}
 		else {
@@ -422,8 +422,8 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 		}
 	}
 
-	if(param->PowerRun < -0.8f) {
-		if(param->PowerRun > -1.5f) {
+	if(param->body.HPos < -0.8f) {
+		if(param->body.HPos > -1.5f) {
 			gene.Color[0] = gene.Color[1] = entry.run;
 		}
 		else {
@@ -431,8 +431,8 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 		}
 	}
 
-	if(param->FlySwim > 0.8f) {
-		if(param->FlySwim < 1.5f) {
+	if(param->body.VPos > 0.8f) {
+		if(param->body.VPos < 1.5f) {
 			gene.Color[0] = gene.Color[1] = entry.fly;
 		}
 		else {
@@ -440,8 +440,8 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 		}
 	}
 
-	if(param->FlySwim < -0.8f) {
-		if(param->FlySwim > -1.5f) {
+	if(param->body.VPos < -0.8f) {
+		if(param->body.VPos > -1.5f) {
 			gene.Color[0] = gene.Color[1] = entry.swim;
 		}
 		else {
@@ -471,10 +471,10 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	if (*(char*)0x0053FD6C == 1)
 	{
 		float Chance = 0.0f;
-		if (GET_CHAOPARAM(pMotherTask)->field_19 != 1 && GET_CHAOPARAM(pMotherTask)->Medal == 7)
+		if (GET_CHAOPARAM(pMotherTask)->field_19 != 1 && GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
-		if (GET_CHAOPARAM(pFatherTask)->field_19 != 1 && GET_CHAOPARAM(pFatherTask)->Medal == 7)
+		if (GET_CHAOPARAM(pFatherTask)->field_19 != 1 && GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
 		if (Chance > 0)

@@ -104,10 +104,10 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, AL_SHAPE_ELEMENT* a3, N
 	{
 		task* player = KarateMainExec_Ptr->pointerToSaveThing;
 		KarateChaoExec_Data2* data2 = (KarateChaoExec_Data2*)player->awp;
-		opponent->APos = (short)(data2->chaoDataPointer->data.Alignment * 10000.0f);
-		opponent->Growth = (short)(data2->chaoDataPointer->data.EvolutionProgress * 10000.0f);
-		opponent->VPos = (short)(data2->chaoDataPointer->data.FlySwim * 10000.0f);
-		opponent->HPos = (short)(data2->chaoDataPointer->data.PowerRun * 10000.0f);
+		opponent->APos = (short)(data2->chaoDataPointer->data.body.APos * 10000.0f);
+		opponent->Growth = (short)(data2->chaoDataPointer->data.body.growth * 10000.0f);
+		opponent->VPos = (short)(data2->chaoDataPointer->data.body.VPos * 10000.0f);
+		opponent->HPos = (short)(data2->chaoDataPointer->data.body.HPos * 10000.0f);
 		opponent->type = data2->chaoDataPointer->data.type;
 		for (int i = 0; i < 7; i++)
 		{
@@ -126,7 +126,7 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, AL_SHAPE_ELEMENT* a3, N
 	fullData->partsDX.MinimalParts[7] = SADXAnimal_Seal;
 
 	if (opponent->MultiNum == 3) {
-		fullData->Shiny = 1;
+		fullData->body.MultiNum = 1;
 		pParamCwe->ShinyJewelMonotone = 1;
 	}
 
@@ -350,7 +350,7 @@ static void Chao_Main_r(task* a1)
 	//immortality
 	if (*(char*)0x0053FD6C == 1) //new challenge enabled check
 	{
-		if (pParam->Medal == 8)
+		if (pParam->body.MedalNum == 8)
 		{
 			if (pParam->life < 1000) pParam->life = 1000;
 			if (pParam->LifeMax < 1000) pParam->LifeMax = 1000;
@@ -374,8 +374,8 @@ static void Chao_Main_r(task* a1)
 	}
 
 	//monster transparency fix
-	if (pParam->FlySwim < -1 || pParam->FlySwim > 1 ||
-		pParam->PowerRun < -1 || pParam->PowerRun > 1)
+	if (pParam->body.VPos < -1 || pParam->body.VPos > 1 ||
+		pParam->body.HPos < -1 || pParam->body.HPos > 1)
 	{
 		if (GET_CHAOWK(a1)->Face.pMouthObject && GET_CHAOWK(a1)->Face.pMouthObject->model)
 		{

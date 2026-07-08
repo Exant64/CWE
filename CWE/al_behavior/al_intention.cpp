@@ -126,7 +126,7 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 			int nbTimesTheyMet = AL_KW_GetMeetChao(a1, pSelectedChao);
 			if (njRandom() > 0.75f && nbTimesTheyMet >= 10) {
 				//easter egg, unlock pearl medal if other chao is pearl, found by chao professor
-				if (GET_CHAOPARAM(pSelectedChao)->Texture == 12)
+				if (GET_CHAOPARAM(pSelectedChao)->body.JewelNum == 12)
 					GET_CHAOPARAM(a1)->DoctorMedal |= (1 << 10);
 
 				if(njRandom() > 0.5f)

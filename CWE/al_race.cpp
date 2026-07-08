@@ -150,7 +150,7 @@ void WinJewelChaoInRace() {
 		if (param->type != 0) {
 			chaoCount++;
 
-			if (param->Texture == texture) noTexture = false;
+			if (param->body.JewelNum == texture) noTexture = false;
 		}
 	}
 

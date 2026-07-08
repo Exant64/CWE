@@ -57,15 +57,15 @@ void AL_ParameterAddAPos(task* a1, float a2)
 
 	chaowk* work = GET_CHAOWK(a1);
 	v3 = work->pParamGC;
-	v4 = v3->Alignment + a2;
-	v3->Alignment = v4;
+	v4 = v3->body.APos + a2;
+	v3->body.APos = v4;
 	if (v4 > 1.0)
 	{
-		v3->Alignment = 1.0;
+		v3->body.APos = 1.0;
 	}
-	if (v3->Alignment < -1.0)
+	if (v3->body.APos < -1.0)
 	{
-		v3->Alignment = -1.0;
+		v3->body.APos = -1.0;
 	}
 	work->Shape.Flag |= 2u;
 }
@@ -103,14 +103,14 @@ void IncrementFlySwim(task* a1, float a2)
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
-	v3->FlySwim += a2;
-	if (v3->FlySwim > *(float*)0x1312C88)
+	v3->body.VPos += a2;
+	if (v3->body.VPos > *(float*)0x1312C88)
 	{
-		v3->FlySwim = *(float*)0x1312C88;
+		v3->body.VPos = *(float*)0x1312C88;
 	}
-	if (v3->FlySwim < -*(float*)0x1312C88)
+	if (v3->body.VPos < -*(float*)0x1312C88)
 	{
-		v3->FlySwim = -*(float*)0x1312C88;
+		v3->body.VPos = -*(float*)0x1312C88;
 	}
 	v2->Shape.Flag |= 2u;
 }
@@ -121,14 +121,14 @@ void IncrementPowerRun(task* a1, float a2)
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
-	v3->PowerRun += a2;
-	if (v3->PowerRun > *(float*)0x1312C88)
+	v3->body.HPos += a2;
+	if (v3->body.HPos > *(float*)0x1312C88)
 	{
-		v3->PowerRun = *(float*)0x1312C88;
+		v3->body.HPos = *(float*)0x1312C88;
 	}
-	if (v3->PowerRun < -*(float*)0x1312C88)
+	if (v3->body.HPos < -*(float*)0x1312C88)
 	{
-		v3->PowerRun = -*(float*)0x1312C88;
+		v3->body.HPos = -*(float*)0x1312C88;
 	}
 	v2->Shape.Flag |= 2u;
 }

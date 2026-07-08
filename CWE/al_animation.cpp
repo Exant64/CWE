@@ -199,7 +199,7 @@ void Chao_ExtraAnimations(task* a1)
 			if (data->MotionCtrl.next_num == 573)
 			{
 				int ToothyClap = 573;
-				if (data->pParamGC->MouthType == ChaoMouth_ToothySmile || data->pParamGC->MouthType == ChaoMouth_ToothyFrown)
+				if (data->pParamGC->body.DefaultMouthNum == ChaoMouth_ToothySmile || data->pParamGC->body.DefaultMouthNum == ChaoMouth_ToothyFrown)
 				{
 					const int ToothyAnim[] = { 465, 466, 467 };
 					int ToothyRNG = rand() % std::size(ToothyAnim);
@@ -500,7 +500,7 @@ void Chao_ExtraAnimations(task* a1)
 	}
 	else
 	{
-		GET_CHAOWK(a1)->Face.EyeDefaultNum = GET_CHAOWK(a1)->pParamGC->EyeType;
+		GET_CHAOWK(a1)->Face.EyeDefaultNum = GET_CHAOWK(a1)->pParamGC->body.DefaultEyeNum;
 	}
 }
 

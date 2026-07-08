@@ -100,24 +100,24 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 		if (v11) 
 		{
 			v11->data.type = TYPE_CHILD;
-			v11->data.BodyType = SADXBodyType_Omochao;
+			v11->data.body.FormNum = SADXBodyType_Omochao;
 			v11->data.place = AL_GetStageNumber();
 			InitChaoDNA(&v11->data.Gene);
 			v11->data.Gene.Color[0] = GetOmoData()->color;
 			v11->data.Gene.Color[1] = GetOmoData()->color;
-			v11->data.Color			= GetOmoData()->color;
+			v11->data.body.ColorNum	= GetOmoData()->color;
 
 			v11->data.Gene.Multi[0] = GetOmoData()->shiny;
 			v11->data.Gene.Multi[1] = GetOmoData()->shiny;
-			v11->data.Shiny			= GetOmoData()->shiny;
+			v11->data.body.MultiNum	= GetOmoData()->shiny;
 
 			v11->data.Gene.NonTex[0]		= GetOmoData()->monotone;
 			v11->data.Gene.NonTex[1]		= GetOmoData()->monotone;
-			v11->data.MonotoneHighlights	= GetOmoData()->monotone;
+			v11->data.body.NonTex	= GetOmoData()->monotone;
 
 			v11->data.Gene.Jewel[0] = GetOmoData()->jewel;
 			v11->data.Gene.Jewel[1] = GetOmoData()->jewel;
-			v11->data.Texture		= GetOmoData()->jewel;
+			v11->data.body.JewelNum		= GetOmoData()->jewel;
 
 			CreateChaoExtra(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
 			memset(GetOmoData(), 0, sizeof(OMOCHAO_INFO));

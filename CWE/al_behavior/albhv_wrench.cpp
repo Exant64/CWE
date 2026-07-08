@@ -94,10 +94,10 @@ int __cdecl ALBHV_BuildStart(task* a1)
 		{
 			omo->phase = 0;
 		}
-		omo->color = pParamGC->Color;
-		omo->shiny = pParamGC->Shiny;
-		omo->monotone = pParamGC->MonotoneHighlights;
-		omo->jewel = pParamGC->Texture;
+		omo->color = pParamGC->body.ColorNum;
+		omo->shiny = pParamGC->body.MultiNum;
+		omo->monotone = pParamGC->body.NonTex;
+		omo->jewel = pParamGC->body.JewelNum;
 		omo->chaoID = pParamGC->ChaoID;
 	}
 	AL_SetBehavior(a1, ALBHV_Wrench);

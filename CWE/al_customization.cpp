@@ -537,7 +537,7 @@ private:
 public:
 	void Press(UIController* controller) override {
 		if (AL_Customization_MedalUnlocked(m_index)) {
-			GBAManager_GetChaoDataPointer()->Medal = m_index;
+			GBAManager_GetChaoDataPointer()->body.MedalNum = m_index;
 		}
 	}
 	void Exec() override {
@@ -545,7 +545,7 @@ public:
 	}
 
 	void ColorSet() override {
-		if (GBAManager_GetChaoDataPointer()->Medal == m_index)
+		if (GBAManager_GetChaoDataPointer()->body.MedalNum == m_index)
 			chSetBillboardColor(1, 1, 0x96 / 255.0f, 0x7F / 255.0f); //light green, current medal
 		if (!AL_Customization_MedalUnlocked(m_index))
 			chSetBillboardColor(1, 0x49 / 255.0f, 0x5E / 255.0f, 0xAF / 255.0f); //light grey, not available
@@ -657,12 +657,12 @@ public:
 		const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
 		if (index < HatList.size()) {
 			bool canEquip = true;
-			if (pParam->Headgear)
-				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->place);
+			if (pParam->body.ObakeHead)
+				canEquip = AL_Customization_CreateHat(pParam->body.ObakeHead, pParam->place);
 
 			if (canEquip) {
 				PlaySoundProbably(0x1007, 0, 0, 0);
-				pParam->Headgear = Uint8(HatList[index]->kind);
+				pParam->body.ObakeHead = Uint8(HatList[index]->kind);
 				AL_ClearItemSaveInfo(HatList[index]);
 				UpdateHatAccVector();
 			}
@@ -1396,14 +1396,14 @@ private:
 
 	int GetItem() {
 		if (HasHeadgear())
-			return GBAManager_GetChaoDataPointer()->Headgear;
+			return GBAManager_GetChaoDataPointer()->body.ObakeHead;
 		else if (HasAccessory())
 			return GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 		return -1;
 	}
 
 	bool HasHeadgear() {
-		return m_slot == 0 && GBAManager_GetChaoDataPointer()->Headgear;
+		return m_slot == 0 && GBAManager_GetChaoDataPointer()->body.ObakeHead;
 	}
 	bool HasAccessory() {
 		return m_slot > 0 && GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Accessories[m_slot - 1].ID[0];
@@ -1513,7 +1513,7 @@ public:
 		PlaySoundProbably(0x100A, 0, 0, 0);
 		if (!m_slot)
 		{
-			Uint8& headgear = pParam->Headgear;
+			Uint8& headgear = pParam->body.ObakeHead;
 			if (headgear && AL_Customization_CreateHat(headgear, pParam->place)) {
 				headgear = 0;
 			}

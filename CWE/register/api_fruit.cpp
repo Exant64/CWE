@@ -47,9 +47,9 @@ void CWEFruit_HyperFruit(task* tp, CHAO_SAVE_INFO* chaoData, task* fruit) {
 }
 
 void CWEFruit_Shiny(task* tp, CHAO_SAVE_INFO* chaoData, task* fruit) {
-	if (chaoData->data.Shiny)
+	if (chaoData->data.body.MultiNum)
 	{
-		chaoData->data.Shiny = (chaoData->data.Shiny % 2) + 1;
+		chaoData->data.body.MultiNum = (chaoData->data.body.MultiNum % 2) + 1;
 	}
 }
 

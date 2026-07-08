@@ -382,11 +382,11 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	}
 	
 
-	flyswim = chaoData->FlySwim;
+	flyswim = chaoData->body.VPos;
 	if (v3 == TYPE_CHILD)
 	{
-		evolution = chaoData->EvolutionProgress;
-		powerrun = chaoData->PowerRun;
+		evolution = chaoData->body.growth;
+		powerrun = chaoData->body.HPos;
 		AL_NC00 = (NJS_BGRA*)gPalette[PVP_NCZ];
 		AL_NC01 = (NJS_BGRA*)gPalette[PVP_NCN];
 		AL_HCZ = (NJS_BGRA*)gPalette[PVP_HCZ];
@@ -395,7 +395,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
 		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
 		v28 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
-		v33 = chaoData->Alignment;
+		v33 = chaoData->body.APos;
 		if (evolution > 1)
 		{
 			evolution = 1;
@@ -564,12 +564,12 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	{
 		v13 = v4;
 		AL_DCb = gPalette[v13 + 1];
-		Magnitude = chaoData->EvolutionProgress;
+		Magnitude = chaoData->body.growth;
 		v14 = gPalette[v13];
 		v15 = gPalette[v13 + 5];
 		v16 = gPalette[v13 + 3];
 		v37 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
-		powerruna = chaoData->PowerRun;
+		powerruna = chaoData->body.HPos;
 		if (Magnitude > 1)
 		{
 			Magnitude = 1;

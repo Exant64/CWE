@@ -7,34 +7,34 @@
 void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
 	if (pElement->type == 254) {
 		pParam->type = TYPE_CHILD;
-		pParam->BodyType = SADXBodyType_Omochao;
+		pParam->body.FormNum = SADXBodyType_Omochao;
 	}
 	else if (pElement->type == 255) {
 		pParam->type = TYPE_CHILD;
-		pParam->BodyType = SADXBodyType_EggChao;
+		pParam->body.FormNum = SADXBodyType_EggChao;
 	}
 	else {
 		pParam->type = pElement->type;
-		pParam->BodyType = SADXBodyType_Normal;
+		pParam->body.FormNum = SADXBodyType_Normal;
 	}
 
-	pParam->EyeType = pElement->DefaultEyeNum;
-	pParam->MouthType = pElement->DefaultMouthNum;
-	pParam->BallType = pElement->HonbuNum;
-	pParam->Headgear = pElement->ObakeHead;
-	pParam->HideFeet = pElement->ObakeBody;
-	pParam->Medal = pElement->MedalNum;
-	pParam->Color = pElement->ColorNum;
-	pParam->MonotoneHighlights = pElement->NonTex;
-	pParam->Texture = pElement->JewelNum;
-	pParam->Shiny = pElement->MultiNum;
+	pParam->body.DefaultEyeNum = pElement->DefaultEyeNum;
+	pParam->body.DefaultMouthNum = pElement->DefaultMouthNum;
+	pParam->body.HonbuNum = pElement->HonbuNum;
+	pParam->body.ObakeHead = pElement->ObakeHead;
+	pParam->body.ObakeBody = pElement->ObakeBody;
+	pParam->body.MedalNum = pElement->MedalNum;
+	pParam->body.ColorNum = pElement->ColorNum;
+	pParam->body.NonTex = pElement->NonTex;
+	pParam->body.JewelNum = pElement->JewelNum;
+	pParam->body.MultiNum = pElement->MultiNum;
 
 	memcpy(pParam->PartsBTL.MinimalParts, pElement->MinimalParts, sizeof(pElement->MinimalParts));
 
- 	pParam->PowerRun = pElement->HPos / 10000.f;
-    pParam->FlySwim = pElement->VPos / 10000.f;
-    pParam->Alignment = pElement->APos / 10000.f;
-    pParam->EvolutionProgress = pElement->Growth / 10000.f;
+ 	pParam->body.HPos = pElement->HPos / 10000.f;
+    pParam->body.VPos = pElement->VPos / 10000.f;
+    pParam->body.APos = pElement->APos / 10000.f;
+    pParam->body.growth = pElement->Growth / 10000.f;
 
 	memcpy(GET_CWEPARAM(pParam)->Name, pElement->name, sizeof(pElement->name));
 	GET_CWEPARAM(pParam)->Name[7] = 0;

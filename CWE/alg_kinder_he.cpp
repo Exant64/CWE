@@ -626,8 +626,8 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(SWDATA[0] & BTN_Y) && SWDATA[0] & BTN_DOWN)
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup < 0) {
-			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType;
-			GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType = (SADXBodyType)9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
+			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = (SADXBodyType)9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
 		}
 		if (!pMother)
 		{
@@ -710,7 +710,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 	else
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup >= 0) {
-			GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType = (SADXBodyType)bodyTypeBackup;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = (SADXBodyType)bodyTypeBackup;
 			bodyTypeBackup = -1;
 		}
 
@@ -1022,7 +1022,7 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 		SETMSGVAR("Looks like Chao is in pain\nDid you hurt your Chao?            ");
 	
 	//hat
-	switch (pParam->Headgear)
+	switch (pParam->body.ObakeHead)
 	{
 	case OBAKE_HEAD_PARTS_PUMPKIN:
 		SETMSGVAR("This Chao is wearing a    \npumpkin hat. You scared me!        ");
@@ -1049,7 +1049,7 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 		SETMSGVAR("A carboard box? Don't be  \nafraid to show your face okay?     ");
 		break;
 	default:
-		if (pParam->Headgear >= OBAKE_HEAD_PARTS_EGG && pParam->Headgear <= OBAKE_HEAD_PARTS_EGG_Env2)
+		if (pParam->body.ObakeHead >= OBAKE_HEAD_PARTS_EGG && pParam->body.ObakeHead <= OBAKE_HEAD_PARTS_EGG_Env2)
 			SETMSGVAR("This chao is wearing an   \neggshell. Did it hatch properly?   ");
 
 		break;
@@ -1061,9 +1061,9 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 	else if (AL_KW_GetFriendCount(pChaoTask) > 12)
 		SETMSGVAR("This Chao is so popular.  \nThis Chao is friends with everybody");
 
-	if (pParam->BodyType == 1)
+	if (pParam->body.FormNum == 1)
 		SETMSGVAR("This is an egg....   \nWait a minute...  ");
-	else if (pParam->BodyType == 2)
+	else if (pParam->body.FormNum == 2)
 		SETMSGVAR("This is a nice Omochao.  \nThe Chao that built this did a good job.");
 
 	if (pParam->Abl[7] >= 10)

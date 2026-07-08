@@ -843,6 +843,37 @@ static_assert(sizeof(AL_SHAPE_ELEMENT) == 0x34);
 static_assert(offsetof(AL_SHAPE_ELEMENT, MultiNum) == 0xA);
 static_assert(offsetof(AL_SHAPE_ELEMENT, HPos) == 0x14);
 
+typedef struct
+{
+    float       HPos;            // Run : Power Align
+    float       VPos;            // Swim : Fly Align
+    float       APos;            // Dark : Hero Align
+    float       AimHPos;        // Last Run : Power
+    float       AimVPos;        // Last Swim : Fly
+    float       AimAPos;        // Last Alignment
+    float       growth;        // Magitude
+    float       EyePos;
+    float       EyeScl;
+    float       EyeRatio;
+    uint8_t EyeColor;
+    uint8_t DefaultEyeNum;
+    uint8_t DefaultMouthNum;
+    uint8_t HonbuNum;        // Icon kind
+    uint8_t HonbuColorNum;    // Inert
+    uint8_t ObakeHead;        // Hat / Mask
+    uint8_t ObakeBody;        // Hide Feet
+    uint8_t MedalNum;
+    uint8_t ColorNum;
+    uint8_t NonTex;            // isMonotone
+    uint8_t JewelNum;
+    uint8_t MultiNum;        // Shiny
+    int8_t EggColor;
+    uint8_t FormNum;
+    uint8_t FormSubNum;        // Animal
+    uint8_t UNDEF0;
+}
+AL_BODY_INFO;
+
 struct CHAO_PARAM_GC
 {
 	char gap_0[18];
@@ -869,29 +900,8 @@ struct CHAO_PARAM_GC
 	__int16 nbSucceed;
 	CHAO_ID ChaoID;
 	int LifeTimer;
-	float PowerRun;
-	float FlySwim;
-	float Alignment;
-	int field_B4;
-	int field_B8;
-	float LastLifeAlignment;
-	float EvolutionProgress;
-	char gap_C4[13];
-	char EyeType;
-	char MouthType;
-	char BallType;
-	char gap_D4[1];
-	Uint8 Headgear;
-	char HideFeet;
-	char Medal;
-	unsigned char Color;
-	char MonotoneHighlights;
-	char Texture;
-	char Shiny;
-	char EggColor;
-	SADXBodyType BodyType;
-	char BodyTypeAnimal;
-	char field_DF[41];
+	AL_BODY_INFO body;
+	char field_DF[40];
 	__int16 DoctorMedal;
 	char KarateInfo;
 	char field_10A[13];

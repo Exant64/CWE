@@ -12,16 +12,16 @@ static void sub_5428C0_r(task* tp) {
         const auto pParam = &KarateMainExec_Ptr->field_18->data;
         switch(KarateMainExec_Ptr->byte6) {
             case 0:
-                pParam->Medal = 12;
+                pParam->body.MedalNum = 12;
                 break;
             case 1:
-                pParam->Medal = 14;
+                pParam->body.MedalNum = 14;
                 break;
             case 2:
-                pParam->Medal = 15;
+                pParam->body.MedalNum = 15;
                 break;
             case 3:
-                pParam->Medal = 13;
+                pParam->body.MedalNum = 13;
                 break;
         }
     }

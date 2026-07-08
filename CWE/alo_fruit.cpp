@@ -282,9 +282,9 @@ void __cdecl sub_545C20(task *a1)
 			{
 				v16 = v13->tp;
 				v17 = GET_CHAOPARAM(v16);
-				v17->EvolutionProgress -= 0.05f;
-				if (v17->EvolutionProgress < 0)
-					v17->EvolutionProgress = 0;
+				v17->body.growth -= 0.05f;
+				if (v17->body.growth < 0)
+					v17->body.growth = 0;
 			}
 			if (v2->ang.x == ChaoFruit_Mushroom || v2->ang.x == ChaoFruit_MushroomAlt)
 			{
@@ -293,8 +293,8 @@ void __cdecl sub_545C20(task *a1)
 					v16 = v13->tp;
 					v17 = GET_CHAOPARAM(v16);
 					if (v2->ang.x == ChaoFruit_Mushroom)
-						v17->EvolutionProgress += 0.05f;
-					else v17->EvolutionProgress += 0.10f;
+						v17->body.growth += 0.05f;
+					else v17->body.growth += 0.10f;
 				}
 			}
 			if (!v2->ang.z)
