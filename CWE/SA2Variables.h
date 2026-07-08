@@ -235,7 +235,7 @@ DataPointer(int, GravityAngle_Z, 0x1DE94AC);
 DataPointer(int, ArbitraryGravityAngle_Z, 0x1DE94B0);
 DataArray(playerwk *, playerpwp, 0x1DE9600, 2);
 DataArray(ModelIndex, CharacterModels, 0x1DE9620, 532);
-DataArray(taskwk *, MainCharObj1, 0x1DEA6C0, 2);
+DataArray(taskwk *, playertwp, 0x1DEA6C0, 2);
 DataArray(task *, MainCharacter, 0x1DEA6E0, 2);
 DataArray(AnimationIndex, CharacterAnimations, 0x1DEA700, 300);
 DataPointer(char, SonicAncientLightGot, 0x1DEB301);

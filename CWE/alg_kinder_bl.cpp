@@ -2297,8 +2297,8 @@ static void SellHeldItem() {
 	if (pHeld)
 	{
 		pHeld->exec = DestroyTask;
-		if (MainCharObj1[0]) {
-			sub_46E5E0(0, (int)MainCharObj1[0]);
+		if (playertwp[0]) {
+			sub_46E5E0(0, (int)playertwp[0]);
 		}
 		playerpwp[0]->htp = 0;
 	}

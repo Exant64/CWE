@@ -551,7 +551,7 @@ static void ChaoSoundMenu() {
         }
 
         if (ImGui::Button("Play")) {
-            PlaySound_XYZ(SoundID, &MainCharObj1[0]->pos, 0, 0, 110);
+            PlaySound_XYZ(SoundID, &playertwp[0]->pos, 0, 0, 110);
         }
 
         if (ImGui::Button("Stop Music")) {

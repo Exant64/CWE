@@ -131,7 +131,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 
 		{
 			Angle3 returnAng;
-			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
+			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, playertwp[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
 
 			drop.ang[0] = returnAng.x;
 			drop.ang[1] = returnAng.y;

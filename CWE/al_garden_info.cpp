@@ -283,12 +283,12 @@ static void AL_CreateHoldingItem() {
 	case ChaoItemCategory_Seed:
 	case ChaoItemCategory_Hat:
 	case ChaoItemCategory_Special:
-		if (dword_19F6454 && dword_19F6454->kind >= 0 && MainCharObj1[0])
+		if (dword_19F6454 && dword_19F6454->kind >= 0 && playertwp[0])
 		{
-			v2 = MainCharObj1[0];
+			v2 = playertwp[0];
 
-			a2 = MainCharObj1[0]->pos;
-			v3 = MainCharObj1[0]->ang.y;
+			a2 = playertwp[0]->pos;
+			v3 = playertwp[0]->ang.y;
 
 			a2.x += njSin(v3) * 3.0f;
 			a2.z += njCos(v3) * 3.0f;
@@ -307,20 +307,20 @@ static void AL_CreateHoldingItem() {
 				}
 				else
 				{
-					v6 = AL_MinimalExecutor_Load((char)v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
+					v6 = AL_MinimalExecutor_Load((char)v1->kind, &a2, playertwp[0]->ang.y, &a4, (int)v1);
 				}
 				break;
 			case 3:
-				v6 = ALO_FruitExecutor_Load(v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (CHAO_SAVE_INFO*)v1);
+				v6 = ALO_FruitExecutor_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (CHAO_SAVE_INFO*)v1);
 				break;
 			case 7:
 				v6 = ALO_SeedExecutor_Load(v1->kind, &a2, &a4, (int)v1);
 				break;
 			case 9:
-				v6 = ALO_ObakeHeadExecutor_Load(v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (int)v1);
+				v6 = ALO_ObakeHeadExecutor_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (int)v1);
 				break;
 			case ChaoItemCategory_Special:
-				v6 = ALO_Special_Load(v1->kind, &a2, MainCharObj1[0]->ang.y, &a4, (short*)v1);
+				v6 = ALO_Special_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (short*)v1);
 				break;
 			default:
 				throw std::exception("CWE: holding incorrect item");
@@ -358,7 +358,7 @@ static bool AL_CreatePurchasedCustomItem(const SAlItemCwe& item, NJS_POINT3& pos
 	}
 
 	// only accessory for now
-	Accessory_Load(item.mType, &position, MainCharObj1[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory));
+	Accessory_Load(item.mType, &position, playertwp[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory));
 
 	return true;
 }
@@ -388,9 +388,9 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 	{
 		v1->btimer = 0;
 
-		position.x = MainCharObj1[0]->pos.x;
-		position.y = MainCharObj1[0]->pos.y + 4.5f;
-		position.z = MainCharObj1[0]->pos.z;
+		position.x = playertwp[0]->pos.x;
+		position.y = playertwp[0]->pos.y + 4.5f;
+		position.z = playertwp[0]->pos.z;
 
 		result.x = 0;
 		result.y = (0.5f - njRandom()) * 0.2f * 1.6f + 0.96f;
@@ -399,7 +399,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 		njPushMatrixEx();
 		memcpy(_nj_current_matrix_ptr_, (void*)0x025F02A0, 0x30);
 		v5 = (0.5 - njRandom()) * 60.0 * -182.0444488525391;
-		RotateY(0x4000 - (signed int)v5 - MainCharObj1[0]->ang.y);
+		RotateY(0x4000 - (signed int)v5 - playertwp[0]->ang.y);
 		njCalcVector(&result, &output, _nj_current_matrix_ptr_);
 		njPopMatrixEx();
 
@@ -444,16 +444,16 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 					++cweSaveFile.purchasedItemCount;
 					return;
 				case 3:
-					ALO_FruitExecutor_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (CHAO_SAVE_INFO*)AL_GetNewItemSaveInfo(3));
+					ALO_FruitExecutor_Load(v10, &position, playertwp[0]->ang.y, &output, (CHAO_SAVE_INFO*)AL_GetNewItemSaveInfo(3));
 					break;
 				case 7:
 					ALO_SeedExecutor_Load(v10, &position, &output, (int)AL_GetNewItemSaveInfo(7));
 					break;
 				case 9:
-					ALO_ObakeHeadExecutor_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (int)AL_GetNewItemSaveInfo(9));
+					ALO_ObakeHeadExecutor_Load(v10, &position, playertwp[0]->ang.y, &output, (int)AL_GetNewItemSaveInfo(9));
 					break;
 				case ChaoItemCategory_Special:
-					ALO_Special_Load(v10, &position, MainCharObj1[0]->ang.y, &output, (short*)AL_GetSpecialItemSave());
+					ALO_Special_Load(v10, &position, playertwp[0]->ang.y, &output, (short*)AL_GetSpecialItemSave());
 					break;
 				default:
 					goto LABEL_34;

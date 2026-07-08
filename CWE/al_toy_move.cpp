@@ -234,7 +234,7 @@ void AL_Toy_Move_Update(task *a1) {
 			toyMove->flag++;
 		}
 		ALW_CommunicationOff(a1);
-		a1->twp->ang.y = 0x4000 - MainCharObj1[0]->ang.y;
+		a1->twp->ang.y = 0x4000 - playertwp[0]->ang.y;
 		//if it gets put down, go back to dynamic
 		if (a1->twp->flag >= 0)
 		{

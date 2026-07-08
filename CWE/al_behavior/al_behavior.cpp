@@ -267,9 +267,9 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 		{
 			return 0;
 		}
-		if (MainCharObj1[0])
+		if (playertwp[0])
 		{
-			sub_46E5E0(0, (int)MainCharObj1[0]);
+			sub_46E5E0(0, (int)playertwp[0]);
 		}
 		AL_GrabObjectBothHands(a1, v3);
 		AL_SetBehaviorWithTimer(a1, 0x569340, -1);
@@ -386,8 +386,8 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(task * tp) {
 		if (v2 && (pSpecial = v2->hit_twp) != 0) {
 			if (!ALW_IsHeld(pSpecial)) {
 				//StopHoldingTaskP(0);
-				if (MainCharObj1[0]) {
-					sub_46E5E0(0, (int)MainCharObj1[0]);
+				if (playertwp[0]) {
+					sub_46E5E0(0, (int)playertwp[0]);
 				}
 				AL_GrabObjectBothHands(tp, pSpecial);
 				AL_SetBehavior(tp, ALBHV_HoldThink);
