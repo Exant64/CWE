@@ -13,7 +13,7 @@ bool AL_IsChild(task* tp) {
 }
 
 bool AL_IsCustomChao(task* tp) {
-	return GET_CHAOPARAM(tp)->type == 26 || GET_CHAOWK(tp)->IsCustomChaoTypeLoaded;
+	return GET_CHAOPARAM(tp)->type == 26 || GET_CHAOWK_CWE(tp)->IsCustomChaoTypeLoaded;
 }
 
 bool AL_IsHero(unsigned __int8 a1) {

@@ -17,13 +17,14 @@
 void Chao_ExtraAnimations(task* a1)
 {
 	chaowk* data = GET_CHAOWK(a1);
+	auto cwe_work = GET_CHAOWK_CWE(a1);
 
 	//Reset to 0 each Behavior
-	if (data->Behavior.Mode == 0) data->AnimRandomized = 0;
+	if (data->Behavior.Mode == 0) cwe_work->AnimRandomized = 0;
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK)
 	{
-		if (data->AnimRandomized == 0)
+		if (cwe_work->AnimRandomized == 0)
 		{
 			if (data->MotionCtrl.next_num == 0 || data->MotionCtrl.next_num == 1 || data->MotionCtrl.next_num == 238 || data->MotionCtrl.next_num == 239)
 			{
@@ -65,7 +66,7 @@ void Chao_ExtraAnimations(task* a1)
 					int NoRNG = rand() % std::size(NoAnim);
 
 					AL_SetMotionLink(a1, NoAnim[NoRNG]);
-					data->AnimRandomized++;
+					cwe_work->AnimRandomized++;
 
 					AL_FaceChangeEye(a1, ChaoEyes_ClosedStraight);
 				}
@@ -95,7 +96,7 @@ void Chao_ExtraAnimations(task* a1)
 					int Idle2RNG = rand() % std::size(Idle2Anim);
 
 					AL_SetMotionLink(a1, Idle2Anim[Idle2RNG]);
-					data->AnimRandomized++;
+					cwe_work->AnimRandomized++;
 				}
 				else
 				{
@@ -115,11 +116,11 @@ void Chao_ExtraAnimations(task* a1)
 					int IdleRNG = rand() % std::size(IdleAnim);
 
 					AL_SetMotionLink(a1, IdleAnim[IdleRNG]);
-					data->AnimRandomized++;
+					cwe_work->AnimRandomized++;
 				}
 			}
 		}
-		else if (data->AnimRandomized == 1)
+		else if (cwe_work->AnimRandomized == 1)
 		{
 			if (data->MotionCtrl.curr_num == 216)
 			{
@@ -128,7 +129,7 @@ void Chao_ExtraAnimations(task* a1)
 
 				AL_SetMotionLinkStep(a1, LookUpAnim[LookUpRNG], 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 			else if (data->MotionCtrl.curr_num == 477)
 			{
@@ -137,7 +138,7 @@ void Chao_ExtraAnimations(task* a1)
 
 				AL_SetMotionLinkStep(a1, ShyAnim[ShyRNG], 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 			else if (data->MotionCtrl.curr_num == 555)
 			{
@@ -146,7 +147,7 @@ void Chao_ExtraAnimations(task* a1)
 
 				AL_SetMotionLinkStep(a1, HeroAnim[HeroRNG], 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 		}
 
@@ -193,7 +194,7 @@ void Chao_ExtraAnimations(task* a1)
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGTV || AL_GetBehavior(a1) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGTV> || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGRADIO || AL_GetBehavior(a1) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGRADIO> || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGSING || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGDANCE || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGMUSIC)
 	{
-		if (data->AnimRandomized == 0)
+		if (cwe_work->AnimRandomized == 0)
 		{
 			if (data->MotionCtrl.next_num == 573)
 			{
@@ -210,7 +211,7 @@ void Chao_ExtraAnimations(task* a1)
 				int GiggleRNG = rand() % std::size(GiggleAnim);
 
 				AL_SetMotionLink(a1, GiggleAnim[GiggleRNG]);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 			else if (data->MotionCtrl.next_num == 574)
 			{
@@ -218,7 +219,7 @@ void Chao_ExtraAnimations(task* a1)
 				int Giggle2RNG = rand() % std::size(Giggle2Anim);
 
 				AL_SetMotionLink(a1, Giggle2Anim[Giggle2RNG]);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 		}
 	}
@@ -286,7 +287,7 @@ void Chao_ExtraAnimations(task* a1)
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOPLAYER || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 	{
-		if (data->AnimRandomized == 0)
+		if (cwe_work->AnimRandomized == 0)
 		{
 			if (data->MotionCtrl.next_num == 119 && data->pParamGC->Skill[2] >= 1333)
 			{
@@ -294,7 +295,7 @@ void Chao_ExtraAnimations(task* a1)
 				int GotoTarget2RNG = rand() % std::size(GotoTarget2Anim);
 
 				AL_SetMotionLink(a1, GotoTarget2Anim[GotoTarget2RNG]);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 		}
 	}
@@ -506,11 +507,12 @@ void Chao_ExtraAnimations(task* a1)
 void Chao_ExtraSounds(task* a1)
 {
 	chaowk* data = GET_CHAOWK(a1);
+	auto cwe_data = GET_CHAOWK_CWE(a1);
 
 	//Reset to 0 each Behavior
-	if (data->Behavior.Mode == 0) data->ExtraSound = 0;
+	if (data->Behavior.Mode == 0) cwe_data->ExtraSound = 0;
 
-	if (data->ExtraSound == 0)
+	if (cwe_data->ExtraSound == 0)
 	{
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK)
 		{
@@ -520,7 +522,7 @@ void Chao_ExtraSounds(task* a1)
 				int BegRNG = rand() % std::size(BegSound);
 
 				PlaySound_XYZ(SOUNDBANK6(BegSound[BegRNG]), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 			else if (data->MotionCtrl.next_num == 199)
 			{
@@ -528,19 +530,19 @@ void Chao_ExtraSounds(task* a1)
 				int HatSuccesRNG = rand() % std::size(HatSuccesSound);
 
 				PlaySound_XYZ(SOUNDBANK6(HatSuccesSound[HatSuccesRNG]), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 			else if (data->MotionCtrl.next_num == 454)
 			{
 				PlaySound_XYZ(SOUNDBANK6(152), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
 		{
 			PlaySound_XYZ(SOUNDBANK1(18), &data->pos, 0, 0, 0);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GETTINGTIRED)
@@ -548,7 +550,7 @@ void Chao_ExtraSounds(task* a1)
 			if (data->MotionCtrl.next_num == 21)
 			{
 				PlaySound_XYZ(SOUNDBANK6(7), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 		}
 
@@ -557,12 +559,12 @@ void Chao_ExtraSounds(task* a1)
 			if (data->MotionCtrl.next_num == 194)
 			{
 				PlaySound_XYZ(SOUNDBANK6(27), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 			else if (data->MotionCtrl.next_num == 519)
 			{
 				PlaySound_XYZ(SOUNDBANK6(32), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 		}
 
@@ -572,7 +574,7 @@ void Chao_ExtraSounds(task* a1)
 			int JumpRNG = rand() % std::size(JumpSound);
 
 			PlaySound_XYZ(SOUNDBANK6(JumpSound[JumpRNG]), &data->pos, 0, 0, 55);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_EATING && data->Icon.CurrType == ChaoIcon_Heart)
@@ -581,7 +583,7 @@ void Chao_ExtraSounds(task* a1)
 			int GotFoodRNG = rand() % std::size(GotFoodSound);
 
 			PlaySound_XYZ(SOUNDBANK6(GotFoodSound[GotFoodRNG]), &data->pos, 0, 0, 110);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WALK)
@@ -589,7 +591,7 @@ void Chao_ExtraSounds(task* a1)
 			if (data->MotionCtrl.next_num == 126)
 			{
 				PlaySound_XYZ(SOUNDBANK6(68), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 		}
 
@@ -599,19 +601,19 @@ void Chao_ExtraSounds(task* a1)
 			int DamageRNG = rand() % std::size(DamageSound);
 
 			PlaySound_XYZ(SOUNDBANK6(DamageSound[DamageRNG]), &data->pos, 0, 0, 110);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTTHROWND)
 		{
 			PlaySound_XYZ(SOUNDBANK6(141), &data->pos, 0, 0, 110);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_PUTHAT)
 		{
 			PlaySound_XYZ(SOUNDBANK6(143), &data->pos, 0, 0, 110);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_DRAWING)
@@ -619,20 +621,20 @@ void Chao_ExtraSounds(task* a1)
 			if (data->MotionCtrl.next_num == 325)
 			{
 				PlaySound_XYZ(SOUNDBANK6(154), &data->pos, 0, 0, 110);
-				data->ExtraSound++;
+				cwe_data->ExtraSound++;
 			}
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
 		{
 			PlaySound_XYZ(SOUNDBANK6(156), &data->pos, 0, 0, 110);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 		{
 			PlaySound_XYZ(SOUNDBANK6(159), &data->pos, 0, 0, 110);
-			data->ExtraSound++;
+			cwe_data->ExtraSound++;
 		}
 	}
 

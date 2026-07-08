@@ -404,13 +404,11 @@ static void AL_PushChaoNodeMatrix(size_t nodeIndex) {
 
 
 static bool AL_HasAccessoryInSlot(const task* tp, const EAccessoryType slot) {
-	const chaowk* work = GET_CHAOWK(tp);
-	return work->AccessoryIndices[slot] != -1;
+	return GET_CHAOWK_CWE(tp)->AccessoryIndices[slot] != -1;
 }
 
 static void AL_ValidateAccessory(task* tp, const EAccessoryType slot) {
-	chaowk* work = GET_CHAOWK(tp);
-	auto& accessoryIndex = work->AccessoryIndices[slot];
+	auto& accessoryIndex = GET_CHAOWK_CWE(tp)->AccessoryIndices[slot];
 
 	if (accessoryIndex != -1 && GetAccessoryType(accessoryIndex) >= EAccessoryType::Generic1) {
 		// empty id means no accessory
@@ -420,8 +418,7 @@ static void AL_ValidateAccessory(task* tp, const EAccessoryType slot) {
 }
 
 static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) {
-	const chaowk* work = GET_CHAOWK(tp);
-	const int accessoryIndex = work->AccessoryIndices[slot];
+	const int accessoryIndex = GET_CHAOWK_CWE(tp)->AccessoryIndices[slot];
 
 	return accessoryIndex != -1 && // chao has accessory
 		GetAccessoryType(accessoryIndex) >= EAccessoryType::Generic1 && // is of rigged accessory type (we dont enforce it to be the same type as the slot intentionally)
@@ -468,9 +465,8 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 		return;
 	}
 
-	chaowk* work = GET_CHAOWK(tp);
 	auto pParam = GET_CWEPARAM(tp);
-	const int accessoryIndex = work->AccessoryIndices[slot];
+	const int accessoryIndex = GET_CHAOWK_CWE(tp)->AccessoryIndices[slot];
 	const auto& accessory_data = GetAccessoryData(accessoryIndex);
 
 	AccessoryNodeIndex = 0;
@@ -484,7 +480,7 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 }
 
 static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
-	const chaowk* work = GET_CHAOWK(tp);
+	const chaowk_cwe* work = GET_CHAOWK_CWE(tp);
 	auto pParam = GET_CWEPARAM(tp);
 
 	if (!AL_HasAccessoryInSlot(tp, slot)) {
@@ -789,6 +785,7 @@ static uint64_t DrawHideNodes = 0;
 
 static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 	chaowk* work = GET_CHAOWK(tp);
+	chaowk_cwe* cwe_work = GET_CHAOWK_CWE(tp);
 	const auto* pParam = GET_CWEPARAM(tp);
 
 	DrawHideNodes = 0;
@@ -808,8 +805,8 @@ static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 	bool disableJiggle = false;
 
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
-		if (work->AccessoryIndices[i] == -1) continue;
-		const auto& data = GetAccessoryData(work->AccessoryIndices[i]);
+		if (cwe_work->AccessoryIndices[i] == -1) continue;
+		const auto& data = GetAccessoryData(cwe_work->AccessoryIndices[i]);
 
 		DrawHideNodes |= data.HideNodes;
 
@@ -830,7 +827,7 @@ static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 		}
 
 		if (!baldData) {
-			baldData = GetAccessoryBaldData(work->AccessoryIndices[i]);
+			baldData = GetAccessoryBaldData(cwe_work->AccessoryIndices[i]);
 		}
 
 		if (data.Flags & CWE_API_ACCESSORY_FLAGS_LEGACY_BALD) {
@@ -852,10 +849,10 @@ static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 	}
 
 	if((work->ChaoFlag & 0x20) != prevFlag) {
-		work->JiggleFlagChanged = true;
+		cwe_work->JiggleFlagChanged = true;
 	}
 
-	work->BaldHideHead = false;
+	cwe_work->BaldHideHead = false;
 
 	if (!baldData) {
 		for (size_t i = 0; i < 3; ++i) {
@@ -865,7 +862,7 @@ static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 				if (dontKeepHeadParts) {
 					DrawHideNodes |= uint64_t(1) << 23;
 					DrawHideNodes |= uint64_t(1) << 25;
-					work->BaldHideHead = true;
+					cwe_work->BaldHideHead = true;
 				}
 				continue;
 			}
@@ -887,7 +884,7 @@ static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 		if (dontKeepHeadParts) {
 			DrawHideNodes |= uint64_t(1) << 23;
 			DrawHideNodes |= uint64_t(1) << 25;
-			work->BaldHideHead = true;
+			cwe_work->BaldHideHead = true;
 		}
 
 		BaldFlag = true;

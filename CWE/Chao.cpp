@@ -194,7 +194,7 @@ Uint32 __cdecl GenerateRandomSeed()
 // and the "approved" id in AccessoryCalculatedID to not check needlessly if it didnt change
 // we also store the index back in the old slots, to provide compatibility checks
 void AL_ChaoAccessoryMainCheck(task* tp) {
-	chaowk* work = GET_CHAOWK(tp);
+	chaowk_cwe* work = GET_CHAOWK_CWE(tp);
 	auto pParam = GET_CWEPARAM(tp);
 
 	// new accessory stuff
@@ -398,9 +398,9 @@ static void Chao_Main_r(task* a1)
 
 	// if disable jiggle was enabled or disabled rerun fittobaseobject
 	// to prevent the jiggled vertices to be frozen
-	if(work->JiggleFlagChanged) {
+	if(GET_CHAOWK_CWE(a1)->JiggleFlagChanged) {
 		AL_FitToBaseObject(a1, work->Shape.pObject);
-		work->JiggleFlagChanged = false;
+		GET_CHAOWK_CWE(a1)->JiggleFlagChanged = false;
 	}
 }
 
@@ -505,14 +505,13 @@ void Chao_Init()
 	static_assert(offsetof(chaowk, Face) == 0x68C, "chaowk:Face got shuffled");
 	static_assert(offsetof(chaowk, Icon) == 0x6EC, "chaowk:Icon got shuffled");
 	static_assert(offsetof(chaowk, Perception) == 0x7CC, "chaowk:Perception got shuffled");
-	static_assert(offsetof(chaowk, LocalCharacterChaoType) == 0x1D74, "chaowk: new fields dont start at vanilla size");
-	static_assert(sizeof(chaowk) >= 0x1D74, "chaowk size lower than vanilla, something's up");
+	static_assert(sizeof(chaowk) == 0x1D74, "chaowk size lower than vanilla, something's up");
 
 	AL_Name_Init();
 
 	//expand chaowk alloc
-	WriteData((int*)0x00550288, (int)sizeof(chaowk) + 4);
-	WriteData((int*)0x00550294, (int)sizeof(chaowk));
+	WriteData((int*)0x00550288, (int)(sizeof(chaowk) + sizeof(chaowk_cwe) + 4));
+	WriteData((int*)0x00550294, (int)(sizeof(chaowk) + sizeof(chaowk_cwe)));
 	//memalloc = sizeof(ChaoData)
 	WriteData((short*)0x55040E, (short)0x200);
 	WriteData((short*)0x5503DD, (short)0x804);

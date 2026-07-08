@@ -57,8 +57,7 @@ void __cdecl AL_CalcIconColorMod(task* tp) {
 	}
 
 	if (AL_IsCustomChao(tp)) {
-		//icon color offset in chaodata1
-		*(Uint32*)((int)GET_CHAOWK(tp) + 0x700) = CustomChaoTypeEntries[work->LocalCharacterChaoType].Data.IconColor;
+		work->Icon.Color = CustomChaoTypeEntries[GET_CHAOWK_CWE(tp)->LocalCharacterChaoType].Data.IconColor;
 		return;
 	}
 
@@ -82,8 +81,7 @@ void __cdecl AL_IconDraw_r(task* a1);
 Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, AL_IconDraw_r);
 void __cdecl AL_IconDraw_r(task* tp)
 {
-	chaowk* work = GET_CHAOWK(tp);
-	CHAO_PARAM_GC* pParam = work->pParamGC;
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 	const auto original = reinterpret_cast<decltype(AL_IconDraw_r)*>(AL_IconDraw_t.Target());
 
 	//if not custom chao just draw the emotion ball
@@ -92,7 +90,7 @@ void __cdecl AL_IconDraw_r(task* tp)
 		return;
 	}
 
-	CustomChaoEntry& entry = CustomChaoTypeEntries[work->LocalCharacterChaoType];
+	CustomChaoEntry& entry = CustomChaoTypeEntries[GET_CHAOWK_CWE(tp)->LocalCharacterChaoType];
 	auto typeBackup = pParam->type;
 	//NJS_TEXLIST* iconTexlist = (NJS_TEXLIST*)0x01366ACC;
 	//NJS_TEXNAME* texBackup = iconTexlist->textures;
@@ -297,8 +295,8 @@ static int AL_CustomChao_SearchID(const char* pID) {
 static int __cdecl AL_ShapeInit_r(task* tp);
 static Trampoline AL_ShapeInit_Tramp(0x0056C9D0, 0x0056C9D7, AL_ShapeInit_r);
 static int __cdecl AL_ShapeInit_r(task* tp) {
-	chaowk* work = GET_CHAOWK(tp);
-	CHAO_PARAM_GC* pParam = work->pParamGC;
+	chaowk_cwe* work = GET_CHAOWK_CWE(tp);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 
 	work->IsCustomChaoTypeLoaded = false;
 
@@ -349,7 +347,7 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	// we do that by finding the lowest vertex index, which is part of the head usually
 	// then finding all indices that don't belong to the same "connected mesh" as that vertex
 	if (checkIfAdjacencyNeeded) {
-		const NJS_CNK_MODEL* pModel = (NJS_CNK_MODEL*)work->Shape.CurrObjectList[16]->pModel;
+		const NJS_CNK_MODEL* pModel = (NJS_CNK_MODEL*)GET_CHAOWK(tp)->Shape.CurrObjectList[16]->pModel;
 		const Sint32* pVertex = pModel->vlist;
 		const Sint32 nbVertex = pModel->vlist[1] >> 16;
 
@@ -387,7 +385,7 @@ static FunctionHook<void, task*> Chao_Delete_hook(0x0054FF30, Chao_Delete_r);
 static void Chao_Delete_r(task* tp) {
 	Chao_Delete_hook.Original(tp);
 
-	auto* work = GET_CHAOWK(tp);
+	auto* work = GET_CHAOWK_CWE(tp);
 	if (work->pBaldAdjacencyIndices) {
 		syFree(work->pBaldAdjacencyIndices, __FILE__, __LINE__);
 	}
@@ -400,7 +398,7 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 	
 	AL_BuyoBuyoControl.Original(tp);
 
-	auto* work = GET_CHAOWK(tp);
+	auto* work = GET_CHAOWK_CWE(tp);
 	if (!work->BaldHideHead || !work->pBaldAdjacencyIndices) {
 		return;
 	}
@@ -408,7 +406,7 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 	for (size_t i = 0; i < work->BaldAdjacencyIndexCount; ++i) {
 		const auto index = work->pBaldAdjacencyIndices[i];
 
-		auto* model = work->Shape.CurrObjectList[16]->pModel;
+		auto* model = GET_CHAOWK(tp)->Shape.CurrObjectList[16]->pModel;
 		auto* points = (NJS_POINT3*)(model->VList + 2);
 
 		points[index * 2] = { 0,0,0 };
@@ -438,7 +436,7 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 		str = "Amy";
 		break;
 	case 26:
-		str = CustomChaoTypeEntries[work->LocalCharacterChaoType].Data.Name;
+		str = CustomChaoTypeEntries[GET_CHAOWK_CWE(a2->field_8)->LocalCharacterChaoType].Data.Name;
 		break;
 	}
 

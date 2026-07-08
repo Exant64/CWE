@@ -54,7 +54,7 @@ void* AL_BehaviorGetUserData(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &work->Behavior;
 
-	return work->BhvUserData[bhv->CurrBhvFuncNum];
+	return GET_CHAOWK_CWE(tp)->BhvUserData[bhv->CurrBhvFuncNum];
 }
 
 void AL_SetNextBehaviorWithUserData(task* tp, BHV_FUNC Func, void* pUserData) {
@@ -62,7 +62,7 @@ void AL_SetNextBehaviorWithUserData(task* tp, BHV_FUNC Func, void* pUserData) {
 	AL_BEHAVIOR* bhv = &work->Behavior;
 
 	if (bhv->nbBhvFuncEntry < 15) {
-		work->BhvUserData[bhv->nbBhvFuncEntry] = pUserData;
+		GET_CHAOWK_CWE(tp)->BhvUserData[bhv->nbBhvFuncEntry] = pUserData;
 	}
 
 	Chao_BehaviourQueue(tp, (int)Func);
@@ -122,7 +122,7 @@ void AL_SetAccessory(task* a1, const AccessorySaveInfo* saveInfo, int type) {
 
 extern "C" __declspec(dllexport) int AL_GetAccessory(task * a1, int type)
 {
-	return GET_CHAOWK(a1)->AccessoryIndices[type];
+	return GET_CHAOWK_CWE(a1)->AccessoryIndices[type];
 }
 
 const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
@@ -474,7 +474,7 @@ static void AccessoryRemoveAll(task* tp) {
 	auto pParam = GET_CWEPARAM(tp);
 	
 	for (size_t i = 0; i < _countof(pParam->Accessories); ++i) {
-		const auto index = work->AccessoryIndices[i];
+		const auto index = GET_CHAOWK_CWE(tp)->AccessoryIndices[i];
 		if (index == -1) continue;
 
 		auto saveinfo = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);

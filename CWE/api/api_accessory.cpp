@@ -362,5 +362,5 @@ void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind) {
 }
 
 size_t CWE_ParamGetAccessory(task* tp, uint32_t slot) {
-	return GET_CHAOWK(tp)->AccessoryIndices[slot];
+	return GET_CHAOWK_CWE(tp)->AccessoryIndices[slot];
 }

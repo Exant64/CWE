@@ -472,21 +472,6 @@ struct __declspec(align(4)) chaowk
 	AL_ZONE Zone;
 	AL_PERCEPTION Perception;
 	void* pWork;
-
-	size_t LocalCharacterChaoType;
-	bool IsCustomChaoTypeLoaded;
-	unsigned char AnimRandomized;
-	unsigned char ExtraSound;
-
-	char AccessoryCalculatedID[4][21];
-	Uint32 AccessoryIndices[4];
-
-	bool JiggleFlagChanged;
-	bool BaldHideHead;
-	Uint16* pBaldAdjacencyIndices;
-	size_t BaldAdjacencyIndexCount;
-
-	void* BhvUserData[16];
 };
 #pragma pack(pop)
 

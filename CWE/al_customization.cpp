@@ -676,7 +676,7 @@ public:
 
 		bool canEquip = true;
 		if (GET_CWEPARAM(pChao)->Accessories[accType].ID[0])
-			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
+			canEquip = AL_Customization_CreateAcc(GET_CHAOWK_CWE(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
 
 		if (canEquip) {
 			PlaySoundProbably(0x1007, 0, 0, 0);
@@ -894,7 +894,7 @@ private:
 	size_t GetColorSlotCount() const {
 		if (!m_accessoryType) return 0;
 
-		const auto index = GET_CHAOWK(pChao)->AccessoryIndices[*m_accessoryType];
+		const auto index = GET_CHAOWK_CWE(pChao)->AccessoryIndices[*m_accessoryType];
 		if (index == -1) return 0;
 		
 		return GetAccessoryColorCount(index);
@@ -905,7 +905,7 @@ private:
 		if (!m_accessoryType) return NJS_COLOR(0xFFFFFFFF);
 
 		const auto& accData = GET_CWEPARAM(pChao)->Accessories[*m_accessoryType];
-		const auto accIndex = GET_CHAOWK(pChao)->AccessoryIndices[*m_accessoryType];
+		const auto accIndex = GET_CHAOWK_CWE(pChao)->AccessoryIndices[*m_accessoryType];
 
 		if (accIndex == -1) return NJS_COLOR(0xFFFFFFFF);
 		if (accData.ColorFlags & (1 << slot)) return NJS_COLOR(accData.ColorSlots[slot]);
@@ -1398,7 +1398,7 @@ private:
 		if (HasHeadgear())
 			return GBAManager_GetChaoDataPointer()->Headgear;
 		else if (HasAccessory())
-			return GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			return GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 		return -1;
 	}
 
@@ -1417,7 +1417,7 @@ public:
 
 		bool hasColorSlots = false;
 		if (m_slot) {
-			const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const auto slotAccIndex = GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 			hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
 			if (!hasColorSlots) {
 				sprite = m_greySprite;
@@ -1467,7 +1467,7 @@ public:
 		};
 
 		if (m_slot > 0) {
-			const auto index = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const auto index = GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 			if (index != -1) {
 				const auto& accData = GET_CWEPARAM(pChao)->Accessories[m_slot - 1];
 				AccessorySetupDraw(index, accData.ColorSlots, accData.ColorFlags);
@@ -1544,7 +1544,7 @@ public:
 		SetSelectable(HasHeadgear() || HasAccessory());
 
 		if (m_slot) {
-			const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const auto slotAccIndex = GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 			const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
 			if (IsSelected() && slotAccIndex != -1) {
 				if (!ColorMenuOpened) {
