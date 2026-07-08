@@ -47,7 +47,7 @@ DataArray(PhysicsData, PhysicsArray, 0x17391E8, 19);
 DataPointer(TexPackInfo *, CommonTextureInfoPtr, 0x1739BD4);
 DataArray(RELFileInfo, RELFiles, 0x173A9A0, 77);
 DataPointer(TexPackInfo, CommonTextureInfo, 0x173CE90);
-DataPointer(unsigned int, ChaoSaveIndexThing, 0x173D06C);
+DataPointer(unsigned int, vmsindex, 0x173D06C);
 DataPointer(char *, CurrentSavePath, 0x173D070);
 DataArray(int, PortNumbers, 0x173D158, 4);
 DataPointer(NJS_TEXLIST, PRESSSTART_TEXLIST, 0x174A9E0);

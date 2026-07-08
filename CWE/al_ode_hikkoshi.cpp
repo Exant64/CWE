@@ -174,10 +174,10 @@ static void AL_SaveSecondFile() {
 }
 
 static CHAO_SAVE_INFO* AL_GetSecondFileChao() {
-	int backup = ChaoSaveIndexThing;
-	ChaoSaveIndexThing = 1;
+	int backup = vmsindex;
+	vmsindex = 1;
 	CHAO_SAVE_INFO* data = AL_GetNewChaoSaveInfo();
-	ChaoSaveIndexThing = backup;
+	vmsindex = backup;
 	return data;
 }
 
