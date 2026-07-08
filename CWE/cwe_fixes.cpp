@@ -213,7 +213,7 @@ void CWE_Fixes() {
 	WriteData<6>((char*)0x0056DE7D, (char)0x90);
 
 	//fix pearl price
-	HatBMAttributes[SA2BHat_PearlEggShell].SalePrice = 8000;
+	HatBMAttributes[ChaoHat_PearlEggShell].SalePrice = 8000;
 
 	//trumpet fix
 	((NJS_CNK_OBJECT*)0x11C830C)->pos[1] = -0.4f; //adjustment

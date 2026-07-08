@@ -158,10 +158,10 @@ void RareFruit()
 
 		int v11 = (signed int)(njRandom() * 100.0f);
 		int item = RareFruitMarket[i].item;
-		if (item == SA2BFruit_Mushroom)
+		if (item == ChaoFruit_Mushroom)
 		{
 			if (njRandom() < 0.3f)
-				item = SA2BFruit_MushroomAlt;
+				item = ChaoFruit_MushroomAlt;
 		}
 		if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Fruit].attrib[item].RequiredEmblems)
 		{
@@ -467,8 +467,8 @@ void FBuyListUpdate()
 	v31 = 0;
 	do
 	{
-		if (v31 != SA2BHat_BlueWoolBeanie
-			&& v31 != SA2BHat_BlackWoolBeanie
+		if (v31 != ChaoHat_BlueWoolBeanie
+			&& v31 != ChaoHat_BlackWoolBeanie
 			&& v29->PurchasePrice > 0
 			&& SaveData.emblemNum >= v29->RequiredEmblems)
 			//&& (njRandom()) > 0.5
@@ -492,20 +492,20 @@ void FBuyListUpdate()
 					break;
 				}
 				int id = v54[(signed int)(njRandom() * (float)v30)];
-				if (id == SA2BHat_RedWoolBeanie)
+				if (id == ChaoHat_RedWoolBeanie)
 				{
 					v38 = (signed int)(njRandom() * 31.f);
 					if (v38 >= 5)
 					{
 						if (v38 < 15
-							&& SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlueWoolBeanie].RequiredEmblems)
+							&& SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[ChaoHat_BlueWoolBeanie].RequiredEmblems)
 						{
-							id = SA2BHat_BlueWoolBeanie;
+							id = ChaoHat_BlueWoolBeanie;
 						}
 					}
-					else if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlackWoolBeanie].RequiredEmblems)
+					else if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[ChaoHat_BlackWoolBeanie].RequiredEmblems)
 					{
-						id = SA2BHat_BlackWoolBeanie;
+						id = ChaoHat_BlackWoolBeanie;
 					}
 				}
 				if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[id].RequiredEmblems)
@@ -641,7 +641,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					sub_42D500(ModAPI_SeedModels[item->mType]->model);
 				break;
 			case ChaoItemCategory_Hat:
-				if (item->mType >= SA2BHat_NormalEggShell && item->mType < 85)
+				if (item->mType >= ChaoHat_NormalEggShell && item->mType < 85)
 					break;
 
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
@@ -770,7 +770,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				break;
 			case ChaoItemCategory_Hat:
-				if (item->mType >= SA2BHat_NormalEggShell && item->mType < 85)
+				if (item->mType >= ChaoHat_NormalEggShell && item->mType < 85)
 					break;
 
 				if (item->mType == 15)
@@ -2318,7 +2318,7 @@ static void SellHeldItem() {
 float NewInvDisplayPosX = 230; //384 = original
 void alg_kinder_bl_Init()
 {
-	RareFruitMarket.push_back({ SA2BFruit_Mushroom, 70 });
+	RareFruitMarket.push_back({ ChaoFruit_Mushroom, 70 });
 
 	WriteData((float**)0x0058B67F, &NewInvDisplayPosX);
 

@@ -20,15 +20,15 @@ void ALO_ObakeHeadDraw(int headgear) {
 	{
 		njSetTexture(&AL_BODY);
 		NJS_CNK_OBJECT** list = (NJS_CNK_OBJECT**)GetDataDllProcAddr("MaskObjObjectList");
-		if (headgear >= SA2BHat_NormalEggShell && headgear < 85)
+		if (headgear >= ChaoHat_NormalEggShell && headgear < 85)
 		{
 			if (UseGardenModel) {
 				BrightFixPlus_ShinyCheck(1);
 				njTranslate(NULL, 0.0f, 0.4f, 0.0f);
-				ColorEggModel((NJS_CNK_MODEL*)0x125CC14, headgear - SA2BHat_NormalEggShell);
+				ColorEggModel((NJS_CNK_MODEL*)0x125CC14, headgear - ChaoHat_NormalEggShell);
 			}
 			else
-				ColorEggModel(list[16]->model, headgear - SA2BHat_NormalEggShell);
+				ColorEggModel(list[16]->model, headgear - ChaoHat_NormalEggShell);
 		}
 		else if(list[headgear])
 		{

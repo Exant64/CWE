@@ -93,11 +93,11 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 		cwe_api->RegisterBlackMarketGeneralFruit(i, 40);
 	}
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, SA2BFruit_SmartFruit)->RequiredEmblems = 0;
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, SA2BFruit_MintCandy)->RequiredEmblems = 0;
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, ChaoFruit_SmartFruit)->RequiredEmblems = 0;
+	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, ChaoFruit_MintCandy)->RequiredEmblems = 0;
 
-	cwe_api->RegisterBlackMarketRareFruit(SA2BFruit_SmartFruit, 50);
-	cwe_api->RegisterBlackMarketRareFruit(SA2BFruit_MintCandy, 60);
+	cwe_api->RegisterBlackMarketRareFruit(ChaoFruit_SmartFruit, 50);
+	cwe_api->RegisterBlackMarketRareFruit(ChaoFruit_MintCandy, 60);
 	cwe_api->RegisterBlackMarketRareFruit(ShinyFruitID, 60);
 	cwe_api->RegisterBlackMarketRareFruit(HyperSwimFruitID, 10);
 	cwe_api->RegisterBlackMarketRareFruit(HyperFlyFruitID, 10);
@@ -106,10 +106,10 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterBlackMarketGeneralFruit(OrangeID, 40);
 
 	//set all vanilla fruits except mushrooms and what comes after mushrooms rebuyable
-	for (int i = 0; i < SA2BFruit_Mushroom; i++)
+	for (int i = 0; i < ChaoFruit_Mushroom; i++)
 		cwe_api->SetRebuyFlag(ChaoItemCategory_Fruit, i, true);
 
 	//set gba fruits to be rebuyable
-	for (int i = SA2BFruit_OrangeFruit; i <= SA2BFruit_RedFruit; i++)
+	for (int i = ChaoFruit_OrangeFruit; i <= ChaoFruit_RedFruit; i++)
 		cwe_api->SetRebuyFlag(ChaoItemCategory_Fruit, i, true);
 }

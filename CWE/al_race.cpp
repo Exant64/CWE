@@ -127,12 +127,12 @@ void AL_EggPresenterDisplayer(task* tp) {
 
 //converts current jewel race to jewel texture to set
 const std::map<Uint8, int> RaceToTexture = {
-	{4, SA2BTexture_SkyBlueJewel}, //aquamarine
-	{5, SA2BTexture_OrangeJewel}, //topaz
-	{6, SA2BTexture_LimeGreenJewel}, //peridot
-	{7, SA2BTexture_RedJewel}, //garnet
-	{8, SA2BTexture_BlackJewel}, //onyx
-	{9, SA2BTexture_Pearl}, //diamond
+	{4, ChaoTexture_SkyBlueJewel}, //aquamarine
+	{5, ChaoTexture_OrangeJewel}, //topaz
+	{6, ChaoTexture_LimeGreenJewel}, //peridot
+	{7, ChaoTexture_RedJewel}, //garnet
+	{8, ChaoTexture_BlackJewel}, //onyx
+	{9, ChaoTexture_Pearl}, //diamond
 };
 
 void WinJewelChaoInRace() {

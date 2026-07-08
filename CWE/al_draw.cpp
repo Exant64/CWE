@@ -1129,7 +1129,7 @@ static void ColorEggModel_r(NJS_CNK_MODEL* model, int eggType) {
 	const auto backupTex = AL_DayNightCycle_PreDrawSetupShinyTexture();
 
 	// if the egg is shiny
-	if (eggType >= SA2BEggColour_NormalShiny && eggType <= SA2BEggColour_BlackShiny_MonoTone) {
+	if (eggType >= ChaoEggColor_NormalShiny && eggType <= ChaoEggColor_BlackShiny_MonoTone) {
 		AL_DayNightCycle_SetLerpShinyTexture();
 	}
 
@@ -1148,7 +1148,7 @@ static void EggDisplayer_r(task* tp) {
 
 	// if the egg is shiny
 	const auto eggType = GET_CHAOPARAM(tp)->EggColor;
-	if (eggType >= SA2BEggColour_NormalShiny && eggType <= SA2BEggColour_BlackShiny_TwoTone) {
+	if (eggType >= ChaoEggColor_NormalShiny && eggType <= ChaoEggColor_BlackShiny_TwoTone) {
 		AL_DayNightCycle_SetLerpShinyTexture();
 	}
 

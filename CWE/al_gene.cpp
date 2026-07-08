@@ -85,49 +85,49 @@ static void AL_GeneVaryingShades(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 	const auto color = pGene->Color[0];
 
 	// normal chao or not a vanilla color
-	if(!color || color > SA2BColour_Black) {
+	if(!color || color > ChaoColor_Black) {
 		return;
 	}
 
 	std::vector<uint8_t> shades;
 	switch (color) {
-		case SA2BColour_Yellow:
+		case ChaoColor_Yellow:
 			shades = { 0x12, 0x9C, 0xAE, 0xB3 };
 			break;
-		case SA2BColour_White:
+		case ChaoColor_White:
 			shades = { 0x13, 0xB4, 0xB6, 0xB9 };
 			break;
-		case SA2BColour_Brown:
+		case ChaoColor_Brown:
 			shades = { 0x14, 0xBA, 0xBC, 0xC0 };
 			break;
-		case SA2BColour_SkyBlue:
+		case ChaoColor_SkyBlue:
 			shades = { 0x16, 0xC2, 0xC3, 0xC5 };
 			break;
-		case SA2BColour_Pink:
+		case ChaoColor_Pink:
 			shades = { 0x17, 0xC6, 0xC9, 0xCC };
 			break;
-		case SA2BColour_Blue:
+		case ChaoColor_Blue:
 			shades = { 0x18, 0xCE, 0xD0, 0xD1 };
 			break;
-		case SA2BColour_Grey:
+		case ChaoColor_Grey:
 			shades = { 0x1E, 0xD2, 0xD8 };
 			break;
-		case SA2BColour_Green:
+		case ChaoColor_Green:
 			shades = { 0x19, 0xDA, 0xDD, 0xDE };
 			break;
-		case SA2BColour_Red:
+		case ChaoColor_Red:
 			shades = { 0x1A, 0xE1, 0xE3, 0xE4 };
 			break;
-		case SA2BColour_LimeGreen:
+		case ChaoColor_LimeGreen:
 			shades = { 0x1B, 0xE6, 0xE9, 0xEA };
 			break;
-		case SA2BColour_Purple:
+		case ChaoColor_Purple:
 			shades = { 0x1C, 0xF0, 0xF2, 0xF3 };
 			break;
-		case SA2BColour_Orange:
+		case ChaoColor_Orange:
 			shades = { 0x1F, 0xF5, 0xF6, 0xF9 };
 			break;
-		case SA2BColour_Black:
+		case ChaoColor_Black:
 			shades = { 0xFC, 0xFE, 0xFF };
 			break;
 	}
@@ -318,43 +318,43 @@ static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
 	switch (param->Medal) {
 	case ChaoMedal_Aquamarine:
 	case ChaoMedal_Sapphire:
-		gene.Jewel[0] = SA2BTexture_SkyBlueJewel;
-		gene.Jewel[1] = SA2BTexture_BlueJewel;
+		gene.Jewel[0] = ChaoTexture_SkyBlueJewel;
+		gene.Jewel[1] = ChaoTexture_BlueJewel;
 		break;
 	case ChaoMedal_Topaz:
-		gene.Jewel[0] = SA2BTexture_OrangeJewel;
-		gene.Jewel[1] = SA2BTexture_OrangeJewel;
+		gene.Jewel[0] = ChaoTexture_OrangeJewel;
+		gene.Jewel[1] = ChaoTexture_OrangeJewel;
 		break;
 	case ChaoMedal_Peridot:
 	case ChaoMedal_Emerald:
-		gene.Jewel[0] = SA2BTexture_LimeGreenJewel;
-		gene.Jewel[1] = SA2BTexture_GreenJewel;
+		gene.Jewel[0] = ChaoTexture_LimeGreenJewel;
+		gene.Jewel[1] = ChaoTexture_GreenJewel;
 		break;
 	case ChaoMedal_Garnet:
 	case ChaoMedal_Ruby:
-		gene.Jewel[0] = SA2BTexture_RedJewel;
-		gene.Jewel[1] = SA2BTexture_PinkJewel;
+		gene.Jewel[0] = ChaoTexture_RedJewel;
+		gene.Jewel[1] = ChaoTexture_PinkJewel;
 		break;
 	case ChaoMedal_Onyx:
 	case ChaoMedal_Amethyst:
-		gene.Jewel[0] = SA2BTexture_BlackJewel;
-		gene.Jewel[1] = SA2BTexture_PurpleJewel;
+		gene.Jewel[0] = ChaoTexture_BlackJewel;
+		gene.Jewel[1] = ChaoTexture_PurpleJewel;
 		break;
 	case ChaoMedal_Diamond:
 		gene.Jewel[0] = rand() % 0x7E;
 		gene.Jewel[1] = rand() % 0x7E;
 		break;
 	case ChaoMedal_Hero:
-		gene.Jewel[0] = SA2BTexture_YellowJewel;
-		gene.Jewel[1] = SA2BTexture_YellowJewel;
+		gene.Jewel[0] = ChaoTexture_YellowJewel;
+		gene.Jewel[1] = ChaoTexture_YellowJewel;
 		break;
 	case ChaoMedal_Dark:
-		gene.Jewel[0] = SA2BTexture_WhiteJewel;
-		gene.Jewel[1] = SA2BTexture_WhiteJewel;
+		gene.Jewel[0] = ChaoTexture_WhiteJewel;
+		gene.Jewel[1] = ChaoTexture_WhiteJewel;
 		break;
 	case ChaoMedal_Pearl:
-		gene.Jewel[0] = SA2BTexture_Pearl;
-		gene.Jewel[1] = SA2BTexture_Pearl;
+		gene.Jewel[0] = ChaoTexture_Pearl;
+		gene.Jewel[1] = ChaoTexture_Pearl;
 		break;
 	}
 }

@@ -286,13 +286,13 @@ void __cdecl sub_545C20(task *a1)
 				if (v17->EvolutionProgress < 0)
 					v17->EvolutionProgress = 0;
 			}
-			if (v2->ang.x == SA2BFruit_Mushroom || v2->ang.x == SA2BFruit_MushroomAlt)
+			if (v2->ang.x == ChaoFruit_Mushroom || v2->ang.x == ChaoFruit_MushroomAlt)
 			{
 				if (v13) 
 				{
 					v16 = v13->tp;
 					v17 = GET_CHAOPARAM(v16);
-					if (v2->ang.x == SA2BFruit_Mushroom)
+					if (v2->ang.x == ChaoFruit_Mushroom)
 						v17->EvolutionProgress += 0.05f;
 					else v17->EvolutionProgress += 0.10f;
 				}
@@ -306,13 +306,13 @@ void __cdecl sub_545C20(task *a1)
 					
 					switch (v2->ang.x)
 					{
-					case SA2BFruit_HeroFruit:
+					case ChaoFruit_HeroFruit:
 						AL_ParameterAddAPos(v16, 0.15f);
 						break;
-					case SA2BFruit_DarkFruit:
+					case ChaoFruit_DarkFruit:
 						AL_ParameterAddAPos(v16, -0.15f);
 						break;
-					case SA2BFruit_HeartFruit:
+					case ChaoFruit_HeartFruit:
 						AL_EmotionAdd(v16, EM_ST_BREED, 10000);
 						break;
 					default:
@@ -351,7 +351,7 @@ LABEL_54:
 
 void ALO_Fruit_Init()
 {
-	FruitModels[SA2BFruit_MushroomAlt] = &object_02FC056C;
+	FruitModels[ChaoFruit_MushroomAlt] = &object_02FC056C;
 	WriteJump(ALO_FruitExecutor_Display, ALO_FruitExecutor_DisplayHack);
 	WriteJump((void*)0x545C20, sub_545C20);
 }

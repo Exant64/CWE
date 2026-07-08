@@ -343,7 +343,7 @@ static void AL_ModAPI_InitSubsystems() {
 	AL_ModAPI_Msg_Init();
 
 	//Fruit
-	for (int i = SA2BFruit_ChaoGardenFruit; i < 24; i++)
+	for (int i = ChaoFruit_ChaoGardenFruit; i < 24; i++)
 	{
 		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Add(FruitModels[i], &AL_OBJECT_TEXLIST);
 		ModAPI_FruitStats.push_back(ChaoFruitStatArray[i]);

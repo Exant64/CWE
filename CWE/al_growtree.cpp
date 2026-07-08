@@ -168,7 +168,7 @@ void __cdecl sub_546670Hook(NJS_VECTOR* a1, ALO_GrowTreeExecutor_Data* a2, int a
 
 task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, CHAO_SAVE_INFO* a5)
 {    
-    if(a1 >= SA2BFruit_ChaoGardenFruit && a1 <= SA2BFruit_DarkGardenFruit)
+    if(a1 >= ChaoFruit_ChaoGardenFruit && a1 <= ChaoFruit_DarkGardenFruit)
         return ALO_FruitExecutor_Load(a1, position, angle, a4, a5);
 
     int lookup = ModAPI_TreeEntries[a1 - 2].FruitIDs[CurrentFruitSlot];

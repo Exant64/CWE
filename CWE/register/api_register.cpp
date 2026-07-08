@@ -120,7 +120,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.ID = "cwe_chaotree",
 		.Flags = 0,
 
-		.FruitIDs = {SA2BFruit_ChaoFruit,SA2BFruit_ChaoFruit,SA2BFruit_ChaoFruit}
+		.FruitIDs = {ChaoFruit_ChaoFruit,ChaoFruit_ChaoFruit,ChaoFruit_ChaoFruit}
 	};
 	cwe_api->AddChaoTree(chao_tree_data, &chao_seed_attrib, "Chao Seed", "Grows a Chao Fruit tree.");
 	

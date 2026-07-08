@@ -14,10 +14,10 @@ DataArray(int, dword_19468A0, 0x19468A0, 4);
 std::vector<std::pair<NJS_CNK_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
 
 bool IsAltDrawHead(int headgear) {
-	return headgear == SA2BHat_Bucket ||
-		headgear == SA2BHat_EmptyCan ||
-		headgear == SA2BHat_FlowerPot ||
-		headgear == SA2BHat_Pan;
+	return headgear == ChaoHat_Bucket ||
+		headgear == ChaoHat_EmptyCan ||
+		headgear == ChaoHat_FlowerPot ||
+		headgear == ChaoHat_Pan;
 }
 
 void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
