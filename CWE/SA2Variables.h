@@ -267,9 +267,22 @@ DataPointer(char, RougeTreasureScopeGot, 0x1DEB31A);
 DataPointer(char, RougeIronBootsGot, 0x1DEB31B);
 DataPointer(__int16, RougeMysticMelodyGot, 0x1DEB31C);
 DataPointer(int, FrameIncrement, 0x1DEB50C);
-DataPointer(int*, SaveFile, 0x1DEC600);
+#pragma pack(push, 1)
+typedef struct SAVE_DATA
+{
+    int code;
+    int totalTime;
+    char monoSound;
+    char language;
+    char speech;
+    char unk0;
+    unsigned __int8 seqSection;
+    unsigned __int8 emblem__not;
+    unsigned __int8 emblemNum;
+} SAVE_DATA;
+#pragma pack(pop)
+DataPointer(SAVE_DATA, SaveData, 0x1DEC600);
 DataPointer(char, TextLanguage_Save, 0x1DEC609);
-DataPointer(unsigned __int8, EmblemCount, 0x1DEC60E);
 DataPointer(char, RumbleEnabled_Save, 0x1DEC60F);
 DataArray(__int16, Life_Count_Save, 0x1DEC61C, 2);
 DataArray(__int16, BattleWinCount_Save, 0x1DEC620, 2);

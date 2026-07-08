@@ -163,7 +163,7 @@ void RareFruit()
 			if (njRandom() < 0.3f)
 				item = SA2BFruit_MushroomAlt;
 		}
-		if (EmblemCount >= CategoryAttribs[ChaoItemCategory_Fruit].attrib[item].RequiredEmblems)
+		if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Fruit].attrib[item].RequiredEmblems)
 		{
 			if (v11 < RareFruitMarket[i].chance)
 			{
@@ -216,7 +216,7 @@ static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const s
 	const auto& itemAttribs = BlackMarketCategories[category];
 	size_t totalObtainableItem = 0;
 	for(size_t i = 0; i < itemAttribs.Count; ++i) {
-		if (EmblemCount < itemAttribs.attrib[i].RequiredEmblems) continue;
+		if (SaveData.emblemNum < itemAttribs.attrib[i].RequiredEmblems) continue;
 
 		totalObtainableItem++;
 	}
@@ -229,7 +229,7 @@ static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const s
 
 	while (items.size() < itemCount) {
 		const size_t id = distr(generator);
-		if (EmblemCount < itemAttribs.attrib[id].RequiredEmblems) continue;
+		if (SaveData.emblemNum < itemAttribs.attrib[id].RequiredEmblems) continue;
 
 		items.insert(id);
 	}
@@ -263,7 +263,7 @@ static void __declspec(naked) sub_58B120Hook()
 void FBuyListGenericUpdate(ChaoItemCategory cat, float change = 0.75f) {
 	for (int i = 0; i < BlackMarketCategories[cat].Count; i++)
 	{
-		if (EmblemCount >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
+		if (SaveData.emblemNum >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
 		{
 			BlackMarketAddInventory(cat, i);
 		}
@@ -276,7 +276,7 @@ void FBuyListGenericUpdateSeed(float change = 0.75f) {
 	//theres a filler one starting at custom ones (to correspond with tree IDs), but its emblem count is 999 so it shouldnt ever be rolled
 	for (int i = ChaoSeed_SquareSeed + 1; i < BlackMarketCategories[cat].Count; i++)
 	{
-		if (EmblemCount >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
+		if (SaveData.emblemNum >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
 		{
 			BlackMarketAddInventory(cat, i);
 		}
@@ -292,7 +292,7 @@ static void FBuyListUpdateAccessory() {
 	std::unordered_map<size_t, std::vector<size_t>> allAccessories;
 
 	for(size_t i = 0; i < attrib->Size(ChaoItemCategory_Accessory); ++i) {
-		if (EmblemCount < attrib->Attrib(ChaoItemCategory_Accessory, i)->RequiredEmblems) {
+		if (SaveData.emblemNum < attrib->Attrib(ChaoItemCategory_Accessory, i)->RequiredEmblems) {
 			continue;
 		}
 
@@ -362,10 +362,10 @@ void FBuyListUpdate()
 	v3 = 0;
 	for (int i = 0; i < kSellEggList_Length; i++)
 	{
-		if (EmblemCount >= kSellEggList[i].emblem0)
+		if (SaveData.emblemNum >= kSellEggList[i].emblem0)
 		{
 			int selectedEggID = kSellEggList[i].id[((*(int*)0x19F6464 + *(int*)0x19F6468) & 0x7FFFFFFF) % 3];
-			if (EmblemCount >= kSellEggList[i].emblem1) //shiny emblem
+			if (SaveData.emblemNum >= kSellEggList[i].emblem1) //shiny emblem
 			{
 				if (njRandom() < 0.3)
 				{
@@ -470,7 +470,7 @@ void FBuyListUpdate()
 		if (v31 != SA2BHat_BlueWoolBeanie
 			&& v31 != SA2BHat_BlackWoolBeanie
 			&& v29->PurchasePrice > 0
-			&& EmblemCount >= v29->RequiredEmblems)
+			&& SaveData.emblemNum >= v29->RequiredEmblems)
 			//&& (njRandom()) > 0.5
 			//&& v31 < 32)
 		{
@@ -498,17 +498,17 @@ void FBuyListUpdate()
 					if (v38 >= 5)
 					{
 						if (v38 < 15
-							&& EmblemCount >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlueWoolBeanie].RequiredEmblems)
+							&& SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlueWoolBeanie].RequiredEmblems)
 						{
 							id = SA2BHat_BlueWoolBeanie;
 						}
 					}
-					else if (EmblemCount >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlackWoolBeanie].RequiredEmblems)
+					else if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlackWoolBeanie].RequiredEmblems)
 					{
 						id = SA2BHat_BlackWoolBeanie;
 					}
 				}
-				if (EmblemCount >= CategoryAttribs[ChaoItemCategory_Hat].attrib[id].RequiredEmblems)
+				if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[id].RequiredEmblems)
 				{
 					if (!set.at(id))
 					{
@@ -541,14 +541,14 @@ void FBuyListUpdate()
 
 	if (HaveBattleDLC && GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize)
 	{
-		if (!*(unsigned char*)0x1DEB367 && EmblemCount >= CategoryAttribs[16].attrib->RequiredEmblems)
+		if (!*(unsigned char*)0x1DEB367 && SaveData.emblemNum >= CategoryAttribs[16].attrib->RequiredEmblems)
 		{
 			if (njRandom() < 0.1f)
 			{
 				BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 0);
 			}
 		}
-		if (GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize && !*(unsigned char*)0x1DEB364 && EmblemCount >= CategoryAttribs[16].attrib[1].RequiredEmblems)
+		if (GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize && !*(unsigned char*)0x1DEB364 && SaveData.emblemNum >= CategoryAttribs[16].attrib[1].RequiredEmblems)
 		{
 			if (njRandom() < 0.1f)
 			{
