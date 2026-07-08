@@ -20,7 +20,7 @@ float gOrthoZoom;
 extern "C" {
 	__declspec(dllexport) void OrthoInit(float orthoZoom = 100) {
 		gOrthoZoom = orthoZoom;
-		float aspect = HorizontalResolution / VerticalResolution;
+		float aspect = DisplayResolutionX / DisplayResolutionY;
 		D3DXMatrixOrthoRH(&ortho,
 			aspect * gOrthoZoom,
 			gOrthoZoom,
