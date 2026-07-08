@@ -169,6 +169,36 @@ enum ChaoTexture : __int8
 	ChaoTexture_Moon = 0x10,
 };
 
+enum SA2BAnimal : __int8
+{
+	SA2BAnimal_None = -1,
+	SA2BAnimal_Penguin = 0x0,
+	SA2BAnimal_Seal = 0x1,
+	SA2BAnimal_Otter = 0x2,
+	SA2BAnimal_Rabbit = 0x3,
+	SA2BAnimal_Cheetah = 0x4,
+	SA2BAnimal_Warthog = 0x5,
+	SA2BAnimal_Bear = 0x6,
+	SA2BAnimal_Tiger = 0x7,
+	SA2BAnimal_Gorilla = 0x8,
+	SA2BAnimal_Peacock = 0x9,
+	SA2BAnimal_Parrot = 0xA,
+	SA2BAnimal_Condor = 0xB,
+	SA2BAnimal_Skunk = 0xC,
+	SA2BAnimal_Sheep = 0xD,
+	SA2BAnimal_Raccoon = 0xE,
+	SA2BAnimal_HalfFish = 0xF,
+	SA2BAnimal_SkeletonDog = 0x10,
+	SA2BAnimal_Bat = 0x11,
+	SA2BAnimal_Dragon = 0x12,
+	SA2BAnimal_Unicorn = 0x13,
+	SA2BAnimal_Phoenix = 0x14,
+	SA2BAnimal_YellowChaosDrive = 0x15,
+	SA2BAnimal_GreenChaosDrive = 0x16,
+	SA2BAnimal_RedChaosDrive = 0x17,
+	SA2BAnimal_PurpleChaosDrive = 0x18,
+};
+
 enum SADXAnimal : __int8
 {
 	SADXAnimal_None = -1,
