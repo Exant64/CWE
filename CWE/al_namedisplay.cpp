@@ -270,7 +270,7 @@ bool AL_EmoteIconRequirement(task* a1, int index)
 		return AL_EmotionGetValue(a1, EM_MD_FEAR) >= 100;
 	case EMOTION_ICON_ILLNESS:
 		for (size_t i = 0; i < 6; i++) {
-			if (data->Emotion.IllState[i] < 0) {
+			if (data->emotion.IllState[i] < 0) {
 				return true;
 			}
 		}

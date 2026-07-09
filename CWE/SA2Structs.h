@@ -926,7 +926,7 @@ struct CHAO_PARAM_GC
 	AL_KARATE_PERSONAL_INFO karate;
 	char field_10A[2];
 	AL_PARTS PartsBTL;
-	AL_EMOTION Emotion;
+	AL_EMOTION emotion;
 	AL_KNOWLEDGE_BTL knowledge;
 	AL_GENE gene;
 	int IsInitializedDX;

@@ -899,7 +899,7 @@ signed int AL_HealthCenter_GetSickness(task* a1)
 	int v2; // eax
 	signed int result; // eax
 
-	v1 = &GET_CHAOPARAM(a1)->Emotion;
+	v1 = &GET_CHAOPARAM(a1)->emotion;
 	v2 = 0;
 	while (v1->IllState[v2] >= 0)
 	{

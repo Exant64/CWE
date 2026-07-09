@@ -7,7 +7,7 @@ void AL_EmotionAdd(task* tp, Uint32 EmotionNum, int add) {
     AL_EMOTION* emotion;
 
     // this is odd, but i can't match it any other way
-    if (emotion = &GET_CHAOPARAM(tp)->Emotion, EmotionNum <= 7) {
+    if (emotion = &GET_CHAOPARAM(tp)->emotion, EmotionNum <= 7) {
         value = add + (Uint8)emotion->Mood[EmotionNum];
 
         if (value > 200)
@@ -36,7 +36,7 @@ void AL_EmotionAdd(task* tp, Uint32 EmotionNum, int add) {
 
 void AL_EmotionSetValue(task* tp, Uint32 EmotionNum, int value) {
     AL_EMOTION* emotion;
-    emotion = &GET_CHAOPARAM(tp)->Emotion;
+    emotion = &GET_CHAOPARAM(tp)->emotion;
 
     if (EmotionNum <= 7) {
         if (value > 200)
@@ -61,7 +61,7 @@ void AL_EmotionSetValue(task* tp, Uint32 EmotionNum, int value) {
 
 int AL_EmotionGetValue(task* tp, Uint32 EmotionNum) {
     AL_EMOTION* emotion;
-    emotion = &GET_CHAOPARAM(tp)->Emotion;
+    emotion = &GET_CHAOPARAM(tp)->emotion;
 
     if (EmotionNum <= 7) {
         return (Uint8)emotion->Mood[EmotionNum];

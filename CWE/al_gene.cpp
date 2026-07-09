@@ -158,7 +158,7 @@ static void AL_GeneAnalyzeMoreFaces(CHAO_PARAM_GC* pParam) {
 			const auto persKind = entry.PersonalityKinds[j];
 			const auto persRange = entry.PersonalityCheckRanges[j];
 	
-			const auto pers = pParam->Emotion.Personality[persKind - EM_PER_CURIOSITY];
+			const auto pers = pParam->emotion.Personality[persKind - EM_PER_CURIOSITY];
 			const bool persLow = pers < -40;
 			const bool persHigh = pers > 40;
 
@@ -498,7 +498,7 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	// we store negative genetics in EyePos since it's unused
 	pChildGene->EyePos[0] = GET_CWEPARAM(pMotherTask)->Negative;
 	pChildGene->EyePos[1] = GET_CWEPARAM(pFatherTask)->Negative;
-	
+
 	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
 	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }

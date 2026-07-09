@@ -555,27 +555,27 @@ float ALS_AngryChance(task* chao, task* otherChao)
 	if (AL_EmotionGetValue(chao, EM_PER_FICKLE) > 50)
 		chance += 0.015f;
 	bool foundDislikedFruit = false;
-	switch (data->Emotion.Taste)
+	switch (data->emotion.Taste)
 	{
 	case TASTE_LS_DT:
 	case TASTE_LC_DT:
 		//dislike triangle
-		if (otherData->Emotion.Taste == TASTE_LT_DS ||
-			otherData->Emotion.Taste == TASTE_LT_DC)
+		if (otherData->emotion.Taste == TASTE_LT_DS ||
+			otherData->emotion.Taste == TASTE_LT_DC)
 			foundDislikedFruit = true;
 		break;
 	case TASTE_LT_DS:
 	case TASTE_LC_DS:
 		//dislike square
-		if (otherData->Emotion.Taste == TASTE_LS_DT ||
-			otherData->Emotion.Taste == TASTE_LS_DC)
+		if (otherData->emotion.Taste == TASTE_LS_DT ||
+			otherData->emotion.Taste == TASTE_LS_DC)
 			foundDislikedFruit = true;
 		break;
 	case TASTE_LS_DC:
 	case TASTE_LT_DC:
 		//dislike circle
-		if (otherData->Emotion.Taste == TASTE_LC_DT ||
-			otherData->Emotion.Taste == TASTE_LC_DS)
+		if (otherData->emotion.Taste == TASTE_LC_DT ||
+			otherData->emotion.Taste == TASTE_LC_DS)
 			foundDislikedFruit = true;
 		break;
 
