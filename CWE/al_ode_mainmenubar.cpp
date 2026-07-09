@@ -9,7 +9,7 @@
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
 FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
 
-ObjectFunc(sub_5AC010, 0x5AC010);
+FunctionPointer(void, sub_5AC010, (task*), 0x5AC010);
 
 // the number of buttons that can be visible on screen, this is used in many calculations
 #define NB_BUTTONS_VISIBLE 6

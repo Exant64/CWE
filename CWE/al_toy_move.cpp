@@ -458,7 +458,7 @@ void __cdecl ALO_TVExecutor_Display_(task *a1)
 	ALO_TVDisplayer(a1);
 }
 
-ObjectFunc(ALO_HorseDisplayer, 0x00580CA0);
+FunctionPointer(void, ALO_HorseDisplayer, (task*), 0x00580CA0);
 void __cdecl ALO_HorseExecutor_Display_(task* a1)
 {
 	a1->disp = ALO_HorseDisplayer;

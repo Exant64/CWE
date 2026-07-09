@@ -158,7 +158,7 @@ int AnimalInfluence[] =
 };
 
 
-ObjectFunc(sub_57BD40, 0x0057BD40);
+FunctionPointer(void, sub_57BD40, (task*), 0x0057BD40);
 #pragma pack(push, 8)
 struct __declspec(align(4)) ParticleData
 {

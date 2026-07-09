@@ -112,7 +112,7 @@ void ALO_FruitExecutor_Main_r(task* a1);
 Trampoline ALO_FruitExecutor_Main_t(0x00545E40, 0x00545E4A, ALO_FruitExecutor_Main_r);
 void ALO_FruitExecutor_Main_r(task *a1)
 {
-	ObjectFunc(original, ALO_FruitExecutor_Main_t.Target());
+	FunctionPointer(void, original, (task*), ALO_FruitExecutor_Main_t.Target());
 	original(a1);
 	
 	//if fruit ID inside api registered fruit list

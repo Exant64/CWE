@@ -107,7 +107,7 @@ void NewBarDraw(task *a1)
 	else
 		chDrawBillboardSR(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
 }
-ObjectFunc(sub_5ABA70, 0x5ABA70);
+FunctionPointer(void, sub_5ABA70, (task*), 0x5ABA70);
 void BarDraw(task* a1)
 {
 	sub_5ABA70(a1);

@@ -14,7 +14,7 @@ void CocoonFix()
 	DoLighting(LightIndex);
 }
 
-ObjectFunc(EGG_Display, 0x0057B640);
+FunctionPointer(void, EGG_Display, (task*), 0x0057B640);
 void __cdecl EGG_Display_(task* a1)
 {
 	BrightFixPlus_ShinyCheck(1);
@@ -155,8 +155,7 @@ static void __declspec(naked) AL_CheckBallHook()
 }
 
 void Ball_Delete(task* a1) {
-	ObjectFunc(j_ALO_Delete, 0x0057B9B0);
-	j_ALO_Delete(a1);
+	ALW_CancelEntry(a1);
 	ALO_BallPtr = 0;
 	BallUsable = 0;
 }

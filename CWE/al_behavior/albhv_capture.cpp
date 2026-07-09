@@ -19,7 +19,7 @@ void ParamFukidasiExecutor_Load(task* a1)
 	}
 }
 FunctionPointer(void, sub_6EFF10, (NJS_VECTOR* a1, NJS_VECTOR* a2, float a3), 0x6EFF10);
-ObjectFunc(AL_CloseParameterFukidasiWait, 0x00565BC0);
+FunctionPointer(void, AL_CloseParameterFukidasiWait, (task*), 0x00565BC0);
 
 //we split this out into a separate function for cleanness, on the original version it was inside
 void ALBHV_Capture_Parts(task* tp, int minitype) {
