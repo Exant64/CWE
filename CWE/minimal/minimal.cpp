@@ -382,11 +382,11 @@ static void LoadLevelDestroy_r() {
 
 static void AnimalPickupSoundHook_r(int a1, NJS_VECTOR *a2, int a3, int a4, int a5, int animalID) {
     if (animalID >= 21 && animalID < 25) {
-        PlaySound_XYZ(0x8011, a2, a3, a4, a5);
+        SE_CallV2(0x8011, a3, a4, a5, a2);
         return;
     }
     
-    PlaySound_XYZ(0x800F, a2, a3, a4, a5);
+    SE_CallV2(0x800F, a3, a4, a5, a2);
 }
 
 static void __declspec(naked) AnimalPickupSoundHook()

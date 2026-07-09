@@ -697,7 +697,7 @@ static inline ModelIndex * LoadMDLFile(char *filename)
 
 //void __usercall(int a1@<edi>, NJS_VECTOR *a2@<esi>, int a3, char a4, char a5)
 static const void *const PlaySound_XYZPtr = (void*)0x4372E0;
-static inline void PlaySound_XYZ(int a1, NJS_VECTOR *a2, int a3, char a4, char a5)
+static inline void SE_CallV2(int a1, int a3, char a4, char a5, NJS_VECTOR *a2)
 {
 	__asm
 	{

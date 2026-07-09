@@ -113,7 +113,7 @@ int ALBHV_Capture(task* tp) {
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
 		if (ChaoStageNumber == ChaoNextStageNumber)
 		{
-			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->pos, 0, 0, 0);
+			SE_CallV2(4100, 0, 0, 0, &GET_CHAOWK(tp)->pos);
 		}
 		CreateChildTask(IM_TWK, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
@@ -128,7 +128,7 @@ int ALBHV_Capture(task* tp) {
 			work->Behavior.Mode = 2;
 			if (ChaoStageNumber == ChaoNextStageNumber)
 			{
-				PlaySound_XYZ(4101, &GET_CHAOWK(tp)->pos, 0, 0, 0);
+				SE_CallV2(4101, 0, 0, 0, &GET_CHAOWK(tp)->pos);
 			}
 
 			for (int i = 0; i < 40; i++) {

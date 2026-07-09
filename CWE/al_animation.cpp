@@ -521,7 +521,7 @@ void Chao_ExtraSounds(task* a1)
 				const int BegSound[] = { 137, 138 };
 				int BegRNG = rand() % std::size(BegSound);
 
-				PlaySound_XYZ(SOUNDBANK6(BegSound[BegRNG]), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(BegSound[BegRNG]), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 			else if (data->MotionCtrl.next_num == 199)
@@ -529,19 +529,19 @@ void Chao_ExtraSounds(task* a1)
 				const int HatSuccesSound[] = { 149, 150, 151 };
 				int HatSuccesRNG = rand() % std::size(HatSuccesSound);
 
-				PlaySound_XYZ(SOUNDBANK6(HatSuccesSound[HatSuccesRNG]), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(HatSuccesSound[HatSuccesRNG]), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 			else if (data->MotionCtrl.next_num == 454)
 			{
-				PlaySound_XYZ(SOUNDBANK6(152), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(152), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
 		{
-			PlaySound_XYZ(SOUNDBANK1(18), &data->pos, 0, 0, 0);
+			SE_CallV2(SOUNDBANK1(18), 0, 0, 0, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
@@ -549,7 +549,7 @@ void Chao_ExtraSounds(task* a1)
 		{
 			if (data->MotionCtrl.next_num == 21)
 			{
-				PlaySound_XYZ(SOUNDBANK6(7), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(7), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 		}
@@ -558,12 +558,12 @@ void Chao_ExtraSounds(task* a1)
 		{
 			if (data->MotionCtrl.next_num == 194)
 			{
-				PlaySound_XYZ(SOUNDBANK6(27), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(27), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 			else if (data->MotionCtrl.next_num == 519)
 			{
-				PlaySound_XYZ(SOUNDBANK6(32), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(32), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 		}
@@ -573,7 +573,7 @@ void Chao_ExtraSounds(task* a1)
 			const int JumpSound[] = { 30, 52, 139 };
 			int JumpRNG = rand() % std::size(JumpSound);
 
-			PlaySound_XYZ(SOUNDBANK6(JumpSound[JumpRNG]), &data->pos, 0, 0, 55);
+			SE_CallV2(SOUNDBANK6(JumpSound[JumpRNG]), 0, 0, 55, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
@@ -582,7 +582,7 @@ void Chao_ExtraSounds(task* a1)
 			const int GotFoodSound[] = { 42, 65 };
 			int GotFoodRNG = rand() % std::size(GotFoodSound);
 
-			PlaySound_XYZ(SOUNDBANK6(GotFoodSound[GotFoodRNG]), &data->pos, 0, 0, 110);
+			SE_CallV2(SOUNDBANK6(GotFoodSound[GotFoodRNG]), 0, 0, 110, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
@@ -590,7 +590,7 @@ void Chao_ExtraSounds(task* a1)
 		{
 			if (data->MotionCtrl.next_num == 126)
 			{
-				PlaySound_XYZ(SOUNDBANK6(68), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(68), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 		}
@@ -600,19 +600,19 @@ void Chao_ExtraSounds(task* a1)
 			const int DamageSound[] = { 109, 41 };
 			int DamageRNG = rand() % std::size(DamageSound);
 
-			PlaySound_XYZ(SOUNDBANK6(DamageSound[DamageRNG]), &data->pos, 0, 0, 110);
+			SE_CallV2(SOUNDBANK6(DamageSound[DamageRNG]), 0, 0, 110, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTTHROWND)
 		{
-			PlaySound_XYZ(SOUNDBANK6(141), &data->pos, 0, 0, 110);
+			SE_CallV2(SOUNDBANK6(141), 0, 0, 110, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_PUTHAT)
 		{
-			PlaySound_XYZ(SOUNDBANK6(143), &data->pos, 0, 0, 110);
+			SE_CallV2(SOUNDBANK6(143), 0, 0, 110, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
@@ -620,20 +620,20 @@ void Chao_ExtraSounds(task* a1)
 		{
 			if (data->MotionCtrl.next_num == 325)
 			{
-				PlaySound_XYZ(SOUNDBANK6(154), &data->pos, 0, 0, 110);
+				SE_CallV2(SOUNDBANK6(154), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
 		{
-			PlaySound_XYZ(SOUNDBANK6(156), &data->pos, 0, 0, 110);
+			SE_CallV2(SOUNDBANK6(156), 0, 0, 110, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 
 		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 		{
-			PlaySound_XYZ(SOUNDBANK6(159), &data->pos, 0, 0, 110);
+			SE_CallV2(SOUNDBANK6(159), 0, 0, 110, &data->pos);
 			cwe_data->ExtraSound++;
 		}
 	}
@@ -642,11 +642,11 @@ void Chao_ExtraSounds(task* a1)
 	{
 		if (data->MotionCtrl.minfo[0].frame == 1.0f)
 		{
-			PlaySound_XYZ(SOUNDBANK1(2), &data->pos, 0, 0, 0);
+			SE_CallV2(SOUNDBANK1(2), 0, 0, 0, &data->pos);
 		}
 		else if (data->MotionCtrl.minfo[0].frame == 7.0f)
 		{
-			PlaySound_XYZ(SOUNDBANK1(3), &data->pos, 0, 0, 0);
+			SE_CallV2(SOUNDBANK1(3), 0, 0, 0, &data->pos);
 		}
 	}
 
@@ -654,23 +654,23 @@ void Chao_ExtraSounds(task* a1)
 	{
 		if (data->MotionCtrl.curr_num == 283)
 		{
-			PlaySound_XYZ(SOUNDBANK1(36), &data->pos, 0, 0, 0);
+			SE_CallV2(SOUNDBANK1(36), 0, 0, 0, &data->pos);
 		}
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_BROOMSTICK && data->Behavior.Timer % 34 == 0)
 	{
-		PlaySound_XYZ(SOUNDBANK1(37), &data->pos, 0, 0, 0);
+		SE_CallV2(SOUNDBANK1(37), 0, 0, 0, &data->pos);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_POGOSTICK && data->MotionCtrl.minfo[0].frame == 5.0f)
 	{
-		PlaySound_XYZ(SOUNDBANK1(41), &data->pos, 0, 0, 0);
+		SE_CallV2(SOUNDBANK1(41), 0, 0, 0, &data->pos);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY && data->Behavior.Timer == 100 && RandomChance)
 	{
-		PlaySound_XYZ(SOUNDBANK6(0), &data->pos, 0, 0, 110);
+		SE_CallV2(SOUNDBANK6(0), 0, 0, 110, &data->pos);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TIRED && data->Behavior.Timer == 0)
@@ -678,12 +678,12 @@ void Chao_ExtraSounds(task* a1)
 		const int TiredSound[] = { 4, 158 };
 		int TiredRNG = rand() % std::size(TiredSound);
 
-		PlaySound_XYZ(SOUNDBANK6(TiredSound[TiredRNG]), &data->pos, 0, 0, 110);
+		SE_CallV2(SOUNDBANK6(TiredSound[TiredRNG]), 0, 0, 110, &data->pos);
 	}
 
 	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TRIP && data->Behavior.Timer == 40 && RandomChance)
 	{
-		PlaySound_XYZ(SOUNDBANK6(24), &data->pos, 0, 0, 110);
+		SE_CallV2(SOUNDBANK6(24), 0, 0, 110, &data->pos);
 	}
 }
 
@@ -854,7 +854,7 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 
 			if (gConfigVal.MoreSound) {
 				if (ChaoStageNumber == ChaoNextStageNumber) {
-					PlaySound_XYZ(SOUNDBANK6(129), &work->pos, 0, 0, 110);
+					SE_CallV2(SOUNDBANK6(129), 0, 0, 110, &work->pos);
 				}
 			}
 		}
@@ -864,17 +864,17 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 			if (gConfigVal.MoreSound) {
 				if (ChaoStageNumber == ChaoNextStageNumber) {
 					if (njRandom() < 0.5f) {
-						PlaySound_XYZ(SOUNDBANK6(147), &work->pos, 0, 0, 110);
+						SE_CallV2(SOUNDBANK6(147), 0, 0, 110, &work->pos);
 					}
 					else {
-						PlaySound_XYZ(SOUNDBANK6(148), &work->pos, 0, 0, 110);
+						SE_CallV2(SOUNDBANK6(148), 0, 0, 110, &work->pos);
 					}
 				}
 			}
 		}
 
 		if (ChaoStageNumber == ChaoNextStageNumber) {
-			PlaySound_XYZ(4097, &work->pos, 0, 0, 0);
+			SE_CallV2(4097, 0, 0, 0, &work->pos);
 		}
 
 		bhv->Mode++;
