@@ -114,7 +114,7 @@ static void UpdateHatAccVector() {
 	AccessoryListCount.clear();
 	HatListCount.clear();
 
-	ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+	ITEM_SAVE_INFO* items = AL_GetCurrGardenInfo()->mask;
 	for (int j = 0; j < 24; j++)
 	{
 		if (items[j].kind > 0) {

@@ -10,8 +10,12 @@ private:
 
 protected:
 	ChaoInfo(){
-		for (int i = 0; i < ChaoSlots_Length; i++) {
-			m_vector.push_back(&ChaoSlots[i].param);
+		// todo: unsure if AL_GetCurrGardenList would return
+		// the first list when this is initialized
+		auto pGardenInfo = &GardenInfoList[0];
+
+		for (size_t i = 0; i < _countof(pGardenInfo->chao); i++) {
+			m_vector.push_back(&pGardenInfo->chao[i].param);
 		}
 
 		m_size = m_vector.size();

@@ -17,7 +17,7 @@ void SpoiledFruits::OnFrame() {
         return;
     }
 
-    ITEM_SAVE_INFO* objData = (ITEM_SAVE_INFO*)ChaoFruitSlots;
+    ITEM_SAVE_INFO* objData = AL_GetCurrGardenInfo()->fruit;
     for (size_t i = 0; i < 24; i++) {
         if(objData[i].nbVisit != 6) continue;
 

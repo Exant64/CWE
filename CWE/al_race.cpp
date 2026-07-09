@@ -210,10 +210,10 @@ void RaceNewPrize()
 		}
 		else if (pWinnerChao == pChaoObject)
 		{
-			if (v5->toyUnlock != -1 && !(ChaoToysUnlocked[0] & (1 << v5->toyUnlock)))
+			if (v5->toyUnlock != -1 && !(AL_GetCurrGardenInfo()->ToyGetFlag & (1 << v5->toyUnlock)))
 			{
 				CreateToyPresenter(v5->toyUnlock, 1);
-				ChaoToysUnlocked[0] |= 1 << v5->toyUnlock;
+				AL_GetCurrGardenInfo()->ToyGetFlag |= 1 << v5->toyUnlock;
 			}
 		}
 		break;

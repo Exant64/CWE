@@ -1655,6 +1655,82 @@ struct CharSelectThing
 };
 
 
+#pragma pack(push, 8)
+struct RaceTimeData
+{
+	int set;
+	AL_SHAPE_ELEMENT Data;
+};
+#pragma pack(pop)
+
+
+#pragma pack(push, 8)
+struct RaceData
+{
+	char UnlockedRaces[6];
+	char field_6[15];
+	char field_15[11];
+	RaceTimeData RaceTimeData[10];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 8)
+struct __declspec(align(4)) BlackMarketSaveData
+{
+	char gap0[28];
+	int dword1C;
+	int ItemCount;
+	int dword24;
+	SAlItem Items[20];
+	int field_50;
+	int field_54;
+	int field_58;
+	int field_5C;
+	int field_60;
+	int field_64;
+	__int16 field_68;
+	__int16 word6A;
+	__int16 word6C;
+	__int16 word6E;
+	__int16 word70;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 8)
+struct TreeData
+{
+	char treeType;
+	unsigned __int8 lifeTimeStatus;
+	unsigned __int8 growth;
+	unsigned __int8 lifeSpanMaybe;
+	char fruitSize1;
+	char FruitSize2;
+	char fruitSize3;
+	char rotation;
+};
+#pragma pack(pop)
+
+struct CHAO_GARDEN_INFO
+{
+	int ChaoSaveStart;
+	int unk_1;
+	int Seed;
+	int flag;
+	int ToyGetFlag;
+	int timer;
+	int nbVisit;
+	int nbBorn;
+	TreeData tree[3][7];
+	ITEM_SAVE_INFO fruit[40];
+	ITEM_SAVE_INFO seed[12];
+	ITEM_SAVE_INFO mask[24];
+	ITEM_SAVE_INFO minimal[10];
+	RaceData race;
+	char field_9D0[32];
+	BlackMarketSaveData BlackMarketData;
+	CHAO_SAVE_INFO chao[24];
+	int Checksum[2];
+};
 
 struct MenuData
 {

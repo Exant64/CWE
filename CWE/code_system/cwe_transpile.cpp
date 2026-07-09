@@ -8,6 +8,8 @@ int Regs[16];
 
 void ChaoWorldExtendedRequired()
 {
+	CHAO_SAVE_INFO* ChaoSlots = GardenInfoList[0].chao;
+	
 	//fix this later to not be 24 for future proofing (function from symbols that "return 24")
 	if (ssStageNumber == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
 		for (int i = 0; i < 24; i++) {

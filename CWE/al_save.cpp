@@ -356,6 +356,7 @@ static void __declspec(naked) SaveCWESaveFileHook()
 	}
 }
 
+#ifdef CHAO_48
 CHAO_SAVE_INFO* GetFreeCWESlot()
 {
 	CHAO_SAVE_INFO* dataPtr = 0;
@@ -530,6 +531,7 @@ void SpawnCWEChao()
 		}
 	}
 }
+#endif
 
 ITEM_SAVE_INFO* AL_GetSpecialItemSave() {
 	for (int i = 0; i < _countof(cweSaveFile.specialItems); i++) {

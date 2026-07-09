@@ -135,8 +135,8 @@ extern "C"
 				ALO_FloatCreate(&pos, 0);
 			}
 			if (
-				(ChaoStageNumber == 2 && (ChaoToysUnlocked[0] & 0x400)) || 
-				(ChaoStageNumber == 3 && (ChaoToysUnlocked[0] & 0x800))
+				(ChaoStageNumber == 2 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x400)) || 
+				(ChaoStageNumber == 3 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x800))
 				)
 			{
 				NJS_VECTOR GCPos[] = { {-45, 0, 6}, {-102, 0.05f, 4.5f} };
@@ -294,7 +294,7 @@ extern "C"
 		}
 
 		// convert the "accessory hats" to the new accessory format
-		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+		ITEM_SAVE_INFO* items = AL_GetCurrGardenInfo()->mask;
 		for (size_t j = 0; j < 24; ++j) {
 			auto& originalItem = items[j];
 			if (originalItem.kind < 256) {
@@ -325,15 +325,15 @@ extern "C"
 		for (int i = 0; i < 24; i++)
 		{
 			//HYPER FRUIT CHECK, dont age hyper fruit
-			ITEM_SAVE_INFO* objData = (ITEM_SAVE_INFO*)ChaoFruitSlots;
+			ITEM_SAVE_INFO* objData = AL_GetCurrGardenInfo()->fruit;
 			if (objData[i].kind >= 29 && objData[i].kind <= 32)
 				objData[i].nbVisit = 0;
 
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
-			if (ChaoSlots[i].param.type == 1)
-				GET_CWEPARAM(&ChaoSlots[i].param)->UpgradeCounter = 0;
+			if (ChaoInfo::Instance()[i].type == 1)
+				GET_CWEPARAM(&ChaoInfo::Instance()[i])->UpgradeCounter = 0;
 
-			GuestChao(ChaoSlots[i].param);
+			GuestChao(ChaoInfo::Instance()[i]);
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {

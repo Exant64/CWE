@@ -92,7 +92,7 @@ void AL_SetItemOnTheGarden(int a1)
 {
 	int v1; // esi
 	double v2; // st7
-	ALFSave* result; // eax
+	CHAO_GARDEN_INFO* result; // eax
 	int v4; // ebx
 	ITEM_SAVE_INFO* v5; // edi
 	ITEM_SAVE_INFO* v6; // ebp
@@ -103,37 +103,37 @@ void AL_SetItemOnTheGarden(int a1)
 	v1 = AL_GetStageNumber();
 	v10 = AL_GetStageNumber();
 	v2 = NJM_DEG_ANG(njRandom() * 360);
-	result = (ALFSave*)(signed int)v2;
+	result = (CHAO_GARDEN_INFO*)(signed int)v2;
 	v4 = (signed int)v2;
 	if ((unsigned int)(v1 - 1) <= 2)
 	{
-		result = (ALFSave*)(a1 - 2);
+		result = (CHAO_GARDEN_INFO*)(a1 - 2);
 		switch (a1)
 		{
 		case 2:
-			result = (ALFSave*)GetChaoSavePointer();
-			v5 = result->ChaoAnimalSlots;
-			v6 = (ITEM_SAVE_INFO*)&result->RaceData;
+			result = (CHAO_GARDEN_INFO*)AL_GetCurrGardenInfo();
+			v5 = result->minimal;
+			v6 = (ITEM_SAVE_INFO*)&result->race;
 			break;
 		case 3:
-			result = (ALFSave*)GetChaoSavePointer();
-			v5 = result->ChaoFruitSlots;
-			v6 = result->ChaoSeedSlots;
+			result = (CHAO_GARDEN_INFO*)AL_GetCurrGardenInfo();
+			v5 = result->fruit;
+			v6 = result->seed;
 			break;
 		case 7:
-			result = (ALFSave*)GetChaoSavePointer();
-			v5 = result->ChaoSeedSlots;
-			v6 = result->ChaoHatSlots;
+			result = (CHAO_GARDEN_INFO*)AL_GetCurrGardenInfo();
+			v5 = result->seed;
+			v6 = result->mask;
 			break;
 		case 10:
-			result = (ALFSave*)GetChaoSavePointer();
+			result = (CHAO_GARDEN_INFO*)AL_GetCurrGardenInfo();
 			v5 = (ITEM_SAVE_INFO*)cweSaveFile.specialItems;
 			v6 = (ITEM_SAVE_INFO*)&cweSaveFile.specialItems[30];
 			break;
 		case 9:
-			result = (ALFSave*)GetChaoSavePointer();
-			v5 = result->ChaoHatSlots;
-			v6 = result->ChaoAnimalSlots;
+			result = (CHAO_GARDEN_INFO*)AL_GetCurrGardenInfo();
+			v5 = result->mask;
+			v6 = result->minimal;
 			break;
 		default:
 			return;
@@ -146,7 +146,7 @@ void AL_SetItemOnTheGarden(int a1)
 			v8 = &v5->pos;
 			do
 			{
-				result = (ALFSave*)(unsigned __int16)v5->kind;
+				result = (CHAO_GARDEN_INFO*)(unsigned __int16)v5->kind;
 				if ((signed __int16)v5->kind < 0)
 				{
 					goto LABEL_30;
