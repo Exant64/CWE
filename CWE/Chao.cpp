@@ -359,9 +359,9 @@ static void Chao_Main_r(task* a1)
 	if (pParam->body.VPos < -1 || pParam->body.VPos > 1 ||
 		pParam->body.HPos < -1 || pParam->body.HPos > 1)
 	{
-		if (GET_CHAOWK(a1)->Face.pMouthObject && GET_CHAOWK(a1)->Face.pMouthObject->model)
+		if (GET_CHAOWK(a1)->Face.pMouthObject && GET_CHAOWK(a1)->Face.pMouthObject->pModel)
 		{
-			__int32* color = (__int32*)GET_CHAOWK(a1)->Face.pMouthObject->model->plist;
+			__int32* color = (__int32*)GET_CHAOWK(a1)->Face.pMouthObject->pModel->PList;
 			color[1] = 0xFFFFFFFF;
 		}
 	}

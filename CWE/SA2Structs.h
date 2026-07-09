@@ -175,8 +175,8 @@ struct __declspec(align(4)) AL_FACE_CTRL
 	float EyeSclX;
 	float EyeSclY;
 	unsigned int Flag;
-	NJS_CNK_OBJECT* pEyeObject[2];
-	NJS_CNK_OBJECT* pMouthObject;
+	AL_OBJECT* pEyeObject[2];
+	AL_OBJECT* pMouthObject;
 	int EyeLidBlinkMode;
 	int EyeLidBlinkTimer;
 	int EyeLidBlinkAng;
