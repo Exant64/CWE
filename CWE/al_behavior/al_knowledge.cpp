@@ -10,7 +10,7 @@
 #include <al_chao_info.h>
 
 Bool AL_KW_IsSToyFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 
 	if (kwlg->SToyFlag & (1 << Kind))
 		return TRUE;
@@ -19,12 +19,12 @@ Bool AL_KW_IsSToyFlagOn(task* pChaoTask, int Kind) {
 }
 
 void AL_KW_SongFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 	kwlg->SongFlag |= 1 << Kind;
 }
 
 Bool AL_KW_IsSongFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 
 	if (kwlg->SongFlag & (1 << Kind))
 		return TRUE;
@@ -33,12 +33,12 @@ Bool AL_KW_IsSongFlagOn(task* pChaoTask, int Kind) {
 }
 
 void AL_KW_ArtFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 	kwlg->ArtFlag |= 1 << Kind;
 }
 
 Bool AL_KW_IsArtFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 
 	if (kwlg->ArtFlag & (1 << Kind))
 		return TRUE;
@@ -47,7 +47,7 @@ Bool AL_KW_IsArtFlagOn(task* pChaoTask, int Kind) {
 }
 
 void AL_KW_MusicFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 
 	//cwe enum
 	if (Kind >= NB_AL_MUSIC) {
@@ -59,7 +59,7 @@ void AL_KW_MusicFlagOn(task* pChaoTask, int Kind) {
 }
 
 Bool AL_KW_IsMusicFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge; 
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge; 
 		
 	//cwe enum
 	if (Kind >= NB_AL_MUSIC) {
@@ -76,12 +76,12 @@ Bool AL_KW_IsMusicFlagOn(task* pChaoTask, int Kind) {
 }
 
 void AL_KW_DanceFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 	kwlg->DanceFlag |= 1 << Kind;
 }
 
 Bool AL_KW_IsDanceFlagOn(task* pChaoTask, int Kind) {
-	AL_KNOWLEDGE* kwlg = &GET_CHAOPARAM(pChaoTask)->Knowledge;
+	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 	
 	switch (Kind) {
 	case AL_DANCE_HERO:
@@ -121,7 +121,7 @@ int AL_KW_AlreadyKnows(task* a1, task* a2)
 
 	for (int i = 0; i < 20; i++)
 	{
-		if (AL_KW_CompareID(wk2->pParamGC->ChaoID, wk1->pParamGC->Knowledge.chao[i].id))
+		if (AL_KW_CompareID(wk2->pParamGC->ChaoID, wk1->pParamGC->knowledge.chao[i].id))
 			return i;
 	}
 	return -1;
@@ -140,9 +140,9 @@ int AL_KW_GetRelationIndex(task* a1, task* a2)
 	//if not registered, find new slot for it
 	for (int i = 0; i < 20; i++)
 	{
-		if (wk1->pParamGC->Knowledge.chao[i].id.id[0] == 0)
+		if (wk1->pParamGC->knowledge.chao[i].id.id[0] == 0)
 		{
-			wk1->pParamGC->Knowledge.chao[i].id = wk2->pParamGC->ChaoID;
+			wk1->pParamGC->knowledge.chao[i].id = wk2->pParamGC->ChaoID;
 			return i;
 		}
 
@@ -178,7 +178,7 @@ int AL_KW_GetFriendCount(task* a1)
 	chaowk* wk1 = GET_CHAOWK(a1);
 	for (int i = 0; i < 20; i++)
 	{
-		if (wk1->pParamGC->Knowledge.chao[i].id.id[0] != 0)
+		if (wk1->pParamGC->knowledge.chao[i].id.id[0] != 0)
 			count++;
 	}
 	return count;
@@ -189,9 +189,9 @@ void __cdecl AL_KW_MeetChao(task* a1, int index, KW_MEET_TYPE meetType)
 	chaowk* wk1 = GET_CHAOWK(a1);
 
 	//increment meet
-	if (wk1->pParamGC->Knowledge.chao[index].meet < 0xFFFFu)
+	if (wk1->pParamGC->knowledge.chao[index].meet < 0xFFFFu)
 	{
-		wk1->pParamGC->Knowledge.chao[index].meet++;
+		wk1->pParamGC->knowledge.chao[index].meet++;
 	}
 
 	//likeness goes up by random
@@ -202,20 +202,20 @@ void __cdecl AL_KW_MeetChao(task* a1, int index, KW_MEET_TYPE meetType)
 	//wk1->pParamGC->Knowledge.chao[index].like--;
 		
 	//limit likeness
-	if (wk1->pParamGC->Knowledge.chao[index].like > 50) wk1->pParamGC->Knowledge.chao[index].like = 50;
-	if (wk1->pParamGC->Knowledge.chao[index].like < -50) wk1->pParamGC->Knowledge.chao[index].like = -50;
+	if (wk1->pParamGC->knowledge.chao[index].like > 50) wk1->pParamGC->knowledge.chao[index].like = 50;
+	if (wk1->pParamGC->knowledge.chao[index].like < -50) wk1->pParamGC->knowledge.chao[index].like = -50;
 
-	wk1->pParamGC->Knowledge.chao[index].meetType = meetType;
+	wk1->pParamGC->knowledge.chao[index].meetType = meetType;
 
-	wk1->pParamGC->Knowledge.chao[index].distance = 2 * (wk1->pParamGC->Knowledge.chao[index].distance / 3);
+	wk1->pParamGC->knowledge.chao[index].distance = 2 * (wk1->pParamGC->knowledge.chao[index].distance / 3);
 }
 
 void AL_KW_AddLikeChao(task* a1, int index, int val)
 {
 	chaowk* wk1 = GET_CHAOWK(a1);
-	wk1->pParamGC->Knowledge.chao[index].like += val;
-	if (wk1->pParamGC->Knowledge.chao[index].like > 50) wk1->pParamGC->Knowledge.chao[index].like = 50;
-	if (wk1->pParamGC->Knowledge.chao[index].like < -50) wk1->pParamGC->Knowledge.chao[index].like = -50;
+	wk1->pParamGC->knowledge.chao[index].like += val;
+	if (wk1->pParamGC->knowledge.chao[index].like > 50) wk1->pParamGC->knowledge.chao[index].like = 50;
+	if (wk1->pParamGC->knowledge.chao[index].like < -50) wk1->pParamGC->knowledge.chao[index].like = -50;
 }
 
 int AL_KW_GetMeetChao(task* a1, int index)
@@ -226,7 +226,7 @@ int AL_KW_GetMeetChao(task* a1, int index)
 		return -1;
 	}
 	chaowk* wk1 = GET_CHAOWK(a1);
-	return wk1->pParamGC->Knowledge.chao[index].meet;
+	return wk1->pParamGC->knowledge.chao[index].meet;
 }
 
 int AL_KW_GetMeetChao(task* a1, task* a2)
@@ -237,7 +237,7 @@ int AL_KW_GetMeetChao(task* a1, task* a2)
 char AL_KW_GetMeetTypeChao(task* a1, int index)
 {
 	chaowk* wk1 = GET_CHAOWK(a1);
-	return wk1->pParamGC->Knowledge.chao[index].meetType;
+	return wk1->pParamGC->knowledge.chao[index].meetType;
 }
 
 void AL_KW_MeetEachother(task* a1, task* a2, KW_MEET_TYPE type)

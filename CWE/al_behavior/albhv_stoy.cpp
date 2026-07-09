@@ -15,7 +15,7 @@
 DataArray(BHV_FUNC, ALBHV_SToyFunc, 0x012FE978, 12);
 bool __cdecl AL_KW_IsSToyFlagOn(task* a1, char a2)
 {
-	return (GET_CHAOPARAM(a1)->Knowledge.SToyFlag & (1 << a2)) != 0;
+	return (GET_CHAOPARAM(a1)->knowledge.SToyFlag & (1 << a2)) != 0;
 }
 signed int __cdecl AL_DecideBehaviorSToy(task* a1)
 {
@@ -42,9 +42,9 @@ signed int __cdecl AL_DecideBehaviorSToy(task* a1)
 	//if yes then don't run anything	
 	//this is done to prevent every single chao that has the shovel (for planting purposes) 
 	//making a sandcastle when theyre bored
-	if (GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
-		GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
-		GET_CHAOPARAM(a1)->Knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
+	if (GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
+		GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
+		GET_CHAOPARAM(a1)->knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
 		return BHV_RET_CONTINUE;
 
 	NJS_VECTOR a3;
@@ -103,9 +103,9 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 			{
 				if (v9 > 0)
 				{
-					if (GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
-						GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
-						GET_CHAOPARAM(a1)->Knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
+					if (GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
+						GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
+						GET_CHAOPARAM(a1)->knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
 						return;
 
 					MOV_SetAimPos(a1, &GET_CHAOWK(v3)->pos);

@@ -782,7 +782,7 @@ struct AL_KNOWLEDGE_OTHER
 {
 	char like;
 };
-struct AL_KNOWLEDGE
+struct AL_KNOWLEDGE_BTL
 {
 	char ArtFlag;
 	char DanceFlag;
@@ -939,7 +939,7 @@ struct CHAO_PARAM_GC
 	char field_10A[2];
 	AL_PARTS PartsBTL;
 	AL_EMOTION Emotion;
-	AL_KNOWLEDGE Knowledge;
+	AL_KNOWLEDGE_BTL knowledge;
 	AL_GENE Gene;
 	int IsInitializedDX;
 	AL_PARTS partsDX;

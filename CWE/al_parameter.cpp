@@ -180,8 +180,8 @@ static void AL_CalcParameter_r(task* tp) {
 			// which decreases distance, we don't want that here, they didn't actually interact
 			// it also only sets the current player
 
-			for(size_t i = 0; i < _countof(param->Knowledge.player); ++i) {
-				auto& player = param->Knowledge.player[i];
+			for(size_t i = 0; i < _countof(param->knowledge.player); ++i) {
+				auto& player = param->knowledge.player[i];
 				int like = int(player.like) - 1;
 
 				if(like < -100) {

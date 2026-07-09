@@ -73,7 +73,7 @@ bool ALS_OmobuildCondition(task* chao, task* item)
 		!AL_KW_IDExists(omo->chaoID) ||
 		(pParam->ChaoID.id[0] == omo->chaoID.id[0] &&
 			pParam->ChaoID.id[1] == omo->chaoID.id[1])) &&
-		pParam->Knowledge.SToyFlag & (1 << 12) && omo->phase != 255;
+		pParam->knowledge.SToyFlag & (1 << 12) && omo->phase != 255;
 }
 
 bool ALS_ReincarnCondition(task* chao, task* item)

@@ -187,10 +187,10 @@ void RaceNewPrize()
 	case 1:
 		if (pWinnerChao == pChaoObject)
 		{
-			if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
+			if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag & (1 << v5->toyUnlock)))
 			{
 				CreateToyPresenter(v5->toyUnlock, 0);
-				GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
+				GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag |= 1 << v5->toyUnlock;
 			}
 		}
 		break;
@@ -201,10 +201,10 @@ void RaceNewPrize()
 		{
 			if (pWinnerChao == pChaoObject)
 			{
-				if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
+				if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag & (1 << v5->toyUnlock)))
 				{
 					CreateToyPresenter(v5->toyUnlock, 0);
-					GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
+					GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag |= 1 << v5->toyUnlock;
 				}
 			}
 		}
