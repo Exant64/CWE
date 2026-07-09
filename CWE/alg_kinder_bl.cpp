@@ -1877,7 +1877,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 	
 	a1->mBuyListAngY += 256;
 
-	if (ControllerPointers[0]->on & BTN_Y) {
+	if (per[0]->on & BTN_Y) {
 		return;
 	}
 		
@@ -1942,7 +1942,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			}
 		}
 
-		if (ControllerPointers[0]->press & BTN_A)
+		if (per[0]->press & BTN_A)
 		{
 			if (gu32TotalRing >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mType < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
 			{
@@ -1992,7 +1992,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				SE_Call(32777, 0, 0, 0);
 			}
 		}
-		else if (ControllerPointers[0]->press & BTN_B)
+		else if (per[0]->press & BTN_B)
 		{
 			a1->currentTab = 0;
 			a1->mMode = 9;
@@ -2015,11 +2015,11 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			SE_Call(0x8000, 0, 0, 0);
 		}
 			
-		if ((ControllerPointers[0]->press & 0x406) == 0) {
+		if ((per[0]->press & 0x406) == 0) {
 			return;
 		}
 
-		if ((ControllerPointers[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
+		if ((per[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
 			a1->mBuyListSelect = 1;
 			SE_Call(4106, 0, 0, 0);
 		}
@@ -2104,7 +2104,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			}
 		}
 	LABEL_57:
-		if ((ControllerPointers[0]->press & 0x402) != 0)
+		if ((per[0]->press & 0x402) != 0)
 		{
 			SE_Call(4106, 0, 0, 0);
 		}
@@ -2239,11 +2239,11 @@ void __cdecl sub_589850(BlackMarketData* data)
 		return;
 	}
 	
-	if ((ControllerPointers[0]->on & 0x200) != 0) {
-		data->mItemDescAngX += ControllerPointers[0]->y1;
-		data->mItemDescAngY += ControllerPointers[0]->x1;
+	if ((per[0]->on & 0x200) != 0) {
+		data->mItemDescAngX += per[0]->y1;
+		data->mItemDescAngY += per[0]->x1;
 
-		data->mItemDescScl = (ControllerPointers[0]->l - ControllerPointers[0]->r) * 0.00013f + data->mItemDescScl;;
+		data->mItemDescScl = (per[0]->l - per[0]->r) * 0.00013f + data->mItemDescScl;;
 
 		if (data->mItemDescScl < 1) {
 			data->mItemDescScl = 1;

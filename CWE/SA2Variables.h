@@ -284,7 +284,7 @@ DataArray(AnalogThing, UnusedAnalogThings, 0x1DEFAC0, 8);
 DataArray(int, SWDATA, 0x1DEFB10, 4);
 DataArray(int, PortValid, 0x1DEFB30, 2);
 DataArray(int, MenuButtons_Pressed_Old2, 0x1DEFB50, 4);
-DataArray(PDS_PERIPHERAL *, ControllerPointers, 0x1DEFB60, 4);
+DataArray(PDS_PERIPHERAL *, per, 0x1DEFB60, 4);
 DataArray(AnalogThing, AnalogThings, 0x1DEFBA0, 8);
 DataArray(int, MenuButtons_Pressed_Old, 0x1DEFBE0, 4);
 DataArray(PDS_PERIPHERAL, Controllers, 0x1DEFC00, 4);

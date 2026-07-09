@@ -853,7 +853,7 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 	{
 		if (!(a1->medicalChartMenu == 0 && SWDATA[0] & BTN_Y)) 
 		{
-			if ((ControllerPointers[0]->press & BTN_L) != 0 || (SWDATAE[0] & 0x40) != 0)
+			if ((per[0]->press & BTN_L) != 0 || (SWDATAE[0] & 0x40) != 0)
 			{
 				if (--a1->medicalChartMenu < 0)
 				{
@@ -861,7 +861,7 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				}
 				SE_Call(0x8000, 0, 0, 0);
 			}
-			if ((ControllerPointers[0]->press & (BTN_R | BTN_A)) != 0 || ControllerPointers[0]->press & 0x80)
+			if ((per[0]->press & (BTN_R | BTN_A)) != 0 || per[0]->press & 0x80)
 			{
 				if (++a1->medicalChartMenu == 3)
 				{
@@ -869,7 +869,7 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				}
 				SE_Call(0x8000, 0, 0, 0);
 			}
-			if ((ControllerPointers[0]->press & 0x402) != 0)
+			if ((per[0]->press & 0x402) != 0)
 			{
 				sub_58DB30((int)a1);
 				SE_Call(0x100A, 0, 0, 0);

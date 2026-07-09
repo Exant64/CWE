@@ -80,8 +80,8 @@ void BlackMarketDebug(BlackMarketData *a1)
 		}
 
 		SWDATAE[0] = 0;
-		ControllerPointers[0]->on = 0;
-		ControllerPointers[0]->press = 0;
+		per[0]->on = 0;
+		per[0]->press = 0;
 		break;
 	case MD_ITEM:
 		if (SWDATAE[0] & BTN_UP) 
@@ -121,8 +121,8 @@ void BlackMarketDebug(BlackMarketData *a1)
 			mode = MD_CATEGORY;
 
 		SWDATAE[0] = 0;
-		ControllerPointers[0]->on = 0;
-		ControllerPointers[0]->press = 0;
+		per[0]->on = 0;
+		per[0]->press = 0;
 		break;
 	case MD_SETINV:
 		if (category == 9 && selection == 0) {
