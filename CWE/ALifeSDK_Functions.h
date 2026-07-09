@@ -10,5 +10,3 @@ int AdjustAngle(__int16 bams_a, unsigned __int16 bams_b, int dang);
 void DrawToyTransform(task *a1, int a2, int a3);
 
 void sub_5669B0(task* a1, int a2, int a3);
-
-void PlayJingle(const char *a1);

@@ -555,7 +555,7 @@ static void ChaoSoundMenu() {
         }
 
         if (ImGui::Button("Stop Music")) {
-            StopMusic();
+            BGM_Stop();
         }
 
         ImGui::End();

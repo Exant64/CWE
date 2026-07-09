@@ -50,16 +50,6 @@ void sub_5669B0(task *a1, int a2, int a3)
 	}
 }
 
-const int PlayJinglePtr = 0x00443480;
-void PlayJingle(const char *a1)
-{
-	__asm
-	{
-		mov ebx, a1
-		call PlayJinglePtr
-	}
-}
-
 const int SetShadersPtr = 0x0041B1F0;
 void SetShaders_(int result)
 {

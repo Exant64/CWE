@@ -51,8 +51,8 @@ FunctionPointer(int, UpdateStaticControllers, (), 0x4421B0);
 VoidFunc(UpdateUselessButtonPressBooleans, 0x442390);
 ObjectFunc(ADX_TaskLoop_Delete, 0x442850);
 ObjectFunc(ADX_TaskLoop, 0x442AD0);
-VoidFunc(ResetMusic, 0x442D90);
-VoidFunc(StopMusic, 0x442F50);
+VoidFunc(BGM_Replay, 0x442D90);
+VoidFunc(BGM_Stop, 0x442F50);
 ObjectFunc(JingleTask_Delete, 0x443320);
 ObjectFunc(JingleTask, 0x4433D0);
 FunctionPointer(int, ProbablySavesSaveFile, (), 0x4436A0);
@@ -554,6 +554,16 @@ static inline void AwardWin(signed int n)
 	}
 }
 
+static const void *const PlayJinglePtr = (void*)0x00443480;
+static inline void Jingle_Play(const char *a1)
+{
+	__asm
+	{
+		mov ebx, a1
+		call PlayJinglePtr
+	}
+}
+
 // void __usercall(int pnum@<esi>)
 static const void *const PlayWinnerVoiceProbablyPtr = (void*)0x43ECA0;
 static inline void PlayWinnerVoiceProbably(int pnum)
@@ -567,7 +577,7 @@ static inline void PlayWinnerVoiceProbably(int pnum)
 
 // void __usercall(const char *song@<edi>)
 static const void *const PlayMusicPtr = (void*)0x442CF0;
-static inline void PlayMusic(const char *song)
+static inline void BGM_SetFile(const char *song)
 {
 	__asm
 	{

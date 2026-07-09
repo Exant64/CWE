@@ -77,8 +77,8 @@ void AL_EggPresenterExecutor(task* tp) {
 	case 2:
 		if (v1->wtimer == 30)
 		{
-			PlayMusic("chao_r_item_get.adx");
-			ResetMusic();
+			BGM_SetFile("chao_r_item_get.adx");
+			BGM_Replay();
 		}
 		if (v1->wtimer++ <= 0x14Au)
 		{
@@ -175,7 +175,7 @@ void WinJewelChaoInRace() {
 void RaceNewPrize()
 {
 	RaceConfigThing* v5 = sub_53A9B0();
-	ResetMusic();
+	BGM_Replay();
 
 	if (gConfigVal.WinJewelChaoInJewelRace) {
 		WinJewelChaoInRace();

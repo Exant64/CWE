@@ -115,7 +115,7 @@ void Piano_Main(task * a1)
 					index = 0;
 				}
 				
-				PlayJingle(PianoSongs[index]);
+				Jingle_Play(PianoSongs[index]);
 				break;
 
 			case PIANOTYPE_ORGAN:
@@ -126,7 +126,7 @@ void Piano_Main(task * a1)
 					index = 0;
 				}
 
-				PlayJingle(OrganSongs[index]);
+				Jingle_Play(OrganSongs[index]);
 				break;
 			}
 		}
@@ -136,7 +136,7 @@ void Piano_Main(task * a1)
 		a1->twp->flag |= 0x240u;
 
 		if (a1->twp->mode)
-			ResetMusic();
+			BGM_Replay();
 		a1->twp->mode = 0;
 	}
 
