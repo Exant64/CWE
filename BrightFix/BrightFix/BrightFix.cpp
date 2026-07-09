@@ -374,7 +374,7 @@ extern "C"
 	void MedalWrap(NJS_CNK_OBJECT* object, int(__cdecl* callback)(NJS_CNK_MODEL*))
 	{
 		SetFlag(1);
-		ProcessChunkModelsWithCallback(object, ProcessChunkModel);
+		njCnkTransformObject(object, ProcessChunkModel);
 		SetFlag(0);
 	}
 

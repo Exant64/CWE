@@ -23,7 +23,7 @@ FunctionPointer(int, controller_useless, (), 0x425700);
 FunctionPointer(void, MemoryManager__Deallocate, (AllocatedMem *data, char *a2, int a3), 0x425B50);
 FunctionPointer(int, ___OutputDebugString, (const char*, ...), 0x426740);
 FunctionPointer(int, ProcessChunkModel, (NJS_CNK_MODEL *a1), 0x42D650);
-FunctionPointer(void, ProcessChunkModelsWithCallback, (NJS_CNK_OBJECT *object, int(__cdecl *callback)(NJS_CNK_MODEL *)), 0x42EB30);
+FunctionPointer(void, njCnkTransformObject, (NJS_CNK_OBJECT *object, int(__cdecl *callback)(NJS_CNK_MODEL *)), 0x42EB30);
 FunctionPointer(void, LoadTextureList_NoName, (NJS_TEXLIST *), 0x42FD10);
 VoidFunc(main_gc_free, 0x433E60);
 FunctionPointer(int, GameLoop, (), 0x433EE0);
