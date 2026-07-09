@@ -432,20 +432,6 @@ static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
 	return result;
 }
 
-// char __usercall@<al>(_DWORD *a1@<esi>)
-static const void *const IsByteswappedPtr = (void*)0x429840;
-static inline char IsByteswapped(void *a1)
-{
-	char result;
-	__asm
-	{
-		mov esi, [a1]
-		call IsByteswappedPtr
-		mov result, al
-	}
-	return result;
-}
-
 // void __usercall(int a1@<esi>, int a2, char a3, char a4)
 static const void *const PlaySoundProbablyPtr = (void*)0x437260;
 static inline void SE_Call(int a1, int a2, char a3, char a4)

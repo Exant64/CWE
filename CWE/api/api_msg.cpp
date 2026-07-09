@@ -68,6 +68,20 @@ int* sub_57A5D0(int a1, const char* a2)
 	return result;
 }
 
+// char __usercall@<al>(_DWORD *a1@<esi>)
+static const void *const IsByteswappedPtr = (void*)0x429840;
+static inline char IsByteswapped(void *a1)
+{
+	char result;
+	__asm
+	{
+		mov esi, [a1]
+		call IsByteswappedPtr
+		mov result, al
+	}
+	return result;
+}
+
 void LoadMsgMemIntoVec(int* pFile, std::vector<const char*>& vec) {
 	if (!pFile)
 		return;
