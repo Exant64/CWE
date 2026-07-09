@@ -8,6 +8,7 @@
 #include "../al_world.h"
 #include "albhv.h"
 #include <al_face.h>
+#include <al_field.h>
 #include <util.h>
 
 static int GetPianoType (task* pToy) {
