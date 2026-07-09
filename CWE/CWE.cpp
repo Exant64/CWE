@@ -450,7 +450,7 @@ extern "C"
 		static_assert(offsetof(CHAO_PARAM_GC, body) + offsetof(AL_BODY_INFO, MultiNum) == 0xDB);
 		static_assert(offsetof(CHAO_PARAM_GC, PartsBTL) == 0x118);
 		static_assert(offsetof(CHAO_PARAM_GC, karate) + offsetof(AL_KARATE_PERSONAL_INFO, rank) == 0x10A);
-		static_assert(offsetof(CHAO_PARAM_GC, Gene) == 0x438, "ChaoDataBase DNA incorrect offset");
+		static_assert(offsetof(CHAO_PARAM_GC, gene) == 0x438, "ChaoDataBase DNA incorrect offset");
 		static_assert(offsetof(CHAO_PARAM_GC, IsInitializedDX) == 0x4DC, "SA2 chaodatabase size incorrect");
 
 		SafetyCheckExternalMods();
