@@ -112,7 +112,7 @@ static void ScrollingLogic(task* a1) {
 static bool AL_OdekakeIsGuest() {
 	CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
 
-	return Odekake_EnabledButtons && pParam && pParam->field_19 == 1;
+	return Odekake_EnabledButtons && pParam && pParam->GBAType == 1;
 }
 
 static void AL_OdeScrollArrowExecutor(task* tp) {

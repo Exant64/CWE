@@ -158,7 +158,7 @@ extern "C"
 		if (AL_GetStageNumber() == CHAO_STG_ODEKAKE)
 			return;
 
-		if (param.field_19 != 1) return;
+		if (param.GBAType != 1) return;
 
 		auto pParamCwe = GET_CWEPARAM(&param);
 		AL_GUEST& Guest = pParamCwe->Guest;

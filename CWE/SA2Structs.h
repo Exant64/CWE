@@ -910,7 +910,7 @@ struct CHAO_PARAM_GC
 {
 	char gap_0[18];
 	char name[7];
-	char field_19;
+	char GBAType;
 	char GBATexture;
 	char field_1B[5];
 	Uint8 Exp[8];

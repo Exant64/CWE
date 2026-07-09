@@ -61,7 +61,7 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 		AlMsgWarnWaitClose(0);
 		AlMsgWarnAddLineC(0, "Guest Chao are immortal, and can't be edited.");
 
-		GBAManager_GetChaoDataPointer()->field_19 = 1;
+		GBAManager_GetChaoDataPointer()->GBAType = 1;
 
 		a1->mode++;
 		break;
@@ -72,7 +72,7 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 			//DeleteObject_(pGuestChao);
 			//pGuestChao = nullptr;
 
-			GBAManager_GetChaoDataPointer()->field_19 = 0;
+			GBAManager_GetChaoDataPointer()->GBAType = 0;
 			a1->mode++;
 		}
 		break;

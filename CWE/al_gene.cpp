@@ -313,7 +313,7 @@ void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene)
 
 static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
 	if (param->body.JewelNum != 0) return;
-	if (param->field_19 == 1) return;
+	if (param->GBAType == 1) return;
 
 	switch (param->body.MedalNum) {
 	case ChaoMedal_Aquamarine:
@@ -471,10 +471,10 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	if (*(char*)0x0053FD6C == 1)
 	{
 		float Chance = 0.0f;
-		if (GET_CHAOPARAM(pMotherTask)->field_19 != 1 && GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
+		if (GET_CHAOPARAM(pMotherTask)->GBAType != 1 && GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
-		if (GET_CHAOPARAM(pFatherTask)->field_19 != 1 && GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
+		if (GET_CHAOPARAM(pFatherTask)->GBAType != 1 && GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
 		if (Chance > 0)

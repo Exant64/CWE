@@ -43,7 +43,7 @@ DataPointer(task*, pKinderChao, 0x01AED248);
 static bool IsValidRoom(int room) {
 	if (!pKinderChao) return true;
 
-	if (GET_CHAOPARAM(pKinderChao)->field_19 == 1 && room == 4)
+	if (GET_CHAOPARAM(pKinderChao)->GBAType == 1 && room == 4)
 		return false;
 
 	return true;
