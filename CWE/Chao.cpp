@@ -104,16 +104,16 @@ task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, AL_SHAPE_ELEMENT* a3, N
 	{
 		task* player = KarateMainExec_Ptr->pointerToSaveThing;
 		KarateChaoExec_Data2* data2 = (KarateChaoExec_Data2*)player->awp;
-		opponent->APos = (short)(data2->chaoDataPointer->data.body.APos * 10000.0f);
-		opponent->Growth = (short)(data2->chaoDataPointer->data.body.growth * 10000.0f);
-		opponent->VPos = (short)(data2->chaoDataPointer->data.body.VPos * 10000.0f);
-		opponent->HPos = (short)(data2->chaoDataPointer->data.body.HPos * 10000.0f);
-		opponent->type = data2->chaoDataPointer->data.type;
+		opponent->APos = (short)(data2->chaoDataPointer->param.body.APos * 10000.0f);
+		opponent->Growth = (short)(data2->chaoDataPointer->param.body.growth * 10000.0f);
+		opponent->VPos = (short)(data2->chaoDataPointer->param.body.VPos * 10000.0f);
+		opponent->HPos = (short)(data2->chaoDataPointer->param.body.HPos * 10000.0f);
+		opponent->type = data2->chaoDataPointer->param.type;
 		for (int i = 0; i < 7; i++)
 		{
-			if (data2->chaoDataPointer->data.Skill[i] >= 1000)
-				opponent->Skill[i] = data2->chaoDataPointer->data.Skill[i] - 200;
-			else opponent->Skill[i] = data2->chaoDataPointer->data.Skill[i];
+			if (data2->chaoDataPointer->param.Skill[i] >= 1000)
+				opponent->Skill[i] = data2->chaoDataPointer->param.Skill[i] - 200;
+			else opponent->Skill[i] = data2->chaoDataPointer->param.Skill[i];
 		}
 	}
 

@@ -41,15 +41,15 @@ static const char* GBAFruitNames[] = {
 void CWEFruit_HyperFruit(task* tp, CHAO_SAVE_INFO* chaoData, task* fruit) {
 	const int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
 
-	if (chaoData->data.Abl[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
+	if (chaoData->param.Abl[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
 		GET_CWEPARAM(chaoData)->XGradeValue = hyperFruitID + 1;
 	}
 }
 
 void CWEFruit_Shiny(task* tp, CHAO_SAVE_INFO* chaoData, task* fruit) {
-	if (chaoData->data.body.MultiNum)
+	if (chaoData->param.body.MultiNum)
 	{
-		chaoData->data.body.MultiNum = (chaoData->data.body.MultiNum % 2) + 1;
+		chaoData->param.body.MultiNum = (chaoData->param.body.MultiNum % 2) + 1;
 	}
 }
 

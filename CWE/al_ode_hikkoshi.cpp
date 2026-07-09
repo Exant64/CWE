@@ -209,7 +209,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 				int Data2garden, data1Garden;
 				if (data2)
 				{
-					Data2garden = data2->data.place;
+					Data2garden = data2->param.place;
 				}
 				else
 				{
@@ -221,7 +221,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 					memcpy(&tempSwap, data2, sizeof(CHAO_SAVE_INFO));
 					if (data1)
 					{
-						data1Garden = data1->data.place;
+						data1Garden = data1->param.place;
 					}
 					else
 					{
@@ -231,9 +231,9 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 					if (data1) 
 					{
 						memcpy(data2, data1, sizeof(CHAO_SAVE_INFO));
-						data2->data.place = Data2garden;
+						data2->param.place = Data2garden;
 						memcpy(data1, &tempSwap, sizeof(CHAO_SAVE_INFO));
-						data1->data.place = data1Garden;
+						data1->param.place = data1Garden;
 
 						//update display
 						AL_SortChaoSaveInfo(SORT_NORMAL);

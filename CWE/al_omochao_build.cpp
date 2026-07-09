@@ -99,25 +99,25 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 		CHAO_SAVE_INFO* v11 = (CHAO_SAVE_INFO*)AL_GetNewChaoSaveInfo();
 		if (v11) 
 		{
-			v11->data.type = TYPE_CHILD;
-			v11->data.body.FormNum = AL_FORM_OMOCHAO;
-			v11->data.place = AL_GetStageNumber();
-			InitChaoDNA(&v11->data.Gene);
-			v11->data.Gene.Color[0] = GetOmoData()->color;
-			v11->data.Gene.Color[1] = GetOmoData()->color;
-			v11->data.body.ColorNum	= GetOmoData()->color;
+			v11->param.type = TYPE_CHILD;
+			v11->param.body.FormNum = AL_FORM_OMOCHAO;
+			v11->param.place = AL_GetStageNumber();
+			InitChaoDNA(&v11->param.Gene);
+			v11->param.Gene.Color[0] = GetOmoData()->color;
+			v11->param.Gene.Color[1] = GetOmoData()->color;
+			v11->param.body.ColorNum	= GetOmoData()->color;
 
-			v11->data.Gene.Multi[0] = GetOmoData()->shiny;
-			v11->data.Gene.Multi[1] = GetOmoData()->shiny;
-			v11->data.body.MultiNum	= GetOmoData()->shiny;
+			v11->param.Gene.Multi[0] = GetOmoData()->shiny;
+			v11->param.Gene.Multi[1] = GetOmoData()->shiny;
+			v11->param.body.MultiNum	= GetOmoData()->shiny;
 
-			v11->data.Gene.NonTex[0]		= GetOmoData()->monotone;
-			v11->data.Gene.NonTex[1]		= GetOmoData()->monotone;
-			v11->data.body.NonTex	= GetOmoData()->monotone;
+			v11->param.Gene.NonTex[0]		= GetOmoData()->monotone;
+			v11->param.Gene.NonTex[1]		= GetOmoData()->monotone;
+			v11->param.body.NonTex	= GetOmoData()->monotone;
 
-			v11->data.Gene.Jewel[0] = GetOmoData()->jewel;
-			v11->data.Gene.Jewel[1] = GetOmoData()->jewel;
-			v11->data.body.JewelNum		= GetOmoData()->jewel;
+			v11->param.Gene.Jewel[0] = GetOmoData()->jewel;
+			v11->param.Gene.Jewel[1] = GetOmoData()->jewel;
+			v11->param.body.JewelNum		= GetOmoData()->jewel;
 
 			CreateChaoExtra(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
 			memset(GetOmoData(), 0, sizeof(OMOCHAO_INFO));

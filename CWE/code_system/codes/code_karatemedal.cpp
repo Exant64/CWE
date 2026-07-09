@@ -9,7 +9,7 @@ FunctionHook<void, task*> sub_5428C0_t (0x5428C0);
 
 static void sub_5428C0_r(task* tp) {
     if (KarateMainExec_Ptr->Round == 5) {
-        const auto pParam = &KarateMainExec_Ptr->field_18->data;
+        const auto pParam = &KarateMainExec_Ptr->field_18->param;
         switch(KarateMainExec_Ptr->byte6) {
             case 0:
                 pParam->body.MedalNum = 12;

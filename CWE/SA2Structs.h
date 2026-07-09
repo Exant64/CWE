@@ -1127,7 +1127,7 @@ struct ChaoFriendshipEntry
 
 struct CHAO_SAVE_INFO
 {
-	CHAO_PARAM_GC data;
+	CHAO_PARAM_GC param;
 	
 	char Padding2[0x800 - sizeof(CHAO_PARAM_GC)]; //remaining empty space th
 };

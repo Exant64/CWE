@@ -100,12 +100,12 @@ void ChaoWorldExtendedRequired()
 			}
 
 			//x rank reincarnation stat cap
-			if (ChaoSlots[i].data.type == 1) //if chao is egg
+			if (ChaoSlots[i].param.type == 1) //if chao is egg
 			{
 				GET_CWEPARAM(&ChaoSlots[i])->XGradeValue = 0;
 
 				int cap;
-				switch (ChaoSlots[i].data.nbSucceed) {
+				switch (ChaoSlots[i].param.nbSucceed) {
 				case 0:
 					cap = 0;
 					break;
@@ -122,8 +122,8 @@ void ChaoWorldExtendedRequired()
 
 				if (cap > 0) {
 					for (int j = 0; j < 4; j++) {
-						if (ChaoSlots[i].data.Skill[j] > cap)
-							ChaoSlots[i].data.Skill[j] = cap;
+						if (ChaoSlots[i].param.Skill[j] > cap)
+							ChaoSlots[i].param.Skill[j] = cap;
 					}
 				}
 			}
@@ -190,7 +190,7 @@ void ChaoWorldExtendedRequired()
 	//more inventory safe guard crap
 	bool saveFull = true;
 	for (int i = 0; i < 24; i++) {
-		if (ChaoSlots[i].data.type == 0)
+		if (ChaoSlots[i].param.type == 0)
 			saveFull = false;
 	}
 	if (saveFull) {

@@ -330,10 +330,10 @@ extern "C"
 				objData[i].nbVisit = 0;
 
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
-			if (ChaoSlots[i].data.type == 1)
-				GET_CWEPARAM(&ChaoSlots[i].data)->UpgradeCounter = 0;
+			if (ChaoSlots[i].param.type == 1)
+				GET_CWEPARAM(&ChaoSlots[i].param)->UpgradeCounter = 0;
 
-			GuestChao(ChaoSlots[i].data);
+			GuestChao(ChaoSlots[i].param);
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {

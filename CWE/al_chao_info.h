@@ -11,7 +11,7 @@ private:
 protected:
 	ChaoInfo(){
 		for (int i = 0; i < ChaoSlots_Length; i++) {
-			m_vector.push_back(&ChaoSlots[i].data);
+			m_vector.push_back(&ChaoSlots[i].param);
 		}
 
 		m_size = m_vector.size();

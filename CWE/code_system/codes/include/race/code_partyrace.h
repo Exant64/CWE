@@ -46,7 +46,7 @@ void PartyRace::OnFrame() {
         for(size_t i = 0; i < 8; ++i) {
             auto info = &ChaoSlots[i];
 
-            if(info->data.type) {
+            if(info->param.type) {
                 pSelectedChaoSaveInfoList[i] = info;
             }
             else {

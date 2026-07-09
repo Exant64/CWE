@@ -361,7 +361,7 @@ CHAO_SAVE_INFO* GetFreeCWESlot()
 	CHAO_SAVE_INFO* dataPtr = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		if (cweSaveFile.chaoParam[i].data.type == 0)
+		if (cweSaveFile.chaoParam[i].param.type == 0)
 		{
 			dataPtr = &cweSaveFile.chaoParam[i];
 			break;
@@ -378,7 +378,7 @@ char* GetFreeChaoSlot()
 	CHAO_SAVE_INFO* dataPtr = 0;
 	for(int i = 0; i < 24; i++)
 	{
-		if (ChaoSlots[i].data.type == 0)
+		if (ChaoSlots[i].param.type == 0)
 		{
 			dataPtr = &ChaoSlots[i];
 			break;
@@ -398,7 +398,7 @@ int GetFreeChaoCWE(int a1)
 	int count = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		if (cweSaveFile.chaoParam[i].data.type && cweSaveFile.chaoParam[i].data.place == a1)
+		if (cweSaveFile.chaoParam[i].param.type && cweSaveFile.chaoParam[i].param.place == a1)
 			count++;
 	}
 	return count;
@@ -409,7 +409,7 @@ int GetFreeChaoCWE2()
 	int count = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		if (cweSaveFile.chaoParam[i].data.type)
+		if (cweSaveFile.chaoParam[i].param.type)
 			count++;
 	}
 	return count;
@@ -421,7 +421,7 @@ int __cdecl sub_5319F0_(int a1)
 	int v2; // edx
 	int v3; // ecx
 
-	v1 = &ChaoSlots[0].data.place;
+	v1 = &ChaoSlots[0].param.place;
 	v2 = 0;
 	v3 = 24;
 	do
@@ -458,7 +458,7 @@ int sub_531A20()
 	int v2; // ecx
 	int i; // eax
 	
-	v0 = (char*)&ChaoSlots[0].data.type;
+	v0 = (char*)&ChaoSlots[0].param.type;
 	v1 = 0;
 	v2 = 24;
 	do
@@ -496,20 +496,20 @@ void SpawnCWEChao()
 		for (int i = 0; i < 24; i++)
 		{
 			CHAO_SAVE_INFO* chao = &cweSaveFile.chaoParam[i];
-			if (chao->data.place == AL_GetStageNumber()
+			if (chao->param.place == AL_GetStageNumber()
 				&& chao != *(CHAO_SAVE_INFO**)0x01A5CA5C)
 				//&& chao != (ChaoData*)GBAManager_GetChaoDataPointer())
 			{
 				NJS_VECTOR* spawn = &ProbablyChaoSpawnPoints[16 * AL_GetStageNumber()
 					+ (int)(njRandom() * 15.9f) - 16];
 
-				if (chao->data.type)
+				if (chao->param.type)
 				{
-					if (chao->data.type == 1)
+					if (chao->param.type == 1)
 					{
 						CreateChaoExtra(chao, 0, 0, spawn, NJM_DEG_ANG(njRandom() * 360.f));
 					}
-					else if (chao->data.ClassNum == -1)
+					else if (chao->param.ClassNum == -1)
 					{
 						task* task = CreateChaoExtra(
 							chao,
