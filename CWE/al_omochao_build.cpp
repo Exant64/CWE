@@ -102,21 +102,21 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 			v11->param.type = TYPE_CHILD;
 			v11->param.body.FormNum = AL_FORM_OMOCHAO;
 			v11->param.place = AL_GetStageNumber();
-			InitChaoDNA(&v11->param.Gene);
-			v11->param.Gene.Color[0] = GetOmoData()->color;
-			v11->param.Gene.Color[1] = GetOmoData()->color;
+			InitChaoDNA(&v11->param.gene);
+			v11->param.gene.Color[0] = GetOmoData()->color;
+			v11->param.gene.Color[1] = GetOmoData()->color;
 			v11->param.body.ColorNum	= GetOmoData()->color;
 
-			v11->param.Gene.Multi[0] = GetOmoData()->shiny;
-			v11->param.Gene.Multi[1] = GetOmoData()->shiny;
+			v11->param.gene.Multi[0] = GetOmoData()->shiny;
+			v11->param.gene.Multi[1] = GetOmoData()->shiny;
 			v11->param.body.MultiNum	= GetOmoData()->shiny;
 
-			v11->param.Gene.NonTex[0]		= GetOmoData()->monotone;
-			v11->param.Gene.NonTex[1]		= GetOmoData()->monotone;
+			v11->param.gene.NonTex[0]		= GetOmoData()->monotone;
+			v11->param.gene.NonTex[1]		= GetOmoData()->monotone;
 			v11->param.body.NonTex	= GetOmoData()->monotone;
 
-			v11->param.Gene.Jewel[0] = GetOmoData()->jewel;
-			v11->param.Gene.Jewel[1] = GetOmoData()->jewel;
+			v11->param.gene.Jewel[0] = GetOmoData()->jewel;
+			v11->param.gene.Jewel[1] = GetOmoData()->jewel;
 			v11->param.body.JewelNum		= GetOmoData()->jewel;
 
 			CreateChaoExtra(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);

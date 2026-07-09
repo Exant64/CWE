@@ -452,8 +452,8 @@ static void AL_GeneNormalChaoColors(task* tp, AL_GENE& gene) {
 
 void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGene)
 {
-	AL_GENE FatherGene = GET_CHAOPARAM(pFatherTask)->Gene;
-	AL_GENE MotherGene = GET_CHAOPARAM(pMotherTask)->Gene;
+	AL_GENE FatherGene = GET_CHAOPARAM(pFatherTask)->gene;
+	AL_GENE MotherGene = GET_CHAOPARAM(pMotherTask)->gene;
 
 	if (gConfigVal.MedalChaoCanMakeColorChao) {
 		AL_GetMedalGene(GET_CHAOPARAM(pFatherTask), FatherGene);

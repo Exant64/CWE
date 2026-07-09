@@ -124,7 +124,7 @@ void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
 		{
 			for (int j = 0; j < 84; j++)
 			{
-				if (EggColorCombo[j].a == chao.Gene.Color[0])
+				if (EggColorCombo[j].a == chao.gene.Color[0])
 				{
 					eggColor += EggColorCombo[j].b;
 					found = true;
@@ -137,7 +137,7 @@ void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
 		{
 			for (int j = 0; j < 84; j++)
 			{
-				if (EggColorCombo[j].a == chao.Gene.Color[1])
+				if (EggColorCombo[j].a == chao.gene.Color[1])
 				{
 					eggColor += EggColorCombo[j].b;
 					found = true;

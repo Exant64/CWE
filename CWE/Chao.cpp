@@ -309,7 +309,7 @@ static void Chao_Main_r(task* a1)
 		
 		if (!(pParamCwe->Flags & AL_PARAM_FLAG_NAME_NEW))
 		{
-			AL_GENE& Gene = pParam->Gene;
+			AL_GENE& Gene = pParam->gene;
 
 			memcpy(pParamCwe->Name, pParam->name, sizeof(pParam->name));
 			memcpy(pParamCwe->MotherName, Gene.MotherName, sizeof(Gene.MotherName));

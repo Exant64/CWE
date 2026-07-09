@@ -940,7 +940,7 @@ struct CHAO_PARAM_GC
 	AL_PARTS PartsBTL;
 	AL_EMOTION Emotion;
 	AL_KNOWLEDGE_BTL knowledge;
-	AL_GENE Gene;
+	AL_GENE gene;
 	int IsInitializedDX;
 	AL_PARTS partsDX;
 	char paddingRaceDX[16];//AL_RACE_PERSONAL_INFO_DX raceDX;

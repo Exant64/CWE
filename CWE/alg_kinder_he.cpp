@@ -628,7 +628,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			CHAO_PARAM_GC* data = nullptr;
 			AL_SHAPE_ELEMENT* opponentPtr = nullptr;
 
-			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID.id[0] == 0;
+			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.MotherID.id[0] == 0;
 			if (noMother)
 			{
 				data = nullptr;
@@ -637,7 +637,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			else
 			{
 				opponentPtr = nullptr;
-				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID);
+				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.MotherID);
 				if (data == nullptr)
 				{
 					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->motherData;
@@ -659,7 +659,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			GET_CHAOWK(pMother)->ChaoFlag &= ~0x10;
 			GET_CHAOWK(pMother)->ChaoFlag &= ~0x20000;
 
-			noFather = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID.id[0] == 0;
+			noFather = GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.FatherID.id[0] == 0;
 			if (noFather) //if id is invalid then dont do anything
 			{
 				data = nullptr;
@@ -668,7 +668,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			else
 			{
 				opponentPtr = nullptr;
-				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID); //find current parent
+				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.FatherID); //find current parent
 				if (data == nullptr)
 				{
 					//if cant find it, use last "image" of them
@@ -728,8 +728,8 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		{
 			if (TextLocation->field_8)
 			{
-				int v11 = GET_CHAOPARAM(TextLocation->field_8)->Gene.LifeTime[1];
-				int v12 = GET_CHAOPARAM(TextLocation->field_8)->Gene.LifeTime[0];
+				int v11 = GET_CHAOPARAM(TextLocation->field_8)->gene.LifeTime[1];
+				int v12 = GET_CHAOPARAM(TextLocation->field_8)->gene.LifeTime[0];
 				if ((unsigned __int8)v12 < v11)
 				{
 					v12 = v11;

@@ -196,7 +196,7 @@ extern "C"
 				param.Lev[i] = 109; //lock icon later
 			}
 
-			param.Gene.Abl[i][1] = ChaoGrade_E;
+			param.gene.Abl[i][1] = ChaoGrade_E;
 		}
 
 		param.Abl[6] = param.Abl[7] = 0;

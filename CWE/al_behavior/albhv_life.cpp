@@ -36,7 +36,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 	{
 		if (a1)
 		{
-			chaoData->param.Gene = *a1;
+			chaoData->param.gene = *a1;
 		}
 		chaoData->param.type = TYPE_CHILD;
 		chaoData->param.ClassNum = -1;
@@ -96,7 +96,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 	{
 		if (a1)
 		{
-			chaoData->param.Gene = *a1;
+			chaoData->param.gene = *a1;
 		}
 		chaoData->param.type = TYPE_CHILD;
 		chaoData->param.ClassNum = -1;
