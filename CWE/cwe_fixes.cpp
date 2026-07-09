@@ -10,7 +10,7 @@
 //THEY DIDNT RESET THE SHADERS LOL
 void CocoonFix()
 {
-	SetShaders(1);
+	SetShaderType(1);
 	DoLighting(LightIndex);
 }
 

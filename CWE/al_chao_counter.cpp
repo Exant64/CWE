@@ -47,7 +47,7 @@ static void AL_ChaoCounterDisplayer(task* tp) {
 	chDrawBillboardSR(&StatText[chaoCount / 10], x_pos, y_pos, -1.5, 1.0, 1.0, 0, -1);
 	chDrawBillboardSR(&StatText[chaoCount % 10], x_pos + 12, y_pos, -1.5, 1.0, 1.0, 0, -1);
 
-	SetShaders(shaderBackup);
+	SetShaderType(shaderBackup);
 }
 
 void AL_ChaoCounterCreate() {

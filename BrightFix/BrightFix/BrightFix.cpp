@@ -122,13 +122,13 @@ extern "C"
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, (RFS_PSHADER*)chaoPixelSimpleShader);
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, (RFS_PSHADER*)chaoPixelSimpleShader);
 
-			SetShaders(1);
+			SetShaderType(1);
 			SetFlag(0);
 
 			return;
 		}
 
-		SetShaders(1);
+		SetShaderType(1);
 		device->SetVertexShader(chaoVertexSimpleShader);
 		device->SetPixelShader(chaoPixelSimpleShader);
 		SetFlag(0);
@@ -147,7 +147,7 @@ extern "C"
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, pBackupFogPixelShader);
 
-			SetShaders(1);
+			SetShaderType(1);
 
 			SetFlag(1);
 			SetChunkTexIndexNull(2);

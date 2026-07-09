@@ -78,7 +78,7 @@ void sub_426CC0(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
 }
 
 static const void* const SetShadersPtr = (void*)0x41B1F0;
-void SetShaders(int id)
+void SetShaderType(int id)
 {
 	__asm
 	{
@@ -280,7 +280,7 @@ static void SetSamplerState(int a1) {
 
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered) {
 	sub_41FDE0_(_nj_current_matrix_ptr_, 0);
-	SetShaders(1);
+	SetShaderType(1);
 	sub_4293B0();
 	sub_4292E0();
 

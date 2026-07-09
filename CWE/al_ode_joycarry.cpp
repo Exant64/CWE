@@ -38,7 +38,7 @@ NJS_CNK_OBJECT* JoyCarryModels[32];
 
 void JoyCarry_Display(task* a1)
 {
-	SetShaders(1);
+	SetShaderType(1);
 	njPushMatrixEx();
 	njTranslate(NULL, 0, 7, 0);
 	njSetTexture(&JOBJ_TEXLIST);

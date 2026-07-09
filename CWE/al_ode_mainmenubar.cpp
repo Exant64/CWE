@@ -140,7 +140,7 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 }
 
 static void AL_OdeScrollArrowDisplayer(task* tp) {
-	SetShaders(1);
+	SetShaderType(1);
 	chSetBillboardColor(tp->twp->scl.z, 1, 1, 1);
 
 	static CHS_BILL_INFO UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };

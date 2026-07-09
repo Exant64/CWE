@@ -1043,7 +1043,7 @@ const char* BlackMarket_GetBlMsg(BlackMarketData const* data, int const msgID)
 #pragma optimize("gty", off)
 void __cdecl FBuyListDispText(BlackMarketData const* a1)
 {
-	SetShaders(1);
+	SetShaderType(1);
 	MessageFontThing messageBuffer;
 	for (int i = 0; i < ITEMSINBUYLIST; i++)
 	{
@@ -1645,7 +1645,7 @@ void DrawPurchasedItem() {
 		const CHS_BILL_INFO hud = { 1,size,size,0,0,1,1,&CWE_UI_TEXLIST, 27 };
 
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
-			SetShaders(1);
+			SetShaderType(1);
 			DoLighting(0);
 			Angle3 rot = { 0,0,0 };
 			DrawItem(

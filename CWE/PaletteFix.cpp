@@ -122,8 +122,8 @@ static void PaletteFix_SetPaletteShader(WeirdChunkTexIndexThing* a1, int bank)
 	ShaderFlags = v6;
 	if (v5 != v6)
 	{
-		SetShaders(1);
-		SetShaders(ShaderBackup);
+		SetShaderType(1);
+		SetShaderType(ShaderBackup);
 	}
 }
 static void __declspec(naked) PaletteFix_SetPaletteShaderHook()
