@@ -35,6 +35,8 @@ void sub_42D690(int a1)
 
 void __cdecl sub_58F980(task* a1)
 {
+	DataPointer(NJS_TEXLIST, CHAOSDRIVE_TEXLIST, 0x1717DAC);
+
 	signed int v1; // ebp
 	float a3; // ST20_4
 	void* v9; // edx

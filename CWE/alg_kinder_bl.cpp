@@ -980,7 +980,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 	DoLighting(LightIndexBackupMaybe);
 }
 
-BlackMarketItemAttributes* __cdecl AlItemGetInfo(SAlItemCwe* a1)
+BlackMarketItemAttributes* __cdecl AlItemGetInfo_r(SAlItemCwe* a1)
 {
 	BlackMarketItemAttributes* result; // eax
 	BlackMarketCategoryAttribute* v4; // edx
@@ -1008,7 +1008,7 @@ static void __declspec(naked) AlItemGetInfoHook()
 		push ecx // a1
 
 		// Call your __cdecl function here:
-		call AlItemGetInfo
+		call AlItemGetInfo_r
 
 		pop ecx // a1
 		retn
@@ -1050,7 +1050,7 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 		int currItemIndex = a1->mBuyListScroll + i;
 		if (currItemIndex >= cweSaveFile.marketInventoryCount[TabCategory]) break;
 		
-		BlackMarketItemAttributes* attrib = AlItemGetInfo(&cweSaveFile.marketInventory[TabCategory][currItemIndex]);
+		BlackMarketItemAttributes* attrib = AlItemGetInfo_r(&cweSaveFile.marketInventory[TabCategory][currItemIndex]);
 		if (!attrib) continue;
 		if (!attrib->Name) continue;
 
@@ -1725,7 +1725,7 @@ const char* BlackMarketGetDescMsg(BlackMarketData const* a1, BlackMarketItemAttr
 
 void __cdecl FItemDescSet(SAlItemCwe* a1, BlackMarketData* a2) {	
 	a2->mItemDescItem = *a1;
-	a2->mItemDescInfo = AlItemGetInfo(a1);
+	a2->mItemDescInfo = AlItemGetInfo_r(a1);
 	a2->mItemDescScl = 1;
 	a2->mItemDescAngX = 0;
 	a2->mItemDescAngY = 0;

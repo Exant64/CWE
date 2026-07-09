@@ -22,7 +22,7 @@ static const char* DefaultCustomChao = "cwe_spartoi";
 static std::vector <NJS_TEXNAME> AL_BODY_TEXNAMES;
 
 //AL_RootObject buffer to store the 'type 26' model in
-static std::vector<NJS_CNK_OBJECT*> AL_RootObject;
+static std::vector<NJS_CNK_OBJECT*> CWE_AL_RootObject;
 
 //node counter for checking the number of nodes and the current node when traversing the char chao's hierarchy in EditChunkObjectTexture
 static int NodeCounter;
@@ -125,12 +125,12 @@ void __cdecl AL_IconDraw_r(task* tp)
 static void FillAL_RootObject() {
 	NJS_CNK_OBJECT** chaoModels = (NJS_CNK_OBJECT**)GetDataDllProcAddr("AL_RootObject");
 	for (int i = 0; i < 144; i++) {
-		AL_RootObject.push_back(chaoModels[i]);
+		CWE_AL_RootObject.push_back(chaoModels[i]);
 	}
 
 	//temp space for type 26
 	for (int i = 0; i < 6; i++) {
-		AL_RootObject.push_back(nullptr);
+		CWE_AL_RootObject.push_back(nullptr);
 	}
 }
 
@@ -201,7 +201,7 @@ static int EditChunkObjectTexture(NJS_CNK_OBJECT* obj, int baseTexture, int texC
 
 size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	size_t startIndex = AL_BODY_TEXNAMES.size();
-	size_t newChaoType = (AL_RootObject.size() / 6) + 2;
+	size_t newChaoType = (CWE_AL_RootObject.size() / 6) + 2;
 
 	if (!pData->Name) {
 		___OutputDebugString("Custom Chao's name is null!");
@@ -279,7 +279,7 @@ void AL_ModAPI_CharacterChao_Update() {
 		CWE_API_Legacy.RegisterChaoTexlistLoad(entry.Data.TextureName, &tex);
 	}
 
-	g_HelperFunctions->HookExport("AL_RootObject", AL_RootObject.data());
+	g_HelperFunctions->HookExport("AL_RootObject", CWE_AL_RootObject.data());
 }
 
 static int AL_CustomChao_SearchID(const char* pID) {
@@ -318,12 +318,12 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 
 		//in our AL_RootObject vector we have a reserved space for type 26 that the original AL_ShapeInit will load here
 		for (size_t i = 144; i < 150; i++) {
-			AL_RootObject[i] = entry.Data.pObject;
+			CWE_AL_RootObject[i] = entry.Data.pObject;
 		}
 
 		if (entry.Data.Flags & CUSTOM_CHAO_FLAG_SECOND_EVO) {
 			for (size_t i = 145; i < 150; i++) {
-				AL_RootObject[i] = entry.Data.pSecondEvoList[i - 145];
+				CWE_AL_RootObject[i] = entry.Data.pSecondEvoList[i - 145];
 			}
 		}
 	}

@@ -42,6 +42,18 @@ static void AL_OdekakeMenuMaster_(task* a1) {
 }
 
 CHAO_PARAM_GC* GBAManager_GetChaoDataPointer() {
+	struct AL_GBAManagerExecutor_Data {
+		int field_0;
+		int field_4;
+		int field_8;
+		task *ObjectPtr;
+		char field_10[4228];
+		char gap_1094[12691];
+		char field_4227;
+	};
+
+	DataPointer(AL_GBAManagerExecutor_Data *, AL_GBAManagerExecutor_ptr, 0x1A5CB54);
+
 	if (!AL_GBAManagerExecutor_ptr) {
 		return nullptr;
 	}
@@ -230,7 +242,7 @@ void AL_Odekake_Init()
 	WriteData((char*)0x01314165, (char)0x45);
 
 	//obviously hook the menumaster
-	WriteJump((void*)AL_OdekakeMenuMaster, AL_OdekakeMenuMaster_);
+	WriteJump((void*)0x57E5F0, AL_OdekakeMenuMaster_);
 
 	//kill the "select/confirm/back" drawing for every background tile, ported to a separate object (al_ode_guide)
 	WriteCall((void*)0x005A7771, nullsub_1);

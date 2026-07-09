@@ -40,7 +40,6 @@ DataArray(int, DebugLevelLists, 0x1415FB8, 17);
 DataArray(int, DebugCharacterList2, 0x1416018, 8);
 DataPointer(int*, Debug2PLevelLists, 0x1416108);
 
-DataPointer(NJS_TEXLIST, CHAOSDRIVE_TEXLIST, 0x1717DAC);
 DataArray(const char *, MusicList, 0x171A2B0, 156);
 DataPointer(NJS_TEXLIST, CONSOLE_TEXLIST, 0x171A64C);
 DataPointer(NJS_COLOR, ScreenFadeARGB, 0x171CDA0);
@@ -164,7 +163,6 @@ DataPointer(task *, Super_ManTex_ptr, 0x1A5A42C);
 DataPointer(task **, ManGCylExecutor_ptr, 0x1A5A768);
 DataPointer(task *, cameraCons_ptr, 0x1A5A77C);
 DataPointer(ChaoSegmentData *, ChaoSegmentPtr, 0x1A5BE1C);
-DataPointer(AL_GBAManagerExecutor_Data *, AL_GBAManagerExecutor_ptr, 0x1A5CB54);
 DataPointer(task *, ALO_RadicaseExecutor_ptr, 0x1AED2E0);
 DataPointer(int, CrappyReplacementDepartureMachine, 0x1AED320);
 DataPointer(task *, ALO_BoxExecutor_ptr, 0x1AED32C);

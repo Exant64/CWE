@@ -48,7 +48,7 @@ static void CreateBullyStopperScenario(task* pBully, task* pVictim, task* pStopp
 
 	// create 3 fake entries that each chao will communicate with
 	ALW_ENTRY_WORK* pEntry = ALLOC_ARRAY(3, ALW_ENTRY_WORK);
-	tp->fwp = (ObjUnknownA*)pEntry;
+	tp->fwp = pEntry;
 
 	for(size_t i = 0; i < 3; i++) {
 		ALW_ResetEntry(&pEntry[i]);

@@ -28,7 +28,6 @@ struct ChaoUnknownE;
 struct ChaoDebugData1;
 struct MOVE_WORK;
 struct chaowk;
-struct ObjUnknownA;
 struct ObjUnknownB;
 struct task;
 
@@ -532,24 +531,6 @@ struct MOVE_WORK {
 	float BottomY;
 	float WaterY;
 	XYZ_SHADOW_WORK Shadow;
-};
-
-struct ObjUnknownA
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	float field_24;
-	float field_28;
-	float field_2C;
-	int field_30;
-	int field_34;
 };
 
 struct ObjUnknownB
@@ -1741,17 +1722,6 @@ struct al_confirmload_data2
 	char *data_ptr;
 	uint32_t dword1C;
 	uint32_t dword20;
-};
-
-struct AL_GBAManagerExecutor_Data
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	task *ObjectPtr;
-	char field_10[4228];
-	char gap_1094[12691];
-	char field_4227;
 };
 
 struct ChaoEggData

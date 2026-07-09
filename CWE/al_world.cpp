@@ -351,7 +351,7 @@ Bool CWE_ALW_Entry(Sint8 category, task* tp, Uint16 kind, void* pSaveInfo) {
 			WorldEntryList[categoryIndex][i].category = category;
 
 			nbWorldEntry[categoryIndex]++;
-			tp->fwp = (ObjUnknownA*) & WorldEntryList[categoryIndex][i];
+			tp->fwp = &WorldEntryList[categoryIndex][i];
 
 			return TRUE;
 		}

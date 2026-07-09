@@ -201,12 +201,10 @@ void __cdecl sub_545C20(task *a1)
 	ALW_ENTRY_WORK *v12; // eax
 	ALW_ENTRY_WORK *v13; // edi
 	taskwk* v14; // eax
-	ObjUnknownA *v15; // eax
 	task *v16; // eax
 	CHAO_PARAM_GC *v17; // ecx
 	ALW_ENTRY_WORK *v22; // eax
 	ALW_ENTRY_WORK *v23; // eax
-	ObjUnknownA *v25; // eax
 	ALW_ENTRY_WORK *v26; // eax
 	ALW_ENTRY_WORK *v27; // ecx
 

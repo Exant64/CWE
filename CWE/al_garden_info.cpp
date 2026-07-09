@@ -428,7 +428,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 						gene.EggColor = v32;
 
 						if (v11) {
-							v12 = CreateEgg(&gene, v11, 0, &position, 3);
+							v12 = CreateEgg(&gene, &v11->param, 0, &position, 3);
 						}
 						else {
 							v12 = CreateEgg(&gene, 0, 0, &position, 3);
