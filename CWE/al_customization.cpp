@@ -1720,7 +1720,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 
 		pCustomizationControllerTask = CreateElementalTask(
 			IM_TWK,
-			3,
+			LEV_3,
 			[](task*) {
 				customizationController->Exec();
 			},

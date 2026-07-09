@@ -99,7 +99,7 @@ task* CreateTween(task* parent, const EASE_TYPE easingMode, const INTERP_TYPE in
 	task* tp;
 
 	if (parent == nullptr) {
-		tp = CreateElementalTask(0, 4, TweenExecutor<T>, "AL_Tween");
+		tp = CreateElementalTask(0, LEV_4, TweenExecutor<T>, "AL_Tween");
 	}
 	else {
 		tp = CreateChildTask(0, TweenExecutor<T>, parent);

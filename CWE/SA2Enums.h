@@ -4,6 +4,21 @@
 #define makemask(enumname,membername) enumname##_##membername = (1 << enumname##Bits_##membername)
 #define makemasks(enumname,membername) enumname##s_##membername = (1 << enumname##Bits_##membername)
 
+typedef enum
+{
+    LEV_0,                          /* level 0, high priority                                   */
+    LEV_1,                          /* level 1, high priority                                   */
+    LEV_2,                          /* level 2                                                  */
+    LEV_3,                          /* level 3                                                  */
+    LEV_4,                          /* level 4                                                  */
+    LEV_5,                          /* level 5                                                  */
+    LEV_6,                          /* level 6                                                  */
+    LEV_C,                          /* create only, task not added to btp list                  */
+
+    LEV_M                           /* task level max                                           */
+}
+tasklevel;
+
 enum
 {
     PLNO_SONIC,                     /* sonic the hedgehog                                       */

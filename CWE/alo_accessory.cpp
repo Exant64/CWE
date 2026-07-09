@@ -64,7 +64,7 @@ static void ALO_AccessoryDelete(task* tp) {
 FunctionPointer(double, sub_57A7A0, (float a1), 0x57A7A0);
 
 task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const NJS_VECTOR* pVelo, AccessorySaveInfo* savedata) {
-	task* tp = CreateElementalTask(IM_TWK, 4, ALO_ObakeHeadExecutor, "ALO_Accessory");
+	task* tp = CreateElementalTask(IM_TWK, LEV_4, ALO_ObakeHeadExecutor, "ALO_Accessory");
 	taskwk* work = tp->twp;
 	MOVE_WORK* move = MOV_Init(tp);
 

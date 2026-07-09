@@ -141,7 +141,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 
 static CCL_INFO omoColli = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
-	task* obj = CreateElementalTask(IM_TWK, 4, AL_OmoBuild_Main, "AL_OmoBuild");
+	task* obj = CreateElementalTask(IM_TWK, LEV_4, AL_OmoBuild_Main, "AL_OmoBuild");
 	CCL_Init(obj, &omoColli, 1, 5);
 	obj->twp->pos = *pPos;
 	obj->twp->ang.y = ang;

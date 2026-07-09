@@ -416,6 +416,6 @@ void AL_NameDisplay_Main(task* a1)
 }
 
 void AL_NameDisplayCreate() {
-	task* p = CreateElementalTask(IM_TWK, 2, AL_NameDisplay_Main, "AL_NameDisplay");
+	task* p = CreateElementalTask(IM_TWK, LEV_2, AL_NameDisplay_Main, "AL_NameDisplay");
 	p->disp_last = AL_NameDisplayer;
 }

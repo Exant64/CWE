@@ -263,7 +263,7 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 		return NULL;
 	}
 	
-	task* tp = CreateElementalTask(0, 4, AL_DayNightRainExecutor, "AL_DayNightRain");
+	task* tp = CreateElementalTask(0, LEV_4, AL_DayNightRainExecutor, "AL_DayNightRain");
 
 	tp->disp = AL_DayNightRainDisplayer;
 

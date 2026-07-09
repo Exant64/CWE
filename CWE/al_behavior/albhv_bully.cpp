@@ -44,7 +44,7 @@ static void BullyStopperScenario (task* tp) {
 }
 
 static void CreateBullyStopperScenario(task* pBully, task* pVictim, task* pStopper) {
-	task* tp = CreateElementalTask(0, 4, BullyStopperScenario, "BullyStopManager");
+	task* tp = CreateElementalTask(0, LEV_4, BullyStopperScenario, "BullyStopManager");
 
 	// create 3 fake entries that each chao will communicate with
 	ALW_ENTRY_WORK* pEntry = ALLOC_ARRAY(3, ALW_ENTRY_WORK);

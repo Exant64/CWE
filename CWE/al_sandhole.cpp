@@ -40,7 +40,7 @@ void SandHole_Display(task *a1)
 
 task* __cdecl SandHole_Load(NJS_VECTOR * pos)
 {
-	task* loaded = CreateElementalTask(IM_TWK, 4, (task_exec)nullsub_1, "SandHole");
+	task* loaded = CreateElementalTask(IM_TWK, LEV_4, (task_exec)nullsub_1, "SandHole");
 	loaded->disp = SandHole_Display;
 	loaded->twp->pos = *pos;
 	return loaded;
