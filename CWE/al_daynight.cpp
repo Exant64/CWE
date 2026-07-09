@@ -1217,7 +1217,7 @@ static void AL_DayNightCycle_InitNewLandTable(task* tp) {
 	pDst->pLandEntry = reinterpret_cast<OBJ_LANDENTRY*>(ALLOC_ARRAY(pSrc->ssCount, OBJ_LANDENTRY));
 	memcpy(pDst->pLandEntry, pSrc->pLandEntry, pSrc->ssCount * sizeof(OBJ_LANDENTRY));
 	
-	work.isChunkLandTable = LandTableSA2BModels != true;
+	work.isChunkLandTable = boolLandGjmdl != true;
 
 	const size_t pointerCount = pSrc->ssDispCount * VERTEX_COLOR_TABLE_COUNT;
 

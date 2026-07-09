@@ -140,7 +140,7 @@ static void GreyscaleLandtable(OBJ_LANDTABLE* pLandTable) {
 }
 
 void GrayscalifyCurrentLandtable() {
-    if(!LandTableSA2BModels) {
+    if(!boolLandGjmdl) {
         return;
     }
 

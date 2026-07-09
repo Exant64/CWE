@@ -156,7 +156,7 @@ DataPointer(void*, ExecFunc_ptr, 0x1A5A2B0);
 DataPointer(void*, SomethingFunc_ptr, 0x1A5A2B4);
 DataPointer(void*, SomethingFuncB_ptr, 0x1A5A2B8);
 DataPointer(void*, SomethingFuncC_ptr, 0x1A5A2C0);
-DataPointer(int, LandTableSA2BModels, 0x1A5A2D8);
+DataPointer(int, boolLandGjmdl, 0x1A5A2D8);
 DataPointer(task *, SetObject_ptr, 0x1A5A340);
 DataPointer(FogData **, FogDataPtrPtr, 0x1A5A34C);
 DataPointer(task *, ParticleCoreTask, 0x1A5A3B8);
