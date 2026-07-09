@@ -4,6 +4,20 @@
 #define makemask(enumname,membername) enumname##_##membername = (1 << enumname##Bits_##membername)
 #define makemasks(enumname,membername) enumname##s_##membername = (1 << enumname##Bits_##membername)
 
+enum CI_FORM {
+    CI_FORM_SPHERE = 0x0,
+    CI_FORM_CYLINDER = 0x1,
+    CI_FORM_CYLINDER2 = 0x2,
+    CI_FORM_RECTANGLE = 0x3,
+    CI_FORM_RECTANGLE2 = 0x4,
+    CI_FORM_RECTANGLE3 = 0x5,
+    CI_FORM_CAPSULE = 0x6,
+    CI_FORM_PERSON = 0x7,
+    CI_FORM_LINE = 0x8,
+    CI_FORM_WALL_PLANE = 0x9,
+    CI_FORM_WALL_CIRCLE = 0xA,
+};
+
 typedef enum
 {
     LEV_0,                          /* level 0, high priority                                   */

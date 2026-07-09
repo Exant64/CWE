@@ -42,6 +42,8 @@ static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const task* tp) {
 
 #define GET_CWEPARAM(p) (CWE_GetExtraChaoParam(p))
 
+DataArray(NJS_VECTOR, ProbablyChaoSpawnPoints, 0x1366260, 48);
+
 enum AL_PARAM_FLAG
 {
 	AL_PARAM_FLAG_NAME_NEW = BIT_0,

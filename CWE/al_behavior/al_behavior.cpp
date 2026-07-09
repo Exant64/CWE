@@ -243,7 +243,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_PutOnAccessoryTemp(tas
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task * a1)
 {
 	chaowk* v1; // edi
-	c_colli_hit_info* v2; // eax
+	CCL_HIT_INFO* v2; // eax
 	task* v3; // ebx
 	CHAO_PARAM_GC* v5; // ecx
 	signed int result; // eax
@@ -261,7 +261,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 		return 0;
 	}
 	v2 = CCL_IsHitKindEx(a1, 0x94);
-	if (v2 && (v3 = v2->hit_twp) != 0)
+	if (v2 && (v3 = v2->hit_tp) != 0)
 	{
 		if (ALW_IsHeld(v3))
 		{
@@ -312,12 +312,12 @@ signed int __cdecl AL_CheckAccessory(task* a1)
 	{
 		return 0;
 	}
-	c_colli_hit_info* v2 = CCL_IsHitKindEx(a1, 0x94);
+	CCL_HIT_INFO* v2 = CCL_IsHitKindEx(a1, 0x94);
 	if (!v2)
 	{
 		return 0;
 	}
-	v3 = v2->hit_twp;
+	v3 = v2->hit_tp;
 	if (!v3)
 	{
 		return 0;
@@ -382,8 +382,8 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(task * tp) {
 
 	if (MOV_TurnToAim2(tp, 0x600) < 0xB6) {
 		task* pSpecial;
-		c_colli_hit_info* v2 = CCL_IsHitKindEx(tp, 0xCE);
-		if (v2 && (pSpecial = v2->hit_twp) != 0) {
+		CCL_HIT_INFO* v2 = CCL_IsHitKindEx(tp, 0xCE);
+		if (v2 && (pSpecial = v2->hit_tp) != 0) {
 			if (!ALW_IsHeld(pSpecial)) {
 				//StopHoldingTaskP(0);
 				if (playertwp[0]) {
@@ -425,12 +425,12 @@ signed int __cdecl AL_CheckSpecial(task* a1)
 	{
 		return 0;
 	}
-	c_colli_hit_info* v2 = CCL_IsHitKindEx(a1, 0xCE);
+	CCL_HIT_INFO* v2 = CCL_IsHitKindEx(a1, 0xCE);
 	if (!v2)
 	{
 		return 0;
 	}
-	v3 = v2->hit_twp;
+	v3 = v2->hit_tp;
 	if (!v3)
 	{
 		return 0;

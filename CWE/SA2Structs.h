@@ -675,7 +675,7 @@ struct colliwk
 	float colli_range;
 	CCL_INFO *info;
 	uint8_t f10[140];
-	task *Object;
+	task *mytask;
 	__int16 field_A0;
 	__int16 field_A2;
 	int field_A4;
@@ -819,6 +819,13 @@ struct __declspec(align(4)) AL_SHAPE_ELEMENT
 	Uint16 Skill[8];
 };
 #pragma pack(pop)
+
+struct CCL_HIT_INFO {
+	char my_num;
+	char hit_num;
+	unsigned __int16 flag;
+	task* hit_tp;
+};
 
 static_assert(sizeof(AL_SHAPE_ELEMENT) == 0x34);
 static_assert(offsetof(AL_SHAPE_ELEMENT, MultiNum) == 0xA);

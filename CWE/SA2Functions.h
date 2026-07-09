@@ -430,6 +430,8 @@ static inline void SE_Call(int a1, int a2, char a3, char a4)
 	}
 }
 
+FunctionPointer(CCL_HIT_INFO*, CCL_IsHitKindEx,(task* a1, unsigned __int8 a2),0x00486760);
+
 // void __usercall(int pnum@<eax>, signed int a2@<edx>, signed int a3@<ecx>, int a4)
 static const void *const KnockBackRumblePtr = (void*)0x438F80;
 static inline void KnockBackRumble(int pnum, signed int a2, signed int a3, int a4)

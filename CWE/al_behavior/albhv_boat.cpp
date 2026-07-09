@@ -84,8 +84,8 @@ signed int ALBHV_RideBoat(task* a1)
 	}
 	if (AL_EmotionGetValue(a1, EM_ST_THIRSTY) < 1000 && move->Flag & 0x4000)
 	{
-		c_colli_hit_info* v6 = CCL_IsHitKindEx(a1, 0xCB); //climb
-		if (v6 && v6->hit_twp)
+		CCL_HIT_INFO* v6 = CCL_IsHitKindEx(a1, 0xCB); //climb
+		if (v6 && v6->hit_tp)
 		{
 			AL_SetBehavior(a1, (BHV_FUNC)0x562EB0);
 		}

@@ -34,7 +34,7 @@ signed int ALBHV_RideCoffin(task* a1)
 
 	if (a1->mwp->Flag & 0x4000)
 	{
-		c_colli_hit_info* v6 = CCL_IsHitKindEx(a1, 0xCB);
+		CCL_HIT_INFO* v6 = CCL_IsHitKindEx(a1, 0xCB);
 		if (v6 && v6->hit_twp)
 		{
 			AL_SetBehavior(a1, (BHV_FUNC)0x562EB0);

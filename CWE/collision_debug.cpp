@@ -62,7 +62,7 @@ void __cdecl DrawCollisionInfo(colliwk* ColInfo)
 	if (ColInfo)
 	{
 		Col = ColInfo->info;
-		Obj = ColInfo->Object;
+		Obj = ColInfo->mytask;
 		if (ColInfo->nbInfo)
 		{
 			if (Col)

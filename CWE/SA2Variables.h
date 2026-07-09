@@ -31,7 +31,6 @@ DataArray(CHAO_GARDEN_INFO, GardenInfoList, 0x019F6460, 2);
 DataPointer(ObjectListEntry, AL_RaceMaster_ObjectArray, 0x1353338);
 DataPointer(ObjectListHead, AL_RaceMaster_ObjectList, 0x13533F8);
 //DataPointer(NJS_VECTOR*, ProbablyChaoSpawnPoints, 0x1366260);
-DataArray(NJS_VECTOR, ProbablyChaoSpawnPoints, 0x1366260, 48);
 DataArray(ChaoSegmentData, ChaoSegments, 0x1366580, 19);
 DataPointer(LevelHeader, ChaoHeader, 0x1367380);
 

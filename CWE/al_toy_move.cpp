@@ -552,8 +552,8 @@ void SaveToyPos() {
 			{
 				if (v5->pos.y >= -100.0)
 				{
-					c_colli_hit_info* v9 = CCL_IsHitKindEx(v6, CI_KIND_AL_STAGE_CHANGER);
-					if (v9 && v9->hit_twp)
+					CCL_HIT_INFO* v9 = CCL_IsHitKindEx(v6, CI_KIND_AL_STAGE_CHANGER);
+					if (v9 && v9->hit_tp)
 					{
 						v5->place = 0;
 					}
