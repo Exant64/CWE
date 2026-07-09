@@ -141,7 +141,7 @@ DataPointer(int, MenuButtons_SomethingWasPressed, 0x1A558C0);
 DataPointer(__int16, IsDPadPressed, 0x1A5592C);
 DataPointer(PDS_PERIPHERAL, NullController, 0x1A55954);
 
-DataArray(task *, ObjectLists, 0x1A5A254, 8);
+DataArray(task *, btp, 0x1A5A254, 8);
 DataPointer(task_exec, CurrentObjectSub, 0x1A5A274);
 DataPointer(void*, DropRingsFunc_ptr, 0x1A5A28C);
 DataPointer(void*, ParticleFunc_ptr, 0x1A5A290);

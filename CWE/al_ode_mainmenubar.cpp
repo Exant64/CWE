@@ -195,7 +195,7 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 		);
 
 		// hack to get the last spawned object (button is in objectlist 3)
-		pOdeButtons[i] = ObjectLists[3]->last;
+		pOdeButtons[i] = btp[3]->last;
 		// default alpha with 1 if supposed to be on screen when spawned, 0 if not
 		pOdeButtons[i]->twp->scl.z = i > 5 ? 0.0f : 1.0f;
 	}

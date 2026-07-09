@@ -569,12 +569,12 @@ static void TaskListMenu() {
             sprintf_s(path, "List %d", int(i));
 
             if (ImGui::TreeNode(path)) {
-                auto* obj = ObjectLists[i];
+                auto* obj = btp[i];
                 if (obj) {
                     do {
                         ImGui::Text(!obj->name ? "" : obj->name);
                         obj = obj->last;
-                    } while (obj != ObjectLists[i]);
+                    } while (obj != btp[i]);
                 }
 
                 ImGui::TreePop();
