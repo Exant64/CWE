@@ -279,7 +279,7 @@ extern "C"
 			for (int i = 0; i < PurchasedItemCount; i++)
 			{
 				save::CWE_PurchasedItems[i].mCategory = PurchasedItems[i].mCategory;
-				save::CWE_PurchasedItems[i].mType = PurchasedItems[i].mType;
+				save::CWE_PurchasedItems[i].mId = PurchasedItems[i].mId;
 			}
 			PurchasedItemCount = 0;
 		}

@@ -357,7 +357,7 @@ static bool AL_CreatePurchasedCustomItem(const SAlItemCwe& item, NJS_POINT3& pos
 	}
 
 	// only accessory for now
-	Accessory_Load(item.mType, &position, playertwp[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY));
+	Accessory_Load(item.mId, &position, playertwp[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY));
 
 	return true;
 }
@@ -411,7 +411,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 			v8 = v7 - 1;
 			v1->ang.x = v7 - 1;
 			v9 = save::CWE_PurchasedItems[v7 - 1].mCategory;
-			v10 = save::CWE_PurchasedItems[v8].mType;
+			v10 = save::CWE_PurchasedItems[v8].mId;
 			--cweSaveFile.purchasedItemCount;
 			v32 = v10;
 

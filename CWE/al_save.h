@@ -47,7 +47,7 @@ struct OMOCHAO_INFO
 struct SAlItemCwe
 {
 	Sint8 mCategory;
-	Uint16 mType;
+	Uint16 mId;
 };
 
 struct CWESaveFile

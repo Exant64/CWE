@@ -133,7 +133,7 @@ void BlackMarketDebug(BlackMarketData *a1)
 		cweSaveFile.marketInventoryCount[category] = 32;
 		for (int i = 0; i < 32; i++) {
 			cweSaveFile.marketInventory[category][i].mCategory = category;
-			cweSaveFile.marketInventory[category][i].mType = selection;
+			cweSaveFile.marketInventory[category][i].mId = selection;
 		}
 
 		mode = MD_IDLE;

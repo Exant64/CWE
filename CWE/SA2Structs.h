@@ -1172,7 +1172,7 @@ struct LevelRankTimes
 struct SAlItem
 {
 	Sint8 mCategory;
-	Sint8 mType;
+	Sint8 mId;
 };
 
 struct LevelEndPosition

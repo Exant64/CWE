@@ -84,7 +84,7 @@ struct ALK_SWINDOW_TABLE
 std::array<std::unordered_set<int>, NB_CWE_CATEGORY> AlItemRebuyable;
 bool AlItemIsRebuyable(const SAlItemCwe& pItem) {
 	const auto& rebuyflags = AlItemRebuyable[pItem.mCategory];
-	if (rebuyflags.contains(pItem.mType)) //check if dict has the item
+	if (rebuyflags.contains(pItem.mId)) //check if dict has the item
 		return true;
 
 	return false;
@@ -195,7 +195,7 @@ void BlackMarketAddInventory(int cat, int item)
 	if (cweSaveFile.marketInventoryCount[cat] < BlackMarketInventorySize)
 	{
 		GetMarketInventory(cat)[cweSaveFile.marketInventoryCount[cat]].mCategory = cat;
-		GetMarketInventory(cat)[cweSaveFile.marketInventoryCount[cat]].mType = item;
+		GetMarketInventory(cat)[cweSaveFile.marketInventoryCount[cat]].mId = item;
 		cweSaveFile.marketInventoryCount[cat]++;
 	}
 }
@@ -242,7 +242,7 @@ static void FBuyListUniformDistributionUpdate(Sint8 category, const size_t minIt
 SAlItemCwe* __cdecl sub_58B120(SAlItemCwe* result)
 {
 	result->mCategory = AL_GetHoldingItemCategory();
-	result->mType = AL_GetHoldingItemKind();
+	result->mId = AL_GetHoldingItemKind();
 
 	return result;
 }
@@ -594,7 +594,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 	OrthoDrawBegin();
 	for (float v45 = SELECTION_ITEM_OY; v45 < SELECTION_ITEM_OY + (ITEMSINBUYLIST * DISTANCEBUYLIST); v45 += DISTANCEBUYLIST)
 	{
-		if (index < BM_GetInvSize(a1) && item->mType < BlackMarketCategories[item->mCategory].Count)
+		if (index < BM_GetInvSize(a1) && item->mId < BlackMarketCategories[item->mCategory].Count)
 		{
 			njUnitMatrix(0);
 
@@ -605,13 +605,13 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				OrthoScreenTranslate(SELECTION_ITEM_OX, (v45 + 2), 1.5f / 3.4189751f);
 				Rotate();
 				njSetTexture((NJS_TEXLIST*)0x013669FC);
-				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mType);
+				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mId);
 				break;
 			case ChaoItemCategory_Accessory:
 			case ChaoItemCategory_Special:
 			case ChaoItemCategory_Fruit:
 			{
-				auto object = ObjectRegistry::Get((ChaoItemCategory)item->mCategory)->GetObj(item->mType);
+				auto object = ObjectRegistry::Get((ChaoItemCategory)item->mCategory)->GetObj(item->mId);
 
 				if (item->mCategory != ChaoItemCategory_Accessory && object->model) {
 					float radius = object->model->r;
@@ -631,7 +631,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					}
 				}
 
-				ObjectRegistry::DrawObject<njCnkDrawObject>((ChaoItemCategory)item->mCategory, item->mType);
+				ObjectRegistry::DrawObject<njCnkDrawObject>((ChaoItemCategory)item->mCategory, item->mId);
 				break;
 			}
 			case ChaoItemCategory_Seed:
@@ -639,20 +639,20 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				Rotate();
 
-				njSetTexture(ModAPI_SeedTexlists[item->mType]);
+				njSetTexture(ModAPI_SeedTexlists[item->mId]);
 				sub_42D340();
-				if (ModAPI_SeedModels[item->mType]->model)
-					sub_42D500(ModAPI_SeedModels[item->mType]->model);
+				if (ModAPI_SeedModels[item->mId]->model)
+					sub_42D500(ModAPI_SeedModels[item->mId]->model);
 				break;
 			case ChaoItemCategory_Hat:
-				if (item->mType >= ChaoHat_NormalEggShell && item->mType < 85)
+				if (item->mId >= ChaoHat_NormalEggShell && item->mId < 85)
 					break;
 
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
-				switch (item->mType)
+				switch (item->mId)
 				{
 				case 4:
 				case 6:
@@ -667,7 +667,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 				
-				ALO_ObakeHeadDraw(item->mType);
+				ALO_ObakeHeadDraw(item->mId);
 				break;
 			case ChaoItemCategory_MenuTheme:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 14, -170 - EXTRAZ);
@@ -681,7 +681,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-				njCnkDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mType]);
+				njCnkDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mId]);
 				break;
 			default:
 				break;
@@ -707,7 +707,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 	for (float v45 = SELECTION_ITEM_OY; v45 < SELECTION_ITEM_OY + (ITEMSINBUYLIST * DISTANCEBUYLIST); v45 += DISTANCEBUYLIST)
 	{
-		if (index < BM_GetInvSize(a1) && item->mType < BlackMarketCategories[item->mCategory].Count)
+		if (index < BM_GetInvSize(a1) && item->mId < BlackMarketCategories[item->mCategory].Count)
 		{
 			njUnitMatrix(0);
 
@@ -718,7 +718,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njSetTexture((NJS_TEXLIST*)0x013669FC);
-				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mType);
+				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mId);
 				break;
 			case ALW_CATEGORY_ACCESSORY:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
@@ -727,14 +727,14 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 
-				AccessorySetupDraw(item->mType, NULL, 0);
+				AccessorySetupDraw(item->mId, NULL, 0);
 
-				if(!IsAccessoryRFSupported(item->mType)) {
-					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, item->mType);
+				if(!IsAccessoryRFSupported(item->mId)) {
+					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, item->mId);
 				}
 				else {
 					Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, item->mType);
+					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, item->mId);
 				}
 
 				break;
@@ -744,11 +744,11 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
-				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, item->mType);
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, item->mId);
 				break;
 			case ALW_CATEGORY_FRUIT:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45 - 13), -44.0 - EXTRAZ);
-				if (item->mType == 20 || item->mType == 21)
+				if (item->mId == 20 || item->mId == 21)
 				{
 					njScale(NULL, 1, 1, 1);
 				}
@@ -759,7 +759,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 
-				ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, item->mType);
+				ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, item->mId);
 				break;
 			case ALW_CATEGORY_SEED:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45), -22.0 - EXTRAZ);
@@ -768,22 +768,22 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
-				njSetTexture(ModAPI_SeedTexlists[item->mType]);
-				if (ModAPI_SeedModels[item->mType]->model) {
-					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mType]->model);
+				njSetTexture(ModAPI_SeedTexlists[item->mId]);
+				if (ModAPI_SeedModels[item->mId]->model) {
+					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mId]->model);
 				}
 				break;
 			case ALW_CATEGORY_MASK:
-				if (item->mType >= ChaoHat_NormalEggShell && item->mType < 85)
+				if (item->mId >= ChaoHat_NormalEggShell && item->mId < 85)
 					break;
 
-				if (item->mType == 15)
+				if (item->mId == 15)
 					ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, *(float*)0xC712FC - EXTRAZ);
 				else
 					ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
-				switch (item->mType)
+				switch (item->mId)
 				{
 				case 4:
 				case 6:
@@ -796,12 +796,12 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					break;
 				}
 
-				if (item->mType == 15)
+				if (item->mId == 15)
 					njTranslate(NULL, 0.0f, -0.13f, 0.0f);
 				else
 					njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 
-				ALO_ObakeHeadDraw(item->mType);
+				ALO_ObakeHeadDraw(item->mId);
 				break;
 			case ALW_CATEGORY_THEME:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 14, -170 - EXTRAZ);
@@ -815,7 +815,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-				RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mType]);
+				RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mId]);
 				break;
 			default:
 				break;
@@ -834,7 +834,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 	DoLighting(10);
 	njPushUnitMatrix();
 
-	int type = a1->mItemDescItem.mType;
+	int type = a1->mItemDescItem.mId;
 
 	//HACK: since animals dont have descriptions this check prevents the animals from rendering, so I added a check to ignore that
 	//if the category is animal
@@ -997,9 +997,9 @@ BlackMarketItemAttributes* __cdecl AlItemGetInfo_r(SAlItemCwe* a1)
 		v4 = &CategoryAttribs[a1->mCategory];
 		if (v4)
 		{
-			if (a1->mType >= 0 && a1->mType < v4->Count)
+			if (a1->mId >= 0 && a1->mId < v4->Count)
 			{
-				result = &v4->attrib[a1->mType];
+				result = &v4->attrib[a1->mId];
 			}
 		}
 	}
@@ -1459,7 +1459,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	DoLighting(index);
 	
 	OrthoDrawBegin();
-	int type = mItemDescItem.mType;
+	int type = mItemDescItem.mId;
 	if (true || type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
 		switch (mItemDescItem.mCategory)
 		{
@@ -1948,7 +1948,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 		if (per[0]->press & BTN_A)
 		{
-			if (gu32TotalRing >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mType < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
+			if (gu32TotalRing >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mId < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
 			{
 				ALK_SWINDOW_TABLE select;
 				AL_KinderPMessage a2;
@@ -2042,7 +2042,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			}
 			if (a1->mItemDescItem.mCategory == 16)
 			{
-				((OtherItemPtr)OtherItemFuncs[a1->mItemDescItem.mType])(a1->mItemDescItem.mType);
+				((OtherItemPtr)OtherItemFuncs[a1->mItemDescItem.mId])(a1->mItemDescItem.mId);
 			}
 			else
 			{
@@ -2259,7 +2259,7 @@ void __cdecl sub_589850(BlackMarketData* data)
 	}
 
 	if (data->mItemDescItem.mCategory == 2) {
-		auto type = data->mItemDescItem.mType;
+		auto type = data->mItemDescItem.mId;
 
 		if (type >= 0 && type < ModAPI_MinimalMotion0.size() && ModAPI_MinimalMotion0[type]) {
 			data->mItemDescFrame += 0.07f;
@@ -2363,7 +2363,7 @@ void alg_kinder_bl_Init()
 
 	//menu theme bs
 	WriteData((int*)0x0058B924, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mCategory));
-	WriteData((int*)0x0058B92E, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mType));
+	WriteData((int*)0x0058B92E, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mId));
 	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData<0x1B>((char*)0x0058B97B, (char)0x90);

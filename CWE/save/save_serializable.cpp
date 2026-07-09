@@ -23,7 +23,7 @@ void Parse(SAlItemCwe& a, Value& d) {
 		return;
 	}
 	a.mCategory = d["mCategory"].GetInt();
-	a.mType = d["mType"].GetInt();
+	a.mId = d["mType"].GetInt();
 }
 
 void Parse(ITEM_SAVE_INFO& a, Value& d) {
@@ -45,5 +45,5 @@ void Write(PrettyWriter<FileWriteStream>& d, SAlItemCwe& a) {
 	d.Key("mCategory");
 	d.Int(a.mCategory);
 	d.Key("mType");
-	d.Int(a.mType);
+	d.Int(a.mId);
 }

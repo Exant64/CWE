@@ -63,13 +63,13 @@ namespace save {
 			char id[METADATA_ID_SIZE];
 			strncpy_s(id, value["id"].GetString(), sizeof(id));
 
-			outItem.mType = ItemMetadata::Get()->GetIndex(outItem.mCategory, id);
-			if (outItem.mType == -1) {
+			outItem.mId = ItemMetadata::Get()->GetIndex(outItem.mCategory, id);
+			if (outItem.mId == -1) {
 				return false;
 			}
 		}
 		else {
-			outItem.mType = Uint16(value["type"].GetInt());
+			outItem.mId = Uint16(value["type"].GetInt());
 		}
 
 		return true;
@@ -96,7 +96,7 @@ namespace save {
 		writer.String(categoryString);
 
 		char id[METADATA_ID_SIZE];
-		bool foundID = ItemMetadata::Get()->GetID(item.mCategory, item.mType, id);
+		bool foundID = ItemMetadata::Get()->GetID(item.mCategory, item.mId, id);
 
 		if (foundID) {
 			writer.Key("id");
@@ -104,7 +104,7 @@ namespace save {
 		}
 		else {
 			writer.Key("type");
-			writer.Int(item.mType);
+			writer.Int(item.mId);
 		}
 
 		writer.EndObject();
