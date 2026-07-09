@@ -117,7 +117,21 @@ typedef int     Int;
 
 typedef Sint32  Angle;
 
-typedef Float   NJS_MATRIX[16];
+/****** Ninja Matrix ****************************************************************************/
+typedef union
+{
+    Float m[3][4];                  /* matrix in either 4x4 or 3x4 layout                       */
+    Float f[12];                    /* matrix as float array                                    */
+}
+NJS_MATRIX;
+
+/****** Ninja Matrix 4x4 ************************************************************************/
+typedef union
+{
+    Float m[4][4];                  /* matrix in 4x4 layout                                     */
+    Float f[16];                    /* matrix as float array                                    */
+}
+NJS_MATRIX44;
 
 typedef Float NJS_FOG_TABLE[128];
 
@@ -798,7 +812,6 @@ typedef Float NJS_FOG_TABLE[128];
 /*--------------------------------------*/
 /*      Matrix                          */
 /*--------------------------------------*/
-typedef Float *NJS_MATRIX_PTR;
 
 enum {M00, M01, M02, M03,
 	  M10, M11, M12, M13,
@@ -998,16 +1011,6 @@ typedef struct{
 } NJS_RECT;
 /* 追加終わり */
 
-
-typedef struct {
-	NJS_MATRIX m;
-	Float   px,py,pz;
-	Float   vx,vy,vz;
-	Angle   roll;
-	Float   apx,apy,apz;
-	Float   avx,avy,avz;
-	Angle   aroll;
-} NJS_VIEW;
 
 typedef struct {
 	Float   dist;
@@ -1527,91 +1530,6 @@ typedef struct {
 	Float		inten;		/* intensity		:32	*/
 } NJS_VERTEX_BUF_X;
 
-
-/*--------------------------------------*/
-/*      Light Structure                 */
-/*--------------------------------------*/
-/*
- * NJS_LIGHT_CAL
- */
-typedef struct
-{
-/*************/
-	Float       ratten;         /* attenuation rate             */
-	Float       ipd;		    /* inner product                */
-/*************/
-	Float       nrr;            /* limit judgment value         */
-	Float       frr;            /* limit judgment value         */
-	Float       cosi;           /* limit judgment value         */
-	Float       cose;           /* limit judgment value         */
-	Float		idev;           /* judgment value of devision   */
-	Float		odev;           /* judgment value of devision   */
-	Float       rate;           /* attenuation rate(calculated) */
-	Float       intns;          /* Intensity (0-1)              */
-	Int         exp;            /* exponent(SGI):material       */
-/*************/
-	Int         reserve;        /*                              */
-/*************/
-	NJS_POINT3  lpnt;           /* point vector                 */
-	NJS_VECTOR  lvctr;          /* directional vector           */
-/*************/
-	NJS_VECTOR  lmvctr;         /* directional vector           */
-/*************/
-	NJS_ARGB    atten;          /* intns * argb                 */
-	NJS_ARGB    amb;            /* iamb*atten                   */
-	NJS_ARGB    dif;            /* idif*atten                   */
-	NJS_ARGB    spc;            /* ispc*atten                   */
-/*************/
-	NJS_ARGB    mamb;           /* amb*material                 */
-	NJS_ARGB    mdif;           /* dif*material                 */
-	NJS_ARGB    mspc;           /* spc*material                 */
-/*************/
-} NJS_LIGHT_CAL, *NJS_LIGHT_CAL_PTR;
-
-/*
- * NJS_LIGHT_ATTR
- */
-typedef struct {
-	Int             lsrc;       /* the kind of light source     */
-	Float           iamb;       /* ambient's intensity          */
-	Float           idif;       /* deffuse light's intensity    */
-	Float           ispc;       /* specular light's intensity   */
-	Float           nrang;      /* limit value (nearest)        */
-	Float           frang;      /* limit value (farthest)       */
-	void*           func;       /* the pointer of Callback func.*/
-	Angle           iang;       /* limit value (inside)         */
-	Angle           oang;       /* limit value (outside)        */
-	NJS_ARGB        argb;       /* light's color                */
-} NJS_LIGHT_ATTR, *NJS_LIGHT_ATTR_PTR;
-
-/*
- * NJS_LIGHT
- */
-typedef struct {
-	NJS_MATRIX      mtrx;       /* matrix                       */
-	NJS_POINT3      pnt;        /* point vector                 */
-	NJS_VECTOR      vctr;       /* directional vector           */
-	Int             stat;       /* status                       */
-	Int             reserve;    /* reserve                      */
-	NJS_LIGHT_CAL   ltcal;      /* calculation                  */
-	NJS_LIGHT_ATTR  attr;       /* attribute                    */
-} NJS_LIGHT, *NJS_LIGHT_PTR;
-
-/*
- * NJS_LIGHT_MATERIAL
- */
-typedef  struct {
-	NJS_ARGB        ambient;    /* Ambient color from Material	*/
-	NJS_ARGB        diffuse;    /* Diffuse color from Material	*/
-	NJS_ARGB        specular;   /* Specular color from Material	*/
-	Float           exponent;   /* Exponent from Material		*/
-} NJS_LIGHT_MATERIAL;
-
-/*
- * NJF_LIGHT_FUNC
- */
-typedef void (*NJF_LIGHT_FUNC)(NJS_ARGB*, NJS_POINT3*, NJS_VECTOR*, NJS_LIGHT_PTR);
-
 /*--------------------------------------*/
 /*      Camera Structure                */
 /*--------------------------------------*/
@@ -1629,11 +1547,6 @@ typedef struct {
 /*--------------------------------------*/
 /*   Light & Camera Motion Structure    */
 /*--------------------------------------*/
-
-typedef struct {
-	NJS_LIGHT	*light;
-	NJS_MOTION	*motion;
-} NJS_LACTION;
 
 typedef struct {
 	NJS_CAMERA	*camera;

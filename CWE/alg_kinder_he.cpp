@@ -524,11 +524,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 
 		if (!noMother)
 		{
-			njPushMatrixEx();
-			memset(_nj_current_matrix_ptr_, 0, 0x30u);
-			*_nj_current_matrix_ptr_ = 1.0;
-			_nj_current_matrix_ptr_[5] = 1.0;
-			_nj_current_matrix_ptr_[10] = 1.0;
+			njPushUnitMatrix();
 			ProjectToScreen(388 - 50, 232.0 + OFFSET_ALL - 6, -23.0f);
 			njRotateY(NULL, -0xE000);
 			pDisplaySub(pMother);
@@ -538,11 +534,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 
 		if (!noFather)
 		{
-			njPushMatrixEx();
-			memset(_nj_current_matrix_ptr_, 0, 0x30u);
-			*_nj_current_matrix_ptr_ = 1.0;
-			_nj_current_matrix_ptr_[5] = 1.0;
-			_nj_current_matrix_ptr_[10] = 1.0;
+			njPushUnitMatrix();
 			ProjectToScreen(548, 232.0 + OFFSET_ALL - 6, -23.0f);
 			njRotateY(NULL, 0xE000);
 			pDisplaySub(pFather);

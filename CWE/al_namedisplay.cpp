@@ -189,8 +189,7 @@ extern "C" __declspec(dllexport) void AL_NameDisplay_(char* a, NJS_VECTOR* v, fl
 		NJS_VECTOR asd;
 		sub_426CC0(_nj_current_matrix_ptr_, &asd, v, 0);
 
-		njPushMatrixEx();
-		njUnitMatrix(0);//njPushMatrix((NJS_MATRIX_PTR)0x025F02A0);
+		njPushUnitMatrix();
 
 		njSetTexture((NJS_TEXLIST*)0x1366AB4);
 		njSetTextureNum(1);
@@ -292,7 +291,7 @@ void AL_NameDisplayer(task* a1) {
 				NJS_VECTOR asd;
 				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->twp->pos, 0);
 
-				njPushMatrix((NJS_MATRIX_PTR)0x025F02A0);
+				njPushUnitMatrix();
 
 				njSetTexture((NJS_TEXLIST*)&CWE_UI_TEXLIST);
 				//njSetTexture((NJS_TEXLIST*)0x1366AB4);

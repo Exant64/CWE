@@ -48,29 +48,29 @@ void njColorBlendingMode(int a1, int a2) {
 		add esp, 4
 	}
 }
-void  njCalcVector(NJS_VECTOR* a1, NJS_VECTOR* a2, NJS_MATRIX_PTR a3)
+void  njCalcVector(NJS_VECTOR* a1, NJS_VECTOR* a2, NJS_MATRIX* a3)
 {
 	Float v3; // ST00_4
 	Float v4; // ST04_4
 
-	v3 = a3[M10] * a1->x + a3[M11] * a1->y + a3[M12] * a1->z;
-	v4 = a3[M20] * a1->x + a3[M21] * a1->y + a3[M22] * a1->z;
-	a2->x = a3[M01] * a1->y + *a3 * a1->x + a3[M02] * a1->z;
+	v3 = a3->f[M10] * a1->x + a3->f[M11] * a1->y + a3->f[M12] * a1->z;
+	v4 = a3->f[M20] * a1->x + a3->f[M21] * a1->y + a3->f[M22] * a1->z;
+	a2->x = a3->f[M01] * a1->y + a3->f[0] * a1->x + a3->f[M02] * a1->z;
 	a2->y = v3;
 	a2->z = v4;
 }
-void sub_426CC0(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
+void sub_426CC0(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
 {
 	NJS_VECTOR v4; // [esp+0h] [ebp-Ch]
 
-	v4.x = result[1] * a3->y + *result * a3->x + result[2] * a3->z;
-	v4.y = result[4] * a3->x + result[5] * a3->y + result[6] * a3->z;
-	v4.z = result[8] * a3->x + result[9] * a3->y + result[10] * a3->z;
+	v4.x = result->f[1] * a3->y + result->f[0] * a3->x + result->f[2] * a3->z;
+	v4.y = result->f[4] * a3->x + result->f[5] * a3->y + result->f[6] * a3->z;
+	v4.z = result->f[8] * a3->x + result->f[9] * a3->y + result->f[10] * a3->z;
 	if (!a4)
 	{
-		v4.x = result[3] + v4.x;
-		v4.y = result[7] + v4.y;
-		v4.z = result[11] + v4.z;
+		v4.x = result->f[3] + v4.x;
+		v4.y = result->f[7] + v4.y;
+		v4.z = result->f[11] + v4.z;
 	}
 	a2->x = v4.x;
 	a2->y = v4.y;
@@ -91,14 +91,14 @@ void njSetTexture(NJS_TEXLIST* texlist) {
 	_nj_curr_ctx_->texlist = texlist;
 }
 
-void njUnitMatrix(NJS_MATRIX_PTR matrix) {
+void njUnitMatrix(NJS_MATRIX* matrix) {
 	if (!matrix) matrix = _nj_current_matrix_ptr_;
 	if (matrix)
 	{
 		memset(matrix, 0, 0x30u);
-		*matrix = 1.0;
-		matrix[5] = 1.0;
-		matrix[10] = 1.0;
+		matrix->f[0] = 1.0;
+		matrix->f[5] = 1.0;
+		matrix->f[10] = 1.0;
 	}
 }
 float njUnitVector(NJS_VECTOR* a1)
@@ -126,7 +126,7 @@ float njUnitVector(NJS_VECTOR* a1)
 }
 
 const void* const njRotateXPtr = (void*)0x42ADB0;
-void njRotateX(NJS_MATRIX_PTR m, Angle x)
+void njRotateX(NJS_MATRIX* m, Angle x)
 {
 	__asm
 	{
@@ -137,7 +137,7 @@ void njRotateX(NJS_MATRIX_PTR m, Angle x)
 }
 
 const void* const njRotateYPtr = (void*)0x42ADD0;
-void njRotateY(NJS_MATRIX_PTR m, Angle y)
+void njRotateY(NJS_MATRIX* m, Angle y)
 {
 	__asm
 	{
@@ -148,7 +148,7 @@ void njRotateY(NJS_MATRIX_PTR m, Angle y)
 }
 
 const void* const njRotateZPtr = (void*)0x42ADF0;
-void njRotateZ(NJS_MATRIX_PTR m, Angle z)
+void njRotateZ(NJS_MATRIX* m, Angle z)
 {
 	__asm
 	{
@@ -215,7 +215,7 @@ void njSetTextureNum(int a1, int a2, int a3, int a4)
 }
 
 const int njScalePtr = 0x007802B0;
-void njScale(NJS_MATRIX_PTR a1, float a2, float a3, float a4)
+void njScale(NJS_MATRIX* a1, float a2, float a3, float a4)
 {
 	__asm
 	{
@@ -228,7 +228,7 @@ void njScale(NJS_MATRIX_PTR a1, float a2, float a3, float a4)
 	}
 }
 const int sub_426CC0Ptr = 0x426CC0;
-__declspec(naked) void njCalcPoint(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
+__declspec(naked) void njCalcPoint(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
 {
 	__asm
 	{
@@ -263,7 +263,7 @@ void njSetTextureNum(int texid) {
 }
 
 auto DrawFVF_H_ = GenerateUsercallWrapper<void(*)(const NJS_TEXTURE_VTX * a1, signed int vertexCount)>(noret, 0x781370, rEAX, rECX);
-auto sub_41FDE0_ = GenerateUsercallWrapper<void(*)(float* a1, int a2)>(noret, 0x41FDE0, rECX, stack4);
+auto sub_41FDE0_ = GenerateUsercallWrapper<void(*)(NJS_MATRIX* a1, int a2)>(noret, 0x41FDE0, rECX, stack4);
 
 VoidFunc(sub_4293B0, 0x4293B0);
 VoidFunc(sub_4292E0, 0x4292E0);

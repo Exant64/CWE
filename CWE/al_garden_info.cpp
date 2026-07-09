@@ -395,8 +395,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 		result.y = (0.5f - njRandom()) * 0.2f * 1.6f + 0.96f;
 		result.z = (0.5f - njRandom()) * 0.25f * 1.6f + 0.56f;
 
-		njPushMatrixEx();
-		memcpy(_nj_current_matrix_ptr_, (void*)0x025F02A0, 0x30);
+		njPushUnitMatrix();
 		v5 = (0.5 - njRandom()) * 60.0 * -182.0444488525391;
 		RotateY(0x4000 - (signed int)v5 - playertwp[0]->ang.y);
 		njCalcVector(&result, &output, _nj_current_matrix_ptr_);

@@ -72,11 +72,11 @@ struct LightGC
 	int field_25;
 	int field_29;
 };
-void sub_426CC0(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4);
+void sub_426CC0(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4);
 VoidFunc(sub_42D340, 0x42D340);
 void njColorBlendingMode(int a1, int a2);
 FastcallFunctionPointer(float,  njCos, (signed int a1), 0x042AC30);
-FastcallFunctionPointer(signed int,  njPushMatrix, (NJS_MATRIX_PTR a1), 0x0077FE10);
+FastcallFunctionPointer(signed int,  njPushMatrix, (NJS_MATRIX* a1), 0x0077FE10);
 FastcallFunctionPointer(float,  njSin, (signed int a1), 0x0042AAB0);
 Float njInnerProduct(const NJS_VECTOR* const v1, const NJS_VECTOR* const v2);
 FunctionPointer(int, chCnkDrawModel, (NJS_CNK_MODEL *a1), 0x0056E1E0);
@@ -92,17 +92,16 @@ static void njCnkDrawObject(NJS_CNK_OBJECT* a1) {
 }
 FunctionPointer(int, sub_42E660, (NJS_CNK_MODEL* a1), 0x42E660);
 
-DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
 FunctionPointer(int, njPushUnitMatrix, (), 0x44B210);
 
 DataPointer(int, _nj_control_3d_flag_, 0x025F02D8);
 DataPointer(int, __control_3d_flag_, 0x01DEB6A4);
-DataPointer(float*, _nj_current_matrix_ptr_, 0x01A557FC);
-void  njCalcVector(NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_MATRIX_PTR a3);
+DataPointer(NJS_MATRIX*, _nj_current_matrix_ptr_, 0x01A557FC);
+void  njCalcVector(NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_MATRIX* a3);
 void  njSetTexture(NJS_TEXLIST* texlist);
 float njUnitVector(NJS_VECTOR *a1);
 
-void njCalcPoint(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4);
+void njCalcPoint(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4);
 
 DataPointer(NJS_ARGB, _nj_constant_material_, 0x025EFFD0);
 FunctionPointer(void, SetMaterial, (float a, float r, float g, float b), 0x44B2E0);
@@ -116,15 +115,15 @@ void chCnkDrawObject(NJS_CNK_OBJECT* a1);
 
 void njCnkDrawModel(NJS_CNK_MODEL* a1);
 
-void njRotateX(NJS_MATRIX_PTR m, Angle x);
-void njRotateY(NJS_MATRIX_PTR m, Angle y);
-void njRotateZ(NJS_MATRIX_PTR m, Angle z);
+void njRotateX(NJS_MATRIX* m, Angle x);
+void njRotateY(NJS_MATRIX* m, Angle y);
+void njRotateZ(NJS_MATRIX* m, Angle z);
 
 void njSetTextureNum(int a1, int a2, int a3, int a4);
 
-void njScale(NJS_MATRIX_PTR a1, float a2, float a3, float a4);
+void njScale(NJS_MATRIX* a1, float a2, float a3, float a4);
 
-void njUnitMatrix(NJS_MATRIX_PTR matrix);
+void njUnitMatrix(NJS_MATRIX* matrix);
 void DrawQuadTexture(int a1, float a2);
 
 void njSetTextureNum(int texid);

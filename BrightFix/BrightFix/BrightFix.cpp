@@ -527,7 +527,7 @@ extern "C"
 		else dontFixTEV = true;
 	}
 	const int GXLoadTexMtxImmPtr = 0x00424480;
-	__declspec(naked) void GXLoadTexMtxImm(NJS_MATRIX_PTR a1, int index, signed int a3)
+	__declspec(naked) void GXLoadTexMtxImm(NJS_MATRIX* a1, int index, signed int a3)
 	{
 		__asm
 		{
@@ -545,7 +545,7 @@ extern "C"
 		//since 1 is never used afaik because no multi tex support
 		if (!dontFixTEV)
 		{
-			GXLoadTexMtxImm((NJS_MATRIX_PTR)0x01AF1620, 0, 1);
+			GXLoadTexMtxImm((NJS_MATRIX*)0x01AF1620, 0, 1);
 		}
 	}
 	void BrightFixPlus_TEVModeCheck()

@@ -296,7 +296,7 @@ void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model)
 }
 
 static const int C_MTXConcatPtr = 0x00426E40;
-static void C_MTXConcat(float* a1, float* a2, float* a3) {
+static void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3) {
 	__asm {
 		mov eax, a1
 		mov edx, a2
@@ -305,14 +305,14 @@ static void C_MTXConcat(float* a1, float* a2, float* a3) {
 	}
 }
 
-static float StartViewMatrix[12];
-static float DrawMatrices[40][12];
+static NJS_MATRIX StartViewMatrix;
+static NJS_MATRIX DrawMatrices[40];
 static size_t DrawMatrixNodeCount = 0;
 static void AL_DrawGetChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject) {
 	njPushMatrixEx();
 
 	AL_SetMotionMatrix(pObject);
-	memcpy(DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
+	memcpy(&DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
 
 	DrawMatrixNodeCount++;
 
@@ -357,7 +357,7 @@ static void AL_DrawGetOtherChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject, NJS
 		AL_SetMotionMatrix(pObject);
 	}
 	
-	memcpy(DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
+	memcpy(&DrawMatrices[DrawMatrixNodeCount], _nj_current_matrix_ptr_, sizeof(DrawMatrices[DrawMatrixNodeCount]));
 
 	DrawMatrixNodeCount++;
 
@@ -373,7 +373,7 @@ static void AL_DrawGetOtherChaoNodeMatricesSub(task* tp, AL_OBJECT* pObject, NJS
 }
 
 static void AL_DrawGetChaoNodeMatrices(task* tp, AL_OBJECT* pObject) {
-	memcpy(StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
+	memcpy(&StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
 
 	DrawMatrixNodeCount = 0;
 	njPushUnitMatrix();
@@ -382,7 +382,7 @@ static void AL_DrawGetChaoNodeMatrices(task* tp, AL_OBJECT* pObject) {
 }
 
 static void AL_DrawGetOtherChaoNodeMatrices(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj) {
-	memcpy(StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
+	memcpy(&StartViewMatrix, _nj_current_matrix_ptr_, sizeof(StartViewMatrix));
 
 	DrawMatrixNodeCount = 0;
 	njPushUnitMatrix();
@@ -391,15 +391,15 @@ static void AL_DrawGetOtherChaoNodeMatrices(task* tp, AL_OBJECT* pObject, NJS_CN
 }
 
 static void AL_PushChaoNodeMatrix(size_t nodeIndex) {
-	DataPointer(float*, MaxMatrixStackPointer, 0x02670588);
+	DataPointer(NJS_MATRIX*, MaxMatrixStackPointer, 0x02670588);
 
-	float* pNextMatrix = _nj_current_matrix_ptr_ + 12;
+	NJS_MATRIX* pNextMatrix = _nj_current_matrix_ptr_ + 1;
 	if (pNextMatrix > MaxMatrixStackPointer) {
 		return;
 	}
 
 	_nj_current_matrix_ptr_ = pNextMatrix;
-	C_MTXConcat(StartViewMatrix, _nj_current_matrix_ptr_, DrawMatrices[nodeIndex]);
+	C_MTXConcat(&StartViewMatrix, _nj_current_matrix_ptr_, &DrawMatrices[nodeIndex]);
 }
 
 
@@ -432,9 +432,9 @@ static void AL_DrawRigAccessorySub(NJS_CNK_OBJECT* pObject, bool isOmoChao, bool
 		// hack i added, if its an omochao it needs scaling
 		// matrix multiplication is associative, so in theory this is equivalent to the scale + SetMotionMatrix-ing
 		if (isOmoChao) {
-			njPushMatrix(StartViewMatrix);
+			njPushMatrix(&StartViewMatrix);
 			njScale(NULL, 1.1f, 1.1f, 1.1f);
-			C_MTXConcat(_nj_current_matrix_ptr_, _nj_current_matrix_ptr_, DrawMatrices[AccessoryNodeIndex]);
+			C_MTXConcat(_nj_current_matrix_ptr_, _nj_current_matrix_ptr_, &DrawMatrices[AccessoryNodeIndex]);
 		}
 		else {
 			AL_PushChaoNodeMatrix(AccessoryNodeIndex);

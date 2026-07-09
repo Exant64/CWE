@@ -156,7 +156,7 @@ struct AL_OBJECT
 	int ItemOffsetFlag;
 	NJS_POINT3 ItemOffsetPos;
 	Angle3 ItemOffsetAng;
-	NJS_MATRIX_PTR pOldMatrix;
+	NJS_MATRIX* pOldMatrix;
 	AL_BUYO_PARAM* pBuyoParam;
     void* DisplayList;
 };

@@ -9,8 +9,6 @@
 #include <random>
 #include "albhv.h"
 
-//DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
-
 int ALBHV_Hug1(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {

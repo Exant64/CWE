@@ -1440,8 +1440,7 @@ Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1, 0.5f, {  1,  1,  1 } };
 #define Translate(x,y,z) OrthoScreenTranslate(x, y, (-26.0f) / z * scl)
 
 extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Angle3& rot, const SAlItemCwe& mItemDescItem) {
-	njPushMatrixEx();
-	njUnitMatrix(0);
+	njPushUnitMatrix();
 
 	const size_t index = 11;
 	const Light backupLight = Lights[index];
