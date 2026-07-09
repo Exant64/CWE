@@ -896,7 +896,14 @@ struct ITEM_SAVE_INFO
 
 struct CHAO_PARAM_GC
 {
-	char gap_0[18];
+	uint8_t GBAChao;
+    uint8_t GBAEgg;
+    uint8_t GBABerry[8];
+    uint8_t padding0;
+    uint8_t padding1;
+    uint32_t GBARing;                // Rings moving from GBA -> GCN
+    uint8_t BootMethed;
+    uint8_t Birthplace;
 	char name[7];
 	char GBAType;
 	char GBATexture;

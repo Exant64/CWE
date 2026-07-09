@@ -182,7 +182,7 @@ extern "C"
 		param.life = 100;
 		param.LifeMax = 100;
 
-		param.gap_0[0xC] = 0; //?
+		*(Uint8*)(&param.GBARing) = 0; // ? sets byte at 0xC to 0
 
 		for (int i = 0; i < 5; i++) {
 			param.Exp[i] = 0;
@@ -447,6 +447,9 @@ extern "C"
 
 		static_assert(sizeof(CHAO_SAVE_INFO) == 0x800, "ChaoData incorrect size");
 		static_assert(sizeof(AL_GENE) == 0xA4, "AL_GENE incorrect size");
+		static_assert(offsetof(CHAO_PARAM_GC, name) == 0x12);
+		static_assert(offsetof(CHAO_PARAM_GC, GBARing) == 0xC);
+		static_assert(offsetof(CHAO_PARAM_GC, GBAType) == 0x19);
 		static_assert(offsetof(CHAO_PARAM_GC, body) + offsetof(AL_BODY_INFO, MultiNum) == 0xDB);
 		static_assert(offsetof(CHAO_PARAM_GC, PartsBTL) == 0x118);
 		static_assert(offsetof(CHAO_PARAM_GC, karate) + offsetof(AL_KARATE_PERSONAL_INFO, rank) == 0x10A);
