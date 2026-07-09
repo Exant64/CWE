@@ -232,7 +232,7 @@ ObjectFunc(AlgKinderMaster, 0x54E780);
 ObjectFunc(ChaoExecutor, 0x54FE20);
 ObjectFunc(ChaoDestructor, 0x54FF30);
 ObjectFunc(ChaoDisplayer, 0x54FF80);
-FunctionPointer(task *, CreateChaoExtra, (CHAO_SAVE_INFO *chaoData, int a2, AL_SHAPE_ELEMENT *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
+FunctionPointer(task *, CreateChaoExtra, (CHAO_PARAM_GC *chaoData, int a2, AL_SHAPE_ELEMENT *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
 ObjectFunc(ChaoSelectMenuManager, 0x5542B0);
 ObjectFunc(ALO_TVDisplayer, 0x55C9E0);
 FunctionPointer(char *, ALO_Ball_Load, (NJS_VECTOR *position, NJS_VECTOR *a2), 0x55D6B0);

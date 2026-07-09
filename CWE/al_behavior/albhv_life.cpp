@@ -40,7 +40,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 		}
 		chaoData->param.type = TYPE_CHILD;
 		chaoData->param.ClassNum = -1;
-		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
+		task* chao = CreateChaoExtra(&chaoData->param, 0, 0, position, a5);
 		chaoData->param.body.FormNum = AL_FORM_EGG_FOOT;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}

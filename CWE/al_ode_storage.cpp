@@ -82,7 +82,7 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 			return;
 		}
 
-		task* obj = CreateChaoExtra(&chaoSelect->m_chaoData[i], 0, 0, &posIn, 0);
+		task* obj = CreateChaoExtra(&chaoSelect->m_chaoData[i].param, 0, 0, &posIn, 0);
 		obj->disp = ChaoDisplayHookTest;
 		if (obj) {
 			GET_CHAOWK(obj)->ChaoFlag &= ~8u;

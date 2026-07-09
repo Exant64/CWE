@@ -96,7 +96,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 {
 	if (GetOmoData()->phase == 255)
 	{
-		CHAO_SAVE_INFO* v11 = (CHAO_SAVE_INFO*)AL_GetNewChaoSaveInfo();
+		CHAO_SAVE_INFO* v11 = AL_GetNewChaoSaveInfo();
 		if (v11) 
 		{
 			v11->param.type = TYPE_CHILD;
@@ -119,7 +119,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 			v11->param.gene.Jewel[1] = GetOmoData()->jewel;
 			v11->param.body.JewelNum		= GetOmoData()->jewel;
 
-			CreateChaoExtra(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
+			CreateChaoExtra(&v11->param, 0, 0, &a1->twp->pos, a1->twp->ang.y);
 			memset(GetOmoData(), 0, sizeof(OMOCHAO_INFO));
 			a1->exec = DestroyTask;
 			return;
@@ -131,8 +131,9 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 	{
 		CCL_Enable(a1, 0);
 	}
-	else 
+	else {
 		CCL_Disable(a1,0);
+	}
 
 	CCL_Entry(a1);
 	if (GetOmoData()->phase & MANNEQUIN)

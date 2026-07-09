@@ -78,7 +78,7 @@ void AL_GetRandomAttrPos_0(task* a1)
 	}
 }
 
-task* KarateCreateChao(CHAO_SAVE_INFO* chaoData, int a2, AL_SHAPE_ELEMENT* a3, NJS_VECTOR* position, Angle angle)
+task* KarateCreateChao(CHAO_PARAM_GC* chaoData, int a2, AL_SHAPE_ELEMENT* a3, NJS_VECTOR* position, Angle angle)
 {
 	AL_SHAPE_ELEMENT* opponent = a3;
 
