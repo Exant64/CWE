@@ -271,7 +271,7 @@ ObjectFunc(ALO_LobbyGateHeroExecutor_Main, 0x57F940);
 ObjectFunc(ALO_LobbyGateHeroExecutor_Display, 0x57F980);
 ObjectFunc(ALO_LobbyGateDarkExecutor_Main, 0x57FD60);
 ObjectFunc(ALO_LobbyGateDarkExecutor_Display, 0x57FDF0);
-ObjectFunc(ALO_BoxExecutor_Main, 0x5801C0);
+ObjectFunc(ALO_BoxExecutor, 0x5801C0);
 FunctionPointer(void, ALO_BoxExecutor_Load, (NJS_VECTOR *position), 0x580890);
 ObjectFunc(ALO_Horse_Main, 0x580E80);
 FunctionPointer(int, ALO_Horse_Load, (), 0x580F30);

@@ -447,7 +447,7 @@ static void __declspec(naked) AL_Horse_Init_Hook()
 
 void __cdecl ALO_BoxExecutor_Main_(task* a1)
 {
-	a1->exec = ALO_BoxExecutor_Main;
+	a1->exec = ALO_BoxExecutor;
 	AL_Toy_Move_Register(a1, ALW_KIND_BOX);
 }
 
