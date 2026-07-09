@@ -10,7 +10,7 @@
 #include <optional>
 
 static void PlaySelectSound() {
-	PlaySoundProbably(0x8000, 0, 0, 0);
+	SE_Call(0x8000, 0, 0, 0);
 }
 
 using UpdateFunc = std::function<void()>;

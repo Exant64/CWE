@@ -1887,7 +1887,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	auto SetTabIfItHasItem = [&](int i) {
 		if (IsTabNotEmpty(i)) {
-			PlaySoundProbably(0x8000, 0, 0, 0);
+			SE_Call(0x8000, 0, 0, 0);
 			a1->currentTab = i;
 			a1->mBuyListCursor = 0;
 			a1->mBuyListScroll = 0;
@@ -1925,7 +1925,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = a1->mBuyListCursor;
 				}
 				FBuyListSetItemDesc(a1);
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(0x8000, 0, 0, 0);
 			}
 		}
 		if (SWDATAE[0] & BTN_DOWN)
@@ -1938,7 +1938,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = v6;
 				}
 				FBuyListSetItemDesc(a1);
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(0x8000, 0, 0, 0);
 			}
 		}
 
@@ -1989,14 +1989,14 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				FMainWinWaitClose(a1);
 				//once the text is done mode 3 goes back to mode 0
 				a1->mBuyListMode = 3;
-				PlaySoundProbably(32777, 0, 0, 0);
+				SE_Call(32777, 0, 0, 0);
 			}
 		}
 		else if (ControllerPointers[0]->press & BTN_B)
 		{
 			a1->currentTab = 0;
 			a1->mMode = 9;
-			PlaySoundProbably(4106, 0, 0, 0);
+			SE_Call(4106, 0, 0, 0);
 		}
 		break;
 	case 1:
@@ -2007,12 +2007,12 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 		if ((SWDATAE[0] & 0x10) && a1->mBuyListSelect == 1)
 		{
 			a1->mBuyListSelect = 0;
-			PlaySoundProbably(0x8000, 0, 0, 0);
+			SE_Call(0x8000, 0, 0, 0);
 		}
 		if ((SWDATAE[0] & 0x20) && !a1->mBuyListSelect)
 		{
 			a1->mBuyListSelect = 1;
-			PlaySoundProbably(0x8000, 0, 0, 0);
+			SE_Call(0x8000, 0, 0, 0);
 		}
 			
 		if ((ControllerPointers[0]->press & 0x406) == 0) {
@@ -2021,7 +2021,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 		if ((ControllerPointers[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
 			a1->mBuyListSelect = 1;
-			PlaySoundProbably(4106, 0, 0, 0);
+			SE_Call(4106, 0, 0, 0);
 		}
 		else {
 			if (a1->mBuyListSelect)
@@ -2106,11 +2106,11 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 	LABEL_57:
 		if ((ControllerPointers[0]->press & 0x402) != 0)
 		{
-			PlaySoundProbably(4106, 0, 0, 0);
+			SE_Call(4106, 0, 0, 0);
 		}
 		else
 		{
-			PlaySoundProbably(4103, 0, 0, 0);
+			SE_Call(4103, 0, 0, 0);
 		}
 		break;
 	case 2:

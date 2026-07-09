@@ -859,7 +859,7 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				{
 					a1->medicalChartMenu = 2;
 				}
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(0x8000, 0, 0, 0);
 			}
 			if ((ControllerPointers[0]->press & (BTN_R | BTN_A)) != 0 || ControllerPointers[0]->press & 0x80)
 			{
@@ -867,12 +867,12 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				{
 					a1->medicalChartMenu = 0;
 				}
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(0x8000, 0, 0, 0);
 			}
 			if ((ControllerPointers[0]->press & 0x402) != 0)
 			{
 				sub_58DB30((int)a1);
-				PlaySoundProbably(0x100A, 0, 0, 0);
+				SE_Call(0x100A, 0, 0, 0);
 			}
 		}
 		a1->field_16 += 16;

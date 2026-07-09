@@ -270,7 +270,7 @@ void AL_Odekake_MenuMaster_Selection() {
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY < 0) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 		}
-		PlaySoundProbably(0x8000, 0, 0, 0);
+		SE_Call(0x8000, 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);
@@ -282,7 +282,7 @@ void AL_Odekake_MenuMaster_Selection() {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = 0;
 		}
 
-		PlaySoundProbably(0x8000, 0, 0, 0);
+		SE_Call(0x8000, 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);

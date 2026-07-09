@@ -450,7 +450,7 @@ static inline char IsByteswapped(void *a1)
 
 // void __usercall(int a1@<esi>, int a2, char a3, char a4)
 static const void *const PlaySoundProbablyPtr = (void*)0x437260;
-static inline void PlaySoundProbably(int a1, int a2, char a3, char a4)
+static inline void SE_Call(int a1, int a2, char a3, char a4)
 {
 	__asm
 	{
