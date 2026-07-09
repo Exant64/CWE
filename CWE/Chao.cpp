@@ -218,10 +218,10 @@ void AL_ChaoAccessoryMainCheck(task* tp) {
 
 		strcpy_s(work->AccessoryCalculatedID[i], data.ID);
 
-		const size_t index = ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, data.ID);
+		const size_t index = ItemMetadata::Get()->GetIndex(ALW_CATEGORY_ACCESSORY, data.ID);
 		if (index == -1) {
 			// error object (should be the last registered i think)
-			work->AccessoryIndices[i] = ObjectRegistry::Get(ChaoItemCategory_Accessory)->Size() - 1;
+			work->AccessoryIndices[i] = ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY)->Size() - 1;
 		}
 		else {
 			work->AccessoryIndices[i] = index;
@@ -250,7 +250,7 @@ void AL_ChaoAccessoryConversion(CHAO_PARAM_CWE* pParam) {
 			if (accIndex >= 8) accIndex -= 1;
 
 			char id[METADATA_ID_SIZE];
-			bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accIndex, id);
+			bool foundID = ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, accIndex, id);
 			if (!foundID) {
 				// TODO: error
 				continue;

@@ -117,7 +117,7 @@ void AL_EggPresenterDisplayer(task* tp) {
 			tp->twp->scl.x * 1.2f, 
 			rot,
 		{
-				ChaoItemCategory_Egg, 
+				ALW_CATEGORY_EGG, 
 				(Uint16)tp->twp->ang.x
 			}
 
@@ -159,7 +159,7 @@ void WinJewelChaoInRace() {
 		if (cweSaveFile.purchasedItemCount < (int)save::CWE_PurchasedItems.size()) {
 			save::CWE_PurchasedItems[cweSaveFile.purchasedItemCount] = 
 			{ 
-				ChaoItemCategory_Egg, 
+				ALW_CATEGORY_EGG, 
 				(Uint16)(54 + texture - 1) 
 			};
 

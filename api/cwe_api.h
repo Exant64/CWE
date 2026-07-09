@@ -84,7 +84,7 @@ struct CWE_REGAPI {
 	//black market functions
 	void(*RegisterBlackMarketGeneralFruit)(int ID, int chance);
 	void(*RegisterBlackMarketRareFruit)(int ID, int chance);
-	BlackMarketItemAttributes* (*GetItemAttr)(ChaoItemCategory cat, int index); //let's you pull and edit existing item attributes
+	BlackMarketItemAttributes* (*GetItemAttr)(Sint8 cat, int index); //let's you pull and edit existing item attributes
 	void(*RegisterOtherItemFunc)(int ID, OtherItemPtr func); //things like "themes", we don't really support this properly yet though, we just did it to code the themes
 	void(*SetRebuyFlag)(int Category, int ID, bool rebuy);
 
@@ -154,7 +154,7 @@ struct CWE_API_REGISTER_MSG {
 struct CWE_API_REGISTER_MARKET {
 	int Version;
 
-	BlackMarketItemAttributes* (*GetItemAttr)(ChaoItemCategory category, size_t index);
+	BlackMarketItemAttributes* (*GetItemAttr)(Sint8 category, size_t index);
 };
 
 struct CWE_API_REGISTER {

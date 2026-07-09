@@ -131,11 +131,11 @@ void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_CNK_OBJECT* a2)
             case 1:
             case 2:
             case 3:
-                ObjectRegistry::DrawModel(ChaoItemCategory_Fruit, a1->garden - 1);
+                ObjectRegistry::DrawModel(ALW_CATEGORY_FRUIT, a1->garden - 1);
                 break;
             default:
                 int lookup = ModAPI_TreeEntries[a1->kind].FruitIDs[v9];
-                ObjectRegistry::DrawModel(ChaoItemCategory_Fruit, lookup);
+                ObjectRegistry::DrawModel(ALW_CATEGORY_FRUIT, lookup);
                 break;
             }
             goto LABEL_33;

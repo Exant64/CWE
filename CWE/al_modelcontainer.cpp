@@ -3,7 +3,7 @@
 
 extern NJS_CNK_OBJECT object_alo_missing;
 
-std::array<ObjectRegistry*, ChaoItemCategory_Count> ObjectRegistry::m_instance;
+std::array<ObjectRegistry*, NB_CWE_CATEGORY> ObjectRegistry::m_instance;
 
 int ObjectRegistry::Size() const {
 	return m_objects.size();

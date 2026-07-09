@@ -18,11 +18,11 @@ void SaveAllItems(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) {
 	writer.EndArray();
 }
 
-static void LoadItem(const ChaoItemCategory category, const rapidjson::Value& value) {
+static void LoadItem(const Sint8 category, const rapidjson::Value& value) {
 	AccessorySaveInfo saveInfo;
 
 	switch (category) {
-	case ChaoItemCategory_Accessory:
+	case ALW_CATEGORY_ACCESSORY:
 		if (AccessoryItemCount >= AccessoryItemMax) return;
 
 		AccessorySaveInfo::Load(saveInfo, value);
@@ -52,13 +52,13 @@ void LoadAllItems(const rapidjson::GenericArray<false, rapidjson::Value>& array)
 
 		if (category == -1) continue;
 
-		LoadItem(ChaoItemCategory(category), item);
+		LoadItem(category, item);
 	}
 }
 
-ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const ChaoItemCategory category) {
+ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const Sint8 category) {
 	switch (category) {
-		case ChaoItemCategory_Accessory:
+		case ALW_CATEGORY_ACCESSORY:
 			for (auto& item : AccessoryItemList) {
 				if (item.IndexID == -1) {
 					return &item;
@@ -71,9 +71,9 @@ ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const ChaoItemCategory category) {
 }
 
 // returns if it uses the new class-based save system or the old one
-bool CWE_IsCustomItemSaveInfoCategory(const ChaoItemCategory category) {
+bool CWE_IsCustomItemSaveInfoCategory(const Sint8 category) {
 	switch (category) {
-		case ChaoItemCategory_Accessory:
+		case ALW_CATEGORY_ACCESSORY:
 			return true;
 	}
 

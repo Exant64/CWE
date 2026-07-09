@@ -66,7 +66,7 @@ void __cdecl sub_58F980(task* a1)
 			break;
 		case 3:
 			njTranslate(NULL, 0.0f, 1.3f, 0.0f);
-			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Fruit, v1);
+			ObjectRegistry::DrawObject<njCnkDrawObject>(ALW_CATEGORY_FRUIT, v1);
 			break;
 		case 7:
 			njSetTexture(ModAPI_SeedTexlists[v1]);

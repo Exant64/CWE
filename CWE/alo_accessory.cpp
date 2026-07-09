@@ -38,10 +38,10 @@ void Accessory_Display(task* a1) {
 	AccessorySetupDraw(a1->twp->ang.x, save->Colors, save->UsedColors);
 	
 	if(!IsAccessoryRFSupported(a1->twp->ang.x)) {
-		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, a1->twp->ang.x);
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, a1->twp->ang.x);
 	}
 	else {
-		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, a1->twp->ang.x);
+		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, a1->twp->ang.x);
 	}
 
 	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
@@ -95,7 +95,7 @@ task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const
 	work->mode = 0;
 	work->smode = 0;
 
-	CWE_ALW_Entry(ChaoItemCategory_Accessory, tp, 0, savedata);
+	CWE_ALW_Entry(ALW_CATEGORY_ACCESSORY, tp, 0, savedata);
 	ALW_SetHeldOffset(tp, 0.0f);
 	ALW_SetHeldRadius(tp, 1.4f);
 
@@ -106,7 +106,7 @@ task* Accessory_Load(const int ID, const NJS_POINT3* pPos, const int AngY, const
 		savedata->ID[0] = 0;
 
 		char id[METADATA_ID_SIZE];
-		if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, ID, id)) {
+		if (ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, ID, id)) {
 			memcpy(savedata->ID, id, sizeof(savedata->ID));
 		}
 	}

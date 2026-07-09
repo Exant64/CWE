@@ -126,7 +126,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 	
 	//set all seeds to be rebuyable as it is in vanilla
 	for (int i = 0; i < 7; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Seed, i, true);
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_SEED, i, true);
 
 	ALAPI_RegisterFruit(cwe_api);
 	ALAPI_RegisterAccessory(cwe_api);

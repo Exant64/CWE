@@ -229,7 +229,7 @@ void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32
 }
 
 size_t GetAccessoryID(const char* pID) {
-	return ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, pID);
+	return ItemMetadata::Get()->GetIndex(ALW_CATEGORY_ACCESSORY, pID);
 }
 
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
@@ -284,16 +284,16 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		return -1;
 	}
 
-	ItemMetadata::Get()->Add(ChaoItemCategory_Accessory, pAccessoryData->ID);
+	ItemMetadata::Get()->Add(ALW_CATEGORY_ACCESSORY, pAccessoryData->ID);
 
 	BlackMarketAttributes::Get()->Add(
-		ChaoItemCategory_Accessory,
+		ALW_CATEGORY_ACCESSORY,
 		pAccessoryData->pMarketAttrib,
 		pAccessoryData->pName,
 		pAccessoryData->pDescription
 	);
 
-	ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(pAccessoryData->pObject, pTexlist);
+	ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY)->Add(pAccessoryData->pObject, pTexlist);
 
 	const size_t id = ModAPI_AccessoryDataList.size();
 

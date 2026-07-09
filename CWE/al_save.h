@@ -58,8 +58,8 @@ struct CWESaveFile
 	int Weather;
 	OMOCHAO_INFO omochao[3];
 	int transporterFlag;
-	int marketInventoryCount[ChaoItemCategory_Count];
-	SAlItemCwe marketInventory[ChaoItemCategory_Count][32];
+	int marketInventoryCount[NB_CWE_CATEGORY];
+	SAlItemCwe marketInventory[NB_CWE_CATEGORY][32];
 	int purchasedItemCount;
 	SAlItemCwe PurchasedItems[5]; //deprecated, ALW_Control_Main moves it to save::CWE_PurchasedItems
 	ITEM_SAVE_INFO cweToyInfo[NB_ALW_KIND * 3];

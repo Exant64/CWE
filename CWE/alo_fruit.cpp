@@ -78,7 +78,7 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 			{
 				_nj_control_3d_flag_ |= 0x2400u;
 			}
-			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Fruit, v2->ang.x);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_FRUIT, v2->ang.x);
 			_nj_control_3d_flag_ &= ~0x2400u;
 			LoadControl3D();
 			njPopMatrixEx();

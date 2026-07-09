@@ -135,7 +135,7 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Accessories")) {
-                const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
+                const auto& items = ItemMetadata::Get()->GetIDs(ALW_CATEGORY_ACCESSORY);
 
                 static const char* AccessoryStrings[3000];
                 static size_t AccessoryIndices[3000];

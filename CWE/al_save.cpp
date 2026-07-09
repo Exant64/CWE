@@ -26,13 +26,13 @@ static struct {
 	int category;
 	const char* key;
 } CategoryKeyValuePairs[] = {
-	{ChaoItemCategory_Egg, "egg"},
-	{ChaoItemCategory_Fruit, "fruit"},
-	{ChaoItemCategory_Seed, "seed"},
-	{ChaoItemCategory_Hat, "hat"},
-	{ChaoItemCategory_Accessory, "accessory"},
-	{ChaoItemCategory_Special, "special"},
-	{ChaoItemCategory_MenuTheme, "menu_theme"}
+	{ALW_CATEGORY_EGG, "egg"},
+	{ALW_CATEGORY_FRUIT, "fruit"},
+	{ALW_CATEGORY_SEED, "seed"},
+	{ALW_CATEGORY_MASK, "hat"},
+	{ALW_CATEGORY_ACCESSORY, "accessory"},
+	{ALW_CATEGORY_SPECIAL, "special"},
+	{ALW_CATEGORY_THEME, "menu_theme"}
 };
 
 // also this is like the only place in the code that uses namespace for some reason
@@ -63,7 +63,7 @@ namespace save {
 			char id[METADATA_ID_SIZE];
 			strncpy_s(id, value["id"].GetString(), sizeof(id));
 
-			outItem.mType = ItemMetadata::Get()->GetIndex(ChaoItemCategory(outItem.mCategory), id);
+			outItem.mType = ItemMetadata::Get()->GetIndex(outItem.mCategory, id);
 			if (outItem.mType == -1) {
 				return false;
 			}
@@ -96,7 +96,7 @@ namespace save {
 		writer.String(categoryString);
 
 		char id[METADATA_ID_SIZE];
-		bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory(item.mCategory), item.mType, id);
+		bool foundID = ItemMetadata::Get()->GetID(item.mCategory, item.mType, id);
 
 		if (foundID) {
 			writer.Key("id");

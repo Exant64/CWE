@@ -165,5 +165,5 @@ void ALAPI_RegisterSpecial(CWE_REGAPI* cwe_api) {
 
 
 	//default lens rebuyable
-	cwe_api->SetRebuyFlag(ChaoItemCategory_Special, LensDefault, true);
+	cwe_api->SetRebuyFlag(ALW_CATEGORY_SPECIAL, LensDefault, true);
 }

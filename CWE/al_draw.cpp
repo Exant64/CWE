@@ -422,7 +422,7 @@ static bool AL_CanRenderRigAccessory(const task* tp, const EAccessoryType slot) 
 
 	return accessoryIndex != -1 && // chao has accessory
 		GetAccessoryType(accessoryIndex) >= EAccessoryType::Generic1 && // is of rigged accessory type (we dont enforce it to be the same type as the slot intentionally)
-		ObjectRegistry::Get(ChaoItemCategory_Accessory)->GetObj(accessoryIndex); // has model
+		ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY)->GetObj(accessoryIndex); // has model
 }
 
 static size_t AccessoryNodeIndex = 0;
@@ -471,7 +471,7 @@ static void AL_DrawRigAccessory(task* tp, const EAccessoryType slot) {
 
 	AccessoryNodeIndex = 0;
 
-	auto registry = ObjectRegistry::Get(ChaoItemCategory_Accessory);
+	auto registry = ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY);
 	njSetTexture(registry->GetTex(accessoryIndex));
 	AccessorySetupDraw(accessoryIndex, pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
 
@@ -499,10 +499,10 @@ static void AL_DrawAccessory(const task* tp, const EAccessoryType slot) {
 	AccessorySetupDraw(work->AccessoryIndices[slot], pParam->Accessories[slot].ColorSlots, pParam->Accessories[slot].ColorFlags);
 
 	if(!IsAccessoryRFSupported(work->AccessoryIndices[slot])) {
-		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, work->AccessoryIndices[slot]);
 	}
 	else {
-		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, work->AccessoryIndices[slot]);
+		ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, work->AccessoryIndices[slot]);
 	}
 	njPopMatrixEx();
 }

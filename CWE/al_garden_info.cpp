@@ -44,15 +44,15 @@ void AL_ClearHoldingItemInfo() {
 int AL_GetHoldingItemKind() {
 	if (!dword_19F6454) return -1;
 	
-	if (CWE_IsCustomItemSaveInfoCategory(ChaoItemCategory(HeldItemType))) {
+	if (CWE_IsCustomItemSaveInfoCategory(HeldItemType)) {
 		return ((ItemSaveInfoBase*)dword_19F6454)->IndexID;
 	}
 
 	return dword_19F6454->kind;
 }
 
-ChaoItemCategory AL_GetHoldingItemCategory() {
-	return ChaoItemCategory(HeldItemType);
+Sint8 AL_GetHoldingItemCategory() {
+	return HeldItemType;
 }
 
 void AL_ClearItemSaveInfo(ITEM_SAVE_INFO* pSaveInfo) {
@@ -80,7 +80,7 @@ void AL_SetCustomItemOnTheGarden() {
 		const NJS_VECTOR velocity = { 0,0,0 };
 
 		switch (item.GetCategory()) {
-			case ChaoItemCategory_Accessory:
+			case ALW_CATEGORY_ACCESSORY:
 				Accessory_Load(item.IndexID, &item.Position, ang, &velocity, &item);
 				break;
 		}
@@ -192,8 +192,7 @@ void AL_SetItemOnTheGarden(int a1)
 						case 7:
 							ALO_SeedExecutor_Load(v5->kind, v8, &a4, (int)v5);
 							break;
-						case ChaoItemCategory_Special:
-
+						case ALW_CATEGORY_SPECIAL:
 							ALO_Special_Load(
 								v5->kind,
 								v8,
@@ -234,7 +233,7 @@ void AL_SetItemOnTheGarden(int a1)
 static void AL_SetObjectOnTheGarden_Hook(int a1) {
 	AL_SetItemOnTheGarden(3);
 	AL_SetCustomItemOnTheGarden();
-	AL_SetItemOnTheGarden(ChaoItemCategory_Special);
+	AL_SetItemOnTheGarden(ALW_CATEGORY_SPECIAL);
 }
 
 static void AL_CreateCustomHoldingItem() {
@@ -250,7 +249,7 @@ static void AL_CreateCustomHoldingItem() {
 	task* tp = NULL;
 
 	switch (AL_GetHoldingItemCategory()) {
-		case ChaoItemCategory_Accessory:
+		case ALW_CATEGORY_ACCESSORY:
 			tp = Accessory_Load(pSaveInfo->IndexID, &pSaveInfo->Position, pSaveInfo->Angle, &velocity, (AccessorySaveInfo*)pSaveInfo);
 			break;
 	}
@@ -278,11 +277,11 @@ static void AL_CreateHoldingItem() {
 
 	switch (AL_GetHoldingItemCategory())
 	{
-	case 2:
-	case ChaoItemCategory_Fruit:
-	case ChaoItemCategory_Seed:
-	case ChaoItemCategory_Hat:
-	case ChaoItemCategory_Special:
+	case ALW_CATEGORY_MINIMAL:
+	case ALW_CATEGORY_FRUIT:
+	case ALW_CATEGORY_SEED:
+	case ALW_CATEGORY_MASK:
+	case ALW_CATEGORY_SPECIAL:
 		if (dword_19F6454 && dword_19F6454->kind >= 0 && playertwp[0])
 		{
 			v2 = playertwp[0];
@@ -319,7 +318,7 @@ static void AL_CreateHoldingItem() {
 			case 9:
 				v6 = ALO_ObakeHeadExecutor_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (int)v1);
 				break;
-			case ChaoItemCategory_Special:
+			case ALW_CATEGORY_SPECIAL:
 				v6 = ALO_Special_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (short*)v1);
 				break;
 			default:
@@ -353,12 +352,12 @@ int AL_GetLocalChaoCount(int a1)
 }
 
 static bool AL_CreatePurchasedCustomItem(const SAlItemCwe& item, NJS_POINT3& position, NJS_VECTOR& velocity) {
-	if (!CWE_IsCustomItemSaveInfoCategory(ChaoItemCategory(item.mCategory))) {
+	if (!CWE_IsCustomItemSaveInfoCategory(item.mCategory)) {
 		return false;
 	}
 
 	// only accessory for now
-	Accessory_Load(item.mType, &position, playertwp[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory));
+	Accessory_Load(item.mType, &position, playertwp[0]->ang.y, &velocity, (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY));
 
 	return true;
 }
@@ -452,14 +451,14 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 				case 9:
 					ALO_ObakeHeadExecutor_Load(v10, &position, playertwp[0]->ang.y, &output, (int)AL_GetNewItemSaveInfo(9));
 					break;
-				case ChaoItemCategory_Special:
+				case ALW_CATEGORY_SPECIAL:
 					ALO_Special_Load(v10, &position, playertwp[0]->ang.y, &output, (short*)AL_GetSpecialItemSave());
 					break;
 				default:
 					goto LABEL_34;
 				}
 			}
-			save::CWE_PurchasedItems[v8].mCategory = (ChaoItemCategory)-1;
+			save::CWE_PurchasedItems[v8].mCategory = -1;
 		LABEL_34:
 			if (v8 != cweSaveFile.purchasedItemCount)
 			{
@@ -479,7 +478,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 					}
 					v27 = v8 + v29;
 				}
-				save::CWE_PurchasedItems[v27].mCategory = (ChaoItemCategory)-1;
+				save::CWE_PurchasedItems[v27].mCategory = -1;
 			}
 		}
 	}
@@ -487,7 +486,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 
 FunctionPointer(void, AL_PackageItemSaveInfo, (int a1), 0x52E710);
 
-static void AL_PackageCustomItemSaveInfo(const ChaoItemCategory category) {
+static void AL_PackageCustomItemSaveInfo(const Sint8 category) {
 	if (!AL_IsGarden()) return;
 
 	int count = CWE_ALW_CountEntry(category);
@@ -521,7 +520,7 @@ static void AL_PackageCustomItemSaveInfo(const ChaoItemCategory category) {
 
 static void AL_PackageItemSaveInfo_Hook() {
 	AL_PackageItemSaveInfo(3);
-	AL_PackageCustomItemSaveInfo(ChaoItemCategory_Accessory);
+	AL_PackageCustomItemSaveInfo(ALW_CATEGORY_ACCESSORY);
 	SaveToyPos();
 }
 
@@ -532,7 +531,7 @@ void AL_GardenInfo_Init() {
 
 	//fixed hat/accessory/special slot problem
 	DataArray(int, dword_8AB838, 0x8AB838, 1);
-	dword_8AB838[ChaoItemCategory_Hat] = 64;
+	dword_8AB838[ALW_CATEGORY_MASK] = 64;
 
 	WriteJump((void*)0x548F40, AL_MinimalCreateManagerExecutor_New);
 	WriteCall((void*)0x0052EBD8, AL_SetObjectOnTheGarden_Hook);

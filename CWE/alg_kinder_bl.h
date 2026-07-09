@@ -112,7 +112,7 @@ DataArray(SAlItem, PurchasedItems, 0x01DBEDA0, 10);
 
 extern std::vector<ItemChance> GeneralFruitMarket;
 extern std::vector<ItemChance> RareFruitMarket;
-extern std::array<std::unordered_set<int>, ChaoItemCategory_Count> AlItemRebuyable;
+extern std::array<std::unordered_set<int>, NB_CWE_CATEGORY> AlItemRebuyable;
 extern std::unordered_map<int, int> OtherItemFuncs;
 
 void BlackMarketAddInventory(int cat, int item);

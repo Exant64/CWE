@@ -99,7 +99,7 @@ size_t AddChaoTree(const CWE_API_TREE_DATA& tree_data, BlackMarketItemAttributes
 
 	ModAPI_TreeEntries.push_back(entry);
 
-	BlackMarketAttributes::Get()->Add(ChaoItemCategory_Seed, attrib, name, description);
+	BlackMarketAttributes::Get()->Add(ALW_CATEGORY_SEED, attrib, name, description);
 
 	return ModAPI_SeedModels.size();
 }
@@ -134,7 +134,7 @@ void AL_ModAPI_Tree_Init() {
 	DataArray(NJS_CNK_OBJECT*, TreeModels, 0x132913C, 24);
 
 	//seed
-	for (int i = 0; i < BlackMarketCategories[ChaoItemCategory_Seed].Count; i++) {
+	for (int i = 0; i < BlackMarketCategories[ALW_CATEGORY_SEED].Count; i++) {
 		ModAPI_SeedTexlists.push_back(&AL_OBJECT_TEXLIST);
 		ModAPI_SeedModels.push_back(Seeds[i]);
 	}
@@ -142,7 +142,7 @@ void AL_ModAPI_Tree_Init() {
 	//"local" tree's seed slot
 	ModAPI_SeedTexlists.push_back(nullptr);
 	ModAPI_SeedModels.push_back(nullptr);
-	BlackMarketAttributes::Get()->Add(ChaoItemCategory_Seed, 0, 0, 0);
+	BlackMarketAttributes::Get()->Add(ALW_CATEGORY_SEED, 0, 0, 0);
 
 	//the TreeModels array only has 8 actual entries, the 9th entry would be the "local tree"/garden tree, lucky for us its 3 nullptrs which is perfect
 	for (int i = 0; i < 9; i++) {

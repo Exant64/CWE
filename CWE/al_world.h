@@ -2,9 +2,11 @@
 
 #define GET_ALW_ENTRY_WORK(tp) ((ALW_ENTRY_WORK*)tp->fwp)
 
+// custom ALW_CATEGORY entries
 enum {
-	CWE_ALW_CATEGORY_ACCESSORY,
-	NB_CWE_ALW_CATEGORY
+    ALW_CATEGORY_ACCESSORY = 0x8,
+	ALW_CATEGORY_THEME = 0x10,
+	NB_CWE_CATEGORY
 };
 
 #pragma pack(push, 8)
@@ -30,10 +32,10 @@ enum
 	ALW_CMD_BYE = 0x6,
 };
 
-Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSaveInfo);
+Bool CWE_ALW_Entry(Sint8 category, task* tp, Uint16 kind, void* pSaveInfo);
 Bool CWE_ALW_CancelEntry(task* tp);
-task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count);
-int CWE_ALW_CountEntry(ChaoItemCategory category);
+task* CWE_ALW_GetTaskCount(Sint8 category, Uint16 count);
+int CWE_ALW_CountEntry(Sint8 category);
 void CWE_ALW_ClearEntry(void);
 
 void ALW_ResetEntry(ALW_ENTRY_WORK* pEntry);

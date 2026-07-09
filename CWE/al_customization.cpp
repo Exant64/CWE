@@ -159,7 +159,7 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Garden) {
 	if (ID == -1) return false;
 
-	auto save = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+	auto save = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY);
 	if (!save) {
 		___OutputDebugString("HatAccRender: no hat slots left");
 		return false;
@@ -770,14 +770,14 @@ public:
 
 				if (index < HatList.size()) {
 					_item = {
-						ChaoItemCategory_Hat,
+						ALW_CATEGORY_MASK,
 						Uint16(HatList[index]->kind)
 					};
 				}
 				else {
 					const auto& accSave = AccessoryList[index - HatList.size()];
 					_item = {
-						ChaoItemCategory_Accessory,
+						ALW_CATEGORY_ACCESSORY,
 						Uint16(accSave->IndexID)
 					};
 					AccessorySetupDraw(accSave->IndexID, accSave->Colors, accSave->UsedColors);
@@ -1462,7 +1462,7 @@ public:
 		Angle3 rot = { 0, IsSelected() ? m_rotY : 0, 0 };
 
 		SAlItemCwe _item = {
-			(m_slot > 0) ? ChaoItemCategory_Accessory : ChaoItemCategory_Hat,
+			(m_slot > 0) ? ALW_CATEGORY_ACCESSORY : ALW_CATEGORY_MASK,
 			(Uint16)item
 		};
 

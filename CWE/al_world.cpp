@@ -4,6 +4,11 @@
 #include <unordered_map>
 #include <FunctionHook.h>
 
+enum {
+	CWE_ALW_CATEGORY_ACCESSORY,
+	NB_CWE_ALW_CATEGORY
+};
+
 ALW_ENTRY_WORK* __cdecl ALW_IsCommunication(task* a1)
 {
 	ALW_ENTRY_WORK* v1; // ecx
@@ -326,11 +331,11 @@ task* GetChaoObject(int a1, int a2)
 int nbWorldEntry[NB_CWE_ALW_CATEGORY] = { 0 };
 ALW_ENTRY_WORK WorldEntryList[NB_CWE_ALW_CATEGORY][NB_MAX_WORLD_ENTRY];
 
-static const std::unordered_map<ChaoItemCategory, size_t> MapRealCategoryToCWEWorld = {
-	{ChaoItemCategory_Accessory, CWE_ALW_CATEGORY_ACCESSORY}
+static const std::unordered_map<Sint8, size_t> MapRealCategoryToCWEWorld = {
+	{ALW_CATEGORY_ACCESSORY, CWE_ALW_CATEGORY_ACCESSORY}
 };
 
-Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSaveInfo) {
+Bool CWE_ALW_Entry(Sint8 category, task* tp, Uint16 kind, void* pSaveInfo) {
 	if (!MapRealCategoryToCWEWorld.contains(category)) {
 		return FALSE;
 	}
@@ -374,7 +379,7 @@ void ALW_ResetEntry(ALW_ENTRY_WORK* pEntry) {
 	pEntry->pSaveInfo = 0;
 }
 
-int CWE_ALW_CountEntry(ChaoItemCategory category) {
+int CWE_ALW_CountEntry(Sint8 category) {
 	if (!MapRealCategoryToCWEWorld.contains(category)) {
 		return NULL;
 	}
@@ -384,7 +389,7 @@ int CWE_ALW_CountEntry(ChaoItemCategory category) {
 	return nbWorldEntry[categoryIndex];
 }
 
-task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count) {
+task* CWE_ALW_GetTaskCount(Sint8 category, Uint16 count) {
 	if (!MapRealCategoryToCWEWorld.contains(category)) {
 		return NULL;
 	}

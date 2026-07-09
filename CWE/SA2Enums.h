@@ -155,17 +155,19 @@ enum {
 	IM_AWK = 0x8,
 };
 
-enum ChaoItemCategory : __int8
+enum 
 {
-	ChaoItemCategory_Egg = 0x1,
-	ChaoItemCategory_Fruit = 0x3,
-	ChaoItemCategory_Seed = 0x7,
-	ChaoItemCategory_Accessory = 0x8, //cwe
-	ChaoItemCategory_Hat = 0x9,
-	ChaoItemCategory_Special = 0xA, //cwe
-	ChaoItemCategory_TransporterUnlock, //cwe
-	ChaoItemCategory_MenuTheme = 0x10,
-	ChaoItemCategory_Count
+    ALW_CATEGORY_CHAO,
+	ALW_CATEGORY_EGG = 0x1,
+    ALW_CATEGORY_MINIMAL,
+	ALW_CATEGORY_FRUIT = 0x3,
+    ALW_CATEGORY_TREE,
+    ALW_CATEGORY_GROWTREE,
+    ALW_CATEGORY_TOY,
+	ALW_CATEGORY_SEED = 0x7,
+    ALW_CATEGORY_SOUND,
+	ALW_CATEGORY_MASK = 0x9,
+	ALW_CATEGORY_SPECIAL = 0xA
 };
 
 enum PDD_DEV_SUPPORT

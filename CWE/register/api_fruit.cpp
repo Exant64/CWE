@@ -72,20 +72,20 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 
 	//vanilla fruit names
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 0)->Name = cwe_api->RegisterAlItemString("Chao Garden fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 1)->Name = cwe_api->RegisterAlItemString("Hero Garden fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 2)->Name = cwe_api->RegisterAlItemString("Dark Garden fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 3)->Name = cwe_api->RegisterAlItemString("Strong fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 4)->Name = cwe_api->RegisterAlItemString("Tasty fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 0)->Name = cwe_api->RegisterAlItemString("Chao Garden fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 1)->Name = cwe_api->RegisterAlItemString("Hero Garden fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 2)->Name = cwe_api->RegisterAlItemString("Dark Garden fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 3)->Name = cwe_api->RegisterAlItemString("Strong fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 4)->Name = cwe_api->RegisterAlItemString("Tasty fruit");
 
-	cwe_api->GetItemAttr(ChaoItemCategory_Hat, 1)->Name = cwe_api->RegisterAlItemString("Pumpkin");
-	cwe_api->GetItemAttr(ChaoItemCategory_Hat, 2)->Name = cwe_api->RegisterAlItemString("Skull");
+	cwe_api->GetItemAttr(ALW_CATEGORY_MASK, 1)->Name = cwe_api->RegisterAlItemString("Pumpkin");
+	cwe_api->GetItemAttr(ALW_CATEGORY_MASK, 2)->Name = cwe_api->RegisterAlItemString("Skull");
 
 	//gba fruit
 	int gbaDescription = cwe_api->RegisterAlItemString(GBAFruitDescription);
 	for (int i = 13; i < 20; i++)
 	{
-		auto fruitAttr = cwe_api->GetItemAttr(ChaoItemCategory_Fruit, i);
+		auto fruitAttr = cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, i);
 		fruitAttr->Name = cwe_api->RegisterAlItemString(GBAFruitNames[i - 13]);
 		fruitAttr->Descriptions = gbaDescription;
 		fruitAttr->PurchasePrice = 350;
@@ -93,8 +93,8 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 		cwe_api->RegisterBlackMarketGeneralFruit(i, 40);
 	}
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, ChaoFruit_SmartFruit)->RequiredEmblems = 0;
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, ChaoFruit_MintCandy)->RequiredEmblems = 0;
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, ChaoFruit_SmartFruit)->RequiredEmblems = 0;
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, ChaoFruit_MintCandy)->RequiredEmblems = 0;
 
 	cwe_api->RegisterBlackMarketRareFruit(ChaoFruit_SmartFruit, 50);
 	cwe_api->RegisterBlackMarketRareFruit(ChaoFruit_MintCandy, 60);
@@ -107,9 +107,9 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 	//set all vanilla fruits except mushrooms and what comes after mushrooms rebuyable
 	for (int i = 0; i < ChaoFruit_Mushroom; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Fruit, i, true);
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_FRUIT, i, true);
 
 	//set gba fruits to be rebuyable
 	for (int i = ChaoFruit_OrangeFruit; i <= ChaoFruit_RedFruit; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Fruit, i, true);
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_FRUIT, i, true);
 }

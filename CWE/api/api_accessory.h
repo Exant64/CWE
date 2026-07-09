@@ -49,7 +49,7 @@ public:
         const auto count = GetAccessoryCount() - m_start;
 
         for(size_t i = m_start; i < m_start + count; i++) {
-            BlackMarketAttributes::Get()->SetModIndex(ChaoItemCategory_Accessory, i, m_modIndex);
+            BlackMarketAttributes::Get()->SetModIndex(ALW_CATEGORY_ACCESSORY, i, m_modIndex);
 	    }
     }
 };

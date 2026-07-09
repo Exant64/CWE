@@ -240,7 +240,7 @@ extern "C"
 						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
 
 						char id[METADATA_ID_SIZE];
-						bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
+						bool foundID = ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, pParam->Accessories_[i] - 1, id);
 						if (!foundID) {
 							// TODO: error
 							continue;
@@ -303,13 +303,13 @@ extern "C"
 
 			const auto accessoryIndex = originalItem.kind - 256;
 
-			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY);
 			// if we don't have space to convert, stop the conversion checks
 			if (!pNewInfo) break;
 
 			// if it's an invalid id, don't write it
 			char id[METADATA_ID_SIZE];
-			if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
+			if (ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, accessoryIndex, id)) {
 				memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
 				pNewInfo->IndexID = accessoryIndex;
 				pNewInfo->Garden = originalItem.place;

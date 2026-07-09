@@ -20,7 +20,7 @@ void __cdecl ALO_Special_Display(task* a1)
 	njRotateY(NULL, a1->twp->ang.y);
 
 	//ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Special, a1->twp->Rotation.x);
-	ObjectRegistry::DrawObject(ChaoItemCategory_Special, a1->twp->ang.x);
+	ObjectRegistry::DrawObject(ALW_CATEGORY_SPECIAL, a1->twp->ang.x);
 
 	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 		njTranslate(NULL, 0, 0.4f, 0);
@@ -38,6 +38,6 @@ extern "C" __declspec(dllexport) task* ALO_Special_Load(int ID, NJS_VECTOR* posi
 	obj->twp->cwp->info[2].kind = CI_KIND_AL_SPECIAL;
 	obj->twp->ang.x = ID;
 	obj->disp = ALO_Special_Display;
-	GET_ALW_ENTRY_WORK(obj)->category = ChaoItemCategory_Special;
+	GET_ALW_ENTRY_WORK(obj)->category = ALW_CATEGORY_SPECIAL;
 	return obj;
 }

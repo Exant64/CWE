@@ -85,7 +85,7 @@ void AL_SetBehaviorWithFreeWork(task* tp, BHV_FUNC Func, int info) {
 
 void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, uint32_t slot, uint32_t kind) {
 	char id[METADATA_ID_SIZE];
-	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, kind, id)) return;
+	if (!ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, kind, id)) return;
 
 	auto& accessoryData = pParamCwe->Accessories[slot];
 
@@ -97,7 +97,7 @@ void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, uint32_t slot, uint32_t kind) {
 
 void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, int type) {
 	char id[METADATA_ID_SIZE];
-	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
+	if (!ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
 	AL_SetAccessory(pParamCwe, slotType, type);
@@ -109,7 +109,7 @@ extern "C" __declspec(dllexport) void AL_SetAccessory(task * a1, int type) {
 
 void AL_SetAccessory(task* a1, const AccessorySaveInfo* saveInfo, int type) {
 	char id[METADATA_ID_SIZE];
-	if (!ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, type, id)) return;
+	if (!ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, type, id)) return;
 
 	const auto slotType = GetAccessoryType(type);
 	auto& accessoryData = GET_CWEPARAM(a1)->Accessories[slotType];
@@ -477,7 +477,7 @@ static void AccessoryRemoveAll(task* tp) {
 		const auto index = GET_CHAOWK_CWE(tp)->AccessoryIndices[i];
 		if (index == -1) continue;
 
-		auto saveinfo = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+		auto saveinfo = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY);
 		if (saveinfo) {
 			const auto& accessoryChaoData = pParam->Accessories[i];
 			saveinfo->UsedColors = accessoryChaoData.ColorFlags;

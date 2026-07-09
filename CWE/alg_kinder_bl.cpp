@@ -40,13 +40,13 @@
 
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
-	ChaoItemCategory_Egg,
-	ChaoItemCategory_Fruit,
-	ChaoItemCategory_Seed,
-	ChaoItemCategory_Hat,
-	ChaoItemCategory_Accessory,
-	ChaoItemCategory_Special,
-	ChaoItemCategory_MenuTheme
+	ALW_CATEGORY_EGG,
+	ALW_CATEGORY_FRUIT,
+	ALW_CATEGORY_SEED,
+	ALW_CATEGORY_MASK,
+	ALW_CATEGORY_ACCESSORY,
+	ALW_CATEGORY_SPECIAL,
+	ALW_CATEGORY_THEME
 };
 #define TabCategory MarketTabIndices[a1->currentTab]
 
@@ -81,7 +81,7 @@ struct ALK_SWINDOW_TABLE
 	char* checkID;
 };
 
-std::array<std::unordered_set<int>, ChaoItemCategory_Count> AlItemRebuyable;
+std::array<std::unordered_set<int>, NB_CWE_CATEGORY> AlItemRebuyable;
 bool AlItemIsRebuyable(const SAlItemCwe& pItem) {
 	const auto& rebuyflags = AlItemRebuyable[pItem.mCategory];
 	if (rebuyflags.contains(pItem.mType)) //check if dict has the item
@@ -138,13 +138,13 @@ void GeneralFruit()
 {
 	for (size_t i = 0; i < GeneralFruitMarket.size(); i++)
 	{
-		if (GetMarketInvSize(ChaoItemCategory_Fruit) >= BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_FRUIT) >= BlackMarketInventorySize)
 			break;
 
 		int v11 = (signed int)(njRandom() * 100.f);
 		if (v11 < GeneralFruitMarket[i].chance)
 		{
-			BlackMarketAddInventory(ChaoItemCategory_Fruit, GeneralFruitMarket[i].item);
+			BlackMarketAddInventory(ALW_CATEGORY_FRUIT, GeneralFruitMarket[i].item);
 		}
 	}
 
@@ -153,7 +153,7 @@ void RareFruit()
 {
 	for (size_t i = 0; i < RareFruitMarket.size(); i++)
 	{
-		if (GetMarketInvSize(ChaoItemCategory_Fruit) >= BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_FRUIT) >= BlackMarketInventorySize)
 			break;
 
 		int v11 = (signed int)(njRandom() * 100.0f);
@@ -163,11 +163,11 @@ void RareFruit()
 			if (njRandom() < 0.3f)
 				item = ChaoFruit_MushroomAlt;
 		}
-		if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Fruit].attrib[item].RequiredEmblems)
+		if (SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_FRUIT].attrib[item].RequiredEmblems)
 		{
 			if (v11 < RareFruitMarket[i].chance)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_Fruit, item);
+				BlackMarketAddInventory(ALW_CATEGORY_FRUIT, item);
 			}
 		}
 	}
@@ -200,7 +200,7 @@ void BlackMarketAddInventory(int cat, int item)
 	}
 }
 
-void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category) {
+void FBuyListAddSet100(std::vector<bool>& set, Sint8 category) {
 	for (size_t i = 0; i < set.size(); i++) {
 		if (set[i]) {
 			BlackMarketAddInventory(category, i);
@@ -209,7 +209,7 @@ void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category) {
 	}
 }
 
-static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const size_t minItems = 3, const size_t maxItems = BlackMarketInventorySize) {
+static void FBuyListUniformDistributionUpdate(Sint8 category, const size_t minItems = 3, const size_t maxItems = BlackMarketInventorySize) {
 	static std::random_device random_dev;
 	static std::mt19937 generator(random_dev());
 
@@ -260,7 +260,7 @@ static void __declspec(naked) sub_58B120Hook()
 	}
 }
 
-void FBuyListGenericUpdate(ChaoItemCategory cat, float change = 0.75f) {
+void FBuyListGenericUpdate(Sint8 cat, float change = 0.75f) {
 	for (int i = 0; i < BlackMarketCategories[cat].Count; i++)
 	{
 		if (SaveData.emblemNum >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
@@ -271,7 +271,7 @@ void FBuyListGenericUpdate(ChaoItemCategory cat, float change = 0.75f) {
 }
 
 void FBuyListGenericUpdateSeed(float change = 0.75f) {
-	ChaoItemCategory cat = ChaoItemCategory_Seed;
+	Sint8 cat = ALW_CATEGORY_SEED;
 	//+ 1 because the ones after vanilla seeds
 	//theres a filler one starting at custom ones (to correspond with tree IDs), but its emblem count is 999 so it shouldnt ever be rolled
 	for (int i = ChaoSeed_SquareSeed + 1; i < BlackMarketCategories[cat].Count; i++)
@@ -291,12 +291,12 @@ static void FBuyListUpdateAccessory() {
 	std::vector<size_t> allMods;
 	std::unordered_map<size_t, std::vector<size_t>> allAccessories;
 
-	for(size_t i = 0; i < attrib->Size(ChaoItemCategory_Accessory); ++i) {
-		if (SaveData.emblemNum < attrib->Attrib(ChaoItemCategory_Accessory, i)->RequiredEmblems) {
+	for(size_t i = 0; i < attrib->Size(ALW_CATEGORY_ACCESSORY); ++i) {
+		if (SaveData.emblemNum < attrib->Attrib(ALW_CATEGORY_ACCESSORY, i)->RequiredEmblems) {
 			continue;
 		}
 
-		const auto modIndex = attrib->GetModIndex(ChaoItemCategory_Accessory, i);
+		const auto modIndex = attrib->GetModIndex(ALW_CATEGORY_ACCESSORY, i);
 		
 		if(!setMods.contains(modIndex)) {
 			setMods.insert(modIndex);
@@ -315,7 +315,7 @@ static void FBuyListUpdateAccessory() {
 			break;
 		}
 
-		if (cweSaveFile.marketInventoryCount[ChaoItemCategory_Accessory] >= BlackMarketInventorySize) {
+		if (cweSaveFile.marketInventoryCount[ALW_CATEGORY_ACCESSORY] >= BlackMarketInventorySize) {
 			break;
 		}
 
@@ -328,7 +328,7 @@ static void FBuyListUpdateAccessory() {
 		const auto entryIndex = size_t(njRandom() * (float(accessoryEntries.size()) - 0.0001f));
 		const auto selectedAcc = accessoryEntries[entryIndex];
 
-		BlackMarketAddInventory(ChaoItemCategory_Accessory, selectedAcc);
+		BlackMarketAddInventory(ALW_CATEGORY_ACCESSORY, selectedAcc);
 
 		accessoryEntries.erase(accessoryEntries.begin() + entryIndex);
 
@@ -380,7 +380,7 @@ void FBuyListUpdate()
 	{
 		v22 = 0;
 
-		if (GetMarketInvSize(ChaoItemCategory_Egg) < BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_EGG) < BlackMarketInventorySize)
 		{
 			do
 			{
@@ -393,9 +393,9 @@ void FBuyListUpdate()
 				++v22;
 				set.at(*v23) = true;
 				*v23 = (char)v54[v3];
-			} while (v22 + GetMarketInvSize(ChaoItemCategory_Egg) < BlackMarketInventorySize);
+			} while (v22 + GetMarketInvSize(ALW_CATEGORY_EGG) < BlackMarketInventorySize);
 		}
-		FBuyListAddSet100(set, ChaoItemCategory_Egg);
+		FBuyListAddSet100(set, ALW_CATEGORY_EGG);
 	}
 	else
 	{
@@ -403,18 +403,18 @@ void FBuyListUpdate()
 		{
 			for (int i = 0; i < v3; i++)
 			{
-				if (GetMarketInvSize(ChaoItemCategory_Egg) >= BlackMarketInventorySize)
+				if (GetMarketInvSize(ALW_CATEGORY_EGG) >= BlackMarketInventorySize)
 				{
 					break;
 				}
-				BlackMarketAddInventory(ChaoItemCategory_Egg, v54[i]);
+				BlackMarketAddInventory(ALW_CATEGORY_EGG, v54[i]);
 			}
 		}
 	}
 
 	GeneralFruit();
 	v16 = 0;
-	if (GetMarketInvSize(ChaoItemCategory_Fruit) < BlackMarketInventorySize)
+	if (GetMarketInvSize(ALW_CATEGORY_FRUIT) < BlackMarketInventorySize)
 	{
 		do
 		{
@@ -428,23 +428,23 @@ void FBuyListUpdate()
 				set.at(id) = true;
 				++v16;
 			}
-		} while (v16 + GetMarketInvSize(ChaoItemCategory_Fruit) < BlackMarketInventorySize);
+		} while (v16 + GetMarketInvSize(ALW_CATEGORY_FRUIT) < BlackMarketInventorySize);
 	}
-	FBuyListAddSet100(set, ChaoItemCategory_Fruit);
+	FBuyListAddSet100(set, ALW_CATEGORY_FRUIT);
 
-	if (GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize)
+	if (GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize)
 	{
-		BlackMarketAddInventory(ChaoItemCategory_Seed, 0);
-		if (GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize)
+		BlackMarketAddInventory(ALW_CATEGORY_SEED, 0);
+		if (GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize)
 		{
 			if (njRandom() < 0.7f)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_Seed, byte_8A2EFC[(signed int)(njRandom() * 3.f)]);
+				BlackMarketAddInventory(ALW_CATEGORY_SEED, byte_8A2EFC[(signed int)(njRandom() * 3.f)]);
 			}
 		}
 	}
 	v26 = 0;
-	if (GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize)
+	if (GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize)
 	{
 		do
 		{
@@ -458,11 +458,11 @@ void FBuyListUpdate()
 				set.at(id) = true;
 				++v26;
 			}
-		} while (v26 + GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize);
+		} while (v26 + GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize);
 	}
-	FBuyListAddSet100(set, ChaoItemCategory_Seed);
+	FBuyListAddSet100(set, ALW_CATEGORY_SEED);
 
-	v29 = CategoryAttribs[ChaoItemCategory_Hat].attrib;
+	v29 = CategoryAttribs[ALW_CATEGORY_MASK].attrib;
 	v30 = 0;
 	v31 = 0;
 	do
@@ -478,12 +478,12 @@ void FBuyListUpdate()
 		}
 		++v31;
 		++v29;
-	} while (v31 < CategoryAttribs[ChaoItemCategory_Hat].Count);
+	} while (v31 < CategoryAttribs[ALW_CATEGORY_MASK].Count);
 	if (v30 > 5)
 	{
 		v35 = 0;
 
-		if (GetMarketInvSize(ChaoItemCategory_Hat) < BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_MASK) < BlackMarketInventorySize)
 		{
 			do
 			{
@@ -498,17 +498,17 @@ void FBuyListUpdate()
 					if (v38 >= 5)
 					{
 						if (v38 < 15
-							&& SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[ChaoHat_BlueWoolBeanie].RequiredEmblems)
+							&& SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_MASK].attrib[ChaoHat_BlueWoolBeanie].RequiredEmblems)
 						{
 							id = ChaoHat_BlueWoolBeanie;
 						}
 					}
-					else if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[ChaoHat_BlackWoolBeanie].RequiredEmblems)
+					else if (SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_MASK].attrib[ChaoHat_BlackWoolBeanie].RequiredEmblems)
 					{
 						id = ChaoHat_BlackWoolBeanie;
 					}
 				}
-				if (SaveData.emblemNum >= CategoryAttribs[ChaoItemCategory_Hat].attrib[id].RequiredEmblems)
+				if (SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_MASK].attrib[id].RequiredEmblems)
 				{
 					if (!set.at(id))
 					{
@@ -516,18 +516,18 @@ void FBuyListUpdate()
 						++v35;
 					}
 				}
-			} while (v35 + GetMarketInvSize(ChaoItemCategory_Hat) < BlackMarketInventorySize);
+			} while (v35 + GetMarketInvSize(ALW_CATEGORY_MASK) < BlackMarketInventorySize);
 		}
-		FBuyListAddSet100(set, ChaoItemCategory_Hat);
+		FBuyListAddSet100(set, ALW_CATEGORY_MASK);
 	}
 	else
 	{
 		if (v30 > 0)
 		{
 			for (int i = 0; i < v30; i++)
-				if (GetMarketInvSize(ChaoItemCategory_Hat) < BlackMarketInventorySize)
+				if (GetMarketInvSize(ALW_CATEGORY_MASK) < BlackMarketInventorySize)
 				{
-					BlackMarketAddInventory(ChaoItemCategory_Hat, v54[i]);
+					BlackMarketAddInventory(ALW_CATEGORY_MASK, v54[i]);
 				}
 		}
 	}
@@ -535,24 +535,24 @@ void FBuyListUpdate()
 	FBuyListGenericUpdateSeed();
 
 	FBuyListUpdateAccessory();
-	FBuyListGenericUpdate(ChaoItemCategory_Special);
+	FBuyListGenericUpdate(ALW_CATEGORY_SPECIAL);
 
 	RareFruit();
 
-	if (HaveBattleDLC && GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize)
+	if (HaveBattleDLC && GetMarketInvSize(ALW_CATEGORY_THEME) < BlackMarketInventorySize)
 	{
 		if (!*(unsigned char*)0x1DEB367 && SaveData.emblemNum >= CategoryAttribs[16].attrib->RequiredEmblems)
 		{
 			if (njRandom() < 0.1f)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 0);
+				BlackMarketAddInventory(ALW_CATEGORY_THEME, 0);
 			}
 		}
-		if (GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize && !*(unsigned char*)0x1DEB364 && SaveData.emblemNum >= CategoryAttribs[16].attrib[1].RequiredEmblems)
+		if (GetMarketInvSize(ALW_CATEGORY_THEME) < BlackMarketInventorySize && !*(unsigned char*)0x1DEB364 && SaveData.emblemNum >= CategoryAttribs[16].attrib[1].RequiredEmblems)
 		{
 			if (njRandom() < 0.1f)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 1);
+				BlackMarketAddInventory(ALW_CATEGORY_THEME, 1);
 			}
 		}
 	}
@@ -709,14 +709,14 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 			switch (item->mCategory)
 			{
-			case ChaoItemCategory_Egg:
+			case ALW_CATEGORY_EGG:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45 + 2), -68.0 - EXTRAZ);
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njSetTexture((NJS_TEXLIST*)0x013669FC);
 				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mType);
 				break;
-			case ChaoItemCategory_Accessory:
+			case ALW_CATEGORY_ACCESSORY:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 
 				if (index == a1->mBuyListCursor)
@@ -726,23 +726,23 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				AccessorySetupDraw(item->mType, NULL, 0);
 
 				if(!IsAccessoryRFSupported(item->mType)) {
-					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, item->mType);
+					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, item->mType);
 				}
 				else {
 					Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, item->mType);
+					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, item->mType);
 				}
 
 				break;
-			case ChaoItemCategory_Special:
+			case ALW_CATEGORY_SPECIAL:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
-				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Special, item->mType);
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, item->mType);
 				break;
-			case ChaoItemCategory_Fruit:
+			case ALW_CATEGORY_FRUIT:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45 - 13), -44.0 - EXTRAZ);
 				if (item->mType == 20 || item->mType == 21)
 				{
@@ -755,9 +755,9 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 
-				ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ChaoItemCategory_Fruit, item->mType);
+				ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, item->mType);
 				break;
-			case ChaoItemCategory_Seed:
+			case ALW_CATEGORY_SEED:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45), -22.0 - EXTRAZ);
 
 				njScale(NULL, 1, 1, 0.001f);
@@ -769,7 +769,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mType]->model);
 				}
 				break;
-			case ChaoItemCategory_Hat:
+			case ALW_CATEGORY_MASK:
 				if (item->mType >= ChaoHat_NormalEggShell && item->mType < 85)
 					break;
 
@@ -799,7 +799,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				ALO_ObakeHeadDraw(item->mType);
 				break;
-			case ChaoItemCategory_MenuTheme:
+			case ALW_CATEGORY_THEME:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 14, -170 - EXTRAZ);
 				njScale(NULL, 1, 1, 0.001f);
 				if (index == a1->mBuyListCursor)
@@ -839,7 +839,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 
 	switch (a1->mItemDescItem.mCategory)
 	{
-	case ChaoItemCategory_Accessory:
+	case ALW_CATEGORY_ACCESSORY:
 		ProjectToScreen(390.0f, 212.0f, -26.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
@@ -864,23 +864,23 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		}
 
 		if(!IsAccessoryRFSupported(type)) {
-			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 		}
 		else {
 			Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 		}
 		
 		break;
 
-	case ChaoItemCategory_Special:
+	case ALW_CATEGORY_SPECIAL:
 		ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -1.4f, 0);
-		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Special, type);
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, type);
 		break;
-	case ChaoItemCategory_Egg:
+	case ALW_CATEGORY_EGG:
 		ProjectToScreen(390, 212, -34.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
@@ -907,15 +907,15 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		}
 
 		break;
-	case ChaoItemCategory_Fruit:
+	case ALW_CATEGORY_FRUIT:
 		ProjectToScreen(390, 212, -22.0f / a1->mItemDescScl);
 		//njScale(1.0, 1.0, 1);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -0.4f, 0);
-		ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ChaoItemCategory_Fruit, type);
+		ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, type);
 		break;
-	case ChaoItemCategory_Seed:
+	case ALW_CATEGORY_SEED:
 		ProjectToScreen(390, 212, -11.0f / a1->mItemDescScl);
 		njScale(NULL, 1, 1, *(float*)0x173B43C);
 		RotateX(a1->mItemDescAngX);
@@ -924,7 +924,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		njSetTexture(ModAPI_SeedTexlists[type]);
 		RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->model);
 		break;
-	case ChaoItemCategory_Hat:
+	case ALW_CATEGORY_MASK:
 		if (type >= 16 && type <= 84)
 		{
 			ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
@@ -964,7 +964,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			ALO_ObakeHeadDraw<false, false>(type);
 		}
 		break;
-	case ChaoItemCategory_MenuTheme:
+	case ALW_CATEGORY_THEME:
 		ProjectToScreen(390, 212, -85.0f / a1->mItemDescScl);
 		njScale(NULL, 1, 1, *(float*)0x173B43C);
 		njSetTexture((NJS_TEXLIST*)0x11E13A8);
@@ -988,7 +988,7 @@ BlackMarketItemAttributes* __cdecl AlItemGetInfo(SAlItemCwe* a1)
 	static BlackMarketItemAttributes dummyAttrib = { 0,0,999,0,0,0 };
 
 	result = &dummyAttrib;
-	if (a1->mCategory <= ChaoItemCategory_Count)
+	if (a1->mCategory <= NB_CWE_CATEGORY)
 	{
 		v4 = &CategoryAttribs[a1->mCategory];
 		if (v4)
@@ -1273,19 +1273,19 @@ void __declspec(naked) FItemDescDispHook()
 //garden object count
 signed int __cdecl AL_GetMaxItemNum(const int a1)
 {
-	if (a1 == ChaoItemCategory_Fruit)
+	if (a1 == ALW_CATEGORY_FRUIT)
 	{
 		return 40;
 	}
-	if (a1 == ChaoItemCategory_Seed)
+	if (a1 == ALW_CATEGORY_SEED)
 	{
 		return 12;
 	}
-	if (a1 == ChaoItemCategory_Hat || a1 == ChaoItemCategory_Accessory)
+	if (a1 == ALW_CATEGORY_MASK || a1 == ALW_CATEGORY_ACCESSORY)
 	{
 		return 24;
 	}
-	if (a1 == ChaoItemCategory_Special)
+	if (a1 == ALW_CATEGORY_SPECIAL)
 	{
 		return 30;
 	}
@@ -1324,7 +1324,7 @@ int sub_52F4F0(int a1)
 int __cdecl AL_GetExistItemNum(const int a1)
 {
 	return 0;
-	if (a1 == ChaoItemCategory_Special)
+	if (a1 == ALW_CATEGORY_SPECIAL)
 	{
 		int ret = 0;
 		for (int i = 0; i < 30; i++)
@@ -1460,7 +1460,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	if (true || type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
 		switch (mItemDescItem.mCategory)
 		{
-		case ChaoItemCategory_Accessory:
+		case ALW_CATEGORY_ACCESSORY:
 			Translate(x, y, -26.0f);
 			RotateX(rot.x);
 			RotateY(rot.y);
@@ -1477,22 +1477,22 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			}
 
 			if(!IsAccessoryRFSupported(type)) {
-				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 			}
 			else {
 				Control3D ctrl (0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 			}
 
 			break;
-		case ChaoItemCategory_Special:
+		case ALW_CATEGORY_SPECIAL:
 			Translate(x, y, -26.0f);
 			RotateX(rot.x);
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -1.4f, 0);
-			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Special, type);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, type);
 			break;
-		case ChaoItemCategory_Egg:
+		case ALW_CATEGORY_EGG:
 			Translate(x, y, -34.0f);
 			RotateX(rot.x);
 			RotateY(rot.y);
@@ -1528,15 +1528,15 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			}
 
 			break;
-		case ChaoItemCategory_Fruit:
+		case ALW_CATEGORY_FRUIT:
 			Translate(x, y, -22.0f);
 			//njScale(1.0, 1.0, 1);
 			RotateX(rot.x);
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -0.4f, 0);
-			ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ChaoItemCategory_Fruit, type);
+			ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, type);
 			break;
-		case ChaoItemCategory_Seed:
+		case ALW_CATEGORY_SEED:
 			Translate(x, y, -11.0f);
 			njScale(NULL, 1, 1, *(float*)0x173B43C);
 			RotateX(rot.x);
@@ -1545,7 +1545,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			njSetTexture(ModAPI_SeedTexlists[type]);
 			RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->model);
 			break;
-		case ChaoItemCategory_Hat:
+		case ALW_CATEGORY_MASK:
 			if (type >= 16 && type <= 84)
 			{
 				Translate(x, y, -26.0f);
@@ -1585,7 +1585,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 				ALO_ObakeHeadDraw<false, false>(type);
 			}
 			break;
-		case ChaoItemCategory_MenuTheme:
+		case ALW_CATEGORY_THEME:
 			Translate(x, y, -85.0f);
 			njScale(NULL, 1, 1, *(float*)0x173B43C);
 			njSetTexture((NJS_TEXLIST*)0x11E13A8);
@@ -2044,7 +2044,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			else
 			{
 				bool saveFull;
-				if (a1->mItemDescItem.mCategory == ChaoItemCategory_Egg)
+				if (a1->mItemDescItem.mCategory == ALW_CATEGORY_EGG)
 				{
 					saveFull = AL_GetAllChaoCount() >= AL_GetMaxChao();
 				}
@@ -2081,15 +2081,8 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					goto LABEL_56;
 				}
 
-				if (BM_GetSelectedItem(a1)->mCategory == ChaoItemCategory_TransporterUnlock)
-				{
-					cweSaveFile.transporterFlag |= (1 << BM_GetSelectedItem(a1)->mType);
-				}
-				else
-				{
-					save::CWE_PurchasedItems[cweSaveFile.purchasedItemCount] = *BM_GetSelectedItem(a1);
-					cweSaveFile.purchasedItemCount++;
-				}
+				save::CWE_PurchasedItems[cweSaveFile.purchasedItemCount] = *BM_GetSelectedItem(a1);
+				cweSaveFile.purchasedItemCount++;
 			}
 			FMainWinAddLineId(a1, 18);
 			FMainWinWaitClose(a1);
@@ -2228,7 +2221,7 @@ void LoadRingDisplayHook()
 	
 	bool empty = true;
 	//todo: std::all_of
-	for (int i = 0; i < ChaoItemCategory_Count; i++)
+	for (int i = 0; i < NB_CWE_CATEGORY; i++)
 		if (cweSaveFile.marketInventoryCount[i])
 			empty = false;
 
@@ -2238,7 +2231,7 @@ void LoadRingDisplayHook()
 
 void CreateMenuThemeItem()
 {
-	BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 2);
+	BlackMarketAddInventory(ALW_CATEGORY_THEME, 2);
 }
 
 void __cdecl sub_589850(BlackMarketData* data)
@@ -2323,8 +2316,8 @@ void alg_kinder_bl_Init()
 	WriteData((float**)0x0058B67F, &NewInvDisplayPosX);
 
 	//fix grey button check
-	WriteData((int*)0x58BACD, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_Fruit]);
-	WriteData((int*)0x58BD8B, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_Fruit]);
+	WriteData((int*)0x58BACD, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_FRUIT]);
+	WriteData((int*)0x58BD8B, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_FRUIT]);
 
 	//chaos drive crash fix i think
 	WriteData((short*)0x0058936C, (short)0x9090);
@@ -2366,10 +2359,10 @@ void alg_kinder_bl_Init()
 	WriteData((int*)0x0058BFE6, (int)sizeof(BlackMarketData));
 
 	//menu theme bs
-	WriteData((int*)0x0058B924, (int)&(cweSaveFile.marketInventory[ChaoItemCategory_MenuTheme]->mCategory));
-	WriteData((int*)0x0058B92E, (int)&(cweSaveFile.marketInventory[ChaoItemCategory_MenuTheme]->mType));
-	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_MenuTheme]);
-	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_MenuTheme]);
+	WriteData((int*)0x0058B924, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mCategory));
+	WriteData((int*)0x0058B92E, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mType));
+	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
+	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData<0x1B>((char*)0x0058B97B, (char)0x90);
 	WriteCall((void*)0x0058B97B, CreateMenuThemeItem);
 
