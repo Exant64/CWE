@@ -137,7 +137,7 @@ static bool AL_DayNightCycle_IsValidArea() {
 	case CHAO_STG_ENTRANCE:
 		return true;
 	case CHAO_STG_RACE:
-	case CHAO_STG_RACE_2P:
+	case CHAO_STG_ENTRANCE_2P:
 		return gConfigVal.DayNightCycleRace;
 	case CHAO_STG_KARATE:
 	case CHAO_STG_KARATE_2P:

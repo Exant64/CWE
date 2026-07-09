@@ -91,7 +91,7 @@ struct EGGCOLORS {
 };
 
 
-void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
+void EggColorCode::OnChaoData(CHAO_PARAM_GC& chao) {
 	if (chao.type <= 0) return;
 
 	if (chao.body.JewelNum > 0 && chao.body.JewelNum <= 15) {

@@ -288,6 +288,23 @@ void ReadCWESaveFiles() {
 	}
 }
 
+// int __usercall@<eax>(char *path@<ecx>, void *buffer@<edx>, size_t size)
+static const void *const ReadSaveFileThingPtr = (void*)0x426860;
+static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
+{
+	int result;
+	__asm
+	{
+		push[_size]
+		mov edx, [buffer]
+		mov ecx, [path]
+		call ReadSaveFileThingPtr
+		add esp, 4
+		mov result, eax
+	}
+	return result;
+}
+
 int __cdecl ReadCWESaveFile(char* path, void* buffer, size_t size) {
 	int ret = ReadSaveFileThing(path, buffer, size);
 	ReadCWESaveFiles();

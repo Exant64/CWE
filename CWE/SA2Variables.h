@@ -127,7 +127,6 @@ DataPointer(NJS_VECTOR, KnucklesGravity, 0x1A51C4C);
 
 DataArray(PDS_PERIPHERAL, ControllersRaw, 0x1A52918, 4);
 DataArray(PDS_PERIPHERALINFO, PeripheralInfo, 0x1A52A68, 4);
-DataPointer(int, HaveBattleDLC, 0x1A556F4);
 DataPointer(int, HaveBattleDLC2, 0x1A556F8);
 DataPointer(int, CheatsEnabled, 0x1A55770);
 DataPointer(int, Cheats_GiveMaxRings, 0x1A55774);
@@ -201,7 +200,6 @@ DataPointer(char*, BattleWinCount_Copy, 0x1D1C114);
 DataPointer(int, CurrentMenu, 0x1D7BB10);
 DataPointer(int, CurrentSubMenu, 0x1D7BB14);
 DataPointer(char*, SomeSFDStrings, 0x1DB0C00);
-DataPointer(int, BlackMarketItemCount, 0x1DBED90);
 DataArray(SAlItem, BlackMarketInventory, 0x1DBEDC0,0x20);
 DataArray(char, MemoryCard, 0x1DBEE00, 104);
 DataPointer(CHAO_SAVE_INFO **, ChaoDataArray, 0x1DC0FC8);

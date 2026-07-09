@@ -355,12 +355,15 @@ void FBuyListUpdate()
 
 	static std::vector<bool> set(255);
 
+	// todo: this is probably in AL_GetCurrGardenInfo
+	DataPointer(int, BlackMarketItemCount, 0x1DBED90);
 	BlackMarketItemCount = 1;
+
 	memset(cweSaveFile.marketInventoryCount, 0, sizeof(cweSaveFile.marketInventoryCount));
 	memset(cweSaveFile.marketInventory, 0, sizeof(cweSaveFile.marketInventory));
 
 	v3 = 0;
-	for (int i = 0; i < kSellEggList_Length; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		if (SaveData.emblemNum >= kSellEggList[i].emblem0)
 		{
@@ -539,6 +542,7 @@ void FBuyListUpdate()
 
 	RareFruit();
 
+	DataPointer(int, HaveBattleDLC, 0x1A556F4);
 	if (HaveBattleDLC && GetMarketInvSize(ALW_CATEGORY_THEME) < BlackMarketInventorySize)
 	{
 		if (!*(unsigned char*)0x1DEB367 && SaveData.emblemNum >= CategoryAttribs[16].attrib->RequiredEmblems)
@@ -2295,13 +2299,13 @@ static void SellHeldItem() {
 		playerpwp[0]->htp = 0;
 	}
 
-	void* pSave = AL_GetHoldingItemSaveInfo();
+	ITEM_SAVE_INFO* pSave = AL_GetHoldingItemSaveInfo();
 	if (pSave) {
 		if (CWE_IsCustomItemSaveInfoCategory(AL_GetHoldingItemCategory())) {
 			AL_ClearItemSaveInfo((ItemSaveInfoBase*)pSave);
 		}
 		else {
-			AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)pSave);
+			AL_ClearItemSaveInfo(pSave);
 		}
 	}
 

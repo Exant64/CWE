@@ -32,7 +32,7 @@ void sub_46E5B0(task* a1, int a2)
 DataPointer(int, HeldItemType, 0x19F6450);
 DataPointer(ITEM_SAVE_INFO*, dword_19F6454, 0x19F6454);
 
-void* AL_GetHoldingItemSaveInfo() {
+ITEM_SAVE_INFO* AL_GetHoldingItemSaveInfo() {
 	return dword_19F6454;
 }
 

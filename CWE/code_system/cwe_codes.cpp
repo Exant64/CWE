@@ -114,7 +114,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	//i havent quite figured out yet how to handle this
 	CodeManager::Init(config);
 	
-	CodeManager::Instance().Add<EggColor>("EggColor", true);
+	CodeManager::Instance().Add<EggColorCode>("EggColor", true);
 	CodeManager::Instance().Add<PlayerSpeed>("PlayerSpeed", true);
 	CodeManager::Instance().Add<BirthdayParty>("BirthdayEvent", true);
 	CodeManager::Instance().Add<GardenLimit>("GardenLimit", 8, -1);

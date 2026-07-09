@@ -415,23 +415,6 @@ static inline int WriteSaveFileThing(char *path, void *a2, size_t count)
 	return result;
 }
 
-// int __usercall@<eax>(char *path@<ecx>, void *buffer@<edx>, size_t size)
-static const void *const ReadSaveFileThingPtr = (void*)0x426860;
-static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
-{
-	int result;
-	__asm
-	{
-		push[_size]
-		mov edx, [buffer]
-		mov ecx, [path]
-		call ReadSaveFileThingPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
 // void __usercall(int a1@<esi>, int a2, char a3, char a4)
 static const void *const PlaySoundProbablyPtr = (void*)0x437260;
 static inline void SE_Call(int a1, int a2, char a3, char a4)
