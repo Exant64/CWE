@@ -205,7 +205,7 @@ void __cdecl AL_KW_MeetChao(task* a1, int index, KW_MEET_TYPE meetType)
 	if (wk1->pParamGC->knowledge.chao[index].like > 50) wk1->pParamGC->knowledge.chao[index].like = 50;
 	if (wk1->pParamGC->knowledge.chao[index].like < -50) wk1->pParamGC->knowledge.chao[index].like = -50;
 
-	wk1->pParamGC->knowledge.chao[index].meetType = meetType;
+	// wk1->pParamGC->knowledge.chao[index].meetType = meetType;
 
 	wk1->pParamGC->knowledge.chao[index].distance = 2 * (wk1->pParamGC->knowledge.chao[index].distance / 3);
 }
@@ -232,12 +232,6 @@ int AL_KW_GetMeetChao(task* a1, int index)
 int AL_KW_GetMeetChao(task* a1, task* a2)
 {
 	return AL_KW_GetMeetChao(a1, AL_KW_GetRelationIndex(a1, a2));
-}
-
-char AL_KW_GetMeetTypeChao(task* a1, int index)
-{
-	chaowk* wk1 = GET_CHAOWK(a1);
-	return wk1->pParamGC->knowledge.chao[index].meetType;
 }
 
 void AL_KW_MeetEachother(task* a1, task* a2, KW_MEET_TYPE type)
