@@ -35,7 +35,7 @@ void ALO_Float_Displayer_(task* a1)
 		//njColorBlendingMode(0, NJD_COLOR_BLENDING_SRCALPHA);
 		//njColorBlendingMode(NJD_DESTINATION_COLOR, NJD_COLOR_BLENDING_INVSRCALPHA);
 
-		_nj_curr_ctx_->texmode = _nj_curr_ctx_->texmode & 0x3FFFFFF | 0x94000000;
+		_nj_curr_ctx_->tspparam = _nj_curr_ctx_->tspparam & 0x3FFFFFF | 0x94000000;
 		*(float*)0x01AED2D0 = (-(a1->twp->ang.x / 335.0f));
 
 		njTranslateEx(&a1->twp->pos);

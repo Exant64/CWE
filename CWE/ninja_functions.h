@@ -42,7 +42,7 @@ typedef struct
 	Uint32          drawmode;   /* drawing flags                                    */
 	Uint32          cullmode;   /* culling flags                                    */
 	NJS2_TEXSURFACE* texsurface; /* current texture surface                          */
-	Uint32          texmode;    /* texture flags                                    */
+	Uint32          tspparam;    /* texture flags                                    */
 	Uint32          colormode;  /* color mode flags                                 */
 	Uint32          gbix;       /* current global texture index                     */
 	Uint32          bank;       /* palette bank                                     */
