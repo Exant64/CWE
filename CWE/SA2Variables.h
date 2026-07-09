@@ -84,7 +84,7 @@ DataPointer(int, GameMode, 0x174B040);
 DataPointer(int, NextGameMode, 0x174B044);
 DataPointer(int, ScoreP1, 0x174B050);
 DataPointer(int, LastScoreP1, 0x174B054);
-DataPointer(int, TotalRings, 0x174B05C);
+DataPointer(int, gu32TotalRing, 0x174B05C);
 DataPointer(float, DisplayResolutionX, 0x174BA64);
 DataPointer(float, DisplayResolutionY, 0x174BA68);
 DataPointer(UINT, uID, 0x174F570);

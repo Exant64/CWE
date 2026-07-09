@@ -1944,7 +1944,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 		if (ControllerPointers[0]->press & BTN_A)
 		{
-			if (TotalRings >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mType < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
+			if (gu32TotalRing >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mType < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
 			{
 				ALK_SWINDOW_TABLE select;
 				AL_KinderPMessage a2;

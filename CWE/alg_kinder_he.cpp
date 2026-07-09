@@ -149,7 +149,7 @@ bool CanStatBeUpgraded(chaowk* data1, int stat)
 	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
 		data1->pParamGC->Lev[stat] == 99 &&
 		data1->pParamGC->Abl[stat] < ChaoGrade_A &&
-		TotalRings >= GradePurchasePrice[data1->pParamGC->Abl[stat]])
+		gu32TotalRing >= GradePurchasePrice[data1->pParamGC->Abl[stat]])
 	{
 		return true;
 	}
@@ -212,7 +212,7 @@ void PurchaseGradesCode(chaowk* data1)
 					SE_Call_TIMER(0x8004, 0x616C7277, 1, 0, 120);
 					SE_Call_TIMER(0x1005, 0x616C7277, 1, 0, 120);
 
-					TotalRings -= GradePurchasePrice[data1->pParamGC->Abl[i]];
+					gu32TotalRing -= GradePurchasePrice[data1->pParamGC->Abl[i]];
 					data1->pParamGC->Abl[i]++;
 				}
 				plusHUD.y0 = 32 * i + 262;
