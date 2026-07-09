@@ -102,7 +102,7 @@ extern "C"
 {
 	int __cdecl CreateToyHook()
 	{
-		int retval = AL_NormalCameraExecutor_Load();
+		int retval = AL_CreateNormalCameraTask();
 		
 		switch (AL_GetStageNumber()) {
 		case CHAO_STG_NEUT:

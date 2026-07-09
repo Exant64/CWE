@@ -135,7 +135,7 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 			music_center.z = njCos(ang) * 8 + work->pos.z;
 
 			AL_SetBehavior(tp, ALBHV_MusicFunc_CWE[kind]);
-			ALOField_Load(tp, CI_KIND_AL_RANDOM_MUSIC, &music_center, 20, (int)(1800 + (njRandom() * 2401.f)));
+			AL_ChildFieldCreateT(tp, CI_KIND_AL_RANDOM_MUSIC, &music_center, 20, (int)(1800 + (njRandom() * 2401.f)));
 			return TRUE;
 		}
 	}

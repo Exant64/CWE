@@ -33,6 +33,8 @@ void someUIProjectionCodeCopy(NJS_VECTOR* a1, NJS_VECTOR* a2)
 	}
 }
 
+FunctionPointer(int, ChaoParamWindowExecutor_Load, (float, float), 0x5AD690);
+
 static task* pGuestChao = NULL;
 static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 {

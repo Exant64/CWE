@@ -91,7 +91,7 @@ task* sub_55A920(int a1, NJS_VECTOR* a2, task* parent, Uint8 a4, float a5)
 		add esp, 12
 	}
 }
-void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer)
+void AL_ChildFieldCreateT(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer)
 {
 	sub_55A920(timer, a3, a1, a2, a4);
 }

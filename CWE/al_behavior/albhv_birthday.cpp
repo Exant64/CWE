@@ -42,7 +42,7 @@ int ALBHV_Birthday(task* a1)
 		break;
 	case 2:
 		//spawn the fruit eat it and end the whole thing
-		task * slice = ALO_FruitExecutor_Load(CakeSliceID, &GET_CHAOWK(a1)->pos, 0, &vel, 0);
+		task * slice = ALO_FruitCreate(CakeSliceID, &GET_CHAOWK(a1)->pos, 0, &vel, NULL);
 		ALW_LockOn(a1, slice);
 		AL_SetBehavior(a1, (BHV_FUNC)0x5613C0);
 		AL_SetNextBehavior(a1, (BHV_FUNC)0x05607C0);
@@ -103,7 +103,7 @@ int ALBHV_Celebrate(task* a1)
 		NJS_VECTOR pos = GET_CHAOWK(a1)->pos;
 		pos.x += njSin(a1->twp->ang.y) * -2;
 		pos.z += njCos(a1->twp->ang.y) * -2;
-		task* slice = ALO_FruitExecutor_Load(CakeSliceID, &pos, 0, &vel, 0);
+		task* slice = ALO_FruitCreate(CakeSliceID, &pos, 0, &vel, NULL);
 		ALW_LockOn(a1, slice);
 		//ALW_TurnToLockOn(a1, 3000);
 		AL_SetBehavior(a1, (BHV_FUNC)0x0056B6C0);

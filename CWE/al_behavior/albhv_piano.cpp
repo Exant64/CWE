@@ -48,12 +48,12 @@ static int ALBHV_PlayPiano(task* tp) {
 
 		timer = (int)(1800 + (njRandom() * 800.f)) * 2;
 
-		work->pBooktask = AL_FieldExecutor_Load(
+		work->pBooktask = AL_AllFieldCreateT(
 			CI_KIND_AL_RANDOM_MUSIC,
 			&work->pos,
 			20,
 			timer);
-		work->pAnytask = AL_FieldExecutor_Load( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
+		work->pAnytask = AL_AllFieldCreateT( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
 			CI_KIND_AL_PIANO,
 			&work->pos,
 			20,

@@ -107,7 +107,7 @@ Bool AL_DecideBehaviorDance(task* tp)
     int kind = InstList[(unsigned int)(njRandom() * ((double)nb - 0.0001f))];
     AL_SetBehavior(tp, ALBHV_DanceFunc_CWE[kind]);
     
-	ALOField_Load(tp, CI_KIND_AL_DANCE, &center, 20.0f, (1800 + (int)(njRandom() * 2401.f)));
+	AL_ChildFieldCreateT(tp, CI_KIND_AL_DANCE, &center, 20.0f, (1800 + (int)(njRandom() * 2401.f)));
 	return TRUE;
 }
 

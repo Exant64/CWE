@@ -127,7 +127,7 @@ void ALO_FruitExecutor_Main_r(task *a1)
 	NJS_VECTOR velocity = { 0,1,0 };
 
 	//find empty animal data slot, and check if garden has less than 10 animals
-	void* data = sub_52F9E0(2);
+	ITEM_SAVE_INFO* data = AL_GetNewItemSaveInfo(ALW_CATEGORY_MINIMAL);
 	if (data && nbWorldEntry[2] < nbMaxEntry[2]) {
 		//decrease bites
 		a1->twp->ang.z--;
@@ -157,7 +157,8 @@ void ALO_FruitExecutor_Main_r(task *a1)
 				break;
 			}
 		}
-		AL_MinimalExecutor_Load(type, &a1->twp->pos, 0, &velocity, (int)data);
+
+		AL_MinimalCreate(type, &a1->twp->pos, 0, &velocity, data);
 	}
 }
 
@@ -352,6 +353,6 @@ LABEL_54:
 void ALO_Fruit_Init()
 {
 	FruitModels[ChaoFruit_MushroomAlt] = &object_02FC056C;
-	WriteJump(ALO_FruitExecutor_Display, ALO_FruitExecutor_DisplayHack);
+	WriteJump((void*)0x545EE0, ALO_FruitExecutor_DisplayHack);
 	WriteJump((void*)0x545C20, sub_545C20);
 }

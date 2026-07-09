@@ -9,17 +9,6 @@ enum {
 	NB_CWE_CATEGORY
 };
 
-#pragma pack(push, 8)
-struct ITEM_SAVE_INFO
-{
-	__int16 kind;
-	__int16 place;
-	__int16 status;
-	__int16 nbVisit;
-	NJS_VECTOR pos;
-};
-#pragma pack(pop)
-
 enum 
 {
 	ALW_CMD_ERROR = 0xFFFFFFFF,

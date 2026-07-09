@@ -453,24 +453,24 @@ void __cdecl ALO_BoxExecutor_Main_(task* a1)
 
 void __cdecl ALO_TVExecutor_Display_(task *a1)
 {
-	a1->disp = ALO_TVExecutor_Display;
+	a1->disp = ALO_TVDisplayer;
 	AL_Toy_Move_Register(a1, ALW_KIND_TV);
-	ALO_TVExecutor_Display(a1);
+	ALO_TVDisplayer(a1);
 }
 
-ObjectFunc(ALO_HorseExecutor_Display, 0x00580CA0);
+ObjectFunc(ALO_HorseDisplayer, 0x00580CA0);
 void __cdecl ALO_HorseExecutor_Display_(task* a1)
 {
-	a1->disp = ALO_HorseExecutor_Display;
+	a1->disp = ALO_HorseDisplayer;
 	AL_Toy_Move_Register(a1, ALW_KIND_HORSE);
-	ALO_HorseExecutor_Display(a1);
+	ALO_HorseDisplayer(a1);
 }
 
 void __cdecl ALO_RadicaseExecutor_Display_(task* a1)
 {
-	a1->disp = ALO_RadicaseExecutor_Display;
+	a1->disp = ALO_RadicaseDisplayer;
 	AL_Toy_Move_Register(a1, ALW_KIND_RADICASE); 
-	ALO_RadicaseExecutor_Display(a1);
+	ALO_RadicaseDisplayer(a1);
 }
 
 template<task_exec func, int index>

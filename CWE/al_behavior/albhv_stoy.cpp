@@ -56,7 +56,7 @@ signed int __cdecl AL_DecideBehaviorSToy(task* a1)
 		a1,
 		ALBHV_SToyFunc[v5[(unsigned int)(njRandom() * (v1 - 0.0001f))]]
 	);
-	ALOField_Load(a1, CI_KIND_AL_RANDOM_STOY, &a3, 20.0f, (int)(1800 + (njRandom() * 2401.f)));
+	AL_ChildFieldCreateT(a1, CI_KIND_AL_RANDOM_STOY, &a3, 20.0f, (int)(1800 + (njRandom() * 2401.f)));
 	return BHV_RET_FINISH;
 }
 void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)

@@ -76,5 +76,5 @@ SAlItemCwe* GetMarketInventory(int category);
 int GetMarketInvSize(int category);
 
 extern CWESaveFile cweSaveFile;
-void *AL_GetSpecialItemSave();
+ITEM_SAVE_INFO *AL_GetSpecialItemSave();
 void AL_SaveInit();

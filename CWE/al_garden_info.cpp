@@ -160,54 +160,54 @@ void AL_SetItemOnTheGarden(int a1)
 						a4.z = 0.0f;
 						switch (a1)
 						{
-						case 2:
+						case ALW_CATEGORY_MINIMAL:
 							if (v5->kind >= 21 && v5->kind < 25)
 							{
-								ALO_ChaosDriveExecutor_Load(
+								ALO_ChaosDriveCreate(
 									LOBYTE(v5->kind) - 21,
 									v8,
 									&a4,
-									(CHAO_SAVE_INFO*)v5);
+									v5);
 							}
 							else
 							{
-								AL_MinimalExecutor_Load((char)v5->kind, v8, v4, &a4, (int)v5);
+								AL_MinimalCreate((char)v5->kind, v8, v4, &a4, v5);
 							}
 							break;
-						case 3:
+						case ALW_CATEGORY_FRUIT:
 							if (v5->status)
 							{
-								ALO_FruitExecutor_Load(
+								ALO_FruitCreate(
 									v5->kind,
 									v8,
 									v4,
 									&a4,
-									(CHAO_SAVE_INFO*)v5);
+									v5);
 							}
 							else
 							{
 								AL_ClearItemSaveInfo(v5);
 							}
 							break;
-						case 7:
-							ALO_SeedExecutor_Load(v5->kind, v8, &a4, (int)v5);
+						case ALW_CATEGORY_SEED:
+							ALO_SeedCreate(v5->kind, v8, &a4, v5);
 							break;
 						case ALW_CATEGORY_SPECIAL:
-							ALO_Special_Load(
+							ALO_SpecialCreate(
 								v5->kind,
 								v8,
 								v4,
 								&a4,
-								(short*)v5);
+								v5);
 							break;
-						case 9:
+						case ALW_CATEGORY_MASK:
 							if (v5->kind > 0) {
-								ALO_ObakeHeadExecutor_Load(
+								ALO_ObakeHeadCreate(
 									v5->kind,
 									v8,
 									v4,
 									&a4,
-									(int)v5);
+									v5);
 							}
 							break;
 						default:
@@ -299,27 +299,27 @@ static void AL_CreateHoldingItem() {
 			playerpwp[0]->htp = 0;
 			switch (HeldItemType)
 			{
-			case 2:
+			case ALW_CATEGORY_MINIMAL:
 				if (v1->kind >= 21 && v1->kind < 25)
 				{
-					v6 = ALO_ChaosDriveExecutor_Load(LOBYTE(v1->kind) - 21, &a2, &a4, (CHAO_SAVE_INFO*)v1);
+					v6 = ALO_ChaosDriveCreate(LOBYTE(v1->kind) - 21, &a2, &a4, v1);
 				}
 				else
 				{
-					v6 = AL_MinimalExecutor_Load((char)v1->kind, &a2, playertwp[0]->ang.y, &a4, (int)v1);
+					v6 = AL_MinimalCreate((char)v1->kind, &a2, playertwp[0]->ang.y, &a4, v1);
 				}
 				break;
-			case 3:
-				v6 = ALO_FruitExecutor_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (CHAO_SAVE_INFO*)v1);
+			case ALW_CATEGORY_FRUIT:
+				v6 = ALO_FruitCreate(v1->kind, &a2, playertwp[0]->ang.y, &a4, v1);
 				break;
-			case 7:
-				v6 = ALO_SeedExecutor_Load(v1->kind, &a2, &a4, (int)v1);
+			case ALW_CATEGORY_SEED:
+				v6 = ALO_SeedCreate(v1->kind, &a2, &a4, v1);
 				break;
-			case 9:
-				v6 = ALO_ObakeHeadExecutor_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (int)v1);
+			case ALW_CATEGORY_MASK:
+				v6 = ALO_ObakeHeadCreate(v1->kind, &a2, playertwp[0]->ang.y, &a4, v1);
 				break;
 			case ALW_CATEGORY_SPECIAL:
-				v6 = ALO_Special_Load(v1->kind, &a2, playertwp[0]->ang.y, &a4, (short*)v1);
+				v6 = ALO_SpecialCreate(v1->kind, &a2, playertwp[0]->ang.y, &a4, v1);
 				break;
 			default:
 				throw std::exception("CWE: holding incorrect item");
@@ -418,7 +418,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 
 			if (!AL_CreatePurchasedCustomItem(save::CWE_PurchasedItems[v8], position, output)) {
 				switch (v9) {
-				case 1:
+				case ALW_CATEGORY_EGG:
 					if (AL_GetLocalChaoCount(AL_GetStageNumber()) < 8)
 					{
 						AL_GENE gene;
@@ -429,10 +429,10 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 						gene.EggColor = v32;
 
 						if (v11) {
-							v12 = CreateChaoEgg(&gene, v11, 0, &position, 3);
+							v12 = CreateEgg(&gene, v11, 0, &position, 3);
 						}
 						else {
-							v12 = CreateChaoEgg(&gene, 0, 0, &position, 3);
+							v12 = CreateEgg(&gene, 0, 0, &position, 3);
 						}
 
 						if (v12) {
@@ -442,17 +442,17 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 					}
 					++cweSaveFile.purchasedItemCount;
 					return;
-				case 3:
-					ALO_FruitExecutor_Load(v10, &position, playertwp[0]->ang.y, &output, (CHAO_SAVE_INFO*)AL_GetNewItemSaveInfo(3));
+				case ALW_CATEGORY_FRUIT:
+					ALO_FruitCreate(v10, &position, playertwp[0]->ang.y, &output, AL_GetNewItemSaveInfo(ALW_CATEGORY_FRUIT));
 					break;
-				case 7:
-					ALO_SeedExecutor_Load(v10, &position, &output, (int)AL_GetNewItemSaveInfo(7));
+				case ALW_CATEGORY_SEED:
+					ALO_SeedCreate(v10, &position, &output, AL_GetNewItemSaveInfo(ALW_CATEGORY_SEED));
 					break;
-				case 9:
-					ALO_ObakeHeadExecutor_Load(v10, &position, playertwp[0]->ang.y, &output, (int)AL_GetNewItemSaveInfo(9));
+				case ALW_CATEGORY_MASK:
+					ALO_ObakeHeadCreate(v10, &position, playertwp[0]->ang.y, &output, AL_GetNewItemSaveInfo(ALW_CATEGORY_MASK));
 					break;
 				case ALW_CATEGORY_SPECIAL:
-					ALO_Special_Load(v10, &position, playertwp[0]->ang.y, &output, (short*)AL_GetSpecialItemSave());
+					ALO_SpecialCreate(v10, &position, playertwp[0]->ang.y, &output, AL_GetSpecialItemSave());
 					break;
 				default:
 					goto LABEL_34;

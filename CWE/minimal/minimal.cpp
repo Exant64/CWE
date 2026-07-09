@@ -282,13 +282,13 @@ static void RenderAnimal_r(task* tp) {
 	RenderAnimal.Original(tp);
 }
 
-static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4, int a5) {
+static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4, ITEM_SAVE_INFO* a5) {
     if (a1 >= 21 && a1 < 25) {
-        ALO_ChaosDriveExecutor_Load(a1 - 21, a2, (NJS_VECTOR*)a4, (CHAO_SAVE_INFO*)a5);
+        ALO_ChaosDriveCreate(a1 - 21, a2, (NJS_VECTOR*)a4, a5);
         return;
     }
 
-    AL_MinimalExecutor_Load(a1, a2, a3, a4, a5);
+    AL_MinimalCreate(a1, a2, a3, a4, a5);
 }
 
 const int sub_48ACD0Ptr = 0x48ACD0;

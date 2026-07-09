@@ -109,7 +109,7 @@ struct ConfigValues {
 extern ConfigValues gConfigVal;
 
 FunctionPointer(CHAO_SAVE_INFO*, AL_GetNewChaoSaveInfo, (), 0x00531AA0);
-ThiscallFunctionPointer(void*, AL_GetNewItemSaveInfo, (int a1), 0x52F9E0);
+ThiscallFunctionPointer(ITEM_SAVE_INFO*, AL_GetNewItemSaveInfo, (int a1), 0x52F9E0);
 
 extern task* pBirthdayChao;
 

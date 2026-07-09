@@ -410,5 +410,5 @@ void al_minimal_Init()
 		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
-	WriteJump(AL_MinimalExecutor_Display, AL_MinimalExecutor_Display_);
+	WriteJump((void*)0x5489D0, AL_MinimalExecutor_Display_);
 }

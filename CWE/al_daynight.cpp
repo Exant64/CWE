@@ -1968,6 +1968,10 @@ static void AL_DayNightCycleDisplayer(task* tp) {
 // this will prevent the daynight cycle code from running if an ECW custom garden is active
 // !! remove when the support is added !!
 static bool AL_DayNightCycle_CheckECWSafety() {
+	FunctionPointer(void, ChaoStgDark_Prolog, (), 0x54B420);
+	FunctionPointer(void, ChaoStgNeut_Prolog, (), 0x54C4F0);
+	FunctionPointer(void, ChaoStgHero_Prolog, (), 0x54CCE0);
+	
 	switch (AL_GetStageNumber()) {
 		case CHAO_STG_NEUT:
 			if (ChaoSegments[0].Prolog != ChaoStgNeut_Prolog) return false;

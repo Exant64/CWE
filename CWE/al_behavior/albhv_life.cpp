@@ -45,7 +45,7 @@ void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}
 	else
-		CreateChaoEgg(a1, chaoData, a3, position, a5);
+		CreateEgg(a1, chaoData, a3, position, a5);
 }
 
 void __cdecl sub_550620(task* a1)
@@ -103,7 +103,7 @@ void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int 
 		chaoData->data.body.FormNum = AL_FORM_EGG_FOOT;
 	}
 	else
-		CreateChaoEgg(a1, chaoData, a3, position, a5);
+		CreateEgg(a1, chaoData, a3, position, a5);
 }
 
 void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
@@ -169,13 +169,13 @@ void CreateMayuField(task* a1, char a2)
 	switch (a2)
 	{
 	case MayuKind_Grow:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_GROW_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_GROW_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	case MayuKind_Death:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_DEATH_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_DEATH_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	case MayuKind_Succeed:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_SUCCEED_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_SUCCEED_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	}
 }

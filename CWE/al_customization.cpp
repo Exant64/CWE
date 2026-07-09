@@ -141,7 +141,7 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 {
 	if (ID < 1) return false;
 
-	ITEM_SAVE_INFO* v9 = (ITEM_SAVE_INFO*)AL_GetNewItemSaveInfo(9);
+	ITEM_SAVE_INFO* v9 = AL_GetNewItemSaveInfo(ALW_CATEGORY_MASK);
 	if (v9 == nullptr)
 	{
 		___OutputDebugString("HatAccRender: no hat slots left");

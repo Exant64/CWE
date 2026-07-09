@@ -166,13 +166,13 @@ void __cdecl sub_546670Hook(NJS_VECTOR* a1, ALO_GrowTreeExecutor_Data* a2, int a
     sub_546670(a1, a2, a3);
 }
 
-task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, CHAO_SAVE_INFO* a5)
+task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ITEM_SAVE_INFO* a5)
 {    
     if(a1 >= ChaoFruit_ChaoGardenFruit && a1 <= ChaoFruit_DarkGardenFruit)
-        return ALO_FruitExecutor_Load(a1, position, angle, a4, a5);
+        return ALO_FruitCreate(a1, position, angle, a4, a5);
 
     int lookup = ModAPI_TreeEntries[a1 - 2].FruitIDs[CurrentFruitSlot];
-    return ALO_FruitExecutor_Load(lookup, position, angle, a4, a5);
+    return ALO_FruitCreate(lookup, position, angle, a4, a5);
 }
 
 __declspec(naked) void AL_GrowTree_CreateFruitHook()
@@ -227,7 +227,7 @@ void ALO_GrowTreeExecutor_Display_(task* a1)
         v1->texlist = ModAPI_TreeEntries[v1->kind].pTexlist;
     
     AL_DayNightCycle_PushFallbackLight();
-    ALO_GrowTreeExecutor_Display(a1);
+    ALO_GrowTreeDisplayer(a1);
     AL_DayNightCycle_PopFallbackLight();
     // this call is already done in the function but we do it again after the pop to be safe
     // since we're not "in" the function we cant do it properly before the dolighting call
@@ -262,7 +262,7 @@ void ALO_GrowTree_Init()
     WriteCall((void*)0x00546CA1, FixTransitionHook);
     WriteData<2>((char*)0x00546CA6, (char)0x90);
 
-    WriteJump(ALO_SeedExecutor_Display, ALO_SeedExecutor_Display_);
+    WriteJump((void*)0x5498E0, ALO_SeedExecutor_Display_);
     WriteCall((Void*)0x05470CB, sub_546670Hook);
     WriteCall((void*)0x005471D7, AL_GrowTree_CreateFruit);
     WriteJump((void*)0x547440, sub_547440);

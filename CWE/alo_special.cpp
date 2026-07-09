@@ -32,9 +32,9 @@ void __cdecl ALO_Special_Display(task* a1)
 
 }
 
-extern "C" __declspec(dllexport) task* ALO_Special_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
+extern "C" __declspec(dllexport) task* ALO_SpecialCreate(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, ITEM_SAVE_INFO* savedata)
 {
-	task* obj = ALO_ObakeHeadExecutor_Load(ID, position, rotY, velocity, (int)savedata);
+	task* obj = ALO_ObakeHeadCreate(ID, position, rotY, velocity, savedata);
 	obj->twp->cwp->info[2].kind = CI_KIND_AL_SPECIAL;
 	obj->twp->ang.x = ID;
 	obj->disp = ALO_Special_Display;

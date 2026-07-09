@@ -490,7 +490,7 @@ int sub_531A20()
 }
 void SpawnCWEChao()
 {
-	SpawnAllChaoInGarden();
+	AL_SetChaoOnTheGarden();
 	if (AL_IsGarden())
 	{
 		for (int i = 0; i < 24; i++)
@@ -531,14 +531,14 @@ void SpawnCWEChao()
 	}
 }
 
-void* AL_GetSpecialItemSave()
-{
-	for (int i = 0; i < 30; i++)
-	{
-		if (cweSaveFile.specialItems[i].kind == -1)
+ITEM_SAVE_INFO* AL_GetSpecialItemSave() {
+	for (int i = 0; i < _countof(cweSaveFile.specialItems); i++) {
+		if (cweSaveFile.specialItems[i].kind == -1) {
 			return &cweSaveFile.specialItems[i];
+		}
 	}
-	return 0;
+
+	return NULL;
 }
 
 

@@ -64,5 +64,5 @@ void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
 
 void ALO_ObakeHead_Init()
 {
-	WriteJump(ALO_ObakeHeadExecutor_Display, ALO_ObakeHeadExecutor_Display_);
+	WriteJump((void*)0x54A0F0, ALO_ObakeHeadExecutor_Display_);
 }
