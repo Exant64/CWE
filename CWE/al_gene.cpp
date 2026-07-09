@@ -261,7 +261,8 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 
 	pParamCwe->Flags |= AL_PARAM_FLAG_NEWBORN;
 
-	pParamCwe->Negative = pGene->Negative[0] || pGene->Negative[1];
+	// we store negative genetics in EyePos since it's unused
+	pParamCwe->Negative = pGene->EyePos[0] || pGene->EyePos[1];
 
 	if (pGene->MotherID.id[0] != 0) {
 		auto motherParam = AL_KW_FindChaoBasedOnId(pGene->MotherID);
@@ -494,8 +495,10 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 		}
 	}
 	
-	pChildGene->Negative[0] = GET_CWEPARAM(pMotherTask)->Negative;
-	pChildGene->Negative[1] = GET_CWEPARAM(pFatherTask)->Negative;
+	// we store negative genetics in EyePos since it's unused
+	pChildGene->EyePos[0] = GET_CWEPARAM(pMotherTask)->Negative;
+	pChildGene->EyePos[1] = GET_CWEPARAM(pFatherTask)->Negative;
+	
 	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
 	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }

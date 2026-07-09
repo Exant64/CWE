@@ -721,7 +721,7 @@ struct AL_GENE
 	char NonTex[2];
 	char Jewel[2];
 	char Multi[2];
-	char Negative[2];
+	char EyePos[2];
 	char EyeScl[2];
 	char EyeRatio[2];
 	char EyeColor[2];
