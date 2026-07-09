@@ -9,7 +9,6 @@
 #include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_parts.h"
-#include "al_minimal.h"
 #include "al_motion.h"
 #include "AL_ModAPI.h"
 

@@ -1075,20 +1075,6 @@ struct LevelHeader
 	task_exec subprgmanager;
 };
 
-struct ChaoItemStats
-{
-	__int16 Mood;
-	__int16 Belly;
-	__int16 Swim;
-	__int16 Fly;
-	__int16 Run;
-	__int16 Power;
-	__int16 Stamina;
-	__int16 Luck;
-	__int16 Intelligence;
-	__int16 anonymous_7;
-};
-
 struct LevelCutscene
 {
 	__int16 Level;

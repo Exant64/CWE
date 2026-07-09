@@ -1,5 +1,7 @@
 #pragma once
  
+#include "al_parameter.h"
+
 #include <vector>
 #include <map>
 

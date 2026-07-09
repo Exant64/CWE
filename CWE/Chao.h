@@ -1,22 +1,5 @@
 #pragma once
 
-struct chaowk_cwe {
-	size_t LocalCharacterChaoType;
-	bool IsCustomChaoTypeLoaded;
-	unsigned char AnimRandomized;
-	unsigned char ExtraSound;
-
-	char AccessoryCalculatedID[4][21];
-	Uint32 AccessoryIndices[4];
-
-	bool JiggleFlagChanged;
-	bool BaldHideHead;
-	Uint16* pBaldAdjacencyIndices;
-	size_t BaldAdjacencyIndexCount;
-
-	void* BhvUserData[16];
-};
-
 #include "al_face.h"
 #include "al_motion.h"
 #include "al_misc.h"
@@ -26,6 +9,23 @@ struct chaowk_cwe {
 #include "al_parameter.h"
 #include "al_behavior/al_intention.h"
 #include "move.h"
+
+struct chaowk_cwe {
+	size_t LocalCharacterChaoType;
+	bool IsCustomChaoTypeLoaded;
+	unsigned char AnimRandomized;
+	unsigned char ExtraSound;
+
+	char AccessoryCalculatedID[4][sizeof(AL_PARAM_ACCESSORY_INFO::ID)];
+	Uint32 AccessoryIndices[4];
+
+	bool JiggleFlagChanged;
+	bool BaldHideHead;
+	Uint16* pBaldAdjacencyIndices;
+	size_t BaldAdjacencyIndexCount;
+
+	void* BhvUserData[16];
+};
 
 #define GET_CHAOWK_CWE(tp) ((chaowk_cwe*)(GET_CHAOWK(tp) + 1))
 #define GET_CHAOWK(tp) ((chaowk*)tp->twp)
