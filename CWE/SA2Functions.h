@@ -892,7 +892,7 @@ static inline void AddChaoSaveSignature(char *a1, char *a2)
 
 // int __usercall@<eax>(AL_GENE *a1@<esi>)
 static const void *const InitChaoDNAPtr = (void*)0x5506B0;
-static inline int InitChaoDNA(AL_GENE *a1)
+static inline int AL_GeneCreate(AL_GENE *a1)
 {
 	int result;
 	__asm

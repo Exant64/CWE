@@ -102,7 +102,7 @@ void __cdecl AL_OmoBuild_Main(task* a1)
 			v11->param.type = TYPE_CHILD;
 			v11->param.body.FormNum = AL_FORM_OMOCHAO;
 			v11->param.place = AL_GetStageNumber();
-			InitChaoDNA(&v11->param.gene);
+			AL_GeneCreate(&v11->param.gene);
 			v11->param.gene.Color[0] = GetOmoData()->color;
 			v11->param.gene.Color[1] = GetOmoData()->color;
 			v11->param.body.ColorNum	= GetOmoData()->color;

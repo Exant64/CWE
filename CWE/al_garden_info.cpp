@@ -424,7 +424,7 @@ static void AL_MinimalCreateManagerExecutor_New(task* a2) {
 						task* v12;
 						CHAO_SAVE_INFO* v11 = AL_GetNewChaoSaveInfo();
 
-						InitChaoDNA(&gene);
+						AL_GeneCreate(&gene);
 						gene.EggColor = v32;
 
 						if (v11) {
