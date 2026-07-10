@@ -105,7 +105,7 @@ task* CreateTween(task* parent, const EASE_TYPE easingMode, const INTERP_TYPE in
 		tp = CreateChildTask(0, TweenExecutor<T>, parent);
 	}
 
-	tp->awp = ALLOC(TweenData<T>);
+	tp->awp = (anywk*)ALLOC(TweenData<T>);
 	tp->dest = TweenDestructor;
 
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);

@@ -253,7 +253,7 @@ MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 	MOVE_WORK* data2; // esi
 
 	data2 = (MOVE_WORK*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
-	obj->mwp = data2;                   // different offset than SADX
+	obj->mwp = (motionwk*)data2;                   // different offset than SADX
 
 	data2->Top = 3.0f;
 	data2->RotSpd.y = 256;                      // different offset than SADX

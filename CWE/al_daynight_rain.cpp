@@ -268,7 +268,7 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 	tp->disp = AL_DayNightRainDisplayer;
 
 	RAIN_WORK* work = ALLOC(RAIN_WORK);
-	tp->awp = work;
+	tp->awp = (anywk*)work;
 
 	memset(work, 0, sizeof(RAIN_WORK));
 

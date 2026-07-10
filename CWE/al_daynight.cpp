@@ -2011,7 +2011,7 @@ void AL_CreateDayNightCycle() {
 
 	AL_CreateDayNightCycleManager();
 
-	tp->awp = ALLOC(DAYNIGHT_WORK);
+	tp->awp = (anywk*)ALLOC(DAYNIGHT_WORK);
 
 	memset(tp->awp, 0, sizeof(DAYNIGHT_WORK));
 

@@ -36,11 +36,61 @@ typedef void(__cdecl *task_exec)(task *);
 // All structs should be packed.
 #pragma pack(push, 1)
 
+struct Angle3
+{
+	int x;
+	int y;
+	int z;
+};
 struct AllocatedMem
 {
 	int Cookie;
 	void *Data;
 };
+
+struct motionwk {
+	NJS_VECTOR  spd;                /* speed                                                    */
+    NJS_VECTOR  acc;                /* acceleration                                             */ 
+    Angle3  ang_aim;            /* angle aim                                                */ 
+    Angle3  ang_spd;            /* angle speed                                              */ 
+    float         force;              /* force                                                    */ 
+    float         accel;              /* forward acceleration                                     */ 
+    float         frict;              /* friction                                                 */ 
+                          
+    union {               
+        Uint8      b[4];               /* bytes                                                    */ 
+        short     w[2];               /* words                                                    */ 
+        int     l;                  /* long                                                     */ 
+        float     f;                  /* real                                                     */ 
+        void*   ptr;                /* pointer                                                  */ 
+    }                     
+    work;                           /* inline work                                              */ 
+};
+
+typedef struct anywk
+{
+    union
+    {
+        uint8_t   ub[16];           /* unsigned bytes                                           */
+        int8_t    sb[16];           /* signed bytes                                             */
+        uint16_t  uw[8];            /* unsigned words                                           */
+        int16_t   sw[8];            /* signed words                                             */
+        uint32_t  ul[4];            /* unsigned longs                                           */
+        int32_t   sl[4];            /* signed longs                                             */
+        float       f[4];             /* real numbers                                             */
+        void*     ptr[4];           /* pointers                                                 */
+    }
+    work;                           /* inline work                                              */
+}
+anywk;
+
+typedef struct forcewk
+{
+    void(__cdecl* call_back)(task*, taskwk*, forcewk*); /* callback                             */
+    Angle3    ang_spd;                              /* angle speed                          */
+    NJS_POINT3    pos_spd;                              /* position speed                       */
+}
+forcewk;
 
 struct task
 {
@@ -58,9 +108,9 @@ struct task
 	void *field_2C;
 	SETObjectData *SETData;
 	taskwk* twp;
-	void *mwp;
-	void *fwp;
-	void* awp;
+	motionwk *mwp;
+	forcewk *fwp;
+	anywk* awp;
 	char *name;
 	char *NameAgain;
 	void *field_4C;
@@ -74,13 +124,6 @@ struct SETObjectData
 	task *Object;
 	SETEntry *SETEntry;
 	float field_C;
-};
-
-struct Angle3
-{
-	int x;
-	int y;
-	int z;
 };
 
 struct taskwk
