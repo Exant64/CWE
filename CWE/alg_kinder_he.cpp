@@ -797,8 +797,10 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				sub_5369F0(GET_CHAOPARAM(TextLocation->field_8)->life, 476, (264 + 32 * 5), 1.0f);
 				chDrawBillboardSR(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
 				chSetBillboardColor(1, 0.72f, 1, 0);
-				chDrawBillboardSR(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
-
+        
+        if(v12 >= 0 && v12 < 10) {
+				  chDrawBillboardSR(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
+        }
 			}
 		}
 	}
