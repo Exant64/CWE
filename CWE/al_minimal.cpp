@@ -9,7 +9,6 @@
 #include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_parts.h"
-#include "al_minimal.h"
 #include "al_motion.h"
 #include "AL_ModAPI.h"
 
@@ -19,7 +18,7 @@ std::vector<int> ModAPI_MinimalInfluence;
 std::vector<ChaoItemStats> ModAPI_MinimalStats;
 std::vector<const char*>  ModAPI_MinimalNames;
 std::vector<NJS_TEXLIST*>  ModAPI_MinimalTexlists;
-std::vector<NJS_OBJECT*>   ModAPI_MinimalModels;
+std::vector<NJS_CNK_OBJECT*>   ModAPI_MinimalModels;
 std::vector<NJS_MOTION*>   ModAPI_MinimalMotion0;
 std::vector<NJS_MOTION*>   ModAPI_MinimalMotion1;
 std::vector<NJS_MOTION*>   ModAPI_MinimalMotion2;
@@ -95,7 +94,7 @@ const char* AnimalPVMNames[] =
   "SUKA"
 };
 
-NJS_OBJECT* AnimalModels[] = {
+NJS_CNK_OBJECT* AnimalModels[] = {
 	&object_0052A2D0, &object_0052C40C,&object_00549104,&object_005308DC,&object_0052EA0C,&object_00532ADC,&object_00539B2C,&object_0053BFE4,&object_0053723C,&object_00544FD4,&object_00542F90,&object_0054043C,&object_0053E2B8,&object_00534AE0,&object_00546D4C,
 };
 
@@ -158,7 +157,7 @@ int AnimalInfluence[] =
 };
 
 
-ObjectFunc(sub_57BD40, 0x0057BD40);
+FunctionPointer(void, sub_57BD40, (task*), 0x0057BD40);
 #pragma pack(push, 8)
 struct __declspec(align(4)) ParticleData
 {
@@ -270,7 +269,7 @@ void SetAnimalTexEntity(taskwk* data)
 }
 
 const int sub_793F90Ptr = 0x793F90;
-void sub_793F90(NJS_OBJECT* a1, MotionTableData* a2)
+void sub_793F90(NJS_CNK_OBJECT* a1, MOTION_CTRL* a2)
 {
 	__asm
 	{
@@ -288,8 +287,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 
 	v1 = a1;
 	v2 = (AL_MinimalExecutor_Data1*)a1->twp;
-	if (Scaletask_XYZ(a1, 3, 3, 2))
-	{
+	if (AL_IsOnScreen2(a1, 3, 2)) {
 		v2->field_34 = 200;
 		if (v2->entity.flag >= 0)
 		{
@@ -307,9 +305,8 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		RotateY(v2->entity.ang.y);
 		njPushMatrixEx();
 
-		if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
-		{
-			njControl3D |= 0x2400u;
+		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
+			_nj_control_3d_flag_ |= 0x2400u;
 		}
 
 		// mega jank, im in a rush rn
@@ -325,22 +322,20 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 			g_HelperFunctions->PopInterpolationFix();
 		}
 
-		njControl3D &= ~0x2400u;
+		_nj_control_3d_flag_ &= ~0x2400u;
 		njPopMatrixEx();
 
+		if (!v1->fwp) ___OutputDebugString("unknown_a == 0, problem incoming");
 
-		if (!v1->UnknownA_ptr) PrintDebug("unknown_a == 0, problem incoming");
-
-		if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && v1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{
-			if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
-			{
+			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
 				njTranslate(NULL, 0, 0.01f, 0);
 			}
-			else
-			{
+			else {
 				njTranslate(NULL, 0, 0.5f, 0);
 			}
+
 			rfapi_core->pDraw->AL_ShadowDraw();
 		}
 		njPopMatrixEx();
@@ -371,7 +366,7 @@ void al_minimal_Init()
 	WriteData((int*)0x00548D69, (int)0xF8 + 4);
 	
 	DataArray(ChaoItemStats, ChaoItemStatArray, 0x08A6240, 26);
-	DataArray(NJS_OBJECT*, BattleAnimalModels, 0x012966F0, 21);
+	DataArray(NJS_CNK_OBJECT*, BattleAnimalModels, 0x012966F0, 21);
 	DataArray(NJS_MOTION*, BattleAnimalAnims0, 0x1296870, 21);
 	DataArray(NJS_MOTION*, BattleAnimalAnims1, 0x12967F0, 21);
 	DataArray(NJS_MOTION*, BattleAnimalAnims2, 0x1296770, 21);
@@ -414,5 +409,5 @@ void al_minimal_Init()
 		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
-	WriteJump(AL_MinimalExecutor_Display, AL_MinimalExecutor_Display_);
+	WriteJump((void*)0x5489D0, AL_MinimalExecutor_Display_);
 }

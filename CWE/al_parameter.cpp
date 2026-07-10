@@ -9,11 +9,11 @@ void AL_NameSet(char* lval, char* rval) {
 }
 
 bool AL_IsChild(task* tp) {
-	return GET_CHAOPARAM(tp)->type == ChaoType_Child;
+	return GET_CHAOPARAM(tp)->type == TYPE_CHILD;
 }
 
 bool AL_IsCustomChao(task* tp) {
-	return GET_CHAOPARAM(tp)->type == 26 || GET_CHAOWK(tp)->IsCustomChaoTypeLoaded;
+	return GET_CHAOPARAM(tp)->type == 26 || GET_CHAOWK_CWE(tp)->IsCustomChaoTypeLoaded;
 }
 
 bool AL_IsHero(unsigned __int8 a1) {
@@ -57,17 +57,17 @@ void AL_ParameterAddAPos(task* a1, float a2)
 
 	chaowk* work = GET_CHAOWK(a1);
 	v3 = work->pParamGC;
-	v4 = v3->Alignment + a2;
-	v3->Alignment = v4;
+	v4 = v3->body.APos + a2;
+	v3->body.APos = v4;
 	if (v4 > 1.0)
 	{
-		v3->Alignment = 1.0;
+		v3->body.APos = 1.0;
 	}
-	if (v3->Alignment < -1.0)
+	if (v3->body.APos < -1.0)
 	{
-		v3->Alignment = -1.0;
+		v3->body.APos = -1.0;
 	}
-	work->Flag |= 2u;
+	work->Shape.Flag |= 2u;
 }
 
 const int sub_536320Ptr = 0x536320;
@@ -98,39 +98,39 @@ void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4
 
 void IncrementFlySwim(task* a1, float a2)
 {
-	ChaoData1* v2; // edx
+	chaowk* v2; // edx
 	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
-	v3->FlySwim += a2;
-	if (v3->FlySwim > *(float*)0x1312C88)
+	v3->body.VPos += a2;
+	if (v3->body.VPos > *(float*)0x1312C88)
 	{
-		v3->FlySwim = *(float*)0x1312C88;
+		v3->body.VPos = *(float*)0x1312C88;
 	}
-	if (v3->FlySwim < -*(float*)0x1312C88)
+	if (v3->body.VPos < -*(float*)0x1312C88)
 	{
-		v3->FlySwim = -*(float*)0x1312C88;
+		v3->body.VPos = -*(float*)0x1312C88;
 	}
-	v2->Flag |= 2u;
+	v2->Shape.Flag |= 2u;
 }
 void IncrementPowerRun(task* a1, float a2)
 {
-	ChaoData1* v2; // edx
+	chaowk* v2; // edx
 	CHAO_PARAM_GC* v3; // ecx
 
 	v2 = GET_CHAOWK(a1);
 	v3 = v2->pParamGC;
-	v3->PowerRun += a2;
-	if (v3->PowerRun > *(float*)0x1312C88)
+	v3->body.HPos += a2;
+	if (v3->body.HPos > *(float*)0x1312C88)
 	{
-		v3->PowerRun = *(float*)0x1312C88;
+		v3->body.HPos = *(float*)0x1312C88;
 	}
-	if (v3->PowerRun < -*(float*)0x1312C88)
+	if (v3->body.HPos < -*(float*)0x1312C88)
 	{
-		v3->PowerRun = -*(float*)0x1312C88;
+		v3->body.HPos = -*(float*)0x1312C88;
 	}
-	v2->Flag |= 2u;
+	v2->Shape.Flag |= 2u;
 }
 
 // levelup function in AL_ParameterGrow, no symbols name :(
@@ -180,8 +180,8 @@ static void AL_CalcParameter_r(task* tp) {
 			// which decreases distance, we don't want that here, they didn't actually interact
 			// it also only sets the current player
 
-			for(size_t i = 0; i < _countof(param->Knowledge.player); ++i) {
-				auto& player = param->Knowledge.player[i];
+			for(size_t i = 0; i < _countof(param->knowledge.player); ++i) {
+				auto& player = param->knowledge.player[i];
 				int like = int(player.like) - 1;
 
 				if(like < -100) {

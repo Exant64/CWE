@@ -21,7 +21,7 @@ int ALBHV_DanceHero(task* tp) {
 	    bhv->Mode++;
 	}
 
-    if (ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE))
+    if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE))
         return BHV_RET_CONTINUE;
     else
         return BHV_RET_FINISH;
@@ -36,7 +36,7 @@ int __cdecl ALBHV_DanceDark(task* tp) {
         bhv->Mode++;
     }
 
-    if (ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE))
+    if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE))
         return BHV_RET_CONTINUE;
     else
         return BHV_RET_FINISH;
@@ -60,7 +60,7 @@ int ALBHV_BreakDance(task* tp)
         break;
     }
     
-    if (ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE))
+    if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE))
         return BHV_RET_CONTINUE;
     else
         return BHV_RET_FINISH;
@@ -99,15 +99,15 @@ Bool AL_DecideBehaviorDance(task* tp)
         return FALSE;
     }
 
-    center.x = njSin(GET_CHAOWK(tp)->entity.ang.y) * 8 + GET_CHAOWK(tp)->entity.pos.x;
-    center.y = GET_CHAOWK(tp)->entity.pos.y;
-    center.z = njCos(GET_CHAOWK(tp)->entity.ang.y) * 8 + GET_CHAOWK(tp)->entity.pos.z;
+    center.x = njSin(GET_CHAOWK(tp)->ang.y) * 8 + GET_CHAOWK(tp)->pos.x;
+    center.y = GET_CHAOWK(tp)->pos.y;
+    center.z = njCos(GET_CHAOWK(tp)->ang.y) * 8 + GET_CHAOWK(tp)->pos.z;
     
     //i overcomplicated it like this with a switch case to support the original DanceFunc array if any other mod overwrites it
     int kind = InstList[(unsigned int)(njRandom() * ((double)nb - 0.0001f))];
     AL_SetBehavior(tp, ALBHV_DanceFunc_CWE[kind]);
     
-	ALOField_Load(tp, CI_KIND_AL_DANCE, &center, 20.0f, (1800 + (int)(njRandom() * 2401.f)));
+	AL_ChildFieldCreateT(tp, CI_KIND_AL_DANCE, &center, 20.0f, (1800 + (int)(njRandom() * 2401.f)));
 	return TRUE;
 }
 
@@ -115,7 +115,7 @@ void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
     Uint32 trigger = ChaoGlobal.IntentionHimaTrigger;
     float score = 0;
     Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
-    task* pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_DANCE);
+    task* pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_DANCE);
 
     if (*pMaxScore < 1) {
         if (pField) {
@@ -129,8 +129,8 @@ void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
             }
             if (score > *pMaxScore) {
                 int kind = -1;
-                if (pField->Parent) {
-                    BHV_FUNC func = AL_GetBehavior(pField->Parent);
+                if (pField->ptp) {
+                    BHV_FUNC func = AL_GetBehavior(pField->ptp);
 
                     for (size_t i = 0; i < NB_AL_DANCE_CWE; i++) {
                         if (func == ALBHV_DanceFunc_CWE[i]) {
@@ -156,13 +156,13 @@ void AL_CalcIntentionScore_JoinDance(task* tp, float* pMaxScore) {
                     AL_EmotionAdd(tp, EM_ST_TEDIOUS, -4000);
                     AL_EmotionAdd(tp, EM_ST_LONELY, -4000);
                     
-                    if (pField->Parent) {
-                        AL_EmotionAdd(pField->Parent, EM_ST_LONELY, -3000);
+                    if (pField->ptp) {
+                        AL_EmotionAdd(pField->ptp, EM_ST_LONELY, -3000);
                     }
                 }
                 else {
-                    if (pField->Parent) {
-                        MOV_SetAimPos(tp, &pField->Parent->twp->pos);
+                    if (pField->ptp) {
+                        MOV_SetAimPos(tp, &pField->ptp->twp->pos);
                     }
 
                     AL_SetBehavior(tp, ALBHV_TurnToAim);

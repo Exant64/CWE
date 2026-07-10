@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+#define GET_MOVE_WORK(tp) ((MOVE_WORK*)tp->mwp)
 ThiscallFunctionPointer(float, MOV_DistFromAim, (task* a1), 0x007968A0);
 
 float MOV_DistFromAimXZ(task* tp);

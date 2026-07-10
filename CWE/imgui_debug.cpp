@@ -40,13 +40,25 @@ static task* GetSelectedOtherChao() {
     return GetChaoObject(0, SelectedOtherChaoIndex);
 }
 
+static int SetMusicBhv(task* tp) {
+    ((task_exec)0x0059D410)(tp);
+
+    return BHV_RET_CONTINUE;
+}
+
+static int SetSToyBhv(task* tp) {
+    ((task_exec)0x55E7A0)(tp);
+
+    return BHV_RET_CONTINUE;
+}
+
 static void MoreFacesMenu() {
     if(!ShowMoreFacesMenu) return;
-    if(!MainCharObj2[0]);
+    if(!playerpwp[0]);
 
-    task* pHeld = MainCharObj2[0]->HeldObject;
+    task* pHeld = playerpwp[0]->htp;
     if(!pHeld) return;
-    if(pHeld->exec != Chao_Main) return;
+    if(pHeld->exec != ChaoExecutor) return;
     
     static int index = 0;
 
@@ -103,11 +115,11 @@ static void ChaoInfoMenu() {
 
         chaowk* work = GET_CHAOWK(pChao);
         auto pParamCwe = GET_CWEPARAM(pChao);
-        auto* move_work = pChao->EntityData2;
+        auto* move_work = GET_MOVE_WORK(pChao);
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
-                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->entity.pos, 3);
+                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
 
                 static bool ChaoDebugDistEnabled = false;
                 ImGui::Checkbox("Distance Debug", &ChaoDebugDistEnabled);
@@ -123,7 +135,7 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Accessories")) {
-                const auto& items = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
+                const auto& items = ItemMetadata::Get()->GetIDs(ALW_CATEGORY_ACCESSORY);
 
                 static const char* AccessoryStrings[3000];
                 static size_t AccessoryIndices[3000];
@@ -141,8 +153,8 @@ static void ChaoInfoMenu() {
                         "%s (internal data ParamID:%s Data1ID:%s Index: %d)", 
                         slotNames[i],
                         pParamCwe->Accessories[i].ID, 
-                        work->AccessoryCalculatedID[i], 
-                        work->AccessoryIndices[i]
+                        GET_CHAOWK_CWE(pChao)->AccessoryCalculatedID[i], 
+                        GET_CHAOWK_CWE(pChao)->AccessoryIndices[i]
                     );
 
                     size_t count = 0;
@@ -160,9 +172,9 @@ static void ChaoInfoMenu() {
                     }
                     ImGui::PopID();
 
-                    if (work->AccessoryIndices[i] == -1) continue;
+                    if (GET_CHAOWK_CWE(pChao)->AccessoryIndices[i] == -1) continue;
                     
-                    for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
+                    for (size_t j = 0; j < GetAccessoryColorCount(GET_CHAOWK_CWE(pChao)->AccessoryIndices[i]); ++j) {
                         NJS_COLOR* pCol = (NJS_COLOR*) & pParamCwe->Accessories[i].ColorSlots[j];
                         ImGui::PushID(i * 10 + j);
                         float col[3];
@@ -207,6 +219,12 @@ static void ChaoInfoMenu() {
                     if (ImGui::Button("Float")) {
                         AL_SetBehavior(pChao, ALBHV_GoToFloat);
                     }
+                    if (ImGui::Button("Music")) {
+                        AL_SetBehavior(pChao, SetMusicBhv);
+                    }
+                    if (ImGui::Button("SToy")) {
+                        AL_SetBehavior(pChao, SetSToyBhv);
+                    }
 
                     ImGui::TreePop();
                 }
@@ -238,11 +256,11 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Perception")) {
                 const AL_PERCEPTION_INFO* perceptionList[] = {
-                    &work->PlayerObjects,
-                    &work->ChaoObjects,
-                    &work->FruitObjects,
-                    &work->TreeObjects,
-                    &work->ToyObjects
+                    &work->Perception.Player,
+                    &work->Perception.Chao,
+                    &work->Perception.Fruit,
+                    &work->Perception.Tree,
+                    &work->Perception.Toy
                 };
 
                 const char* const perceptionDropDownNames[] = {
@@ -257,15 +275,15 @@ static void ChaoInfoMenu() {
 
                 task* pToy = AL_GetFoundToyTask(pChao);
                 if (pToy) {
-                    ImGui::Text("Toy Name: %s", pToy->Name);
+                    ImGui::Text("Toy Name: %s", pToy->name);
                     ImGui::Separator();
                 }
                 
-                ImGui::Text("SightRange: %f", work->ObjectListInfo.SightRange);
-                ImGui::Text("SightAngle: %d (%f deg)", work->ObjectListInfo.SightAngle, NJM_ANG_DEG(work->ObjectListInfo.SightAngle));
-                ImGui::Text("SightAngleHalf: %d (%f deg)", work->ObjectListInfo.SightAngleHalf, NJM_ANG_DEG(work->ObjectListInfo.SightAngleHalf));
-                ImGui::Text("HearRange: %f", work->ObjectListInfo.HearRange);
-                ImGui::Text("SmellRange: %f", work->ObjectListInfo.SmellRange);
+                ImGui::Text("SightRange: %f", work->Perception.SightRange);
+                ImGui::Text("SightAngle: %d (%f deg)", work->Perception.SightAngle, NJM_ANG_DEG(work->Perception.SightAngle));
+                ImGui::Text("SightAngleHalf: %d (%f deg)", work->Perception.SightAngleHalf, NJM_ANG_DEG(work->Perception.SightAngleHalf));
+                ImGui::Text("HearRange: %f", work->Perception.HearRange);
+                ImGui::Text("SmellRange: %f", work->Perception.SmellRange);
 
                 for (size_t i = 0; i < _countof(perceptionList); i++) {
                     const AL_PERCEPTION_INFO* perception = perceptionList[i];
@@ -299,7 +317,7 @@ static void ChaoInfoMenu() {
                                     ImGui::Text("No al_entry_work->tp?");
                                 }
                                 else {
-                                    const char* taskName = link->pEntry->tp->Name;
+                                    const char* taskName = link->pEntry->tp->name;
                                     ImGui::Text("Name: %s", !taskName ? "(no name)" : taskName);
                                 }
 
@@ -316,10 +334,10 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Flags")) {
                 {
-                    bool flagEnabled = (work->Flag & 2);
+                    bool flagEnabled = (work->Shape.Flag & 2);
                     if(ImGui::Checkbox("Shape Deform", &flagEnabled)) {
                         if(flagEnabled) {
-                            work->Flag |= 2;
+                            work->Shape.Flag |= 2;
                         }
                     }
                 }
@@ -353,13 +371,13 @@ static void ChaoInfoMenu() {
                 static_assert(_countof(flagsStrings) == _countof(bits));
 
                 for (size_t i = 0; i < _countof(flagsStrings); i++) {
-                    bool flagEnabled = (work->field_B0 & bits[i]);
+                    bool flagEnabled = (work->ChaoFlag & bits[i]);
                     ImGui::Checkbox(flagsStrings[i], &flagEnabled);
                     if (!flagEnabled) {
-                        work->field_B0 &= ~bits[i];
+                        work->ChaoFlag &= ~bits[i];
                     }
                     else {
-                        work->field_B0 |= bits[i];
+                        work->ChaoFlag |= bits[i];
                     }
                 }
 
@@ -378,18 +396,17 @@ static void ChaoInfoMenu() {
 
                 static int poseFilter = 0;
 
-                ImGui::Text("Pose: %s (%d)", poseNames[work->MotionTable.gap2 + 1], work->MotionTable.gap2);
+                ImGui::Text("Pose: %s (%d)", poseNames[work->MotionCtrl.posture + 1], work->MotionCtrl.posture);
 
                 static int animID = 0;
-                int currentAnimID = work->MotionTable.AnimID;
+                int currentAnimID = work->MotionCtrl.curr_num;
                 ImGui::Text("Current Animation: %s (%d)", MotionNames[currentAnimID], currentAnimID);
-                ImGui::Text("Speed: %f %f", work->MotionTable.PlaySpeed2, work->MotionTable.PlaySpeed);
 
                 ImGui::Combo("Filter for pose: %s (%d)", &poseFilter, poseNames, IM_ARRAYSIZE(poseNames));
                 if (poseFilter > 0) {
                     int pose = poseFilter - 1;
                     if (ImGui::TreeNode("Filter results")) {
-                        MotionTableAction* entries = (MotionTableAction*)GetDllData("al_motion_table");
+                        MotionTableAction* entries = (MotionTableAction*)GetDataDllProcAddr("al_motion_table");
                         for (size_t i = 0; i <= ALM_TAIL; i++) {
                             if (entries[i].field_6 != pose) continue;
                             ImGui::Text("%s (%d)", MotionNames[i], i);
@@ -416,7 +433,7 @@ static void ChaoInfoMenu() {
             }
             
             if (ImGui::BeginTabItem("Move")) {
-                ImGui::Text("Aim: %f %f %f", move_work->Waypoint.x, move_work->Waypoint.y, move_work->Waypoint.z);
+                ImGui::Text("Aim: %f %f %f", move_work->AimPos.x, move_work->AimPos.y, move_work->AimPos.z);
                 ImGui::Text("DistFromAim: %f", MOV_DistFromAim(pChao));
                 ImGui::Text("DistFromAimXZ: %f", MOV_DistFromAimXZ(pChao));
 
@@ -424,9 +441,9 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Vertices")) {
-                ChunkObjectPointer* pHead = work->field_524[1];
+                AL_OBJECT* pHead = work->Shape.CurrObjectList[1];
                 if(pHead) {
-                    al_model* pModel = (al_model*)pHead->base.model;
+                    AL_MODEL* pModel = (AL_MODEL*)pHead->pModel;
 
                     for(size_t i = 0; i < pModel->nbVertex; ++i) {
                         CNK_VN_VERTEX* pVert = (CNK_VN_VERTEX*)(pModel->VList + 2) + i;
@@ -454,7 +471,7 @@ static void DayNightMenu() {
     if (!pDayNightTask) return;
    
     if (ShowDNC && ImGui::Begin("DayNight Cycle", &ShowDNC)) {
-        auto& work = *reinterpret_cast<DAYNIGHT_WORK*>(pDayNightTask->Data2.Undefined);
+        auto& work = *reinterpret_cast<DAYNIGHT_WORK*>(pDayNightTask->awp);
         ImGui::SliderInt("Timer", (int*) & work.timer, 0, 24 * gConfigVal.DayNightCycleHourFrame);
         ImGui::Text("Phase: %d", work.phase);
         ImGui::Text("Day: %d", work.day);
@@ -533,11 +550,11 @@ static void ChaoSoundMenu() {
         }
 
         if (ImGui::Button("Play")) {
-            PlaySound_XYZ(SoundID, &MainCharObj1[0]->pos, 0, 0, 110);
+            SE_CallV2(SoundID, 0, 0, 110, &playertwp[0]->pos);
         }
 
         if (ImGui::Button("Stop Music")) {
-            StopMusic();
+            BGM_Stop();
         }
 
         ImGui::End();
@@ -546,17 +563,17 @@ static void ChaoSoundMenu() {
 
 static void TaskListMenu() {
     if (ShowTaskList && ImGui::Begin("Tasks", &ShowTaskList)) {
-        for (size_t i = 0; i < ObjectLists_Length; i++) {
+        for (size_t i = 0; i < btp_Length; i++) {
             char path[40];
             sprintf_s(path, "List %d", int(i));
 
             if (ImGui::TreeNode(path)) {
-                auto* obj = ObjectLists[i];
+                auto* obj = btp[i];
                 if (obj) {
                     do {
-                        ImGui::Text(!obj->Name ? "" : obj->Name);
-                        obj = obj->NextObject;
-                    } while (obj != ObjectLists[i]);
+                        ImGui::Text(!obj->name ? "" : obj->name);
+                        obj = obj->last;
+                    } while (obj != btp[i]);
                 }
 
                 ImGui::TreePop();
@@ -818,7 +835,7 @@ static void ImGuiMenu() {
         }
 
         if (raintp) {
-            auto* work = (RAIN_WORK*)raintp->Data2.Undefined;
+            auto* work = (RAIN_WORK*)raintp->awp;
             
             for (size_t i = 0; i < DROP_COUNT; i++) {
                 if (!work->drops[i].lifeCount) {

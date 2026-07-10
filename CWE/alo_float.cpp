@@ -21,7 +21,7 @@ enum
 	MD_FLOAT_FLY_DOWN_START,
 	MD_FLOAT_FLY_DOWN
 };
-//extern NJS_OBJECT object_00F005A0;
+//extern NJS_CNK_OBJECT object_00F005A0;
 void ALO_Float_Displayer_(task* a1)
 {
 	if (a1->twp->wtimer)
@@ -35,15 +35,15 @@ void ALO_Float_Displayer_(task* a1)
 		//njColorBlendingMode(0, NJD_COLOR_BLENDING_SRCALPHA);
 		//njColorBlendingMode(NJD_DESTINATION_COLOR, NJD_COLOR_BLENDING_INVSRCALPHA);
 
-		Has_texlist_batadvPlayerChara_in_it[3] = Has_texlist_batadvPlayerChara_in_it[3] & 0x3FFFFFF | 0x94000000;
+		_nj_curr_ctx_->tspparam = _nj_curr_ctx_->tspparam & 0x3FFFFFF | 0x94000000;
 		*(float*)0x01AED2D0 = (-(a1->twp->ang.x / 335.0f));
 
 		njTranslateEx(&a1->twp->pos);
 		njRotateY(NULL, a1->twp->ang.y);
 		njTranslate(NULL, 0, 0, -2.65f);
-		chCnkDrawObject((NJS_OBJECT*)0x013005A0);//0x03898530 - coffin
+		chCnkDrawObject((NJS_CNK_OBJECT*)0x013005A0);//0x03898530 - coffin
 		
-		if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
+		if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 			njTranslate(NULL, 0, 0.4f, 2.65f);
 			njScale(NULL, 1.5f, 0.7f, 1.5f);
 
@@ -132,10 +132,9 @@ void ALO_Float_Main(task* a1)
 		break;
 	}
 	//ALO_Float_Displayer(a1);
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
-CollisionData floatColl =
-{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+
 void ALO_Float_Load(task* a1)
 {
 	a1->exec = ALO_Float_Main;
@@ -144,14 +143,15 @@ void ALO_Float_Load(task* a1)
 }
 
 void ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
-	task* p = CreateElementalTask(4, "ALO_Float", ALO_Float_Load, LoadObj_Data1);
-	//InitCollision(p, (CollisionData*)colli_info, 2, 4);
+	static const CCL_INFO float_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+
+	task* p = CreateElementalTask(IM_TWK, LEV_4, ALO_Float_Load, "ALO_Float");
 
 	p->disp = ALO_Float_Displayer_;
 	p->twp->wtimer = 1; //enable display
 	p->twp->pos = *pPos;
 	p->twp->ang.y = ang;
 	p->twp->scl = p->twp->pos; //scale = default pos
-	//p->Data1->Position = { 10,0,0 };
-	AL_Toy_Move_Init(p, (CCL_INFO*)&floatColl);
+	
+	AL_Toy_Move_Init(p, &float_colli_info);
 }

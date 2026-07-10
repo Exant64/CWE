@@ -16,7 +16,7 @@ void WcConvFromCStr(int result, int a2, signed int a3)
 
 #pragma optimize( "gty", off )
 const int DrawChaoHudThingBptr = 0x00558BE0;
-void DrawChaoHudThingB(ChaoHudThingB* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8)
+void chDrawBillboardSR(CHS_BILL_INFO* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8)
 {
     __asm
     {
@@ -35,7 +35,7 @@ void DrawChaoHudThingB(ChaoHudThingB* a1, float a2, float a3, float a4, float a5
 #pragma optimize( "gty", on )
 
 const int DrawChaoHudThingPtr = 0x0583F50;
-void DrawChaoHudThing(ChaoHudThing* a1, int a2)
+void AlgKinderOrthoQuadDraw(SAlgKinderOrthoQuad* a1, int a2)
 {
 	__asm
 	{
@@ -45,9 +45,9 @@ void DrawChaoHudThing(ChaoHudThing* a1, int a2)
 	}
 }
 
-void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(ChaoHudThing const* a4, int a5, unsigned int a6, int a7, int a8, int a9, __int16 a10)
+void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(SAlgKinderOrthoQuad const* a4, int a5, unsigned int a6, int a7, int a8, int a9, __int16 a10)
 {
-    ChaoHudThing const* v7; // esi
+    SAlgKinderOrthoQuad const* v7; // esi
     __int16 v8; // bx
     __int16 v9; // cx
     __int16 v10; // bp
@@ -63,7 +63,7 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(ChaoHudThing const* a4, int a
     int v20; // [esp+0h] [ebp-1Ch]
     int v21; // [esp+4h] [ebp-18h]
     __int16 v22; // [esp+8h] [ebp-14h]
-    ChaoHudThing a1; // [esp+Ch] [ebp-10h]
+    SAlgKinderOrthoQuad a1; // [esp+Ch] [ebp-10h]
     int a5a; // [esp+24h] [ebp+8h]
 
     if (a5 > 0)
@@ -100,7 +100,7 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(ChaoHudThing const* a4, int a
                         a5a = a7;
                         do
                         {
-                            DrawChaoHudThing(&a1, a6);
+                            AlgKinderOrthoQuadDraw(&a1, a6);
                             v12 += v10;
                             v13 += v10;
                             v17 = a5a == 1;
@@ -128,12 +128,12 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(ChaoHudThing const* a4, int a
         } while (v21);
     }
 }
-void __cdecl AlgKinderOrthoQuadDrawArrayOffset(ChaoHudThing const* a3, int count, unsigned int color, __int16 oX, __int16 oY)
+void __cdecl AlgKinderOrthoQuadDrawArrayOffset(SAlgKinderOrthoQuad const* a3, int count, unsigned int color, __int16 oX, __int16 oY)
 {
     for(int i = 0; i < count; i++)
     {
-        ChaoHudThing a1;
-        const ChaoHudThing* v6 = &a3[i];
+        SAlgKinderOrthoQuad a1;
+        const SAlgKinderOrthoQuad* v6 = &a3[i];
         a1.x0 = oX + v6->x0;
         a1.y0 = oY + v6->y0;
         a1.x1 = oX + v6->x1;
@@ -142,13 +142,13 @@ void __cdecl AlgKinderOrthoQuadDrawArrayOffset(ChaoHudThing const* a3, int count
         a1.u1 = v6->u1;
         a1.v0 = v6->v0;
         a1.v1 = v6->v1;
-        DrawChaoHudThing(&a1, color);
+        AlgKinderOrthoQuadDraw(&a1, color);
     }
 }
 
-void __cdecl AlgKinderOrthoQuadDrawArrayTile(ChaoHudThing* a3, int count, Uint32 color, int nx, int ny)
+void __cdecl AlgKinderOrthoQuadDrawArrayTile(SAlgKinderOrthoQuad* a3, int count, Uint32 color, int nx, int ny)
 {
-    ChaoHudThing* v5; // edi
+    SAlgKinderOrthoQuad* v5; // edi
     __int16 v6; // si
     __int16 v7; // bx
     int v8; // ecx
@@ -156,7 +156,7 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTile(ChaoHudThing* a3, int count, Uint32
     __int16 v10; // dx
     bool v11; // zf
     int v12; // [esp+0h] [ebp-14h]
-    ChaoHudThing a1; // [esp+4h] [ebp-10h]
+    SAlgKinderOrthoQuad a1; // [esp+4h] [ebp-10h]
     int a4a; // [esp+1Ch] [ebp+8h]
 
     if (count > 0)
@@ -182,7 +182,7 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTile(ChaoHudThing* a3, int count, Uint32
                     {
                         do
                         {
-                            DrawChaoHudThing(&a1, color);
+                            AlgKinderOrthoQuadDraw(&a1, color);
                             a1.x0 += v6;
                             a1.x1 += v6;
                             --v9;
@@ -202,9 +202,9 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTile(ChaoHudThing* a3, int count, Uint32
         } while (v12);
     }
 }
-void __cdecl AlgKinderOrthoQuadDrawArray(ChaoHudThing* q, int len, Uint32 color)
+void __cdecl AlgKinderOrthoQuadDrawArray(SAlgKinderOrthoQuad* q, int len, Uint32 color)
 {
     for (int i = 0; i < len; i++) {
-        DrawChaoHudThing(&q[i], color);
+        AlgKinderOrthoQuadDraw(&q[i], color);
     }
 }

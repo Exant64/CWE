@@ -22,7 +22,7 @@ static const char* DefaultCustomChao = "cwe_spartoi";
 static std::vector <NJS_TEXNAME> AL_BODY_TEXNAMES;
 
 //AL_RootObject buffer to store the 'type 26' model in
-static std::vector<NJS_OBJECT*> AL_RootObject;
+static std::vector<NJS_CNK_OBJECT*> CWE_AL_RootObject;
 
 //node counter for checking the number of nodes and the current node when traversing the char chao's hierarchy in EditChunkObjectTexture
 static int NodeCounter;
@@ -40,7 +40,7 @@ void AL_CalcIconColor(task* tp)
 	}
 }
 void __cdecl AL_CalcIconColorMod(task* tp) {
-	ChaoData1* work = GET_CHAOWK(tp);
+	chaowk* work = GET_CHAOWK(tp);
 	CHAO_PARAM_GC* pParam = work->pParamGC;
 	
 	//we put the monster evo fix here because iirc CalcIconColor is called right before the deform crap
@@ -57,8 +57,7 @@ void __cdecl AL_CalcIconColorMod(task* tp) {
 	}
 
 	if (AL_IsCustomChao(tp)) {
-		//icon color offset in chaodata1
-		*(Uint32*)((int)GET_CHAOWK(tp) + 0x700) = CustomChaoTypeEntries[work->LocalCharacterChaoType].Data.IconColor;
+		work->Icon.Color = CustomChaoTypeEntries[GET_CHAOWK_CWE(tp)->LocalCharacterChaoType].Data.IconColor;
 		return;
 	}
 
@@ -82,8 +81,7 @@ void __cdecl AL_IconDraw_r(task* a1);
 Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, AL_IconDraw_r);
 void __cdecl AL_IconDraw_r(task* tp)
 {
-	ChaoData1* work = GET_CHAOWK(tp);
-	CHAO_PARAM_GC* pParam = work->pParamGC;
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 	const auto original = reinterpret_cast<decltype(AL_IconDraw_r)*>(AL_IconDraw_t.Target());
 
 	//if not custom chao just draw the emotion ball
@@ -92,7 +90,7 @@ void __cdecl AL_IconDraw_r(task* tp)
 		return;
 	}
 
-	CustomChaoEntry& entry = CustomChaoTypeEntries[work->LocalCharacterChaoType];
+	CustomChaoEntry& entry = CustomChaoTypeEntries[GET_CHAOWK_CWE(tp)->LocalCharacterChaoType];
 	auto typeBackup = pParam->type;
 	//NJS_TEXLIST* iconTexlist = (NJS_TEXLIST*)0x01366ACC;
 	//NJS_TEXNAME* texBackup = iconTexlist->textures;
@@ -100,13 +98,13 @@ void __cdecl AL_IconDraw_r(task* tp)
 	//we trick the emotion ball drawing function to think the chao is of specified alignment
 	switch (entry.Data.IconType) {
 	case ICON_TYPE_BALL:
-		pParam->type = ChaoType_Neutral_Normal;
+		pParam->type = TYPE_N_NORMAL;
 		break;
 	case ICON_TYPE_HALO:
-		pParam->type = ChaoType_Hero_Normal;
+		pParam->type = TYPE_H_NORMAL;
 		break;
 	case ICON_TYPE_SPIKY:
-		pParam->type = ChaoType_Dark_Normal;
+		pParam->type = TYPE_D_NORMAL;
 		break;
 	}
 
@@ -125,14 +123,14 @@ void __cdecl AL_IconDraw_r(task* tp)
 }
 
 static void FillAL_RootObject() {
-	NJS_OBJECT** chaoModels = (NJS_OBJECT**)GetDllData("AL_RootObject");
+	NJS_CNK_OBJECT** chaoModels = (NJS_CNK_OBJECT**)GetDataDllProcAddr("AL_RootObject");
 	for (int i = 0; i < 144; i++) {
-		AL_RootObject.push_back(chaoModels[i]);
+		CWE_AL_RootObject.push_back(chaoModels[i]);
 	}
 
 	//temp space for type 26
 	for (int i = 0; i < 6; i++) {
-		AL_RootObject.push_back(nullptr);
+		CWE_AL_RootObject.push_back(nullptr);
 	}
 }
 
@@ -141,9 +139,9 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	// checks vertex chunk type (so that its vertex+normal)
 	__int16 vertChunkType = (__int16)*(int*)model->vlist;
 	if (vertChunkType != NJD_CV_VN) {
-		PrintDebug("--------------------------------------ERROR-----------------------------------------------");
-		PrintDebug("invalid vertex chunk type (probably using vertex colors), cancelling custom chao register!");
-		PrintDebug("------------------------------------------------------------------------------------------");
+		___OutputDebugString("--------------------------------------ERROR-----------------------------------------------");
+		___OutputDebugString("invalid vertex chunk type (probably using vertex colors), cancelling custom chao register!");
+		___OutputDebugString("------------------------------------------------------------------------------------------");
 		return 1;
 	}
 
@@ -154,9 +152,9 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	{
 		//if texCount out of bounds
 		if ((foundChunk[1] & 0x1FFF) >= texCount) {
-			PrintDebug("------------------------------ERROR------------------------------------");
-			PrintDebug("texture index is out of bounds (%d), cancelling custom chao register!", (foundChunk[1] & 0x1FFF));
-			PrintDebug("-----------------------------------------------------------------------");
+			___OutputDebugString("------------------------------ERROR------------------------------------");
+			___OutputDebugString("texture index is out of bounds (%d), cancelling custom chao register!", (foundChunk[1] & 0x1FFF));
+			___OutputDebugString("-----------------------------------------------------------------------");
 
 			return 1;
 		}
@@ -167,9 +165,9 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	}
 
 	if (NodeCounter == 27 && texChunkCount != 2) {
-		PrintDebug("---------------------------------ERROR---------------------------------------");
-		PrintDebug("Mouth (node 27) doesn't have 2 materials, cancelling custom chao register!");
-		PrintDebug("-----------------------------------------------------------------------------");
+		___OutputDebugString("---------------------------------ERROR---------------------------------------");
+		___OutputDebugString("Mouth (node 27) doesn't have 2 materials, cancelling custom chao register!");
+		___OutputDebugString("-----------------------------------------------------------------------------");
 
 		return 1;
 	}
@@ -177,12 +175,12 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 	return 0;
 }
 
-static int EditChunkObjectTexture(NJS_OBJECT* obj, int baseTexture, int texCount)
+static int EditChunkObjectTexture(NJS_CNK_OBJECT* obj, int baseTexture, int texCount)
 {
 	do
 	{
-		if (obj->chunkmodel) {
-			if (EditChunkModelTexture(obj->chunkmodel, baseTexture, texCount)) {
+		if (obj->model) {
+			if (EditChunkModelTexture(obj->model, baseTexture, texCount)) {
 				//if there's an error, return with error (wow what an insight)
 				return 1;
 			}
@@ -203,10 +201,10 @@ static int EditChunkObjectTexture(NJS_OBJECT* obj, int baseTexture, int texCount
 
 size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	size_t startIndex = AL_BODY_TEXNAMES.size();
-	size_t newChaoType = (AL_RootObject.size() / 6) + 2;
+	size_t newChaoType = (CWE_AL_RootObject.size() / 6) + 2;
 
 	if (!pData->Name) {
-		PrintDebug("Custom Chao's name is null!");
+		___OutputDebugString("Custom Chao's name is null!");
 		return -1;
 	}
 
@@ -215,24 +213,24 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	name_buffer[sizeof(pData->ID) - 1] = '\0';
 
 	if (strlen(name_buffer) == 0) {	
-		PrintDebug("Custom Chao ID is an empty string, please set a proper one!");
+		___OutputDebugString("Custom Chao ID is an empty string, please set a proper one!");
 		return -1;
 	}
 
 	//check if ID is already used
 	for (const auto& entry : CustomChaoTypeEntries) {
 		if (strcmp(pData->ID, entry.Data.ID) == 0) {
-			PrintDebug("------------------ERROR-------------------");
-			PrintDebug("Custom Chao ID %s is already used by %s", pData->ID, entry.Data.Name);
-			PrintDebug("------------------------------------------");
+			___OutputDebugString("------------------ERROR-------------------");
+			___OutputDebugString("Custom Chao ID %s is already used by %s", pData->ID, entry.Data.Name);
+			___OutputDebugString("------------------------------------------");
 			return -1;
 		}
 	}
 
 	if (pData->TextureCount <= 0) {
-		PrintDebug("-------------------------------ERROR---------------------------------------");
-		PrintDebug("Custom Chao ID %s has negative (or zero) texture count, cancelling register", pData->ID);
-		PrintDebug("---------------------------------------------------------------------------");
+		___OutputDebugString("-------------------------------ERROR---------------------------------------");
+		___OutputDebugString("Custom Chao ID %s has negative (or zero) texture count, cancelling register", pData->ID);
+		___OutputDebugString("---------------------------------------------------------------------------");
 	}
 
 	for (int i = 0; i < pData->TextureCount; i++) {
@@ -245,9 +243,9 @@ size_t AddChaoType(CWE_API_CHAO_DATA const* pData) {
 	}
 
 	if (NodeCounter != AL_PART_END) {
-		PrintDebug("-------------------------------ERROR---------------------------------------");
-		PrintDebug("The number of nodes is not 40 (it's %d), cancelling character chao register!", NodeCounter);
-		PrintDebug("---------------------------------------------------------------------------");
+		___OutputDebugString("-------------------------------ERROR---------------------------------------");
+		___OutputDebugString("The number of nodes is not 40 (it's %d), cancelling character chao register!", NodeCounter);
+		___OutputDebugString("---------------------------------------------------------------------------");
 		return -1;
 	}
 
@@ -281,7 +279,7 @@ void AL_ModAPI_CharacterChao_Update() {
 		CWE_API_Legacy.RegisterChaoTexlistLoad(entry.Data.TextureName, &tex);
 	}
 
-	g_HelperFunctions->HookExport("AL_RootObject", AL_RootObject.data());
+	g_HelperFunctions->HookExport("AL_RootObject", CWE_AL_RootObject.data());
 }
 
 static int AL_CustomChao_SearchID(const char* pID) {
@@ -297,8 +295,8 @@ static int AL_CustomChao_SearchID(const char* pID) {
 static int __cdecl AL_ShapeInit_r(task* tp);
 static Trampoline AL_ShapeInit_Tramp(0x0056C9D0, 0x0056C9D7, AL_ShapeInit_r);
 static int __cdecl AL_ShapeInit_r(task* tp) {
-	chaowk* work = GET_CHAOWK(tp);
-	CHAO_PARAM_GC* pParam = work->pParamGC;
+	chaowk_cwe* work = GET_CHAOWK_CWE(tp);
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 
 	work->IsCustomChaoTypeLoaded = false;
 
@@ -307,7 +305,7 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	if (AL_IsCustomChao(tp)) {
 		int id = AL_CustomChao_SearchID(GET_CWEPARAM(tp)->TypeID);
 		if (id == -1) {
-			PrintDebug("AL_ShapeInit_r: couldn't find type %s, using %s as default", GET_CWEPARAM(tp)->TypeID, DefaultCustomChao);
+			___OutputDebugString("AL_ShapeInit_r: couldn't find type %s, using %s as default", GET_CWEPARAM(tp)->TypeID, DefaultCustomChao);
 			id = AL_CustomChao_SearchID(DefaultCustomChao);
 		}
 
@@ -320,12 +318,12 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 
 		//in our AL_RootObject vector we have a reserved space for type 26 that the original AL_ShapeInit will load here
 		for (size_t i = 144; i < 150; i++) {
-			AL_RootObject[i] = entry.Data.pObject;
+			CWE_AL_RootObject[i] = entry.Data.pObject;
 		}
 
 		if (entry.Data.Flags & CUSTOM_CHAO_FLAG_SECOND_EVO) {
 			for (size_t i = 145; i < 150; i++) {
-				AL_RootObject[i] = entry.Data.pSecondEvoList[i - 145];
+				CWE_AL_RootObject[i] = entry.Data.pSecondEvoList[i - 145];
 			}
 		}
 	}
@@ -337,8 +335,8 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	work->BaldAdjacencyIndexCount = 0;
 	
 	switch (pParam->type) {
-		case ChaoType_Tails:
-		case ChaoType_Amy:
+		case TYPE_TAILS:
+		case TYPE_AMY:
 			checkIfAdjacencyNeeded = true;
 			break;
 	}
@@ -349,7 +347,7 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	// we do that by finding the lowest vertex index, which is part of the head usually
 	// then finding all indices that don't belong to the same "connected mesh" as that vertex
 	if (checkIfAdjacencyNeeded) {
-		const NJS_CNK_MODEL* pModel = work->field_524[16]->base.chunkmodel;
+		const NJS_CNK_MODEL* pModel = (NJS_CNK_MODEL*)GET_CHAOWK(tp)->Shape.CurrObjectList[16]->pModel;
 		const Sint32* pVertex = pModel->vlist;
 		const Sint32 nbVertex = pModel->vlist[1] >> 16;
 
@@ -387,7 +385,7 @@ static FunctionHook<void, task*> Chao_Delete_hook(0x0054FF30, Chao_Delete_r);
 static void Chao_Delete_r(task* tp) {
 	Chao_Delete_hook.Original(tp);
 
-	auto* work = GET_CHAOWK(tp);
+	auto* work = GET_CHAOWK_CWE(tp);
 	if (work->pBaldAdjacencyIndices) {
 		syFree(work->pBaldAdjacencyIndices, __FILE__, __LINE__);
 	}
@@ -400,7 +398,7 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 	
 	AL_BuyoBuyoControl.Original(tp);
 
-	auto* work = GET_CHAOWK(tp);
+	auto* work = GET_CHAOWK_CWE(tp);
 	if (!work->BaldHideHead || !work->pBaldAdjacencyIndices) {
 		return;
 	}
@@ -408,8 +406,8 @@ static void AL_BuyoBuyoControl_r(task* tp) {
 	for (size_t i = 0; i < work->BaldAdjacencyIndexCount; ++i) {
 		const auto index = work->pBaldAdjacencyIndices[i];
 
-		auto* model = work->field_524[16]->base.chunkmodel;
-		auto* points = (NJS_POINT3*)(model->vlist + 2);
+		auto* model = GET_CHAOWK(tp)->Shape.CurrObjectList[16]->pModel;
+		auto* points = (NJS_POINT3*)(model->VList + 2);
 
 		points[index * 2] = { 0,0,0 };
 	}
@@ -420,7 +418,7 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 	CHAO_PARAM_GC* pParam = work->pParamGC;
 	int msg = (int)a3;
 
-	if (pParam->type < ChaoType_Tails) {
+	if (pParam->type < TYPE_TAILS) {
 		DrawMedicalChartText((char*)&a2->dword60[*(int*)&a2->dword60[4 * (int)a3]], a4, a5, a6, a7, a1);
 		return;
 	}
@@ -428,17 +426,17 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 	const char* str = "Error";
 
 	switch (pParam->type) {
-	case ChaoType_Tails:
+	case TYPE_TAILS:
 		str = "Tails";
 		break;
-	case ChaoType_Knuckles:
+	case TYPE_KNUCKLES:
 		str = "Knuckles";
 		break;
-	case ChaoType_Amy:
+	case TYPE_AMY:
 		str = "Amy";
 		break;
 	case 26:
-		str = CustomChaoTypeEntries[work->LocalCharacterChaoType].Data.Name;
+		str = CustomChaoTypeEntries[GET_CHAOWK_CWE(a2->field_8)->LocalCharacterChaoType].Data.Name;
 		break;
 	}
 
@@ -476,20 +474,20 @@ int __cdecl sub_5366E0(task* a1, int a2)
 	auto pParam = GET_CHAOPARAM(a1);
 	switch (pParam->type)
 	{
-	case ChaoType_Empty:
-	case ChaoType_Good:
-	case ChaoType_Bad:
+	case TYPE_NONE:
+	case TYPE_DUMMY1:
+	case TYPE_DUMMY2:
 		return -1;
-	case ChaoType_Egg:
+	case TYPE_EGG:
 		return 0;
-	case ChaoType_Child:
+	case TYPE_CHILD:
 		return 1;
-	case ChaoType_Neutral_Chaos:
-	case ChaoType_Hero_Chaos:
-	case ChaoType_Dark_Chaos:
+	case TYPE_N_CHAOS:
+	case TYPE_H_CHAOS:
+	case TYPE_D_CHAOS:
 		return 7;
 	default:
-		if (pParam->type >= ChaoType_Tails) 
+		if (pParam->type >= TYPE_TAILS) 
 			return 7;
 
 		return ((unsigned __int8)pParam->type - 5) / 3 + 2;
@@ -514,7 +512,7 @@ static void __declspec(naked) sub_5366E0Hook()
 
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp);
 static Trampoline AL_ChaoParamWindowExecutorDisplay_t(0x005928A0, 0x005928A8, AL_ChaoParamWindowExecutorDisplay_r);
-DataArray(ChaoHudThingB, AL_ChaoParamWindow_HudThingB, 0x011D1658, 1);
+DataArray(CHS_BILL_INFO, AL_ChaoParamWindow_HudThingB, 0x011D1658, 1);
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 #pragma pack(push, 8)
 	struct __declspec(align(16)) AL_ChaoParamWindowExecutor_Data
@@ -590,7 +588,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 	auto original = reinterpret_cast<decltype(AL_ChaoParamWindowExecutorDisplay_r)*>(AL_ChaoParamWindowExecutorDisplay_t.Target());
 	original(tp);
 
-	auto* pData = (AL_ChaoParamWindowExecutor_Data*)tp->Data2.Undefined;
+	auto* pData = (AL_ChaoParamWindowExecutor_Data*)tp->awp;
 	if (pData->Action) {
 		char v2 = pData->byte4;
 		float posX = (float)pData->posX;
@@ -604,9 +602,9 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 		{
 			*(int*)0x1AED260 = 0;
 			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(v5);
-			SetChaoHUDThingBColor(pData->alpha, 0.5f, 0.85f, 1.0f);
+			chSetBillboardColor(pData->alpha, 0.5f, 0.85f, 1.0f);
 
-			ChaoHudThingB custom_type = {
+			CHS_BILL_INFO custom_type = {
 				.adjust = 1,
 				.wd = 119 * 0.5f,
 				.ht = 41 * 0.5f,
@@ -620,23 +618,23 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 
 			switch (pParam->type)
 			{
-			case ChaoType_Child:
+			case TYPE_CHILD:
 				v8 = BBI_CPW_TYPE_CHILD;
 				break;
-			case ChaoType_Neutral_Chaos:
-			case ChaoType_Hero_Chaos:
-			case ChaoType_Dark_Chaos:
+			case TYPE_N_CHAOS:
+			case TYPE_H_CHAOS:
+			case TYPE_D_CHAOS:
 				v8 = BBI_CPW_TYPE_CHAOS;
 				break;
-			case ChaoType_Tails:
-			case ChaoType_Knuckles:
-			case ChaoType_Amy:
+			case TYPE_TAILS:
+			case TYPE_KNUCKLES:
+			case TYPE_AMY:
 				v8 = -1;
 				break;
 			case 26:
 				//custom sprite drawn here
-				DrawChaoHudThingB(&custom_type, posX - 96, posY - 89, -34.5f, 1, 1, -1, -1);
-				SetChaoHUDThingBColor(1.0f, 1.0f, 1.0f, 1.0f);
+				chDrawBillboardSR(&custom_type, posX - 96, posY - 89, -34.5f, 1, 1, -1, -1);
+				chSetBillboardColor(1.0f, 1.0f, 1.0f, 1.0f);
 				return;
 			default:
 				v8 = ((unsigned __int8)pParam->type - 5) / 3 + BBI_CPW_TYPE_NORMAL;
@@ -648,16 +646,16 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				float v45 = posX - 96;
 				float v44 = posY - 72;
 				
-				DrawChaoHudThingB(&AL_ChaoParamWindow_HudThingB[v8], v45, v44, -34.5f, 1, 1, -1, -1);
+				chDrawBillboardSR(&AL_ChaoParamWindow_HudThingB[v8], v45, v44, -34.5f, 1, 1, -1, -1);
 			}
 			
-			if (pParam->type != ChaoType_Child
-				&& ((unsigned __int8)pParam->type <= ChaoType_Dark_Chaos || (unsigned __int8)pParam->type > ChaoType_Amy))
+			if (pParam->type != TYPE_CHILD
+				&& (pParam->type <= TYPE_D_CHAOS || pParam->type > TYPE_AMY))
 			{
 				float v43 = posX - 96;
 				float v42 = posY - 89;
-				DrawChaoHudThingB(
-					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + ((unsigned __int8)pParam->type - 5) % 3],
+				chDrawBillboardSR(
+					&AL_ChaoParamWindow_HudThingB[BBI_CPW_ATTR_NEUT + (pParam->type - 5) % 3],
 					v43,
 					v42,
 					-35,
@@ -670,7 +668,7 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 	}
 
 	//back to default
-	SetChaoHUDThingBColor(1.0f, 1.0f, 1.0f, 1.0f);
+	chSetBillboardColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void AL_ModAPI_CharacterChao_Init() {

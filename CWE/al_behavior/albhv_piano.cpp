@@ -8,6 +8,7 @@
 #include "../al_world.h"
 #include "albhv.h"
 #include <al_face.h>
+#include <al_field.h>
 #include <util.h>
 
 static int GetPianoType (task* pToy) {
@@ -17,7 +18,6 @@ static int GetPianoType (task* pToy) {
 static int ALBHV_PlayPiano(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	AL_BEHAVIOR* bhv = &work->Behavior;
-	UnknownData2* move = tp->Data2.Unknown_Chao;
 
 	task* pToy;
 	NJS_POINT3 toyPos;
@@ -28,9 +28,9 @@ static int ALBHV_PlayPiano(task* tp) {
 		pToy = ALW_GetLockOnTask(tp);
 		SetPianoWaypoint(pToy, &toyPos);
 
-		toyPos.y = work->entity.pos.y;
-		work->entity.pos = toyPos;
-		work->entity.ang.y = pToy->twp->ang.y + 0x8000;
+		toyPos.y = work->pos.y;
+		work->pos = toyPos;
+		work->ang.y = pToy->twp->ang.y + 0x8000;
 
 		switch (GetPianoType(pToy))
 		{
@@ -49,19 +49,19 @@ static int ALBHV_PlayPiano(task* tp) {
 
 		timer = (int)(1800 + (njRandom() * 800.f)) * 2;
 
-		work->task_ptr1 = AL_FieldExecutor_Load(
+		work->pBooktask = AL_AllFieldCreateT(
 			CI_KIND_AL_RANDOM_MUSIC,
-			&work->entity.pos,
+			&work->pos,
 			20,
 			timer);
-		work->task_ptr2 = AL_FieldExecutor_Load( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
+		work->pAnytask = AL_AllFieldCreateT( //165 is shared with bands, so that shouldn't stop the pianist to join, which is why i created 225
 			CI_KIND_AL_PIANO,
-			&work->entity.pos,
+			&work->pos,
 			20,
 			timer);
 		break;
 	case 1:
-		if (!ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
+		if (!AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
 			bhv->IntervalTimer[INT_TIMER_LTOY] = 1800 + (njRandom() * 1801.f);
 			return BHV_RET_FINISH;
 		}
@@ -95,8 +95,8 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 		{
 			const float speed = GET_GLOBAL()->WalkAcc * 0.8f;
-			tp->EntityData2->speed.x = njSin(work->entity.ang.y) * speed;
-			tp->EntityData2->speed.z = njCos(work->entity.ang.y) * speed;
+			GET_MOVE_WORK(tp)->Acc.x = njSin(work->ang.y) * speed;
+			GET_MOVE_WORK(tp)->Acc.z = njCos(work->ang.y) * speed;
 		}
 		
 		if (MOV_DistFromAimXZ(tp) < 0.5f) {
@@ -104,9 +104,9 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 		}
 		break;
 	case 2:
-		work->entity.ang.y = AdjustAngle(work->entity.ang.y, targetAng, ANGLE_SPD);
+		work->ang.y = AdjustAngle(work->ang.y, targetAng, ANGLE_SPD);
 
-		if (abs(work->entity.ang.y - targetAng) <= ANGLE_SPD) {
+		if (abs(work->ang.y - targetAng) <= ANGLE_SPD) {
 			return BHV_RET_FINISH;
 		}
 		break;
@@ -120,7 +120,7 @@ int ALBHV_GoToPiano(task* tp) {
 	NJS_POINT3 toyPos;
 
 	//if theres already a piano field or if any chao is playing the piano
-	if (!pToy || ALW_IsSheAttentionOtherOne(tp, pToy) || ALO_Field_Find_(tp, 1, CI_KIND_AL_PIANO))
+	if (!pToy || ALW_IsSheAttentionOtherOne(tp, pToy) || AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_PIANO))
 	{
 		return BHV_RET_FINISH;
 	}

@@ -153,7 +153,7 @@ Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
 		return TRUE;
 	}
 	
-	PrintDebug("IsLessonLearned: invalid lesson! %d", LessonKind);
+	___OutputDebugString("IsLessonLearned: invalid lesson! %d", LessonKind);
 	return TRUE;
 }
 
@@ -267,7 +267,7 @@ void AL_KinderMessageTimerDisp(task* tp) {
 	//tp->twp->Rotation.z;
 
 	*(int*)0x01A267D0 = textColor.color;
-	AlMsgFontCreateCStr(TextLanguage == 0, (int)ourMsg, (int)&messageBuffer, 999);
+	AlMsgFontCreateCStr(Language == 0, (int)ourMsg, (int)&messageBuffer, 999);
 
 	AlMsgFontDrawRegionScale2(-1, (MessageFontThing*)&messageBuffer, pPos->x, pPos->y, pPos->z, 32, 0, tp->twp->scl.x, tp->twp->scl.x);
 
@@ -290,7 +290,7 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 	a2->flags |= 4;
 	task* orig = AL_KinderPMessageExec_Load(a1, a2);
 
-	task* pTask = CreateChildTask(LoadObj_Data1, AL_KinderMessageTimerExec, a1);
+	task* pTask = CreateChildTask(IM_TWK, AL_KinderMessageTimerExec, a1);
 	pTask->twp->scl.x = orig->twp->scl.x;
 	pTask->twp->pos = orig->twp->pos;
 
@@ -300,13 +300,13 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 		pTask->twp->btimer = a1->twp->id + 1;
 	}
 
-	DeleteObject_(orig);
+	DestroyTask(orig);
 
 	//15 extra characters have to be enough right 
 	pTask->twp->ang.x = (int)syMalloc(strlen(pMsg) + 15, __FILE__, __LINE__);
 	pTask->twp->ang.y = (int)pMsg;
 	pTask->twp->ang.z = a2->color;
-	pTask->field_1C = AL_KinderMessageTimerDisp;
+	pTask->disp_dely = AL_KinderMessageTimerDisp;
 	pTask->dest = AL_KinderMessageTimerDest;
 
 	return pTask;

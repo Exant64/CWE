@@ -79,11 +79,11 @@ static int MaxRadius(NJS_CNK_MODEL* pModel) {
     return 0;
 }
 
-static float CalcMaxRadius(NJS_OBJECT* pObj, NJS_POINT3& center) {
+static float CalcMaxRadius(NJS_CNK_OBJECT* pObj, NJS_POINT3& center) {
     CalcRadius = -1;
 
     njPushUnitMatrix();
-    ProcessChunkModelsWithCallback(pObj, MaxRadius);
+    njCnkTransformObject(pObj, MaxRadius);
     njPopMatrixEx();
 
     center = CalcRadiusCenter;

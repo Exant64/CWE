@@ -149,7 +149,7 @@ static uint32_t* AccessoryFindMaterial(NJS_CNK_MODEL* pModel, size_t materialInd
 }
 
 static int IterateNodeCount = 0;
-static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupTable, NJS_OBJECT* pObject) {
+static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupTable, NJS_CNK_OBJECT* pObject) {
 	while (pObject) {
 		for (size_t i = 0; i < data.Data.ColorEntryCount; ++i) {
 			const auto& entry = data.Data.pColorEntries[i];
@@ -157,11 +157,11 @@ static bool AccessoryIterateObjects(AccessoryInternalData& data, size_t* lookupT
 				continue;
 			}
 			
-			if (!pObject->chunkmodel) {
+			if (!pObject->model) {
 				return false;
 			}
 
-			uint32_t* pMaterial = AccessoryFindMaterial(pObject->chunkmodel, entry.MaterialIndex);
+			uint32_t* pMaterial = AccessoryFindMaterial(pObject->model, entry.MaterialIndex);
 			if (!pMaterial) {
 				return false;
 			}
@@ -229,7 +229,7 @@ void AccessorySetupDraw(const size_t index, const Uint32 colors[8], const Uint32
 }
 
 size_t GetAccessoryID(const char* pID) {
-	return ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, pID);
+	return ItemMetadata::Get()->GetIndex(ALW_CATEGORY_ACCESSORY, pID);
 }
 
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
@@ -284,16 +284,16 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		return -1;
 	}
 
-	ItemMetadata::Get()->Add(ChaoItemCategory_Accessory, pAccessoryData->ID);
+	ItemMetadata::Get()->Add(ALW_CATEGORY_ACCESSORY, pAccessoryData->ID);
 
 	BlackMarketAttributes::Get()->Add(
-		ChaoItemCategory_Accessory,
+		ALW_CATEGORY_ACCESSORY,
 		pAccessoryData->pMarketAttrib,
 		pAccessoryData->pName,
 		pAccessoryData->pDescription
 	);
 
-	ObjectRegistry::Get(ChaoItemCategory_Accessory)->Add(pAccessoryData->pObject, pTexlist);
+	ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY)->Add(pAccessoryData->pObject, pTexlist);
 
 	const size_t id = ModAPI_AccessoryDataList.size();
 
@@ -317,7 +317,7 @@ CWE_API_REGISTER_ACCESSORY AL_ModAPI_Accessory = {
 	.GetAccessoryIndex = GetAccessoryID
 };
 
-extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	APIErrorUtil error("Error in legacy RegisterChaoAccessory: ");
 
 	#define SHIFT_MSG "If this is your first 9.6 bootup, you may experience the accessories being shifted. Note that this is a onetime process."
@@ -362,5 +362,5 @@ void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind) {
 }
 
 size_t CWE_ParamGetAccessory(task* tp, uint32_t slot) {
-	return GET_CHAOWK(tp)->AccessoryIndices[slot];
+	return GET_CHAOWK_CWE(tp)->AccessoryIndices[slot];
 }

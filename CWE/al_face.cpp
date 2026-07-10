@@ -20,13 +20,13 @@ void  SetChunkTextureID_(NJS_CNK_MODEL* a1, int a2)
 // todo: refactor with decomp
 void __cdecl AL_FaceSetEyeCWE(task* a3, int a2, int a1)
 {
-	ChaoFacialData* v3; // esi
-	ChaoData1* v4; // ecx
+	AL_FACE_CTRL* v3; // esi
+	chaowk* v4; // ecx
 	int v5; // eax
 	__int16 v6; // di
-	NJS_OBJECT* v7; // eax
+	AL_OBJECT* v7; // eax
 	NJS_CNK_MODEL* v8; // eax
-	NJS_OBJECT* v9; // esi
+	AL_OBJECT* v9; // esi
 	NJS_CNK_MODEL* v10; // ecx
 
 	v3 = &GET_CHAOWK(a3)->Face;
@@ -123,7 +123,7 @@ LABEL_10:
 		break;
 	}
 
-	if (v4->pParamGC->BodyType != 2) 
+	if (v4->pParamGC->body.FormNum != 2) 
 	{
 		//colors
 		if (GET_CWEPARAM(a3)->EyeColor)
@@ -178,7 +178,7 @@ LABEL_10:
 	v7 = v3->pEyeObject[0];
 	if (v7)
 	{
-		v8 = (NJS_CNK_MODEL*)v7->chunkmodel;
+		v8 = (NJS_CNK_MODEL*)v7->pModel;
 		if (v8)
 		{
 			SetChunkTextureID_(v8, v6);
@@ -187,7 +187,7 @@ LABEL_10:
 	v9 = v3->pEyeObject[1];
 	if (v9)
 	{
-		v10 = (NJS_CNK_MODEL*)v9->chunkmodel;
+		v10 = (NJS_CNK_MODEL*)v9->pModel;
 		if (v10)
 		{
 			SetChunkTextureID_(v10, v6);
@@ -211,35 +211,6 @@ static void __declspec(naked) AL_FaceSetEyeHook()
 		retn
 	}
 }
-
-unsigned __int8 eye_default_num[3][3][3] =
-{
-  { { ChaoEyes_HalfClosed, 0u, 0u }, { ChaoEyes_HalfClosed, 0u, 0u }, { 0u, 0u, 0u } },
-  { { ChaoEyes_HalfClosed, 0u, 0u }, { 0u, 0u, ChaoEyes_ClosedUp }, { 0u, 0u, ChaoEyes_ClosedUp } },
-  { { ChaoEyes_Mean, ChaoEyes_Mean, ChaoEyes_Mean }, { ChaoEyes_HalfClosed, 0u, ChaoEyes_ClosedUp }, { 0u, ChaoEyes_ClosedUp, ChaoEyes_ClosedUp } }
-};
-
-unsigned __int8 mouse_default_num[3][3][3] =
-{
-	//aggressive < -45
-	{
-		{ ChaoMouth_Squiggly, 0u, ChaoMouth_ClosedFrown },							//kindness < -45
-		{ ChaoMouth_Squiggly, ChaoMouth_ClosedFrown, ChaoMouth_ClosedFrown },		//kindness >= -45 && kindness < 45
-		{ ChaoMouth_Squiggly, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }		//kindness >= 45 
-	},
-	//aggressive >= -45 && aggressive < 45
-	{
-		{ 0u, ChaoMouth_ToothySmile, ChaoMouth_ToothySmile },						//kindness < -45
-		{ ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }, 	//kindness >= -45 && kindness < 45
-		{ 0u, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }						//kindness >= 45 
-	},
-	//aggressive >= 45
-	{
-		{ 0u, ChaoMouth_ToothySmile, ChaoMouth_ToothySmile },						//kindness < -45
-		{ 0u, ChaoMouth_ClosedFrown, ChaoMouth_ClosedFrown },						//kindness >= -45 && kindness < 45
-		{ ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile, ChaoMouth_ClosedSmile }		//kindness >= 45 
-	}
-};
 
 const int Chao_SetMouthPtr = 0x0053A5A0;
 void AL_FaceSetMouth(task* a2, int a3, int a1)

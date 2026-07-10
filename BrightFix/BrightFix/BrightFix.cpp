@@ -1,6 +1,8 @@
 #pragma once
 
 #include "SA2ModLoader.h"
+#include <chaoenum.h>
+
 #include <d3d9.h>
 //#include <d3dx9.h>
 #include <string>
@@ -61,7 +63,7 @@ extern "C"
 		int v6; // edx
 		int v7; // ecx
 
-		v3 = Has_texlist_batadvPlayerChara_in_it[8];
+		v3 = (int)_nj_curr_ctx_->texlist;
 		index_ = 12 * index;
 		v5 = *(int*)(*(int*)(*(int*)v3 + 12 * index + 8) + 12) + 4;
 		v6 = *(int*)(v5 + 24) >> 31;
@@ -120,13 +122,13 @@ extern "C"
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, (RFS_PSHADER*)chaoPixelSimpleShader);
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, (RFS_PSHADER*)chaoPixelSimpleShader);
 
-			SetShaders(1);
+			SetShaderType(1);
 			SetFlag(0);
 
 			return;
 		}
 
-		SetShaders(1);
+		SetShaderType(1);
 		device->SetVertexShader(chaoVertexSimpleShader);
 		device->SetPixelShader(chaoPixelSimpleShader);
 		SetFlag(0);
@@ -145,7 +147,7 @@ extern "C"
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
 			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, pBackupFogPixelShader);
 
-			SetShaders(1);
+			SetShaderType(1);
 
 			SetFlag(1);
 			SetChunkTexIndexNull(2);
@@ -362,17 +364,17 @@ extern "C"
 		ChunkMatEnable = 0;
 	}
 
-	void ToyFix(NJS_OBJECT* obj)
+	void ToyFix(NJS_CNK_OBJECT* obj)
 	{
 		SetFlag(1);
 		njCnkDrawObject(obj);
 		SetFlag(0);
 	}
 
-	void MedalWrap(NJS_OBJECT* object, int(__cdecl* callback)(NJS_CNK_MODEL*))
+	void MedalWrap(NJS_CNK_OBJECT* object, int(__cdecl* callback)(NJS_CNK_MODEL*))
 	{
 		SetFlag(1);
-		ProcessChunkModelsWithCallback(object, ProcessChunkModel);
+		njCnkTransformObject(object, ProcessChunkModel);
 		SetFlag(0);
 	}
 
@@ -386,64 +388,64 @@ extern "C"
 
 		switch (a2)
 		{
-		case SA2BEggColour_Normal:
+		case ChaoEggColor_Normal:
 			ChunkMatEnable = 0;
 			return;
-		case SA2BEggColour_Yellow_MonoTone:
-		case SA2BEggColour_White_MonoTone:
-		case SA2BEggColour_Brown_MonoTone:
-		case SA2BEggColour_SkyBlue_MonoTone:
-		case SA2BEggColour_Pink_MonoTone:
-		case SA2BEggColour_Blue_MonoTone:
-		case SA2BEggColour_Grey_MonoTone:
-		case SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_Red_MonoTone:
-		case SA2BEggColour_LimeGreen_MonoTone:
-		case SA2BEggColour_Purple_MonoTone:
-		case SA2BEggColour_Orange_MonoTone:
-		case SA2BEggColour_Black_MonoTone:
+		case ChaoEggColor_Yellow_MonoTone:
+		case ChaoEggColor_White_MonoTone:
+		case ChaoEggColor_Brown_MonoTone:
+		case ChaoEggColor_SkyBlue_MonoTone:
+		case ChaoEggColor_Pink_MonoTone:
+		case ChaoEggColor_Blue_MonoTone:
+		case ChaoEggColor_Grey_MonoTone:
+		case ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_Red_MonoTone:
+		case ChaoEggColor_LimeGreen_MonoTone:
+		case ChaoEggColor_Purple_MonoTone:
+		case ChaoEggColor_Orange_MonoTone:
+		case ChaoEggColor_Black_MonoTone:
 			v2 = dword_1298448[a2];
 			ChunkMatEnable = 1;
 			ChunkMatFlag = 9;
 			ChunkObjectColor = v2;
 			return;
-		case SA2BEggColour_Yellow_TwoTone:
-		case SA2BEggColour_White_TwoTone:
-		case SA2BEggColour_Brown_TwoTone:
-		case SA2BEggColour_SkyBlue_TwoTone:
-		case SA2BEggColour_Pink_TwoTone:
-		case SA2BEggColour_Blue_TwoTone:
-		case SA2BEggColour_Grey_TwoTone:
-		case SA2BEggColour_Green_TwoTone:
-		case SA2BEggColour_Red_TwoTone:
-		case SA2BEggColour_LimeGreen_TwoTone:
-		case SA2BEggColour_Purple_TwoTone:
-		case SA2BEggColour_Orange_TwoTone:
-		case SA2BEggColour_Black_TwoTone:
+		case ChaoEggColor_Yellow_TwoTone:
+		case ChaoEggColor_White_TwoTone:
+		case ChaoEggColor_Brown_TwoTone:
+		case ChaoEggColor_SkyBlue_TwoTone:
+		case ChaoEggColor_Pink_TwoTone:
+		case ChaoEggColor_Blue_TwoTone:
+		case ChaoEggColor_Grey_TwoTone:
+		case ChaoEggColor_Green_TwoTone:
+		case ChaoEggColor_Red_TwoTone:
+		case ChaoEggColor_LimeGreen_TwoTone:
+		case ChaoEggColor_Purple_TwoTone:
+		case ChaoEggColor_Orange_TwoTone:
+		case ChaoEggColor_Black_TwoTone:
 			ChunkMatEnable = 1;
 			ChunkMatFlag = UseChunkObjectColor;
 			v3 = GetChunkTexIndex((NJS_CNK_MODEL*)result);
 			SetChunkTexIndexPrimary(v3, 1, 1);
 			ChunkObjectColor = dword_1298414[a2];
 			return;
-		case SA2BEggColour_NormalShiny:
+		case ChaoEggColor_NormalShiny:
 			ChunkMatFlag = SecondTextureEnvironmentMap | HasSecondTexture;
 			njSetTexture(&AL_BODY);
 			goto LABEL_6;
-		case SA2BEggColour_YellowShiny_MonoTone:
-		case SA2BEggColour_WhiteShiny_MonoTone:
-		case SA2BEggColour_BrownShiny_MonoTone:
-		case SA2BEggColour_SkyBlueShiny_MonoTone:
-		case SA2BEggColour_PinkShiny_MonoTone:
-		case SA2BEggColour_BlueShiny_MonoTone:
-		case SA2BEggColour_GreyShiny_MonoTone:
-		case SA2BEggColour_GreenShiny_MonoTone:
-		case SA2BEggColour_RedShiny_MonoTone:
-		case SA2BEggColour_LimeGreenShiny_MonoTone:
-		case SA2BEggColour_PurpleShiny_MonoTone:
-		case SA2BEggColour_OrangeShiny_MonoTone:
-		case SA2BEggColour_BlackShiny_MonoTone:
-			Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
+		case ChaoEggColor_YellowShiny_MonoTone:
+		case ChaoEggColor_WhiteShiny_MonoTone:
+		case ChaoEggColor_BrownShiny_MonoTone:
+		case ChaoEggColor_SkyBlueShiny_MonoTone:
+		case ChaoEggColor_PinkShiny_MonoTone:
+		case ChaoEggColor_BlueShiny_MonoTone:
+		case ChaoEggColor_GreyShiny_MonoTone:
+		case ChaoEggColor_GreenShiny_MonoTone:
+		case ChaoEggColor_RedShiny_MonoTone:
+		case ChaoEggColor_LimeGreenShiny_MonoTone:
+		case ChaoEggColor_PurpleShiny_MonoTone:
+		case ChaoEggColor_OrangeShiny_MonoTone:
+		case ChaoEggColor_BlackShiny_MonoTone:
+			njSetTexture(&AL_BODY);
 			v5 = dword_12983DC[a2];
 			ChunkMatFlag = UseChunkObjectColor | SecondTextureEnvironmentMap | HasSecondTexture | DontUseTexture;
 			ChunkObjectColor = v5;
@@ -451,20 +453,20 @@ extern "C"
 			v4 = GetChunkTexIndex((NJS_CNK_MODEL*)result);
 			SetChunkTexIndexPrimary(34, 1, 1);
 			break;
-		case SA2BEggColour_YellowShiny_TwoTone:
-		case SA2BEggColour_WhiteShiny_TwoTone:
-		case SA2BEggColour_BrownShiny_TwoTone:
-		case SA2BEggColour_SkyBlueShiny_TwoTone:
-		case SA2BEggColour_PinkShiny_TwoTone:
-		case SA2BEggColour_BlueShiny_TwoTone:
-		case SA2BEggColour_GreyShiny_TwoTone:
-		case SA2BEggColour_GreenShiny_TwoTone:
-		case SA2BEggColour_RedShiny_TwoTone:
-		case SA2BEggColour_LimeGreenShiny_TwoTone:
-		case SA2BEggColour_PurpleShiny_TwoTone:
-		case SA2BEggColour_OrangeShiny_TwoTone:
-		case SA2BEggColour_BlackShiny_TwoTone:
-			Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
+		case ChaoEggColor_YellowShiny_TwoTone:
+		case ChaoEggColor_WhiteShiny_TwoTone:
+		case ChaoEggColor_BrownShiny_TwoTone:
+		case ChaoEggColor_SkyBlueShiny_TwoTone:
+		case ChaoEggColor_PinkShiny_TwoTone:
+		case ChaoEggColor_BlueShiny_TwoTone:
+		case ChaoEggColor_GreyShiny_TwoTone:
+		case ChaoEggColor_GreenShiny_TwoTone:
+		case ChaoEggColor_RedShiny_TwoTone:
+		case ChaoEggColor_LimeGreenShiny_TwoTone:
+		case ChaoEggColor_PurpleShiny_TwoTone:
+		case ChaoEggColor_OrangeShiny_TwoTone:
+		case ChaoEggColor_BlackShiny_TwoTone:
+			njSetTexture(&AL_BODY);
 			v6 = dword_12983A8[a2];
 			ChunkMatFlag = UseChunkObjectColor | SecondTextureEnvironmentMap | HasSecondTexture;
 			ChunkObjectColor = v6;
@@ -474,25 +476,25 @@ extern "C"
 			SetChunkTexIndexPrimary(v4, 1, 1);
 			SetChunkTexIndexSecondary(34, 1, 1);
 			break;
-		case SA2BEggColour_GlitchyNormal:										//nice IDA thing lol
-		case SA2BEggColour_GlitchyNormal | SA2BEggColour_Yellow_MonoTone:
-		case SA2BEggColour_GreenShiny_TwoTone | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_RedShiny_TwoTone | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_LimeGreenShiny_TwoTone | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_PurpleShiny_TwoTone | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_OrangeShiny_TwoTone | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_BlackShiny_TwoTone | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_GlitchyNormal | SA2BEggColour_Green_MonoTone:
-		case SA2BEggColour_GlitchyNormal | SA2BEggColour_Red_MonoTone:
+		case ChaoEggColor_GlitchyNormal:										//nice IDA thing lol
+		case ChaoEggColor_GlitchyNormal | ChaoEggColor_Yellow_MonoTone:
+		case ChaoEggColor_GreenShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_RedShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_LimeGreenShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_PurpleShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_OrangeShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_BlackShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_GlitchyNormal | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_GlitchyNormal | ChaoEggColor_Red_MonoTone:
 		case 0x40:
 		case 0x41:
 		case 0x42:
-		case SA2BEggColour_Brown_MonoTone | 0x40:
+		case ChaoEggColor_Brown_MonoTone | 0x40:
 		case 0x44:
 			ChunkObjectColor = -1;
 			ChunkMatEnable = 1;
 			ChunkMatFlag = 12; //also fixed the egg problem , i made a patch for this before but now it's "baked" into this.
-			Has_texlist_batadvPlayerChara_in_it[8] = (int)&AL_BODY;
+			njSetTexture(&AL_BODY);
 			SetChunkTexIndexPrimary(a2 - 36, 1, 1);
 			break;
 		default:
@@ -525,7 +527,7 @@ extern "C"
 		else dontFixTEV = true;
 	}
 	const int GXLoadTexMtxImmPtr = 0x00424480;
-	__declspec(naked) void GXLoadTexMtxImm(NJS_MATRIX_PTR a1, int index, signed int a3)
+	__declspec(naked) void GXLoadTexMtxImm(NJS_MATRIX* a1, int index, signed int a3)
 	{
 		__asm
 		{
@@ -543,7 +545,7 @@ extern "C"
 		//since 1 is never used afaik because no multi tex support
 		if (!dontFixTEV)
 		{
-			GXLoadTexMtxImm((NJS_MATRIX_PTR)0x01AF1620, 0, 1);
+			GXLoadTexMtxImm((NJS_MATRIX*)0x01AF1620, 0, 1);
 		}
 	}
 	void BrightFixPlus_TEVModeCheck()
@@ -563,8 +565,8 @@ extern "C"
 
 	DataPointer(NJS_ARGB, GlobalColorThing, 0x025EFFD0);
 
-	FunctionPointer(void, __cdecl sub_42E730, (NJS_OBJECT* a1), 0x42E730);
-	void HatHookTest(NJS_OBJECT* obj)
+	FunctionPointer(void, __cdecl sub_42E730, (NJS_CNK_OBJECT* a1), 0x42E730);
+	void HatHookTest(NJS_CNK_OBJECT* obj)
 	{
 		SetFlag(1);
 		sub_42E730(obj);

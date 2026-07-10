@@ -40,7 +40,7 @@
 #include <util.h>
 
 // the menu entry
-static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
+static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster);
 
 CWE_API_ODEKAKE_ENTRY OdekakeCustomizationEntry = {
 	AL_OdekakeCustomization, 
@@ -65,9 +65,9 @@ static const NJS_POINT3 ChaoColorEditPosition = { 400, 300 + 50, -12 };
 static const NJS_POINT3 ChaoMedalsPosition = { 110, 300 + 50, -12 };
 
 //models
-DataArray(NJS_OBJECT*, BigMedals, 0x012E58F8, 16);
-extern NJS_OBJECT object_ala_full_mannequin;
-extern NJS_OBJECT object_alo_mannequin;
+DataArray(NJS_CNK_OBJECT*, BigMedals, 0x012E58F8, 16);
+extern NJS_CNK_OBJECT object_ala_full_mannequin;
+extern NJS_CNK_OBJECT object_alo_mannequin;
 
 static task* pChao = NULL;
 
@@ -88,7 +88,7 @@ struct AccessorySaveComparator {
 
 struct ItemSaveComparator {
 	bool operator()(const ITEM_SAVE_INFO* a, const ITEM_SAVE_INFO* b) const {
-		return a->Type < b->Type;
+		return a->kind < b->kind;
 	}
 };
 
@@ -114,10 +114,10 @@ static void UpdateHatAccVector() {
 	AccessoryListCount.clear();
 	HatListCount.clear();
 
-	ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+	ITEM_SAVE_INFO* items = AL_GetCurrGardenInfo()->mask;
 	for (int j = 0; j < 24; j++)
 	{
-		if (items[j].Type > 0) {
+		if (items[j].kind > 0) {
 			HatListCount[& items[j]]++;
 		}
 	}
@@ -141,16 +141,16 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 {
 	if (ID < 1) return false;
 
-	ITEM_SAVE_INFO* v9 = (ITEM_SAVE_INFO*)AL_GetNewItemSaveInfo(9);
+	ITEM_SAVE_INFO* v9 = AL_GetNewItemSaveInfo(ALW_CATEGORY_MASK);
 	if (v9 == nullptr)
 	{
-		PrintDebug("HatAccRender: no hat slots left");
+		___OutputDebugString("HatAccRender: no hat slots left");
 		return false;
 	}
 
-	v9->Garden = Garden;
-	v9->Type = ID;
-	v9->position = ProbablyChaoSpawnPoints[(Garden - 1) * 16 + (int)(njRandom() * 15.f)];
+	v9->place = Garden;
+	v9->kind = ID;
+	v9->pos = ProbablyChaoSpawnPoints[(Garden - 1) * 16 + (int)(njRandom() * 15.f)];
 	UpdateHatAccVector();
 
 	return true;
@@ -159,9 +159,9 @@ bool AL_Customization_CreateHat(int ID, int Garden)
 bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Garden) {
 	if (ID == -1) return false;
 
-	auto save = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+	auto save = (AccessorySaveInfo*)CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY);
 	if (!save) {
-		PrintDebug("HatAccRender: no hat slots left");
+		___OutputDebugString("HatAccRender: no hat slots left");
 		return false;
 	}
 
@@ -220,9 +220,9 @@ private:
 
 	Uint32 m_timer = 0; // this is only used to track to only create tween once
 
-	ChaoHudThingB m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
 public:
 	enum LeftBarType : int {
 		HatAcc = 0,
@@ -236,12 +236,12 @@ public:
 			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
 
-			PlaySoundProbably(0x100E, 0, 0, 0);
+			SE_Call(0x100E, 0, 0, 0);
 			return;
 		}
 
 		if (!controller->IsCurrentLayer(m_layerEnter)) {
-			PlaySoundProbably(0x1007, 0, 0, 0);
+			SE_Call(0x1007, 0, 0, 0);
 
 			controller->SetCurrentLayer(m_layerEnter);
 
@@ -260,7 +260,7 @@ public:
 		}
 	}
 
-	static void DrawAsSprite(ChaoHudThingB& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z, const NJS_COLOR rightColor = (NJS_COLOR)-1) {
+	static void DrawAsSprite(CHS_BILL_INFO& pHud, const float posX, const float posY, const float sclX, const float sclY, const Angle angle, const float z, const NJS_COLOR rightColor = (NJS_COLOR)-1) {
 		const float x1 = -sclX * pHud.wd / 2.f;
 		const float y1 = -sclY * pHud.ht / 2.f;
 		const float x2 = -x1;
@@ -320,12 +320,12 @@ public:
 			break;
 		case ButtonMode::ToSelected:
 			if (m_iconTween) {
-				DeleteObject_(m_iconTween);
+				DestroyTask(m_iconTween);
 				m_iconTween = NULL;
 			}
 
 			if (m_textTween) {
-				DeleteObject_(m_textTween);
+				DestroyTask(m_textTween);
 				m_textTween = NULL;
 			}
 
@@ -353,12 +353,12 @@ public:
 			break;
 		case ButtonMode::ToUnselected:
 			if (m_iconTween) {
-				DeleteObject_(m_iconTween);
+				DestroyTask(m_iconTween);
 				m_iconTween = NULL;
 			}
 
 			if (m_textTween) {
-				DeleteObject_(m_textTween);
+				DestroyTask(m_textTween);
 				m_textTween = NULL;
 			}
 
@@ -367,7 +367,7 @@ public:
 		}
 	}
 
-	const ChaoHudThingB GetTextSprite() {
+	const CHS_BILL_INFO GetTextSprite() {
 		switch (m_buttonType) {
 			case LeftBarType::HatAcc:
 				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 5 };
@@ -378,7 +378,7 @@ public:
 		}
 	}
 
-	const ChaoHudThingB GetIconSprite() {
+	const CHS_BILL_INFO GetIconSprite() {
 		switch (m_buttonType) {
 		case LeftBarType::HatAcc:
 			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
@@ -390,7 +390,7 @@ public:
 	}
 
 	void Disp() override {
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 
 		const float middle_width = 140;
 		auto& originalIconSprite = IsSelected() ? m_selectedIcon : m_icon;
@@ -450,7 +450,7 @@ public:
 		NJS_COLOR rightSideColor = (NJS_COLOR)-1;
 		rightSideColor.argb.a = Uint8(progress * 255.f);
 
-		ChaoHudThingB text = GetTextSprite();
+		CHS_BILL_INFO text = GetTextSprite();
 		text.s1 = text.s0 + m_textProgress * (text.wd / 256.f);
 		DrawAsSprite(
 			text,
@@ -473,8 +473,8 @@ public:
 
 class BaseCustomizeBox : public UISelectable {
 private:
-	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 public:
 	float m_sclX = 1;
 	float m_sclY = 1;
@@ -487,10 +487,10 @@ public:
 	void Disp() override {
 		BeforeBoxDisp();
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 		ColorSet();
 
-		DrawChaoHudThingB(IsBoxSelected() ? &m_selectedSprite : & m_sprite, m_posX, m_posY, -2.2f, m_sclX, m_sclY, -1, -1);
+		chDrawBillboardSR(IsBoxSelected() ? &m_selectedSprite : & m_sprite, m_posX, m_posY, -2.2f, m_sclX, m_sclY, -1, -1);
 
 		BoxContentDisp();
 	}
@@ -506,8 +506,8 @@ private:
 	int m_rotY = 0;
 
 	bool AL_Customization_MedalUnlocked(int index) {
-		int medal = GBAManager_GetChaoDataPointer()->DoctorMedal;
-		int karateInfo = GBAManager_GetChaoDataPointer()->KarateInfo;
+		int medal = GBAManager_GetChaoDataPointer()->race.MedalFlag;
+		int karateInfo = GBAManager_GetChaoDataPointer()->karate.rank;
 		switch (index)
 		{
 		case 0:
@@ -537,7 +537,7 @@ private:
 public:
 	void Press(UIController* controller) override {
 		if (AL_Customization_MedalUnlocked(m_index)) {
-			GBAManager_GetChaoDataPointer()->Medal = m_index;
+			GBAManager_GetChaoDataPointer()->body.MedalNum = m_index;
 		}
 	}
 	void Exec() override {
@@ -545,10 +545,10 @@ public:
 	}
 
 	void ColorSet() override {
-		if (GBAManager_GetChaoDataPointer()->Medal == m_index)
-			SetChaoHUDThingBColor(1, 1, 0x96 / 255.0f, 0x7F / 255.0f); //light green, current medal
+		if (GBAManager_GetChaoDataPointer()->body.MedalNum == m_index)
+			chSetBillboardColor(1, 1, 0x96 / 255.0f, 0x7F / 255.0f); //light green, current medal
 		if (!AL_Customization_MedalUnlocked(m_index))
-			SetChaoHUDThingBColor(1, 0x49 / 255.0f, 0x5E / 255.0f, 0xAF / 255.0f); //light grey, not available
+			chSetBillboardColor(1, 0x49 / 255.0f, 0x5E / 255.0f, 0xAF / 255.0f); //light grey, not available
 	}
 	void BoxContentDisp() override {
 		DoLighting(0);
@@ -585,19 +585,19 @@ private:
 	int m_uiSelectX = 0;
 	int m_uiSelectY = 0;
 
-	ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 5 };
 
 	const size_t GetItemCount() const {
 		return HatList.size() + AccessoryList.size();
 	}
 
 	void ScrollDisp(float posX, float posY, float length){
-		DrawChaoHudThingB(
+		chDrawBillboardSR(
 			&m_scrollTop,
 			posX,
 			posY,
@@ -611,7 +611,7 @@ private:
 		auto scrollMiddle = m_scrollMiddle;
 		scrollMiddle.ht = length;
 
-		DrawChaoHudThingB(
+		chDrawBillboardSR(
 			&scrollMiddle,
 			posX,
 			posY + m_scrollTop.ht,
@@ -622,7 +622,7 @@ private:
 			-1
 		);
 
-		DrawChaoHudThingB(
+		chDrawBillboardSR(
 			&m_scrollBottom,
 			posX,
 			posY + m_scrollTop.ht + scrollMiddle.ht,
@@ -657,12 +657,12 @@ public:
 		const size_t index = m_uiSelectX + m_uiSelectY * m_horizItemCount;
 		if (index < HatList.size()) {
 			bool canEquip = true;
-			if (pParam->Headgear)
-				canEquip = AL_Customization_CreateHat(pParam->Headgear, pParam->place);
+			if (pParam->body.ObakeHead)
+				canEquip = AL_Customization_CreateHat(pParam->body.ObakeHead, pParam->place);
 
 			if (canEquip) {
-				PlaySoundProbably(0x1007, 0, 0, 0);
-				pParam->Headgear = Uint8(HatList[index]->Type);
+				SE_Call(0x1007, 0, 0, 0);
+				pParam->body.ObakeHead = Uint8(HatList[index]->kind);
 				AL_ClearItemSaveInfo(HatList[index]);
 				UpdateHatAccVector();
 			}
@@ -676,10 +676,10 @@ public:
 
 		bool canEquip = true;
 		if (GET_CWEPARAM(pChao)->Accessories[accType].ID[0])
-			canEquip = AL_Customization_CreateAcc(GET_CHAOWK(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
+			canEquip = AL_Customization_CreateAcc(GET_CHAOWK_CWE(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
 
 		if (canEquip) {
-			PlaySoundProbably(0x1007, 0, 0, 0);
+			SE_Call(0x1007, 0, 0, 0);
 			AL_SetAccessory(pChao, pSaveInfo, pSaveInfo->IndexID);
 			AL_ClearItemSaveInfo(pSaveInfo);
 			UpdateHatAccVector();
@@ -688,7 +688,7 @@ public:
 
 	void Disp() override {
 		const auto setColor = [this](float a, float r, float g, float b) {
-			SetChaoHUDThingBColor(a * m_alpha, r, g, b);
+			chSetBillboardColor(a * m_alpha, r, g, b);
 		};
 
 		setColor(1, 1, 1, 1);
@@ -739,7 +739,7 @@ public:
 				else 
 					setColor(1, 1, 1, 1);
 
-				DrawChaoHudThingB(sprite, m_visualPosX + x * horizSpacing, m_visualPosY + (float(y) + m_scrollOffsetY) * verticalSpacing, -2.2f, 1, 1, -1, -1);
+				chDrawBillboardSR(sprite, m_visualPosX + x * horizSpacing, m_visualPosY + (float(y) + m_scrollOffsetY) * verticalSpacing, -2.2f, 1, 1, -1, -1);
 
 				if (index >= GetItemCount()) continue;
 
@@ -766,18 +766,18 @@ public:
 
 				Angle3 rot = { 0, 0, 0 };
 
-				SAlItem _item;
+				SAlItemCwe _item;
 
 				if (index < HatList.size()) {
 					_item = {
-						ChaoItemCategory_Hat,
-						Uint16(HatList[index]->Type)
+						ALW_CATEGORY_MASK,
+						Uint16(HatList[index]->kind)
 					};
 				}
 				else {
 					const auto& accSave = AccessoryList[index - HatList.size()];
 					_item = {
-						ChaoItemCategory_Accessory,
+						ALW_CATEGORY_ACCESSORY,
 						Uint16(accSave->IndexID)
 					};
 					AccessorySetupDraw(accSave->IndexID, accSave->Colors, accSave->UsedColors);
@@ -804,26 +804,26 @@ public:
 
 		if (IsSelected()) {
 			bool doTween = false;
-			if (MenuButtons_Pressed[0] & Buttons_Up) {
+			if (SWDATAE[0] & BTN_UP) {
 				if (m_uiSelectY >= 1) {
 					m_uiSelectY--;
 					doTween = true;
 				}
 			}
-			if (MenuButtons_Pressed[0] & Buttons_Down) {
+			if (SWDATAE[0] & BTN_DOWN) {
 				if (m_uiSelectY < GetItemCount() - 1) {
 					m_uiSelectY++;
 					doTween = true;
 				}
 			}
 
-			if (MenuButtons_Pressed[0] & Buttons_Left) {
+			if (SWDATAE[0] & BTN_LEFT) {
 				if (m_uiSelectX >= 1) {
 					m_uiSelectX--;
 					if (!m_uiSelectX) m_canUnselect = false;
 				}
 			}
-			if (MenuButtons_Pressed[0] & Buttons_Right) {
+			if (SWDATAE[0] & BTN_RIGHT) {
 				if (m_uiSelectX < m_horizItemCount - 1) m_uiSelectX++;
 			}
 
@@ -861,22 +861,22 @@ class ColorEditor : public UISelectable {
 private:
 	std::optional<EAccessoryType> m_accessoryType;
 
-	ChaoHudThingB m_colorPanel = { 1, 211, 213, 0, 0, 1, 1, &CWE_UI_TEXLIST, 37 };
+	CHS_BILL_INFO m_colorPanel = { 1, 211, 213, 0, 0, 1, 1, &CWE_UI_TEXLIST, 37 };
 
-	ChaoHudThingB m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 5 };
-	ChaoHudThingB m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-	ChaoHudThingB m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 5 };
 
 	std::optional<int> m_colorSlotIndex = std::nullopt;
 	bool m_inSliderMenu = false;
@@ -894,7 +894,7 @@ private:
 	size_t GetColorSlotCount() const {
 		if (!m_accessoryType) return 0;
 
-		const auto index = GET_CHAOWK(pChao)->AccessoryIndices[*m_accessoryType];
+		const auto index = GET_CHAOWK_CWE(pChao)->AccessoryIndices[*m_accessoryType];
 		if (index == -1) return 0;
 		
 		return GetAccessoryColorCount(index);
@@ -905,7 +905,7 @@ private:
 		if (!m_accessoryType) return NJS_COLOR(0xFFFFFFFF);
 
 		const auto& accData = GET_CWEPARAM(pChao)->Accessories[*m_accessoryType];
-		const auto accIndex = GET_CHAOWK(pChao)->AccessoryIndices[*m_accessoryType];
+		const auto accIndex = GET_CHAOWK_CWE(pChao)->AccessoryIndices[*m_accessoryType];
 
 		if (accIndex == -1) return NJS_COLOR(0xFFFFFFFF);
 		if (accData.ColorFlags & (1 << slot)) return NJS_COLOR(accData.ColorSlots[slot]);
@@ -958,38 +958,38 @@ private:
 		float gray,
 		const NJS_ARGB& overlayColors, 
 		const NJS_ARGB& rightColors,
-		ChaoHudThingB& overlaySprite
+		CHS_BILL_INFO& overlaySprite
 	) {
 		const float sliderLength = GetSliderLength();
-		DrawChaoHudThingB(&m_genericSliderLeft, posX, posY, -2.2f, 1, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.2f, sliderLength, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderLeft, posX, posY, -2.2f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.2f, sliderLength, 1, -1, -1);
 
-		SetChaoHUDThingBColor(rightColors.a, rightColors.r, rightColors.g, rightColors.b);
-		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.2f, 1, 1, -1, -1);
+		chSetBillboardColor(rightColors.a, rightColors.r, rightColors.g, rightColors.b);
+		chDrawBillboardSR(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.2f, 1, 1, -1, -1);
 
-		SetChaoHUDThingBColor(overlayColors.a, overlayColors.r, overlayColors.g, overlayColors.b);
+		chSetBillboardColor(overlayColors.a, overlayColors.r, overlayColors.g, overlayColors.b);
 		overlaySprite.wd = 1;
-		DrawChaoHudThingB(&overlaySprite, posX + m_genericSliderLeft.wd, posY + 1.5f, -2.1f, sliderLength, 1, -1, -1);
+		chDrawBillboardSR(&overlaySprite, posX + m_genericSliderLeft.wd, posY + 1.5f, -2.1f, sliderLength, 1, -1, -1);
 
 		if (selected) {
-			SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
+			chSetBillboardColor(m_alpha, 0, 1, 0);
 		}
 		else {
-			SetChaoHUDThingBColor(m_alpha, gray, gray, gray);
+			chSetBillboardColor(m_alpha, gray, gray, gray);
 		}
 		const float sliderPos = m_genericSliderLeft.wd + sliderLength + m_genericSliderRight.wd - m_sliderPicker.wd;
-		DrawChaoHudThingB(&m_sliderPicker, posX + sliderPos * sliderVal, posY - 2, -0.5f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_sliderPicker, posX + sliderPos * sliderVal, posY - 2, -0.5f, 1, 1, -1, -1);
 	}
 
 	void SliderShadowDisp(
 		float posX,
 		float posY
 	) {
-		SetChaoHUDThingBColor(m_alpha * 0.3f, 0, 0, 0);
+		chSetBillboardColor(m_alpha * 0.3f, 0, 0, 0);
 		const float sliderLength = GetSliderLength();
-		DrawChaoHudThingB(&m_genericSliderLeft, posX, posY, -2.4f, 1, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.4f, sliderLength, 1, -1, -1);
-		DrawChaoHudThingB(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.4f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderLeft, posX, posY, -2.4f, 1, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderMiddle, posX + m_genericSliderLeft.wd, posY, -2.4f, sliderLength, 1, -1, -1);
+		chDrawBillboardSR(&m_genericSliderRight, posX + m_genericSliderLeft.wd + sliderLength, posY, -2.4f, 1, 1, -1, -1);
 	}
 
 	// sets sliders based on input rgb
@@ -1057,7 +1057,7 @@ private:
 	}
 
 	void DrawColorSlots(float panelMiddleX) {
-		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
+		chSetBillboardColor(m_alpha, 1, 1, 1);
 
 		const auto slotCount = GetColorSlotCount();
 
@@ -1097,13 +1097,13 @@ private:
 			}
 
 			// shadow
-			SetChaoHUDThingBColor(m_alpha * 0.3f, 0, 0, 0);
-			DrawChaoHudThingB(&m_colorSlot, x + GetShadowOffset(), m_posY + y + GetShadowOffset(), -2.5f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
+			chSetBillboardColor(m_alpha * 0.3f, 0, 0, 0);
+			chDrawBillboardSR(&m_colorSlot, x + GetShadowOffset(), m_posY + y + GetShadowOffset(), -2.5f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
 
 			// color slot
 			NJS_COLOR color = GetSlotColor(i);
-			SetChaoHUDThingBColor(m_alpha, color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
-			DrawChaoHudThingB(&m_colorSlot, x, m_posY + y, -2.1f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
+			chSetBillboardColor(m_alpha, color.argb.r / 255.f, color.argb.g / 255.f, color.argb.b / 255.f);
+			chDrawBillboardSR(&m_colorSlot, x, m_posY + y, -2.1f, scl, scl, DrawAncorV_Center, DrawAncorV_Center);
 		}
 	}
 	
@@ -1131,11 +1131,11 @@ private:
 	}
 
 	float GetSliderSpeed() const {
-		if (MenuButtons_Held[0] & Buttons_L) {
+		if (SWDATA[0] & BTN_L) {
 			return 0.005f;
 		}
 
-		if (MenuButtons_Held[0] & Buttons_R) {
+		if (SWDATA[0] & BTN_R) {
 			return 0.1f;
 		}
 
@@ -1159,42 +1159,42 @@ public:
 		if (!m_alpha) return;
 
 		// panel sprites
-		ChaoHudThingB lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
 
-		ChaoHudThingB lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
 
-		ChaoHudThingB lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
 
-		SetChaoHUDThingBColor(m_alpha, 1, 1, 1);
+		chSetBillboardColor(m_alpha, 1, 1, 1);
 
 		const float panelWidth = GetPanelWidth();
 		const float panelBasePosX = m_posX + lu.wd / 2.f + 4;
 		const float panelBasePosY = m_posY + lu.ht;
 		const size_t heightPanelCount = (GetVerticalSlotCount() > 1) ? 15 : 11;
 
-		DrawChaoHudThingB(&lu, panelBasePosX + 0.5f, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Right);
-		DrawChaoHudThingB(&cu, panelBasePosX + panelWidth / 2.f, panelBasePosY, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Right);
-		DrawChaoHudThingB(&ru, panelBasePosX + panelWidth, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Right);
+		chDrawBillboardSR(&lu, panelBasePosX + 0.5f, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Right);
+		chDrawBillboardSR(&cu, panelBasePosX + panelWidth / 2.f, panelBasePosY, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Right);
+		chDrawBillboardSR(&ru, panelBasePosX + panelWidth, panelBasePosY, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Right);
 
-		DrawChaoHudThingB(&lb, panelBasePosX + 0.5f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Left);
-		DrawChaoHudThingB(&cb, panelBasePosX + panelWidth / 2.f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Left);
-		DrawChaoHudThingB(&rb, panelBasePosX + panelWidth, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Left);
+		chDrawBillboardSR(&lb, panelBasePosX + 0.5f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Left);
+		chDrawBillboardSR(&cb, panelBasePosX + panelWidth / 2.f, panelBasePosY + heightPanelCount * lm.ht, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Left);
+		chDrawBillboardSR(&rb, panelBasePosX + panelWidth, panelBasePosY + heightPanelCount * lm.ht, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Left);
 
 		for (size_t i = 0; i < heightPanelCount; ++i) {
 			const float py = panelBasePosY + float(i) * lm.ht;
 
-			DrawChaoHudThingB(&lm, panelBasePosX + 0.5f, py, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Top);
-			DrawChaoHudThingB(&cm, panelBasePosX + panelWidth / 2.f, py, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Top);
-			DrawChaoHudThingB(&rm, panelBasePosX + panelWidth, py, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Top);
+			chDrawBillboardSR(&lm, panelBasePosX + 0.5f, py, -2.4f, 1, 1, DrawAncorV_Right, DrawAncorV_Top);
+			chDrawBillboardSR(&cm, panelBasePosX + panelWidth / 2.f, py, -2.4f, panelWidth, 1, DrawAncorV_Center, DrawAncorV_Top);
+			chDrawBillboardSR(&rm, panelBasePosX + panelWidth, py, -2.4f, 1, 1, DrawAncorV_Left, DrawAncorV_Top);
 		}
 
-		DrawChaoHudThingB(&m_colorsText, panelBasePosX + panelWidth / 2.f, m_posY, -2.3f, 1, 1, DrawAncorV_Center, DrawAncorV_Center);
+		chDrawBillboardSR(&m_colorsText, panelBasePosX + panelWidth / 2.f, m_posY, -2.3f, 1, 1, DrawAncorV_Center, DrawAncorV_Center);
 		DrawColorSlots(panelBasePosX + panelWidth / 2.f);
 
 		const size_t sliderSelectionStart = GetVerticalSlotCount();
@@ -1206,7 +1206,7 @@ public:
 		// hue slider
 		{
 			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + GetShadowOffset());
-			SetChaoHUDThingBColor(m_alpha, grayOut, 0, 0);
+			chSetBillboardColor(m_alpha, grayOut, 0, 0);
 			SliderDisp(sliderX, m_posY + sliderStartY, m_hsl[0], m_selectionY == sliderSelectionStart, grayOut, { m_alpha,grayOut ,grayOut ,grayOut }, { m_alpha,grayOut,0,0 }, m_hueColors);
 		}
 
@@ -1224,7 +1224,7 @@ public:
 			satSliderEndColor.b *= grayOut;
 
 			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + sliderPad + GetShadowOffset());
-			SetChaoHUDThingBColor(m_alpha, satSliderStartColor.r, satSliderStartColor.g, satSliderStartColor.b);
+			chSetBillboardColor(m_alpha, satSliderStartColor.r, satSliderStartColor.g, satSliderStartColor.b);
 			SliderDisp(sliderX, m_posY + sliderStartY + sliderPad, m_hsl[1], m_selectionY == sliderSelectionStart + 1, grayOut, satSliderEndColor, satSliderEndColor, m_overlayColor);
 		}
 
@@ -1245,10 +1245,10 @@ public:
 			const auto lightSliderEndColor = argbToColor(HSLtoRGB(m_hsl[0], m_hsl[1], 1));
 
 			SliderShadowDisp(sliderX + GetShadowOffset(), m_posY + sliderStartY + sliderPad * 2 + GetShadowOffset());
-			SetChaoHUDThingBColor(m_alpha, lightSliderStartColor.argb.r / 255.f, lightSliderStartColor.argb.g / 255.f, lightSliderStartColor.argb.b / 255.f);
-			DrawChaoHudThingB(&m_genericSliderLeft, sliderX, m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
-			SetChaoHUDThingBColor(m_alpha, lightSliderEndColor.argb.r / 255.f, lightSliderEndColor.argb.g / 255.f, lightSliderEndColor.argb.b / 255.f);
-			DrawChaoHudThingB(&m_genericSliderRight, sliderX + m_genericSliderLeft.wd + GetSliderLength(), m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
+			chSetBillboardColor(m_alpha, lightSliderStartColor.argb.r / 255.f, lightSliderStartColor.argb.g / 255.f, lightSliderStartColor.argb.b / 255.f);
+			chDrawBillboardSR(&m_genericSliderLeft, sliderX, m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
+			chSetBillboardColor(m_alpha, lightSliderEndColor.argb.r / 255.f, lightSliderEndColor.argb.g / 255.f, lightSliderEndColor.argb.b / 255.f);
+			chDrawBillboardSR(&m_genericSliderRight, sliderX + m_genericSliderLeft.wd + GetSliderLength(), m_posY + sliderStartY + sliderPad * 2, -2.2, 1, 1, -1, -1);
 
 			const float u0 = 117 / 256.f;
 			const float v0 = 91 / 256.f;
@@ -1273,13 +1273,13 @@ public:
 			njDrawTextureEx(vertices, 4, 1);
 
 			if (m_selectionY == sliderSelectionStart + 2) {
-				SetChaoHUDThingBColor(m_alpha, 0, 1, 0);
+				chSetBillboardColor(m_alpha, 0, 1, 0);
 			}
 			else {
-				SetChaoHUDThingBColor(m_alpha, grayOut, grayOut, grayOut);
+				chSetBillboardColor(m_alpha, grayOut, grayOut, grayOut);
 			}
 			const float sliderPos = m_genericSliderLeft.wd + GetSliderLength() + m_genericSliderRight.wd - m_sliderPicker.wd;
-			DrawChaoHudThingB(&m_sliderPicker, sliderX + sliderPos * m_hsl[2], m_posY + sliderStartY + sliderPad * 2 - 2, -0.5f, 1, 1, -1, -1);
+			chDrawBillboardSR(&m_sliderPicker, sliderX + sliderPos * m_hsl[2], m_posY + sliderStartY + sliderPad * 2 - 2, -0.5f, 1, 1, -1, -1);
 		}
 	}
 
@@ -1293,9 +1293,9 @@ public:
 		// only animate the sine scaling if the elastic scaling from clicking on the slot finished
 		if(m_colorSlotScaleAnim <= 0.f) m_sineAng += 512;
 
-		if (!m_inSliderMenu && (MenuButtons_Pressed[0] & Buttons_B)) {
+		if (!m_inSliderMenu && (SWDATAE[0] & BTN_B)) {
 			// exits the color menu
-			PlaySoundProbably(0x100A, 0, 0, 0);
+			SE_Call(0x100A, 0, 0, 0);
 			ColorMenuOpened = false;
 			return;
 		}
@@ -1306,17 +1306,17 @@ public:
 		const int minSelectionY = m_inSliderMenu ? sliderSelectionStart : 0;
 		const int maxSelectionY = !m_inSliderMenu ? (sliderSelectionStart - 1) : (sliderSelectionStart + 2); // color slots + 3 sliders - 1 (max not count)
 
-		if (MenuButtons_Pressed[0] & Buttons_Up) {
+		if (SWDATAE[0] & BTN_UP) {
 			if (--m_selectionY < minSelectionY) m_selectionY = minSelectionY;
 			m_selectionX = 0;
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Down) {
+		if (SWDATAE[0] & BTN_DOWN) {
 			if (++m_selectionY > maxSelectionY) m_selectionY = maxSelectionY;
 			m_selectionX = 0;
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Left) {
+		if (SWDATAE[0] & BTN_LEFT) {
 			if (m_selectionY >= sliderSelectionStart) {
 				float& val = m_hsl[m_selectionY - sliderSelectionStart];
 				val -= GetSliderSpeed();
@@ -1330,7 +1330,7 @@ public:
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Right) {
+		if (SWDATAE[0] & BTN_RIGHT) {
 			if (m_selectionY >= sliderSelectionStart) {
 				float& val = m_hsl[m_selectionY - sliderSelectionStart];
 				val += GetSliderSpeed();
@@ -1350,8 +1350,8 @@ public:
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_A && m_selectionY < sliderSelectionStart) {
-			PlaySoundProbably(0x1007, 0, 0, 0);
+		if (SWDATAE[0] & BTN_A && m_selectionY < sliderSelectionStart) {
+			SE_Call(0x1007, 0, 0, 0);
 
 			const auto slotCount = GetColorSlotCount();
 			SelectColorSlot(m_selectionY * min(slotCount, 4) + m_selectionX);
@@ -1360,8 +1360,8 @@ public:
 			CreateTween(NULL, EASE_OUT, INTERP_ELASTIC, &m_colorSlotScaleAnim, 1.f, 15, NULL);
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_B && m_inSliderMenu) {
-			PlaySoundProbably(0x100A, 0, 0, 0);
+		if (SWDATAE[0] & BTN_B && m_inSliderMenu) {
+			SE_Call(0x100A, 0, 0, 0);
 
 			m_inSliderMenu = false;
 			m_sineAng = 0;
@@ -1396,44 +1396,44 @@ private:
 
 	int GetItem() {
 		if (HasHeadgear())
-			return GBAManager_GetChaoDataPointer()->Headgear;
+			return GBAManager_GetChaoDataPointer()->body.ObakeHead;
 		else if (HasAccessory())
-			return GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			return GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 		return -1;
 	}
 
 	bool HasHeadgear() {
-		return m_slot == 0 && GBAManager_GetChaoDataPointer()->Headgear;
+		return m_slot == 0 && GBAManager_GetChaoDataPointer()->body.ObakeHead;
 	}
 	bool HasAccessory() {
 		return m_slot > 0 && GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Accessories[m_slot - 1].ID[0];
 	}
 public:
 	void BeforeBoxDisp() override {
-		ChaoHudThingB m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
 		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
 
 		bool hasColorSlots = false;
 		if (m_slot) {
-			const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const auto slotAccIndex = GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 			hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
 			if (!hasColorSlots) {
 				sprite = m_greySprite;
 			}
 		}
 
-		DrawChaoHudThingB(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
+		chDrawBillboardSR(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
-		ChaoHudThingB greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		ChaoHudThingB nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		DrawChaoHudThingB(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
+		chSetBillboardColor(1, 1, 1, 1);
+		CHS_BILL_INFO greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		chDrawBillboardSR(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
 	}
 
 	void BoxContentDisp() override {
-		ChaoHudThingB slotSprite;
+		CHS_BILL_INFO slotSprite;
 		switch (m_slot) {
 			case 0: // hat
 				slotSprite = { 1, 56 * .65f, 65 * .65f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
@@ -1452,22 +1452,22 @@ public:
 				break;
 		}
 
-		DrawChaoHudThingB(&slotSprite, m_posX + GetWidth() * m_sclX / 2.f, m_posY + GetHeight() * m_sclY / 2.f, -2.f, m_sclX, m_sclY, 0, 0);
+		chDrawBillboardSR(&slotSprite, m_posX + GetWidth() * m_sclX / 2.f, m_posY + GetHeight() * m_sclY / 2.f, -2.f, m_sclX, m_sclY, 0, 0);
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 
 		int item = GetItem();
 		if (item < 0) return;
 
 		Angle3 rot = { 0, IsSelected() ? m_rotY : 0, 0 };
 
-		SAlItem _item = {
-			(m_slot > 0) ? ChaoItemCategory_Accessory : ChaoItemCategory_Hat,
+		SAlItemCwe _item = {
+			(m_slot > 0) ? ALW_CATEGORY_ACCESSORY : ALW_CATEGORY_MASK,
 			(Uint16)item
 		};
 
 		if (m_slot > 0) {
-			const auto index = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const auto index = GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 			if (index != -1) {
 				const auto& accData = GET_CWEPARAM(pChao)->Accessories[m_slot - 1];
 				AccessorySetupDraw(index, accData.ColorSlots, accData.ColorFlags);
@@ -1476,7 +1476,7 @@ public:
 
 		DrawItem(m_posX + 20, m_posY + 20, 0.75f, rot, _item);
 
-		SetChaoHUDThingBColor(1, 1, 1, 1);
+		chSetBillboardColor(1, 1, 1, 1);
 	}
 
 	bool CanUnselect(Direction direction) const override {
@@ -1499,9 +1499,9 @@ public:
 
 	void ColorSet() override {
 		if (!HasHeadgear() && !HasAccessory())
-			SetChaoHUDThingBColor(1, 0.5f, 0.5f, 0.5f);
+			chSetBillboardColor(1, 0.5f, 0.5f, 0.5f);
 		else
-			SetChaoHUDThingBColor(1, 1, 1, 1);
+			chSetBillboardColor(1, 1, 1, 1);
 	}
 
 	void Press(UIController* controller) override {
@@ -1510,10 +1510,10 @@ public:
 		}
 
 		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
-		PlaySoundProbably(0x100A, 0, 0, 0);
+		SE_Call(0x100A, 0, 0, 0);
 		if (!m_slot)
 		{
-			Uint8& headgear = pParam->Headgear;
+			Uint8& headgear = pParam->body.ObakeHead;
 			if (headgear && AL_Customization_CreateHat(headgear, pParam->place)) {
 				headgear = 0;
 			}
@@ -1544,30 +1544,30 @@ public:
 		SetSelectable(HasHeadgear() || HasAccessory());
 
 		if (m_slot) {
-			const auto slotAccIndex = GET_CHAOWK(pChao)->AccessoryIndices[m_slot - 1];
+			const auto slotAccIndex = GET_CHAOWK_CWE(pChao)->AccessoryIndices[m_slot - 1];
 			const bool hasColorSlots = slotAccIndex != -1 && GetAccessoryColorCount(slotAccIndex) > 0;
 			if (IsSelected() && slotAccIndex != -1) {
 				if (!ColorMenuOpened) {
 					if (hasColorSlots) {
-						if (MenuButtons_Pressed[0] & Buttons_Left) {
+						if (SWDATAE[0] & BTN_LEFT) {
 							m_editSelected = true;
 						}
-						if (MenuButtons_Pressed[0] & Buttons_Right) {
+						if (SWDATAE[0] & BTN_RIGHT) {
 							m_editSelected = false;
 							m_preventRightSelect = true;
 						}
 					}
 					else {
-						if (MenuButtons_Pressed[0] & Buttons_Left) {
-							PlaySoundProbably(0x8009, 0, 0, 0);
+						if (SWDATAE[0] & BTN_LEFT) {
+							SE_Call(0x8009, 0, 0, 0);
 						}
 					}
 
 					if (m_editSelected) {
-						if (!ColorMenuOpened && MenuButtons_Pressed[0] & Buttons_A) {
+						if (!ColorMenuOpened && SWDATAE[0] & BTN_A) {
 							ColorMenuOpened = true;
 
-							PlaySoundProbably(0x1007, 0, 0, 0);
+							SE_Call(0x1007, 0, 0, 0);
 
 							auto colorEditElement = customizationController->GetButton("coloredit");
 							if (colorEditElement) {
@@ -1600,32 +1600,32 @@ public:
 	}
 };
 
-static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {	
+static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {	
 	NJS_POINT3 posOut;
 
-	switch (a1->mode)
+	switch (pMaster->mode)
 	{
 	case 0:
 		UpdateHatAccVector();
 
 		//setup sadx medal models
 		BigMedals[0] = &NoMedal_Main;
-		BigMedals[11] = (NJS_OBJECT*)0x012E365C;
-		BigMedals[12] = (NJS_OBJECT*)0x012E390C;
-		BigMedals[13] = (NJS_OBJECT*)0x012E43C4;
-		BigMedals[14] = (NJS_OBJECT*)0x012e4e1c;
-		BigMedals[15] = (NJS_OBJECT*)0x012e586c;
+		BigMedals[11] = (NJS_CNK_OBJECT*)0x012E365C;
+		BigMedals[12] = (NJS_CNK_OBJECT*)0x012E390C;
+		BigMedals[13] = (NJS_CNK_OBJECT*)0x012E43C4;
+		BigMedals[14] = (NJS_CNK_OBJECT*)0x012e4e1c;
+		BigMedals[15] = (NJS_CNK_OBJECT*)0x012e586c;
 
 		if (customizationController) {
-			while (1) PrintDebug("customizationController not 0, what happened?");
+			while (1) ___OutputDebugString("customizationController not 0, what happened?");
 		}
 
 		someUIProjectionCode(&ChaoHatPosition, &posOut);
-		pChao = CreateChao((CHAO_SAVE_INFO*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
-		GET_CHAOWK(pChao)->field_B0 &= ~8u;
-		GET_CHAOWK(pChao)->field_B0 &= ~2u;
-		GET_CHAOWK(pChao)->field_B0 &= ~0x10u;
-		GET_CHAOWK(pChao)->field_B0 &= ~BIT_5; // buyo
+		pChao = CreateChaoExtra(GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
+		GET_CHAOWK(pChao)->ChaoFlag &= ~8u;
+		GET_CHAOWK(pChao)->ChaoFlag &= ~2u;
+		GET_CHAOWK(pChao)->ChaoFlag &= ~0x10u;
+		GET_CHAOWK(pChao)->ChaoFlag &= ~BIT_5; // buyo
 
 		customizationController = new UIController();
 
@@ -1636,7 +1636,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 				}
 
 				// if we're in the color menu we can't exit until we're out
-				if (ColorMenuOpened || !(MenuButtons_Pressed[0] & Buttons_B)) {
+				if (ColorMenuOpened || !(SWDATAE[0] & BTN_B)) {
 					return;
 				}
 				
@@ -1718,37 +1718,39 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 		CreateButtonGuide(SELECT | CONFIRM | BACK);
 		LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 
-		pCustomizationControllerTask = CreateElementalTask(3,
-			"CustomizeUIController",
+		pCustomizationControllerTask = CreateElementalTask(
+			IM_TWK,
+			LEV_3,
 			[](task*) {
 				customizationController->Exec();
 			},
-			LoadObj_Data1);
+			"CustomizeUIController"
+		);
 		pCustomizationControllerTask->disp = [](task*) {
 			customizationController->Disp();
 		};
 
-		a1->mode++;
+		pMaster->mode++;
 		break;
 	case 1:
 		break;
 	case 2:
-		a1->timer++;
-		if (a1->timer > 90)
+		pMaster->timer++;
+		if (pMaster->timer > 90)
 		{
-			a1->timer = 0;
-			a1->mode++;
+			pMaster->timer = 0;
+			pMaster->mode++;
 		}
 		break;
 	case 3:
-		if (a1->state == 0)
+		if (pMaster->state == 0)
 		{
-			a1->mode++;
+			pMaster->mode++;
 		}
 		break;
 	case 4:
-		DeleteObject_(pChao); pChao = NULL;
-		DeleteObject_(pCustomizationControllerTask); pCustomizationControllerTask = NULL;
+		DestroyTask(pChao); pChao = NULL;
+		DestroyTask(pCustomizationControllerTask); pCustomizationControllerTask = NULL;
 
 		delete customizationController;
 		customizationController = NULL;

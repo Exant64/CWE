@@ -16,7 +16,7 @@
 void Social_ErrorCheck(task* a1)
 {
 #ifdef SOCIALDEBUG
-	if (!a1->Data2) PrintDebug("Social error: socialwk is 0");
+	if (!a1->Data2) ___OutputDebugString("Social error: socialwk is 0");
 #endif
 }
 
@@ -35,7 +35,7 @@ int ALBHV_Social(task* a1)
 void Social_ClearBehavior(task* a1)
 {
 	Social_ErrorCheck(a1);
-	memset(((socialwk*)a1->Data2.Undefined)->bhvFuncs, 0, sizeof(SBHV_FUNCDATA) * SBHVCOUNT);
+	memset(((socialwk*)a1->awp)->bhvFuncs, 0, sizeof(SBHV_FUNCDATA) * SBHVCOUNT);
 }
 
 void Social_Clear(task* a1)
@@ -46,7 +46,7 @@ void Social_Clear(task* a1)
 
 void Social_SetParameter(task* a1, int a2, int param)
 {
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+	socialwk* wk = ((socialwk*)a1->awp);
 	wk->data[a2].parameter1 = param;
 }
 
@@ -55,13 +55,13 @@ void Social_SetActor(task* a1, int a2, task* chao)
 	Social_ErrorCheck(a1);
 	AL_SetBehaviorWithTimer(chao, (int)ALBHV_Social, -1);
 	//((chaowk*)chao->Data1)->pAnyTask = a1;
-	((socialwk*)a1->Data2.Undefined)->data[a2].chaoPointer = chao;
-	((socialwk*)a1->Data2.Undefined)->data[a2].parameter1 = 0;
+	((socialwk*)a1->awp)->data[a2].chaoPointer = chao;
+	((socialwk*)a1->awp)->data[a2].parameter1 = 0;
 }
 
 void Social_QueueBehavior(task* a1, int a2, SBHV_FUNC func)
 {
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+	socialwk* wk = ((socialwk*)a1->awp);
 	Social_ErrorCheck(a1);
 	if (wk->nbBhvFuncEntry < 18)
 	{
@@ -70,14 +70,14 @@ void Social_QueueBehavior(task* a1, int a2, SBHV_FUNC func)
 }
 void Social_SetSync(task* a1, int a2) //syncs behavior with another actor
 {
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+	socialwk* wk = ((socialwk*)a1->awp);
 	Social_ErrorCheck(a1);
 	if (wk->bhvFuncs[wk->nbBhvFuncEntry - 1].actorindex != a2) //if index is not identical with other actor
 		wk->bhvFuncs[wk->nbBhvFuncEntry - 1].syncindex = a2;  //set sync
 }
 void Social_Main(task* a1)
 {
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+	socialwk* wk = ((socialwk*)a1->awp);
 	SBHV_FUNCDATA& currFunc = wk->bhvFuncs[wk->CurrBhvFuncNum];
 	bool abort = false;
 
@@ -103,7 +103,7 @@ void Social_Main(task* a1)
 		}
 
 		//kill
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 		return;
 	}
 	
@@ -137,22 +137,22 @@ void Social_Main(task* a1)
 }
 void Social_SetIdle(task* a1, SBHV_FUNC a2)
 {
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+	socialwk* wk = ((socialwk*)a1->awp);
 	wk->idleFunc = a2;
 }
 task* Social_GetActor(task* a1, int a2)
 {
-	socialwk* wk = ((socialwk*)a1->Data2.Undefined);
+	socialwk* wk = ((socialwk*)a1->awp);
 	return wk->data[a2].chaoPointer;
 }
 task* Social_Create(SBHV_FUNC idleFunc)
 {
-	task* social = CreateElementalTask(5, "AL_Social", Social_Main, (LoadObj)0);
+	task* social = CreateElementalTask(0, LEV_5, Social_Main, "AL_Social");
 
-	social->Data2.Undefined = syMalloc(sizeof(socialwk), "al_social.cpp", __LINE__);
-	memset(social->Data2.Undefined, 0, sizeof(socialwk));
+	social->awp = (anywk*)syMalloc(sizeof(socialwk), "al_social.cpp", __LINE__);
+	memset(social->awp, 0, sizeof(socialwk));
 
-	socialwk* wk = (socialwk*)(social->Data2.Undefined);
+	socialwk* wk = (socialwk*)(social->awp);
 	wk->idleFunc = idleFunc;
 	return social;
 }

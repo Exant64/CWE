@@ -33,20 +33,20 @@ int ALBHV_Guitar(task* tp) {
 		//al_toy, the function got automatically optimized to always use al_toy inside the code
 		//so i gotta do it manually
 		//todo: fix with decomp function in al_parts or something		
-		GET_CHAOWK(tp)->field_524[AL_PART_HAND_R]->toy.texlist = texlist_cwe_object;
+		GET_CHAOWK(tp)->Shape.CurrObjectList[AL_PART_HAND_R]->pItemTexlist = texlist_cwe_object;
 		
 		++bhv->Mode;
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && CurrentChaoArea == NextChaoArea)
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
 		{
-			PlaySound_XYZ((24576 + 162), &tp->twp->pos, 0, 0, 56);
+			SE_CallV2((24576 + 162), 0, 0, 56, &tp->twp->pos);
 		}
 		break;
 	}
 
-	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;//if the band/music field is gone, end the action
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;//if the band/music field is gone, end the action
 }
 
 int ALBHV_Triangle(task* tp) {
@@ -63,13 +63,13 @@ int ALBHV_Triangle(task* tp) {
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5f && CurrentChaoArea == NextChaoArea)
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5f && ChaoStageNumber == ChaoNextStageNumber)
 		{
-			PlaySound_XYZ((24576 + 163), &tp->twp->pos, 0, 0, 75);
+			SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
 		}
 		break;
 	}
-	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL; //if the band/music field is gone, end the action
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL; //if the band/music field is gone, end the action
 }
 
 int ALBHV_Accordion(task* tp) {
@@ -85,14 +85,14 @@ int ALBHV_Accordion(task* tp) {
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && CurrentChaoArea == NextChaoArea)
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
 		{
-			PlaySound_XYZ((24576 + 161), &tp->twp->pos, 0, 0, 56);
+			SE_CallV2((24576 + 161), 0, 0, 56, &tp->twp->pos);
 		}
 		break;
 	}
 
-	return ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
 }
 
 extern "C" __declspec(dllexport) const BHV_FUNC ALBHV_MusicFunc_CWE[NB_AL_MUSIC_CWE] = {
@@ -116,7 +116,7 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 	int count = 0;
 
 	//removed the redundant CCL_ClearSearch call	
-	if (!ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
+	if (!AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC)) {
 		int i;
 		for (i = 0; i < NB_AL_MUSIC_CWE; i++) {
 			if (AL_KW_IsMusicFlagOn(tp, i)) {
@@ -129,13 +129,13 @@ Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
 			NJS_POINT3 music_center;
 			Uint32 kind = InstList[(int)(njRandom() * (count - 0.00001f))];
 
-			int ang = work->entity.ang.y;
-			music_center.x = njSin(ang) * 8 + work->entity.pos.x;
-			music_center.y = work->entity.pos.y;
-			music_center.z = njCos(ang) * 8 + work->entity.pos.z;
+			int ang = work->ang.y;
+			music_center.x = njSin(ang) * 8 + work->pos.x;
+			music_center.y = work->pos.y;
+			music_center.z = njCos(ang) * 8 + work->pos.z;
 
 			AL_SetBehavior(tp, ALBHV_MusicFunc_CWE[kind]);
-			ALOField_Load(tp, CI_KIND_AL_RANDOM_MUSIC, &music_center, 20, (int)(1800 + (njRandom() * 2401.f)));
+			AL_ChildFieldCreateT(tp, CI_KIND_AL_RANDOM_MUSIC, &music_center, 20, (int)(1800 + (njRandom() * 2401.f)));
 			return TRUE;
 		}
 	}
@@ -147,7 +147,7 @@ void AL_CalcIntentionScore_JoinMusic(task* tp, float* pMaxScore) {
 	float score = 0.0f;
 	Uint32 trigger = GET_GLOBAL()->IntentionHimaTrigger >> 1; //div by 2?
 	Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
-	task* pField = ALO_Field_Find_(tp, 1, CI_KIND_AL_RANDOM_MUSIC);
+	task* pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC);
 
 	int InstList[NB_AL_MUSIC_CWE];
 	int count = 0;
@@ -186,13 +186,13 @@ void AL_CalcIntentionScore_JoinMusic(task* tp, float* pMaxScore) {
 					AL_EmotionAdd(tp, EM_ST_LONELY, -4000);
 					//AL_ClearIntention(tp);
 
-					if (pField->Parent) {
-						AL_EmotionAdd(pField->Parent, EM_ST_LONELY, -4000);
+					if (pField->ptp) {
+						AL_EmotionAdd(pField->ptp, EM_ST_LONELY, -4000);
 					}
 				}
 				else {
-					if (pField->Parent) {
-						MOV_SetAimPos(tp, &pField->Parent->twp->pos);
+					if (pField->ptp) {
+						MOV_SetAimPos(tp, &pField->ptp->twp->pos);
 					}
 					AL_SetBehavior(tp, ALBHV_TurnToAim);
 					AL_SetNextBehavior(tp, ALBHV_PostureChangeSit);

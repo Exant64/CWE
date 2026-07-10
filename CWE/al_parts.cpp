@@ -8,21 +8,21 @@
 #include <vector>
 #include <map>
 
-void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist)
+void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist)
 {
-	ChaoData1* v4; // eax
-	ChunkObjectPointer* v5; // edx
+	chaowk* v4; // eax
+	AL_OBJECT* v5; // edx
 
 	v4 = GET_CHAOWK(a1);
-	v5 = v4->field_524[a2];
-	if (v5->toy.model != model)
+	v5 = v4->Shape.CurrObjectList[a2];
+	if (v5->pItemObject != model)
 	{
-		v5->toy.scale = 0.0;
-		v4->field_524[a2]->toy.model = model;
+		v5->ItemScale = 0.0;
+		v4->Shape.CurrObjectList[a2]->pItemObject = model;
 	}
-	v4->field_524[a2]->toy.texlist = texlist;
-	v4->field_524[a2]->toy.exists = 1;
-	v4->field_524[a2]->useTransform = 0;
+	v4->Shape.CurrObjectList[a2]->pItemTexlist = texlist;
+	v4->Shape.CurrObjectList[a2]->ItemActiveFlag = 1;
+	v4->Shape.CurrObjectList[a2]->ItemOffsetFlag = 0;
 }
 
 void  AL_PartsMinimalFlagOn(task* tp, int MinimalType)
@@ -80,8 +80,8 @@ int AL_GetMinimalPart(task* tp, int PartsKind)
 
 std::vector<std::array<CWE_PARTS,2>> ModAPI_MiniParts;
 
-NJS_OBJECT emptyNJSOBJECT = { NJD_EVAL_HIDE | NJD_EVAL_BREAK , NULL, 0,0,0, 0,0,0, 0,0,0, NULL, NULL };
-NJS_OBJECT* emptyArray[13];
+NJS_CNK_OBJECT emptyNJSOBJECT = { NJD_EVAL_HIDE | NJD_EVAL_BREAK , NULL, 0,0,0, 0,0,0, 0,0,0, NULL, NULL };
+NJS_CNK_OBJECT* emptyArray[13];
 
 int PartsObjectTreeNumber[8][2] = {
 	{3, 10},
@@ -132,16 +132,16 @@ void AL_SetMinimalParts(task* tp, int PartsKind, int MinimalType) {
 				//we're using field_CC (pDisplayList, unused field) as a texlist field
 				//first element of CWE_PARTS[2] array is child parts, second is adult parts
 				if (work->pParamGC->type == 2) {
-					work->field_524[tree]->animalPart = ModAPI_MiniParts[MinimalType][0].objects[listNumber];
-					work->field_524[tree]->field_CC = (int)ModAPI_MiniParts[MinimalType][0].tex;
+					work->Shape.CurrObjectList[tree]->pPartsObject = ModAPI_MiniParts[MinimalType][0].objects[listNumber];
+					work->Shape.CurrObjectList[tree]->DisplayList = (void*)ModAPI_MiniParts[MinimalType][0].tex;
 				}
 				else {
-					work->field_524[tree]->animalPart = ModAPI_MiniParts[MinimalType][1].objects[listNumber];
-					work->field_524[tree]->field_CC = (int)ModAPI_MiniParts[MinimalType][1].tex;
+					work->Shape.CurrObjectList[tree]->pPartsObject = ModAPI_MiniParts[MinimalType][1].objects[listNumber];
+					work->Shape.CurrObjectList[tree]->DisplayList = (void*)ModAPI_MiniParts[MinimalType][1].tex;
 				}
 			}
 			else
-				work->field_524[tree]->animalPart = 0;
+				work->Shape.CurrObjectList[tree]->pPartsObject = 0;
 		}
 	}
 }
@@ -150,10 +150,10 @@ void AL_RemoveMinimalParts(task* tp, int PartsType) {
 	AL_SetMinimalParts(tp, PartsType, -1);
 }
 
-FunctionPointer(void, sub_566B30, (ChunkObjectPointer* a1), 0x566B30);
+FunctionPointer(void, sub_566B30, (AL_OBJECT* a1), 0x566B30);
 
 static void AL_PartsConversion(task* a1) {
-	ChaoData1* wk = GET_CHAOWK(a1);
+	chaowk* wk = GET_CHAOWK(a1);
 	CHAO_PARAM_GC* pParam = wk->pParamGC;
 
 	for (size_t i = 0; i < NB_PARTS_KIND; i++) {
@@ -164,7 +164,7 @@ static void AL_PartsConversion(task* a1) {
 }
 
 void sub_566B80(task* tp) {
-	ChaoData1* wk = GET_CHAOWK(tp);
+	chaowk* wk = GET_CHAOWK(tp);
 	auto pParam = GET_CWEPARAM(tp);
 
 	if (!(pParam->Flags & AL_PARAM_FLAG_PARTS_CONVERSION)) {
@@ -176,7 +176,7 @@ void sub_566B80(task* tp) {
 	for (int i = 0; i < NB_PARTS_KIND; i++) {
 		AL_SetMinimalParts(tp, i, wk->pParamGC->PartsBTL.MinimalParts[i]);
 	}
-	sub_566B30(wk->field_510);
+	sub_566B30(wk->Shape.pObject);
 }
 
 static void __declspec(naked) sub_566B80Hook()
@@ -205,8 +205,8 @@ void AL_Parts_Init()
 	AdultAnimalParts[SA2BAnimal_Raccoon][0] = &RaccoonArmsRight;
 	AdultAnimalParts[SA2BAnimal_Raccoon][1] = &RaccoonArmsLeft;
 
-	ChildAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_OBJECT*)0x012BB6F4;//raccoon tail
-	AdultAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_OBJECT*)0x0129A16C;
+	ChildAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_CNK_OBJECT*)0x012BB6F4;//raccoon tail
+	AdultAnimalParts[SA2BAnimal_Raccoon][9] = (NJS_CNK_OBJECT*)0x0129A16C;
 
 	//sa2 parts
 	for (int i = 0; i < 21; i++) {

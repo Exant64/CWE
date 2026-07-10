@@ -56,9 +56,9 @@ struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
     int garden;
     void* pMySaveInfo;
     NJS_TEXLIST* texlist;
-    NJS_OBJECT* pLocalObject;
-    NJS_OBJECT* pShadowObject;
-    NJS_OBJECT* pCopyObject;
+    NJS_CNK_OBJECT* pLocalObject;
+    NJS_CNK_OBJECT* pShadowObject;
+    NJS_CNK_OBJECT* pCopyObject;
 };
 #pragma pack(pop)
 
@@ -75,7 +75,7 @@ enum eTREE_STATE
 
 DataArray(int, dword_12E8AEC, 0x12E8AEC,10);
 DataArray(int, dword_13291B4, 0x13291B4, 10);
-void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_OBJECT* a2)
+void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_CNK_OBJECT* a2)
 {
     double v7; // st7
     int v9; // edx
@@ -131,18 +131,18 @@ void __cdecl sub_547440(ALO_GrowTreeExecutor_Data* a1, NJS_OBJECT* a2)
             case 1:
             case 2:
             case 3:
-                ObjectRegistry::DrawModel(ChaoItemCategory_Fruit, a1->garden - 1);
+                ObjectRegistry::DrawModel(ALW_CATEGORY_FRUIT, a1->garden - 1);
                 break;
             default:
                 int lookup = ModAPI_TreeEntries[a1->kind].FruitIDs[v9];
-                ObjectRegistry::DrawModel(ChaoItemCategory_Fruit, lookup);
+                ObjectRegistry::DrawModel(ALW_CATEGORY_FRUIT, lookup);
                 break;
             }
             goto LABEL_33;
         }
         v7 = njSin(a1->LeafRotAng + dword_12E8AEC[a1->LeafDispNum]) * a1->LeafWidth;
         RotateX(NJM_DEG_ANG(v7));
-        chCnkDrawModel(a2->chunkmodel);
+        chCnkDrawModel(a2->model);
         ++a1->LeafDispNum;
     LABEL_34:
         if (a2->child)
@@ -166,13 +166,13 @@ void __cdecl sub_546670Hook(NJS_VECTOR* a1, ALO_GrowTreeExecutor_Data* a2, int a
     sub_546670(a1, a2, a3);
 }
 
-task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, CHAO_SAVE_INFO* a5)
+task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle, NJS_VECTOR* a4, ITEM_SAVE_INFO* a5)
 {    
-    if(a1 >= SA2BFruit_ChaoGardenFruit && a1 <= SA2BFruit_DarkGardenFruit)
-        return ALO_FruitExecutor_Load(a1, position, angle, a4, a5);
+    if(a1 >= ChaoFruit_ChaoGardenFruit && a1 <= ChaoFruit_DarkGardenFruit)
+        return ALO_FruitCreate(a1, position, angle, a4, a5);
 
     int lookup = ModAPI_TreeEntries[a1 - 2].FruitIDs[CurrentFruitSlot];
-    return ALO_FruitExecutor_Load(lookup, position, angle, a4, a5);
+    return ALO_FruitCreate(lookup, position, angle, a4, a5);
 }
 
 __declspec(naked) void AL_GrowTree_CreateFruitHook()
@@ -191,8 +191,7 @@ void __cdecl ALO_SeedExecutor_Display_(task* eax0)
     taskwk* v1; // esi
 
     v1 = eax0->twp;
-    if (Scaletask_XYZ(eax0, 1.5f, 1.5f, 1.0f))
-    {
+    if (AL_IsOnScreen2(eax0, 1.5f, 1.0f)) {
         DoLighting(LightIndex);
        
         njPushMatrixEx();
@@ -203,13 +202,13 @@ void __cdecl ALO_SeedExecutor_Display_(task* eax0)
         njTranslateEx(&v1->pos);
         RotateY( v1->ang.y);
         njScale(NULL, 1.5f, 1.5f, 1.5f);
-        njControl3D |= 0x2400u;
+        _nj_control_3d_flag_ |= 0x2400u;
         njSetTexture(ModAPI_SeedTexlists[v1->ang.x]);
-        chCnkDrawModel(ModAPI_SeedModels[v1->ang.x]->chunkmodel);
-        njControl3D &= ~0x2400;
+        chCnkDrawModel(ModAPI_SeedModels[v1->ang.x]->model);
+        _nj_control_3d_flag_ &= ~0x2400;
 
         if(RenderFix_IsEnabled()) {
-            if (eax0->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev1 > *(float*)&eax0->UnknownA_ptr->field_30) {
+            if (eax0->fwp && ChaoGlobal.CamDistShadowCutLev1 > GET_ALW_ENTRY_WORK(eax0)->CamDist) {
                 njScale(NULL, 0.38f, 0.7f, 0.38f);
                 njTranslate(NULL, 0, 0.1f, 0);
                 rfapi_core->pDraw->AL_ShadowDraw();
@@ -228,7 +227,7 @@ void ALO_GrowTreeExecutor_Display_(task* a1)
         v1->texlist = ModAPI_TreeEntries[v1->kind].pTexlist;
     
     AL_DayNightCycle_PushFallbackLight();
-    ALO_GrowTreeExecutor_Display(a1);
+    ALO_GrowTreeDisplayer(a1);
     AL_DayNightCycle_PopFallbackLight();
     // this call is already done in the function but we do it again after the pop to be safe
     // since we're not "in" the function we cant do it properly before the dolighting call
@@ -263,7 +262,7 @@ void ALO_GrowTree_Init()
     WriteCall((void*)0x00546CA1, FixTransitionHook);
     WriteData<2>((char*)0x00546CA6, (char)0x90);
 
-    WriteJump(ALO_SeedExecutor_Display, ALO_SeedExecutor_Display_);
+    WriteJump((void*)0x5498E0, ALO_SeedExecutor_Display_);
     WriteCall((Void*)0x05470CB, sub_546670Hook);
     WriteCall((void*)0x005471D7, AL_GrowTree_CreateFruit);
     WriteJump((void*)0x547440, sub_547440);

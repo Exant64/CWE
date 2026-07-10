@@ -21,9 +21,9 @@ StdcallFunctionPointer(int, nullsub_5, (int), 0x411600);
 FunctionPointer(int, GetCrappyReplacementDepartureMachine, (), 0x41DFB0);
 FunctionPointer(int, controller_useless, (), 0x425700);
 FunctionPointer(void, MemoryManager__Deallocate, (AllocatedMem *data, char *a2, int a3), 0x425B50);
-FunctionPointer(int, PrintDebug, (const char*, ...), 0x426740);
+FunctionPointer(int, ___OutputDebugString, (const char*, ...), 0x426740);
 FunctionPointer(int, ProcessChunkModel, (NJS_CNK_MODEL *a1), 0x42D650);
-FunctionPointer(void, ProcessChunkModelsWithCallback, (NJS_OBJECT *object, int(__cdecl *callback)(NJS_CNK_MODEL *)), 0x42EB30);
+FunctionPointer(void, njCnkTransformObject, (NJS_CNK_OBJECT *object, int(__cdecl *callback)(NJS_CNK_MODEL *)), 0x42EB30);
 FunctionPointer(void, LoadTextureList_NoName, (NJS_TEXLIST *), 0x42FD10);
 VoidFunc(main_gc_free, 0x433E60);
 FunctionPointer(int, GameLoop, (), 0x433EE0);
@@ -42,7 +42,7 @@ VoidFunc(InitCurrentLevelAndScreenCount, 0x43CB10);
 VoidFunc(CallControlAndDoOtherThings, 0x43D240);
 FunctionPointer(int, PauseMenu_Main, (), 0x43D310);
 FunctionPointer(int, LoadCharacters, (), 0x43D630);
-FunctionPointer(void, SetCurrentCharacter1P, (Characters a1), 0x43D850);
+FunctionPointer(void, SetCurrentCharacter1P, (int a1), 0x43D850);
 FastcallFunctionPointer(void, UpdateMenuInput, (int a1), 0x441AB0);
 VoidFunc(Control, 0x441BA0);
 VoidFunc(Control_B, 0x441D50);
@@ -51,8 +51,8 @@ FunctionPointer(int, UpdateStaticControllers, (), 0x4421B0);
 VoidFunc(UpdateUselessButtonPressBooleans, 0x442390);
 ObjectFunc(ADX_TaskLoop_Delete, 0x442850);
 ObjectFunc(ADX_TaskLoop, 0x442AD0);
-VoidFunc(ResetMusic, 0x442D90);
-VoidFunc(StopMusic, 0x442F50);
+VoidFunc(BGM_Replay, 0x442D90);
+VoidFunc(BGM_Stop, 0x442F50);
 ObjectFunc(JingleTask_Delete, 0x443320);
 ObjectFunc(JingleTask, 0x4433D0);
 FunctionPointer(int, ProbablySavesSaveFile, (), 0x4436A0);
@@ -62,8 +62,8 @@ FunctionPointer(int, SetWorkingSaveD, (), 0x445330);
 ObjectFunc(DrawLine3DExec, 0x44B680);
 FunctionPointer(int, Get_dword_1A559C8, (), 0x44BFE0);
 FunctionPointer(double, MaybeThisIsDeltaTimeOrSomething, (), 0x44C1A0);
-FastcallFunctionPointer(signed int, LoadTextureList, (char *filename, NJS_TEXLIST *texlist), 0x44C350);
-ThiscallFunctionPointer(NJS_TEXLIST *, LoadCharTextures, (char *filename), 0x44C510);
+FastcallFunctionPointer(signed int, texLoadTexturePvmFile, (char *filename, NJS_TEXLIST *texlist), 0x44C350);
+ThiscallFunctionPointer(NJS_TEXLIST *, texCreateTexlist, (char *filename), 0x44C510);
 FunctionPointer(int, SetupGameplayVariables, (), 0x44C8F0);
 FunctionPointer(int, GetHandicapThingMaybe, (int id), 0x44CBA0);
 ObjectFunc(DispTechniqueScore_Main, 0x44D320);
@@ -104,24 +104,23 @@ ObjectFunc(PlayerSpeedUp_Main, 0x46DF80);
 ObjectFunc(PlayerSpeedUp_Delete, 0x46DFC0);
 ObjectFunc(PlayerSpeedUp, 0x46E000);
 FunctionPointer(Bool, CheckBreakObject, (task *_this, task *other), 0x46EC00);
-ObjectFunc(DeleteObject_, 0x46F720);
+ObjectFunc(DestroyTask, 0x46F720);
 FunctionPointer(void, RunObjectIndex, (int index), 0x46F8C0);
 FunctionPointer(int, RunMostObjects, (), 0x46FBA0);
 VoidFunc(UpdateObjects, 0x470010);
 FunctionPointer(taskwk *, AllocateEntityData1, (), 0x470B40);
 FunctionPointer(EntityData2 *, AllocateEntityData2, (), 0x470B70);
-FunctionPointer(ObjUnknownA *, AllocateObjUnknownA, (), 0x470BA0);
 FunctionPointer(ObjUnknownB *, AllocateObjUnknownB, (), 0x470BD0);
-FunctionPointer(task *, CreateChildTask, (LoadObj a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
+FunctionPointer(task *, CreateChildTask, (__int8 a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
 ObjectFunc(DeleteChildObjects, 0x470C80);
 ObjectFunc(StageNameDisplayExecutor_Main, 0x4724C0);
-FunctionPointer(int, DamagePlayer, (taskwk *data1, CharObj2Base *data2), 0x473800);
+FunctionPointer(int, DamagePlayer, (taskwk *data1, playerwk *data2), 0x473800);
 ObjectFunc(ExecutePlayerDrawMotionWithAlphaReducing, 0x476BD0);
 ObjectFunc(PSubCallSEWithWait, 0x476EA0);
 ObjectFunc(LoopSECallForTheMode, 0x476F20);
 FunctionPointer(signed int, ScreenFadeIn, (), 0x478690);
 FunctionPointer(signed int, ScreenFadeOut, (), 0x4786E0);
-FunctionPointer(signed int, LoadLandManager, (LandTable *a1), 0x47BD30);
+FunctionPointer(signed int, LoadLandManager, (OBJ_LANDTABLE *a1), 0x47BD30);
 ObjectFunc(LandManager_Main, 0x47C180);
 FunctionPointer(signed int, LoadSetObject, (ObjectListHead *list, void *setfile), 0x487E40);
 FunctionPointer(int, DeleteSetObject, (), 0x487F00);
@@ -175,14 +174,14 @@ ObjectFunc(AL_RaceMaster, 0x52D1C0);
 FunctionPointer(int, LoadChaoKarateModule, (), 0x52D6E0);
 ObjectFunc(AL_KarateMaster, 0x52D990);
 ObjectFunc(FExec_1, 0x52DD90);
-FunctionPointer(char *, GetChaoSavePointer, (), 0x52E440);
-FunctionPointer(int, GetChaoSavePointer_, (), 0x52E460);
+FunctionPointer(CHAO_GARDEN_INFO *, AL_GetCurrGardenInfo, (), 0x52E440);
+FunctionPointer(CHAO_GARDEN_INFO*, AL_GetAnotherGardenInfo, (), 0x52E460);
 ThiscallFunctionPointer(bool, CheckChaoChecksum, (char *data), 0x52F030);
 ObjectFunc(FExec_2, 0x52FC60);
 ObjectFunc(ALW_Control_Main, 0x530850);
 ObjectFunc(ALW_Control_Display, 0x530B00);
 ObjectFunc(ALW_Control_Delete, 0x530B70);
-FunctionPointer(int, SpawnAllChaoInGarden, (), 0x531B10);
+FunctionPointer(int, AL_SetChaoOnTheGarden, (), 0x531B10);
 FunctionPointer(int, AL_GBAManagerExecutor_Load, (), 0x532710);
 ObjectFunc(AL_GBAManagerExecutor, 0x532A60);
 ObjectFunc(AL_GBAManagerExecutor_Delete, 0x532C70);
@@ -213,65 +212,28 @@ ObjectFunc(j_Chao_Display, 0x53FCE0);
 ObjectFunc(AL_ExecShadowTex, 0x5412E0);
 ObjectFunc(KarateMainExec, 0x542DA0);
 ObjectFunc(FExec_4, 0x5436B0);
-ObjectFunc(ALO_ChaosDriveExecutor_Main, 0x5450C0);
-ObjectFunc(ALO_ChaosDriveExecutor_Display, 0x545150);
-FunctionPointer(int, ALO_ChaosDriveExecutor_Unknown, (int), 0x545430);
-ObjectFunc(ALO_ChaosDriveExecutor_Delete, 0x5455B0);
-FunctionPointer(task *, ALO_ChaosDriveExecutor_Load, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, CHAO_SAVE_INFO *a4), 0x545600);
-ObjectFunc(ALO_FruitExecutor_Main, 0x545E40);
-ObjectFunc(ALO_FruitExecutor_Display, 0x545EE0);
-FunctionPointer(task *, ALO_FruitExecutor_Load, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, CHAO_SAVE_INFO *a5), 0x546180);
-ObjectFunc(ALO_GrowTreeExecutor_Main, 0x546810);
-ObjectFunc(ALO_GrowTreeExecutor_Display, 0x547E70);
-ObjectFunc(ALO_GrowTreeExecutor_Delete, 0x5481E0);
-FunctionPointer(int, ALO_GrowTreeExecutor_Load, (int, int), 0x548210);
-ObjectFunc(AL_MinimalExecutor_Display, 0x5489D0);
-ObjectFunc(AL_MinimalExecutor_Delete, 0x548C30);
-ObjectFunc(AL_MinimalExecutor_Main, 0x548C50);
-FunctionPointer(task *, AL_MinimalExecutor_Load, (char a1, NJS_VECTOR *a2, int a3, void *a4, int a5), 0x548D30);
-ObjectFunc(AL_MinimalCreateManagerExecutor, 0x5492B0);
-ObjectFunc(ALO_SeedExecutor_Main, 0x549860);
-ObjectFunc(ALO_SeedExecutor_Display, 0x5498E0);
-FunctionPointer(task *, ALO_SeedExecutor_Load, (int a1, NJS_VECTOR *position, NJS_VECTOR *a3, int a4), 0x549B00);
-FastcallFunctionPointer(int, CalcChaoSaveChecksum, (char *a1), 0x549C40);
-ObjectFunc(ALO_ObakeHeadExecutor_Main, 0x54A050);
-ObjectFunc(ALO_ObakeHeadExecutor_Display, 0x54A0F0);
-FunctionPointer(task *, ALO_ObakeHeadExecutor_Load, (int a1, NJS_VECTOR *position, int a3, NJS_VECTOR *a4, int a5), 0x54A540);
-FunctionPointer(void, ChaoStgDark_Prolog, (), 0x54B420);
+FunctionPointer(task *, ALO_ChaosDriveCreate, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, ITEM_SAVE_INFO *a4), 0x545600);
+FunctionPointer(task *, ALO_FruitCreate, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, ITEM_SAVE_INFO *a5), 0x546180);
+ObjectFunc(ALO_GrowTreeDisplayer, 0x547E70);
+FunctionPointer(task *, AL_MinimalCreate, (char a1, NJS_VECTOR *a2, int a3, void *a4, ITEM_SAVE_INFO* a5), 0x548D30);
+FunctionPointer(task *, ALO_SeedCreate, (int a1, NJS_VECTOR *position, NJS_VECTOR *a3, ITEM_SAVE_INFO* a4), 0x549B00);
+ObjectFunc(ALO_ObakeHeadExecutor, 0x54A050);
+FunctionPointer(task *, ALO_ObakeHeadCreate, (int a1, NJS_VECTOR *position, int a3, NJS_VECTOR *a4, ITEM_SAVE_INFO* a5), 0x54A540);
+
 ObjectFunc(AL_DarkGardenMaster, 0x54B730);
 ObjectFunc(AL_OdekakeStage, 0x54BCE0);
-FunctionPointer(int, ChaoStgLobby_Prolog, (), 0x54BFB0);
 ObjectFunc(AL_LobbyMaster, 0x54C2A0);
-FunctionPointer(void, ChaoStgNeut_Prolog, (), 0x54C4F0);
 ObjectFunc(AL_NeutGardenMaster, 0x54C7B0);
-FunctionPointer(void, ChaoStgHero_Prolog, (), 0x54CCE0);
 ObjectFunc(AL_HeroGardenMaster, 0x54D210);
 ObjectFunc(AL_EntranceMaster, 0x54DAD0);
 ObjectFunc(AL_StadiumMaster, 0x54E010);
 ObjectFunc(AlgKinderMaster, 0x54E780);
-ObjectFunc(Chao_Main, 0x54FE20);
-ObjectFunc(Chao_Delete, 0x54FF30);
-ObjectFunc(Chao_Display, 0x54FF80);
-FunctionPointer(task *, CreateChao, (CHAO_SAVE_INFO *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
+ObjectFunc(ChaoExecutor, 0x54FE20);
+ObjectFunc(ChaoDestructor, 0x54FF30);
+ObjectFunc(ChaoDisplayer, 0x54FF80);
+FunctionPointer(task *, CreateChaoExtra, (CHAO_PARAM_GC *chaoData, int a2, AL_SHAPE_ELEMENT *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
 ObjectFunc(ChaoSelectMenuManager, 0x5542B0);
-ObjectFunc(ALO_EntranceElevatorExecutor_Main, 0x557FC0);
-ObjectFunc(ALO_EntranceElevatorExecutor_Display, 0x558350);
-ObjectFunc(ALO_EntranceElevatorExecutor_Delete, 0x5584C0);
-FunctionPointer(int, ALO_EntranceElevatorExecutor_Load, (), 0x558510);
-ObjectFunc(ALO_RaceFruit_Main2, 0x55A290);
-ObjectFunc(ALO_RaceFruit_Display, 0x55A2F0);
-ObjectFunc(ALO_RaceFruit_Main, 0x55A560);
-FunctionPointer(int, ALO_RaceFruit_Load, (int), 0x55A5E0);
-ObjectFunc(AL_FieldExecutor_Main, 0x55A6A0);
-ObjectFunc(AL_FieldExecutor_Display, 0x55A6D0);
-FunctionPointer(task *, AL_FieldExecutor_Load, (char a1, NJS_VECTOR *a2, float a3, int a4), 0x55A850);
-ObjectFunc(ALO_TVExecutor_Main, 0x55C540);
-ObjectFunc(ALO_TVExecutor_Display, 0x55C9E0);
-ObjectFunc(ALO_TVExecutor_Delete, 0x55CB70);
-FunctionPointer(void, ALO_TVExecutor_Load, (NJS_VECTOR *position), 0x55CB90);
-ObjectFunc(ALO_Ball_Main2, 0x55D310);
-ObjectFunc(ALO_Ball_Display, 0x55D3B0);
-ObjectFunc(ALO_Ball_Main, 0x55D640);
+ObjectFunc(ALO_TVDisplayer, 0x55C9E0);
 FunctionPointer(char *, ALO_Ball_Load, (NJS_VECTOR *position, NJS_VECTOR *a2), 0x55D6B0);
 ObjectFunc(ALO_ShabonExecutor_Display, 0x55D830);
 ObjectFunc(ALO_ShabonExecutor_Main, 0x55D960);
@@ -286,20 +248,19 @@ ObjectFunc(CnkWaterManagerExecutor, 0x56B1B0);
 ObjectFunc(KarateCameraExec, 0x574480);
 ObjectFunc(KarateChaoExec_Main, 0x578D30);
 ObjectFunc(EGG, 0x57B520);
-ObjectFunc(ALO_Delete, 0x57B9B0);
-FunctionPointer(task *, CreateChaoEgg, (const void *a1, CHAO_SAVE_INFO *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
+ObjectFunc(ALW_CancelEntry, 0x57B9B0);
+FunctionPointer(task *, CreateEgg, (const void *a1, CHAO_PARAM_GC *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
 ObjectFunc(ALO_RadicaseExecutor_Main, 0x57C840);
-ObjectFunc(ALO_RadicaseExecutor_Display, 0x57CA80);
+ObjectFunc(ALO_RadicaseDisplayer, 0x57CA80);
 ObjectFunc(ALO_RadicaseExecutor_Delete, 0x57CC80);
 FunctionPointer(int, ALO_RadicaseExecutor_Load, (int), 0x57CCA0);
 ObjectFunc(AL_NormalCameraExecutor_Main, 0x57CD50);
-FunctionPointer(int, AL_NormalCameraExecutor_Load, (), 0x57D2E0);
+FunctionPointer(int, AL_CreateNormalCameraTask, (), 0x57D2E0);
 ObjectFunc(ALCAM_CameraManagerExecutor, 0x57D400);
 ObjectFunc(ALO_OdekakeMachine_Main2, 0x57D540);
 ObjectFunc(ALO_OdekakeMachine_Delete, 0x57E040);
 ObjectFunc(ALO_OdekakeMachine_Display, 0x57E060);
 ObjectFunc(ALO_OdekakeMachine_Main, 0x57E460);
-ObjectFunc(AL_OdekakeMenuMaster, 0x57E5F0);
 ObjectFunc(FExec_5, 0x57EDD0);
 ObjectFunc(ALO_LobbyGateKinderExecutor, 0x57EF00);
 ObjectFunc(ALO_LobbyGateKinderExecutor_Display, 0x57EF30);
@@ -310,9 +271,7 @@ ObjectFunc(ALO_LobbyGateHeroExecutor_Main, 0x57F940);
 ObjectFunc(ALO_LobbyGateHeroExecutor_Display, 0x57F980);
 ObjectFunc(ALO_LobbyGateDarkExecutor_Main, 0x57FD60);
 ObjectFunc(ALO_LobbyGateDarkExecutor_Display, 0x57FDF0);
-ObjectFunc(ALO_BoxExecutor_Main, 0x5801C0);
-ObjectFunc(ALO_BoxExecutor_Display, 0x580510);
-ObjectFunc(ALO_BoxExecutor_Delete, 0x580870);
+ObjectFunc(ALO_BoxExecutor, 0x5801C0);
 FunctionPointer(void, ALO_BoxExecutor_Load, (NJS_VECTOR *position), 0x580890);
 ObjectFunc(ALO_Horse_Main, 0x580E80);
 FunctionPointer(int, ALO_Horse_Load, (), 0x580F30);
@@ -348,7 +307,6 @@ ObjectFunc(SayounaraWindowExecutor, 0x5AC410);
 ObjectFunc(ChaoParamWindowExecutor, 0x5ACC50);
 ObjectFunc(ChaoParamWindowExecutor_Display, 0x5ACF40);
 ObjectFunc(ChaoParamWindowExecutor_Delete, 0x5AD660);
-FunctionPointer(int, ChaoParamWindowExecutor_Load, (float, float), 0x5AD690);
 
 ObjectFunc(Omochao_Main, 0x6C0780);
 ObjectFunc(MsgerDmyTaskExec, 0x6C0A50);
@@ -388,13 +346,13 @@ FunctionPointer(void, LoadMechTails, (int playerNum), 0x740EB0);
 FunctionPointer(void, LoadChaoWalker, (int playerNum), 0x741110);
 FunctionPointer(void, LoadDarkChaoWalker, (int playerNum), 0x7412F0);
 
-FunctionPointer(int, GetDllData, (LPCSTR lpProcName), 0x77DEF0);
+FunctionPointer(int, GetDataDllProcAddr, (LPCSTR lpProcName), 0x77DEF0);
 FunctionPointer(void *, MemoryManager__Allocate, (int size, char *file, int line), 0x77DFA0);
 FunctionPointer(void *, MemoryManager__AllocateArray, (int count, int size), 0x77DFB0);
 FunctionPointer(void, MemoryManager__Deallocate2, (AllocatedMem *a1, size_t count), 0x77DFE0);
 VoidFunc(UpdateControllers, 0x77E780);
 
-FunctionPointer(UnknownData2 *, AllocateUnknownData2, (task *obj), 0x7966D0);
+FunctionPointer(MOVE_WORK *, MOV_Init, (task *tp), 0x7966D0);
 VoidFunc(nullsub_1, 0x6FE430);
 FunctionPointer(int, nullsub_2, (), 0x7B4AEF);
 FunctionPointer(int, nullsub_3, (), 0x7F4700);
@@ -457,40 +415,9 @@ static inline int WriteSaveFileThing(char *path, void *a2, size_t count)
 	return result;
 }
 
-// int __usercall@<eax>(char *path@<ecx>, void *buffer@<edx>, size_t size)
-static const void *const ReadSaveFileThingPtr = (void*)0x426860;
-static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
-{
-	int result;
-	__asm
-	{
-		push[_size]
-		mov edx, [buffer]
-		mov ecx, [path]
-		call ReadSaveFileThingPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// char __usercall@<al>(_DWORD *a1@<esi>)
-static const void *const IsByteswappedPtr = (void*)0x429840;
-static inline char IsByteswapped(void *a1)
-{
-	char result;
-	__asm
-	{
-		mov esi, [a1]
-		call IsByteswappedPtr
-		mov result, al
-	}
-	return result;
-}
-
 // void __usercall(int a1@<esi>, int a2, char a3, char a4)
 static const void *const PlaySoundProbablyPtr = (void*)0x437260;
-static inline void PlaySoundProbably(int a1, int a2, char a3, char a4)
+static inline void SE_Call(int a1, int a2, char a3, char a4)
 {
 	__asm
 	{
@@ -502,6 +429,8 @@ static inline void PlaySoundProbably(int a1, int a2, char a3, char a4)
 		add esp, 12
 	}
 }
+
+FunctionPointer(CCL_HIT_INFO*, CCL_IsHitKindEx,(task* a1, unsigned __int8 a2),0x00486760);
 
 // void __usercall(int pnum@<eax>, signed int a2@<edx>, signed int a3@<ecx>, int a4)
 static const void *const KnockBackRumblePtr = (void*)0x438F80;
@@ -593,6 +522,16 @@ static inline void AwardWin(signed int n)
 	}
 }
 
+static const void *const PlayJinglePtr = (void*)0x00443480;
+static inline void Jingle_Play(const char *a1)
+{
+	__asm
+	{
+		mov ebx, a1
+		call PlayJinglePtr
+	}
+}
+
 // void __usercall(int pnum@<esi>)
 static const void *const PlayWinnerVoiceProbablyPtr = (void*)0x43ECA0;
 static inline void PlayWinnerVoiceProbably(int pnum)
@@ -606,7 +545,7 @@ static inline void PlayWinnerVoiceProbably(int pnum)
 
 // void __usercall(const char *song@<edi>)
 static const void *const PlayMusicPtr = (void*)0x442CF0;
-static inline void PlayMusic(const char *song)
+static inline void BGM_SetFile(const char *song)
 {
 	__asm
 	{
@@ -727,7 +666,7 @@ static inline ModelIndex * LoadMDLFile(char *filename)
 
 //void __usercall(int a1@<edi>, NJS_VECTOR *a2@<esi>, int a3, char a4, char a5)
 static const void *const PlaySound_XYZPtr = (void*)0x4372E0;
-static inline void PlaySound_XYZ(int a1, NJS_VECTOR *a2, int a3, char a4, char a5)
+static inline void SE_CallV2(int a1, int a3, char a4, char a5, NJS_VECTOR *a2)
 {
 	__asm
 	{
@@ -782,7 +721,7 @@ static inline int GetPlayerNumber(task *a1)
 
 // task *__usercall@<eax>(int list@<ecx>, char *name@<eax>, void (__cdecl *mainSub)(task *)@<edi>, LoadObj flags)
 static const void *const LoadObjectPtr = (void*)0x46F610;
-static inline task * CreateElementalTask(int list, const char *name, void(__cdecl *mainSub)(task *), LoadObj flags)
+static inline task * CreateElementalTask(__int8 flags, tasklevel list, void(__cdecl *mainSub)(task *), const char *name)
 {
 	task * result;
 	__asm
@@ -831,7 +770,7 @@ static inline int ScreenFade(int targetAlpha)
 
 // signed int __usercall@<eax>(task *obj@<eax>, CollisionData *collision, int count, unsigned __int8 a4)
 static const void *const InitCollisionPtr = (void*)0x47E520;
-static inline signed int InitCollision(task *obj, CollisionData *collision, int count, unsigned __int8 a4)
+static inline signed int CCL_Init(task *obj, CCL_INFO *collision, int count, unsigned __int8 a4)
 {
 	signed int result;
 	__asm
@@ -895,15 +834,6 @@ static inline void ChaosDrive_Load(NJS_VECTOR *a1)
 }
 
 // void __usercall(char *a1@<esi>)
-static const void *const WriteChaoSaveChecksumPtr = (void*)0x52EEE0;
-static inline void WriteChaoSaveChecksum(char *a1)
-{
-	__asm
-	{
-		mov esi, [a1]
-		call WriteChaoSaveChecksumPtr
-	}
-}
 
 // signed int __usercall@<eax>(unsigned __int16 a1@<cx>, task *obj@<ebx>, __int16 a3, CHAO_SAVE_INFO *data)
 static const void *const AddToGlobalChaoThingMaybePtr = (void*)0x530750;
@@ -938,7 +868,7 @@ static inline void AddChaoSaveSignature(char *a1, char *a2)
 
 // int __usercall@<eax>(AL_GENE *a1@<esi>)
 static const void *const InitChaoDNAPtr = (void*)0x5506B0;
-static inline int InitChaoDNA(AL_GENE *a1)
+static inline int AL_GeneCreate(AL_GENE *a1)
 {
 	int result;
 	__asm
@@ -1205,7 +1135,7 @@ static inline int XInputToDreamcastButtons(int buttons)
 
 // double __usercall@<st0>(NJS_VECTOR *a1@<eax>, NJS_VECTOR *a2@<ecx>)
 static const void *const CheckDistancePtr = (void*)0x77FBD0;
-static inline float CheckDistance(NJS_VECTOR *a1, NJS_VECTOR *a2)
+static inline float njDistanceP2P(NJS_VECTOR *a1, NJS_VECTOR *a2)
 {
 	float result;
 	__asm

@@ -61,6 +61,8 @@ const char* JewelEggs[] = {
 
 void ThemeUnlockFunc(int ID)
 {
+	DataPointer(char, SonicLightShoesGot, 0x1DEB300);
+
 	if (ID)
 	{
 		if (ID == 1)
@@ -118,13 +120,13 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.ID = "cwe_chaotree",
 		.Flags = 0,
 
-		.FruitIDs = {SA2BFruit_ChaoFruit,SA2BFruit_ChaoFruit,SA2BFruit_ChaoFruit}
+		.FruitIDs = {ChaoFruit_ChaoFruit,ChaoFruit_ChaoFruit,ChaoFruit_ChaoFruit}
 	};
 	cwe_api->AddChaoTree(chao_tree_data, &chao_seed_attrib, "Chao Seed", "Grows a Chao Fruit tree.");
 	
 	//set all seeds to be rebuyable as it is in vanilla
 	for (int i = 0; i < 7; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Seed, i, true);
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_SEED, i, true);
 
 	ALAPI_RegisterFruit(cwe_api);
 	ALAPI_RegisterAccessory(cwe_api);
@@ -158,7 +160,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.pEvolveFunc = [](task* tp) {
 			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 		
-			return pParam->type == ChaoType_Dark_Power && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
+			return pParam->type == TYPE_D_POWER && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
 		},
 
 		.Flags = 0,

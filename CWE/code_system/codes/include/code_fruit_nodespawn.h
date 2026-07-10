@@ -11,8 +11,7 @@ public:
 };
 
 void FruitsDontDespawn::OnALControl(task* tp) {
-	for (size_t i = 0; i < 40; i++) {
-		ChaoObjectData* objData = (ChaoObjectData*)ChaoFruitSlots;
-		objData[i].Age = 0;
+	for (size_t i = 0; i < _countof(AL_GetCurrGardenInfo()->fruit); i++) {
+		AL_GetCurrGardenInfo()->fruit[i].nbVisit = 0;
 	}
 }

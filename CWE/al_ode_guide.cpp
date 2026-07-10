@@ -26,12 +26,12 @@ void ButtonGuideDisp(task* tp) {
 
 void ButtonGuideExec(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr || AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
-		DeleteObject_(tp);
+		DestroyTask(tp);
 	}
 }
 
 void CreateButtonGuide(int _flags) {
-	task* pTask = CreateElementalTask(4, "ButtonGuide", ButtonGuideExec, LoadObj_Data1);
+	task* pTask = CreateElementalTask(IM_TWK, LEV_4, ButtonGuideExec, "ButtonGuide");
 	pTask->twp->btimer = _flags;
 	pTask->disp = ButtonGuideDisp;
 }

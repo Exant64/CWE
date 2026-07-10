@@ -41,15 +41,14 @@ static const char* GBAFruitNames[] = {
 void CWEFruit_HyperFruit(CHAO_SAVE_INFO* chaoData, task* fruit, task* tp) {
 	const int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
 
-	if (chaoData->data.Abl[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
+	if (chaoData->param.Abl[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
 		GET_CWEPARAM(chaoData)->XGradeValue = hyperFruitID + 1;
 	}
 }
 
 void CWEFruit_Shiny(CHAO_SAVE_INFO* chaoData, task* fruit, task* tp) {
-	if (chaoData->data.Shiny)
-	{
-		chaoData->data.Shiny = (chaoData->data.Shiny % 2) + 1;
+	if (chaoData->param.body.MultiNum) {
+		chaoData->param.body.MultiNum = (chaoData->param.body.MultiNum % 2) + 1;
 	}
 }
 
@@ -72,20 +71,20 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 
 	//vanilla fruit names
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 0)->Name = cwe_api->RegisterAlItemString("Chao Garden fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 1)->Name = cwe_api->RegisterAlItemString("Hero Garden fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 2)->Name = cwe_api->RegisterAlItemString("Dark Garden fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 3)->Name = cwe_api->RegisterAlItemString("Strong fruit");
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, 4)->Name = cwe_api->RegisterAlItemString("Tasty fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 0)->Name = cwe_api->RegisterAlItemString("Chao Garden fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 1)->Name = cwe_api->RegisterAlItemString("Hero Garden fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 2)->Name = cwe_api->RegisterAlItemString("Dark Garden fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 3)->Name = cwe_api->RegisterAlItemString("Strong fruit");
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, 4)->Name = cwe_api->RegisterAlItemString("Tasty fruit");
 
-	cwe_api->GetItemAttr(ChaoItemCategory_Hat, 1)->Name = cwe_api->RegisterAlItemString("Pumpkin");
-	cwe_api->GetItemAttr(ChaoItemCategory_Hat, 2)->Name = cwe_api->RegisterAlItemString("Skull");
+	cwe_api->GetItemAttr(ALW_CATEGORY_MASK, 1)->Name = cwe_api->RegisterAlItemString("Pumpkin");
+	cwe_api->GetItemAttr(ALW_CATEGORY_MASK, 2)->Name = cwe_api->RegisterAlItemString("Skull");
 
 	//gba fruit
 	int gbaDescription = cwe_api->RegisterAlItemString(GBAFruitDescription);
 	for (int i = 13; i < 20; i++)
 	{
-		auto fruitAttr = cwe_api->GetItemAttr(ChaoItemCategory_Fruit, i);
+		auto fruitAttr = cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, i);
 		fruitAttr->Name = cwe_api->RegisterAlItemString(GBAFruitNames[i - 13]);
 		fruitAttr->Descriptions = gbaDescription;
 		fruitAttr->PurchasePrice = 350;
@@ -93,11 +92,11 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 
 		cwe_api->RegisterBlackMarketGeneralFruit(i, 40);
 	}
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, SA2BFruit_SmartFruit)->RequiredEmblems = 0;
-	cwe_api->GetItemAttr(ChaoItemCategory_Fruit, SA2BFruit_MintCandy)->RequiredEmblems = 0;
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, ChaoFruit_SmartFruit)->RequiredEmblems = 0;
+	cwe_api->GetItemAttr(ALW_CATEGORY_FRUIT, ChaoFruit_MintCandy)->RequiredEmblems = 0;
 
-	cwe_api->RegisterBlackMarketRareFruit(SA2BFruit_SmartFruit, 50);
-	cwe_api->RegisterBlackMarketRareFruit(SA2BFruit_MintCandy, 60);
+	cwe_api->RegisterBlackMarketRareFruit(ChaoFruit_SmartFruit, 50);
+	cwe_api->RegisterBlackMarketRareFruit(ChaoFruit_MintCandy, 60);
 	cwe_api->RegisterBlackMarketRareFruit(ShinyFruitID, 60);
 	cwe_api->RegisterBlackMarketRareFruit(HyperSwimFruitID, 10);
 	cwe_api->RegisterBlackMarketRareFruit(HyperFlyFruitID, 10);
@@ -106,10 +105,10 @@ void ALAPI_RegisterFruit(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterBlackMarketGeneralFruit(OrangeID, 40);
 
 	//set all vanilla fruits except mushrooms and what comes after mushrooms rebuyable
-	for (int i = 0; i < SA2BFruit_Mushroom; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Fruit, i, true);
+	for (int i = 0; i < ChaoFruit_Mushroom; i++)
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_FRUIT, i, true);
 
 	//set gba fruits to be rebuyable
-	for (int i = SA2BFruit_OrangeFruit; i <= SA2BFruit_RedFruit; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Fruit, i, true);
+	for (int i = ChaoFruit_OrangeFruit; i <= ChaoFruit_RedFruit; i++)
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_FRUIT, i, true);
 }

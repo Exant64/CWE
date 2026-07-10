@@ -189,8 +189,7 @@ extern "C" __declspec(dllexport) void AL_NameDisplay_(char* a, NJS_VECTOR* v, fl
 		NJS_VECTOR asd;
 		sub_426CC0(_nj_current_matrix_ptr_, &asd, v, 0);
 
-		njPushMatrixEx();
-		njUnitMatrix(0);//njPushMatrix((NJS_MATRIX_PTR)0x025F02A0);
+		njPushUnitMatrix();
 
 		njSetTexture((NJS_TEXLIST*)0x1366AB4);
 		njSetTextureNum(1);
@@ -238,7 +237,7 @@ NJS_TEXANIM texanim2[] = {
 	{256,256,128,128,0,0,256,256,2,0}
 };
 NJS_SPRITE dayNightUI = { {320,220,0}, 0.5f,0.5f, 0, &CWE_UI_TEXLIST, texanim2 };
-DataArray(ChaoSomeUnknownA, stru_1DC0FC0, 0x1DC0FC0, 32);
+DataArray(ALW_ENTRY_WORK, stru_1DC0FC0, 0x1DC0FC0, 32);
 NJS_TEXTURE_VTX emoIcon[4] =
 {
 	{ -1, -1.0, 0, 0, 0, 0xFFFFFFFF },
@@ -254,9 +253,9 @@ enum {
 	EMOTION_ICON_ILLNESS = 3,
 	EMOTION_ICON_COUNT
 };
-bool AL_EmoteIconRequirement(task* a1, int index)
+bool AL_EmoteIconRequirement(task* tp, int index)
 {
-	CHAO_PARAM_GC* data = GET_CHAOPARAM(a1);
+	CHAO_PARAM_GC* data = GET_CHAOPARAM(tp);
 
 	if (!data)
 		return false;
@@ -264,36 +263,35 @@ bool AL_EmoteIconRequirement(task* a1, int index)
 	switch (index)
 	{
 	case EMOTION_ICON_MATE:
-		return AL_EmotionGetValue(a1, EM_ST_BREED) >= 10000;
+		return AL_EmotionGetValue(tp, EM_ST_BREED) >= 10000;
 	case EMOTION_ICON_HUNGER:
-		return AL_EmotionGetValue(a1, EM_ST_HUNGER) >= 8000;
+		return AL_EmotionGetValue(tp, EM_ST_HUNGER) >= 8000;
 	case EMOTION_ICON_FEAR:
-		return AL_EmotionGetValue(a1, EM_MD_FEAR) >= 100;
+		return AL_EmotionGetValue(tp, EM_MD_FEAR) >= 100;
 	case EMOTION_ICON_ILLNESS:
-		char* sickness = &data->Emotion.CoughLevel;
-		for (int i = 0; i < 6; i++)
-		{
-			if (sickness[i] < 0)
+		for (size_t i = 0; i < 6; i++) {
+			if (data->emotion.IllState[i] < 0) {
 				return true;
+			}
 		}
 		break;
 	}
 	return false;
 }
 
-void AL_NameDisplayer(task* a1) {
-	if (a1->twp->mode == 0 && gConfigVal.EmotionDisplay)
+void AL_NameDisplayer(task* tp) {
+	if (tp->twp->mode == 0 && gConfigVal.EmotionDisplay)
 	{
 		for (int i = 0; i < 32; i++) {
-			task* chao = stru_1DC0FC0[i].pointerToOwner;
+			task* chao = stru_1DC0FC0[i].tp;
 			if (chao &&
-				chao->EntityData2 &&
-				chao->twp->pos.y + 2 >= chao->EntityData2->field_DC)
+				chao->mwp &&
+				chao->twp->pos.y + 2 >= ((MOVE_WORK*)chao->mwp)->WaterY)
 			{
 				NJS_VECTOR asd;
 				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->twp->pos, 0);
 
-				njPushMatrix((NJS_MATRIX_PTR)0x025F02A0);
+				njPushUnitMatrix();
 
 				njSetTexture((NJS_TEXLIST*)&CWE_UI_TEXLIST);
 				//njSetTexture((NJS_TEXLIST*)0x1366AB4);
@@ -319,25 +317,25 @@ void AL_NameDisplayer(task* a1) {
 			}
 		}
 	}
-	if (a1->twp->mode == 1)
+	if (tp->twp->mode == 1)
 	{
 		*(char*)0x25EFFCC = 0;
 		//njDrawSprite2D(&chaoCamEdge_sprite, 1, 0, 0x60);
 		selectMenu.p = { 320,220, 0 };
-		njDrawSprite2D(&selectMenu, (a1->twp->smode == 0) ? 1 : 0, 1, 0x60);
+		njDrawSprite2D(&selectMenu, (tp->twp->smode == 0) ? 1 : 0, 1, 0x60);
 		selectMenu.p.y += 40;
-		njDrawSprite2D(&selectMenu, (a1->twp->smode == 1) ? 3 : 2, 1, 0x60);
+		njDrawSprite2D(&selectMenu, (tp->twp->smode == 1) ? 3 : 2, 1, 0x60);
 		*(char*)0x25EFFCC = 1;
 	}
-	else if (a1->twp->mode == 2)
+	else if (tp->twp->mode == 2)
 	{
 		for (int i = 0; i < 32; i++) {
-			task* chao = stru_1DC0FC0[i].pointerToOwner;
+			task* chao = stru_1DC0FC0[i].tp;
 			if (chao)
 				AL_NameDisplay_(GET_CWEPARAM(chao)->Name, &chao->twp->pos);
 		}
 	}
-	else if (a1->twp->mode == 3)
+	else if (tp->twp->mode == 3)
 	{
 		*(char*)0x25EFFCC = 0;
 
@@ -351,64 +349,64 @@ void AL_NameDisplayer(task* a1) {
 	}
 	//SetShaders(backup);
 }
-void AL_NameDisplay_Main(task* a1)
+void AL_NameDisplay_Main(task* tp)
 {
-	switch (a1->twp->mode)
+	switch (tp->twp->mode)
 	{
 	case 0:
-		if ((MenuButtons_Held[0] & Buttons_X) &&
-			(MenuButtons_Held[0] & Buttons_Y) &&
-			MainCharObj2[0] && !MainCharObj2[0]->HeldObject)
+		if ((SWDATA[0] & BTN_X) &&
+			(SWDATA[0] & BTN_Y) &&
+			playerpwp[0] && !playerpwp[0]->htp)
 		{
 			if (gConfigVal.DayNightCheat)
-				a1->twp->mode = 1;
+				tp->twp->mode = 1;
 			else
-				a1->twp->mode = 2;
+				tp->twp->mode = 2;
 		}
 		break;
 	case 1:
 		ControlEnabled = 0;
 
-		if (MenuButtons_Pressed[0] & Buttons_Up)
-			a1->twp->smode = 0;
-		else if (MenuButtons_Pressed[0] & Buttons_Down)
-			a1->twp->smode = 1;
+		if (SWDATAE[0] & BTN_UP)
+			tp->twp->smode = 0;
+		else if (SWDATAE[0] & BTN_DOWN)
+			tp->twp->smode = 1;
 
 
-		if (MenuButtons_Pressed[0] & Buttons_A)
+		if (SWDATAE[0] & BTN_A)
 		{
 			ControlEnabled = 1;
-			a1->twp->mode = 2 + a1->twp->smode;
-			a1->twp->smode = 0;
+			tp->twp->mode = 2 + tp->twp->smode;
+			tp->twp->smode = 0;
 		}
 		break;
 
 	case 2:
-		a1->twp->wtimer++;
-		if (a1->twp->wtimer > 60 * 10)
+		tp->twp->wtimer++;
+		if (tp->twp->wtimer > 60 * 10)
 		{
-			a1->twp->wtimer = 0;
-			a1->twp->mode = 0;
+			tp->twp->wtimer = 0;
+			tp->twp->mode = 0;
 		}
 		break;
 	case 3:
 		ControlEnabled = 0;
 
-		if (MenuButtons_Pressed[0] & Buttons_Left)
+		if (SWDATAE[0] & BTN_LEFT)
 			gDayNightCheatPhase = PHASE_DAY;
-		else if (MenuButtons_Pressed[0] & Buttons_Right)
+		else if (SWDATAE[0] & BTN_RIGHT)
 			gDayNightCheatPhase = PHASE_EVE;
-		else if (MenuButtons_Pressed[0] & Buttons_Down)
+		else if (SWDATAE[0] & BTN_DOWN)
 			gDayNightCheatPhase = PHASE_NGT;
 
 		bool isDay = gDayNightCheatPhase == PHASE_CLD || gDayNightCheatPhase == PHASE_DAY;
-		if (isDay && (MenuButtons_Pressed[0] & Buttons_Y))
+		if (isDay && (SWDATAE[0] & BTN_Y))
 			gDayNightCheatPhase = (gDayNightCheatPhase == PHASE_CLD) ? PHASE_DAY : PHASE_CLD;
 
-		if (MenuButtons_Pressed[0] & Buttons_A)
+		if (SWDATAE[0] & BTN_A)
 		{
-			a1->twp->wtimer = 0;
-			a1->twp->mode = 0;
+			tp->twp->wtimer = 0;
+			tp->twp->mode = 0;
 
 			ControlEnabled = 1;
 		}
@@ -418,6 +416,6 @@ void AL_NameDisplay_Main(task* a1)
 }
 
 void AL_NameDisplayCreate() {
-	task* p = CreateElementalTask(2, "AL_NameDisplay", AL_NameDisplay_Main, LoadObj_Data1);
-	p->field_28 = AL_NameDisplayer;
+	task* p = CreateElementalTask(IM_TWK, LEV_2, AL_NameDisplay_Main, "AL_NameDisplay");
+	p->disp_last = AL_NameDisplayer;
 }

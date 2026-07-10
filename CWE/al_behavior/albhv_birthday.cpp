@@ -28,9 +28,9 @@ int ALBHV_Birthday(task* a1)
 		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
 
 		sub_5669B0(a1, (int)&object_cake, 28);
-		GET_CHAOWK(a1)->field_524[28]->toy.texlist = &AL_SANDHOLE_TEXLIST;
+		GET_CHAOWK(a1)->Shape.CurrObjectList[28]->pItemTexlist = &AL_SANDHOLE_TEXLIST;
 		sub_5669B0(a1, (int)&hat_main, 16);
-		GET_CHAOWK(a1)->field_524[16]->toy.texlist = &BIRTHDAYHAT_TEXLIST;
+		GET_CHAOWK(a1)->Shape.CurrObjectList[16]->pItemTexlist = &BIRTHDAYHAT_TEXLIST;
 		GET_CHAOWK(pBirthdayChao)->Behavior.FreeWork = 0;
 		wk->Behavior.Mode = 1;
 		break;
@@ -42,7 +42,7 @@ int ALBHV_Birthday(task* a1)
 		break;
 	case 2:
 		//spawn the fruit eat it and end the whole thing
-		task * slice = ALO_FruitExecutor_Load(CakeSliceID, &GET_CHAOWK(a1)->entity.pos, 0, &vel, 0);
+		task * slice = ALO_FruitCreate(CakeSliceID, &GET_CHAOWK(a1)->pos, 0, &vel, NULL);
 		ALW_LockOn(a1, slice);
 		AL_SetBehavior(a1, (BHV_FUNC)0x5613C0);
 		AL_SetNextBehavior(a1, (BHV_FUNC)0x05607C0);
@@ -100,10 +100,10 @@ int ALBHV_Celebrate(task* a1)
 		}
 		break;
 	case 4:
-		NJS_VECTOR pos = GET_CHAOWK(a1)->entity.pos;
+		NJS_VECTOR pos = GET_CHAOWK(a1)->pos;
 		pos.x += njSin(a1->twp->ang.y) * -2;
 		pos.z += njCos(a1->twp->ang.y) * -2;
-		task* slice = ALO_FruitExecutor_Load(CakeSliceID, &pos, 0, &vel, 0);
+		task* slice = ALO_FruitCreate(CakeSliceID, &pos, 0, &vel, NULL);
 		ALW_LockOn(a1, slice);
 		//ALW_TurnToLockOn(a1, 3000);
 		AL_SetBehavior(a1, (BHV_FUNC)0x0056B6C0);

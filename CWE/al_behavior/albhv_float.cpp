@@ -11,18 +11,20 @@
 
 signed int ALBHV_RideFloat(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	AL_BEHAVIOR* v3; // esi
 	float v2;
 
-	v1 = (ChaoData1*)GET_CHAOWK(a1);
+	v1 = (chaowk*)GET_CHAOWK(a1);
 	v3 = &v1->Behavior;
+
+	MOVE_WORK* move = GET_MOVE_WORK(a1);
 
 	//SWIM CONTROL
 	ALW_CommunicationOn(a1, ALW_GetLockOnTask(a1));
 	if (!(v1->Behavior.Flag & 4))
 	{
-		if (a1->EntityData2->field_40 & 0x400)
+		if (move->Flag & 0x400)
 		{
 			//AL_ForwardAcc(a1, 0.1f);
 			AL_ForwardSpd(a1, 1);
@@ -30,10 +32,10 @@ signed int ALBHV_RideFloat(task* a1)
 		}
 	}
 
-	if (AL_EmotionGetValue(a1, EM_ST_THIRSTY) < 1000 && a1->EntityData2->field_40 & 0x4000)
+	if (AL_EmotionGetValue(a1, EM_ST_THIRSTY) < 1000 && move->Flag & 0x4000)
 	{
-		c_colli_hit_info* v6 = CCL_IsHitKindEx(a1, 0xCB);
-		if (v6 && v6->hit_twp)
+		CCL_HIT_INFO* v6 = CCL_IsHitKindEx(a1, 0xCB);
+		if (v6 && v6->hit_tp)
 		{
 			AL_SetBehavior(a1, (BHV_FUNC)0x562EB0);
 		}
@@ -59,7 +61,7 @@ signed int ALBHV_RideFloat(task* a1)
 		//AL_SetMotionLink(a1, 148 - 3);
 		Chao_RegAnimation(a1, "alm_float");
 		//AL_SetItem(a1, 0x22, &object_00F005A0, &AL_TOY_TEXLIST); //0x22
-		AL_SetItem(a1, 0, (NJS_OBJECT*)0x013005A0, (NJS_TEXLIST*)0x01366AFC);
+		AL_SetItem(a1, 0, (NJS_CNK_OBJECT*)0x013005A0, (NJS_TEXLIST*)0x01366AFC);
 		//AL_SetItem(a1, 0, (NJS_CNK_OBJECT*)0x03898530, &AL_TOY_TEXLIST); //coffin test
 
 		//AL_SetMotionLink(a1, 260);
@@ -69,17 +71,17 @@ signed int ALBHV_RideFloat(task* a1)
 		GET_CHAOWK(a1)->Behavior.SubTimer++;
 		if (GET_CHAOWK(a1)->Behavior.SubTimer % 600 == 0)
 			if (njRandom() > 0.6f)
-				AL_EmotionSet(a1, EM_ST_THIRSTY, 0);
+				AL_EmotionSetValue(a1, EM_ST_THIRSTY, 0);
 
 		if (MOV_DistFromAim(a1) < 36.0)
 			sub_561740((int)a1);
 
-		a1->twp->pos.y = a1->EntityData2->field_DC;
+		a1->twp->pos.y = move->WaterY;
 		MOV_TurnToAim2(a1, 100);
 		float v8 = 0.005f;
-		a1->EntityData2->speed.y = -a1->EntityData2->gravity - a1->EntityData2->velocity.y * 0.1f;
-		a1->EntityData2->speed.x = njSin(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.x * 0.05f;
-		a1->EntityData2->speed.z = njCos(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.z * 0.05f;
+		move->Acc.y = -move->Gravity - move->Velo.y * 0.1f;
+		move->Acc.x = njSin(a1->twp->ang.y) * v8 - move->Velo.x * 0.05f;
+		move->Acc.z = njCos(a1->twp->ang.y) * v8 - move->Velo.z * 0.05f;
 
 
 		//AL_ForwardAcc(a1, ChaoGlobal.WalkAcc * 0.8f);

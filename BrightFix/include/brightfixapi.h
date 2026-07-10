@@ -1,4 +1,6 @@
+#undef SA2MODLOADER_H
 #include "rfapi.h"
+#define SA2MODLOADER_H
 
 #ifdef BRIGHTFIX_API
 #define API //__declspec(dllexport)

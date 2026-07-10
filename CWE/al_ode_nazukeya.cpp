@@ -8,13 +8,13 @@
 #include "al_ode_menu.h"
 #include "al_texlist.h"
 
-static ChaoHudThingB NameMenuSprites[] = {
+static CHS_BILL_INFO NameMenuSprites[] = {
 	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &NAME_ODE_TEXLIST, 0}, //text
 	{1, 128, 32, 136.0f / 256.0f, 0.01f, 1, 0.5f, &NAME_ODE_TEXLIST, 0}, //grey text
 	{1, 32, 32, 0.01f, 0.01f, 0.99f, 1, &NAME_ODE_TEXLIST, 1} //icon
 };
 
-static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1);
+static void AL_OdekakeName(ODE_MENU_MASTER_WORK* pMaster);
 
 CWE_API_ODEKAKE_ENTRY OdekakeNameEntry = { AL_OdekakeName, nullptr, ODE_FLAGS_REQUIRE_CHAO, &NameMenuSprites[2], &NameMenuSprites[0], &NameMenuSprites[1], nullptr, nullptr };
 
@@ -22,21 +22,21 @@ char NazukeyaBuff[0x60 + 4 + sizeof(AL_NAME)];
 task* nazukeyaObj = 0;
 FunctionPointer(void, sub_5827A0, (int a1), 0x5827A0);
 
-static void Nazukeya_Main(task *a1) {
+static void Nazukeya_Main(task *tp) {
 	sub_582F60((char*)NazukeyaBuff);
 }
 
-static void Nazukeya_Display(task *a1) {
+static void Nazukeya_Display(task *tp) {
 	sub_5827A0((int)NazukeyaBuff);
 }
 
-static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
+static void AL_OdekakeName(ODE_MENU_MASTER_WORK* pMaster) {
 	int v4;
-	switch (a1->mode)
+	switch (pMaster->mode)
 	{
 	case 0:
-		LoadTextureList((char*)"al_stg_kinder_ad_tex", (NJS_TEXLIST*)0x011D2ACC);
-		a1->mode++;
+		texLoadTexturePvmFile((char*)"al_stg_kinder_ad_tex", (NJS_TEXLIST*)0x011D2ACC);
+		pMaster->mode++;
 		memset(NazukeyaBuff, 0, 0x60 + 4 + sizeof(AL_NAME));
 		NazukeyaBuff[80] = 1;
 		NazukeyaBuff[81] = 1;
@@ -50,20 +50,20 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 		*(short*)& NazukeyaBuff[88] = 16;
 		*(short*)& NazukeyaBuff[90] = 0;
 		*(short*)& NazukeyaBuff[92] = 0;
-		nazukeyaObj = CreateElementalTask(4, "Nazukeya", Nazukeya_Main, (LoadObj)0);
-		nazukeyaObj->field_1C = Nazukeya_Display;
+		nazukeyaObj = CreateElementalTask(0, LEV_4, Nazukeya_Main, "Nazukeya");
+		nazukeyaObj->disp_dely = Nazukeya_Display;
 		//obj->field_1C 
 		break;
 	case 1:	
 		if (!NazukeyaBuff[80]) {
-			nazukeyaObj->exec = DeleteObject_;
+			nazukeyaObj->exec = DestroyTask;
 
 			if (NazukeyaBuff[0x51] != 2) {//not "cancel"
 				memset(GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, 0, sizeof(AL_NAME));
 				memcpy(GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, &NazukeyaBuff[0x60], strlen(&NazukeyaBuff[0x60]));
 			}
 			//njReleaseTexture((NJS_TEXLIST*)0x011D2ACC);
-			a1->mode++;
+			pMaster->mode++;
 		}
 		break;
 	case 2:

@@ -103,7 +103,7 @@ static void sub_5396C0_r() {
     }
 
     if(leveledUp) {
-        PlayJingle("chao_k_net_fine.adx");
+        Jingle_Play("chao_k_net_fine.adx");
     }
 }
 

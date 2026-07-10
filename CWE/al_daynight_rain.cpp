@@ -24,7 +24,7 @@ struct SA2CAMERADATA
 
 #define FALL_FRAMES 35
 
-#define GET_WORK(tp) ((RAIN_WORK*)tp->Data2.Undefined)
+#define GET_WORK(tp) ((RAIN_WORK*)tp->awp)
 
 static char
 SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
@@ -67,7 +67,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 	work->angle = lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
 
 	if (work->timer++ >= work->timerLimit) {
-		DeleteObject_(tp);
+		DestroyTask(tp);
 		return;
 	}
 
@@ -131,7 +131,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 
 		{
 			Angle3 returnAng;
-			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
+			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, playertwp[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
 
 			drop.ang[0] = returnAng.x;
 			drop.ang[1] = returnAng.y;
@@ -263,12 +263,12 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 		return NULL;
 	}
 	
-	task* tp = CreateElementalTask(4, "AL_DayNightRain", AL_DayNightRainExecutor, LoadObj(0));
+	task* tp = CreateElementalTask(0, LEV_4, AL_DayNightRainExecutor, "AL_DayNightRain");
 
 	tp->disp = AL_DayNightRainDisplayer;
 
 	RAIN_WORK* work = ALLOC(RAIN_WORK);
-	tp->Data2.Undefined = work;
+	tp->awp = (anywk*)work;
 
 	memset(work, 0, sizeof(RAIN_WORK));
 

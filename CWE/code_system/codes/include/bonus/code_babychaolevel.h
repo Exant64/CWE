@@ -19,8 +19,8 @@ void StayBabyChaoLvl::OnChaoData(CHAO_PARAM_GC& chao) {
 		if (chao.Lev[i] < 10) {
 			// 1 - 0.016f = 0.984
 			float threshold = ChaoGlobal.GrowthMayuPoint - 0.002f;
-			if (chao.EvolutionProgress > threshold) {
-				chao.EvolutionProgress = threshold;
+			if (chao.body.growth > threshold) {
+				chao.body.growth = threshold;
 			}
 		}
 	}

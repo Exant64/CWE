@@ -38,7 +38,7 @@ extern "C"
 	extern void EggEndHook();
 }
 
-const std::array<std::pair<int, NJS_OBJECT*>, 6> OmochaoPartModels = {{
+static const std::array<std::pair<int, NJS_CNK_OBJECT*>, 6> OmochaoPartModels = {{
 	{HANDS, &object_omobuild_arms},
 	{MOUTH, &object_omobuild_mouth},
 	{LEGS, &object_omobuild_legs},
@@ -47,32 +47,31 @@ const std::array<std::pair<int, NJS_OBJECT*>, 6> OmochaoPartModels = {{
 	{PROPELLER, &object_omobuild_prop}
 }};
 
-void __cdecl AL_OmoBuild_Display(task* a1)
-{
+static void ALO_OmoBuildDisplayer(task* tp) {
 	EggStartShaderHook();
 	njPushMatrixEx();
 	njSetTexture(&AL_BODY);
-	njTranslateEx(&a1->twp->pos);
-	njRotateY(NULL, a1->twp->ang.y);
+	njTranslateEx(&tp->twp->pos);
+	njRotateY(NULL, tp->twp->ang.y);
 	
 	OMOCHAO_INFO* omoinf = GetOmoData();
 	
-	if (omoinf->phase & MANNEQUIN) 
-	{
-		if (!(omoinf->phase & LEGS))
+	if (omoinf->phase & MANNEQUIN) {
+		if (!(omoinf->phase & LEGS)) {
 			njTranslate(NULL, 0, -0.575f, 0);
+		}
 
-		ChaoColoring(omoinf->jewel, omoinf->color, omoinf->shiny, omoinf->monotone, 0, object_omobuild_base.chunkmodel);
+		ChaoColoring(omoinf->jewel, omoinf->color, omoinf->shiny, omoinf->monotone, 0, object_omobuild_base.model);
 		chCnkDrawObject(&object_omobuild_base);
 		SetChunkTexIndexNull(2);
 		ChunkMatEnable = 0;
 		ChunkMatFlag = 0;
 	}
 
-	for (size_t i = 0; i < OmochaoPartModels.size(); i++)
-	{
-		if (omoinf->phase & OmochaoPartModels[i].first)
+	for (size_t i = 0; i < OmochaoPartModels.size(); i++) {
+		if (omoinf->phase & OmochaoPartModels[i].first) {
 			chCnkDrawObject(OmochaoPartModels[i].second);
+		}
 	}
 
 	njPopMatrixEx();
@@ -91,60 +90,58 @@ void sub_540FD0(NJS_VECTOR* v, float f)
 	}
 }
 
-//FunctionPointer(ChaoData*, AL_GetNewChaoSaveInfo, (), 0x00531AA0);
-void __cdecl AL_OmoBuild_Main(task* a1)
-{
-	if (GetOmoData()->phase == 255)
-	{
-		CHAO_SAVE_INFO* v11 = (CHAO_SAVE_INFO*)AL_GetNewChaoSaveInfo();
-		if (v11) 
-		{
-			v11->data.type = ChaoType_Child;
-			v11->data.BodyType = SADXBodyType_Omochao;
-			v11->data.place = AL_GetStageNumber();
-			InitChaoDNA(&v11->data.Gene);
-			v11->data.Gene.Color[0] = GetOmoData()->color;
-			v11->data.Gene.Color[1] = GetOmoData()->color;
-			v11->data.Color			= GetOmoData()->color;
+static void ALO_OmoBuildExecutor(task* tp) {
+	if (GetOmoData()->phase == 255) {
+		CHAO_SAVE_INFO* pChaoInfo = AL_GetNewChaoSaveInfo();
+		if (pChaoInfo) {
+			pChaoInfo->param.type = TYPE_CHILD;
+			pChaoInfo->param.body.FormNum = AL_FORM_OMOCHAO;
+			pChaoInfo->param.place = AL_GetStageNumber();
+			AL_GeneCreate(&pChaoInfo->param.gene);
+			pChaoInfo->param.gene.Color[0] = GetOmoData()->color;
+			pChaoInfo->param.gene.Color[1] = GetOmoData()->color;
+			pChaoInfo->param.body.ColorNum	= GetOmoData()->color;
 
-			v11->data.Gene.Multi[0] = GetOmoData()->shiny;
-			v11->data.Gene.Multi[1] = GetOmoData()->shiny;
-			v11->data.Shiny			= GetOmoData()->shiny;
+			pChaoInfo->param.gene.Multi[0] = GetOmoData()->shiny;
+			pChaoInfo->param.gene.Multi[1] = GetOmoData()->shiny;
+			pChaoInfo->param.body.MultiNum	= GetOmoData()->shiny;
 
-			v11->data.Gene.NonTex[0]		= GetOmoData()->monotone;
-			v11->data.Gene.NonTex[1]		= GetOmoData()->monotone;
-			v11->data.MonotoneHighlights	= GetOmoData()->monotone;
+			pChaoInfo->param.gene.NonTex[0]		= GetOmoData()->monotone;
+			pChaoInfo->param.gene.NonTex[1]		= GetOmoData()->monotone;
+			pChaoInfo->param.body.NonTex	= GetOmoData()->monotone;
 
-			v11->data.Gene.Jewel[0] = GetOmoData()->jewel;
-			v11->data.Gene.Jewel[1] = GetOmoData()->jewel;
-			v11->data.Texture		= GetOmoData()->jewel;
+			pChaoInfo->param.gene.Jewel[0] = GetOmoData()->jewel;
+			pChaoInfo->param.gene.Jewel[1] = GetOmoData()->jewel;
+			pChaoInfo->param.body.JewelNum		= GetOmoData()->jewel;
 
-			CreateChao(v11, 0, 0, &a1->twp->pos, a1->twp->ang.y);
+			CreateChaoExtra(&pChaoInfo->param, 0, 0, &tp->twp->pos, tp->twp->ang.y);
+
 			memset(GetOmoData(), 0, sizeof(OMOCHAO_INFO));
-			a1->exec = DeleteObject_;
+			tp->exec = DestroyTask;
+
 			return;
 		}
-		
 	}
 
-	if (GetOmoData()->phase & MANNEQUIN) 
-	{
-		CCL_Enable(a1, 0);
+	if (GetOmoData()->phase & MANNEQUIN) {
+		CCL_Enable(tp, 0);
 	}
-	else 
-		CCL_Disable(a1,0);
+	else {
+		CCL_Disable(tp,0);
+	}
 
-	AddToCollisionList(a1);
-	if (GetOmoData()->phase & MANNEQUIN)
-		sub_540FD0(&a1->twp->pos, 0.235f);
+	CCL_Entry(tp);
+
+	if (GetOmoData()->phase & MANNEQUIN) {
+		sub_540FD0(&tp->twp->pos, 0.235f);
+	}
 }
 
-
-CollisionData omoColli = { 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+static CCL_INFO omoColli = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
-	task* obj = CreateElementalTask(4, "AL_OmoBuild", AL_OmoBuild_Main, LoadObj_Data1);
-	InitCollision(obj, (CollisionData*)&omoColli, 1, 5);
+	task* obj = CreateElementalTask(IM_TWK, LEV_4, ALO_OmoBuildExecutor, "AL_OmoBuild");
+	CCL_Init(obj, &omoColli, 1, 5);
 	obj->twp->pos = *pPos;
 	obj->twp->ang.y = ang;
-	obj->disp = AL_OmoBuild_Display;
+	obj->disp = ALO_OmoBuildDisplayer;
 }

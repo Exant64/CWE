@@ -101,7 +101,7 @@ void CWE_Patch_Init(const IniFile* config)
 
 	if (config->getBool("Advanced", "AdvancedChaosandCharactersChaoarelikeNormalChao", false))
 	{
-		PrintDebug("Patch AdvancedChaosandCharactersChaoarelikeNormalChao");
+		___OutputDebugString("Patch AdvancedChaosandCharactersChaoarelikeNormalChao");
 		PatchData((unsigned char*)0x00535A43, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x00540212, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x0053A54B, (unsigned char)0xFF);
@@ -113,13 +113,13 @@ void CWE_Patch_Init(const IniFile* config)
 
 	if (config->getBool("Hard", "HardEnableSpinDashandSomersault", false))
 	{
-		PrintDebug("Patch HardEnableSpinDashandSomersault");
+		___OutputDebugString("Patch HardEnableSpinDashandSomersault");
 		PatchData((unsigned short*)0x007238EB, (unsigned short)0x9066);
 	}
 
 	if (config->getBool("Easy", "EasyStrongerChaosDrive", false))
 	{
-		PrintDebug("Patch EasyStrongerChaosDrive");
+		___OutputDebugString("Patch EasyStrongerChaosDrive");
 		PatchData((unsigned char*)0x008A63E8, (unsigned char)72);
 		PatchData((unsigned char*)0x008A6400, (unsigned char)72);
 		PatchData((unsigned char*)0x008A6416, (unsigned char)72);
@@ -132,7 +132,7 @@ void CWE_Patch_Init(const IniFile* config)
 
 	if (config->getBool("Misc", "OtherSADXChaoAlignment", false))
 	{
-		PrintDebug("Patch OtherSADXChaoAlignment");
+		___OutputDebugString("Patch OtherSADXChaoAlignment");
 		ChaoGlobal.FruitAddAttrChild = 0; 
 		ChaoGlobal.FruitAddAttrAdult = 0;
 		ChaoGlobal.FruitDislikeSubAttr = 0;
@@ -149,39 +149,39 @@ void CWE_Patch_Init(const IniFile* config)
 
 	if (config->getBool("Misc", "OtherRemoveDarkChao'sMeanEyesOverride", false))
 	{
-		PrintDebug("Patch OtherRemoveDarkChao'sMeanEyesOverride");
+		___OutputDebugString("Patch OtherRemoveDarkChao'sMeanEyesOverride");
 		PatchData((unsigned int*)0x0053A089, (unsigned int)0x90909090);
 		PatchData((unsigned int*)0x0053A08C, (unsigned int)0x90909090);
 	}
 
 	if (config->getBool("Easy", "EasyReusableChaosDrive", false))
 	{
-		PrintDebug("Patch EasyReusableChaosDrive");
+		___OutputDebugString("Patch EasyReusableChaosDrive");
 		PatchData((char*)0x00545012, (char)0);
 		PatchData((char*)0x00544FCC, (char)0xEB);
 	}
 
 	if (config->getBool("Misc", "AdvancedRemoveBreedingLimit", false))
 	{
-		PrintDebug("Patch AdvancedRemoveBreedingLimit");
+		___OutputDebugString("Patch AdvancedRemoveBreedingLimit");
 		PatchData((char*)0x5628F1, (char)24);
 	}
 
 	if (config->getBool("Easy", "EasyInstantGrowFruits", false))
 	{
-		PrintDebug("Patch EasyInstantGrowFruits");
+		___OutputDebugString("Patch EasyInstantGrowFruits");
 		ChaoGlobal.TreeFruitAddGrowth = 2;
 	}
 
 	if (config->getBool("Easy", "EasyReincarnationRequires20Happiness", false))
 	{
-		PrintDebug("Patch EasyReincarnationRequires20Happiness");
+		___OutputDebugString("Patch EasyReincarnationRequires20Happiness");
 		ChaoGlobal.SucceedBoundaryUserLike = 19;
 	}
 
 	if (config->getBool("Chao World Extended", "GardenMagnitude", true))
 	{
-		PrintDebug("Patch GardenMagnitude");
+		___OutputDebugString("Patch GardenMagnitude");
 		ChaoGlobal.TimeAddGrowthAdult = 0.004166f;
 		ChaoGlobal.TimeAddAttrChild = 0;
 		ChaoGlobal.TimeAddAttrAdult = 0;

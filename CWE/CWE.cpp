@@ -102,7 +102,7 @@ extern "C"
 {
 	int __cdecl CreateToyHook()
 	{
-		int retval = AL_NormalCameraExecutor_Load();
+		int retval = AL_CreateNormalCameraTask();
 		
 		switch (AL_GetStageNumber()) {
 		case CHAO_STG_NEUT:
@@ -124,19 +124,19 @@ extern "C"
 
 		if (gConfigVal.UnusedToys)
 		{
-			if (CurrentChaoArea == 1)
+			if (ChaoStageNumber == 1)
 			{
 				NJS_POINT3 pos = { -51, 0.448f, -16 };
 				ALO_BoatCreate(&pos, 0);
 			}
-			if (CurrentChaoArea == 2)
+			if (ChaoStageNumber == 2)
 			{
 				NJS_POINT3 pos = { 88, 0, 50 };
 				ALO_FloatCreate(&pos, 0);
 			}
 			if (
-				(CurrentChaoArea == 2 && (ChaoToysUnlocked[0] & 0x400)) || 
-				(CurrentChaoArea == 3 && (ChaoToysUnlocked[0] & 0x800))
+				(ChaoStageNumber == 2 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x400)) || 
+				(ChaoStageNumber == 3 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x800))
 				)
 			{
 				NJS_VECTOR GCPos[] = { {-45, 0, 6}, {-102, 0.05f, 4.5f} };
@@ -158,31 +158,31 @@ extern "C"
 		if (AL_GetStageNumber() == CHAO_STG_ODEKAKE)
 			return;
 
-		if (param.field_19 != 1) return;
+		if (param.GBAType != 1) return;
 
 		auto pParamCwe = GET_CWEPARAM(&param);
 		AL_GUEST& Guest = pParamCwe->Guest;
 
 		if (Guest.Type == 0) {
 			Guest.Type = param.type;
-			Guest.Alignment = param.Alignment;
-			Guest.Magnitude = param.EvolutionProgress;
-			Guest.FlySwim = param.FlySwim;
-			Guest.RunPower = param.PowerRun;
+			Guest.Alignment = param.body.APos;
+			Guest.Magnitude = param.body.growth;
+			Guest.FlySwim = param.body.VPos;
+			Guest.RunPower = param.body.HPos;
 
 		}
 		else {
 			param.type = Guest.Type;
-			param.Alignment = Guest.Alignment;
-			param.EvolutionProgress = Guest.Magnitude;
-			param.FlySwim = Guest.FlySwim;
-			param.PowerRun = Guest.RunPower;
+			param.body.APos = Guest.Alignment;
+			param.body.growth = Guest.Magnitude;
+			param.body.VPos = Guest.FlySwim;
+			param.body.HPos = Guest.RunPower;
 		}
 
 		param.life = 100;
 		param.LifeMax = 100;
 
-		param.gap_0[0xC] = 0; //?
+		*(Uint8*)(&param.GBARing) = 0; // ? sets byte at 0xC to 0
 
 		for (int i = 0; i < 5; i++) {
 			param.Exp[i] = 0;
@@ -196,7 +196,7 @@ extern "C"
 				param.Lev[i] = 109; //lock icon later
 			}
 
-			param.Gene.Abl[i][1] = ChaoGrade_E;
+			param.gene.Abl[i][1] = ChaoGrade_E;
 		}
 
 		param.Abl[6] = param.Abl[7] = 0;
@@ -240,7 +240,7 @@ extern "C"
 						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
 
 						char id[METADATA_ID_SIZE];
-						bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, pParam->Accessories_[i] - 1, id);
+						bool foundID = ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, pParam->Accessories_[i] - 1, id);
 						if (!foundID) {
 							// TODO: error
 							continue;
@@ -278,8 +278,8 @@ extern "C"
 			cweSaveFile.purchasedItemCount = PurchasedItemCount;
 			for (int i = 0; i < PurchasedItemCount; i++)
 			{
-				save::CWE_PurchasedItems[i].mCategory = PurchasedItems[i].Category;
-				save::CWE_PurchasedItems[i].mType = PurchasedItems[i].Type;
+				save::CWE_PurchasedItems[i].mCategory = PurchasedItems[i].mCategory;
+				save::CWE_PurchasedItems[i].mId = PurchasedItems[i].mId;
 			}
 			PurchasedItemCount = 0;
 		}
@@ -294,26 +294,26 @@ extern "C"
 		}
 
 		// convert the "accessory hats" to the new accessory format
-		ITEM_SAVE_INFO* items = (ITEM_SAVE_INFO*)ChaoHatSlots;
+		ITEM_SAVE_INFO* items = AL_GetCurrGardenInfo()->mask;
 		for (size_t j = 0; j < 24; ++j) {
 			auto& originalItem = items[j];
-			if (originalItem.Type < 256) {
+			if (originalItem.kind < 256) {
 				continue;
 			}
 
-			const auto accessoryIndex = originalItem.Type - 256;
+			const auto accessoryIndex = originalItem.kind - 256;
 
-			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ChaoItemCategory_Accessory);
+			ItemSaveInfoBase* pNewInfo = CWE_GetNewItemSaveInfo(ALW_CATEGORY_ACCESSORY);
 			// if we don't have space to convert, stop the conversion checks
 			if (!pNewInfo) break;
 
 			// if it's an invalid id, don't write it
 			char id[METADATA_ID_SIZE];
-			if (ItemMetadata::Get()->GetID(ChaoItemCategory_Accessory, accessoryIndex, id)) {
+			if (ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, accessoryIndex, id)) {
 				memcpy(pNewInfo->ID, id, sizeof(pNewInfo->ID));
 				pNewInfo->IndexID = accessoryIndex;
-				pNewInfo->Garden = originalItem.Garden;
-				pNewInfo->Position = originalItem.position;
+				pNewInfo->Garden = originalItem.place;
+				pNewInfo->Position = originalItem.pos;
 			}
 
 			// even if it does become an invalid id, we omit the original item
@@ -325,26 +325,26 @@ extern "C"
 		for (int i = 0; i < 24; i++)
 		{
 			//HYPER FRUIT CHECK, dont age hyper fruit
-			ChaoObjectData* objData = (ChaoObjectData*)ChaoFruitSlots;
-			if (objData[i].Type >= 29 && objData[i].Type <= 32)
-				objData[i].Age = 0;
+			ITEM_SAVE_INFO* objData = AL_GetCurrGardenInfo()->fruit;
+			if (objData[i].kind >= 29 && objData[i].kind <= 32)
+				objData[i].nbVisit = 0;
 
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
-			if (ChaoSlots[i].data.type == 1)
-				GET_CWEPARAM(&ChaoSlots[i].data)->UpgradeCounter = 0;
+			if (ChaoInfo::Instance()[i].type == 1)
+				GET_CWEPARAM(&ChaoInfo::Instance()[i])->UpgradeCounter = 0;
 
-			GuestChao(ChaoSlots[i].data);
+			GuestChao(ChaoInfo::Instance()[i]);
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {
-			if (MenuButtons_Held[0] & Buttons_X && 
-				MenuButtons_Held[0] & Buttons_A && 
-				MenuButtons_Held[0] & Buttons_L) 
+			if (SWDATA[0] & BTN_X && 
+				SWDATA[0] & BTN_A && 
+				SWDATA[0] & BTN_L) 
 			{
-				PrintDebug("toys have been reset");
+				___OutputDebugString("toys have been reset");
 				ToyResetTimer = 120;
 				for (int i = 0; i < NB_ALW_KIND * 3; i++) {
-					cweSaveFile.cweToyInfo[i].Garden = 0;
+					cweSaveFile.cweToyInfo[i].place = 0;
 				}
 			}
 		}
@@ -447,7 +447,13 @@ extern "C"
 
 		static_assert(sizeof(CHAO_SAVE_INFO) == 0x800, "ChaoData incorrect size");
 		static_assert(sizeof(AL_GENE) == 0xA4, "AL_GENE incorrect size");
-		static_assert(offsetof(CHAO_PARAM_GC, Gene) == 0x438, "ChaoDataBase DNA incorrect offset");
+		static_assert(offsetof(CHAO_PARAM_GC, name) == 0x12);
+		static_assert(offsetof(CHAO_PARAM_GC, GBARing) == 0xC);
+		static_assert(offsetof(CHAO_PARAM_GC, GBAType) == 0x19);
+		static_assert(offsetof(CHAO_PARAM_GC, body) + offsetof(AL_BODY_INFO, MultiNum) == 0xDB);
+		static_assert(offsetof(CHAO_PARAM_GC, PartsBTL) == 0x118);
+		static_assert(offsetof(CHAO_PARAM_GC, karate) + offsetof(AL_KARATE_PERSONAL_INFO, rank) == 0x10A);
+		static_assert(offsetof(CHAO_PARAM_GC, gene) == 0x438, "ChaoDataBase DNA incorrect offset");
 		static_assert(offsetof(CHAO_PARAM_GC, IsInitializedDX) == 0x4DC, "SA2 chaodatabase size incorrect");
 
 		SafetyCheckExternalMods();
@@ -460,10 +466,6 @@ extern "C"
 
 		KCE_Init();
 
-		//DEBUG LENS THING
-		//WriteCall((void*)0x0056D696, SetChunkTexIndexPrimaryHook);
-		//WriteCall((void*)0x0056D6B8, SetChunkTexIndexPrimaryHook);
-		//AL_Lua_Init();
 		CWE_Codes_Init(path, config);
 
 		CWE_Fixes();
@@ -475,16 +477,6 @@ extern "C"
 		OrthoInit();
 		AL_SaveInit();
 		AL_Palette_Init();
-
-		DataArray(int, LessonArray, 0x011D2DC8, 21);
-		//11 - trumpet
-		//12 - tambourine 
-		//13 - organ
-		//14 - piano
-
-		//classroom thingy
-		//LessonArray[5] = 13;
-		//LessonArray[14] = 14;
 		
 		//Main
 		gConfigVal.CharacterChaoEvo = config->getBool("Chao World Extended", "CharacterChaoEvo", true);
@@ -586,8 +578,8 @@ extern "C"
 		}
 
 		if (gConfigVal.FixHeroSky) {
-			*(NJS_OBJECT*)GetDllData("object_ghero_nk_kumofront_kumofront") = object_ghero_nk_kumofront_kumofront;
-			*(NJS_OBJECT*)GetDllData("object_ghero_nk_kumoback_kumoback") = object_ghero_nk_kumoback_kumoback;
+			*(NJS_CNK_OBJECT*)GetDataDllProcAddr("object_ghero_nk_kumofront_kumofront") = object_ghero_nk_kumofront_kumofront;
+			*(NJS_CNK_OBJECT*)GetDataDllProcAddr("object_ghero_nk_kumoback_kumoback") = object_ghero_nk_kumoback_kumoback;
 		}
 
 		if (gConfigVal.NeutSet) {
@@ -636,7 +628,7 @@ extern "C"
 
 		if (gConfigVal.UnusedToys)
 		{
-			PrintDebug("Load UnusedToys");
+			___OutputDebugString("Load UnusedToys");
 
 			//unused rattles
 			WriteJump((void*)0x55DDE0, ALBHV_Garagara);

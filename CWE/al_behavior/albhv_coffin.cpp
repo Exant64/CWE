@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#if 0
 #include "..//SA2ModLoader.h"
 #include "../Chao.h"
 #include "../al_world.h"
@@ -11,18 +13,18 @@
 
 signed int ALBHV_RideCoffin(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	AL_BEHAVIOR* v3; // esi
 	float v2;
 
 	v1 = GET_CHAOWK(a1);
 	v3 = &v1->Behavior;
-
+	
 	//SWIM CONTROL
 
 	if (!(v1->Behavior.Flag & 4))
 	{
-		if (a1->EntityData2->field_40 & 0x400)
+		if (a1->mwp->Flag & 0x400)
 		{
 			//AL_ForwardAcc(a1, 0.1f);
 			AL_ForwardSpd(a1, 1);
@@ -30,9 +32,9 @@ signed int ALBHV_RideCoffin(task* a1)
 		}
 	}
 
-	if (a1->EntityData2->field_40 & 0x4000)
+	if (a1->mwp->Flag & 0x4000)
 	{
-		c_colli_hit_info* v6 = CCL_IsHitKindEx(a1, 0xCB);
+		CCL_HIT_INFO* v6 = CCL_IsHitKindEx(a1, 0xCB);
 		if (v6 && v6->hit_twp)
 		{
 			AL_SetBehavior(a1, (BHV_FUNC)0x562EB0);
@@ -59,7 +61,7 @@ signed int ALBHV_RideCoffin(task* a1)
 		//AL_SetMotionLink(a1, 148 - 3);
 		Chao_RegAnimation(a1, "alm_float");
 		//AL_SetItem(a1, 0x22, &object_00F005A0, &AL_TOY_TEXLIST); //0x22
-		AL_SetItem(a1, 0, (NJS_OBJECT*)0x01301BB4, (NJS_TEXLIST*)0x01366AFC);
+		AL_SetItem(a1, 0, (NJS_CNK_OBJECT*)0x01301BB4, (NJS_TEXLIST*)0x01366AFC);
 		//AL_SetItem(a1, 0, (NJS_CNK_OBJECT*)0x03898530, &AL_TOY_TEXLIST); //coffin test
 
 		//AL_SetMotionLink(a1, 260);
@@ -69,12 +71,12 @@ signed int ALBHV_RideCoffin(task* a1)
 		if (MOV_DistFromAim(a1) < 36.0)
 			sub_561740((int)a1);
 
-		a1->twp->pos.y = a1->EntityData2->field_DC;
+		a1->twp->pos.y = a1->mwp->WaterY;
 		MOV_TurnToAim2(a1, 100);
 		float v8 = 0.005f;
-		a1->EntityData2->speed.y = -a1->EntityData2->gravity - a1->EntityData2->velocity.y * 0.1f;
-		a1->EntityData2->speed.x = njSin(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.x * 0.05f;
-		a1->EntityData2->speed.z = njCos(a1->twp->ang.y) * v8 - a1->EntityData2->velocity.z * 0.05f;
+		a1->mwp->Acc.y = -a1->mwp->Gravity - a1->mwp->Velo.y * 0.1f;
+		a1->mwp->Acc.x = njSin(a1->twp->ang.y) * v8 - a1->mwp->Velo.x * 0.05f;
+		a1->mwp->Acc.z = njCos(a1->twp->ang.y) * v8 - a1->mwp->Velo.z * 0.05f;
 
 
 		//AL_ForwardAcc(a1, ChaoGlobal.WalkAcc * 0.8f);
@@ -105,7 +107,7 @@ signed int __cdecl ALBHV_GoToCoffin(task* a1)
 	ALW_LockOn(a1, v1);
 	AL_EmotionAdd(a1, EM_ST_THIRSTY, 100);
 
-	sub_534F80((int)& stru_1A15938[9], &a1->EntityData2->Waypoint, stru_1A15938[9].nbIndex);
+	sub_534F80((int)& stru_1A15938[9], &((MOVE_WORK*)a1->mwp)->AimPos, stru_1A15938[9].nbIndex);
 
 	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);
@@ -115,3 +117,4 @@ signed int __cdecl ALBHV_GoToCoffin(task* a1)
 	AL_SetNextBehavior(a1, ALBHV_RideCoffin);
 	return BHV_RET_CONTINUE;
 }
+#endif

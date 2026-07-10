@@ -27,7 +27,7 @@ static bool GenericParseID(const rapidjson::Document& document, const APIErrorUt
 	return false;
 }
 
-static NJS_OBJECT* GenericParseChunkObj(const rapidjson::Document& document, const APIErrorUtil& error, const char* pathToJson) {
+static NJS_CNK_OBJECT* GenericParseChunkObj(const rapidjson::Document& document, const APIErrorUtil& error, const char* pathToJson) {
 	const std::filesystem::path jsonPath = pathToJson;
 
 	if (!document.HasMember("model")) {

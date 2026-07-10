@@ -214,7 +214,7 @@ struct  struc_36asd
 	NJS_ARGB FogColor;
 	ShaderLight *gap38[1];
 	char gap3C[68];
-	NJS_MATRIX field_80;
+	NJS_MATRIX44 field_80;
 	NJS_VECTOR field_C0[4];
 	int field_F0;
 	int field_F4;
@@ -313,10 +313,10 @@ struct  struc_36asd
 	float AttnFunc[4];
 	NJS_ARGB LightMasks[6];
 	NJS_ARGB SomeColorArray[2];
-	NJS_MATRIX field_328;
-	NJS_MATRIX ProjMatrix;
-	NJS_MATRIX field_3A8;
-	NJS_MATRIX TexMatrices[4];
+	NJS_MATRIX44 field_328;
+	NJS_MATRIX44 ProjMatrix;
+	NJS_MATRIX44 field_3A8;
+	NJS_MATRIX44 TexMatrices[4];
 	int field_4E8;
 	int field_4EC;
 	int field_4F0;

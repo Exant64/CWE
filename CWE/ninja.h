@@ -117,7 +117,21 @@ typedef int     Int;
 
 typedef Sint32  Angle;
 
-typedef Float   NJS_MATRIX[16];
+/****** Ninja Matrix ****************************************************************************/
+typedef union
+{
+    Float m[3][4];                  /* matrix in either 4x4 or 3x4 layout                       */
+    Float f[12];                    /* matrix as float array                                    */
+}
+NJS_MATRIX;
+
+/****** Ninja Matrix 4x4 ************************************************************************/
+typedef union
+{
+    Float m[4][4];                  /* matrix in 4x4 layout                                     */
+    Float f[16];                    /* matrix as float array                                    */
+}
+NJS_MATRIX44;
 
 typedef Float NJS_FOG_TABLE[128];
 
@@ -798,7 +812,6 @@ typedef Float NJS_FOG_TABLE[128];
 /*--------------------------------------*/
 /*      Matrix                          */
 /*--------------------------------------*/
-typedef Float *NJS_MATRIX_PTR;
 
 enum {M00, M01, M02, M03,
 	  M10, M11, M12, M13,
@@ -1000,16 +1013,6 @@ typedef struct{
 
 
 typedef struct {
-	NJS_MATRIX m;
-	Float   px,py,pz;
-	Float   vx,vy,vz;
-	Angle   roll;
-	Float   apx,apy,apz;
-	Float   avx,avy,avz;
-	Angle   aroll;
-} NJS_VIEW;
-
-typedef struct {
 	Float   dist;
 	Float   w,h;
 	Float   cx,cy;
@@ -1207,62 +1210,112 @@ struct SA2B_Model
 
 struct NJS_CNK_MODEL;
 
-/*
- * NJS_OBJECT
- */
-typedef struct obj {
-	Uint32          evalflags;  /* evalation flags              */
-	void            *model;     /* model data pointer           */
-	Float           pos[3];     /* translation                  */
-	Angle           ang[3];     /* rotation                     */
-	Float           scl[3];     /* scaling                      */
-	struct obj      *child;     /* child object                 */
-	struct obj      *sibling;   /* sibling object               */
+typedef struct cnkobj
+{
+    Uint32          evalflags;  /* evalation flags                                              */
+    NJS_CNK_MODEL*  model;      /* model data pointer                                           */
+    Float           pos[3];     /* translation                                                  */
+    Angle           ang[3];     /* rotation or im part of quat                                  */
+    Float           scl[3];     /* scaling                                                      */
+    struct cnkobj*  child;      /* child object                                                 */
+    struct cnkobj*  sibling;    /* sibling object                                               */
+    Float           re_quat;    /* re part of quat                                              */
+}
+NJS_CNK_OBJECT;
 
-#ifdef __cplusplus
-	NJS_MODEL       *getbasicmodel() const { return (NJS_MODEL*)model; }
-	void            putbasicmodel(NJS_MODEL *value) { model = value; }
-	NJS_MODEL_SADX  *getbasicdxmodel() const { return (NJS_MODEL_SADX*)model; }
-	void            putbasicdxmodel(NJS_MODEL_SADX *value) { model = value; }
-	NJS_CNK_MODEL   *getchunkmodel() const { return (NJS_CNK_MODEL*)model; }
-	void            putchunkmodel(NJS_CNK_MODEL *value) { model = value; }
-	SA2B_Model      *getsa2bmodel() const { return (SA2B_Model*)model; }
-	void            putsa2bmodel(SA2B_Model *value) { model = value; }
+typedef struct njobj
+{
+    Uint32          evalflags;  /* evalation flags                                  */
+    NJS_MODEL*      model;      /* model data pointer                               */
+    Float           pos[3];     /* translation                                      */
+    Angle           ang[3];     /* rotation or im part of quat                      */
+    Float           scl[3];     /* scaling                                          */
+    struct njobj*   child;      /* child object                                     */
+    struct njobj*   sibling;    /* sibling object                                   */
+}
+NJS_OBJECT;
+/****** Ginja Model *****************************************************************************/
+typedef struct
+{
+    Uint8           id;             /* vertex attribute type                          [GJ_ATTR] */
+    Uint8           stride;         /* vertex attribute size                                    */
+    Uint16          count;          /* vertex attribute count                                   */
+    /*
+    *   Sint8  type : 4;            // component type                                           //
+    *   Sint8  cnt  : 4;            // component kind                                           //
+    *   Sint8  pad1;                // padding                                                  //
+    *   Sint16 drawflags;           // set at runtime                                           //
+    */
+    Uint32          attrflags;      /* vertex attribute flags                         [GJ_COMP] */
+    void*           base_ptr;       /* vertex component list                                    */
+    Uint32          size;           /* total size of list, in bytes                             */
+}
+GJS_ARRAY;
 
-#ifdef _MSC_VER
-	/* MSVC-specific property emulation. */
-	__declspec(property(get = getbasicmodel, put = putbasicmodel))
-	NJS_MODEL       *basicmodel;
-	__declspec(property(get = getbasicdxmodel, put = putbasicdxmodel))
-	NJS_MODEL_SADX  *basicdxmodel;
-	__declspec(property(get = getchunkmodel, put = putchunkmodel))
-	NJS_CNK_MODEL   *chunkmodel;
-	__declspec(property(get = getsa2bmodel, put = putsa2bmodel))
-	SA2B_Model      *sa2bmodel;
-#endif
+typedef struct
+{
+    Uint16          type;           /* vlist type                                   [GJD_VLIST] */
+    Uint16          size;           /* total size of vertex+weights, in i32's                   */
+    Uint16          offset;         /* vlist start offset                                       */
+    Uint16          num;            /* number of vertex/weight entries                          */
+    /*
+    *   Sint16 px,py,pz;            // vertex position as fractional integer, 256 == 1.f        //
+    *   Sint16 nx,ny,nz;            // vertex normal as fractional integer    ^^^               //
+    */  
+    Sint16*         vertices;       /* vertex position+normal                                   */
+    /*
+    *   Uint16 weight;              // vertex weight as fractional integer, 256 == 1.f          //
+    *   Uint16 vindex;              // vertex index for weight calculations                     //
+    */
+    Uint32*         weight;         /* vertex weights, only non-basic type                      */
+}
+GJS_VLIST;
 
-	int countanimated() const
-	{
-		int result = (evalflags & NJD_EVAL_SKIP) == NJD_EVAL_SKIP ? 0 : 1;
-		if (child != nullptr)
-			result += child->countanimated();
-		if (sibling != nullptr)
-			result += sibling->countanimated();
-		return result;
-	}
+typedef struct
+{
+    Uint8           id;             /* material type                                [GJ_MTTYPE] */
+    Uint8           pad8;           /* padding                                                  */
+    Uint16          pad16;          /* padding                                                  */
+    Uint32          setting;        /* material setting                                         */
+}
+GJS_MATERIAL;
 
-	int countmorph() const
-	{
-		int result = (evalflags & NJD_EVAL_SHAPE_SKIP) == NJD_EVAL_SHAPE_SKIP ? 0 : 1;
-		if (child != nullptr)
-			result += child->countmorph();
-		if (sibling != nullptr)
-			result += sibling->countmorph();
-		return result;
-	}
-#endif /* __cplusplus */
+typedef struct
+{
+    GJS_MATERIAL*   mats;           /* material list                                            */
+    Uint32          nbMat;          /* material count                                           */
+    void*           pDisplayList;   /* mesh array                                               */
+    Uint32         szDisplayList;   /* mesh count                                               */
+}
+GJS_MESHSET;
 
-} NJS_OBJECT;
+typedef struct gjmdl
+{
+    GJS_ARRAY*      arrays;         /* vertex comonent arrays                                   */
+    GJS_VLIST*      vlist;          /* weighted vlist                                           */
+    GJS_MESHSET*    opaque;         /* opaque mesh set                                          */
+    GJS_MESHSET*    transparent;    /* transparent mesh set                                     */
+    Uint16          nbOpaque;       /* opaque mesh set count                                    */
+    Uint16          nbTrans;        /* transparent mesh set count                               */
+    NJS_POINT3      center;         /* model center                                             */
+    Float           r;              /* model radius                                             */
+}
+GJS_MODEL;
+
+/****** Ginja Object ****************************************************************************/
+typedef struct gjobj
+{
+    Uint32          evalflags;      /* evalation flags                                          */
+    GJS_MODEL*      model;          /* model data pointer                                       */
+    Float           pos[3];         /* translation                                              */
+    Angle           ang[3];         /* rotation or im part of quat                              */
+    Float           scl[3];         /* scaling                                                  */
+    struct gjobj*   child;          /* child object                                             */
+    struct gjobj*   sibling;        /* sibling object                                           */
+    Float           re_quat;        /* re part of quat                                          */
+}
+GJS_OBJECT;
+
 
 /*
  * NJS_MOTION
@@ -1369,7 +1422,7 @@ typedef struct {
 } NJS_MOTION;
 
 typedef struct {
-	NJS_OBJECT      *object;    /* Object Tree top pointer      */
+	NJS_CNK_OBJECT      *object;    /* Object Tree top pointer      */
 	NJS_MOTION      *motion;    /* motion                       */
 #if 0
 	NJS_TEXLIST     *texlist;   /* current texture list         */
@@ -1384,7 +1437,7 @@ typedef struct
 
 typedef struct
 {
-	NJS_OBJECT		*object;		/* object's pointer */
+	NJS_CNK_OBJECT		*object;		/* object's pointer */
 	NJS_MOTION_LINK	*motionlink;	/* motion-link's pointer */
 } NJS_ACTION_LINK;
 
@@ -1477,91 +1530,6 @@ typedef struct {
 	Float		inten;		/* intensity		:32	*/
 } NJS_VERTEX_BUF_X;
 
-
-/*--------------------------------------*/
-/*      Light Structure                 */
-/*--------------------------------------*/
-/*
- * NJS_LIGHT_CAL
- */
-typedef struct
-{
-/*************/
-	Float       ratten;         /* attenuation rate             */
-	Float       ipd;		    /* inner product                */
-/*************/
-	Float       nrr;            /* limit judgment value         */
-	Float       frr;            /* limit judgment value         */
-	Float       cosi;           /* limit judgment value         */
-	Float       cose;           /* limit judgment value         */
-	Float		idev;           /* judgment value of devision   */
-	Float		odev;           /* judgment value of devision   */
-	Float       rate;           /* attenuation rate(calculated) */
-	Float       intns;          /* Intensity (0-1)              */
-	Int         exp;            /* exponent(SGI):material       */
-/*************/
-	Int         reserve;        /*                              */
-/*************/
-	NJS_POINT3  lpnt;           /* point vector                 */
-	NJS_VECTOR  lvctr;          /* directional vector           */
-/*************/
-	NJS_VECTOR  lmvctr;         /* directional vector           */
-/*************/
-	NJS_ARGB    atten;          /* intns * argb                 */
-	NJS_ARGB    amb;            /* iamb*atten                   */
-	NJS_ARGB    dif;            /* idif*atten                   */
-	NJS_ARGB    spc;            /* ispc*atten                   */
-/*************/
-	NJS_ARGB    mamb;           /* amb*material                 */
-	NJS_ARGB    mdif;           /* dif*material                 */
-	NJS_ARGB    mspc;           /* spc*material                 */
-/*************/
-} NJS_LIGHT_CAL, *NJS_LIGHT_CAL_PTR;
-
-/*
- * NJS_LIGHT_ATTR
- */
-typedef struct {
-	Int             lsrc;       /* the kind of light source     */
-	Float           iamb;       /* ambient's intensity          */
-	Float           idif;       /* deffuse light's intensity    */
-	Float           ispc;       /* specular light's intensity   */
-	Float           nrang;      /* limit value (nearest)        */
-	Float           frang;      /* limit value (farthest)       */
-	void*           func;       /* the pointer of Callback func.*/
-	Angle           iang;       /* limit value (inside)         */
-	Angle           oang;       /* limit value (outside)        */
-	NJS_ARGB        argb;       /* light's color                */
-} NJS_LIGHT_ATTR, *NJS_LIGHT_ATTR_PTR;
-
-/*
- * NJS_LIGHT
- */
-typedef struct {
-	NJS_MATRIX      mtrx;       /* matrix                       */
-	NJS_POINT3      pnt;        /* point vector                 */
-	NJS_VECTOR      vctr;       /* directional vector           */
-	Int             stat;       /* status                       */
-	Int             reserve;    /* reserve                      */
-	NJS_LIGHT_CAL   ltcal;      /* calculation                  */
-	NJS_LIGHT_ATTR  attr;       /* attribute                    */
-} NJS_LIGHT, *NJS_LIGHT_PTR;
-
-/*
- * NJS_LIGHT_MATERIAL
- */
-typedef  struct {
-	NJS_ARGB        ambient;    /* Ambient color from Material	*/
-	NJS_ARGB        diffuse;    /* Diffuse color from Material	*/
-	NJS_ARGB        specular;   /* Specular color from Material	*/
-	Float           exponent;   /* Exponent from Material		*/
-} NJS_LIGHT_MATERIAL;
-
-/*
- * NJF_LIGHT_FUNC
- */
-typedef void (*NJF_LIGHT_FUNC)(NJS_ARGB*, NJS_POINT3*, NJS_VECTOR*, NJS_LIGHT_PTR);
-
 /*--------------------------------------*/
 /*      Camera Structure                */
 /*--------------------------------------*/
@@ -1579,11 +1547,6 @@ typedef struct {
 /*--------------------------------------*/
 /*   Light & Camera Motion Structure    */
 /*--------------------------------------*/
-
-typedef struct {
-	NJS_LIGHT	*light;
-	NJS_MOTION	*motion;
-} NJS_LACTION;
 
 typedef struct {
 	NJS_CAMERA	*camera;

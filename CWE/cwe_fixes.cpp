@@ -10,11 +10,11 @@
 //THEY DIDNT RESET THE SHADERS LOL
 void CocoonFix()
 {
-	SetShaders(1);
+	SetShaderType(1);
 	DoLighting(LightIndex);
 }
 
-ObjectFunc(EGG_Display, 0x0057B640);
+FunctionPointer(void, EGG_Display, (task*), 0x0057B640);
 void __cdecl EGG_Display_(task* a1)
 {
 	BrightFixPlus_ShinyCheck(1);
@@ -95,9 +95,9 @@ void __cdecl ExpandTextureBuffer()
 
 static void __cdecl BreedPatch(task* a1)
 {
-	sub_54A690(a1);
+	AL_FixPosition(a1);
 	//attentionoff
-	al_entry_work* v1 = (al_entry_work*)a1->UnknownA_ptr;
+	ALW_ENTRY_WORK* v1 = GET_ALW_ENTRY_WORK(a1);
 	if (v1)
 	{
 		v1->flag = 0;
@@ -131,7 +131,7 @@ signed int __cdecl AL_CheckBallFix(task* tp) {
 	auto pParam = GET_CHAOPARAM(tp);
 
 	if (AL_EmotionGetValue(tp, EM_ST_TEDIOUS) <= 4000
-		|| CheckDistance(&work->entity.pos, &ALO_BallPtr->twp->pos) >= 50)
+		|| njDistanceP2P(&work->pos, &ALO_BallPtr->twp->pos) >= 50)
 	{
 		return 0;
 	}
@@ -155,8 +155,7 @@ static void __declspec(naked) AL_CheckBallHook()
 }
 
 void Ball_Delete(task* a1) {
-	ObjectFunc(j_ALO_Delete, 0x0057B9B0);
-	j_ALO_Delete(a1);
+	ALW_CancelEntry(a1);
 	ALO_BallPtr = 0;
 	BallUsable = 0;
 }
@@ -191,9 +190,9 @@ void CWE_Fixes() {
 	WriteJump((void*)0x00530596, (void*)0x005305B6);//calcdistfromlockon
 
 	//chaos chao animal ear fix
-	NJS_OBJECT** ChaoObjects = (NJS_OBJECT**)GetDllData("AL_RootObject");
-	NJS_OBJECT* ChaosChaoRoot = ChaoObjects[108];
-	NJS_OBJECT* EarObject = ChaosChaoRoot->child->child->sibling->sibling->sibling->sibling->sibling->child->child->child->sibling->sibling->sibling->sibling->sibling;
+	NJS_CNK_OBJECT** ChaoObjects = (NJS_CNK_OBJECT**)GetDataDllProcAddr("AL_RootObject");
+	NJS_CNK_OBJECT* ChaosChaoRoot = ChaoObjects[108];
+	NJS_CNK_OBJECT* EarObject = ChaosChaoRoot->child->child->sibling->sibling->sibling->sibling->sibling->child->child->child->sibling->sibling->sibling->sibling->sibling;
 	EarObject->ang[1] = 0;
 
 	//egg bright shell fix
@@ -213,9 +212,9 @@ void CWE_Fixes() {
 	WriteData<6>((char*)0x0056DE7D, (char)0x90);
 
 	//fix pearl price
-	HatBMAttributes[SA2BHat_PearlEggShell].SalePrice = 8000;
+	HatBMAttributes[ChaoHat_PearlEggShell].SalePrice = 8000;
 
 	//trumpet fix
-	((NJS_OBJECT*)0x11C830C)->pos[1] = -0.4f; //adjustment
-	((NJS_OBJECT*)0x11C830C)->evalflags &= ~NJD_EVAL_UNIT_POS; //dont ignore position
+	((NJS_CNK_OBJECT*)0x11C830C)->pos[1] = -0.4f; //adjustment
+	((NJS_CNK_OBJECT*)0x11C830C)->evalflags &= ~NJD_EVAL_UNIT_POS; //dont ignore position
 }

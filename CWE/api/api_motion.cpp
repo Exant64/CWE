@@ -87,7 +87,7 @@ void Chao_RegAnimation(task* a1, const std::string& name) {
     AL_SetMotionLink(a1, IDMotionMap[name]);
 }
 
-void Chao_RegAnimationTbl(MotionTableData* a1, const std::string& name) {
+void Chao_RegAnimationTbl(MOTION_CTRL* a1, const std::string& name) {
     Chao_Animation(a1, IDMotionMap[name]);
 }
 
@@ -113,6 +113,6 @@ void AL_ModAPI_Motion_Update() {
 }
 
 void AL_ModAPI_Motion_Init() {
-	MOTION_TABLE* al_motion_table = (MOTION_TABLE*)GetDllData("al_motion_table");
+	MOTION_TABLE* al_motion_table = (MOTION_TABLE*)GetDataDllProcAddr("al_motion_table");
 	al_motion_table_api.insert(al_motion_table_api.end(), al_motion_table, &al_motion_table[622]);
 }

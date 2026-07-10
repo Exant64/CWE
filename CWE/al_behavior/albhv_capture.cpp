@@ -19,7 +19,7 @@ void ParamFukidasiExecutor_Load(task* a1)
 	}
 }
 FunctionPointer(void, sub_6EFF10, (NJS_VECTOR* a1, NJS_VECTOR* a2, float a3), 0x6EFF10);
-ObjectFunc(AL_CloseParameterFukidasiWait, 0x00565BC0);
+FunctionPointer(void, AL_CloseParameterFukidasiWait, (task*), 0x00565BC0);
 
 //we split this out into a separate function for cleanness, on the original version it was inside
 void ALBHV_Capture_Parts(task* tp, int minitype) {
@@ -58,7 +58,7 @@ void ALBHV_Capture_Parts(task* tp, int minitype) {
 				//	Chao_InitAnimalParts(v1, v17, -1);
 				if (part == PARTS_KIND_REG && minitype != SA2BAnimal_Bat)
 				{
-					pParamGC->HideFeet = 0;
+					pParamGC->body.ObakeBody = 0;
 				}
 			}
 		}
@@ -78,7 +78,7 @@ void ALBHV_Capture_Parts(task* tp, int minitype) {
 
 				if (part == 4 && minitype != 17)
 				{
-					pParamGC->HideFeet = 0;
+					pParamGC->body.ObakeBody = 0;
 				}
 			}
 		}
@@ -111,28 +111,28 @@ int ALBHV_Capture(task* tp) {
 		AL_SetMotionLink(tp, 203);
 		work->Behavior.Mode = 1;
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
-		if (CurrentChaoArea == NextChaoArea)
+		if (ChaoStageNumber == ChaoNextStageNumber)
 		{
-			PlaySound_XYZ(4100, &GET_CHAOWK(tp)->entity.pos, 0, 0, 0);
+			SE_CallV2(4100, 0, 0, 0, &GET_CHAOWK(tp)->pos);
 		}
-		CreateChildTask(LoadObj_Data1, (task_exec)0x566CF0, tp);
+		CreateChildTask(IM_TWK, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
 	case 1:
 		if (!AL_MoveHoldingObject(tp)) {
 			return BHV_RET_FINISH;
 		}
 		if (AL_IsMotionEnd(tp)) {
-			al_entry_work* pEntryMinimal = ALW_IsCommunication(tp);
+			ALW_ENTRY_WORK* pEntryMinimal = ALW_IsCommunication(tp);
 
 			AL_SetMotionLink(tp, 204);
 			work->Behavior.Mode = 2;
-			if (CurrentChaoArea == NextChaoArea)
+			if (ChaoStageNumber == ChaoNextStageNumber)
 			{
-				PlaySound_XYZ(4101, &GET_CHAOWK(tp)->entity.pos, 0, 0, 0);
+				SE_CallV2(4101, 0, 0, 0, &GET_CHAOWK(tp)->pos);
 			}
 
 			for (int i = 0; i < 40; i++) {
-				NJS_POINT3* pos = &work->entity.pos;
+				NJS_POINT3* pos = &work->pos;
 				int ang = NJM_DEG_ANG(9) * i; //40 steps around a circle
 
 				NJS_POINT3 ppos = {
@@ -159,7 +159,7 @@ int ALBHV_Capture(task* tp) {
 				float addform;
 
 				if (minitype < 0 || minitype >= (int)ModAPI_MinimalInfluence.size()) {
-					PrintDebug("ALBHV_Capture: animal type (%d) out of bounds when checking influence, exiting bhv", minitype);
+					___OutputDebugString("ALBHV_Capture: animal type (%d) out of bounds when checking influence, exiting bhv", minitype);
 					return BHV_RET_FINISH;
 				}
 
@@ -178,21 +178,21 @@ int ALBHV_Capture(task* tp) {
 
 				if (ChaoGlobal.PartsRemoveProb > njRandom() && minitype != SA2BAnimal_HalfFish)
 				{
-					pParamGC->BallType = 0;
+					pParamGC->body.HonbuNum = 0;
 				}
 				if (minitype == SA2BAnimal_HalfFish)
 				{
 					if (ChaoGlobal.PartsSetProb > njRandom())
 					{
-						if (pParamGC->type < (unsigned __int8)ChaoType_Neutral_Chaos)
+						if (pParamGC->type < TYPE_N_CHAOS)
 						{
-							pParamGC->BallType = 1;
+							pParamGC->body.HonbuNum = 1;
 						}
 					}
 				}
 				else if (minitype == SA2BAnimal_Bat && ChaoGlobal.PartsSetProb > njRandom())
 				{
-					pParamGC->HideFeet = 1;
+					pParamGC->body.ObakeBody = 1;
 				}
 				
 				if (AL_IsChild(tp)) {

@@ -10,7 +10,7 @@
 #include "al_behavior/al_intention.h"
 #include "renderfix.h"
 
-extern NJS_OBJECT object_alo_mannequin;
+extern NJS_CNK_OBJECT object_alo_mannequin;
 void __cdecl ALO_Special_Display(task* a1)
 {
 	DoLighting(LightIndex);
@@ -20,9 +20,9 @@ void __cdecl ALO_Special_Display(task* a1)
 	njRotateY(NULL, a1->twp->ang.y);
 
 	//ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Special, a1->twp->Rotation.x);
-	ObjectRegistry::DrawObject(ChaoItemCategory_Special, a1->twp->ang.x);
+	ObjectRegistry::DrawObject(ALW_CATEGORY_SPECIAL, a1->twp->ang.x);
 
-	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
+	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 		njTranslate(NULL, 0, 0.4f, 0);
 		njScale(NULL, 1, 0.7f, 1);
 
@@ -32,12 +32,12 @@ void __cdecl ALO_Special_Display(task* a1)
 
 }
 
-extern "C" __declspec(dllexport) task* ALO_Special_Load(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, short* savedata)
+extern "C" __declspec(dllexport) task* ALO_SpecialCreate(int ID, NJS_VECTOR* position, int rotY, NJS_VECTOR* velocity, ITEM_SAVE_INFO* savedata)
 {
-	task* obj = ALO_ObakeHeadExecutor_Load(ID, position, rotY, velocity, (int)savedata);
-	*(unsigned char*)&obj->twp->cwp->CollisionArray[2].field_0 = CI_KIND_AL_SPECIAL;
+	task* obj = ALO_ObakeHeadCreate(ID, position, rotY, velocity, savedata);
+	obj->twp->cwp->info[2].kind = CI_KIND_AL_SPECIAL;
 	obj->twp->ang.x = ID;
 	obj->disp = ALO_Special_Display;
-	((ChaoSomeUnknownA*)obj->UnknownA_ptr)->index = ChaoItemCategory_Special;
+	GET_ALW_ENTRY_WORK(obj)->category = ALW_CATEGORY_SPECIAL;
 	return obj;
 }

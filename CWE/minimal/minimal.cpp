@@ -173,7 +173,7 @@ static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
     njDrawTexture(4, 44657590, (int)vtx, 1);
 
     const Angle3 rot = { 0, -4000, 0 };
-    const SAlItem item = { 2, type };
+    const SAlItemCwe item = { 2, type };
     
     const float scale = 1.65f;
     NJS_POINT3 center;
@@ -261,7 +261,7 @@ static void __declspec(naked) njDrawTextureHook2()
 
 static void RenderAnimal_r(task* tp) {
 	const float someFloat = *(float*)0xB18F54;
-	auto* v3 = (MinimalData2*)tp->Data2.Undefined;
+	auto* v3 = (MinimalData2*)tp->awp;
 	
 	if (v3->table > SA2BAnimal_PurpleChaosDrive) {
 		const size_t id = v3->table;
@@ -282,13 +282,13 @@ static void RenderAnimal_r(task* tp) {
 	RenderAnimal.Original(tp);
 }
 
-static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4, int a5) {
+static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4, ITEM_SAVE_INFO* a5) {
     if (a1 >= 21 && a1 < 25) {
-        ALO_ChaosDriveExecutor_Load(a1 - 21, a2, (NJS_VECTOR*)a4, (CHAO_SAVE_INFO*)a5);
+        ALO_ChaosDriveCreate(a1 - 21, a2, (NJS_VECTOR*)a4, a5);
         return;
     }
 
-    AL_MinimalExecutor_Load(a1, a2, a3, a4, a5);
+    AL_MinimalCreate(a1, a2, a3, a4, a5);
 }
 
 const int sub_48ACD0Ptr = 0x48ACD0;
@@ -312,7 +312,7 @@ static void sub_48ACD0_r(int i, int a1, float a2, float a3, float a4) {
         const size_t animalCount = gConfigVal.StageAnimalMinCount + size_t(njRandom() * (gConfigVal.StageAnimalMaxCount - gConfigVal.StageAnimalMinCount + 0.99999f));
         for (size_t i = 0; i < animalCount; ++i) {
             task* pMinimal = sub_48AAD0(a2, a3, a4, 0, 4);
-            auto* work = (MinimalData2*)pMinimal->Data2.Undefined;
+            auto* work = (MinimalData2*)pMinimal->awp;
             
             const int startIndex = gConfigVal.StageAnimalIncludeSADX ? (SA2BAnimal_PurpleChaosDrive + 1) : 40;
             work->table = startIndex + int(njRandom() * (ModAPI_MinimalInfluence.size() - startIndex));
@@ -353,21 +353,21 @@ static FunctionHook<void> InitLevelThings_hook(0x439610);
 static FunctionHook<void> LoadLevelDestroy_hook(0x454CC0);
 
 static void InitLevelThings_r() {
-    if(CurrentLevel != LevelIDs_ChaoWorld) {
+    if(ssStageNumber != STAGE_CHAOWORLD) {
         for (const auto& load : TexlistLoads) {
             if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 
-            LoadTextureList((char*)load.first, load.second);
+            texLoadTexturePvmFile((char*)load.first, load.second);
         }
 
-        LoadTextureList((char*)"CWE_UI", &CWE_UI_TEXLIST);
+        texLoadTexturePvmFile((char*)"CWE_UI", &CWE_UI_TEXLIST);
     }
 
     InitLevelThings_hook.Original();
 }
 
 static void LoadLevelDestroy_r() {
-    if(CurrentLevel != LevelIDs_ChaoWorld) {
+    if(ssStageNumber != STAGE_CHAOWORLD) {
         for (const auto& load : TexlistLoads) {
             if (std::find(ModAPI_MinimalTexlists.begin(), ModAPI_MinimalTexlists.end(), load.second) == ModAPI_MinimalTexlists.end()) continue;
 
@@ -382,11 +382,11 @@ static void LoadLevelDestroy_r() {
 
 static void AnimalPickupSoundHook_r(int a1, NJS_VECTOR *a2, int a3, int a4, int a5, int animalID) {
     if (animalID >= 21 && animalID < 25) {
-        PlaySound_XYZ(0x8011, a2, a3, a4, a5);
+        SE_CallV2(0x8011, a3, a4, a5, a2);
         return;
     }
     
-    PlaySound_XYZ(0x800F, a2, a3, a4, a5);
+    SE_CallV2(0x800F, a3, a4, a5, a2);
 }
 
 static void __declspec(naked) AnimalPickupSoundHook()

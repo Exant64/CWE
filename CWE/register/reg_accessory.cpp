@@ -14,8 +14,8 @@ void ALAPI_RegisterAccessory(CWE_REGAPI* cwe_api) {
 	cwe_api->RegisterChaoAccessory(EAccessoryType::Head, &headphone_cups, texlist_cwe_object, &accessoryAttrib, "Headphones", "Music makes you lose control.");
 	cwe_api->RegisterChaoAccessory(EAccessoryType::Face, &object_00245C64, &AL_BODY, &accessoryAttrib, "Pacifier", "");
 	cwe_api->RegisterChaoAccessory(EAccessoryType::Head, &object_ala_presshat, texlist_cwe_object, &accessoryAttrib, "Press Hat", "For writing news and playing pinball.");
-	NJS_OBJECT* pHoodie = &object_ala_hoodie_low;
-	NJS_OBJECT* pHoodie_pink = &object_ala_hoodie_pink_low;
+	NJS_CNK_OBJECT* pHoodie = &object_ala_hoodie_low;
+	NJS_CNK_OBJECT* pHoodie_pink = &object_ala_hoodie_pink_low;
 	if (gConfigVal.HDHoodie)
 	{
 		pHoodie = &object_ala_hoodie;

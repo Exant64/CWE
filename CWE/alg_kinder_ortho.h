@@ -2,7 +2,7 @@
 
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ChaoHudThingB
+struct __declspec(align(4)) CHS_BILL_INFO
 {
 	int adjust;
 	float wd;
@@ -15,8 +15,8 @@ struct __declspec(align(4)) ChaoHudThingB
 	int TexNum;
 };
 #pragma pack(pop)
-FunctionPointer(void, SetChaoHUDThingBColor, (float a1, float a2, float a3, float a4), 0x00559FA0);
-void DrawChaoHudThingB(ChaoHudThingB* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8);
+FunctionPointer(void, chSetBillboardColor, (float a1, float a2, float a3, float a4), 0x00559FA0);
+void chDrawBillboardSR(CHS_BILL_INFO* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8);
 
 void WcConvFromCStr(int result, int a2, signed int a3);
 
@@ -28,7 +28,7 @@ struct ChaoHudThingOld
 	NJS_POINT2I d;
 };
 
-struct ChaoHudThing
+struct SAlgKinderOrthoQuad
 {
 	__int16 x0;
 	__int16 x1;
@@ -40,8 +40,8 @@ struct ChaoHudThing
 	__int16 v1;
 };
 
-void DrawChaoHudThing(ChaoHudThing* a1, int a2);
-void __cdecl AlgKinderOrthoQuadDrawArray(ChaoHudThing* q, int len, Uint32 color);
-void __cdecl AlgKinderOrthoQuadDrawArrayTile(ChaoHudThing* a3, int count, Uint32 color, int nx, int ny);
-void __cdecl AlgKinderOrthoQuadDrawArrayOffset(ChaoHudThing const* a3, int count, unsigned int color, __int16 oX, __int16 oY);
-void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(ChaoHudThing const* a4, int a5, unsigned int a6, int a7, int a8, int a9, __int16 a10);
+void AlgKinderOrthoQuadDraw(SAlgKinderOrthoQuad* a1, int a2);
+void __cdecl AlgKinderOrthoQuadDrawArray(SAlgKinderOrthoQuad* q, int len, Uint32 color);
+void __cdecl AlgKinderOrthoQuadDrawArrayTile(SAlgKinderOrthoQuad* a3, int count, Uint32 color, int nx, int ny);
+void __cdecl AlgKinderOrthoQuadDrawArrayOffset(SAlgKinderOrthoQuad const* a3, int count, unsigned int color, __int16 oX, __int16 oY);
+void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(SAlgKinderOrthoQuad const* a4, int a5, unsigned int a6, int a7, int a8, int a9, __int16 a10);

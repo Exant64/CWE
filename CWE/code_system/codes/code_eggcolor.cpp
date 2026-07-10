@@ -91,28 +91,28 @@ struct EGGCOLORS {
 };
 
 
-void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
+void EggColorCode::OnChaoData(CHAO_PARAM_GC& chao) {
 	if (chao.type <= 0) return;
 
-	if (chao.Texture > 0 && chao.Texture <= 15) {
-		chao.EggColor = 53 + chao.Texture;
+	if (chao.body.JewelNum > 0 && chao.body.JewelNum <= 15) {
+		chao.body.EggColor = 53 + chao.body.JewelNum;
 		return;
 	}
 
 	int eggColor = 0;
-	if (chao.Shiny)
+	if (chao.body.MultiNum)
 		eggColor += 27;
 
-	if (chao.Color > 0)
+	if (chao.body.ColorNum > 0)
 	{
 		// todo: rewrite this to not look like.. this
 		bool found = false;
-		if (!chao.MonotoneHighlights)
+		if (!chao.body.NonTex)
 			eggColor += 13;
 
 		for (int j = 0; j < 84; j++)
 		{
-			if (EggColorCombo[j].a == chao.Color)
+			if (EggColorCombo[j].a == chao.body.ColorNum)
 			{
 				eggColor += EggColorCombo[j].b;
 				found = true;
@@ -124,7 +124,7 @@ void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
 		{
 			for (int j = 0; j < 84; j++)
 			{
-				if (EggColorCombo[j].a == chao.Gene.Color[0])
+				if (EggColorCombo[j].a == chao.gene.Color[0])
 				{
 					eggColor += EggColorCombo[j].b;
 					found = true;
@@ -137,7 +137,7 @@ void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
 		{
 			for (int j = 0; j < 84; j++)
 			{
-				if (EggColorCombo[j].a == chao.Gene.Color[1])
+				if (EggColorCombo[j].a == chao.gene.Color[1])
 				{
 					eggColor += EggColorCombo[j].b;
 					found = true;
@@ -147,9 +147,8 @@ void EggColor::OnChaoData(CHAO_PARAM_GC& chao) {
 		}
 
 		if (!found)
-			eggColor = chao.Shiny ? 27 : 0;
+			eggColor = chao.body.MultiNum ? 27 : 0;
 	}
-	chao.EggColor = eggColor;
-
 	
+	chao.body.EggColor = eggColor;
 };

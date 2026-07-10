@@ -57,7 +57,7 @@ void CWE_Codes_OnFrame() {
 		c->OnFrame();
 	}
 
-	if (CurrentLevel == 90) {
+	if (ssStageNumber == 90) {
 		//if the texlist is loaded at all
 		if (texlist_cwe_object && texlist_cwe_object->textures[0].texaddr) {
 			if (texlist_cwe_object->nbTexture < 67 || !texlist_cwe_object->textures[62].texaddr) {
@@ -114,7 +114,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	//i havent quite figured out yet how to handle this
 	CodeManager::Init(config);
 	
-	CodeManager::Instance().Add<EggColor>("EggColor", true);
+	CodeManager::Instance().Add<EggColorCode>("EggColor", true);
 	CodeManager::Instance().Add<PlayerSpeed>("PlayerSpeed", true);
 	CodeManager::Instance().Add<BirthdayParty>("BirthdayEvent", true);
 	CodeManager::Instance().Add<GardenLimit>("GardenLimit", 8, -1);

@@ -20,7 +20,7 @@ float gOrthoZoom;
 extern "C" {
 	__declspec(dllexport) void OrthoInit(float orthoZoom = 100) {
 		gOrthoZoom = orthoZoom;
-		float aspect = HorizontalResolution / VerticalResolution;
+		float aspect = DisplayResolutionX / DisplayResolutionY;
 		D3DXMatrixOrthoRH(&ortho,
 			aspect * gOrthoZoom,
 			gOrthoZoom,
@@ -30,26 +30,26 @@ extern "C" {
 
 	__declspec(dllexport) void OrthoDrawBegin() {
 		Renderer_SetMatrix(*(int*)0x1A557C0, 0, 8, (int)&ortho);
-		njControl3DBackup = njControl3D;
-		njControl3D &= ~0x100;
+		__control_3d_flag_ = _nj_control_3d_flag_;
+		_nj_control_3d_flag_ &= ~0x100;
 	}
 
 	__declspec(dllexport) void OrthoDrawEnd() {
-		njControl3D = njControl3DBackup;
+		_nj_control_3d_flag_ = __control_3d_flag_;
 		GXSetProjection(0x025EFF00);
 	}
 
-	__declspec(dllexport) void OrthoDraw(NJS_OBJECT* obj, DrawObjectFunc draw = njCnkDrawObject) {
+	__declspec(dllexport) void OrthoDraw(NJS_CNK_OBJECT* obj, DrawObjectFunc draw = njCnkDrawObject) {
 		OrthoDrawBegin();
 		draw(obj);
 		OrthoDrawEnd();
 	}
 
-	__declspec(dllexport) void njOrthoCnkDrawObject(NJS_OBJECT* obj) {
+	__declspec(dllexport) void njOrthoCnkDrawObject(NJS_CNK_OBJECT* obj) {
 		OrthoDraw(obj, njCnkDrawObject);
 	}
 
-	__declspec(dllexport) void chOrthoCnkDrawObject(NJS_OBJECT* obj) {
+	__declspec(dllexport) void chOrthoCnkDrawObject(NJS_CNK_OBJECT* obj) {
 		OrthoDraw(obj, chCnkDrawObject);
 	}
 

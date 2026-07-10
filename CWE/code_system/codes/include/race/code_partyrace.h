@@ -33,7 +33,7 @@ void PartyRace::OnFrame() {
     // from lst code: hack to prevent timer from reaching 480
     *(uint8_t*)0x01A5CE14 = 50;
 
-    if(NextChaoArea == CHAO_STG_RACE) {
+    if(ChaoNextStageNumber == CHAO_STG_RACE) {
         if(RaceMainType <= 1) {
             RaceMainType = 5;
             RaceLevel = 0;
@@ -41,12 +41,12 @@ void PartyRace::OnFrame() {
     }
 
     if(RaceMainType == 5) {
-        DataArray(CHAO_SAVE_INFO*, pSelectedChaoSaveInfoList, 0x01A5CC00, 8);
+        DataArray(CHAO_PARAM_GC*, pSelectedChaoSaveInfoList, 0x01A5CC00, 8);
 
         for(size_t i = 0; i < 8; ++i) {
-            auto info = &ChaoSlots[i];
+            auto info = &ChaoInfo::Instance()[i];
 
-            if(info->data.type) {
+            if(info->type) {
                 pSelectedChaoSaveInfoList[i] = info;
             }
             else {

@@ -7,7 +7,7 @@
 
 int __cdecl ALBHV_EggChao(task* a1)
 {
-	ChaoData1* wk = GET_CHAOWK(a1);
+	chaowk* wk = GET_CHAOWK(a1);
 	AL_BEHAVIOR* bhv = &wk->Behavior;
 
 	switch (bhv->Mode)
@@ -30,30 +30,31 @@ int __cdecl ALBHV_EggChao(task* a1)
 	return BHV_RET_CONTINUE;
 }
 
-void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_VECTOR* position, int a5)
+void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_PARAM_GC* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
 	if (njRandom() <= 0.01f)
 	{
 		if (a1)
 		{
-			chaoData->data.Gene = *a1;
+			chaoData->gene = *a1;
 		}
-		chaoData->data.type = ChaoType_Child;
-		chaoData->data.InKindergarten = -1;
-		task* chao = CreateChao(chaoData, 0, 0, position, a5);
-		chaoData->data.BodyType = SADXBodyType_EggChao;
+		chaoData->type = TYPE_CHILD;
+		chaoData->ClassNum = -1;
+		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
+		chaoData->body.FormNum = AL_FORM_EGG_FOOT;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}
-	else
-		CreateChaoEgg(a1, chaoData, a3, position, a5);
+	else {
+		CreateEgg(a1, chaoData, a3, position, a5);
+	}
 }
 
 void __cdecl sub_550620(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType != 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
 	{
 		memset(GET_CHAOPARAM(a1), 0, sizeof(CHAO_PARAM_GC));
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 	}
 }
 static void __declspec(naked) sub_550620Hook()
@@ -72,8 +73,8 @@ static void __declspec(naked) sub_550620Hook()
 
 void __cdecl EggChao_ALO_Delete(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType != 1)
-		ALO_Delete(a1);
+	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
+		ALW_CancelEntry(a1);
 }
 static void __declspec(naked) EggChao_ALO_Delete_Hook()
 {
@@ -88,28 +89,28 @@ static void __declspec(naked) EggChao_ALO_Delete_Hook()
 		retn
 	}
 }
-void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_VECTOR* position, int a5)
+void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_PARAM_GC* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
 	GET_CWEPARAM(chaoData)->ForceReincarnate = false;
 	
-	if (chaoData->data.BodyType == 1)
+	if (chaoData->body.FormNum == 1)
 	{
 		if (a1)
 		{
-			chaoData->data.Gene = *a1;
+			chaoData->gene = *a1;
 		}
-		chaoData->data.type = ChaoType_Child;
-		chaoData->data.InKindergarten = -1;
-		chaoData->data.BodyType = SADXBodyType_EggChao;
+		chaoData->type = TYPE_CHILD;
+		chaoData->ClassNum = -1;
+		chaoData->body.FormNum = AL_FORM_EGG_FOOT;
 	}
 	else
-		CreateChaoEgg(a1, chaoData, a3, position, a5);
+		CreateEgg(a1, chaoData, a3, position, a5);
 }
 
-void __cdecl EggChaoCrawl(MotionTableData* a1, int a2)
+void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
 {
-	ChaoData1* data1 = (ChaoData1*)((int)a1 - 0xAC);
-	if (data1->pParamGC->BodyType == 1)
+	chaowk* data1 = (chaowk*)((int)a1 - 0xAC);
+	if (data1->pParamGC->body.FormNum == 1)
 		Chao_RegAnimationTbl(a1, "alm_egg_crawl_start");
 	else
 		Chao_Animation(a1, a2);
@@ -132,13 +133,13 @@ static void __declspec(naked) EggChaoCrawlHook()
 
 void __cdecl EggChao_KeepOrDie(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType == 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum == 1)
 	{
-		a1->exec = Chao_Main;
+		a1->exec = ChaoExecutor;
 		AL_SetBehavior(a1, ALBHV_Think);
 	}
 	else
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 }
 
 
@@ -169,13 +170,13 @@ void CreateMayuField(task* a1, char a2)
 	switch (a2)
 	{
 	case MayuKind_Grow:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_GROW_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_GROW_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	case MayuKind_Death:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_DEATH_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_DEATH_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	case MayuKind_Succeed:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_SUCCEED_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_SUCCEED_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	}
 }

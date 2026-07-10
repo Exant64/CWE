@@ -15,7 +15,7 @@
 DataArray(BHV_FUNC, ALBHV_SToyFunc, 0x012FE978, 12);
 bool __cdecl AL_KW_IsSToyFlagOn(task* a1, char a2)
 {
-	return (GET_CHAOPARAM(a1)->Knowledge.SToyFlag & (1 << a2)) != 0;
+	return (GET_CHAOPARAM(a1)->knowledge.SToyFlag & (1 << a2)) != 0;
 }
 signed int __cdecl AL_DecideBehaviorSToy(task* a1)
 {
@@ -42,21 +42,21 @@ signed int __cdecl AL_DecideBehaviorSToy(task* a1)
 	//if yes then don't run anything	
 	//this is done to prevent every single chao that has the shovel (for planting purposes) 
 	//making a sandcastle when theyre bored
-	if (GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
-		GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
-		GET_CHAOPARAM(a1)->Knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
+	if (GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
+		GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
+		GET_CHAOPARAM(a1)->knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
 		return BHV_RET_CONTINUE;
 
 	NJS_VECTOR a3;
-	a3.x = njSin(GET_CHAOWK(a1)->entity.ang.y) * 8 + GET_CHAOWK(a1)->entity.pos.x;
-	a3.y = GET_CHAOWK(a1)->entity.pos.y;
-	a3.z = njCos(GET_CHAOWK(a1)->entity.ang.y) * 8 + GET_CHAOWK(a1)->entity.pos.z;
+	a3.x = njSin(GET_CHAOWK(a1)->ang.y) * 8 + GET_CHAOWK(a1)->pos.x;
+	a3.y = GET_CHAOWK(a1)->pos.y;
+	a3.z = njCos(GET_CHAOWK(a1)->ang.y) * 8 + GET_CHAOWK(a1)->pos.z;
 
 	AL_SetBehavior(
 		a1,
 		ALBHV_SToyFunc[v5[(unsigned int)(njRandom() * (v1 - 0.0001f))]]
 	);
-	ALOField_Load(a1, CI_KIND_AL_RANDOM_STOY, &a3, 20.0f, (int)(1800 + (njRandom() * 2401.f)));
+	AL_ChildFieldCreateT(a1, CI_KIND_AL_RANDOM_STOY, &a3, 20.0f, (int)(1800 + (njRandom() * 2401.f)));
 	return BHV_RET_FINISH;
 }
 void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
@@ -72,7 +72,7 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 	v10 = 0.0;
 	v2 = ChaoGlobal.IntentionHimaTrigger >> 1;
 	value = AL_EmotionGetValue(a1, EM_ST_TEDIOUS);
-	v3 = ALO_Field_Find_(a1, 1, CI_KIND_AL_RANDOM_STOY);
+	v3 = AL_IsHitKindWithNum(a1, 1, CI_KIND_AL_RANDOM_STOY);
 	v9 = 0;
 	if (*a2 < 1)
 	{
@@ -103,12 +103,12 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 			{
 				if (v9 > 0)
 				{
-					if (GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
-						GET_CHAOPARAM(a1)->Knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
-						GET_CHAOPARAM(a1)->Knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
+					if (GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_SCOP) ||
+						GET_CHAOPARAM(a1)->knowledge.SToyFlag == (1 << AL_STOY_JYOURO) ||
+						GET_CHAOPARAM(a1)->knowledge.SToyFlag == ((1 << AL_STOY_SCOP) | (1 << AL_STOY_JYOURO)))
 						return;
 
-					MOV_SetAimPos(a1, &GET_CHAOWK(v3)->entity.pos);
+					MOV_SetAimPos(a1, &GET_CHAOWK(v3)->pos);
 					AL_SetBehavior(a1, (BHV_FUNC)0x56B500);
 
 					AL_SetNextBehavior(
@@ -119,9 +119,9 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 					AL_EmotionAdd(a1, EM_ST_TEDIOUS, -7500);
 					AL_EmotionAdd(a1, EM_ST_LONELY, -4000);
 					//AL_ClearIntention(a1);
-					if (v3->Parent)
+					if (v3->ptp)
 					{
-						AL_EmotionAdd(v3->Parent, EM_ST_LONELY, -4000);
+						AL_EmotionAdd(v3->ptp, EM_ST_LONELY, -4000);
 					}
 					*a2 = 0.99f;
 				}
@@ -133,7 +133,7 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2)
 
 int __cdecl ALBHV_Garagara(task* a1)
 {
-	ChaoData1* v1; // esi
+	chaowk* v1; // esi
 	int v3; // eax
 
 	v1 = GET_CHAOWK(a1);

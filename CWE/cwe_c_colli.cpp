@@ -44,12 +44,12 @@ static bool FoundDrawDistanceMod = false;
 
 void CWE_CCL_Entry(task* tp) {
     if(FoundDrawDistanceMod) {
-        AddToCollisionList(tp);
+        CCL_Entry(tp);
         return;
     }
 
 
-    if(!tp->twp->cwp || tp->exec == DeleteObject_)  {
+    if(!tp->twp->cwp || tp->exec == DestroyTask)  {
         return;
     }
 
@@ -67,7 +67,7 @@ static void CCL_CCheckColli_r() {
     // to dynamically use the one that any other mod overwrites (us or ecw)
     task** chao_entry_list = *(task***)0x0047E923;
 
-    if(CurrentLevel == LevelIDs_ChaoWorld && !cwe_entry_list.empty()) {
+    if(ssStageNumber == STAGE_CHAOWORLD && !cwe_entry_list.empty()) {
         // self colli check
         for(size_t i = 0; i < cwe_entry_list.size() - 1; ++i) {
             for(size_t j = i + 1; j < cwe_entry_list.size(); ++j) {

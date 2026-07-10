@@ -4,59 +4,43 @@
 #include "api/api_customchao.h"
 #include "ChaoMain.h"
 
-void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, CHAO_PARAM_GC* data)
-{
-	signed int v2; // ST00_4
-	__int16* v3; // eax
-	char* v4; // ecx
-
-	SADXBodyType storage = SADXBodyType_Normal;
-
-	if ((unsigned char)(KarateOpponentData->ChaoType) == 254)
-	{
-		data->type = ChaoType_Child;
-		storage = SADXBodyType_Omochao;
+void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
+	if (pElement->type == 254) {
+		pParam->type = TYPE_CHILD;
+		pParam->body.FormNum = AL_FORM_OMOCHAO;
 	}
-	else if ((unsigned char)(KarateOpponentData->ChaoType) == 255)
-	{
-		data->type = ChaoType_Child;
-		storage = SADXBodyType_EggChao;
+	else if (pElement->type == 255) {
+		pParam->type = TYPE_CHILD;
+		pParam->body.FormNum = AL_FORM_EGG_FOOT;
 	}
-	else
-		data->type = KarateOpponentData->ChaoType;
-	data->BodyType = storage;
+	else {
+		pParam->type = pElement->type;
+		pParam->body.FormNum = AL_FORM_NORMAL;
+	}
 
-	data->EyeType = KarateOpponentData->EyeType;
-	data->MouthType = KarateOpponentData->MouthType;
-	data->BallType = KarateOpponentData->BallType;
-	data->Headgear = KarateOpponentData->Headgear;
-	data->HideFeet = KarateOpponentData->HideFeet;
-	data->Medal = KarateOpponentData->Medal;
-	data->Color = KarateOpponentData->Color;
-	data->MonotoneHighlights = KarateOpponentData->Monotone;
-	data->Texture = KarateOpponentData->Texture;
-	data->Shiny = KarateOpponentData->Shiny;
-	*(int*)&data->PartsBTL.MinimalParts[0] = *(int*)&KarateOpponentData->SA2BArmType;
-	*(int*)&data->PartsBTL.MinimalParts[4] = *(int*)&KarateOpponentData->SA2BLegType;
-	v2 = KarateOpponentData->PowerRun;
-	v3 = KarateOpponentData->StatPoints;
-	v4 = (char*)data->Skill;
-	*((float*)v4 + 0x1C) = v2 * 0.00009999999747378752f;
-	*((float*)v4 + 0x1D) = *(v3 - 7) * 0.00009999999747378752f;
-	*((float*)v4 + 0x1E) = *(v3 - 6) * 0.00009999999747378752f;
-	*((float*)v4 + 0x22) = 0.00009999999747378752f * *(v3 - 5);
-	
-	memcpy(GET_CWEPARAM(data)->Name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
-	GET_CWEPARAM(data)->Name[7] = 0;
+	pParam->body.DefaultEyeNum = pElement->DefaultEyeNum;
+	pParam->body.DefaultMouthNum = pElement->DefaultMouthNum;
+	pParam->body.HonbuNum = pElement->HonbuNum;
+	pParam->body.ObakeHead = pElement->ObakeHead;
+	pParam->body.ObakeBody = pElement->ObakeBody;
+	pParam->body.MedalNum = pElement->MedalNum;
+	pParam->body.ColorNum = pElement->ColorNum;
+	pParam->body.NonTex = pElement->NonTex;
+	pParam->body.JewelNum = pElement->JewelNum;
+	pParam->body.MultiNum = pElement->MultiNum;
 
-	memcpy(data->name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
+	memcpy(pParam->PartsBTL.MinimalParts, pElement->MinimalParts, sizeof(pElement->MinimalParts));
 
-	*(int*)v4 = *(int*)v3;
-	*((int*)v4 + 1) = *((int*)v3 + 1);
-	*((int*)v4 + 2) = *((int*)v3 + 2);
-	*((short*)v4 + 6) = v3[6];
+ 	pParam->body.HPos = pElement->HPos / 10000.f;
+    pParam->body.VPos = pElement->VPos / 10000.f;
+    pParam->body.APos = pElement->APos / 10000.f;
+    pParam->body.growth = pElement->Growth / 10000.f;
 
+	memcpy(GET_CWEPARAM(pParam)->Name, pElement->name, sizeof(pElement->name));
+	GET_CWEPARAM(pParam)->Name[7] = 0;
+	memcpy(pParam->name, pElement->name, sizeof(pParam->name));
 
+	memcpy(pParam->Skill, pElement->Skill, sizeof(pParam->Skill));
 }
 static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
 {
@@ -104,22 +88,22 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 		pParam->nbSucceed >= 2)
 	{
 		switch (type) {
-		case ChaoType_Neutral_Fly:
-		case ChaoType_Hero_Fly:
-		case ChaoType_Dark_Fly:
-			type = ChaoType_Tails;
+		case TYPE_N_FLY:
+		case TYPE_H_FLY:
+		case TYPE_D_FLY:
+			type = TYPE_TAILS;
 			break;
 
-		case ChaoType_Neutral_Power:
-		case ChaoType_Hero_Power:
-		case ChaoType_Dark_Power:
-			type = ChaoType_Knuckles;
+		case TYPE_N_POWER:
+		case TYPE_H_POWER:
+		case TYPE_D_POWER:
+			type = TYPE_KNUCKLES;
 			break;
 
-		case ChaoType_Neutral_Run:
-		case ChaoType_Hero_Run:
-		case ChaoType_Dark_Run:
-			type = ChaoType_Amy;
+		case TYPE_N_RUN:
+		case TYPE_H_RUN:
+		case TYPE_D_RUN:
+			type = TYPE_AMY;
 			break;
 		}
 	}

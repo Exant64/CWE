@@ -1,10 +1,24 @@
 #pragma once
-#include "SA2ModLoader.h"
+
+#include "stdafx.h"
+
+struct ChaoItemStats {
+	__int16 Mood;
+	__int16 Belly;
+	__int16 Swim;
+	__int16 Fly;
+	__int16 Run;
+	__int16 Power;
+	__int16 Stamina;
+	__int16 Luck;
+	__int16 Intelligence;
+	__int16 anonymous_7;
+};
 
 #pragma pack(push, 1)
 typedef char AL_NAME[13];
 struct AL_GUEST {
-	ChaoType Type;
+	Uint8 Type;
 	float Magnitude;
 	float FlySwim;
 	float RunPower;
@@ -14,7 +28,7 @@ struct AL_GUEST {
 };
 
 struct AL_PARAM_ACCESSORY_INFO {
-	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
+	char ID[21];
 	Uint32 Flags;
 	Uint32 ColorFlags;
 	Uint32 ColorSlots[8];
@@ -35,8 +49,8 @@ struct CHAO_PARAM_CWE {
 	char UpgradeCounter;
 	char freeSpace3;
 	char XGradeValue;
-	KarateOpponent motherData;
-	KarateOpponent fatherData;
+	AL_SHAPE_ELEMENT motherData;
+	AL_SHAPE_ELEMENT fatherData;
 	unsigned char IsInitializedAccessory;
 	unsigned char Accessories_old[4];
 	bool DCWings;

@@ -791,6 +791,7 @@
     <ClCompile Include="al_ode_storage.cpp" />
     <ClCompile Include="al_omochao_build.cpp" />
     <ClCompile Include="al_parameter.cpp" />
+    <ClCompile Include="al_field.cpp" />
     <ClCompile Include="al_parts.cpp" />
     <ClCompile Include="al_piano.cpp" />
     <ClCompile Include="al_sandhole.cpp" />

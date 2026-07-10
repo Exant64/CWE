@@ -50,7 +50,7 @@ static void AlMsgWarnAddLineC(int winid, const char* str)
 	AlMsgWinAddLineC(
 		AL_MSGWarnKinderMessageArray[winid].mWin,
 		str,
-		TextLanguage == 0);
+		Language == 0);
 }
 static void AlMsgWarnWaitClose(int winid)
 {
@@ -61,7 +61,7 @@ static void AlMsgWarnWaitClose(int winid)
 	v1 = &AL_MSGWarnKinderMessageArray[winid].mWin->pointerToSomething0x380->array[v0];
 	AL_MSGWarnKinderMessageArray[winid].mWin->wordsLeftMaybe = v0 + 1;
 	v1->Mode = 5;
-	v1->ButtonPress = (Buttons)(Buttons_X | Buttons_A | Buttons_B);
+	v1->ButtonPress = (BTN_X | BTN_A | BTN_B);
 	v1->ButtonOn = 0;
 }
 static void AlMsgWarnDelete(int winid)

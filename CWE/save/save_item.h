@@ -42,7 +42,7 @@ struct ItemSaveInfoBase {
 	NJS_POINT3 Position;
 	Angle Angle;
 
-	virtual ChaoItemCategory GetCategory() const = NULL;
+	virtual Sint8 GetCategory() const = NULL;
 
 	virtual void Save(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) const {
 		if (IndexID == -1) return;
@@ -70,7 +70,7 @@ struct ItemSaveInfoBase {
 	static void Load(ItemSaveInfoBase& item, const rapidjson::Value& value) {
 		strcpy_s(item.ID, value["id"].GetString());
 
-		item.IndexID = int(ItemMetadata::Get()->GetIndex(ChaoItemCategory_Accessory, item.ID));
+		item.IndexID = int(ItemMetadata::Get()->GetIndex(ALW_CATEGORY_ACCESSORY, item.ID));
 
 		item.Garden = IDToIndexGardenMap.at(value["garden"].GetString());
 		item.Angle = value["angle"].GetInt();
@@ -91,8 +91,8 @@ struct AccessorySaveInfo : ItemSaveInfoBase {
 	Uint32 Colors[8];
 	Uint32 UsedColors;
 
-	ChaoItemCategory GetCategory() const {
-		return ChaoItemCategory_Accessory;
+	Sint8 GetCategory() const {
+		return ALW_CATEGORY_ACCESSORY;
 	}
 
 	void Clear() override {
@@ -157,5 +157,5 @@ void ClearAllItemSave();
 void SaveAllItems(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer);
 void LoadAllItems(const rapidjson::GenericArray<false, rapidjson::Value>& array);
 
-bool CWE_IsCustomItemSaveInfoCategory(const ChaoItemCategory category);
-ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const ChaoItemCategory category);
+bool CWE_IsCustomItemSaveInfoCategory(const Sint8 category);
+ItemSaveInfoBase* CWE_GetNewItemSaveInfo(const Sint8 category);

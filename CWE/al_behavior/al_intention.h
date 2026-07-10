@@ -246,8 +246,11 @@ enum
 	INT_TIMER_BALL,
 	INT_TIMER_GOO,
 	INT_TIMER_AKUBI,
-	INT_TIMER_COCOONREACT, //why is there 128 fields, i dont know, but thanks sega
 	NB_INT_TIMER,
+};
+
+enum {
+	INT_TIMER_COCOONREACT = NB_INT_TIMER
 };
 
 Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer);

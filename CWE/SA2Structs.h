@@ -11,7 +11,7 @@ typedef NJS_VECTOR Vector3;
 
 struct taskwk;
 struct ObjectListEntry;
-struct COL;
+struct OBJ_LANDENTRY;
 struct ModelIndex;
 struct SETEntry;
 struct SETObjectData;
@@ -19,16 +19,15 @@ struct colliwk;
 struct struct_0;
 struct AnimationIndex;
 struct AnimationInfo;
-struct CollisionData;
-struct CharObj2Base;
+struct CCL_INFO;
+struct playerwk;
 struct EntityData2;
 struct LaunchConfig_vtable;
 struct CHAO_PARAM_GC;
 struct ChaoUnknownE;
 struct ChaoDebugData1;
-struct UnknownData2;
-struct ChaoData1;
-struct ObjUnknownA;
+struct MOVE_WORK;
+struct chaowk;
 struct ObjUnknownB;
 struct task;
 
@@ -37,48 +36,82 @@ typedef void(__cdecl *task_exec)(task *);
 // All structs should be packed.
 #pragma pack(push, 1)
 
+struct Angle3
+{
+	int x;
+	int y;
+	int z;
+};
 struct AllocatedMem
 {
 	int Cookie;
 	void *Data;
 };
 
-union __declspec(align(2)) Data1Ptr
-{
-	void *Undefined;
-	taskwk *Entity;
-	ChaoDebugData1 *ChaoDebug;
+struct motionwk {
+	NJS_VECTOR  spd;                /* speed                                                    */
+    NJS_VECTOR  acc;                /* acceleration                                             */ 
+    Angle3  ang_aim;            /* angle aim                                                */ 
+    Angle3  ang_spd;            /* angle speed                                              */ 
+    float         force;              /* force                                                    */ 
+    float         accel;              /* forward acceleration                                     */ 
+    float         frict;              /* friction                                                 */ 
+                          
+    union {               
+        Uint8      b[4];               /* bytes                                                    */ 
+        short     w[2];               /* words                                                    */ 
+        int     l;                  /* long                                                     */ 
+        float     f;                  /* real                                                     */ 
+        void*   ptr;                /* pointer                                                  */ 
+    }                     
+    work;                           /* inline work                                              */ 
 };
 
-union Data2Ptr
+typedef struct anywk
 {
-	void *Undefined;
-	ObjUnknownB *UnknownB;
-	EntityData2 *Entity;
-	CharObj2Base *Character;
-	UnknownData2 *Unknown_Chao;
-};
+    union
+    {
+        uint8_t   ub[16];           /* unsigned bytes                                           */
+        int8_t    sb[16];           /* signed bytes                                             */
+        uint16_t  uw[8];            /* unsigned words                                           */
+        int16_t   sw[8];            /* signed words                                             */
+        uint32_t  ul[4];            /* unsigned longs                                           */
+        int32_t   sl[4];            /* signed longs                                             */
+        float       f[4];             /* real numbers                                             */
+        void*     ptr[4];           /* pointers                                                 */
+    }
+    work;                           /* inline work                                              */
+}
+anywk;
+
+typedef struct forcewk
+{
+    void(__cdecl* call_back)(task*, taskwk*, forcewk*); /* callback                             */
+    Angle3    ang_spd;                              /* angle speed                          */
+    NJS_POINT3    pos_spd;                              /* position speed                       */
+}
+forcewk;
 
 struct task
 {
-	task *PrevObject;
-	task *NextObject;
-	task *Parent;
-	task *Child;
+	task *next;
+	task *last;
+	task *ptp;
+	task *ctp;
 	task_exec exec;
 	task_exec disp;
 	task_exec dest;
-	task_exec field_1C;
-	task_exec field_20;
-	task_exec SomethingSub;
-	task_exec field_28;
+	task_exec disp_dely;
+	task_exec disp_sort;
+	task_exec disp_late;
+	task_exec disp_last;
 	void *field_2C;
 	SETObjectData *SETData;
 	taskwk* twp;
-	UnknownData2 *EntityData2;
-	ObjUnknownA *UnknownA_ptr;
-	Data2Ptr Data2;
-	char *Name;
+	motionwk *mwp;
+	forcewk *fwp;
+	anywk* awp;
+	char *name;
 	char *NameAgain;
 	void *field_4C;
 };
@@ -91,13 +124,6 @@ struct SETObjectData
 	task *Object;
 	SETEntry *SETEntry;
 	float field_C;
-};
-
-struct Angle3
-{
-	int x;
-	int y;
-	int z;
 };
 
 struct taskwk
@@ -114,85 +140,71 @@ struct taskwk
 	colliwk *cwp;
 };
 
-struct ChaoUnknownD
-{
-	__int16 field_0;
-	unsigned __int16 Index;
-	__int16 field_4;
-	__int16 field_6;
-	int field_8;
-	int Timer;
-	int field_10;
-	int field_14;
-	int field_18;
+struct CNK_VN_VERTEX {
+	NJS_POINT3 Pos;
+	NJS_POINT3 Normal;
 };
 
-struct ChaoUnknownB
-{
-	__int16 field_0;
-	__int16 field_2;
-	__int16 field_4;
-	__int16 field_6;
-	float field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
+struct AL_MODEL {
+	int* VList;
+	__int16* PList;
+	NJS_POINT3 Center;
+	float Radius;
+	__int16 OrgTexId[4];
+	int PListSize;
+	int nbVertex;
+	CNK_VN_VERTEX* pVertex;
 };
 
-struct ChaoUnknown
-{
-	__int16 field_0;
-	__int16 field_2;
-	int field_4;
-	int field_8;
-	int field_C;
-	float field_10;
-	__int16 field_14;
-	__int16 field_16;
-	ChaoUnknownB field_18[32];
-};
+typedef struct {
+    float Spring1;
+    float Spring2;
+    float Friction1;
+    float Friction2;
+    float MaxDiff;
+    float MaxSpd;
+    float Weight1;
+    float Weight2;
+    float Weight3;
+    NJS_POINT3 Center;
+} AL_BUYO_PARAM;
 
-struct  ChaoToyChunk
+struct AL_OBJECT
 {
-	NJS_OBJECT *model;
-	NJS_TEXLIST *texlist;
-	float scale;
-	int exists;
-};
-struct ChunkObjectPointer
-{
-	NJS_OBJECT base;
-	ChunkObjectPointer* parent;
-	NJS_VECTOR differenceOrigOther;
-	int field_44;
-	int field_48;
-	int field_4C;
-	NJS_VECTOR originalPosition;
-	NJS_VECTOR field_5C;
-	float field_68;
-	int field_6C;
-	int field_70;
-	int field_74;
-	int field_78;
-	int field_7C;
-	int field_80;
-	int field_84;
-	int field_88;
-	int field_8C;
-	int field_90;
-	NJS_OBJECT *animalPart;
-	ChaoToyChunk toy;
-	int useTransform;
-	NJS_VECTOR position;
-	Angle3 rotation;
-	NJS_MATRIX_PTR Matrix;
-	NJS_VECTOR *field_C8;
-	int field_CC;
+	Uint32 EvalFlags;
+	AL_MODEL *pModel;
+	Float Pos[3];
+	Angle Ang[3];
+	Float Scl[3];
+	struct AL_OBJECT *pChild;
+	struct AL_OBJECT *pSibling;
+	struct AL_OBJECT* pParent;
+	NJS_POINT3 diff;
+	NJS_POINT3 GlobalAimPos;
+	NJS_POINT3 OrgPos;
+	NJS_VECTOR Velo;
+	NJS_POINT3 OrgAng;
+    NJS_POINT3 AngSpd;
+	float Weight;
+    float Spring;
+    float Friction;
+    int32_t NoBuyoFlag;
+    int32_t CalcBuyoPosFlag;
+	NJS_CNK_OBJECT *pPartsObject;
+	NJS_CNK_OBJECT* pItemObject;
+	NJS_TEXLIST* pItemTexlist;
+    float ItemScale;
+    int32_t ItemActiveFlag;
+	int ItemOffsetFlag;
+	NJS_POINT3 ItemOffsetPos;
+	Angle3 ItemOffsetAng;
+	NJS_MATRIX* pOldMatrix;
+	AL_BUYO_PARAM* pBuyoParam;
+    void* DisplayList;
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ChaoFacialData
+struct __declspec(align(4)) AL_FACE_CTRL
 {
 	int EyeTimer;
 	__int16 EyeColorNum;
@@ -206,8 +218,8 @@ struct __declspec(align(4)) ChaoFacialData
 	float EyeSclX;
 	float EyeSclY;
 	unsigned int Flag;
-	NJS_OBJECT* pEyeObject[2];
-	NJS_OBJECT* pMouthObject;
+	AL_OBJECT* pEyeObject[2];
+	AL_OBJECT* pMouthObject;
 	int EyeLidBlinkMode;
 	int EyeLidBlinkTimer;
 	int EyeLidBlinkAng;
@@ -248,41 +260,31 @@ struct MOTION_TABLE
 	float spd;
 };
 
+#pragma pack(push, 4)
+typedef struct {
+    uint16_t    mode;
+    float         frame;
+    float         start;
+    float         end;
+    float         spd;
+    NJS_MOTION* pMotion;
+} MOTION_INFO;
+#pragma pack(pop)
+
 #pragma pack(push, 8)
-struct __declspec(align(4)) MotionTableData
+struct __declspec(align(4)) MOTION_CTRL
 {
 	short flag;
-	__int16 gap2;
-	int AnimID;
-	int TransitionToID;
-	float frameIncreaseSpeed_;
-	float someSpeedThing;
-	float dword14;
-	__int16 SomeFlagThingInEntry2;
-	__int16 field_1A;
-	float frame;
-	float StartFrame2;
-	float EndFrame2;
-	float PlaySpeed2;
-	NJS_MOTION *LastNJS_Motion;
-	short SomeFlagThingInEntry;
-	__int16 field_32;
-	float StartFrame;
-	float StartFrame_;
-	float EndFrame;
-	float PlaySpeed;
-	NJS_MOTION *NJS_MOTION;
-	MOTION_TABLE *PointerToAnimations;
+	__int16 posture;
+	int curr_num;
+	int next_num;
+	float multi_spd;
+	float link_spd;
+	float ratio;
+	MOTION_INFO minfo[2];
+	MOTION_TABLE *table;
 };
 #pragma pack(pop)
-
-#pragma pack(push, 8)
-struct ChaoBehaviourInfothing
-{
-	int timers[16];
-};
-#pragma pack(pop)
-
 
 #pragma pack(push, 8)
 struct __declspec(align(4)) AL_BEHAVIOR
@@ -313,7 +315,7 @@ struct __declspec(align(4)) AL_BEHAVIOR
 };
 #pragma pack(pop)
 
-struct al_entry_work
+struct ALW_ENTRY_WORK
 {
 	unsigned __int16 category;
 	unsigned __int16 num;
@@ -330,33 +332,8 @@ struct al_entry_work
 	__int16 command_value;
 	int state;
 	task* tp;
-	al_entry_work* pCommu;
-	al_entry_work* pLockOn;
-};
-
-
-struct ChaoSomeUnknownA
-{
-	__int16 index;
-	__int16 index2;
-	__int16 ID;
-	__int16 someFlag;
-	int saveData;
-	int field_C;
-	NJS_VECTOR locationVector;
-	int field_1C;
-	int field_20;
-	int field_24;
-	float field_28;
-	float field_2C;
-	float playerDistance;
-	__int16 setSomeIndex;
-	__int16 field_36;
-	__int16 field_38;
-	__int16 field_3A;
-	task* pointerToOwner;
-	ChaoSomeUnknownA* heldBy;
-	ChaoSomeUnknownA* field_44;
+	ALW_ENTRY_WORK* pCommu;
+	ALW_ENTRY_WORK* pLockOn;
 };
 
 #pragma pack(push, 8)
@@ -367,19 +344,7 @@ struct __declspec(align(4)) al_perception_link
 	int InSightFlag;
 	int HearFlag;
 	int SmellFlag;
-	al_entry_work* pEntry;
-};
-#pragma pack(pop)
-
-
-#pragma pack(push, 8)
-struct __declspec(align(4)) ChaoObjectListInfo
-{
-	float SightRange;
-	int SightAngle;
-	int SightAngleHalf;
-	float HearRange;
-	float SmellRange;
+	ALW_ENTRY_WORK* pEntry;
 };
 #pragma pack(pop)
 
@@ -396,58 +361,97 @@ struct __declspec(align(4)) AL_PERCEPTION_INFO
 };
 #pragma pack(pop)
 
-#pragma pack(push, 8)
-struct __declspec(align(4)) ChaoData1
-{
-	taskwk entity;
-	int gap_30;
-	int gap_34;
-	task* task_ptr1;
-	task *task_ptr1_notreally;
-	task* task_ptr2;
-	task *task_ptr2_notreally;
-	char field_54[12];
-	int field_60;
-	int field_58;
-	CHAO_PARAM_GC *pParamGC;
-	char field_70[40];
-	int field_88;
-	int field_8C;
-	char field_90[16];
-	int field_B0;
-	__int16 field_B4;
-	__int16 field_A6;
-	float waypointID;
-	MotionTableData MotionTable;
-	MotionTableData field_F8;
-	char gap144[112];
-	AL_BEHAVIOR Behavior;
-	int field_4BC[21];
-	ChunkObjectPointer* field_510;
-	ChunkObjectPointer* field_524[40];
-	int field_5B4;
-	ChaoUnknownE *unknown_e_1;
-	ChaoUnknownE *unknown_e_2;
-	NJS_VECTOR BaseTranslationPos;
-	NJS_VECTOR HeadTranslationPos;
-	NJS_VECTOR LeftHandTranslationPos;
-	NJS_VECTOR RightHandTranslationPos;
-	NJS_VECTOR LeftLegTranslationPos;
-	NJS_VECTOR RightLegTranslationPos;
-	NJS_VECTOR NoseTranslationPos;
-	NJS_VECTOR NoseUnitTransPortion;
-	NJS_VECTOR LeftEyeTranslationPos;
-	NJS_VECTOR LeftEyeUnitTransPortion;
-	NJS_VECTOR RightEyeTranslationPos;
-	NJS_VECTOR RightEyeUnitTransPortion;
-	NJS_OBJECT* pLeftHandItemObject;
+typedef struct AL_PERCEPTION {
+    float SightRange;
+    int SightAngle;
+    int SightAngleHalf;
+    float HearRange;
+    float SmellRange;
+    AL_PERCEPTION_INFO Player;
+    AL_PERCEPTION_INFO Chao;
+    AL_PERCEPTION_INFO Fruit;
+    AL_PERCEPTION_INFO Tree;
+    AL_PERCEPTION_INFO Toy;
+    AL_PERCEPTION_INFO Sound;
+} AL_PERCEPTION;
+
+#pragma pack(push, 4)
+typedef struct {
+    uint16_t  Flag;
+    uint16_t  CurrNum;
+    float       Ratio;
+    NJS_LINE  Plane;
+} AL_ZONE;
+
+typedef struct {
+    uint16_t Mode;
+    uint16_t TexNum;
+    uint16_t Timer;
+    NJS_POINT3 Offset;
+    NJS_POINT3 Pos;
+    NJS_POINT3 Velo;
+    NJS_POINT3 Scl;
+    NJS_POINT3 SclSpd;
+} AL_ICON_INFO;
+
+typedef struct {
+    int16_t CurrType;
+    int16_t NextType;
+    int32_t Timer;
+    int32_t NextTimer;
+    int32_t PuniPhase;
+    int32_t PosPhase;
+    uint32_t Color;
+    uint16_t TexAnimNum;
+    uint16_t TexAnimTimer;
+    int32_t ang;
+    NJS_POINT3 Up;
+    NJS_POINT3 Pos;
+    AL_ICON_INFO Upper;
+    AL_ICON_INFO Lower;
+} AL_ICON;
+#pragma pack(pop)
+
+typedef struct al_group_object_list {
+    NJS_CNK_OBJECT* child[40];
+    NJS_CNK_OBJECT* normal[40];
+    NJS_CNK_OBJECT* swim[40];
+    NJS_CNK_OBJECT* fly[40];
+    NJS_CNK_OBJECT* run[40];
+    NJS_CNK_OBJECT* power[40];
+} AL_GROUP_OBJECT_LIST;
+
+typedef struct AL_SHAPE {
+	AL_OBJECT* pObject;
+	AL_OBJECT* CurrObjectList[40];
+
+	AL_GROUP_OBJECT_LIST* pObjectList;
+    AL_GROUP_OBJECT_LIST* pObjectListH;
+    AL_GROUP_OBJECT_LIST* pObjectListD;
+
+	NJS_POINT3 BodyPos;
+	NJS_POINT3 HeadPos;
+	NJS_POINT3 LeftHandPos;
+	NJS_POINT3 RightHandPos;
+	NJS_POINT3 LeftFootPos;
+    NJS_POINT3 RightFootPos;
+    NJS_POINT3 MouthPos;
+    NJS_VECTOR MouthVec;
+    NJS_VECTOR LeftEyePos;
+    NJS_VECTOR LeftEyeVec;
+    NJS_VECTOR RightEyePos;
+    NJS_VECTOR RightEyeVec;
+
+	NJS_CNK_OBJECT* pLeftHandItemObject;
 	NJS_TEXLIST* pLeftHandItemTexlist;
 	float LeftHandItemScale;
 	float LeftHandItemActiveFlag;
-	NJS_OBJECT* pRightHandItemObject;
+
+	NJS_CNK_OBJECT* pRightHandItemObject;
 	NJS_TEXLIST* pRightHandItemTexlist;
 	float RightHandItemScale;
 	float RightHandItemActiveFlag;
+
 	unsigned __int16* palette;
 	unsigned __int16 Flag;
 	__int16 ColorNum;
@@ -456,33 +460,60 @@ struct __declspec(align(4)) ChaoData1
 	float SclH;
 	float SclV;
 	float CamDist;
-	ChaoFacialData Face;
-	char gap6EC[194];
-	__int16 field_7AE;
-	float waypointLerpFactor;
-	NJS_VECTOR field_7B4;
-	NJS_VECTOR field_7C0;
-	ChaoObjectListInfo ObjectListInfo;
-	AL_PERCEPTION_INFO PlayerObjects;
-	AL_PERCEPTION_INFO ChaoObjects;
-	AL_PERCEPTION_INFO FruitObjects;
-	AL_PERCEPTION_INFO TreeObjects;
-	AL_PERCEPTION_INFO ToyObjects;
-	char ObjectListEnd[924];
-	size_t LocalCharacterChaoType;
-	bool IsCustomChaoTypeLoaded;
-	unsigned char AnimRandomized;
-	unsigned char ExtraSound;
+} AL_SHAPE;
 
-	char AccessoryCalculatedID[4][21];
-	Uint32 AccessoryIndices[4];
+typedef struct {
+    uint8_t  Exp[8];
+    uint8_t  Abl[8];
+    uint8_t  Lev[8];
+    uint16_t Skills[8];
+} TMP_PARAM;
 
-	bool JiggleFlagChanged;
-	bool BaldHideHead;
-	Uint16* pBaldAdjacencyIndices;
-	size_t BaldAdjacencyIndexCount;
+#pragma pack(push, 8)
+struct __declspec(align(4)) chaowk
+{
+	char mode;
+	char smode;
+	char id;
+	char btimer;
+	__int16 flag;
+	__int16 wtimer;
+	Angle3 ang;
+	NJS_POINT3 pos;
+	NJS_VECTOR scl;
+	colliwk *cwp;
 
-	void* BhvUserData[16];
+	int Timer;
+	task* pMayu;
+	task* pBooktask;
+	Bool NestFlag;
+	task* pAnytask;
+	task *pAimtask;
+	int32_t AimNum;
+    int32_t RememberNum;
+    int32_t pitch;
+	float ClimbFirstPos;
+	int field_58;
+	CHAO_PARAM_GC *pParamGC;
+	TMP_PARAM tmpParam;
+	int Stamina;
+	int AimStamina;
+	task* tp;
+    Angle pre_ang[3];
+	int ChaoFlag;
+	Uint16 ColliFormat;
+	float CurrZone;
+	MOTION_CTRL MotionCtrl;
+	MOTION_CTRL MiniMotionCtrl;
+	MOTION_TABLE MiniMotionTable[4];
+	AL_BEHAVIOR Behavior;
+	int field_4BC[21];
+	AL_SHAPE Shape;
+	AL_FACE_CTRL Face;
+	AL_ICON Icon;
+	AL_ZONE Zone;
+	AL_PERCEPTION Perception;
+	void* pWork;
 };
 #pragma pack(pop)
 
@@ -494,70 +525,55 @@ struct UnknownData2_B
 	NJS_VECTOR field_14;
 };
 
-struct UnknownData2
-{
-	NJS_VECTOR velocity;
-	NJS_VECTOR speed;
-	char gap18[4];
-	int field_1C;
-	char gap20[8];
-	int field_28;
-	int field_2C;
-	int field_30;
-	int field_34;
-	char gap38[4];
-	int field_3C;
-	__int16 field_40;
-	__int16 Index;
-	char gap44[4];
-	float gravity;
-	int gap_4C;
-	int field_50;
-	NJS_VECTOR Waypoint;
-	NJS_VECTOR some_vector;
-	char gap6C[4];
-	float field_70;
-	char gap74[28];
-	float field_90;
-	float field_94;
-	float field_98;
-	float field_9C;
-	float field_A0;
-	float field_A4;
-	float field_A8;
-	float field_AC;
-	char gapB0[4];
-	float field_B4;
-	float field_B8;
-	float field_BC;
-	float field_C0;
-	float field_C4;
-	float field_C8;
-	float field_CC;
-	float field_D0;
-	char gapD4[4];
-	float field_D8;
-	float field_DC;
-	NJS_VECTOR field_E0;
-	UnknownData2_B WeirdStructures[12];
-};
+typedef struct {
+    int32_t findflag;
+    int32_t objatt;
+    Angle angx;
+    Angle angz;
+    float onpos;
+    NJS_POINT3 normal;
+} xssunit;
 
-struct ObjUnknownA
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	int field_C;
-	int field_10;
-	int field_14;
-	int field_18;
-	int field_1C;
-	int field_20;
-	float field_24;
-	float field_28;
-	float field_2C;
-	int field_30;
-	int field_34;
+typedef struct {
+    NJS_POINT3 pos;
+    xssunit hit[6];
+    xssunit pre_hit[6];
+} XYZ_SHADOW_WORK;
+
+struct MOVE_WORK {
+	NJS_VECTOR Velo;
+	NJS_VECTOR Acc;
+	Angle3 AimAng;
+    Angle3 RotSpd;
+	int unk;
+	float rad;
+	float height;
+	float weight;
+	Uint16 Flag;
+	Uint16 Timer;
+	float Spd;
+	float Gravity;
+	int ViewAngle;
+	float ViewRange;
+	NJS_POINT3 AimPos;
+	NJS_POINT3 PrePos;
+	NJS_POINT3 HomePos;
+	Angle3 HomeAng;
+    Angle3 Phase;
+	NJS_LINE FrontWall;
+	NJS_POINT3 Offset;
+	float Top;
+	float Side;
+	float Bottom;
+	float CliffHeight;
+	float BoundSide;
+	float BoundFloor;
+	float BoundCeiling;
+	float BoundFriction;
+	float TopY;
+	float BottomY;
+	float WaterY;
+	XYZ_SHADOW_WORK Shadow;
 };
 
 struct ObjUnknownB
@@ -570,7 +586,7 @@ struct ObjUnknownB
 
 struct EntityData2
 {
-	CharObj2Base *CharacterData;
+	playerwk *CharacterData;
 	int field_4;
 	int field_8;
 	int field_C;
@@ -594,7 +610,7 @@ struct PhysicsData
 	float anonymous_0;
 	float HSpeedCap;
 	float VSpeedCap;
-	float BaseSpeed;
+	float max_x_spd;
 	float anonymous_4;
 	float InitialJumpSpeed;
 	float anonymous_6;
@@ -607,10 +623,10 @@ struct PhysicsData
 	float JumpHoldSpeed;
 	float GroundAccel;
 	float AirAccel;
-	float GroundDecel;
-	float BrakeSpeed;
-	float AirBrakeSpeed;
-	float AirDecel;
+	float slow_down;
+	float run_break;
+	float air_break;
+	float air_resist_air;
 	float anonymous_20;
 	float anonymous_21;
 	float anonymous_22;
@@ -651,16 +667,16 @@ struct CharAnimInfo
 	NJS_MOTION *motion;
 };
 
-struct CharObj2Base
+struct playerwk
 {
 	char PlayerNum;
 	char CharID;
 	char Costume;
-	char CharID2;
+	char character;
 	char ActionWindowItems[8];
 	char ActionWindowItemCount;
 	char field_D[3];
-	__int16 Powerups;
+	__int16 item;
 	int field_12;
 	__int16 UnderwaterTime;
 	__int16 IdleTime;
@@ -672,12 +688,12 @@ struct CharObj2Base
 	int field_4C[6];
 	NJS_VECTOR Speed;
 	char gap_70[36];
-	task *HeldObject;
+	task *htp;
 	char gap_98[4];
 	task *HoldTarget;
 	char gap_A0[28];
 	NJS_MOTION **Animation;
-	PhysicsData PhysData;
+	PhysicsData p;
 	int field_144[12];
 	CharAnimInfo AnimInfo;
 	int field_1A0[7];
@@ -699,10 +715,10 @@ struct colliwk
 	__int16 field_2;
 	uint16_t flag;
 	uint16_t nbInfo;
-	float field_8;
-	CollisionData *CollisionArray;
+	float colli_range;
+	CCL_INFO *info;
 	uint8_t f10[140];
-	task *Object;
+	task *mytask;
 	__int16 field_A0;
 	__int16 field_A2;
 	int field_A4;
@@ -748,7 +764,7 @@ struct AL_GENE
 	char NonTex[2];
 	char Jewel[2];
 	char Multi[2];
-	char Negative[2];
+	char EyePos[2];
 	char EyeScl[2];
 	char EyeRatio[2];
 	char EyeColor[2];
@@ -757,51 +773,17 @@ struct AL_GENE
 
 struct  AL_EMOTION
 {
-	__int16 field_124;
-	__int16 Category1Timer;
-	__int16 SicknessTimer;
-	__int16 Category2Timer;
-	char Joy;
-	Uint8 Anger;
-	Uint8 UrgeToCry;
-	char Fear;
-	Uint8 Surprise;
-	Uint8 Dizziness;
-	char Relax;
-	char Total;
-	__int16 Sleepiness;
-	__int16 Tiredness;
-	__int16 Hunger;
-	__int16 MateDesire;
-	__int16 Boredom;
-	__int16 Lonely;
-	__int16 Tire;
-	__int16 Stress;
-	__int16 Nourish;
-	__int16 Conditn;
-	__int16 Energy;
-	char Normal_Curiosity;
-	char Kindness;
-	char CryBaby_Energetic;
-	char Naive_Normal;
-	char Solitude;
-	char Vitality;
-	char Glutton;
-	char Regain;
-	char Skillful;
-	char Charm;
-	char Chatty;
-	char Normal_Carefree;
-	char Fickle;
-	char FavoriteFruit;
-	char field_34;
-	char field_35;
-	char CoughLevel;
-	char ColdLevel;
-	char RashLevel;
-	char RunnyNoseLevel;
-	char HiccupsLevel;
-	char StomachAcheLevel;
+	Uint16 Flag;
+	Uint16 MoodTimer;
+	Uint16 IllTimer;
+	Uint16 Timer;
+	Uint8 Mood[8];
+    Uint16 State[11];
+    Sint8 Personality[13];
+	char Taste;
+	char Tv;
+	char Music;
+	Sint8 IllState[6];
 };
 
 
@@ -824,7 +806,7 @@ struct AL_KNOWLEDGE_OTHER
 {
 	char like;
 };
-struct AL_KNOWLEDGE
+struct AL_KNOWLEDGE_BTL
 {
 	char ArtFlag;
 	char DanceFlag;
@@ -858,44 +840,115 @@ struct AL_KNOWLEDGE_DX
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) KarateOpponent
+struct __declspec(align(4)) AL_SHAPE_ELEMENT
 {
-	ChaoType ChaoType;
-	char EyeType;
-	char MouthType;
-	char BallType;
-	char Headgear;
-	char HideFeet;
-	char Medal;
-	char Color;
-	char Monotone;
-	char Texture;
-	char Shiny;
-	SA2BAnimal SA2BArmType;
-	SA2BAnimal SA2BEarType;
-	SA2BAnimal SA2BForeheadType;
-	SA2BAnimal SA2BHornType;
-	SA2BAnimal SA2BLegType;
-	SA2BAnimal SA2BTailType;
-	SA2BAnimal SA2BWingType;
-	SA2BAnimal SA2BFaceType;
-	char f13;
-	__int16 PowerRun;
-	__int16 FlySwim;
-	__int16 Alignment;
-	__int16 Magnitude;
-	char Name[7]; //name?
-	char unusedPossibly;
-	__int16 StatPoints[8];
+	Uint8 type;
+	Uint8 DefaultEyeNum;
+	Uint8 DefaultMouthNum;
+	Uint8 HonbuNum;
+	Uint8 ObakeHead;
+	Uint8 ObakeBody;
+	Uint8 MedalNum;
+	Uint8 ColorNum;
+	Uint8 NonTex;
+	Uint8 JewelNum;
+	Uint8 MultiNum;
+	Sint8 MinimalParts[8];
+	Sint16 HPos;
+	Sint16 VPos;
+	Sint16 APos;
+	Sint16 Growth;
+	Sint8 name[8];
+	Uint16 Skill[8];
 };
 #pragma pack(pop)
 
+struct CCL_HIT_INFO {
+	char my_num;
+	char hit_num;
+	unsigned __int16 flag;
+	task* hit_tp;
+};
+
+static_assert(sizeof(AL_SHAPE_ELEMENT) == 0x34);
+static_assert(offsetof(AL_SHAPE_ELEMENT, MultiNum) == 0xA);
+static_assert(offsetof(AL_SHAPE_ELEMENT, HPos) == 0x14);
+
+typedef struct
+{
+    float       HPos;            // Run : Power Align
+    float       VPos;            // Swim : Fly Align
+    float       APos;            // Dark : Hero Align
+    float       AimHPos;        // Last Run : Power
+    float       AimVPos;        // Last Swim : Fly
+    float       AimAPos;        // Last Alignment
+    float       growth;        // Magitude
+    float       EyePos;
+    float       EyeScl;
+    float       EyeRatio;
+    uint8_t EyeColor;
+    uint8_t DefaultEyeNum;
+    uint8_t DefaultMouthNum;
+    uint8_t HonbuNum;        // Icon kind
+    uint8_t HonbuColorNum;    // Inert
+    uint8_t ObakeHead;        // Hat / Mask
+    uint8_t ObakeBody;        // Hide Feet
+    uint8_t MedalNum;
+    uint8_t ColorNum;
+    uint8_t NonTex;            // isMonotone
+    uint8_t JewelNum;
+    uint8_t MultiNum;        // Shiny
+    int8_t EggColor;
+    uint8_t FormNum;
+    uint8_t FormSubNum;        // Animal
+    uint8_t UNDEF0;
+}
+AL_BODY_INFO;
+
+typedef struct
+{
+    AL_TIME PersonalRecord[10];
+    uint8_t nbWin[10];
+    uint16_t MedalFlag;
+}
+AL_RACE_PERSONAL_INFO;
+
+typedef struct
+{
+    uint8_t rank;
+    uint8_t level;
+    uint8_t tournament;
+    uint8_t UNDEF0;
+    uint16_t nbBattle;
+    uint16_t nbWin;
+    uint16_t nbLose;
+    uint16_t nbDraw;
+}
+AL_KARATE_PERSONAL_INFO;
+
+#pragma pack(push, 8)
+struct ITEM_SAVE_INFO
+{
+	__int16 kind;
+	__int16 place;
+	__int16 status;
+	__int16 nbVisit;
+	NJS_VECTOR pos;
+};
+#pragma pack(pop)
 
 struct CHAO_PARAM_GC
 {
-	char gap_0[18];
+	uint8_t GBAChao;
+    uint8_t GBAEgg;
+    uint8_t GBABerry[8];
+    uint8_t padding0;
+    uint8_t padding1;
+    uint32_t GBARing;                // Rings moving from GBA -> GCN
+    uint8_t BootMethed;
+    uint8_t Birthplace;
 	char name[7];
-	char field_19;
+	char GBAType;
 	char GBATexture;
 	char field_1B[5];
 	Uint8 Exp[8];
@@ -906,10 +959,11 @@ struct CHAO_PARAM_GC
 	char rmsg[16];
 	unsigned int runaway;
 	char dummy[4];
-	ChaoType type;
+	Uint8 type;
 	char place;
 	__int16 like;
-	__int16 InKindergarten;
+	Sint8 ClassNum;
+	Sint8 _pad_;
 	__int16 age;
 	__int16 old;
 	__int16 life;
@@ -917,46 +971,18 @@ struct CHAO_PARAM_GC
 	__int16 nbSucceed;
 	CHAO_ID ChaoID;
 	int LifeTimer;
-	float PowerRun;
-	float FlySwim;
-	float Alignment;
-	int field_B4;
-	int field_B8;
-	float LastLifeAlignment;
-	float EvolutionProgress;
-	char gap_C4[13];
-	char EyeType;
-	char MouthType;
-	char BallType;
-	char gap_D4[1];
-	Uint8 Headgear;
-	char HideFeet;
-	char Medal;
-	unsigned char Color;
-	char MonotoneHighlights;
-	char Texture;
-	char Shiny;
-	char EggColor;
-	SADXBodyType BodyType;
-	char BodyTypeAnimal;
-	char field_DF[41];
-	__int16 DoctorMedal;
-	char KarateInfo;
-	char field_10A[13];
+	AL_BODY_INFO body;
+	AL_RACE_PERSONAL_INFO race;
+	AL_KARATE_PERSONAL_INFO karate;
+	char field_10A[2];
 	AL_PARTS PartsBTL;
-	AL_EMOTION Emotion;
-	AL_KNOWLEDGE Knowledge;
-	AL_GENE Gene;
+	AL_EMOTION emotion;
+	AL_KNOWLEDGE_BTL knowledge;
+	AL_GENE gene;
 	int IsInitializedDX;
 	AL_PARTS partsDX;
 	char paddingRaceDX[16];//AL_RACE_PERSONAL_INFO_DX raceDX;
 	AL_KNOWLEDGE_DX knowledgeDX;
-
-};
-
-struct ChaoUnknownE
-{
-	char pad[960];
 };
 
 struct AnimationInfo
@@ -969,24 +995,25 @@ struct AnimationInfo
 	float AnimationSpeed;
 };
 
-struct CollisionData
-{
-	__int16 field_0;
-	__int16 field_2;
-	int field_4;
-	NJS_VECTOR some_vector;
-	float anonymous_1;
-	float anonymous_2;
-	float anonymous_3;
-	int field_20;
-	int field_24;
-	int field_28;
-	int field_2C;
+struct CCL_INFO {
+	char kind;
+	char form;
+	char push;
+	char damage;
+	int attr;
+	NJS_POINT3 center;
+	float a;
+	float b;
+	float c;
+	float d;
+	int angx;
+	int angy;
+	int angz;
 };
 
 struct SonicCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[428];
 	__int16 SpindashCounter;
 	char field_36A[42];
@@ -998,7 +1025,7 @@ struct SonicCharObj2
 struct ModelIndex
 {
 	int Index;
-	NJS_OBJECT *Model;
+	NJS_CNK_OBJECT *Model;
 };
 
 struct AnimationIndex
@@ -1016,7 +1043,7 @@ struct ObjectListHead
 
 struct ObjectListEntry
 {
-	LoadObj LoadFlags;
+	Uint8 LoadFlags;
 	char List;
 	__int16 ObjectFlags;
 	float DistanceMaybe;
@@ -1038,29 +1065,31 @@ struct LevelItemData
 };
 
 
-struct LandTable
+struct OBJ_LANDTABLE
 {
-	__int16 COLCount;
-	__int16 ChunkModelCount;
-	__int16 field_4;
-	__int16 field_6;
-	__int16 field_8;
-	__int16 field_A;
-	float field_C;
-	COL *COLList;
+	__int16 ssCount;
+	__int16 ssDispCount;
+	__int16 ssDirectDispCount;
+	__int16 ssMotCount;
+	__int16 ssAttribute;
+	__int16 ssLoadFlag;
+	float fFarClipping;
+	OBJ_LANDENTRY *pLandEntry;
 	float *field_14;
-	char *TextureName;
-	NJS_TEXLIST *TextureList;
+	char *pPvmFileName;
+	NJS_TEXLIST *pTexList;
 };
 
-struct COL
+struct OBJ_LANDENTRY
 {
-	NJS_VECTOR Center;
-	float Radius;
-	NJS_OBJECT *Model;
+	float xCenter;
+	float yCenter;
+	float zCenter;
+	float radius;
+	NJS_CNK_OBJECT *pObject;
 	int field_14;
-	int field_18;
-	int Flags;
+	int blockbit;
+	int slAttribute;
 };
 
 struct StartPosition
@@ -1082,20 +1111,6 @@ struct LevelHeader
 	void(__cdecl *Init)();
 	void *anonymous_2;
 	task_exec subprgmanager;
-};
-
-struct ChaoItemStats
-{
-	__int16 Mood;
-	__int16 Belly;
-	__int16 Swim;
-	__int16 Fly;
-	__int16 Run;
-	__int16 Power;
-	__int16 Stamina;
-	__int16 Luck;
-	__int16 Intelligence;
-	__int16 anonymous_7;
 };
 
 struct LevelCutscene
@@ -1136,7 +1151,7 @@ struct ChaoFriendshipEntry
 
 struct CHAO_SAVE_INFO
 {
-	CHAO_PARAM_GC data;
+	CHAO_PARAM_GC param;
 	
 	char Padding2[0x800 - sizeof(CHAO_PARAM_GC)]; //remaining empty space th
 };
@@ -1204,10 +1219,10 @@ struct LevelRankTimes
 	MinSec ARank;
 };
 
-struct BlackMarketItem
+struct SAlItem
 {
-	ChaoItemCategory Category;
-	Sint8 Type;
+	Sint8 mCategory;
+	Sint8 mId;
 };
 
 struct LevelEndPosition
@@ -1240,7 +1255,7 @@ struct CharacterVoiceBank
 struct DeathZone
 {
 	int Flags;
-	NJS_OBJECT *Model;
+	NJS_CNK_OBJECT *Model;
 };
 
 struct AnalogThing
@@ -1277,7 +1292,7 @@ struct EmeManThing
 
 struct KnucklesCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[564];
 	NJS_TEXLIST *TextureList;
 	NJS_TEXLIST *EffectTextureList;
@@ -1288,7 +1303,7 @@ struct KnucklesCharObj2
 
 struct EggmanCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[420];
 	NJS_TEXLIST *TextureList;
 	ModelIndex *ModelList;
@@ -1297,7 +1312,7 @@ struct EggmanCharObj2
 
 struct MechEggmanCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[128];
 	float field_23C;
 	char field_240[4];
@@ -1356,7 +1371,7 @@ struct MechEggmanCharObj2
 
 struct TailsCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[500];
 	NJS_TEXLIST *TextureList;
 	ModelIndex *ModelList;
@@ -1366,7 +1381,7 @@ struct TailsCharObj2
 
 struct SuperSonicCharObj2
 {
-	CharObj2Base base;
+	playerwk base;
 	char field_1BC[436];
 	NJS_TEXLIST *TextureList;
 	ModelIndex *ModelList;
@@ -1432,7 +1447,7 @@ struct EventFileHeader
 	void *field_10;
 	void *field_14;
 	void *field_18;
-	NJS_OBJECT **field_1C;
+	NJS_CNK_OBJECT **field_1C;
 	void *field_20;
 	void *field_24;
 	int field_28;
@@ -1632,7 +1647,7 @@ struct AL_MinimalExecutor_Data1
 	taskwk entity;
 	int field_30;
 	int field_34;
-	MotionTableData field_38;
+	MOTION_CTRL field_38;
 	MotionTableAction field_84;
 	MotionTableAction field_A0;
 	MotionTableAction field_BC;
@@ -1664,6 +1679,82 @@ struct CharSelectThing
 };
 
 
+#pragma pack(push, 8)
+struct RaceTimeData
+{
+	int set;
+	AL_SHAPE_ELEMENT Data;
+};
+#pragma pack(pop)
+
+
+#pragma pack(push, 8)
+struct RaceData
+{
+	char UnlockedRaces[6];
+	char field_6[15];
+	char field_15[11];
+	RaceTimeData RaceTimeData[10];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 8)
+struct __declspec(align(4)) BlackMarketSaveData
+{
+	char gap0[28];
+	int dword1C;
+	int ItemCount;
+	int dword24;
+	SAlItem Items[20];
+	int field_50;
+	int field_54;
+	int field_58;
+	int field_5C;
+	int field_60;
+	int field_64;
+	__int16 field_68;
+	__int16 word6A;
+	__int16 word6C;
+	__int16 word6E;
+	__int16 word70;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 8)
+struct TreeData
+{
+	char treeType;
+	unsigned __int8 lifeTimeStatus;
+	unsigned __int8 growth;
+	unsigned __int8 lifeSpanMaybe;
+	char fruitSize1;
+	char FruitSize2;
+	char fruitSize3;
+	char rotation;
+};
+#pragma pack(pop)
+
+struct CHAO_GARDEN_INFO
+{
+	int ChaoSaveStart;
+	int unk_1;
+	int Seed;
+	int flag;
+	int ToyGetFlag;
+	int timer;
+	int nbVisit;
+	int nbBorn;
+	TreeData tree[3][7];
+	ITEM_SAVE_INFO fruit[40];
+	ITEM_SAVE_INFO seed[12];
+	ITEM_SAVE_INFO mask[24];
+	ITEM_SAVE_INFO minimal[10];
+	RaceData race;
+	char field_9D0[32];
+	BlackMarketSaveData BlackMarketData;
+	CHAO_SAVE_INFO chao[24];
+	int Checksum[2];
+};
 
 struct MenuData
 {
@@ -1688,17 +1779,6 @@ struct al_confirmload_data2
 	char *data_ptr;
 	uint32_t dword1C;
 	uint32_t dword20;
-};
-
-struct AL_GBAManagerExecutor_Data
-{
-	int field_0;
-	int field_4;
-	int field_8;
-	task *ObjectPtr;
-	char field_10[4228];
-	char gap_1094[12691];
-	char field_4227;
 };
 
 struct ChaoEggData

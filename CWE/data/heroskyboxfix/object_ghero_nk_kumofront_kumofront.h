@@ -146,4 +146,4 @@ SA2B_GeometryData tpoly_00010A20[] = {	{ parameter_000108BC, 10, primitive_00010
 
 SA2B_Model attach_00010A40 = { vertex_0001087C, 0, NULL, tpoly_00010A20, 0, LengthOfArray<Uint16>(tpoly_00010A20), { 0, -203.5f, 0 }, 1090.5111f };
 
-NJS_OBJECT object_ghero_nk_kumofront_kumofront = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK, &attach_00010A40, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT object_ghero_nk_kumofront_kumofront = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK, (NJS_CNK_MODEL*)&attach_00010A40, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };

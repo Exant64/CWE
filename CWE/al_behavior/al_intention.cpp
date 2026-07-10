@@ -78,14 +78,14 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 		BHV_FUNC func = AL_GetBehavior(pChao);
 
 		//not in water 
-		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < ((MOVE_WORK*)pChao->mwp)->WaterY) continue;
 
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_TalkAllowed); j++)
 		{
 			if (func == ALBHV_TalkAllowed[j])
 			{
-				float dist = CheckDistance(&wk->entity.pos, &pChao->twp->pos);
+				float dist = njDistanceP2P(&wk->pos, &pChao->twp->pos);
 				if (dist < 50.0f && njRandom() < 0.5f)
 					pSelectedChao = pChao;
 				break;
@@ -126,8 +126,8 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 			int nbTimesTheyMet = AL_KW_GetMeetChao(a1, pSelectedChao);
 			if (njRandom() > 0.75f && nbTimesTheyMet >= 10) {
 				//easter egg, unlock pearl medal if other chao is pearl, found by chao professor
-				if (GET_CHAOPARAM(pSelectedChao)->Texture == 12)
-					GET_CHAOPARAM(a1)->DoctorMedal |= (1 << 10);
+				if (GET_CHAOPARAM(pSelectedChao)->body.JewelNum == 12)
+					GET_CHAOPARAM(a1)->race.MedalFlag |= (1 << 10);
 
 				if(njRandom() > 0.5f)
 					AL_SetBehavior(a1, ALBHV_InitHug);
@@ -157,9 +157,9 @@ void sub_562800(float* a1, task* a2)
 
 signed int __cdecl ALBHV_FartReaction(task* a1)
 {
-	ChaoData1* v2;
+	chaowk* v2;
 
-	v2 = (ChaoData1*)GET_CHAOWK(a1);
+	v2 = GET_CHAOWK(a1);
 	if (!v2->Behavior.Mode)
 	{
 		AL_SetMotionLink(a1, 565);
@@ -201,14 +201,12 @@ void AL_CalcIntentionScore_Mayua(task* a2, float* a1) {
 }
 void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 {
-	if (ALO_Field_Find_(a1, 1, 151))
-	{
+	if (AL_IsHitKindWithNum(a1, 1, CI_KIND_AL_ONARA)) {
 		AL_SetBehavior(a1, ALBHV_FartReaction);
 		*a2 = 1;
 	}
 
-	if (GET_CWEPARAM(a1)->ForceReincarnate)
-	{
+	if (GET_CWEPARAM(a1)->ForceReincarnate) {
 		AL_SetBehavior(a1, (BHV_FUNC)0x0568F60);
 		*a2 = 1.0f;
 	}

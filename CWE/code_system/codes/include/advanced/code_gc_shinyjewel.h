@@ -25,10 +25,10 @@ const std::unordered_map<Uint8, Uint8> pcToGc = {
 };
 
 void GCShinyJewel::OnChaoData(CHAO_PARAM_GC& chao) {
-	if (chao.Texture < 1) return;
-	if (!chao.Shiny) return;
-	if (chao.Color >= 16) return; //already transformed probably
+	if (chao.body.JewelNum < 1) return;
+	if (!chao.body.MultiNum) return;
+	if (chao.body.ColorNum >= 16) return; //already transformed probably
 
-	if (pcToGc.count(chao.Color)) 
-		chao.Color = pcToGc.at(chao.Color);
+	if (pcToGc.count(chao.body.ColorNum)) 
+		chao.body.ColorNum = pcToGc.at(chao.body.ColorNum);
 }

@@ -20,8 +20,8 @@
 DataPointer(CHAO_SAVE_INFO*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
 FunctionPointer(void, sub_782780, (int a1, int a2, float a3), 0x782780);
-DataArray(NJS_OBJECT*, dword_171A240, 0x171A240, 4);
-DataArray(NJS_OBJECT*, off_12E537C, 0x12E537C, 7);
+DataArray(NJS_CNK_OBJECT*, dword_171A240, 0x171A240, 4);
+DataArray(NJS_CNK_OBJECT*, off_12E537C, 0x12E537C, 7);
 
 const int sub_42D690Ptr = 0x42D690;
 void sub_42D690(int a1)
@@ -35,17 +35,19 @@ void sub_42D690(int a1)
 
 void __cdecl sub_58F980(task* a1)
 {
+	DataPointer(NJS_TEXLIST, CHAOSDRIVE_TEXLIST, 0x1717DAC);
+
 	signed int v1; // ebp
 	float a3; // ST20_4
-	Data2Ptr v9; // edx
+	void* v9; // edx
 
-	v9.Undefined = (void*)a1->Data2.Undefined;
-	if (*((char*)v9.Undefined + 40))
+	v9 = (void*)a1->awp;
+	if (*((char*)v9 + 40))
 	{
 		v1 = AL_GetHoldingItemKind();
 
 		njPushMatrixEx();
-		a3 = *((float*)v9.Undefined + 11) + 3.284631013870239f;
+		a3 = *((float*)v9 + 11) + 3.284631013870239f;
 		njTranslate(NULL, 0.34388199f, a3, -2.164542f);
 		switch (AL_GetHoldingItemCategory())
 		{
@@ -55,18 +57,18 @@ void __cdecl sub_58F980(task* a1)
 				njScale(NULL, 1.2f, 1.2f, 1.2f);
 				njTranslate(NULL, 0.0f, flt_B18F54, 0.0f);
 				njSetTexture(&CHAOSDRIVE_TEXLIST);
-				njCnkDrawObject((NJS_OBJECT*)dword_171A240[v1]);
+				njCnkDrawObject((NJS_CNK_OBJECT*)dword_171A240[v1]);
 			}
 			else
 			{
 				njSetTexture(ModAPI_MinimalTexlists[v1]);
-				char* v5 = (char*)v9.Undefined;
+				char* v5 = (char*)v9;
 				sub_782780((int)ModAPI_MinimalModels[v1], (int)ModAPI_MinimalMotion0[v1], *(float*)(v5 + 52));
 			}
 			break;
 		case 3:
 			njTranslate(NULL, 0.0f, 1.3f, 0.0f);
-			ObjectRegistry::DrawObject<njCnkDrawObject>(ChaoItemCategory_Fruit, v1);
+			ObjectRegistry::DrawObject<njCnkDrawObject>(ALW_CATEGORY_FRUIT, v1);
 			break;
 		case 7:
 			njSetTexture(ModAPI_SeedTexlists[v1]);
@@ -101,9 +103,9 @@ __int16 word_8A2754[] = { 3464, 2824, 3464, 3464, 2824, 3464, 2184, 3464, 1544, 
 
 //                             E    D       C    B      A        S         X 
 int GradePurchasePrice[] = { 10000,20000,30000,40000, 9999999,9999999 ,9999999 };
-ChaoHudThing plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4096,0, 4096 };
+SAlgKinderOrthoQuad plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4096,0, 4096 };
 
-int UpgradeButtons[] = { Buttons_Up, Buttons_Down, Buttons_Right, Buttons_Left, Buttons_L};
+int UpgradeButtons[] = { BTN_UP, BTN_DOWN, BTN_RIGHT, BTN_LEFT, BTN_L};
 
 const int SE_Call_TIMERPtr = 0x04374D0;
 void SE_Call_TIMER(int a1, int a2, char a3, char a4, __int16 a5)
@@ -144,19 +146,19 @@ void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float Tex
 		add esp, 20
 	}
 }
-bool CanStatBeUpgraded(ChaoData1* data1, int stat)
+bool CanStatBeUpgraded(chaowk* data1, int stat)
 {
 	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
 		data1->pParamGC->Lev[stat] == 99 &&
 		data1->pParamGC->Abl[stat] < ChaoGrade_A &&
-		TotalRings >= GradePurchasePrice[data1->pParamGC->Abl[stat]])
+		gu32TotalRing >= GradePurchasePrice[data1->pParamGC->Abl[stat]])
 	{
 		return true;
 	}
 
 	return false;
 }
-bool CanChaoUpgrade(ChaoData1* data1)
+bool CanChaoUpgrade(chaowk* data1)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -167,7 +169,7 @@ bool CanChaoUpgrade(ChaoData1* data1)
 	}
 	return false;
 }
-void PurchaseGradesCode(ChaoData1* data1)
+void PurchaseGradesCode(chaowk* data1)
 {
 	char buff[256];
 	
@@ -177,7 +179,7 @@ void PurchaseGradesCode(ChaoData1* data1)
 	{
 		if (CanChaoUpgrade(data1)) 
 		{
-			if (MenuButtons_Held[0] & Buttons_Y)
+			if (SWDATA[0] & BTN_Y)
 				sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
 			else
 				sprintf(buff, "Hold Y to Upgrade");
@@ -198,13 +200,13 @@ void PurchaseGradesCode(ChaoData1* data1)
 	sub_583C60();
 	njSetTexture(&CWE_UI_TEXLIST);
 	njSetTextureNum(25, 0, 0, 0);
-	if (MenuButtons_Held[0] & Buttons_Y)
+	if (SWDATA[0] & BTN_Y)
 	{
 		for (int i = 0; i < 5; i++)
 		{
 			if (CanStatBeUpgraded(data1, i))
 			{
-				if (MenuButtons_Pressed[0] & UpgradeButtons[i])
+				if (SWDATAE[0] & UpgradeButtons[i])
 				{
 					data1->pParamGC->Lev[i] = 1;
 					data1->pParamGC->Skill[i] /= 100;
@@ -212,12 +214,12 @@ void PurchaseGradesCode(ChaoData1* data1)
 					SE_Call_TIMER(0x8004, 0x616C7277, 1, 0, 120);
 					SE_Call_TIMER(0x1005, 0x616C7277, 1, 0, 120);
 
-					TotalRings -= GradePurchasePrice[data1->pParamGC->Abl[i]];
+					gu32TotalRing -= GradePurchasePrice[data1->pParamGC->Abl[i]];
 					data1->pParamGC->Abl[i]++;
 				}
 				plusHUD.y0 = 32 * i + 262;
 				plusHUD.y1 = 32 * i + 282;
-				DrawChaoHudThing(&plusHUD, -1);
+				AlgKinderOrthoQuadDraw(&plusHUD, -1);
 			}
 
 		}
@@ -441,7 +443,7 @@ void ConvertName(char* original_, char* output)
 	buffer[7] = 0;
 
 	sub_57A6F0(buffer, wcbuffer);
-	WcConvFromCStr((int)output, (int)wcbuffer, TextLanguage == 0);
+	WcConvFromCStr((int)output, (int)wcbuffer, Language == 0);
 }
 
 task* pMother = 0;
@@ -463,7 +465,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 	njSetTextureNum(7, 0, 0, 0);
 	for (size_t i = 0; i < LengthOfArray(HealthCenter_DNAMenu); i++)
-		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu[i], -1);
+		AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&HealthCenter_DNAMenu[i], -1);
 
 	if (!noMother && !noFather) {
 		auto pParam = GET_CWEPARAM(a1->medicalChartChao_);
@@ -476,7 +478,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 		ConvertName(pParam->FGroundFatherName, fgfName);
 
 		for (size_t i = 0; i < LengthOfArray(HealthCenter_DNAMenu2); i++)
-			DrawChaoHudThing((ChaoHudThing*)&HealthCenter_DNAMenu2[i], -1);
+			AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&HealthCenter_DNAMenu2[i], -1);
 
 		DrawMedicalChartText("Parents", 444, 83.5f, 999, 20.0f, 5);
 
@@ -524,11 +526,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 
 		if (!noMother)
 		{
-			njPushMatrixEx();
-			memset(_nj_current_matrix_ptr_, 0, 0x30u);
-			*_nj_current_matrix_ptr_ = 1.0;
-			_nj_current_matrix_ptr_[5] = 1.0;
-			_nj_current_matrix_ptr_[10] = 1.0;
+			njPushUnitMatrix();
 			ProjectToScreen(388 - 50, 232.0 + OFFSET_ALL - 6, -23.0f);
 			njRotateY(NULL, -0xE000);
 			pDisplaySub(pMother);
@@ -538,11 +536,7 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 
 		if (!noFather)
 		{
-			njPushMatrixEx();
-			memset(_nj_current_matrix_ptr_, 0, 0x30u);
-			*_nj_current_matrix_ptr_ = 1.0;
-			_nj_current_matrix_ptr_[5] = 1.0;
-			_nj_current_matrix_ptr_[10] = 1.0;
+			njPushUnitMatrix();
 			ProjectToScreen(548, 232.0 + OFFSET_ALL - 6, -23.0f);
 			njRotateY(NULL, 0xE000);
 			pDisplaySub(pFather);
@@ -562,16 +556,16 @@ void HealthCenterDNAMenu(HealthCenter* a1)
 int FriendsSelection = 0;
 void HealthCenterFriendsMenu(HealthCenter* a1)
 {
-	if (FriendsSelection > 0 && MenuButtons_Pressed[0] & Buttons_Left)
+	if (FriendsSelection > 0 && SWDATAE[0] & BTN_LEFT)
 		FriendsSelection--;
-	if (FriendsSelection < AL_KW_GetFriendCount(a1->medicalChartChao_) && MenuButtons_Pressed[0] & Buttons_Right)
+	if (FriendsSelection < AL_KW_GetFriendCount(a1->medicalChartChao_) && SWDATAE[0] & BTN_RIGHT)
 		FriendsSelection++;
 
 	sub_583C60();
 	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 	njSetTextureNum(7, 0, 0, 0);
 	for (size_t i = 0; i < LengthOfArray(HealthCenter_FriendMenu); i++)
-		DrawChaoHudThing((ChaoHudThing*)&HealthCenter_FriendMenu[i], -1);
+		AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&HealthCenter_FriendMenu[i], -1);
 	DrawMedicalChartText("Friends", 444, 83.5f, 999, 20.0f, 5);
 	char friendCountStr[8];
 	sprintf_s(friendCountStr, "(%d/%d)", FriendsSelection + 1, AL_KW_GetFriendCount(a1->medicalChartChao_));
@@ -617,26 +611,26 @@ DataArray(char, byte_8A274C, 0x008A274C, 8);
 
 void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 {
-	if (MenuButtons_Pressed[0] & Buttons_Up)
+	if (SWDATAE[0] & BTN_UP)
 		isInDNAMenu = 0;
-	else if (MenuButtons_Pressed[0] & Buttons_Down)
+	else if (SWDATAE[0] & BTN_DOWN)
 		isInDNAMenu = 1;
-	//if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(MenuButtons_Held[0] & Buttons_Y) && MenuButtons_Held[0] & Buttons_Up)
+	//if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(MenuButtons_Held[0] & BTN_Y) && MenuButtons_Held[0] & BTN_UP)
 		//TextLocation->medicalChartMenu = 4;
-	if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(MenuButtons_Held[0] & Buttons_Y) && MenuButtons_Held[0] & Buttons_Down)
+	if (TextLocation->openedMedicalChart && TextLocation->medicalChartMenu == 0 && !(SWDATA[0] & BTN_Y) && SWDATA[0] & BTN_DOWN)
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup < 0) {
-			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType;
-			GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType = (SADXBodyType)9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
+			bodyTypeBackup = GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = 9; //setting it to a bodytype that doesnt exist makes the switch case in the chao draw code quit
 		}
 		if (!pMother)
 		{
 			noMother = false;
 			noFather = false;
 			CHAO_PARAM_GC* data = nullptr;
-			KarateOpponent* opponentPtr = nullptr;
+			AL_SHAPE_ELEMENT* opponentPtr = nullptr;
 
-			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID.id[0] == 0;
+			noMother = GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.MotherID.id[0] == 0;
 			if (noMother)
 			{
 				data = nullptr;
@@ -645,7 +639,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			else
 			{
 				opponentPtr = nullptr;
-				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.MotherID);
+				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.MotherID);
 				if (data == nullptr)
 				{
 					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->motherData;
@@ -655,19 +649,19 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			//init
 			NJS_VECTOR pos = { 0,0,0 };
 
-			pMother = CreateChao(
-				(CHAO_SAVE_INFO*)data,
+			pMother = CreateChaoExtra(
+				data,
 				1,
 				opponentPtr,
 				&pos,
 				0);
-			GET_CHAOWK(pMother)->field_B0 &= ~8u;
-			GET_CHAOWK(pMother)->field_B0 &= ~2u;
-			GET_CHAOWK(pMother)->field_B0 |= 0x2000;
-			GET_CHAOWK(pMother)->field_B0 &= ~0x10;
-			GET_CHAOWK(pMother)->field_B0 &= ~0x20000;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~8u;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~2u;
+			GET_CHAOWK(pMother)->ChaoFlag |= 0x2000;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~0x10;
+			GET_CHAOWK(pMother)->ChaoFlag &= ~0x20000;
 
-			noFather = GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID.id[0] == 0;
+			noFather = GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.FatherID.id[0] == 0;
 			if (noFather) //if id is invalid then dont do anything
 			{
 				data = nullptr;
@@ -676,7 +670,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 			else
 			{
 				opponentPtr = nullptr;
-				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->Gene.FatherID); //find current parent
+				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.FatherID); //find current parent
 				if (data == nullptr)
 				{
 					//if cant find it, use last "image" of them
@@ -684,42 +678,42 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				}
 			}
 
-			pFather = CreateChao(
-				(CHAO_SAVE_INFO*)data,
+			pFather = CreateChaoExtra(
+				data,
 				1,
 				opponentPtr,
 				&pos,
 				0);
-			GET_CHAOWK(pFather)->field_B0 &= ~8u;
-			GET_CHAOWK(pFather)->field_B0 &= ~2u;
-			GET_CHAOWK(pFather)->field_B0 |= 0x2000;
-			GET_CHAOWK(pFather)->field_B0 &= ~0x10;
-			GET_CHAOWK(pFather)->field_B0 &= ~0x20000;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~8u;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~2u;
+			GET_CHAOWK(pFather)->ChaoFlag |= 0x2000;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~0x10;
+			GET_CHAOWK(pFather)->ChaoFlag &= ~0x20000;
 
 			pDisplaySub = pMother->disp;
-			pField20Sub = pMother->field_20;
+			pField20Sub = pMother->disp_sort;
 			if (!pDisplaySub) pDisplaySub = (task_exec)nullsub_1;
 			if (!pField20Sub) pField20Sub = (task_exec)nullsub_1;
 			pMother->disp = 0;
-			pMother->field_20 = 0;
+			pMother->disp_sort = 0;
 			pFather->disp = 0;
-			pFather->field_20 = 0;
+			pFather->disp_sort = 0;
 		}
 		HealthCenterDNAMenu(TextLocation);
 	}
 	else
 	{
 		if (TextLocation->medicalChartChao && bodyTypeBackup >= 0) {
-			GET_CHAOPARAM(TextLocation->medicalChartChao)->BodyType = (SADXBodyType)bodyTypeBackup;
+			GET_CHAOPARAM(TextLocation->medicalChartChao)->body.FormNum = bodyTypeBackup;
 			bodyTypeBackup = -1;
 		}
 
 		if (pMother)
 		{
 			//deinit
-			pMother->exec = DeleteObject_;
+			pMother->exec = DestroyTask;
 			pMother = 0;
-			pFather->exec = DeleteObject_;
+			pFather->exec = DestroyTask;
 			pFather = 0;
 		}
 
@@ -736,8 +730,8 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		{
 			if (TextLocation->field_8)
 			{
-				int v11 = GET_CHAOPARAM(TextLocation->field_8)->Gene.LifeTime[1];
-				int v12 = GET_CHAOPARAM(TextLocation->field_8)->Gene.LifeTime[0];
+				int v11 = GET_CHAOPARAM(TextLocation->field_8)->gene.LifeTime[1];
+				int v12 = GET_CHAOPARAM(TextLocation->field_8)->gene.LifeTime[0];
 				if ((unsigned __int8)v12 < v11)
 				{
 					v12 = v11;
@@ -750,7 +744,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				njSetTextureNum(7, 0, 0, 0);
 
 				{
-					ChaoHudThing gradeElem;
+					SAlgKinderOrthoQuad gradeElem;
 					gradeElem.x0 = 558;
 					gradeElem.x1 = 578;
 					for (int i = 0; i < 5; i++)
@@ -780,17 +774,17 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 						}
 						gradeElem.y0 = 32 * i + 262;
 						gradeElem.y1 = 32 * i + 282;
-						DrawChaoHudThing(&gradeElem, -1);       // grades	
+						AlgKinderOrthoQuadDraw(&gradeElem, -1);       // grades	
 					}
 				}
 				sub_583C60();
 				njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 				njSetTextureNum(7, 0, 0, 0);
-				DrawChaoHudThing((ChaoHudThing*)&bar1, -1);
-				DrawChaoHudThing((ChaoHudThing*)&bar2, -1);
+				AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&bar1, -1);
+				AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&bar2, -1);
 
-				DataArray(ChaoHudThingB, stru_13128B0, 0x13128B0, 10);
-				ChaoHudThingB lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
+				DataArray(CHS_BILL_INFO, stru_13128B0, 0x13128B0, 10);
+				CHS_BILL_INFO lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
 				//ChaoHudThing lifespan = { {0x132, (264 + 32 * 5.25f)}, {}, {0,0}, {4096, 4096} };
 				sub_536770(
 					(Uint32)((GET_CHAOPARAM(TextLocation->field_8)->life / 3900.0f) * 1000),
@@ -801,18 +795,18 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 					1.0f
 				);
 				sub_5369F0(GET_CHAOPARAM(TextLocation->field_8)->life, 476, (264 + 32 * 5), 1.0f);
-				DrawChaoHudThingB(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
-				
-				SetChaoHUDThingBColor(1, 0.72f, 1, 0);
-				if(v12 >= 0 && v12 < 10) {
-					DrawChaoHudThingB(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
-				}
+				chDrawBillboardSR(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
+				chSetBillboardColor(1, 0.72f, 1, 0);
+        
+        if(v12 >= 0 && v12 < 10) {
+				  chDrawBillboardSR(&stru_13128B0[v12], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
+        }
 			}
 		}
 	}
 	if (TextLocation->medicalChartMenu == 4)
 	{
-		if (MenuButtons_Pressed[0] & Buttons_Down)
+		if (SWDATAE[0] & BTN_DOWN)
 			TextLocation->medicalChartMenu = 0;
 		HealthCenterFriendsMenu(TextLocation);
 	}
@@ -861,28 +855,28 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 {
 	if (a1->openedMedicalChart)
 	{
-		if (!(a1->medicalChartMenu == 0 && MenuButtons_Held[0] & Buttons_Y)) 
+		if (!(a1->medicalChartMenu == 0 && SWDATA[0] & BTN_Y)) 
 		{
-			if ((ControllerPointers[0]->press & Buttons_L) != 0 || (MenuButtons_Pressed[0] & 0x40) != 0)
+			if ((per[0]->press & BTN_L) != 0 || (SWDATAE[0] & 0x40) != 0)
 			{
 				if (--a1->medicalChartMenu < 0)
 				{
 					a1->medicalChartMenu = 2;
 				}
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(0x8000, 0, 0, 0);
 			}
-			if ((ControllerPointers[0]->press & (Buttons_R | Buttons_A)) != 0 || ControllerPointers[0]->press & 0x80)
+			if ((per[0]->press & (BTN_R | BTN_A)) != 0 || per[0]->press & 0x80)
 			{
 				if (++a1->medicalChartMenu == 3)
 				{
 					a1->medicalChartMenu = 0;
 				}
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(0x8000, 0, 0, 0);
 			}
-			if ((ControllerPointers[0]->press & 0x402) != 0)
+			if ((per[0]->press & 0x402) != 0)
 			{
 				sub_58DB30((int)a1);
-				PlaySoundProbably(0x100A, 0, 0, 0);
+				SE_Call(0x100A, 0, 0, 0);
 			}
 		}
 		a1->field_16 += 16;
@@ -899,7 +893,7 @@ void __fastcall InitDoctorHook(HealthCenter* a1, int a2)
 void __fastcall AL_HealthCenter_SetMessageStr(HealthCenter* a1, const char* a2)
 {
 	*(uint32_t*)0x01A267D0 = 0xFFFFFFFF;
-	AlMsgWinAddLineC(a1->pkindercomessagething3C, a2, TextLanguage == 0);
+	AlMsgWinAddLineC(a1->pkindercomessagething3C, a2, Language == 0);
 }
 signed int AL_HealthCenter_GetSickness(task* a1)
 {
@@ -907,9 +901,9 @@ signed int AL_HealthCenter_GetSickness(task* a1)
 	int v2; // eax
 	signed int result; // eax
 
-	v1 = &GET_CHAOPARAM(a1)->Emotion;
+	v1 = &GET_CHAOPARAM(a1)->emotion;
 	v2 = 0;
-	while (*(&v1->CoughLevel + v2) >= 0)
+	while (v1->IllState[v2] >= 0)
 	{
 	LABEL_4:
 		if (++v2 >= 6)
@@ -917,7 +911,7 @@ signed int AL_HealthCenter_GetSickness(task* a1)
 			return -1;
 		}
 	}
-	*(&v1->CoughLevel + v2) = 100;
+	v1->IllState[v2] = 100;
 	switch (v2)
 	{
 	case 0:
@@ -1024,7 +1018,7 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 		SETMSGVAR("Looks like Chao is in pain\nDid you hurt your Chao?            ");
 	
 	//hat
-	switch (pParam->Headgear)
+	switch (pParam->body.ObakeHead)
 	{
 	case OBAKE_HEAD_PARTS_PUMPKIN:
 		SETMSGVAR("This Chao is wearing a    \npumpkin hat. You scared me!        ");
@@ -1051,7 +1045,7 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 		SETMSGVAR("A carboard box? Don't be  \nafraid to show your face okay?     ");
 		break;
 	default:
-		if (pParam->Headgear >= OBAKE_HEAD_PARTS_EGG && pParam->Headgear <= OBAKE_HEAD_PARTS_EGG_Env2)
+		if (pParam->body.ObakeHead >= OBAKE_HEAD_PARTS_EGG && pParam->body.ObakeHead <= OBAKE_HEAD_PARTS_EGG_Env2)
 			SETMSGVAR("This chao is wearing an   \neggshell. Did it hatch properly?   ");
 
 		break;
@@ -1063,9 +1057,9 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 	else if (AL_KW_GetFriendCount(pChaoTask) > 12)
 		SETMSGVAR("This Chao is so popular.  \nThis Chao is friends with everybody");
 
-	if (pParam->BodyType == 1)
+	if (pParam->body.FormNum == 1)
 		SETMSGVAR("This is an egg....   \nWait a minute...  ");
-	else if (pParam->BodyType == 2)
+	else if (pParam->body.FormNum == 2)
 		SETMSGVAR("This is a nice Omochao.  \nThe Chao that built this did a good job.");
 
 	if (pParam->Abl[7] >= 10)

@@ -15,7 +15,7 @@ size_t RegisterAlItemString(const char* str) {
 
 void OverwriteAlItemString(size_t id, const char* str) {
 	if (id >= MsgAlItem.size()) {
-		PrintDebug("OverwriteAlItemString: invalid id %d, size of MsgAlItem is %d", id, MsgAlItem.size());
+		___OutputDebugString("OverwriteAlItemString: invalid id %d, size of MsgAlItem is %d", id, MsgAlItem.size());
 		return;
 	}
 
@@ -68,6 +68,20 @@ int* sub_57A5D0(int a1, const char* a2)
 	return result;
 }
 
+// char __usercall@<al>(_DWORD *a1@<esi>)
+static const void *const IsByteswappedPtr = (void*)0x429840;
+static inline char IsByteswapped(void *a1)
+{
+	char result;
+	__asm
+	{
+		mov esi, [a1]
+		call IsByteswappedPtr
+		mov result, al
+	}
+	return result;
+}
+
 void LoadMsgMemIntoVec(int* pFile, std::vector<const char*>& vec) {
 	if (!pFile)
 		return;
@@ -87,7 +101,7 @@ void LoadMsgMemIntoVec(int* pFile, std::vector<const char*>& vec) {
 
 void LoadMsgFileIntoVec(const char* filename, std::vector<const char*>& vec)
 {
-	int* loadedFile = sub_57A5D0(TextLanguage, filename);
+	int* loadedFile = sub_57A5D0(Language, filename);
 	LoadMsgMemIntoVec(loadedFile, vec);
 	//FREE(loadedFile);
 }

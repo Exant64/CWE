@@ -8,8 +8,10 @@ int Regs[16];
 
 void ChaoWorldExtendedRequired()
 {
+	CHAO_SAVE_INFO* ChaoSlots = GardenInfoList[0].chao;
+	
 	//fix this later to not be 24 for future proofing (function from symbols that "return 24")
-	if (CurrentLevel == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
+	if (ssStageNumber == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
 		for (int i = 0; i < 24; i++) {
 			//REMOVED: shiny fruit value for FCE hack (FCE is not very common anymore)
 
@@ -100,12 +102,12 @@ void ChaoWorldExtendedRequired()
 			}
 
 			//x rank reincarnation stat cap
-			if (ChaoSlots[i].data.type == 1) //if chao is egg
+			if (ChaoSlots[i].param.type == 1) //if chao is egg
 			{
 				GET_CWEPARAM(&ChaoSlots[i])->XGradeValue = 0;
 
 				int cap;
-				switch (ChaoSlots[i].data.nbSucceed) {
+				switch (ChaoSlots[i].param.nbSucceed) {
 				case 0:
 					cap = 0;
 					break;
@@ -122,37 +124,9 @@ void ChaoWorldExtendedRequired()
 
 				if (cap > 0) {
 					for (int j = 0; j < 4; j++) {
-						if (ChaoSlots[i].data.Skill[j] > cap)
-							ChaoSlots[i].data.Skill[j] = cap;
+						if (ChaoSlots[i].param.Skill[j] > cap)
+							ChaoSlots[i].param.Skill[j] = cap;
 					}
-				}
-			}
-
-			//cap emotions (im guessing emotions that get edited by lst)
-			if (ChaoSlots[i].data.Emotion.Dizziness > 200)
-			{
-				ChaoSlots[i].data.Emotion.Dizziness = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.Surprise > 200)
-			{
-				ChaoSlots[i].data.Emotion.Surprise = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.UrgeToCry > 200)
-			{
-				ChaoSlots[i].data.Emotion.UrgeToCry = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.Anger > 200)
-			{
-				ChaoSlots[i].data.Emotion.Anger = 200;
-			}
-
-			//swim points
-			if (gConfigVal.EnergyCap && ChaoSlots[i].data.Skill[0] <= 99)
-			{
-				//cap energy at 5000 if the chao cant swim yet
-				if (ChaoSlots[i].data.Emotion.Energy > 5000)
-				{
-					ChaoSlots[i].data.Emotion.Energy = 5000;
 				}
 			}
 		}
@@ -218,7 +192,7 @@ void ChaoWorldExtendedRequired()
 	//more inventory safe guard crap
 	bool saveFull = true;
 	for (int i = 0; i < 24; i++) {
-		if (ChaoSlots[i].data.type == 0)
+		if (ChaoSlots[i].param.type == 0)
 			saveFull = false;
 	}
 	if (saveFull) {
@@ -1202,9 +1176,9 @@ void ChaoWorldExtendedRequired()
 	}
 
 	//invincibility on maincharobj if chao world 
-	if (CurrentLevel == 90 && MainCharObj2[0])
+	if (ssStageNumber == 90 && playerpwp[0])
 	{
-		MainCharObj2[0]->Powerups = 1;
+		playerpwp[0]->item = 1;
 	}
 
 	//REMOVED: that weird Y pos check thing

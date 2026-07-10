@@ -43,7 +43,7 @@ DataPointer(task*, pKinderChao, 0x01AED248);
 static bool IsValidRoom(int room) {
 	if (!pKinderChao) return true;
 
-	if (GET_CHAOPARAM(pKinderChao)->field_19 == 1 && room == 4)
+	if (GET_CHAOPARAM(pKinderChao)->GBAType == 1 && room == 4)
 		return false;
 
 	return true;
@@ -55,7 +55,7 @@ void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 {
 	if (pCoData->enteringRoom == 6)
 		AlMsgFontCreateCStr(
-			TextLanguage == 0,
+			Language == 0,
 			(int)"Credits",
 			(int)pCoData->dword1C,
 			640);
@@ -68,7 +68,7 @@ void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 		sprintf(BlockedString, "%s %s", titleString, suffix);
 
 		AlMsgFontCreateCStr(
-			TextLanguage == 0,
+			Language == 0,
 			(int)BlockedString,
 			(int)pCoData->dword1C,
 			640);
@@ -167,7 +167,7 @@ static void __declspec(naked) CorridorText2Hook()
 DataArray(task*, doorObjectArray, 0x01A27850, 6);
 void __cdecl EnteringRoom(al_stg_kinder_co_data* pCoData, int room) {
 	pCoData->enteringRoom = room;
-	if (IsValidRoom(room) && ControllerPointers[0]->press & (Buttons_A | Buttons_B))
+	if (IsValidRoom(room) && per[0]->press & (BTN_A | BTN_B))
 	{
 		*(char*)0x0174AFFE = 0;
 		*(char*)0x0174AFD6 = 1;

@@ -4,26 +4,43 @@
 #include <unordered_map>
 #include <FunctionHook.h>
 
-#define ALW_ENTRY_WORK(tp) ((al_entry_work*)tp->UnknownA_ptr)
+enum {
+	CWE_ALW_CATEGORY_ACCESSORY,
+	NB_CWE_ALW_CATEGORY
+};
 
-al_entry_work* __cdecl ALW_IsCommunication(task* a1)
+ALW_ENTRY_WORK* __cdecl ALW_IsCommunication(task* a1)
 {
-	al_entry_work* v1; // ecx
-	al_entry_work* result; // eax
+	ALW_ENTRY_WORK* v1; // ecx
+	ALW_ENTRY_WORK* result; // eax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	if (!v1 || (result = v1->pCommu) == 0 || result->pCommu != v1)// check if interactingPtr is > 0 and not set to itself
 	{
 		result = 0;
 	}
 	return result;
 }
+
+ALW_ENTRY_WORK* ALW_IsCommunicationEx(task* tp, Uint16 category) {
+    ALW_ENTRY_WORK* pEntry = GET_ALW_ENTRY_WORK(tp);
+    if (pEntry) {
+        ALW_ENTRY_WORK* pCommu = pEntry->pCommu;
+        if (pCommu) {
+            if (pCommu->pCommu == pEntry && pCommu->category == category)
+                return pCommu;
+        }
+    }
+
+    return NULL;
+}
+
 __int16 __cdecl ALW_RecieveCommand(task* a1)
 {
-	al_entry_work* v1; // ecx
+	ALW_ENTRY_WORK* v1; // ecx
 	__int16 result; // ax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	result = 0;
 	if (v1)
 	{
@@ -34,11 +51,11 @@ __int16 __cdecl ALW_RecieveCommand(task* a1)
 }
 task* __cdecl ALW_GetLockOnTask(task* a1)
 {
-	al_entry_work* v1; // eax
-	al_entry_work* v2; // eax
+	ALW_ENTRY_WORK* v1; // eax
+	ALW_ENTRY_WORK* v2; // eax
 	task* result; // eax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	if (!v1 || (v2 = v1->pLockOn) == 0 || (result = v2->tp) == 0)
 	{
 		result = 0;
@@ -47,7 +64,7 @@ task* __cdecl ALW_GetLockOnTask(task* a1)
 }
 signed int __cdecl ALW_SendCommand(task* a1, __int16 a2)
 {
-	al_entry_work* v2; // eax
+	ALW_ENTRY_WORK* v2; // eax
 
 	v2 = ALW_IsCommunication(a1);
 	if (!v2)
@@ -70,10 +87,10 @@ void ALW_CommunicationOff(task* a1)
 
 void* __cdecl AL_GetItemSaveInfo(task* a1)
 {
-	al_entry_work* v1; // eax
+	ALW_ENTRY_WORK* v1; // eax
 	void* result; // eax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	if (v1)
 	{
 		result = v1->pSaveInfo;
@@ -86,9 +103,9 @@ void* __cdecl AL_GetItemSaveInfo(task* a1)
 }
 void __cdecl AL_ClearItemSaveInfoPtr(task* a1)
 {
-	al_entry_work* v1; // eax
+	ALW_ENTRY_WORK* v1; // eax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	if (v1)
 	{
 		v1->pSaveInfo = 0;
@@ -97,19 +114,19 @@ void __cdecl AL_ClearItemSaveInfoPtr(task* a1)
 
 bool __cdecl ALW_IsHeld(task* a1)
 {
-	al_entry_work* v1; // eax
+	ALW_ENTRY_WORK* v1; // eax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	return v1 && v1->flag & 2;
 }
 
 signed int __cdecl ALW_LockOn(task* a1, task* a2)
 {
-	al_entry_work* v2; // eax
-	al_entry_work* v3; // ecx
+	ALW_ENTRY_WORK* v2; // eax
+	ALW_ENTRY_WORK* v3; // ecx
 
-	v2 = (al_entry_work*)a1->UnknownA_ptr;
-	v3 = (al_entry_work*)a2->UnknownA_ptr;
+	v2 = (ALW_ENTRY_WORK*)a1->fwp;
+	v3 = (ALW_ENTRY_WORK*)a2->fwp;
 	if (!v2 || !v3)
 	{
 		return 0;
@@ -147,8 +164,8 @@ void ALW_CommunicationOn(task* a1, task* a2)
 Bool ALW_AttentionOn(task* tp1, task* tp2) {
 	static int CommuID = 0;
 
-    al_entry_work* pEntry1 = ALW_ENTRY_WORK(tp1);
-    al_entry_work* pEntry2 = ALW_ENTRY_WORK(tp2);
+    ALW_ENTRY_WORK* pEntry1 = GET_ALW_ENTRY_WORK(tp1);
+    ALW_ENTRY_WORK* pEntry2 = GET_ALW_ENTRY_WORK(tp2);
     if (pEntry1 && pEntry2) {
         pEntry1->pCommu = pEntry2;
         pEntry1->CommuID = CommuID;
@@ -162,12 +179,12 @@ Bool ALW_AttentionOn(task* tp1, task* tp2) {
     return FALSE;
 }
 
-al_entry_work* __cdecl ALW_IsCommunicating(task* a1)
+ALW_ENTRY_WORK* __cdecl ALW_IsCommunicating(task* a1)
 {
-	al_entry_work* v1; // ecx
-	al_entry_work* result; // eax
+	ALW_ENTRY_WORK* v1; // ecx
+	ALW_ENTRY_WORK* result; // eax
 
-	v1 = (al_entry_work*)a1->UnknownA_ptr;
+	v1 = (ALW_ENTRY_WORK*)a1->fwp;
 	if (!v1 || (result = v1->pCommu) == 0 || result->pCommu != v1)// check if interactingPtr is > 0 and not set to itself
 	{
 		result = 0;
@@ -181,15 +198,15 @@ int __cdecl ALW_CountEntry(unsigned __int16 index)
 }
 al_perception_link* __cdecl AL_GetFoundTree(task* a1)
 {
-	ChaoData1* v1; // ecx
+	chaowk* v1; // ecx
 	int v2; // edx
 	AL_PERCEPTION_INFO* v3; // ecx
 	al_perception_link* result; // eax
 	__int16 v5; // dx
 
 	v1 = GET_CHAOWK(a1);
-	v2 = v1->TreeObjects.InSightFlag;
-	v3 = &v1->TreeObjects;
+	v2 = v1->Perception.Tree.InSightFlag;
+	v3 = &v1->Perception.Tree;
 	result = 0;
 	if (v2)
 	{
@@ -203,18 +220,18 @@ al_perception_link* __cdecl AL_GetFoundTree(task* a1)
 }
 bool __cdecl ALW_IsSheAttentionOtherOne(task* a1, task* a2)
 {
-	al_entry_work* v2; // eax
-	al_entry_work* v3; // eax
+	ALW_ENTRY_WORK* v2; // eax
+	ALW_ENTRY_WORK* v3; // eax
 	bool result; // eax
 
-	v2 = (al_entry_work*)a2->UnknownA_ptr;
+	v2 = (ALW_ENTRY_WORK*)a2->fwp;
 	result = 0;
 	if (v2)
 	{
 		v3 = v2->pCommu;
 		if (v3)
 		{
-			if (v3 != (al_entry_work*)a1->UnknownA_ptr)
+			if (v3 != (ALW_ENTRY_WORK*)a1->fwp)
 			{
 				result = 1;
 			}
@@ -223,8 +240,8 @@ bool __cdecl ALW_IsSheAttentionOtherOne(task* a1, task* a2)
 	return result;
 }
 
-al_entry_work* ALW_IsAttention(task* tp) {
-    al_entry_work* pEntry = ALW_ENTRY_WORK(tp);
+ALW_ENTRY_WORK* ALW_IsAttention(task* tp) {
+    ALW_ENTRY_WORK* pEntry = GET_ALW_ENTRY_WORK(tp);
 
     if (pEntry) {
         return pEntry->pCommu;
@@ -234,7 +251,7 @@ al_entry_work* ALW_IsAttention(task* tp) {
 }
 
 Bool ALW_SetHeldOffset(task* tp, float offset) {
-	al_entry_work* pEntry = ALW_ENTRY_WORK(tp);
+	ALW_ENTRY_WORK* pEntry = GET_ALW_ENTRY_WORK(tp);
 
 	if (pEntry) {
 		pEntry->offset = offset;
@@ -245,7 +262,7 @@ Bool ALW_SetHeldOffset(task* tp, float offset) {
 }
 
 Bool ALW_SetHeldRadius(task* tp, float radius) {
-	al_entry_work* pEntry = ALW_ENTRY_WORK(tp);
+	ALW_ENTRY_WORK* pEntry = GET_ALW_ENTRY_WORK(tp);
 
 	if (pEntry) {
 		pEntry->radius = radius;
@@ -262,15 +279,15 @@ bool ALW_LockOnPickedUp(task* a1)
 
 al_perception_link* __cdecl GetToyObjects(task* a1)
 {
-	ChaoData1* v1; // ecx
+	chaowk* v1; // ecx
 	int v2; // edx
 	AL_PERCEPTION_INFO* v3; // ecx
 	al_perception_link* result; // eax
 	__int16 v5; // dx
 
 	v1 = GET_CHAOWK(a1);
-	v2 = v1->ToyObjects.InSightFlag;
-	v3 = &v1->ToyObjects;
+	v2 = v1->Perception.Toy.InSightFlag;
+	v3 = &v1->Perception.Toy;
 	result = 0;
 	if (v2)
 	{
@@ -285,7 +302,7 @@ al_perception_link* __cdecl GetToyObjects(task* a1)
 task* __cdecl AL_GetFoundToyTask(task* a1)
 {
 	al_perception_link* v1; // eax
-	al_entry_work* v2; // eax
+	ALW_ENTRY_WORK* v2; // eax
 	task* result; // eax
 
 	v1 = GetToyObjects(a1);
@@ -312,13 +329,13 @@ task* GetChaoObject(int a1, int a2)
 
 #define NB_MAX_WORLD_ENTRY 64
 int nbWorldEntry[NB_CWE_ALW_CATEGORY] = { 0 };
-al_entry_work WorldEntryList[NB_CWE_ALW_CATEGORY][NB_MAX_WORLD_ENTRY];
+ALW_ENTRY_WORK WorldEntryList[NB_CWE_ALW_CATEGORY][NB_MAX_WORLD_ENTRY];
 
-static const std::unordered_map<ChaoItemCategory, size_t> MapRealCategoryToCWEWorld = {
-	{ChaoItemCategory_Accessory, CWE_ALW_CATEGORY_ACCESSORY}
+static const std::unordered_map<Sint8, size_t> MapRealCategoryToCWEWorld = {
+	{ALW_CATEGORY_ACCESSORY, CWE_ALW_CATEGORY_ACCESSORY}
 };
 
-Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSaveInfo) {
+Bool CWE_ALW_Entry(Sint8 category, task* tp, Uint16 kind, void* pSaveInfo) {
 	if (!MapRealCategoryToCWEWorld.contains(category)) {
 		return FALSE;
 	}
@@ -334,7 +351,7 @@ Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSave
 			WorldEntryList[categoryIndex][i].category = category;
 
 			nbWorldEntry[categoryIndex]++;
-			tp->UnknownA_ptr = (ObjUnknownA*) & WorldEntryList[categoryIndex][i];
+			tp->fwp = (forcewk*)&WorldEntryList[categoryIndex][i];
 
 			return TRUE;
 		}
@@ -345,7 +362,7 @@ Bool CWE_ALW_Entry(ChaoItemCategory category, task* tp, Uint16 kind, void* pSave
 	return FALSE;
 }
 
-void ALW_ResetEntry(al_entry_work* pEntry) {
+void ALW_ResetEntry(ALW_ENTRY_WORK* pEntry) {
 	if (!pEntry)
 		return;
 
@@ -362,7 +379,7 @@ void ALW_ResetEntry(al_entry_work* pEntry) {
 	pEntry->pSaveInfo = 0;
 }
 
-int CWE_ALW_CountEntry(ChaoItemCategory category) {
+int CWE_ALW_CountEntry(Sint8 category) {
 	if (!MapRealCategoryToCWEWorld.contains(category)) {
 		return NULL;
 	}
@@ -372,7 +389,7 @@ int CWE_ALW_CountEntry(ChaoItemCategory category) {
 	return nbWorldEntry[categoryIndex];
 }
 
-task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count) {
+task* CWE_ALW_GetTaskCount(Sint8 category, Uint16 count) {
 	if (!MapRealCategoryToCWEWorld.contains(category)) {
 		return NULL;
 	}
@@ -398,7 +415,7 @@ task* CWE_ALW_GetTaskCount(ChaoItemCategory category, Uint16 count) {
 }
 
 Bool CWE_ALW_CancelEntry(task* tp) {
-	auto* pEntry = ALW_ENTRY_WORK(tp);
+	auto* pEntry = GET_ALW_ENTRY_WORK(tp);
 
 	if (!pEntry) return FALSE;
 
@@ -407,7 +424,7 @@ Bool CWE_ALW_CancelEntry(task* tp) {
 	task* pBackup = pEntry->tp;
 	pEntry->tp = NULL;
 
-	ALO_Delete(tp);
+	ALW_CancelEntry(tp);
 
 	pEntry->tp = pBackup;
 
@@ -428,7 +445,7 @@ void CWE_ALW_ClearEntry(void) {
 		nbWorldEntry[i] = 0;
 
 		for (j = 0; j < NB_MAX_WORLD_ENTRY; j++) {
-			al_entry_work* pEntry = &WorldEntryList[i][j];
+			ALW_ENTRY_WORK* pEntry = &WorldEntryList[i][j];
 			pEntry->category = i;
 			pEntry->num = j;
 			ALW_ResetEntry(pEntry);

@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-
+#if 0
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
@@ -16,7 +16,7 @@ enum
 	MD_COFFIN_FLY_DOWN_START,
 	MD_COFFIN_FLY_DOWN
 };
-//extern NJS_OBJECT object_00F005A0;
+//extern NJS_CNK_OBJECT object_00F005A0;
 void ALO_Coffin_Displayer_(task* a1)
 {
 	if (a1->twp->wtimer)
@@ -40,7 +40,7 @@ void ALO_Coffin_Displayer_(task* a1)
 		//*(float*)0x3D0857C = -0.5f;
 		njTranslate(NULL, a1->twp->pos.x, a1->twp->pos.y, a1->twp->pos.z - 2.65f);
 		njRotateY(NULL, a1->twp->ang.y);
-		chCnkDrawObject((NJS_OBJECT*)0x01301BB4);//0x03898530 - coffin
+		chCnkDrawObject((NJS_CNK_OBJECT*)0x01301BB4);//0x03898530 - coffin
 		//chCnkDrawObject(&object_0349A900);
 		njPopMatrixEx();
 
@@ -124,7 +124,7 @@ void ALO_Coffin_Load(task* a1)
 
 void ALO_Coffin_Create(NJS_VECTOR* a1, int rotY)
 {
-	task* p = CreateElementalTask(4, "ALO_Coffin", ALO_Coffin_Load, LoadObj_Data1);
+	task* p = CreateElementalTask(4, "ALO_Coffin", ALO_Coffin_Load, IM_TWK);
 	InitCollision(p, &coffinColl, 1, 4);
 
 	p->disp = ALO_Coffin_Displayer_;
@@ -135,3 +135,4 @@ void ALO_Coffin_Create(NJS_VECTOR* a1, int rotY)
 	//p->Data1->Position = { 10,0,0 };
 
 }
+#endif

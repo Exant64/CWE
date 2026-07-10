@@ -26,7 +26,7 @@ const bool IsAccessoryRFSupported(const int id);
 bool AccessoryCheckID(const char* ID);
 size_t GetAccessoryID(const char* pID);
 size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData);
-extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
+extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
 
 void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind);
 size_t CWE_ParamGetAccessory(task* tp, uint32_t slot);
@@ -49,7 +49,7 @@ public:
         const auto count = GetAccessoryCount() - m_start;
 
         for(size_t i = m_start; i < m_start + count; i++) {
-            BlackMarketAttributes::Get()->SetModIndex(ChaoItemCategory_Accessory, i, m_modIndex);
+            BlackMarketAttributes::Get()->SetModIndex(ALW_CATEGORY_ACCESSORY, i, m_modIndex);
 	    }
     }
 };

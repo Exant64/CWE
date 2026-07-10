@@ -87,31 +87,32 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 		saveIndex += (AL_GetStageNumber() - 1);
 
 		info = &cweSaveFile.cweToyInfo[saveIndex];
-		if (info->Garden == 0) {
-			info->Garden = AL_GetStageNumber();
-			info->position = obj->twp->pos;
-			info->Age = obj->twp->ang.y;
+		if (info->place == 0) {
+			info->place = AL_GetStageNumber();
+			info->pos = obj->twp->pos;
+			info->nbVisit = obj->twp->ang.y;
 		}
 	}
 	else {
-		PrintDebug("AL_Toy_Move_Register: invalid toy area");
+		___OutputDebugString("AL_Toy_Move_Register: invalid toy area");
 	}
 
 	AddToGlobalChaoThingMaybe_(6, obj, a3, (CHAO_SAVE_INFO*)info);
 	if (info) {
-		obj->twp->pos = info->position;
-		obj->twp->ang.y = info->Age;
+		obj->twp->pos = info->pos;
+		obj->twp->ang.y = info->nbVisit;
 	}
 }
 
 AL_TOY_MOVE* GetToyMove(task* a1)
 {
-	return (AL_TOY_MOVE*)((int)a1->EntityData2 + 0x26C);
+	return (AL_TOY_MOVE*)((int)a1->mwp + 0x26C);
 }
 
-void AL_Toy_Move_Update(task *a1)
-{
-	AL_TOY_MOVE* toyMove = GetToyMove(a1);
+void AL_Toy_Move_Update(task *tp) {
+	MOVE_WORK* move = GET_MOVE_WORK(tp);
+	AL_TOY_MOVE* toyMove = GetToyMove(tp);
+
 	//todo: "nextaction" for collision changes?
 	switch (toyMove->state)
 	{
@@ -119,15 +120,15 @@ void AL_Toy_Move_Update(task *a1)
 
 		if (toyMove->flag == 0)
 		{
-			CCL_Disable(a1, 0);
-			CCL_Disable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Disable(tp, 0);
+			CCL_Disable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
 
 		//run collision for 30 frames, after that become static
-		MOV_Control(a1);
-		MoveFunc2(a1);
+		MOV_Control(tp);
+		MoveFunc2(tp);
 		toyMove->timer++;
 		if (toyMove->timer > 30)
 		{
@@ -140,16 +141,16 @@ void AL_Toy_Move_Update(task *a1)
 
 		if (toyMove->flag == 0)
 		{
-			CCL_Enable(a1, 0);
-			CCL_Enable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Enable(tp, 0);
+			CCL_Enable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
 
 		//if not picked up
-		if (a1->twp->flag >= 0)
+		if (tp->twp->flag >= 0)
 		{
-			colliwk* v8 = a1->twp->cwp;
+			colliwk* v8 = tp->twp->cwp;
 			if (v8)
 			{
 				//if the object is touched, start running collision
@@ -172,20 +173,22 @@ void AL_Toy_Move_Update(task *a1)
 	case TOY_MOVE_DYNAMIC:
 		if (toyMove->flag == 0)
 		{
-			CCL_Enable(a1, 0);
-			CCL_Enable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Enable(tp, 0);
+			CCL_Enable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
 		//water handler
-		sub_54B230(a1, toyMove->floatVal);
+		sub_54B230(tp, toyMove->floatVal);
 
-		if (a1->twp->flag & 1)
+		if (tp->twp->flag & 1)
 		{
+
 			NJS_VECTOR veloVec;
-			veloVec.x = a1->EntityData2->velocity.x;
+			veloVec.x = move->Velo.x;
 			veloVec.y = 0.0;
-			veloVec.z = a1->EntityData2->velocity.z;
+			veloVec.z = move->Velo.z;
+
 			//if it has velocity, reset timer to 0
 			if (njScalor(&veloVec) >= 0.01f)
 			{
@@ -198,13 +201,13 @@ void AL_Toy_Move_Update(task *a1)
 				toyMove->timer++;
 				if (toyMove->timer > 30)
 				{
-					UnknownData2* v8 = a1->EntityData2;
-					v8->velocity.x = 0.0;
-					v8->velocity.y = 0.0;
-					v8->velocity.z = 0.0;
-					v8->speed.x = 0.0;
-					v8->speed.y = 0.0;
-					v8->speed.z = 0.0;
+					move->Velo.x = 0.0;
+					move->Velo.y = 0.0;
+					move->Velo.z = 0.0;
+					move->Acc.x = 0.0;
+					move->Acc.y = 0.0;
+					move->Acc.z = 0.0;
+
 					toyMove->flag = 0;
 					toyMove->timer = 0;
 					toyMove->state = TOY_MOVE_STATIC;
@@ -212,28 +215,28 @@ void AL_Toy_Move_Update(task *a1)
 			}
 		}
 		//if picked up
-		if (a1->twp->flag < 0)
+		if (tp->twp->flag < 0)
 		{
 			toyMove->flag = 0;
 			toyMove->timer = 0;
 			toyMove->state = TOY_MOVE_HOLDP;
 		}
-		MOV_Control(a1);
-		MoveFunc2(a1);
+		MOV_Control(tp);
+		MoveFunc2(tp);
 		break;
 	case TOY_MOVE_HOLDP:
 
 		if (toyMove->flag == 0)
 		{
-			CCL_Disable(a1, 0);
-			CCL_Disable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Disable(tp, 0);
+			CCL_Disable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
-		ALW_CommunicationOff(a1);
-		a1->twp->ang.y = 0x4000 - MainCharObj1[0]->ang.y;
+		ALW_CommunicationOff(tp);
+		tp->twp->ang.y = 0x4000 - playertwp[0]->ang.y;
 		//if it gets put down, go back to dynamic
-		if (a1->twp->flag >= 0)
+		if (tp->twp->flag >= 0)
 		{
 			toyMove->timer = 0;
 			toyMove->flag = 0;
@@ -242,42 +245,42 @@ void AL_Toy_Move_Update(task *a1)
 		break;
 	}
 
-	a1->EntityData2->some_vector = a1->twp->pos;
+	move->PrePos = tp->twp->pos;
 	
 }
-UnknownData2* __cdecl AllocateUnknownData2New(task* obj)
+MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 {
-	UnknownData2* data2; // esi
+	MOVE_WORK* data2; // esi
 
-	data2 = (UnknownData2*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
-	obj->EntityData2 = data2;                   // different offset than SADX
+	data2 = (MOVE_WORK*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
+	obj->mwp = (motionwk*)data2;                   // different offset than SADX
 
-	data2->field_B4 = 3.0f;
-	data2->field_28 = 256;                      // different offset than SADX
-	data2->field_B8 = 2.2f;	
-	data2->field_BC = -3.0f;
-	data2->field_C0 = 40.0f;
-	data2->field_C4 = 0.80000001f;
-	data2->field_C8 = 0.89999998f;
-	data2->field_CC = 0.2f;
-	data2->field_D0 = 0.80000001f;
-	data2->field_AC = 3.0f;
+	data2->Top = 3.0f;
+	data2->RotSpd.y = 256;                      // different offset than SADX
+	data2->Side = 2.2f;	
+	data2->Bottom = -3.0f;
+	data2->CliffHeight = 40.0f;
+	data2->BoundSide = 0.80000001f;
+	data2->BoundFloor = 0.89999998f;
+	data2->BoundCeiling = 0.2f;
+	data2->BoundFriction = 0.80000001f;
+	data2->Offset.y = 3.0f;
 	return data2;
 }
 
-void AL_Toy_Move_Init(task* p, CCL_INFO* col)
+void AL_Toy_Move_Init(task* p, const CCL_INFO* col)
 {
-	UnknownData2* mov = AllocateUnknownData2New(p);
+	MOVE_WORK* mov = AllocateUnknownData2New(p);
 
 	// this pointer's purpose is explained at the declaration
 	pLastToyTask = p;
 
-	mov->gravity = -0.05f;
-	mov->field_AC = 3.0f;
-	mov->field_C8 = 0.7f;
-	mov->field_D0 = 0.7f;
-	mov->field_30 = 3;
-	mov->field_40 |= 8;
+	mov->Gravity = -0.05f;
+	mov->Offset.y = 3.0f;
+	mov->BoundFloor = 0.7f;
+	mov->BoundFriction = 0.7f;
+	mov->unk = 3;
+	mov->Flag |= 8;
 
 	GetToyMove(p)->floatVal = 1.0f;
 
@@ -296,8 +299,8 @@ void AL_Toy_Move_Init(task* p, CCL_INFO* col)
 	collisions[1].c = collisions[2].c;
 	collisions[1].d = collisions[2].d;
 
-	InitCollision(p, (CollisionData*)collisions, 3, 5);
-	if (p->EntityData2)
+	CCL_Init(p, collisions, 3, 5);
+	if (p->mwp)
 	{
 		ObjectMovableInitialize(p->twp, 10);
 	}
@@ -312,7 +315,7 @@ void __cdecl AddToColliListToy(task* a1)
 	//else
 	//	a1->twp->Status &= ~0x240u;
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
 static void __declspec(naked) AddToCollisionListHook()
@@ -338,7 +341,7 @@ CCL_INFO ALO_BoxExecutor_collision = { '\0', '\0', 'w', '\f', 32768u, {  0,  1.6
 void __cdecl AL_TV_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &stru_8A5C10);
-	a1->EntityData2->field_AC = 1.75f;
+	GET_MOVE_WORK(a1)->Offset.y = 1.75f;
 }
 
 static void __declspec(naked) AL_TV_Init_Hook()
@@ -365,7 +368,7 @@ void __cdecl AL_Toy_Update(task* a1)
 		a1->twp->flag &= ~0x240u;
 
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
 static void __declspec(naked) AL_Toy_UpdateHook()
@@ -405,7 +408,7 @@ static void __declspec(naked) AL_Box_Init_Hook()
 void __cdecl AL_Radio_Init(task* a1)
 {
 	AL_Toy_Move_Init(a1, &RadioCol);
-	a1->EntityData2->field_AC = 1.6f;
+	GET_MOVE_WORK(a1)->Offset.y = 1.6f;
 }
 
 static void __declspec(naked) AL_Radio_Init_Hook()
@@ -444,30 +447,30 @@ static void __declspec(naked) AL_Horse_Init_Hook()
 
 void __cdecl ALO_BoxExecutor_Main_(task* a1)
 {
-	a1->exec = ALO_BoxExecutor_Main;
+	a1->exec = ALO_BoxExecutor;
 	AL_Toy_Move_Register(a1, ALW_KIND_BOX);
 }
 
 void __cdecl ALO_TVExecutor_Display_(task *a1)
 {
-	a1->disp = ALO_TVExecutor_Display;
+	a1->disp = ALO_TVDisplayer;
 	AL_Toy_Move_Register(a1, ALW_KIND_TV);
-	ALO_TVExecutor_Display(a1);
+	ALO_TVDisplayer(a1);
 }
 
-ObjectFunc(ALO_HorseExecutor_Display, 0x00580CA0);
+FunctionPointer(void, ALO_HorseDisplayer, (task*), 0x00580CA0);
 void __cdecl ALO_HorseExecutor_Display_(task* a1)
 {
-	a1->disp = ALO_HorseExecutor_Display;
+	a1->disp = ALO_HorseDisplayer;
 	AL_Toy_Move_Register(a1, ALW_KIND_HORSE);
-	ALO_HorseExecutor_Display(a1);
+	ALO_HorseDisplayer(a1);
 }
 
 void __cdecl ALO_RadicaseExecutor_Display_(task* a1)
 {
-	a1->disp = ALO_RadicaseExecutor_Display;
+	a1->disp = ALO_RadicaseDisplayer;
 	AL_Toy_Move_Register(a1, ALW_KIND_RADICASE); 
-	ALO_RadicaseExecutor_Display(a1);
+	ALO_RadicaseDisplayer(a1);
 }
 
 template<task_exec func, int index>
@@ -494,9 +497,9 @@ void ALO_Ball_Hook() {
 
 DataArray(int, dword_1DC0F80, 0x1DC0F80, 1);
 const int sub_530470Ptr = 0x530470;
-al_entry_work* sub_530470(int a1, int a2)
+ALW_ENTRY_WORK* sub_530470(int a1, int a2)
 {
-	al_entry_work* result;
+	ALW_ENTRY_WORK* result;
 	__asm
 	{
 		mov edx, a1
@@ -510,7 +513,7 @@ al_entry_work* sub_530470(int a1, int a2)
 void SaveToyPos() {
 	ITEM_SAVE_INFO* v5;
 	task* v6;
-	al_entry_work* v4 = 0;
+	ALW_ENTRY_WORK* v4 = 0;
 	if (AL_IsGarden())
 	{
 		int v2 = dword_1DC0F80[6];
@@ -538,33 +541,33 @@ void SaveToyPos() {
 				}
 			}
 
-			v5->position = v6->twp->pos;
-			v5->Age = v6->twp->ang.y;
+			v5->pos = v6->twp->pos;
+			v5->nbVisit = v6->twp->ang.y;
 			if (AL_IsGarden())
 			{
-				v5->Garden = AL_GetStageNumber();
+				v5->place = AL_GetStageNumber();
 			}
 
 			if (v6->twp->flag >= 0)
 			{
-				if (v5->position.y >= -100.0)
+				if (v5->pos.y >= -100.0)
 				{
-					c_colli_hit_info* v9 = CCL_IsHitKindEx(v6, CI_KIND_AL_STAGE_CHANGER);
-					if (v9 && v9->hit_twp)
+					CCL_HIT_INFO* v9 = CCL_IsHitKindEx(v6, CI_KIND_AL_STAGE_CHANGER);
+					if (v9 && v9->hit_tp)
 					{
-						v5->Garden = 0;
+						v5->place = 0;
 					}
 				}
 				else 
-					v5->Garden = 0;
+					v5->place = 0;
 			}
 			else if (!AL_IsGarden())
 			{
-				v5->Garden = 0;
-				PrintDebug( "trying to save item in invalid area");
+				v5->place = 0;
+				___OutputDebugString( "trying to save item in invalid area");
 			}
 			else 
-				v5->Garden = 0;
+				v5->place = 0;
 			goto LABEL_25;
 		}
 	}

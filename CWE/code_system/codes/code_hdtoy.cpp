@@ -18,23 +18,23 @@
 #pragma warning(pop)
 
 void HDToyModels::Init() {
-	*((NJS_OBJECT*)0x121D804) = object_cha_toy_jokebox;
+	*((NJS_CNK_OBJECT*)0x121D804) = object_cha_toy_jokebox;
 	*((NJS_CNK_MODEL*)0x121D264) = model_cha_toy_jokebox_head;
 
-	*((NJS_OBJECT*)0x121AA0C) = cha_toy_horse;
+	*((NJS_CNK_OBJECT*)0x121AA0C) = cha_toy_horse;
 
-	*((NJS_OBJECT*)0x12FE33C) = cha_toy_bubble_Mesh_0000_1;
+	*((NJS_CNK_OBJECT*)0x12FE33C) = cha_toy_bubble_Mesh_0000_1;
 
-	*((NJS_OBJECT*)0x11C62C4) = toy_drum;
-	*((NJS_OBJECT*)0x11C6674) = drumstick_l;
-	*((NJS_OBJECT*)0x11C6A14) = drumstick_r;
+	*((NJS_CNK_OBJECT*)0x11C62C4) = toy_drum;
+	*((NJS_CNK_OBJECT*)0x11C6674) = drumstick_l;
+	*((NJS_CNK_OBJECT*)0x11C6A14) = drumstick_r;
 	
-	*((NJS_OBJECT*)0x11C830C) = cha_toy_trumpet;
+	*((NJS_CNK_OBJECT*)0x11C830C) = cha_toy_trumpet;
 
-	*((NJS_OBJECT*)0x1301D74) = *tvOld.child;
-	tvOld.child = (NJS_OBJECT*)0x1301D74;
-	*((NJS_OBJECT*)0x1302C1C) = tvOld;
-	*((NJS_OBJECT*)0x125BF74) = radio;
+	*((NJS_CNK_OBJECT*)0x1301D74) = *tvOld.child;
+	tvOld.child = (NJS_CNK_OBJECT*)0x1301D74;
+	*((NJS_CNK_OBJECT*)0x1302C1C) = tvOld;
+	*((NJS_CNK_OBJECT*)0x125BF74) = radio;
 
 	g_HelperFunctions->ReplaceTexture(
 		"AL_TOY",

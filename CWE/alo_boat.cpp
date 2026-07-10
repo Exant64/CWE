@@ -30,15 +30,15 @@ void ALO_Boat_Displayer(task* a1)
 
 	//EnableChunkMaterialFlags();
 	//SetChunkMaterialFlags(8);
-	Has_texlist_batadvPlayerChara_in_it[3] = Has_texlist_batadvPlayerChara_in_it[3] & 0x3FFFFFF | 0x94000000;
+	_nj_curr_ctx_->tspparam = _nj_curr_ctx_->tspparam & 0x3FFFFFF | 0x94000000;
 	//*(int*)0x03D0856C = 0xFFFFFFFF;
 	*(float *)0x01AED2D0 = (-(a1->twp->ang.x / 335.0f));
 
 	njTranslateEx(&a1->twp->pos);
 	njRotateY(NULL, a1->twp->ang.y);
-	chCnkDrawObject((NJS_OBJECT*)0x0130111C);
+	chCnkDrawObject((NJS_CNK_OBJECT*)0x0130111C);
 
-	if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30) {
+	if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist) {
 		njTranslate(NULL, 0, 0.4f, 0);
 		njScale(NULL, 1.5f, 0.7f, 2.25f);
 		
@@ -121,12 +121,8 @@ void ALO_Boat_Main(task* a1)
 		break;
 	}
 	//ALO_Boat_Displayer(a1);
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
-
-
-CollisionData baotColli =
-{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 
 
 void ALO_Boat_Init(task *a1)
@@ -138,14 +134,15 @@ void ALO_Boat_Init(task *a1)
 
 
 void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
-	task* p = CreateElementalTask(4, "ALO_Boat", ALO_Boat_Init, LoadObj_Data1);
-	//InitCollision(p, (CollisionData*)&boatColliT, 2, 4);
+	static const CCL_INFO boat_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
+
+	task* p = CreateElementalTask(IM_TWK, LEV_4, ALO_Boat_Init, "ALO_Boat");
 
 	p->disp = ALO_Boat_Displayer;
 	p->twp->pos = *pPos;
 	p->twp->ang.y = ang;
 	p->twp->scl = p->twp->pos; //scale = default pos
-	//p->Data1->Position = { 10,0,0 };
-	AL_Toy_Move_Init(p, (CCL_INFO*)&baotColli);
+
+	AL_Toy_Move_Init(p, &boat_colli_info);
 
 }

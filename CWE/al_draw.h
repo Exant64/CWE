@@ -64,28 +64,20 @@ enum ChunkMaterialFlagsEnum
 	UseChunkObjectColor = 0x8,
 };
 
-void AL_RenderAccessory(const task* tp, const EAccessoryType slot);
-void AL_SetMotionMatrix(task* a1, ChunkObjectPointer* ptr);
-void AL_ValidateAccessory(task* a1, EAccessoryType type);
-void AL_RenderRigAccessory(task* a1, ChunkObjectPointer* chunkObjectPointer, EAccessoryType type);
 void AL_Draw_Init();
 void AnimateChao(int a1);
 void sub_56E9C0(task* a1);
-void DrawAccessory(task* a1, ChunkObjectPointer* chunkObjectPointer, NJS_OBJECT* traverseAccessory);
 void ChaoColoring(int texture, int color, int shiny, int highlights, int shinyJewelMonotone, NJS_CNK_MODEL* model);
 
-void AL_SetBodyTexture(task* a1);
-void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model);
-
-void __cdecl DrawEggChao(task* a1);
-void AL_DrawToy(ChunkObjectPointer* chunkObjectPointer);
+void AL_SetBodyTexture(task* tp);
+void AL_SetRareMaterial(task* tp, NJS_CNK_MODEL* pModel);
 
 extern task* ChaoDebugDistSelected;
 extern float ChaoDebugDist;
 
 DataPointer(unsigned char, CharacterIndex, 0x540212);
 DataArray(int, dword_1298448, 0x01298448, 20);
-DataArray(NJS_OBJECT*, dword_12E58B8, 0x12E58B8, 12);
+DataArray(NJS_CNK_OBJECT*, dword_12E58B8, 0x12E58B8, 12);
 DataPointer(int, Chao_NodeIndex, 0x01A259D8);
 DataPointer(int, ChunkMatEnable, 0x01AED2CC);
 DataPointer(int, ChunkMatFlag, 0x01A27594);

@@ -9,7 +9,7 @@
 #include "al_ode_guide.h"
 #include "al_ode_menu.h"
 
-static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1);
+static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* pMaster);
 
 CWE_API_ODEKAKE_ENTRY OdakakeMoveEntry = {
 	AL_OdekakeMove, 
@@ -158,6 +158,16 @@ static char GetMultiSaveIndex() {
 	return '0' + numberConverted;
 }
 
+static const void *const WriteChaoSaveChecksumPtr = (void*)0x52EEE0;
+static inline void WriteChaoSaveChecksum(char *a1)
+{
+	__asm
+	{
+		mov esi, [a1]
+		call WriteChaoSaveChecksumPtr
+	}
+}
+
 static void AL_SaveSecondFile() {
 	WriteChaoSaveChecksum((char*)SecondChaoSaveFilePointer);
 
@@ -174,18 +184,18 @@ static void AL_SaveSecondFile() {
 }
 
 static CHAO_SAVE_INFO* AL_GetSecondFileChao() {
-	int backup = ChaoSaveIndexThing;
-	ChaoSaveIndexThing = 1;
+	int backup = vmsindex;
+	vmsindex = 1;
 	CHAO_SAVE_INFO* data = AL_GetNewChaoSaveInfo();
-	ChaoSaveIndexThing = backup;
+	vmsindex = backup;
 	return data;
 }
 
-static void AL_HikkoshiMenuExecutor(task *a1) {
-	if (a1->twp->mode == 0) {
+static void AL_HikkoshiMenuExecutor(task *tp) {
+	if (tp->twp->mode == 0) {
 		if (*(int*)0x1AED254 == 2) { // menu is quitting 
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
-			a1->exec = DeleteObject_;
+			tp->exec = DestroyTask;
 			return;
 		}
 	}
@@ -194,13 +204,13 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 		return; // sadly i cant stop the selectmanager from running so you can still move the cursor
 		
 	if(SelectMenuManager->cursor.x == 4 && SelectMenuManager->cursor.y == 2) // the move button is vertical 2 for some reason, and horizontal 4 is shared by the second panel first tile
-		a1->twp->ang.x += 1280;
+		tp->twp->ang.x += 1280;
 	else 
-		a1->twp->ang.x = 0;
+		tp->twp->ang.x = 0;
 
 	// move button pressed
 	if (SelectMenuManager->cursor.x == 4 && SelectMenuManager->cursor.y == 2) {
-		if(MenuButtons_Pressed[0] & Buttons_A) {
+		if(SWDATAE[0] & BTN_A) {
 			CHAO_SAVE_INFO* data1 = ChaoSelectData[((SelectMenuManager->slot[0].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[0].multiselect - 1) >> 3)];
 			CHAO_SAVE_INFO* data2 = ChaoSelectData[((SelectMenuManager->slot[1].multiselect - 1) & 7) + 8 * ((signed int)(SelectMenuManager->slot[1].multiselect - 1) >> 3) + 24];
 			if (data1 || data2)
@@ -209,7 +219,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 				int Data2garden, data1Garden;
 				if (data2)
 				{
-					Data2garden = data2->data.place;
+					Data2garden = data2->param.place;
 				}
 				else
 				{
@@ -221,7 +231,7 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 					memcpy(&tempSwap, data2, sizeof(CHAO_SAVE_INFO));
 					if (data1)
 					{
-						data1Garden = data1->data.place;
+						data1Garden = data1->param.place;
 					}
 					else
 					{
@@ -231,9 +241,9 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 					if (data1) 
 					{
 						memcpy(data2, data1, sizeof(CHAO_SAVE_INFO));
-						data2->data.place = Data2garden;
+						data2->param.place = Data2garden;
 						memcpy(data1, &tempSwap, sizeof(CHAO_SAVE_INFO));
-						data1->data.place = data1Garden;
+						data1->param.place = data1Garden;
 
 						//update display
 						AL_SortChaoSaveInfo(SORT_NORMAL);
@@ -251,23 +261,23 @@ static void AL_HikkoshiMenuExecutor(task *a1) {
 		}
 	}
 
-	a1->twp->ang.y += 1792;
+	tp->twp->ang.y += 1792;
 
 	// quit button temp(?)
 	if (SelectMenuManager->cursor.x == 3 && SelectMenuManager->cursor.y == 2) {
-		a1->twp->scl.x += 0.05f;
-		if (a1->twp->scl.x > 1)
-			a1->twp->scl.x = 1;
+		tp->twp->scl.x += 0.05f;
+		if (tp->twp->scl.x > 1)
+			tp->twp->scl.x = 1;
 	}
 	else  {
-		a1->twp->scl.x -= 0.05f;
-		if (a1->twp->scl.x < 0)
-			a1->twp->scl.x = 0;
+		tp->twp->scl.x -= 0.05f;
+		if (tp->twp->scl.x < 0)
+			tp->twp->scl.x = 0;
 	}
 	
 }
 
-static ChaoHudThingB HikkoshiUI[] = {
+static CHS_BILL_INFO HikkoshiUI[] = {
 	{0, 21, 16, 152 ,			 65 * 2,		 (152 + 21 * 1) , (65 + 16) * 2, (NJS_TEXLIST*)0x01314058 , 6},//the numbers ~~mason~~
 	{0, 21, 16, (152 + 21 * 1) , 65 * 2,		 (152 + 21 * 2) , (65 + 16) * 2 , (NJS_TEXLIST*)0x01314058 , 6},
 	{0, 21, 16, (152 + 21 * 2) , 65 * 2,		 (152 + 21 * 3) , (65 + 16) * 2, (NJS_TEXLIST*)0x01314058 , 6},
@@ -282,49 +292,49 @@ static ChaoHudThingB HikkoshiUI[] = {
 };
 
 // the generic menu sprite array used throughout the odekake menus
-DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
+DataArray(CHS_BILL_INFO, MenuArray, 0x11BA528, 0x61);
 
-static void AL_HikkoshiMenuDisplayer(task* a1) {
+static void AL_HikkoshiMenuDisplayer(task* tp) {
 	*(char*)0x25EFFCC = 0;
 
 	//DrawChaoHudThingB(MenuArray[2], 472, 399, -1.2f, 1, 1, 0, 0); //the middle arrow thing
-	float scale = njSin(a1->twp->ang.x) * 0.1f + 0.85f;
-	DrawChaoHudThingB((ChaoHudThingB*)0x011BB0D4, 320, 272, -1.2f, scale, scale, 0,0); //the middle arrow thing
+	float scale = njSin(tp->twp->ang.x) * 0.1f + 0.85f;
+	chDrawBillboardSR((CHS_BILL_INFO*)0x011BB0D4, 320, 272, -1.2f, scale, scale, 0,0); //the middle arrow thing
 	
 	float v14 = 340;
 	float a3 = 424;
 	float v9 = a3 - 5.0f;
-	float v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1.0f;
+	float v7 = (njSin(tp->twp->ang.y) * tp->twp->scl.x * 0.1f) + 1.0f;
 	float sizeX = 40.0f;
 
-	DrawChaoHudThingB(&MenuArray[40], 458 + 18 - 60,  145, -1, 1,     1, 1,  1);  //button1 
-	DrawChaoHudThingB(&MenuArray[41], 458 + 18,		  145, -1, 60 + 60, 1, 0,  1);  //button2
-	DrawChaoHudThingB(&MenuArray[42], 458 + 18 + 60,  145, -1, 1,     1, -1, 1); //button3
+	chDrawBillboardSR(&MenuArray[40], 458 + 18 - 60,  145, -1, 1,     1, 1,  1);  //button1 
+	chDrawBillboardSR(&MenuArray[41], 458 + 18,		  145, -1, 60 + 60, 1, 0,  1);  //button2
+	chDrawBillboardSR(&MenuArray[42], 458 + 18 + 60,  145, -1, 1,     1, -1, 1); //button3
 
-	DrawChaoHudThingB(&HikkoshiUI[10],				  458,      135, -1.2f, 1, 1, 0, 0); //number
-	DrawChaoHudThingB(&HikkoshiUI[selectedMultiSave], 458 + 75, 135, -1.2f, 1, 1, 0, 0); //number
+	chDrawBillboardSR(&HikkoshiUI[10],				  458,      135, -1.2f, 1, 1, 0, 0); //number
+	chDrawBillboardSR(&HikkoshiUI[selectedMultiSave], 458 + 75, 135, -1.2f, 1, 1, 0, 0); //number
 
-	DrawChaoHudThingB(&MenuArray[40], v14 - sizeX, a3, -1, 1, 1, 1,1); //button1
-	DrawChaoHudThingB(&MenuArray[41], v14        , a3, -1, sizeX+sizeX, 1.0, 0, 1); //button2
-	DrawChaoHudThingB(&MenuArray[42], v14 + sizeX, a3, -1, 1, 1, -1, 1); //button3
-	v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1.0f;
+	chDrawBillboardSR(&MenuArray[40], v14 - sizeX, a3, -1, 1, 1, 1,1); //button1
+	chDrawBillboardSR(&MenuArray[41], v14        , a3, -1, sizeX+sizeX, 1.0, 0, 1); //button2
+	chDrawBillboardSR(&MenuArray[42], v14 + sizeX, a3, -1, 1, 1, -1, 1); //button3
+	v7 = (njSin(tp->twp->ang.y) * tp->twp->scl.x * 0.1f) + 1.0f;
 	float newVal = 2 - v7;
-	DrawChaoHudThingB(&MenuArray[2],  v14 + 8,   v9, -1, v7, newVal, 0, 1); //back text
-	v7 = (njSin(a1->twp->ang.y) * a1->twp->scl.x * 0.1f) + 1; //HACK: patches bug that happens to what im assuming the compiler trying to preserve on stack but failing 
-	DrawChaoHudThingB(&MenuArray[34], v14 - 42,  v9, -1, v7, 2 - v7, 0, 1); //swirly quit
+	chDrawBillboardSR(&MenuArray[2],  v14 + 8,   v9, -1, v7, newVal, 0, 1); //back text
+	v7 = (njSin(tp->twp->ang.y) * tp->twp->scl.x * 0.1f) + 1; //HACK: patches bug that happens to what im assuming the compiler trying to preserve on stack but failing 
+	chDrawBillboardSR(&MenuArray[34], v14 - 42,  v9, -1, v7, 2 - v7, 0, 1); //swirly quit
 	*(char*)0x25EFFCC = 1;
 }
 
 static void AL_HikkoshiMenu() {
-	task* a1 = CreateElementalTask(3, "HikkoshiMenuExecutor", AL_HikkoshiMenuExecutor, LoadObj_Data1);
-	a1->disp = AL_HikkoshiMenuDisplayer;
-	a1->twp->scl.x = 0;
+	task* tp = CreateElementalTask(IM_TWK, LEV_3, AL_HikkoshiMenuExecutor, "HikkoshiMenuExecutor");
+	tp->disp = AL_HikkoshiMenuDisplayer;
+	tp->twp->scl.x = 0;
 }
 
-static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
+static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* pMaster) {
 	int previousSelected;
 
-	switch (a1->mode) {
+	switch (pMaster->mode) {
 	case 0:
 		selectedMultiSave = 0;
 		updateCurrentSave = true;
@@ -338,16 +348,16 @@ static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 		AlMsgWarnAddLineC(0, "Use X and Y on the controller to switch between savefiles.");
 		AlMsgWarnWaitClose(0);
 
-		a1->mode = 5;
+		pMaster->mode = 5;
 
 		break;
 	case 1:
 		previousSelected = selectedMultiSave;
 
-		if (MenuButtons_Pressed[0] & Buttons_X && selectedMultiSave > 0) {
+		if (SWDATAE[0] & BTN_X && selectedMultiSave > 0) {
 			selectedMultiSave--;
 		}
-		if (MenuButtons_Pressed[0] & Buttons_Y && selectedMultiSave < 9)  {
+		if (SWDATAE[0] & BTN_Y && selectedMultiSave < 9)  {
 			selectedMultiSave ++;
 		}
 			
@@ -363,7 +373,7 @@ static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 			updateCurrentSave = false;
 			FILE* f = fopen__(selectedSavePath, "rb");
 			if (f)  {
-				PrintDebug("save index: %c", GetMultiSaveIndex());
+				___OutputDebugString("save index: %c", GetMultiSaveIndex());
 
 				// this magic int disables the second selection menu (the big X)
 				// if the selected savefile is the same one as the current one
@@ -390,20 +400,20 @@ static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 
 		// objects spawned inside the odekake menu use these to signal the menu to shutdown (for example a quit button)
 		if (AL_OdekakeMenuMaster_Data_ptr->EndFlag)  {
-			a1->mode = 2;
+			pMaster->mode = 2;
 		}
 		break;
 	case 2:
-		a1->timer++;
-		if (a1->timer > 30)
+		pMaster->timer++;
+		if (pMaster->timer > 30)
 		{
-			a1->timer = 0;
-			a1->mode++;
+			pMaster->timer = 0;
+			pMaster->mode++;
 		}
 	case 3:
-		if (a1->state == 0)
+		if (pMaster->state == 0)
 		{
-			a1->mode++;
+			pMaster->mode++;
 		}
 		break;
 	case 4:
@@ -417,7 +427,7 @@ static void AL_OdekakeMove(ODE_MENU_MASTER_WORK* a1) {
 			*(int*)0x19F6458 = 1; //disable big X (set to 1 by save loading function)
 			AL_CreateChaoSelectMenu(MenuPurpose_HIKKOSHI);
 			AL_HikkoshiMenu();
-			a1->mode = 1;
+			pMaster->mode = 1;
 		}
 		break;
 	}

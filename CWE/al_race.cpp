@@ -77,8 +77,8 @@ void AL_EggPresenterExecutor(task* tp) {
 	case 2:
 		if (v1->wtimer == 30)
 		{
-			PlayMusic("chao_r_item_get.adx");
-			ResetMusic();
+			BGM_SetFile("chao_r_item_get.adx");
+			BGM_Replay();
 		}
 		if (v1->wtimer++ <= 0x14Au)
 		{
@@ -107,8 +107,8 @@ void AL_EggPresenterExecutor(task* tp) {
 	}
 }
 void AL_EggPresenterDisplayer(task* tp) {
-	if (tp->twp->mode && *(int*)dword_1A5AF18->Data2.Undefined < 10 && tp->twp->scl.x > 0.001f) {
-		SetShaders(1);
+	if (tp->twp->mode && *(int*)dword_1A5AF18->awp < 10 && tp->twp->scl.x > 0.001f) {
+		SetShaderType(1);
 		DoLighting(0);
 		Angle3 rot = { 0,tp->twp->ang.y,0 };
 		DrawItem(
@@ -117,7 +117,7 @@ void AL_EggPresenterDisplayer(task* tp) {
 			tp->twp->scl.x * 1.2f, 
 			rot,
 		{
-				ChaoItemCategory_Egg, 
+				ALW_CATEGORY_EGG, 
 				(Uint16)tp->twp->ang.x
 			}
 
@@ -127,12 +127,12 @@ void AL_EggPresenterDisplayer(task* tp) {
 
 //converts current jewel race to jewel texture to set
 const std::map<Uint8, int> RaceToTexture = {
-	{4, SA2BTexture_SkyBlueJewel}, //aquamarine
-	{5, SA2BTexture_OrangeJewel}, //topaz
-	{6, SA2BTexture_LimeGreenJewel}, //peridot
-	{7, SA2BTexture_RedJewel}, //garnet
-	{8, SA2BTexture_BlackJewel}, //onyx
-	{9, SA2BTexture_Pearl}, //diamond
+	{4, ChaoTexture_SkyBlueJewel}, //aquamarine
+	{5, ChaoTexture_OrangeJewel}, //topaz
+	{6, ChaoTexture_LimeGreenJewel}, //peridot
+	{7, ChaoTexture_RedJewel}, //garnet
+	{8, ChaoTexture_BlackJewel}, //onyx
+	{9, ChaoTexture_Pearl}, //diamond
 };
 
 void WinJewelChaoInRace() {
@@ -150,7 +150,7 @@ void WinJewelChaoInRace() {
 		if (param->type != 0) {
 			chaoCount++;
 
-			if (param->Texture == texture) noTexture = false;
+			if (param->body.JewelNum == texture) noTexture = false;
 		}
 	}
 
@@ -159,13 +159,13 @@ void WinJewelChaoInRace() {
 		if (cweSaveFile.purchasedItemCount < (int)save::CWE_PurchasedItems.size()) {
 			save::CWE_PurchasedItems[cweSaveFile.purchasedItemCount] = 
 			{ 
-				ChaoItemCategory_Egg, 
+				ALW_CATEGORY_EGG, 
 				(Uint16)(54 + texture - 1) 
 			};
 
 			cweSaveFile.purchasedItemCount++;
 
-			//task* eggPresent = LoadObject(2, "AL_EggPresenter", AL_EggPresenterExecutor, LoadObj_Data1);
+			//task* eggPresent = LoadObject(2, "AL_EggPresenter", AL_EggPresenterExecutor, IM_TWK);
 			//eggPresent->DisplaySub = AL_EggPresenterDisplayer;
 			//eggPresent->twp->Rotation.x = 54 + texture - 1;
 		}
@@ -175,7 +175,7 @@ void WinJewelChaoInRace() {
 void RaceNewPrize()
 {
 	RaceConfigThing* v5 = sub_53A9B0();
-	ResetMusic();
+	BGM_Replay();
 
 	if (gConfigVal.WinJewelChaoInJewelRace) {
 		WinJewelChaoInRace();
@@ -187,10 +187,10 @@ void RaceNewPrize()
 	case 1:
 		if (pWinnerChao == pChaoObject)
 		{
-			if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
+			if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag & (1 << v5->toyUnlock)))
 			{
 				CreateToyPresenter(v5->toyUnlock, 0);
-				GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
+				GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag |= 1 << v5->toyUnlock;
 			}
 		}
 		break;
@@ -201,19 +201,19 @@ void RaceNewPrize()
 		{
 			if (pWinnerChao == pChaoObject)
 			{
-				if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag & (1 << v5->toyUnlock)))
+				if (v5->toyUnlock != -1 && !(GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag & (1 << v5->toyUnlock)))
 				{
 					CreateToyPresenter(v5->toyUnlock, 0);
-					GET_CHAOPARAM(pChaoObject)->Knowledge.SToyFlag |= 1 << v5->toyUnlock;
+					GET_CHAOPARAM(pChaoObject)->knowledge.SToyFlag |= 1 << v5->toyUnlock;
 				}
 			}
 		}
 		else if (pWinnerChao == pChaoObject)
 		{
-			if (v5->toyUnlock != -1 && !(ChaoToysUnlocked[0] & (1 << v5->toyUnlock)))
+			if (v5->toyUnlock != -1 && !(AL_GetCurrGardenInfo()->ToyGetFlag & (1 << v5->toyUnlock)))
 			{
 				CreateToyPresenter(v5->toyUnlock, 1);
-				ChaoToysUnlocked[0] |= 1 << v5->toyUnlock;
+				AL_GetCurrGardenInfo()->ToyGetFlag |= 1 << v5->toyUnlock;
 			}
 		}
 		break;

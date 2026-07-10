@@ -47,7 +47,7 @@ signed int __cdecl ALBHV_GoNextToSocial(task* a1)
 	double v5; // st7
 	
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
-		PrintDebug("ALW_CMD_CHANGE");
+		___OutputDebugString("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
 
@@ -86,7 +86,7 @@ signed int __cdecl ALBHV_GoNextToSocial(task* a1)
 		break;
 	case 2:
 
-		v1->entity.ang.y = AdjustAngle_(v1->entity.ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
+		v1->ang.y = AdjustAngle_(v1->ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
 		if (v3->Timer++ > 30)
 			return 1;
 		break;
@@ -133,7 +133,7 @@ int ALBHV_WaitForSocialArrive(task* tp)
 int ALBHV_LockUp(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
-		PrintDebug("ALW_CMD_CHANGE");
+		___OutputDebugString("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
 	if (GET_CHAOWK(a1)->Behavior.Mode == 0)
@@ -152,7 +152,7 @@ signed int __cdecl ALBHV_GoToSocial(task* a1)
 	double v5; // st7
 
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
-		PrintDebug("ALW_CMD_CHANGE");
+		___OutputDebugString("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
 

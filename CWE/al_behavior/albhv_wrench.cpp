@@ -29,7 +29,7 @@ int __cdecl ALBHV_Wrench(task* a1)
 			if (MOV_DistFromAim(a1) < 4.0)
 			{
 				++GET_CHAOWK(a1)->Behavior.Mode;
-				al_entry_work* v7 = ALW_IsCommunicating(a1);
+				ALW_ENTRY_WORK* v7 = ALW_IsCommunicating(a1);
 
 				//failsafe
 				if (!v7 || !v7->tp)
@@ -41,12 +41,12 @@ int __cdecl ALBHV_Wrench(task* a1)
 					AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)v9);
 					AL_ClearItemSaveInfoPtr(v7->tp);
 				}
-				v7->tp->exec = DeleteObject_;
+				v7->tp->exec = DestroyTask;
 			}
 		}
 		break;
 	case 2:
-		sub_54A690(a1);
+		AL_FixPosition(a1);
 		sub_54A730(a1);
 		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
 		Chao_RegAnimation(a1, "alm_wrench_start");//AL_SetMotionLink(a1, 231);
@@ -85,7 +85,7 @@ int __cdecl ALBHV_BuildStart(task* a1)
 
 	MOV_SetAimPos(a1, &OmoPositions[AL_GetStageNumber() - 1]);
 	
-	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[CurrentChaoArea - 1].x, 25, OmoPositions[CurrentChaoArea - 1].z, &a1->twp->Rotation);
+	//a1->EntityData2->Waypoint.y = CalculateFalloffPosition_(OmoPositions[ChaoStageNumber - 1].x, 25, OmoPositions[ChaoStageNumber - 1].z, &a1->twp->Rotation);
 	if (omo->phase == 0 || !AL_KW_IDExists(omo->chaoID))
 	{
 		CHAO_PARAM_GC* pParamGC = GET_CHAOPARAM(a1);
@@ -94,10 +94,10 @@ int __cdecl ALBHV_BuildStart(task* a1)
 		{
 			omo->phase = 0;
 		}
-		omo->color = pParamGC->Color;
-		omo->shiny = pParamGC->Shiny;
-		omo->monotone = pParamGC->MonotoneHighlights;
-		omo->jewel = pParamGC->Texture;
+		omo->color = pParamGC->body.ColorNum;
+		omo->shiny = pParamGC->body.MultiNum;
+		omo->monotone = pParamGC->body.NonTex;
+		omo->jewel = pParamGC->body.JewelNum;
 		omo->chaoID = pParamGC->ChaoID;
 	}
 	AL_SetBehavior(a1, ALBHV_Wrench);

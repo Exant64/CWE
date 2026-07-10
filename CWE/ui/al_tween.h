@@ -24,7 +24,7 @@ struct TweenData {
 	task* Parent;
 };
 
-#define GET_TWEEN_DATA(tp) ((TweenData<T>*)(tp->Data2.Undefined))
+#define GET_TWEEN_DATA(tp) ((TweenData<T>*)(tp->awp))
 
 // so the idea is to template specialize the interpolate functions 
 // for stuff like NJS_POINT2 and colors and such
@@ -58,7 +58,7 @@ static void TweenExecutor(task* tp) {
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);
 
 	if (tween->Timer == tween->FrameCount + 1) {
-		tp->exec = DeleteObject_;
+		tp->exec = DestroyTask;
 
 		if (tween->TweenPointer) {
 			*tween->TweenPointer = NULL;
@@ -85,7 +85,7 @@ static void TweenExecutor(task* tp) {
 
 static void TweenDestructor(task* tp) {
 	// technically the callback call could go in here too, but I feel more comfortable with putting this logic in the mainsub
-	FREE(tp->Data2.Undefined);
+	FREE(tp->awp);
 }
 
 template <typename T>
@@ -99,13 +99,13 @@ task* CreateTween(task* parent, const EASE_TYPE easingMode, const INTERP_TYPE in
 	task* tp;
 
 	if (parent == nullptr) {
-		tp = CreateElementalTask(4, "AL_Tween", TweenExecutor<T>, (LoadObj)0);
+		tp = CreateElementalTask(0, LEV_4, TweenExecutor<T>, "AL_Tween");
 	}
 	else {
-		tp = CreateChildTask((LoadObj)0, TweenExecutor<T>, parent);
+		tp = CreateChildTask(0, TweenExecutor<T>, parent);
 	}
 
-	tp->Data2.Undefined = ALLOC(TweenData<T>);
+	tp->awp = (anywk*)ALLOC(TweenData<T>);
 	tp->dest = TweenDestructor;
 
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);

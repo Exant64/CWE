@@ -6,11 +6,11 @@
 int __cdecl ALBHV_Glide(task* a1)
 {
 	task* v2; // ebx
-	UnknownData2* v3; // esi
-	ChaoData1* v4; // edi
+	MOVE_WORK* v3; // esi
+	chaowk* v4; // edi
 
 	v2 = a1;
-	v3 = a1->EntityData2;
+	v3 = GET_MOVE_WORK(a1);
 	v4 = GET_CHAOWK(a1);
 
 	if (!v4->Behavior.Mode)
@@ -25,12 +25,12 @@ int __cdecl ALBHV_Glide(task* a1)
 		MOV_TurnToAim2(v2, 256);
 		if (v4->Behavior.Mode == 1)
 		{
-			v3->speed.y = 0;
-			v3->velocity.y = 0.25f;
-			//v4->entity.Position.y += 0.05f;
-			if (v4->entity.pos.y > 25)
+			v3->Acc.y = 0;
+			v3->Velo.y = 0.25f;
+			//v4->Position.y += 0.05f;
+			if (v4->pos.y > 25)
 			{
-				v4->entity.pos.y = 25;
+				v4->pos.y = 25;
 			}
 			v4->Behavior.Timer--;
 			if (v4->Behavior.Timer <= 0)
@@ -43,10 +43,10 @@ int __cdecl ALBHV_Glide(task* a1)
 		}
 		else if (v4->Behavior.Mode == 2)
 		{
-			if (v3->field_40 & 0x400)
+			if (v3->Flag & 0x400)
 				AL_SetBehaviorWithTimer(a1, (int)0x00562D20, -1); //00562D20 = albhv_move
 
-			v3->speed.y = v3->gravity * 0.05f;
+			v3->Acc.y = v3->Gravity * 0.05f;
 		}
 	}
 	return BHV_RET_CONTINUE;
@@ -54,7 +54,7 @@ int __cdecl ALBHV_Glide(task* a1)
 
 int __cdecl ALBHV_GlideCondition(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->type == ChaoType_Tails)
+	if (GET_CHAOPARAM(a1)->type == TYPE_TAILS)
 		AL_SetBehavior(a1, ALBHV_Glide);
 	else
 		AL_SetBehavior(a1, (BHV_FUNC)0x005630C0);

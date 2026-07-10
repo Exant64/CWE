@@ -9,8 +9,6 @@
 #include <random>
 #include "albhv.h"
 
-//DataPointer(NJS_MATRIX, flt_25F02A0, 0x25F02A0);
-
 int ALBHV_HoldHands_Left(task* a1)
 {
 	if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE) {
@@ -56,7 +54,7 @@ int ALBHV_HoldHands_Left(task* a1)
 		otherChao->twp->ang.y = AdjustAngle_(otherChao->twp->ang.y, a1->twp->ang.y, 1024);
 
 		v8.y = otherChao->twp->pos.y;
-		if(CheckDistance(&v8, &otherChao->twp->pos) <= 0.2)
+		if(njDistanceP2P(&v8, &otherChao->twp->pos) <= 0.2)
 			wk->Behavior.Mode++;
 		break;
 	case 2:
@@ -73,7 +71,7 @@ int ALBHV_HoldHands_Left(task* a1)
 		otherChao->twp->pos.y = backupY;
 		otherChao->twp->ang.y = a1->twp->ang.y;
 
-		((UnknownData2*)a1->EntityData2)->Waypoint.y = a1->twp->pos.y; //DISGUSTING hack
+		((MOVE_WORK*)a1->mwp)->AimPos.y = a1->twp->pos.y; //DISGUSTING hack
 
 		MOV_TurnToAim2(a1, 384);
 		float a2 = ChaoGlobal.WalkAcc * 0.4f;

@@ -27,7 +27,7 @@ struct MessageField0Array
 struct __declspec(align(4)) Message380
 {
 	int Mode;
-	Buttons ButtonPress;
+	int ButtonPress;
 	int ButtonOn;
 	float floatC;
 	float float10;

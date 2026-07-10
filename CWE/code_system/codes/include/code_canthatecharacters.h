@@ -11,8 +11,8 @@ public:
 
 void CantHateCharacters::OnChaoData(CHAO_PARAM_GC& chao) {
 	for (int i = 0; i < 6; i++) {
-		if (chao.Knowledge.player[i].like < 0) {
-			chao.Knowledge.player[i].like = 0;
+		if (chao.knowledge.player[i].like < 0) {
+			chao.knowledge.player[i].like = 0;
 		}
 	}
 }

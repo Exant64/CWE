@@ -5,14 +5,16 @@
 
 int __cdecl ALBHV_Drown(task* a1)
 {
-	if (!a1 || !GET_CHAOWK(a1) || !a1->EntityData2)
+	if (!a1 || !GET_CHAOWK(a1) || !a1->mwp)
 		return 0;
-	if (a1->twp->pos.y <= a1->EntityData2->field_DC - 2.1f)
+
+	MOVE_WORK* move = (MOVE_WORK*)a1->mwp;
+	if (a1->twp->pos.y <= move->WaterY - 2.1f)
 	{
 		a1->twp->pos.y += 0.1f;
-		if (a1->twp->pos.y > a1->EntityData2->field_DC - 2.1f)
-			a1->twp->pos.y = a1->EntityData2->field_DC - 2.1f;
-		a1->EntityData2->speed.y = -a1->EntityData2->gravity - 0.1f * a1->EntityData2->velocity.y;
+		if (a1->twp->pos.y > move->WaterY - 2.1f)
+			a1->twp->pos.y = move->WaterY - 2.1f;
+		move->Acc.y = -move->Gravity - 0.1f * move->Velo.y;
 	}
 	int modePre = GET_CHAOWK(a1)->Behavior.Mode;
 	int returnVal = ((BHV_FUNC)0x00568F60)(a1);

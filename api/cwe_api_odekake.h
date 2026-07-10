@@ -3,7 +3,7 @@
 #include "cwe_api_common.h"
 
 #ifndef CWEV9
-struct ChaoHudThingB {
+struct CHS_BILL_INFO {
 	int adjust;
 	float wd;
 	float ht;
@@ -36,19 +36,19 @@ struct CWE_API_ODEKAKE_ENTRY {
 	Uint32 Flags;
 
 	// the icon sprite on the left of the button
-	ChaoHudThingB* ButtonIcon;
+	CHS_BILL_INFO* ButtonIcon;
 
 	// the text sprite in the middle of the button if the menu is accessible
-	ChaoHudThingB* ButtonText;
+	CHS_BILL_INFO* ButtonText;
 
 	// the text sprite in the middle of the button if the menu is inaccessible
-	ChaoHudThingB* GreyButtonText;
+	CHS_BILL_INFO* GreyButtonText;
 
 	// the icon sprite for the top "LargeTitleBar" in the menu
-	ChaoHudThingB* BarIcon;
+	CHS_BILL_INFO* BarIcon;
 
 	// the text sprite for the top "LargeTitleBar" in the menu
-	ChaoHudThingB* BarText;
+	CHS_BILL_INFO* BarText;
 
 	// in 0-1 float format
 	float BarColorA;

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "al_face.h"
 #include "al_motion.h"
 #include "al_misc.h"
@@ -9,8 +10,24 @@
 #include "al_behavior/al_intention.h"
 #include "move.h"
 
-typedef ChaoData1 chaowk;
+struct chaowk_cwe {
+	size_t LocalCharacterChaoType;
+	bool IsCustomChaoTypeLoaded;
+	unsigned char AnimRandomized;
+	unsigned char ExtraSound;
 
+	char AccessoryCalculatedID[4][sizeof(AL_PARAM_ACCESSORY_INFO::ID)];
+	Uint32 AccessoryIndices[4];
+
+	bool JiggleFlagChanged;
+	bool BaldHideHead;
+	Uint16* pBaldAdjacencyIndices;
+	size_t BaldAdjacencyIndexCount;
+
+	void* BhvUserData[16];
+};
+
+#define GET_CHAOWK_CWE(tp) ((chaowk_cwe*)(GET_CHAOWK(tp) + 1))
 #define GET_CHAOWK(tp) ((chaowk*)tp->twp)
 #define GET_CHAOPARAM(tp) (GET_CHAOWK(tp)->pParamGC)
 
@@ -24,6 +41,8 @@ static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const task* tp) {
 }
 
 #define GET_CWEPARAM(p) (CWE_GetExtraChaoParam(p))
+
+DataArray(NJS_VECTOR, ProbablyChaoSpawnPoints, 0x1366260, 48);
 
 enum AL_PARAM_FLAG
 {
@@ -119,7 +138,6 @@ enum ChaoIcon : __int8
 	ChaoIcon_Heart = 0x4,
 	ChaoIcon_Spiral = 0x5,
 };
-
 
 enum eHEAD_PARTS
 {
@@ -318,7 +336,6 @@ enum : Uint8
 	CI_KIND_AL_NADE_FIELD = 0x92,
 	CI_KIND_AL_OBAKE_HEAD = 0x93,
 	CI_KIND_AL_CDR = 0x94,
-	CI_KIND_AL_ACCESSORY = 0x94,
 	CI_KIND_AL_PUNCH = 0x95,
 	CI_KIND_AL_SHADOW = 0x96,
 	CI_KIND_AL_ONARA = 0x97,
@@ -376,13 +393,18 @@ enum : Uint8
 	CI_KIND_AL_CLIMB = 0xCB,
 	CI_KIND_AL_FURIMUKI = 0xCC,
 	CI_KIND_AL_STAGE_CHANGER = 0xCD,
+	CI_KIND_END = 0xFF,
+};
+
+// our custom colli IDs
+enum {
+	CI_KIND_AL_ACCESSORY = 0x94,
 	CI_KIND_AL_SPECIAL = 0xCE,
 	CI_KIND_AL_MAYU_GROW_FIELD = 0xD0,
 	CI_KIND_AL_MAYU_DEATH_FIELD = 0xD1,
 	CI_KIND_AL_MAYU_SUCCEED_FIELD = 0xD2,
 	CI_KIND_AL_PIANO = 0xE1,
 	CI_KIND_AL_RANDOM_STOY = 0xE6,
-	CI_KIND_END = 0xFF,
 };
 
 enum
@@ -420,10 +442,14 @@ enum ALW_KIND
 	ALW_KIND_PIANO = 0x5,
 	ALW_KIND_ORGAN = 0x6,
 	ALW_KIND_HORSE = 0x7,
-	ALW_KIND_BOX = 0x8,
-	//CWE STARTS HERE
+	ALW_KIND_BOX = 0x8
+};
+
+// ALW_KIND enum extension
+enum {
 	ALW_KIND_BOAT = 0x9,
 	ALW_KIND_UKIWA = 10,
+	ALW_KIND_COFFIN = 11,
 	NB_ALW_KIND
 };
 
@@ -439,34 +465,18 @@ struct LAND_ATTR_INDEX
 };
 DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
 
-struct CNK_VN_VERTEX {
-	NJS_POINT3 Pos;
-	NJS_POINT3 Normal;
-};
-
-struct al_model {
-	int* VList;
-	__int16* PList;
-	NJS_POINT3 Center;
-	float Radius;
-	__int16 OrgTexId[4];
-	int PListSize;
-	int nbVertex;
-	CNK_VN_VERTEX* pVertex;
-};
-
 void AL_ChaoAccessoryConversion(CHAO_PARAM_CWE* pParam);
 void AL_ChaoAccessoryMainCheck(task* tp);
 
 ThiscallFunctionPointer(signed int, AL_MoveHoldingObject, (task* a1), 0x56CFF0);
 task* __cdecl AL_GetFoundToyTask(task* a1);
 
-void __cdecl AL_SetItem(task* a1, int a2, NJS_OBJECT* model, NJS_TEXLIST* texlist);
+void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist);
 FastcallFunctionPointer(signed int, AL_TraceHoldingPosition, (int a1, task* a2), 0x56D170);
 task* sub_55A920(int a1, NJS_VECTOR* a2, task* parent, Uint8 a4, float a5);
-void sub_54A690(task* a1);
+void AL_FixPosition(task* a1);
 void LoadCocoon(task* a1, char a2);
-void ALOField_Load(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer);
+void AL_ChildFieldCreateT(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int timer);
 
 task* GetClosestChao(task* a1);
 void AL_IconSet(task* a4, char a2, int a3);

@@ -41,7 +41,7 @@ DataArray(int, dword_12983A8, 0x12983A8, 12);
 FunctionPointer(int, __cdecl sub_56E1E0, (int a1), 0x56E1E0);
 FunctionPointer(void, sub_496310, (), 0x496310);
 FunctionPointer(int, __cdecl SetPixelShaderFloatAlmostAlwaysTEVMode, (int a1, int a2), 0x0041FCA0);
-FunctionPointer(void, sub_56DF50, (NJS_OBJECT* a1), 0x56DF50);
+FunctionPointer(void, sub_56DF50, (NJS_CNK_OBJECT* a1), 0x56DF50);
 StdcallFunctionPointer(void, SetAndLoadShader, (int a1), 0x00424050);
 
 ThiscallFunctionPointer(void, __thiscall LoadShaders, (struc_36asd *a1), 0x004248B0);
