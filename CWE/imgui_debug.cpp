@@ -115,7 +115,7 @@ static void ChaoInfoMenu() {
 
         chaowk* work = GET_CHAOWK(pChao);
         auto pParamCwe = GET_CWEPARAM(pChao);
-        auto* move_work = pChao->mwp;
+        auto* move_work = GET_MOVE_WORK(pChao);
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
@@ -153,8 +153,8 @@ static void ChaoInfoMenu() {
                         "%s (internal data ParamID:%s Data1ID:%s Index: %d)", 
                         slotNames[i],
                         pParamCwe->Accessories[i].ID, 
-                        work->AccessoryCalculatedID[i], 
-                        work->AccessoryIndices[i]
+                        GET_CHAOWK_CWE(pChao)->AccessoryCalculatedID[i], 
+                        GET_CHAOWK_CWE(pChao)->AccessoryIndices[i]
                     );
 
                     size_t count = 0;
@@ -172,9 +172,9 @@ static void ChaoInfoMenu() {
                     }
                     ImGui::PopID();
 
-                    if (work->AccessoryIndices[i] == -1) continue;
+                    if (GET_CHAOWK_CWE(pChao)->AccessoryIndices[i] == -1) continue;
                     
-                    for (size_t j = 0; j < GetAccessoryColorCount(work->AccessoryIndices[i]); ++j) {
+                    for (size_t j = 0; j < GetAccessoryColorCount(GET_CHAOWK_CWE(pChao)->AccessoryIndices[i]); ++j) {
                         NJS_COLOR* pCol = (NJS_COLOR*) & pParamCwe->Accessories[i].ColorSlots[j];
                         ImGui::PushID(i * 10 + j);
                         float col[3];
@@ -334,10 +334,10 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Flags")) {
                 {
-                    bool flagEnabled = (work->Flag & 2);
+                    bool flagEnabled = (work->Shape.Flag & 2);
                     if(ImGui::Checkbox("Shape Deform", &flagEnabled)) {
                         if(flagEnabled) {
-                            work->Flag |= 2;
+                            work->Shape.Flag |= 2;
                         }
                     }
                 }
@@ -401,7 +401,6 @@ static void ChaoInfoMenu() {
                 static int animID = 0;
                 int currentAnimID = work->MotionCtrl.curr_num;
                 ImGui::Text("Current Animation: %s (%d)", MotionNames[currentAnimID], currentAnimID);
-                ImGui::Text("Speed: %f %f", work->MotionCtrl.PlaySpeed2, work->MotionCtrl.PlaySpeed);
 
                 ImGui::Combo("Filter for pose: %s (%d)", &poseFilter, poseNames, IM_ARRAYSIZE(poseNames));
                 if (poseFilter > 0) {
@@ -551,7 +550,7 @@ static void ChaoSoundMenu() {
         }
 
         if (ImGui::Button("Play")) {
-            SE_CallV2(SoundID, &playertwp[0]->pos, 0, 0, 110);
+            SE_CallV2(SoundID, 0, 0, 110, &playertwp[0]->pos);
         }
 
         if (ImGui::Button("Stop Music")) {
@@ -564,7 +563,7 @@ static void ChaoSoundMenu() {
 
 static void TaskListMenu() {
     if (ShowTaskList && ImGui::Begin("Tasks", &ShowTaskList)) {
-        for (size_t i = 0; i < ObjectLists_Length; i++) {
+        for (size_t i = 0; i < btp_Length; i++) {
             char path[40];
             sprintf_s(path, "List %d", int(i));
 

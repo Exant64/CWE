@@ -32,7 +32,7 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 			a3.x = njSin(a1->twp->ang.y) * 3.0f + a1->twp->pos.x;
 			a3.y = a1->twp->pos.y;
 			a3.z = njCos(a1->twp->ang.y) * 3.0f + a1->twp->pos.z;
-			GET_CHAOWK(a1)->pBooktask = SandHole_Load(&a3);
+			GET_CHAOWK(a1)->pBooktask = ALO_SandHoleCreate(&a3);
 		}
 		break;
 	case 2:
