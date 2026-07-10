@@ -14,7 +14,7 @@ static CHS_BILL_INFO NameMenuSprites[] = {
 	{1, 32, 32, 0.01f, 0.01f, 0.99f, 1, &NAME_ODE_TEXLIST, 1} //icon
 };
 
-static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1);
+static void AL_OdekakeName(ODE_MENU_MASTER_WORK* pMaster);
 
 CWE_API_ODEKAKE_ENTRY OdekakeNameEntry = { AL_OdekakeName, nullptr, ODE_FLAGS_REQUIRE_CHAO, &NameMenuSprites[2], &NameMenuSprites[0], &NameMenuSprites[1], nullptr, nullptr };
 
@@ -22,21 +22,21 @@ char NazukeyaBuff[0x60 + 4 + sizeof(AL_NAME)];
 task* nazukeyaObj = 0;
 FunctionPointer(void, sub_5827A0, (int a1), 0x5827A0);
 
-static void Nazukeya_Main(task *a1) {
+static void Nazukeya_Main(task *tp) {
 	sub_582F60((char*)NazukeyaBuff);
 }
 
-static void Nazukeya_Display(task *a1) {
+static void Nazukeya_Display(task *tp) {
 	sub_5827A0((int)NazukeyaBuff);
 }
 
-static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
+static void AL_OdekakeName(ODE_MENU_MASTER_WORK* pMaster) {
 	int v4;
-	switch (a1->mode)
+	switch (pMaster->mode)
 	{
 	case 0:
 		texLoadTexturePvmFile((char*)"al_stg_kinder_ad_tex", (NJS_TEXLIST*)0x011D2ACC);
-		a1->mode++;
+		pMaster->mode++;
 		memset(NazukeyaBuff, 0, 0x60 + 4 + sizeof(AL_NAME));
 		NazukeyaBuff[80] = 1;
 		NazukeyaBuff[81] = 1;
@@ -63,7 +63,7 @@ static void AL_OdekakeName(ODE_MENU_MASTER_WORK* a1) {
 				memcpy(GET_CWEPARAM(GBAManager_GetChaoDataPointer())->Name, &NazukeyaBuff[0x60], strlen(&NazukeyaBuff[0x60]));
 			}
 			//njReleaseTexture((NJS_TEXLIST*)0x011D2ACC);
-			a1->mode++;
+			pMaster->mode++;
 		}
 		break;
 	case 2:

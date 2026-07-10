@@ -69,8 +69,8 @@ void AnimateChao(int a1);
 void sub_56E9C0(task* a1);
 void ChaoColoring(int texture, int color, int shiny, int highlights, int shinyJewelMonotone, NJS_CNK_MODEL* model);
 
-void AL_SetBodyTexture(task* a1);
-void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model);
+void AL_SetBodyTexture(task* tp);
+void AL_SetRareMaterial(task* tp, NJS_CNK_MODEL* pModel);
 
 extern task* ChaoDebugDistSelected;
 extern float ChaoDebugDist;

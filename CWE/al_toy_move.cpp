@@ -109,9 +109,9 @@ AL_TOY_MOVE* GetToyMove(task* a1)
 	return (AL_TOY_MOVE*)((int)a1->mwp + 0x26C);
 }
 
-void AL_Toy_Move_Update(task *a1) {
-	MOVE_WORK* move = GET_MOVE_WORK(a1);
-	AL_TOY_MOVE* toyMove = GetToyMove(a1);
+void AL_Toy_Move_Update(task *tp) {
+	MOVE_WORK* move = GET_MOVE_WORK(tp);
+	AL_TOY_MOVE* toyMove = GetToyMove(tp);
 
 	//todo: "nextaction" for collision changes?
 	switch (toyMove->state)
@@ -120,15 +120,15 @@ void AL_Toy_Move_Update(task *a1) {
 
 		if (toyMove->flag == 0)
 		{
-			CCL_Disable(a1, 0);
-			CCL_Disable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Disable(tp, 0);
+			CCL_Disable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
 
 		//run collision for 30 frames, after that become static
-		MOV_Control(a1);
-		MoveFunc2(a1);
+		MOV_Control(tp);
+		MoveFunc2(tp);
 		toyMove->timer++;
 		if (toyMove->timer > 30)
 		{
@@ -141,16 +141,16 @@ void AL_Toy_Move_Update(task *a1) {
 
 		if (toyMove->flag == 0)
 		{
-			CCL_Enable(a1, 0);
-			CCL_Enable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Enable(tp, 0);
+			CCL_Enable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
 
 		//if not picked up
-		if (a1->twp->flag >= 0)
+		if (tp->twp->flag >= 0)
 		{
-			colliwk* v8 = a1->twp->cwp;
+			colliwk* v8 = tp->twp->cwp;
 			if (v8)
 			{
 				//if the object is touched, start running collision
@@ -173,15 +173,15 @@ void AL_Toy_Move_Update(task *a1) {
 	case TOY_MOVE_DYNAMIC:
 		if (toyMove->flag == 0)
 		{
-			CCL_Enable(a1, 0);
-			CCL_Enable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Enable(tp, 0);
+			CCL_Enable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
 		//water handler
-		sub_54B230(a1, toyMove->floatVal);
+		sub_54B230(tp, toyMove->floatVal);
 
-		if (a1->twp->flag & 1)
+		if (tp->twp->flag & 1)
 		{
 
 			NJS_VECTOR veloVec;
@@ -215,28 +215,28 @@ void AL_Toy_Move_Update(task *a1) {
 			}
 		}
 		//if picked up
-		if (a1->twp->flag < 0)
+		if (tp->twp->flag < 0)
 		{
 			toyMove->flag = 0;
 			toyMove->timer = 0;
 			toyMove->state = TOY_MOVE_HOLDP;
 		}
-		MOV_Control(a1);
-		MoveFunc2(a1);
+		MOV_Control(tp);
+		MoveFunc2(tp);
 		break;
 	case TOY_MOVE_HOLDP:
 
 		if (toyMove->flag == 0)
 		{
-			CCL_Disable(a1, 0);
-			CCL_Disable(a1, 1);
-			CCL_Disable(a1, 2);
+			CCL_Disable(tp, 0);
+			CCL_Disable(tp, 1);
+			CCL_Disable(tp, 2);
 			toyMove->flag++;
 		}
-		ALW_CommunicationOff(a1);
-		a1->twp->ang.y = 0x4000 - playertwp[0]->ang.y;
+		ALW_CommunicationOff(tp);
+		tp->twp->ang.y = 0x4000 - playertwp[0]->ang.y;
 		//if it gets put down, go back to dynamic
-		if (a1->twp->flag >= 0)
+		if (tp->twp->flag >= 0)
 		{
 			toyMove->timer = 0;
 			toyMove->flag = 0;
@@ -245,7 +245,7 @@ void AL_Toy_Move_Update(task *a1) {
 		break;
 	}
 
-	move->PrePos = a1->twp->pos;
+	move->PrePos = tp->twp->pos;
 	
 }
 MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)

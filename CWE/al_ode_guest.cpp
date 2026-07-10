@@ -10,7 +10,7 @@
 
 #include "al_ode_menu.h"
 
-static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1);
+static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* pMaster);
 
 static CHS_BILL_INFO GuestMenu[] = {
 	{1, 128, 32, 0, 0.01f, 0.5f, 0.5f, &AL_ODE_GUEST_TEXLIST, 0}, //text
@@ -36,11 +36,11 @@ void someUIProjectionCodeCopy(NJS_VECTOR* a1, NJS_VECTOR* a2)
 FunctionPointer(int, ChaoParamWindowExecutor_Load, (float, float), 0x5AD690);
 
 static task* pGuestChao = NULL;
-static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
+static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* pMaster)
 {
 	NJS_VECTOR posIn = { 240, 300, -25 };
 
-	switch (a1->mode)
+	switch (pMaster->mode)
 	{
 	case 0:
 		CreateButtonGuide(BACK);
@@ -63,7 +63,7 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 
 		GBAManager_GetChaoDataPointer()->GBAType = 1;
 
-		a1->mode++;
+		pMaster->mode++;
 		break;
 	case 1:
 		if (SWDATAE[0] & BTN_B) {
@@ -73,7 +73,7 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* a1)
 			//pGuestChao = nullptr;
 
 			GBAManager_GetChaoDataPointer()->GBAType = 0;
-			a1->mode++;
+			pMaster->mode++;
 		}
 		break;
 	case 2:

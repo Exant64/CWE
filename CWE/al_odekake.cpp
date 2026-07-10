@@ -15,11 +15,11 @@
 // todo: move this maybe somewhere more appropriate
 std::vector<CWE_API_ODEKAKE_ENTRY> odekakeMenuEntries;
 
-static void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1) {
-	sub_5A6F50(a1);
+static void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* pMaster) {
+	sub_5A6F50(pMaster);
 }
 
-static void AL_OdekakeMenuMaster_(task* a1) {
+static void AL_OdekakeMenuMaster_(task* tp) {
 	ODE_MENU_MASTER_WORK* pOde = AL_OdekakeMenuMaster_Data_ptr;
 	int stage = pOde->CurrStage;
 
@@ -67,9 +67,9 @@ void sub_558BA0(int a1, int a2, int a3, float a4, float a5, float a6)
 	chDrawBillboardSR((CHS_BILL_INFO*)a3, a4, a5, a6, 1, 1, a2, a1);
 }
 
-void NewBarDraw(task *a1)
+void NewBarDraw(task *tp)
 {
-	taskwk* v1 = a1->twp;
+	taskwk* v1 = tp->twp;
 	float a2 = *(float*)& v1->ang.x;
 	float a3 = *(float*)& v1->ang.y;
 	float  v11 = v1->pos.x;
@@ -120,10 +120,10 @@ void NewBarDraw(task *a1)
 		chDrawBillboardSR(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
 }
 FunctionPointer(void, sub_5ABA70, (task*), 0x5ABA70);
-void BarDraw(task* a1)
+void BarDraw(task* tp)
 {
-	sub_5ABA70(a1);
-	NewBarDraw(a1);
+	sub_5ABA70(tp);
+	NewBarDraw(tp);
 }
 
 // todo: maybe move these somewhere more findable?

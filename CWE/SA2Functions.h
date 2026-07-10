@@ -834,15 +834,6 @@ static inline void ChaosDrive_Load(NJS_VECTOR *a1)
 }
 
 // void __usercall(char *a1@<esi>)
-static const void *const WriteChaoSaveChecksumPtr = (void*)0x52EEE0;
-static inline void WriteChaoSaveChecksum(char *a1)
-{
-	__asm
-	{
-		mov esi, [a1]
-		call WriteChaoSaveChecksumPtr
-	}
-}
 
 // signed int __usercall@<eax>(unsigned __int16 a1@<cx>, task *obj@<ebx>, __int16 a3, CHAO_SAVE_INFO *data)
 static const void *const AddToGlobalChaoThingMaybePtr = (void*)0x530750;

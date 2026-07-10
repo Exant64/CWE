@@ -253,9 +253,9 @@ enum {
 	EMOTION_ICON_ILLNESS = 3,
 	EMOTION_ICON_COUNT
 };
-bool AL_EmoteIconRequirement(task* a1, int index)
+bool AL_EmoteIconRequirement(task* tp, int index)
 {
-	CHAO_PARAM_GC* data = GET_CHAOPARAM(a1);
+	CHAO_PARAM_GC* data = GET_CHAOPARAM(tp);
 
 	if (!data)
 		return false;
@@ -263,11 +263,11 @@ bool AL_EmoteIconRequirement(task* a1, int index)
 	switch (index)
 	{
 	case EMOTION_ICON_MATE:
-		return AL_EmotionGetValue(a1, EM_ST_BREED) >= 10000;
+		return AL_EmotionGetValue(tp, EM_ST_BREED) >= 10000;
 	case EMOTION_ICON_HUNGER:
-		return AL_EmotionGetValue(a1, EM_ST_HUNGER) >= 8000;
+		return AL_EmotionGetValue(tp, EM_ST_HUNGER) >= 8000;
 	case EMOTION_ICON_FEAR:
-		return AL_EmotionGetValue(a1, EM_MD_FEAR) >= 100;
+		return AL_EmotionGetValue(tp, EM_MD_FEAR) >= 100;
 	case EMOTION_ICON_ILLNESS:
 		for (size_t i = 0; i < 6; i++) {
 			if (data->emotion.IllState[i] < 0) {
@@ -279,8 +279,8 @@ bool AL_EmoteIconRequirement(task* a1, int index)
 	return false;
 }
 
-void AL_NameDisplayer(task* a1) {
-	if (a1->twp->mode == 0 && gConfigVal.EmotionDisplay)
+void AL_NameDisplayer(task* tp) {
+	if (tp->twp->mode == 0 && gConfigVal.EmotionDisplay)
 	{
 		for (int i = 0; i < 32; i++) {
 			task* chao = stru_1DC0FC0[i].tp;
@@ -317,17 +317,17 @@ void AL_NameDisplayer(task* a1) {
 			}
 		}
 	}
-	if (a1->twp->mode == 1)
+	if (tp->twp->mode == 1)
 	{
 		*(char*)0x25EFFCC = 0;
 		//njDrawSprite2D(&chaoCamEdge_sprite, 1, 0, 0x60);
 		selectMenu.p = { 320,220, 0 };
-		njDrawSprite2D(&selectMenu, (a1->twp->smode == 0) ? 1 : 0, 1, 0x60);
+		njDrawSprite2D(&selectMenu, (tp->twp->smode == 0) ? 1 : 0, 1, 0x60);
 		selectMenu.p.y += 40;
-		njDrawSprite2D(&selectMenu, (a1->twp->smode == 1) ? 3 : 2, 1, 0x60);
+		njDrawSprite2D(&selectMenu, (tp->twp->smode == 1) ? 3 : 2, 1, 0x60);
 		*(char*)0x25EFFCC = 1;
 	}
-	else if (a1->twp->mode == 2)
+	else if (tp->twp->mode == 2)
 	{
 		for (int i = 0; i < 32; i++) {
 			task* chao = stru_1DC0FC0[i].tp;
@@ -335,7 +335,7 @@ void AL_NameDisplayer(task* a1) {
 				AL_NameDisplay_(GET_CWEPARAM(chao)->Name, &chao->twp->pos);
 		}
 	}
-	else if (a1->twp->mode == 3)
+	else if (tp->twp->mode == 3)
 	{
 		*(char*)0x25EFFCC = 0;
 
@@ -349,9 +349,9 @@ void AL_NameDisplayer(task* a1) {
 	}
 	//SetShaders(backup);
 }
-void AL_NameDisplay_Main(task* a1)
+void AL_NameDisplay_Main(task* tp)
 {
-	switch (a1->twp->mode)
+	switch (tp->twp->mode)
 	{
 	case 0:
 		if ((SWDATA[0] & BTN_X) &&
@@ -359,34 +359,34 @@ void AL_NameDisplay_Main(task* a1)
 			playerpwp[0] && !playerpwp[0]->htp)
 		{
 			if (gConfigVal.DayNightCheat)
-				a1->twp->mode = 1;
+				tp->twp->mode = 1;
 			else
-				a1->twp->mode = 2;
+				tp->twp->mode = 2;
 		}
 		break;
 	case 1:
 		ControlEnabled = 0;
 
 		if (SWDATAE[0] & BTN_UP)
-			a1->twp->smode = 0;
+			tp->twp->smode = 0;
 		else if (SWDATAE[0] & BTN_DOWN)
-			a1->twp->smode = 1;
+			tp->twp->smode = 1;
 
 
 		if (SWDATAE[0] & BTN_A)
 		{
 			ControlEnabled = 1;
-			a1->twp->mode = 2 + a1->twp->smode;
-			a1->twp->smode = 0;
+			tp->twp->mode = 2 + tp->twp->smode;
+			tp->twp->smode = 0;
 		}
 		break;
 
 	case 2:
-		a1->twp->wtimer++;
-		if (a1->twp->wtimer > 60 * 10)
+		tp->twp->wtimer++;
+		if (tp->twp->wtimer > 60 * 10)
 		{
-			a1->twp->wtimer = 0;
-			a1->twp->mode = 0;
+			tp->twp->wtimer = 0;
+			tp->twp->mode = 0;
 		}
 		break;
 	case 3:
@@ -405,8 +405,8 @@ void AL_NameDisplay_Main(task* a1)
 
 		if (SWDATAE[0] & BTN_A)
 		{
-			a1->twp->wtimer = 0;
-			a1->twp->mode = 0;
+			tp->twp->wtimer = 0;
+			tp->twp->mode = 0;
 
 			ControlEnabled = 1;
 		}

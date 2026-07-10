@@ -169,12 +169,12 @@ void LoadChaoFiles() {
 }
 
 DataArray(CHS_BILL_INFO, MenuArray, 0x11BA528, 0x61);
-void BackButtonDisp(task* a1) {
+void BackButtonDisp(task* tp) {
 
 	float v14 = 320;
 	float a3 = 470;
 	float v9 = a3 - 5.0f;
-	float v7 = (njSin(a1->twp->ang.y) *  0.1f) + 1.0f;
+	float v7 = (njSin(tp->twp->ang.y) *  0.1f) + 1.0f;
 	float sizeX = 40.0f;
 
 	*(char*)0x25EFFCC = 1;

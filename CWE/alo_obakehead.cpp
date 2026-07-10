@@ -9,7 +9,6 @@
 #include "alo_obakehead.h"
 
 DataPointer(float, flt_1312CBC, 0x1312CBC);
-DataArray(int, dword_19468A0, 0x19468A0, 4);
 
 std::vector<std::pair<NJS_CNK_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
 
@@ -20,49 +19,46 @@ bool IsAltDrawHead(int headgear) {
 		headgear == ChaoHat_Pan;
 }
 
-void __cdecl ALO_ObakeHeadExecutor_Display_(task *a1)
-{
-	task *v1; // ebx
-	float v28; // st6
-	float a3; // ST04_4
-
-	v1 = a1;
-	taskwk* work = a1->twp;
+void ALO_ObakeHeadDisplayer_r(task *tp) {
+	taskwk* work = tp->twp;
 	
-	if (AL_IsOnScreen2(a1, 2.5f, 2.0f)) {
+	if (AL_IsOnScreen2(tp, 2.5f, 2.0f)) {
 		njSetTexture(&AL_BODY);
 		DoLighting(LightIndex);
+
 		njPushMatrixEx();
 		njTranslateEx(&work->pos);
-		if (work->flag < 0)
+		if (work->flag < 0) {
 			njTranslate(NULL, 0, -0.35f, 0);
+		}
 		RotateY(work->ang.y);
 		njPushMatrixEx();
-		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
+		if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_SHADOW))
 			_nj_control_3d_flag_ |= 0x2400u;
 		ALO_ObakeHeadDraw<true>(work->ang.x);
 		_nj_control_3d_flag_ &= ~0x2400u;
 		njPopMatrixEx();
-		if (flt_1312CBC > GET_ALW_ENTRY_WORK(a1)->CamDist)
-		{
-			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW))
-			{
-				v28 = 0.1f;
+
+		if (RenderFix_IsEnabled() && flt_1312CBC > GET_ALW_ENTRY_WORK(tp)->CamDist) {
+			float y;
+
+			if (AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_SHADOW)) {
+				y = 0.1f;
 			}
-			else
-			{
-				v28 = 0.4f;
+			else {
+				y = 0.4f;
 			}
-			a3 = v28;
-			njTranslate(NULL, 0.0, a3, 0.0);
+			
+			njTranslate(NULL, 0, y, 0);
 			njScale(NULL, 1.5, 0.7f, 1.5f);
+			rfapi_core->pDraw->AL_ShadowDraw();
 		}
+
 		njPopMatrixEx();
 		DoLighting(LightIndexBackupMaybe);
 	}
 }
 
-void ALO_ObakeHead_Init()
-{
-	WriteJump((void*)0x54A0F0, ALO_ObakeHeadExecutor_Display_);
+void ALO_ObakeHead_Init() {
+	WriteJump((void*)0x54A0F0, ALO_ObakeHeadDisplayer_r);
 }

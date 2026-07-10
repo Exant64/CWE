@@ -1727,9 +1727,9 @@ const char* BlackMarketGetDescMsg(BlackMarketData const* a1, BlackMarketItemAttr
 	return BlackMarket_GetItemMsg(a1, a2->Descriptions);
 }
 
-void __cdecl FItemDescSet(SAlItemCwe* a1, BlackMarketData* a2) {	
-	a2->mItemDescItem = *a1;
-	a2->mItemDescInfo = AlItemGetInfo_r(a1);
+void __cdecl FItemDescSet(SAlItemCwe* pItem, BlackMarketData* a2) {	
+	a2->mItemDescItem = *pItem;
+	a2->mItemDescInfo = AlItemGetInfo_r(pItem);
 	a2->mItemDescScl = 1;
 	a2->mItemDescAngX = 0;
 	a2->mItemDescAngY = 0;

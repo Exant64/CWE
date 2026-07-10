@@ -14,34 +14,32 @@ __declspec(naked) void DoLighting(int a1)
 	}
 }
 
-NJS_CNK_OBJECT* object_sandpit[] = {
+static NJS_CNK_OBJECT* object_sandpit[] = {
 	&object_8D65212E6E079DB20DD,
 	& object_8D6521312A3FB5E8953
 };
 
-float scale_sandpit[] = { 0.25f, 0.75f };
+static void ALO_SandHoleDisplayer(task *tp) {
+	const float scale_sandpit[] = { 0.25f, 0.75f };
 
-void SandHole_Display(task *a1)
-{
 	DoLighting(LightIndex);
 
 	njPushMatrixEx();
-	njTranslateEx(&a1->twp->pos);
+	njTranslateEx(&tp->twp->pos);
 	
-	float scl = scale_sandpit[a1->twp->btimer];
+	float scl = scale_sandpit[tp->twp->btimer];
 	njScale(NULL, scl, scl, scl);
 
 	njSetTexture(&AL_SANDHOLE_TEXLIST);
-	chCnkDrawObject(object_sandpit[a1->twp->btimer]);
+	chCnkDrawObject(object_sandpit[tp->twp->btimer]);
 
 	njPopMatrixEx();
 	DoLighting(LightIndexBackupMaybe);
 }
 
-task* __cdecl SandHole_Load(NJS_VECTOR * pos)
-{
+task* ALO_SandHoleCreate(NJS_POINT3* pPos) {
 	task* loaded = CreateElementalTask(IM_TWK, LEV_4, (task_exec)nullsub_1, "SandHole");
-	loaded->disp = SandHole_Display;
-	loaded->twp->pos = *pos;
+	loaded->disp = ALO_SandHoleDisplayer;
+	loaded->twp->pos = *pPos;
 	return loaded;
 }

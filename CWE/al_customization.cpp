@@ -40,7 +40,7 @@
 #include <util.h>
 
 // the menu entry
-static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1);
+static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster);
 
 CWE_API_ODEKAKE_ENTRY OdekakeCustomizationEntry = {
 	AL_OdekakeCustomization, 
@@ -1600,10 +1600,10 @@ public:
 	}
 };
 
-static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {	
+static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {	
 	NJS_POINT3 posOut;
 
-	switch (a1->mode)
+	switch (pMaster->mode)
 	{
 	case 0:
 		UpdateHatAccVector();
@@ -1730,22 +1730,22 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* a1) {
 			customizationController->Disp();
 		};
 
-		a1->mode++;
+		pMaster->mode++;
 		break;
 	case 1:
 		break;
 	case 2:
-		a1->timer++;
-		if (a1->timer > 90)
+		pMaster->timer++;
+		if (pMaster->timer > 90)
 		{
-			a1->timer = 0;
-			a1->mode++;
+			pMaster->timer = 0;
+			pMaster->mode++;
 		}
 		break;
 	case 3:
-		if (a1->state == 0)
+		if (pMaster->state == 0)
 		{
-			a1->mode++;
+			pMaster->mode++;
 		}
 		break;
 	case 4:

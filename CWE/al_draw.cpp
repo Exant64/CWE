@@ -284,15 +284,16 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 	}
 }
 
-void AL_SetRareMaterial(task* a1, NJS_CNK_MODEL* model)
+void AL_SetRareMaterial(task* tp, NJS_CNK_MODEL* pModel)
 {
 	ChaoColoring(
-		GET_CHAOWK(a1)->pParamGC->body.JewelNum,
-		GET_CHAOWK(a1)->pParamGC->body.ColorNum,
-		GET_CHAOWK(a1)->pParamGC->body.MultiNum,
-		GET_CHAOWK(a1)->pParamGC->body.NonTex,
-		GET_CWEPARAM(a1)->ShinyJewelMonotone,
-		model);
+		GET_CHAOWK(tp)->pParamGC->body.JewelNum,
+		GET_CHAOWK(tp)->pParamGC->body.ColorNum,
+		GET_CHAOWK(tp)->pParamGC->body.MultiNum,
+		GET_CHAOWK(tp)->pParamGC->body.NonTex,
+		GET_CWEPARAM(tp)->ShinyJewelMonotone,
+		pModel
+	);
 }
 
 static const int C_MTXConcatPtr = 0x00426E40;
@@ -520,12 +521,12 @@ static void AL_DrawAccessories(task* tp) {
 	AL_DrawAccessory(tp, EAccessoryType::Face);
 }
 
-bool EggChaoFeetCheck(task* a1) {
+bool EggChaoFeetCheck(task* tp) {
 	//if not egg chao stop
 	//if doesnt have hidefeet stop
 	//but if it does, make sure youre not rendering arm_l and arm_r
-	return !IsEggChao(a1) ||
-		(!GET_CHAOPARAM(a1)->body.ObakeBody || (Chao_NodeIndex != AL_PART_REG_L && Chao_NodeIndex != AL_PART_REG_R));
+	return !IsEggChao(tp) ||
+		(!GET_CHAOPARAM(tp)->body.ObakeBody || (Chao_NodeIndex != AL_PART_REG_L && Chao_NodeIndex != AL_PART_REG_R));
 }
 
 void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj)
@@ -681,63 +682,64 @@ void sub_56E9C0(task* a1)
 		call sub_56E9C0Ptr
 	}
 }
-void __cdecl DrawEggChao(task* a1)
+void __cdecl DrawEggChao(task* tp)
 {
-	chaowk* data1 = GET_CHAOWK(a1);
+	chaowk* work = GET_CHAOWK(tp);
 
-	if (!(data1->ChaoFlag & 0x200)) return;
+	if (!(work->ChaoFlag & 0x200)) return;
 
 	njPushMatrixEx();
-	njTranslateEx(&data1->pos);
-	RotateZ(data1->ang.z);
-	RotateX(data1->ang.x);
-	RotateY(data1->ang.y);
+	njTranslateEx(&work->pos);
+	RotateZ(work->ang.z);
+	RotateX(work->ang.x);
+	RotateY(work->ang.y);
 
-	if (ssGameMode != MD_GAME_PAUSE && GET_CHAOPARAM(a1)->body.FormNum == 1)
+	if (ssGameMode != MD_GAME_PAUSE && GET_CHAOPARAM(tp)->body.FormNum == 1)
 	{
-		if (GET_CHAOWK(a1)->scl.y < 1.0f)
-			GET_CHAOWK(a1)->scl.y += 0.06f;
+		if (work->scl.y < 1.0f) {
+			work->scl.y += 0.06f;
+		}
 
-		float a1a = (1.0f - GET_CHAOWK(a1)->scl.x) * 0.15f + GET_CHAOWK(a1)->scl.z;
-		GET_CHAOWK(a1)->scl.z = a1a * 0.9f;
-		GET_CHAOWK(a1)->scl.x += a1a;
+		const float v = (1.0f - work->scl.x) * 0.15f + work->scl.z;
+		work->scl.z = v * 0.9f;
+		work->scl.x += v;
 	}
 
 	njSetTexture(&AL_BODY);
-	sub_56E9C0(a1);
-	alpalSetBank(a1, a1->twp->btimer);
+	sub_56E9C0(tp);
+	alpalSetBank(tp, tp->twp->btimer);
 	SaveControl3D();
 
 	OffControl3D(NJD_CONTROL_3D_CONSTANT_ATTR);
 	OffControl3D(NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 
 	Chao_NodeIndex = 0;
-	if (GET_CHAOPARAM(a1)->body.FormNum == 1)
-		DrawOtherChao(a1, data1->Shape.pObject, &object_0023CC1C);
-	else if (GET_CHAOPARAM(a1)->body.FormNum == 2)
-		DrawOtherChao(a1, data1->Shape.pObject, &object_00254A0C);
+	if (GET_CHAOPARAM(tp)->body.FormNum == 1)
+		DrawOtherChao(tp, work->Shape.pObject, &object_0023CC1C);
+	else if (GET_CHAOPARAM(tp)->body.FormNum == 2)
+		DrawOtherChao(tp, work->Shape.pObject, &object_00254A0C);
 
 	LoadControl3D();
 
 	njPopMatrixEx();
-	if (data1->Shape.pLeftHandItemObject)
+	if (work->Shape.pLeftHandItemObject)
 	{
-		njSetTexture(data1->Shape.pLeftHandItemTexlist);
+		njSetTexture(work->Shape.pLeftHandItemTexlist);
 		njPushMatrixEx();
-		njTranslateEx(&data1->Shape.LeftHandPos);
-		RotateY(data1->ang.y);
-		njScale(NULL, data1->Shape.LeftHandItemScale, data1->Shape.LeftHandItemScale, data1->Shape.LeftHandItemScale);
-		njCnkDrawObject(data1->Shape.pLeftHandItemObject);
+		njTranslateEx(&work->Shape.LeftHandPos);
+		RotateY(work->ang.y);
+		njScale(NULL, work->Shape.LeftHandItemScale, work->Shape.LeftHandItemScale, work->Shape.LeftHandItemScale);
+		njCnkDrawObject(work->Shape.pLeftHandItemObject);
 		njPopMatrixEx();
 	}
-	if (data1->Shape.pRightHandItemObject)
+	if (work->Shape.pRightHandItemObject)
 	{
-		njSetTexture(data1->Shape.pRightHandItemTexlist);
+		njSetTexture(work->Shape.pRightHandItemTexlist);
 		njPushMatrixEx();
-		njTranslateEx(&data1->Shape.RightHandPos);
-		RotateY(data1->ang.y);
-		njScale(NULL, data1->Shape.RightHandItemScale, data1->Shape.RightHandItemScale, data1->Shape.RightHandItemScale);
-		njCnkDrawObject(data1->Shape.pRightHandItemObject);
+		njTranslateEx(&work->Shape.RightHandPos);
+		RotateY(work->ang.y);
+		njScale(NULL, work->Shape.RightHandItemScale, work->Shape.RightHandItemScale, work->Shape.RightHandItemScale);
+		njCnkDrawObject(work->Shape.pRightHandItemObject);
 		njPopMatrixEx();
 	}
 	njPopMatrixEx();
@@ -766,14 +768,14 @@ void ColorEggModel(NJS_CNK_MODEL* a1, int a2)
 	}
 }
 
-void AL_SetBodyTexture(task* a1)
+void AL_SetBodyTexture(task* tp)
 {
-	if (GET_CHAOPARAM(a1)->type == 26) {
+	if (GET_CHAOPARAM(tp)->type == 26) {
 		njSetTexture(&AL_BODY);
 		return;
 	}
 
-	if (AL_IsNegative(a1))
+	if (AL_IsNegative(tp))
 		njSetTexture(&XL_BODY_TEXLIST);
 	else
 		njSetTexture(&AL_BODY);
@@ -1007,12 +1009,10 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 			case 19:
 				AL_SetBodyTexture(tp);
 				AL_SetRareMaterial(tp, (NJS_CNK_MODEL*)pObject->pModel);
-				//alpalSetBank(a1, GET_CHAOWK(a1)->Index);
 				goto LABEL_86;
 			case 22:
 				AL_SetBodyTexture(tp);
 				AL_SetRareMaterial(tp, (NJS_CNK_MODEL*)pObject->pModel);
-				//alpalSetBank(a1, GET_CHAOWK(a1)->Index);
 				v36 = -v36;
 			LABEL_86:
 
@@ -1053,7 +1053,6 @@ void DrawChao(task* tp, AL_OBJECT* pObject)
 				if (GET_CWEPARAM(tp)->DCWings || (Chao_NodeIndex != 37 && Chao_NodeIndex != 39))
 					AL_SetRareMaterial(tp, (NJS_CNK_MODEL*)pObject->pModel);
 
-				//alpalSetBank(a1, GET_CHAOWK(a1)->Index);
 				goto LABEL_91;
 			}
 

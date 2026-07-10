@@ -11,4 +11,4 @@ FunctionPointer(double, CalculateFalloffPosition, (float x, float y, float z, An
 const int DoLightingPtr = 0x00487060; //TODO: move to new thing
 void DoLighting(int a1);
 
-task*  SandHole_Load(NJS_VECTOR * pos);
+task* SandHole_Load(NJS_POINT3* pPos);
