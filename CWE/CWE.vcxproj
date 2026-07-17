@@ -666,6 +666,7 @@
     <ClCompile Include="al_behavior\albhv_coffin.cpp" />
     <ClCompile Include="al_behavior\albhv_dance.cpp" />
     <ClCompile Include="al_behavior\albhv_float.cpp" />
+    <ClCompile Include="al_behavior\albhv_fear.cpp" />
     <ClCompile Include="al_behavior\albhv_glide.cpp" />
     <ClCompile Include="al_behavior\albhv_life.cpp" />
     <ClCompile Include="al_behavior\albhv_ltoy.cpp" />

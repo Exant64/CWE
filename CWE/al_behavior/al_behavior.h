@@ -1,7 +1,7 @@
 #pragma once
 #include "save/save_item.h"
 
-void  AL_SetBehaviorWithTimer(task* a1, int a2, int a3);
+void AL_SetBehaviorWithTimer(task* a1, BHV_FUNC a2, int a3);
 void  Chao_BehaviourQueue(task* a1, int a2);
 
 void AL_SetNextBehaviorWithUserData(task* tp, BHV_FUNC Func, void* pUserData);

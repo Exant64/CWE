@@ -167,5 +167,5 @@ void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	piano->twp->pos = *pPos;
 	piano->twp->ang.y = ang;
 
-	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision);
+	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision, 1);
 }

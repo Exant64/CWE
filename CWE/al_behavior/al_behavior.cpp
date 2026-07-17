@@ -15,7 +15,7 @@ extern void ALBHV_Life_Init();
 const int Chao_BehaviourPtr = 0x0053D890;
 const int Chao_BehaviourQueuePtr = 0x0053D970;
 
-void AL_SetBehaviorWithTimer(task* a1, int a2, int a3)
+void AL_SetBehaviorWithTimer(task* a1, BHV_FUNC a2, int a3)
 {
 	__asm
 	{
@@ -43,7 +43,7 @@ BHV_FUNC AL_GetBehavior(task* a1)
 }
 void AL_SetBehavior(task* a1, BHV_FUNC a2)
 {
-	AL_SetBehaviorWithTimer(a1, (int)a2, -1);
+	AL_SetBehaviorWithTimer(a1, a2, -1);
 }
 void AL_SetNextBehavior(task* a1, BHV_FUNC a2)
 {
@@ -272,7 +272,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 			sub_46E5E0(0, (int)playertwp[0]);
 		}
 		AL_GrabObjectBothHands(a1, v3);
-		AL_SetBehaviorWithTimer(a1, 0x569340, -1);
+		AL_SetBehaviorWithTimer(a1, (BHV_FUNC)0x569340, -1);
 		v5 = GET_CHAOPARAM(a1);
 		if (AL_GetAccessory(a1, GetAccessoryType(v3->twp->ang.x)) == -1)
 			Chao_BehaviourQueue(a1, (int)ALBHV_PutOnAccessoryTemp);
@@ -332,7 +332,7 @@ signed int __cdecl AL_CheckAccessory(task* a1)
 	}
 
 	MOV_SetAimPos(a1, &v3->twp->pos);
-	AL_SetBehaviorWithTimer(a1, (int)ALBHV_TurnToAccessory, -1);
+	AL_SetBehaviorWithTimer(a1, ALBHV_TurnToAccessory, -1);
 	return 1;
 }
 //putting accessory on
@@ -492,7 +492,7 @@ static void AccessoryRemoveAll(task* tp) {
 //removing accessory
 void __cdecl AccessoryRemove1(task* a1)
 {
-	AL_SetBehaviorWithTimer(a1, (int)0x563EB0, -1);
+	AL_SetBehavior(a1, (BHV_FUNC)0x563EB0);
 	AccessoryRemoveAll(a1);
 }
 

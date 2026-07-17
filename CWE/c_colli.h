@@ -1,5 +1,9 @@
 #pragma once
 
+#define CCL_CAPSULE(kind, push, damage, attr, cx, cy, cz, a, b) \
+    { kind, CI_FORM_CAPSULE, push, damage, attr, { cx, cy, cz }, a, b, 0, 0, 0, 0, 0 }
+#define CCL_RECTANGLE(kind, push, damage, attr, cx, cy, cz, a, b, c) \
+    { kind, CI_FORM_RECTANGLE, push, damage, attr, { cx, cy, cz }, a, b, c, 0, 0, 0, 0 }
 #define CCL_SPHERE(kind, push, damage, attr, cx, cy, cz, a, b, c) \
     { kind, CI_FORM_SPHERE, push, damage, attr, { cx, cy, cz }, a, b, c, 0, 0, 0, 0 }
 #define CCL_CYLINDER(kind, push, damage, attr, cx, cy, cz, a, b, c) \
@@ -17,5 +21,7 @@ static inline void CCL_Entry(task* object)
 		call AddToCollisionListPtr
 	}
 }
+
+task* CCL_IsHitKind(task* tp, Uint8 kind);
 
 task* AL_IsHitKindWithNum(task *a1, int a2, Uint8 a3);

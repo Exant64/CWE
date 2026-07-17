@@ -95,6 +95,7 @@
 #include "land_grayscale.h"
 #include "api/api_main.h"
 #include "cwe_c_colli.h"
+#include "alo_coffin.h"
 
 const char* PathToModFolder = "";
 
@@ -134,6 +135,12 @@ extern "C"
 				NJS_POINT3 pos = { 88, 0, 50 };
 				ALO_FloatCreate(&pos, 0);
 			}
+			if(AL_GetStageNumber() == 3) {
+				NJS_VECTOR GCPos[] = { {-45, 0, 6}, {-102, 0.05f, 4.5f} };
+				Uint32 Rot[] = { 0x5B0, 0x4000 };
+				ALO_CoffinCreate(&GCPos[1], Rot[1]);
+			}
+			
 			if (
 				(ChaoStageNumber == 2 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x400)) || 
 				(ChaoStageNumber == 3 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x800))
@@ -143,10 +150,13 @@ extern "C"
 				NJS_VECTOR DCPos[] = { {-48, 0, 16}, {-71, 0, -27} };
 				Uint32 Rot[] = { 0x5B0, 0x4000 };
 				int index = (AL_GetStageNumber() == 2) ? 0 : 1;
+
+				#if 0
 				if (GetModuleHandle(L"DCGarden"))
 					ALO_PianoCreate(index, &DCPos[index], Rot[index]);
 				else
 					ALO_PianoCreate(index, &GCPos[index], Rot[index]);
+				#endif
 			}
 		}
 		return retval;

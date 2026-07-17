@@ -182,6 +182,9 @@ void __cdecl  AL_CalcIntentionScore_LToy(task* a1, float* a2)
 				case ALW_KIND_UKIWA:
 					AL_SetBehavior(a1, ALBHV_GoToFloat);
 					break;
+				case ALW_KIND_COFFIN:
+					AL_SetBehavior(a1, ALBHV_GoToCoffin);
+					break;
 				default:
 					break;
 				}

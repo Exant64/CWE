@@ -2,6 +2,18 @@
 
 #include "stdafx.h"
 
+enum {
+    SKILL_SWIM,
+    SKILL_FLY,
+    SKILL_RUN,
+    SKILL_POWER,
+    SKILL_STAMINA,
+    SKILL_GUTS,
+    SKILL_INTELLECT,
+    SKILL_EMPTY,
+    NB_SKILL,
+};
+
 struct ChaoItemStats {
 	__int16 Mood;
 	__int16 Belly;
@@ -96,12 +108,14 @@ bool AL_IsCustomChao(task* tp);
 
 void AL_ParameterClearAccessory(task* tp, int slot);
 
+Bool AL_IsEmotionTimerReset(task* tp);
 void AL_ParameterAddAPos(task* a1, float a2);
 
 void sub_535E90(CHAO_PARAM_GC *a1, int a2);
 
 void AL_ParameterAddUserLike(task* tp, int add, float AddAttr);
 void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4);
+Uint32 AL_ParameterGetSkill(task* tp, Uint16 SkillKind);
 
 void IncrementFlySwim(task* a1, float a2);
 void IncrementPowerRun(task* a1, float a2);

@@ -30,6 +30,7 @@ struct chaowk_cwe {
 #define GET_CHAOWK_CWE(tp) ((chaowk_cwe*)(GET_CHAOWK(tp) + 1))
 #define GET_CHAOWK(tp) ((chaowk*)tp->twp)
 #define GET_CHAOPARAM(tp) (GET_CHAOWK(tp)->pParamGC)
+#define RAND_RANGE(min, max) ((Uint16)(min + (int)(njRandom() * ((max - min) + 1.0f))))
 
 // I chose void* because it should work with both ChaoData and ChaoDataBase
 static CHAO_PARAM_CWE* CWE_GetExtraChaoParam(const void* pChaoParam) {

@@ -770,7 +770,7 @@ static inline int ScreenFade(int targetAlpha)
 
 // signed int __usercall@<eax>(task *obj@<eax>, CollisionData *collision, int count, unsigned __int8 a4)
 static const void *const InitCollisionPtr = (void*)0x47E520;
-static inline signed int CCL_Init(task *obj, CCL_INFO *collision, int count, unsigned __int8 a4)
+static inline signed int CCL_Init(task *obj, const CCL_INFO *collision, int count, unsigned __int8 a4)
 {
 	signed int result;
 	__asm

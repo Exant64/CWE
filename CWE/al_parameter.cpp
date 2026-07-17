@@ -3,6 +3,7 @@
 #include "Chao.h"
 #include <cwe_api.h>
 #include "ChaoMain.h"
+#include "al_stage.h"
 
 void AL_NameSet(char* lval, char* rval) {
 	memcpy(lval, rval, sizeof(AL_NAME));
@@ -48,6 +49,19 @@ void AL_ParameterClearAccessory(task* tp, int slot) {
 	auto pParam = GET_CWEPARAM(tp);
 
 	memset(&pParam->Accessories[slot], 0, sizeof(pParam->Accessories[slot]));
+}
+
+Bool AL_IsEmotionTimerReset(task* tp) {
+    AL_EMOTION* pEmotion = &GET_CHAOPARAM(tp)->emotion;
+
+    if (0);
+    else if (pEmotion->Timer);
+    else {
+        pEmotion->Timer++;
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
 void AL_ParameterAddAPos(task* a1, float a2)
@@ -223,6 +237,16 @@ static void __declspec(naked) AL_CalcParameter_t()
 		pop esi // a1
 		retn
 	}
+}
+
+Uint32 AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {
+    const int stg = AL_GetStageNumber();
+
+    if (stg == CHAO_STG_KINDER || stg > CHAO_STG_STADIUM && stg <= CHAO_STG_KARATE_2P) {
+        return GET_CHAOPARAM(tp)->Skill[SkillKind];
+    }
+    
+	return 3 * GET_CHAOPARAM(tp)->Skill[SkillKind];
 }
 
 void AL_ParameterInit() {

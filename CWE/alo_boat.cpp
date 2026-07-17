@@ -143,6 +143,6 @@ void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
 	p->twp->ang.y = ang;
 	p->twp->scl = p->twp->pos; //scale = default pos
 
-	AL_Toy_Move_Init(p, &boat_colli_info);
+	AL_Toy_Move_Init(p, &boat_colli_info, 1);
 
 }

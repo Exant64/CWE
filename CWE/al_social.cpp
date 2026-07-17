@@ -53,7 +53,8 @@ void Social_SetParameter(task* a1, int a2, int param)
 void Social_SetActor(task* a1, int a2, task* chao)
 {
 	Social_ErrorCheck(a1);
-	AL_SetBehaviorWithTimer(chao, (int)ALBHV_Social, -1);
+	AL_SetBehavior(chao, ALBHV_Social);
+	
 	//((chaowk*)chao->Data1)->pAnyTask = a1;
 	((socialwk*)a1->awp)->data[a2].chaoPointer = chao;
 	((socialwk*)a1->awp)->data[a2].parameter1 = 0;

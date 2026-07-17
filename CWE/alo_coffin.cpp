@@ -1,138 +1,234 @@
 #pragma once
 #include "stdafx.h"
-#if 0
-#include "ninja_functions.h"
-#include "al_world.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
-#include "al_sandhole.h"
+#include "al_field.h"
 #include "al_toy_move.h"
-enum
-{
-	MD_COFFIN_IDLE,
-	MD_COFFIN_PICKEDUP,
-	MD_COFFIN_SWIM,
-	MD_COFFIN_FLY_UP,
-	MD_COFFIN_FLY_DOWN_START,
-	MD_COFFIN_FLY_DOWN
-};
-//extern NJS_CNK_OBJECT object_00F005A0;
-void ALO_Coffin_Displayer_(task* a1)
-{
-	if (a1->twp->wtimer)
-	{
-		DoLighting(0);
-		njPushMatrixEx();
-		njSetTexture((NJS_TEXLIST*)0x01366AFC);
+#include "ninja_functions.h"
+#include "renderfix.h"
 
-		//njControl3D_Backup();
+#include "njdef.h"
+#include "al_stage.h"
+#include "data/toy/motion_alo_coffin_open.nja"
 
-		//njColorBlendingMode(0, NJD_COLOR_BLENDING_SRCALPHA);
-		//njColorBlendingMode(NJD_DESTINATION_COLOR, NJD_COLOR_BLENDING_INVSRCALPHA);
+DataArray(NJS_CNK_OBJECT, object_alo_coffin, 0x1301B7C, 1);
 
-		//EnableChunkMaterialFlags();
-		//DisableChunkMaterialFlags();
-		//SetChunkMaterialFlags(8);
-		//SetChunkTextureIndexA(117);
-		//SetChunkTextureIndexB(117);
-		//*(int*)0x03D0856C = 0xFFFFFFFF;
-		//*(unsigned char*)0x03D0856F = (255 - (a1->Data1->Rotation.x / 335.0f) * 255.0f);
-		//*(float*)0x3D0857C = -0.5f;
-		njTranslate(NULL, a1->twp->pos.x, a1->twp->pos.y, a1->twp->pos.z - 2.65f);
-		njRotateY(NULL, a1->twp->ang.y);
-		chCnkDrawObject((NJS_CNK_OBJECT*)0x01301BB4);//0x03898530 - coffin
-		//chCnkDrawObject(&object_0349A900);
-		njPopMatrixEx();
+void ALO_GetCoffinTouchPos(task* tp, NJS_POINT3* pPos) {
+	const taskwk* work = tp->twp;
+    
+	const Angle ang = work->ang.y + Angle(0.8f * NJM_DEG_ANG(njRandom() * 180 - 90));
+	const float rad = 6.5f;
 
-		//DisableChunkMaterialFlags();
-		//njControl3D_Restore();
-	}
+	pPos->x = njSin(ang) * rad + work->pos.x;
+	pPos->y = work->pos.y;
+	pPos->z = njCos(ang) * rad + work->pos.z;
 }
-//FunctionPointer(float, CalcCamDist, (task* a1), 0x00736460);
-void ALO_Coffin_Displayer(task* a1)
-{
-	//float a3 = -1.0 - CalcCamDist(a1) * 0.000099999997;
-	//DrawModelCallback_Queue((void(__cdecl*)(void*))ALO_Coffin_Displayer_, a1, a3, QueuedModelFlagsB_EnableZWrite);
-}
-//FunctionPointer(void, CCL_Enable, (taskwk* a1, int a2), 0x41C1F0);
-//FunctionPointer(void, CCL_Disable, (taskwk* a1, int a2), 0x041C220);
-void ALO_Coffin_Main(task* a1)
-{
-	//if (ALW_RecieveCommand(a1) == ALW_CMD_CHANGE)
-		//a1->Data1->Action = MD_COFFIN_FLY_UP;
-	switch (a1->twp->mode)
-	{
-	case MD_COFFIN_IDLE:
-		//CCL_Enable(a1->Data1, 0);
-		if (ALW_IsHeld(a1))
-		{
-			a1->twp->mode = MD_COFFIN_PICKEDUP;
 
+static void ALO_CoffinExecutor(task* tp) {
+    taskwk* work = tp->twp;
+
+    switch (work->mode) {
+        case 0: {
+            task* touch = CCL_IsHitKind(tp, CI_KIND_AL_TOUCH);
+            if (touch && touch->ptp) {
+                const Uint16 skill = AL_ParameterGetSkill(touch->ptp, SKILL_GUTS);
+                
+                if (50000 - (skill * 4) > njRandom() * 80000) {
+                    work->scl.y = 0.01f;
+                    work->scl.z = 0;
+                    work->scl.x = 0;
+                };
+
+                work->mode = 1;
+                work->smode = 0;
+                work->wtimer = RAND_RANGE(30, 150);
+            }
+        } break;
+        case 1:
+            if (--work->wtimer <= 0) {
+                if(AL_GetStageNumber() == CHAO_STG_DARK) {
+                    SE_CallV2(1, 0, 0, 0, &work->pos);
+                }
+
+                work->mode = 2;
+                work->smode = 0;
+                work->wtimer = 0;
+            }
+            break;
+        case 2:
+            work->scl.x += 0.3f;
+            if (work->smode == 0) {
+                if (work->scl.x > 4) {
+                    if (work->scl.y > 0) {
+                        SE_CallV2(0x1029, 0, 0, 0, &work->pos);
+                        ALW_SendCommand(tp, ALW_CMD_GO);
+                    }
+                    else {
+                        ALW_SendCommand(tp, ALW_CMD_FINISH);
+                    }
+                    work->smode = 1;
+                }
+            }
+
+            if (work->scl.x > motion_coffin_open[0].nbFrame - 1.0f) {
+                work->scl.x = motion_coffin_open[0].nbFrame - 1.0f;
+                work->mode = 3;
+                work->smode = 0;
+                work->wtimer = 0;
+            }
+
+            break;
+        case 3:
+            if (work->wtimer++ > 120) {
+                work->mode = 4;
+                work->smode = 0;
+                work->wtimer = 0;
+            }
+            break;
+        case 4:
+            work->scl.x -= 0.3f;
+            if (work->scl.x < 0) {
+                if(AL_GetStageNumber() == CHAO_STG_DARK) {
+                    SE_CallV2(2, 0, 0, 0, &work->pos);
+                }
+
+                work->scl.x = 0;
+                work->scl.y = 0;
+                work->scl.z = 0;
+                work->ang.x = 0;
+                work->ang.z = 0;
+                work->mode = 0;
+                work->smode = 0;
+                work->wtimer = 0;
+            }
+            break;
+    }
+    switch (work->mode) {
+        case 2:
+        case 3:
+            if (work->scl.x > 5.f && work->scl.y > 0) {
+				static float float_C6352BC = 2.f;
+				static float float_C6352C0 = 0.15f;
+				static float float_C6352C4 = 0.96f;
+
+                work->scl.z += float_C6352C0 * (float_C6352BC - work->scl.y);
+
+                work->scl.z *= float_C6352C4;
+                work->scl.y += work->scl.z;
+
+                work->ang.x += 4096;
+                work->ang.z += 4864;
+            }
+
+            break;
+        case 4:
+            if (work->scl.y > 0 && work->scl.x < 7.f) {
+                work->scl.z = 0;
+                work->scl.y *= 0.8f;
+            }
+
+            work->ang.x += 4096, work->ang.z += 4864;
+            break;
+    }
+
+	AL_Toy_Move_Update(tp);
+
+    if (ALW_RecieveCommand(tp) == ALW_CMD_CHANGE) {
+        ALW_CommunicationOff(tp);
+    }
+
+    if (!ALW_IsAttention(tp)) {
+		work->flag |= 0x240u;
+    }
+	else {
+		work->flag &= ~0x240u;
+    }
+
+    CCL_Entry(tp);
+}
+
+static void ALO_CoffinDisplayer(task* tp) {
+    taskwk* work = tp->twp;
+
+    if (AL_IsOnScreen2(tp, 4.5f, 1.2f)) {
+        njSetTexture((NJS_TEXLIST*)0x01366AFC);
+
+        njPushMatrixEx();
+        njTranslateEx(&work->pos);
+        njRotateY(0, work->ang.y);
+
+        njPushMatrixEx();
+        njRotateY(0, 0x8000);
+
+        njScale(NULL, 0.75f, 0.75f, 0.75f);
+        if (work->scl.x < 0.01f) {
+            njCnkDrawObject(object_alo_coffin);
+        } else {
+            njCnkMotion(object_alo_coffin, motion_coffin_open, work->scl.x);
+        }
+
+        njPopMatrixEx();
+		
+        if (work->scl.y > 0.01f) {
+            int angX = NJM_DEG_ANG(njSin(work->ang.x) * 15);
+            int angZ = NJM_DEG_ANG(njSin(work->ang.z) * 15);
+
+            float scl;
+            if (work->scl.y < 2) {
+                scl = work->scl.y * 0.25f + 0.5f;
+            } else {
+                scl = 1.5f;
+            }
+
+            njPushMatrixEx();
+            njTranslate(0, 0, work->scl.y, 0);
+            njRotateX(0, angX);
+            njRotateZ(0, angZ);
+            njRotateY(0, 0x8000);
+            njScale(0, scl, scl, scl);
+            njCnkDrawModel((NJS_CNK_MODEL*)0x121D264);
+            njPopMatrixEx();
+        }
+
+		if(RenderFix_IsEnabled()) {
+			njTranslate(0, 0, 0.5f, 0);
+			njScale(0, 3.25f, 1, 1.85f);
+			rfapi_core->pDraw->AL_ShadowDraw();
 		}
-		break;
-	case MD_COFFIN_PICKEDUP:
-		//CCL_Disable(a1->Data1, 0);
-		if (!AL_TraceHoldingPosition(0, a1))
-		{
-			a1->twp->mode = MD_COFFIN_IDLE;
-		}
-		break;
-	case MD_COFFIN_FLY_UP:
-		a1->twp->wtimer = 1;
-		a1->twp->pos.y += 0.15f;
-		a1->twp->ang.y += 4096;
-		a1->twp->ang.x += 5;
 
-		if (a1->twp->ang.x > 335)
-			a1->twp->ang.x = 335;
-
-		if (a1->twp->pos.y > 10)
-		{
-			a1->twp->pos.y = 10;
-			a1->twp->mode = MD_COFFIN_FLY_DOWN_START;
-		}
-		break;
-	case MD_COFFIN_FLY_DOWN_START:
-		a1->twp->pos = a1->twp->scl;
-		a1->twp->pos.y = 10;
-		a1->twp->mode = MD_COFFIN_FLY_DOWN;
-		break;
-	case MD_COFFIN_FLY_DOWN:
-		a1->twp->pos.y -= 0.15f;
-		a1->twp->ang.y -= 4096;
-		a1->twp->ang.x -= 5;
-		if (a1->twp->ang.x < 0)
-			a1->twp->ang.x = 0;
-		if (a1->twp->pos.y <= a1->twp->scl.y)
-		{
-			a1->twp->pos.y = a1->twp->scl.y;
-			a1->twp->mode = MD_COFFIN_IDLE;
-		}
-		break;
-	}
-	//ALO_Coffin_Displayer(a1);
-	AddToCollisionList(a1);
-}
-CollisionData coffinColl =
-{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
-void ALO_Coffin_Load(task* a1)
-{
-	a1->exec = ALO_Coffin_Main;
-
-	AL_Toy_Move_Register(a1, 2);
+        njPopMatrixEx();
+    }
 }
 
-void ALO_Coffin_Create(NJS_VECTOR* a1, int rotY)
-{
-	task* p = CreateElementalTask(4, "ALO_Coffin", ALO_Coffin_Load, IM_TWK);
-	InitCollision(p, &coffinColl, 1, 4);
-
-	p->disp = ALO_Coffin_Displayer_;
-	p->twp->wtimer = 1; //enable display
-	p->twp->pos = *a1;
-	p->twp->ang.y = rotY;
-	p->twp->scl = p->twp->pos; //scale = default pos
-	//p->Data1->Position = { 10,0,0 };
-
+static void ALO_CoffinDestroyer(task* tp) {
+    ALW_CancelEntry(tp);
 }
-#endif
+
+static const CCL_INFO colli[] = {{
+    0, CI_FORM_SPHERE, 0x77, 0xC, 0, 
+    {0.f, 1.6f* .75f, 0.f}, 
+    2.25f * .75f, 0, 0, 0, 
+    0, 0, 0
+}};
+
+static void ALO_CoffinInit(task* tp) {
+	tp->exec = ALO_CoffinExecutor;
+	tp->disp = ALO_CoffinDisplayer;
+    tp->dest = ALO_CoffinDestroyer;
+
+	AL_Toy_Move_Register(tp, ALW_KIND_COFFIN);
+}
+
+void ALO_CoffinCreate(NJS_POINT3* pPos, Angle angY) {
+    task* box = CreateElementalTask(IM_TWK, LEV_4, ALO_CoffinInit, "ALO_CoffinExecutor");
+    taskwk* work = box->twp;
+
+    work->pos = *pPos;
+    work->ang.y = angY;
+
+    work->scl.y = 0;
+    work->scl.z = 0;
+    work->ang.x = 0;
+    work->ang.z = 0;
+
+	AL_Toy_Move_Init(box, colli, 1);
+}

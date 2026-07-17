@@ -155,6 +155,7 @@
     <ClCompile Include="code_system\codes\code_karatemedal.cpp" />
     <ClCompile Include="land_grayscale.cpp" />
     <ClCompile Include="cwe_c_colli.cpp" />
+    <ClCompile Include="al_field.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />

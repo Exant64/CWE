@@ -44,7 +44,7 @@ int __cdecl ALBHV_Glide(task* a1)
 		else if (v4->Behavior.Mode == 2)
 		{
 			if (v3->Flag & 0x400)
-				AL_SetBehaviorWithTimer(a1, (int)0x00562D20, -1); //00562D20 = albhv_move
+				AL_SetBehavior(a1, (BHV_FUNC)0x00562D20); //00562D20 = albhv_move
 
 			v3->Acc.y = v3->Gravity * 0.05f;
 		}

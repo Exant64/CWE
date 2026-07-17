@@ -40,3 +40,9 @@ task* AL_IsHitKindWithNum(task *a1, int a2, Uint8 a3)
 	return retval;
 }
 #pragma warning(pop)
+
+task* CCL_IsHitKind(task* tp, Uint8 kind) {
+    CCL_HIT_INFO* v2 = CCL_IsHitKindEx(tp, kind);
+
+    return v2 ? v2->hit_tp : nullptr;
+}
