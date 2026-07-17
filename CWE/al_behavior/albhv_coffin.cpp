@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <Chao.h>
+#include <ChaoMain.h>
 #include "al_behavior.h"
 #include "albhv.h"
 #include "alo_coffin.h"
@@ -90,12 +91,12 @@ static int ALBHV_WaitForCoffin(task* tp) {
                     return BHV_RET_FINISH;
 
                 case ALW_CMD_GO:
-                    if(njRandom() < 0.3f) {
+                    if(gConfigVal.MoreAnimation && njRandom() < 0.3f) {
                         AL_SetBehavior(tp, ALBHV_Runaway);
+                        break;
                     }
-                    else {
-                        AL_SetBehaviorWithTimer(tp, ALBHV_Bikkuri, 500);
-                    }
+                    
+                    AL_SetBehaviorWithTimer(tp, ALBHV_Bikkuri, 500);
                     break;
             }
             break;

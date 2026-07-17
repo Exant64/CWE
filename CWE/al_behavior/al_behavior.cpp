@@ -550,11 +550,40 @@ static void AL_Behavior_PostureFix() {
 	WriteData((int*)(0x005A36D2 - 4), int(ALBHV_PostureChangeStand)); // WalkSelect
 }
 
+static void AL_CheckBikkuri_SetBehavior_r(task* tp, BHV_FUNC Func, int ReserveTimer) {
+	if(njRandom() < 0.3f) {
+		AL_SetBehavior(tp, ALBHV_Runaway);
+		return;
+	}
+
+	AL_SetBehaviorWithTimer(tp, Func, ReserveTimer);
+}
+
+static void __declspec(naked) AL_CheckBikkuri_SetBehavior_t() {
+	__asm {
+		push [esp + 08h] // a3
+		push [esp + 08h] // a2
+		push eax // a1
+
+		// Call your __cdecl function here:
+		call AL_CheckBikkuri_SetBehavior_r
+
+		pop eax // a1
+		add esp, 4 // a2
+		add esp, 4 // a3
+		retn
+	}
+}
+
 void AL_Behavior_Init() {
 	AL_Behavior_PostureFix();
 
 	AL_IntentionInit();
 	ALBHV_Life_Init();
+
+	if (gConfigVal.MoreAnimation) {
+		WriteCall((void*)0x0056479F, AL_CheckBikkuri_SetBehavior_t);
+	}
 
 	//accessories
 	WriteCall((void*)0x0053DB87, sub_5691B0Hook);
