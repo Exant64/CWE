@@ -524,12 +524,20 @@ static void ChaoSoundMenu() {
             SoundID += 0x10;
         }
         ImGui::SameLine();
+        if (ImGui::Button("+++")) {
+            SoundID += 0x1000;
+        }
+        ImGui::SameLine();
         if (ImGui::Button("-")) {
             SoundID--;
         }
         ImGui::SameLine();
         if (ImGui::Button("--")) {
             SoundID-= 0x10;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("---")) {
+            SoundID-= 0x1000;
         }
 
         if (ImGui::Button("Play")) {
