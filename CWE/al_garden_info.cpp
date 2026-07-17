@@ -500,6 +500,8 @@ static void AL_PackageCustomItemSaveInfo(const ChaoItemCategory category) {
 			taskwk* work = tp->twp;
 			ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)(((al_entry_work*)tp->UnknownA_ptr)->pSaveInfo);
 			
+			if(!pSaveInfo) continue;
+
 			// not held (! & 0x8000) most likely
 			if (work->flag >= 0) {
 				pSaveInfo->Position = work->pos;

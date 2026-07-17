@@ -19,7 +19,6 @@ extern NJS_OBJECT object_ala_full_mannequin;
 extern NJS_OBJECT object_alo_mannequin;
 
 void Accessory_Display(task* a1) {
-	const AccessorySaveInfo* save = (const AccessorySaveInfo*)AL_GetItemSaveInfo(a1);
 
 	DoLighting(LightIndex);
 	njPushMatrixEx();
@@ -33,10 +32,13 @@ void Accessory_Display(task* a1) {
 		chCnkDrawObject(&object_ala_full_mannequin);
 	else
 		chCnkDrawObject(&object_alo_mannequin);
-
-	Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-	AccessorySetupDraw(a1->twp->ang.x, save->Colors, save->UsedColors);
 	
+	const AccessorySaveInfo* save = (const AccessorySaveInfo*)AL_GetItemSaveInfo(a1);
+	if (save) {
+		AccessorySetupDraw(a1->twp->ang.x, save->Colors, save->UsedColors);
+	}
+	
+	Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
 	if(!IsAccessoryRFSupported(a1->twp->ang.x)) {
 		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, a1->twp->ang.x);
 	}
