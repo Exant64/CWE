@@ -223,8 +223,7 @@ void RaceNewPrize()
 void al_race_Init() {
 	//race toy unlocks
 	HeroRaceConfigs[2].toyUnlock = AL_LTOY_UKIWA;
-	//NO COFFIN FOR NOW
-	//DarkRaceConfigs[2].toyUnlock = AL_LTOY_KANOKE;
+	DarkRaceConfigs[2].toyUnlock = AL_LTOY_KANOKE;
 
 	HeroRaceConfigs[0].toyUnlock = AL_LTOY_PIANO;
 	DarkRaceConfigs[0].toyUnlock = AL_LTOY_ORGAN;
