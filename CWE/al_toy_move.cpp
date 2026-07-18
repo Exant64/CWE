@@ -494,17 +494,17 @@ void ALO_Ball_Hook() {
 
 DataArray(int, dword_1DC0F80, 0x1DC0F80, 1);
 const int sub_530470Ptr = 0x530470;
-al_entry_work* sub_530470(int a1, int a2)
+__declspec(naked) al_entry_work* ALW_GetEntryCount(int a1, int a2)
 {
-	al_entry_work* result;
 	__asm
 	{
-		mov edx, a1
-		mov ebx, a2
+		push ebx
+		mov edx, [esp + 4 + 4] // a1
+        mov ebx, [esp + 8 + 4] // a2
 		call sub_530470Ptr
-		mov result, eax
+		pop ebx
+		ret
 	}
-	return result;
 }
 
 void SaveToyPos() {
@@ -518,7 +518,7 @@ void SaveToyPos() {
 		{
 			while (1)
 			{
-				v4 = sub_530470(6, --v2);
+				v4 = ALW_GetEntryCount(6, --v2);
 				if (v4)
 				{
 					v5 = (ITEM_SAVE_INFO*)v4->pSaveInfo;
