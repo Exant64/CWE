@@ -1273,6 +1273,10 @@ void __declspec(naked) FItemDescDispHook()
 //garden object count
 signed int __cdecl AL_GetMaxItemNum(const int a1)
 {
+	if(a1 == ChaoItemCategory_Accessory) {
+		return AccessoryItemList.size();
+	}
+	
 	if (a1 == ChaoItemCategory_Fruit)
 	{
 		return 40;
@@ -1281,7 +1285,7 @@ signed int __cdecl AL_GetMaxItemNum(const int a1)
 	{
 		return 12;
 	}
-	if (a1 == ChaoItemCategory_Hat || a1 == ChaoItemCategory_Accessory)
+	if (a1 == ChaoItemCategory_Hat)
 	{
 		return 24;
 	}
@@ -1323,7 +1327,32 @@ int sub_52F4F0(int a1)
 
 int __cdecl AL_GetExistItemNum(const int a1)
 {
-	return 0;
+	size_t c = 0;
+
+	if(a1 == ChaoItemCategory_Accessory) {
+		for(const auto& item : AccessoryItemList) {
+			if(item.IndexID != -1) {
+				c++;
+			}
+		}
+
+		for(size_t i = 0; i < cweSaveFile.purchasedItemCount; ++i) {
+			const auto& item = save::CWE_PurchasedItems[i];
+
+			if(item.mCategory != ChaoItemCategory_Accessory) {
+				continue;
+			}
+
+			if(item.mType != -1) {
+				c++;
+			}
+		}
+	}
+
+	// TODO: why did we have this return 0'd?
+
+	return c;
+
 	if (a1 == ChaoItemCategory_Special)
 	{
 		int ret = 0;
