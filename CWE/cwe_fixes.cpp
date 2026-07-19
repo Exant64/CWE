@@ -169,6 +169,11 @@ void CWE_Fixes() {
 	ChaoExpandPatch();
 	ExpandTextureBuffer();
 
+	// fix BoxExecutor's CCL_Disable for nonexistant collision
+	WriteCall((void*)0x580252, nullsub_1);
+	// fix BoxExecutor sound ID for jack in the box
+	WriteData((uint8_t*)0x005802E9, uint8_t(0x29));
+
 	//fruit growth getting divided by 2 fix
 	WriteData((double**)0x005483CE, (double*)0x9054C0);
 
