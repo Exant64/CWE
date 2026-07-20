@@ -24,7 +24,8 @@ static CWE_API_PARAM_ACCESSORY CWE_API_ParamAccessory = {
     .Version = CWE_API_PARAM_ACCESSORY_VER,
 
     .GetAccessory = CWE_ParamGetAccessory,
-    .SetAccessory = CWE_ParamSetAccessory
+    .SetAccessory = CWE_ParamSetAccessory,
+    .ClearAccessory = CWE_ParamClearAccessory
 };
 
 CWE_API CWE_API_Main = {
