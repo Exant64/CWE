@@ -556,10 +556,10 @@ static void AL_Behavior_PostureFix() {
 // AL_BehaviorResetParameter hook on bottom to free navigation points when not needed anymore
 // we make sure to free it in Chao_Delete_r aswell, incase the player leaves the garden mid-navigation behavior chain
 static void AL_BehaviorResetParameter_r(task* tp) {
-	auto work = GET_CHAOWK(tp);
-
 	// original behavior of the instructions we overwrite with our call
-	work->field_B0 |= 2; 
+	GET_CHAOWK(tp)->ChaoFlag |= 2; 
+	
+	auto work = GET_CHAOWK_CWE(tp);
 
 	if (work->pNaviPoints) {
 		FREE(work->pNaviPoints);

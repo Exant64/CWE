@@ -215,8 +215,9 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Behavior")) {
                 if (ImGui::TreeNode("Start behaviors")) {
-                    int __cdecl ALBHV_GoToTV(ObjectMaster* tp);
                     if (ImGui::Button("TV")) {
+                        int ALBHV_GoToTV(task* tp);
+                        
                         AL_SetBehavior(pChao, ALBHV_GoToTV);
                     }
                     if (ImGui::Button("Piano")) {

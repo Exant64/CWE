@@ -74,7 +74,7 @@ public:
     std::optional<NavSysPathResult> GetResult(const uint32_t queryIndex);
 };
 
-#define GET_NAV_SYS(tp) ((NavSys*)(tp->Data2.Undefined))
+#define GET_NAV_SYS(tp) ((NavSys*)(tp->awp))
 
 enum {
     NAV_MD_INIT,

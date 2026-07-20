@@ -18,13 +18,12 @@ Bool ALO_GetRadicaseListenPos(NJS_POINT3* pPos) {
     if (!pRadicaseTask)
         return FALSE;
     else {
-        EntityData1* work = pRadicaseTask->Data1.Entity;
+        taskwk* work = pRadicaseTask->twp;
         float mul = 10 + njRandom() * 3;
-        int ang = work->Rotation.y + 0x8000 + NJM_DEG_ANG(njRandom() * 80 - 40);
-
-        pPos->x = njSin(ang) * mul + work->Position.x;
-        pPos->y = work->Position.y;
-        pPos->z = njCos(ang) * mul + work->Position.z;
+        int ang = work->ang.y + 0x8000 + NJM_DEG_ANG(njRandom() * 80 - 40);
+        pPos->x = njSin(ang) * mul + work->pos.x;
+        pPos->y = work->pos.y;
+        pPos->z = njCos(ang) * mul + work->pos.z;
     }
 
     return TRUE;
@@ -34,12 +33,12 @@ Bool ALO_GetTVWatchPos(NJS_POINT3* pPos) {
     if (!pTVTask)
         return FALSE;
     else {
-        EntityData1* work = pTVTask->Data1.Entity;
+        taskwk* work = pTVTask->twp;
         float mul = 10 + njRandom() * 3;
-        int ang = work->Rotation.y + 0x8000 + NJM_DEG_ANG(njRandom() * 80 - 40);
-        pPos->x = njSin(ang) * mul + work->Position.x;
-        pPos->y = work->Position.y;
-        pPos->z = njCos(ang) * mul + work->Position.z;
+        int ang = work->ang.y + 0x8000 + NJM_DEG_ANG(njRandom() * 80 - 40);
+        pPos->x = njSin(ang) * mul + work->pos.x;
+        pPos->y = work->pos.y;
+        pPos->z = njCos(ang) * mul + work->pos.z;
     }
 
     return TRUE;
@@ -112,7 +111,7 @@ int ALBHV_GoToHorse(task* tp) {
     NJS_POINT3 pos;
 
     if(pToy && !ALW_IsSheAttentionOtherOne(tp, pToy)) {
-        MOV_SetAimPos(tp, &pToy->Data1.Entity->Position);
+        MOV_SetAimPos(tp, &pToy->twp->pos);
         ALW_CommunicationOn(tp, pToy);
 
         AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
@@ -136,7 +135,7 @@ int ALBHV_GoToHorse(task* tp) {
     return BHV_RET_FINISH;
 }
 
-extern signed int __cdecl ALBHV_GoToPiano(ObjectMaster* a1);
+extern signed int __cdecl ALBHV_GoToPiano(task* tp);
 void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
 	float score = 0;
 	Uint32 emotion = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
@@ -153,7 +152,7 @@ void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
             AL_ScoreRandomize(&score);
 
 			if(score > *pMaxScore) {
-				int kind = ((al_entry_work*)pToy->UnknownA_ptr)->kind;
+				int kind = GET_ALW_ENTRY_WORK(pToy)->kind;
 
 				switch (kind) {
 					case ALW_KIND_TV:
@@ -172,7 +171,7 @@ void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
 						AL_SetBehavior(tp, (BHV_FUNC)0x40AD80);
 						break;
 					case ALW_KIND_HORSE: {
-						int landattr = AL_GetCurrLandAttr(&GET_CHAOWK(tp)->entity.Position);
+						int landattr = AL_GetCurrLandAttr(&GET_CHAOWK(tp)->pos);
 						
 						// really weird check (it's there on all versions)
 						// we should probably get rid of it?

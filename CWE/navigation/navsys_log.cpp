@@ -14,7 +14,7 @@ void NavSysLogInit(const char* path) {
     logOutput = _fsopen(filePath, "a", _SH_DENYWR);
 
     if(!logOutput) {
-        PrintDebug("failed to create navsys log at %s", filePath);
+        ___OutputDebugString("failed to create navsys log at %s", filePath);
         return;
     }
 
@@ -46,7 +46,7 @@ void NavSysLog(const char* format, ...) {
     vsnprintf_s(msg, _countof(msg), format, argptr);
     va_end(argptr);
 
-    PrintDebug("%s\n", msg);
+    ___OutputDebugString("%s\n", msg);
 
     fprintf_s(logOutput, "%s\n", msg);
     fflush(logOutput);

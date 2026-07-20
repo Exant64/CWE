@@ -195,7 +195,7 @@ dtNavMesh* NavSysGenerator::LoadNavMesh(const char* path) {
 #endif
 
 void NavSysGenerator::PopulateClimbSpots(std::vector<NavSysGenerator::ClimbSpot>& spots) const {
-    task* pTask = ObjectLists[2];
+    task* pTask = btp[2];
 
     if(!pTask) {
         return;
@@ -203,36 +203,36 @@ void NavSysGenerator::PopulateClimbSpots(std::vector<NavSysGenerator::ClimbSpot>
 
     do {
         // C_CLIMB executor pointer
-        if(pTask->MainSub != ObjectFuncPtr(0x55AB20)) {
-            pTask = pTask->NextObject;
+        if(pTask->exec != task_exec(0x55AB20)) {
+            pTask = pTask->next;
             continue;
         }
 
-        auto work = pTask->Data1.Entity;
+        auto work = pTask->twp;
         
-        if(!work || !work->Collision || !work->Collision->CollisionArray) {
-            pTask = pTask->NextObject;
+        if(!work || !work->cwp || !work->cwp->info) {
+            pTask = pTask->next;
             continue;
         }
 
-        auto colliEntry = work->Collision->CollisionArray;
+        auto colliEntry = work->cwp->info;
 
         // anonymous_x = xyz scale
         ClimbSpot spot = {
-            .m_pos = work->Position,
+            .m_pos = work->pos,
             .m_extent = { 
-                njAbs(colliEntry->anonymous_1),
-                njAbs(colliEntry->anonymous_2), 
-                njAbs(colliEntry->anonymous_3) 
+                njAbs(colliEntry->a),
+                njAbs(colliEntry->b), 
+                njAbs(colliEntry->c) 
             },
-            .m_inverseAngY = -work->Rotation.y,
-            .m_radiusSquared = work->Collision->field_8 * work->Collision->field_8
+            .m_inverseAngY = -work->ang.y,
+            .m_radiusSquared = work->cwp->colli_range * work->cwp->colli_range
         };
 
         spots.push_back(spot);
 
-        pTask = pTask->NextObject;
-    } while(pTask && pTask != ObjectLists[2]);
+        pTask = pTask->next;
+    } while(pTask && pTask != btp[2]);
 }
 
 bool NavSysGenerator::CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const {

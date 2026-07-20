@@ -20,7 +20,7 @@ struct cweRcContext : rcContext {
 		vsnprintf(prefix, _countof(prefix), format, argptr);
 		va_end(argptr);
 
-        PrintDebug("[NAVI] %s", prefix);
+        ___OutputDebugString("[NAVI] %s", prefix);
     }
 
     cweRcContext() : rcContext(true) {

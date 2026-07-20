@@ -149,13 +149,13 @@ bool NavSys::IsQueryReady() {
 }
 
 void NavSys::Generate() {
-    const uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
+    const uint32_t land_hash = GenerateHashForLandTable(pObjLandTable);
 
     m_loadingNavMeshResult = gNavSysGenerator.TryGenerate(land_hash);
 }
 
 bool NavSys::CheckAndLoadCache() {
-    const uint32_t land_hash = GenerateHashForLandTable(CurrentLandTable);
+    const uint32_t land_hash = GenerateHashForLandTable(pObjLandTable);
 
     auto result = gNavSysGenerator.TryLoad(land_hash);
     if(result) {
@@ -238,33 +238,33 @@ std::optional<NavSysPathResult> NavSysGetResult(const uint32_t queryIndex) {
 
 static void NavSysExecutor(task* tp) {
     auto sys = GET_NAV_SYS(tp);
-    auto work = tp->Data1.Entity;
+    auto work = tp->twp;
 
     gNavSysGenerator.CheckCleanInProgress();
 
-    switch(work->Action) {
+    switch(work->mode) {
         case NAV_MD_INIT:
-            work->Action = NAV_MD_CHECK_CACHE_GENERATE;
+            work->mode = NAV_MD_CHECK_CACHE_GENERATE;
             [[fallthrough]];
         case NAV_MD_CHECK_CACHE_GENERATE:
-            if(!CurrentLandTable) {
+            if(!pObjLandTable) {
                 NavSysLog("no landtable found, aborting NAV_MD_CHECK_CACHE_GENERATE and deleting navsys task");
 
-                DeleteObject_(tp);
+                DestroyTask(tp);
                 break;
             }
 
             if (sys->CheckAndLoadCache()) {
-                work->Action = NAV_MD_ACTIVE;
+                work->mode = NAV_MD_ACTIVE;
             }
             else {
-                work->Action = NAV_MD_LAUNCH_GENERATE;
+                work->mode = NAV_MD_LAUNCH_GENERATE;
             }
             break;
 
         case NAV_MD_LAUNCH_GENERATE:
             sys->Generate();
-            work->Action = NAV_MD_WAIT_FOR_GENERATE;
+            work->mode = NAV_MD_WAIT_FOR_GENERATE;
             break;
 
         case NAV_MD_WAIT_FOR_GENERATE:
@@ -273,10 +273,10 @@ static void NavSysExecutor(task* tp) {
                     break;
                 case NavSys::WAIT_FOR_GENERATE_RESULT::FAIL:
                     NavSysLog("navmesh generation failed, aborting NAV_MD_WAIT_FOR_GENERATE and deleting navsys task");
-                    DeleteObject_(tp);
+                    DestroyTask(tp);
                     break;
                 case NavSys::WAIT_FOR_GENERATE_RESULT::SUCCESS:
-                    work->Action = NAV_MD_ACTIVE;
+                    work->mode = NAV_MD_ACTIVE;
                     break;
             }
             break;
@@ -299,7 +299,7 @@ static void NavSysDestructor(task* tp) {
     pNavSysTask = NULL;
     
     delete sys;
-    tp->Data2.Undefined = NULL;
+    tp->awp = NULL;
 }
 
 static void NavSysDisplayer(task* tp) {
@@ -308,12 +308,12 @@ static void NavSysDisplayer(task* tp) {
     if(!sys->IsQueryReady()) {
         return;
 
-        SetShaders(1);
+        SetShaderType(1);
         *(Uint32*)0x01A267D0 = 0xFFFF6AFF;
 
         MessageFontThing messageBuffer;
 
-        AlMsgFontCreateCStr(TextLanguage == 0, (int)"Generating navigation...", (int)&messageBuffer, 999);
+        AlMsgFontCreateCStr(Language == 0, (int)"Generating navigation...", (int)&messageBuffer, 999);
 		AlMsgFontDrawRegionScale2(-1, &messageBuffer, 0, 0, -1, 32, 0, 1, 1);
 		AlMsgFontDelete(&messageBuffer);
     }
@@ -336,11 +336,11 @@ void NavSysCreate() {
     if(!gConfigVal.PathfindingEnabled) return;
     if(!AL_IsGarden()) return;
 
-    pNavSysTask = LoadObject(4, "NavSysTask", NavSysExecutor, LoadObj_Data1);
-    pNavSysTask->DisplaySub = NavSysDisplayer;
-    pNavSysTask->DeleteSub = NavSysDestructor;
+    pNavSysTask = CreateElementalTask(IM_TWK, LEV_4, NavSysExecutor, "NavSysTask");
+    pNavSysTask->disp = NavSysDisplayer;
+    pNavSysTask->dest = NavSysDestructor;
 
-    pNavSysTask->Data2.Undefined = (void*)(new NavSys());
+    pNavSysTask->awp = (anywk*)(new NavSys());
 }
 
 void NavSysInit(const char* path) {

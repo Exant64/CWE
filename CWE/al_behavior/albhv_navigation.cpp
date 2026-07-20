@@ -29,16 +29,17 @@ int ALBHV_CheckNavigate(task* tp) {
     };
 
     auto work = GET_CHAOWK(tp);
+    auto work_cwe = GET_CHAOWK_CWE(tp);
     AL_BEHAVIOR* bhv = &work->Behavior;
-    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+    MOVE_WORK* move = GET_MOVE_WORK(tp);
 
     switch(bhv->Mode) {
         case MD_QUERY_THINK:
             AL_SetMotionLink(tp, ALM_STAND);
 
-            work->NaviCurrQueryIndex = NavSysQueryPath(
-                &work->entity.Position, 
-                &work->NaviTargetPos, 
+            work_cwe->NaviCurrQueryIndex = NavSysQueryPath(
+                &work->pos, 
+                &work_cwe->NaviTargetPos, 
                 GetChaoNaviExcludeFlags(tp)
             );
             
@@ -47,10 +48,10 @@ int ALBHV_CheckNavigate(task* tp) {
             break;
 
         case MD_QUERY_WAIT: {
-            const auto result = NavSysGetResult(work->NaviCurrQueryIndex);
+            const auto result = NavSysGetResult(work_cwe->NaviCurrQueryIndex);
             if (result) {
                 #ifndef IMGUIDEBUG
-                    NavSysDiscardResult(work->NaviCurrQueryIndex);
+                    NavSysDiscardResult(work_cwe->NaviCurrQueryIndex);
                 #endif
 
                 if(result->empty()) {
@@ -60,10 +61,10 @@ int ALBHV_CheckNavigate(task* tp) {
                     return BHV_RET_BREAK;
                 }
 
-                work->NaviPointCount = result->size();
+                work_cwe->NaviPointCount = result->size();
                 
-                work->pNaviPoints = ALLOC_ARRAY(work->NaviPointCount, NJS_POINT3);
-                memcpy(work->pNaviPoints, result->data(), work->NaviPointCount * sizeof(*work->pNaviPoints));
+                work_cwe->pNaviPoints = ALLOC_ARRAY(work_cwe->NaviPointCount, NJS_POINT3);
+                memcpy(work_cwe->pNaviPoints, result->data(), work_cwe->NaviPointCount * sizeof(*work_cwe->pNaviPoints));
 
                 return BHV_RET_FINISH;
             }
@@ -75,10 +76,11 @@ int ALBHV_CheckNavigate(task* tp) {
 
 static void TurnToNaviAim2(task* tp, int adjust) {
     auto work = GET_CHAOWK(tp);
-    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+    auto work_cwe = GET_CHAOWK_CWE(tp);
+    MOVE_WORK* move = GET_MOVE_WORK(tp);
 
-    move->AimAng.y = njArcTan2(work->NaviAimPos.x - work->entity.Position.x, work->NaviAimPos.z - work->entity.Position.z);
-    work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, move->AimAng.y, adjust);
+    move->AimAng.y = njArcTan2(work_cwe->NaviAimPos.x - work->pos.x, work_cwe->NaviAimPos.z - work->pos.z);
+    work->ang.y = AdjustAngle(work->ang.y, move->AimAng.y, adjust);
 }
 
 int ALBHV_Navigation(task* tp) {
@@ -97,8 +99,9 @@ int ALBHV_Navigation(task* tp) {
     };
 
     auto work = GET_CHAOWK(tp);
+    auto work_cwe = GET_CHAOWK_CWE(tp);
     AL_BEHAVIOR* bhv = &work->Behavior;
-    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+    MOVE_WORK* move = GET_MOVE_WORK(tp);
 
     // prevent Swim from starting
     work->Behavior.Flag |= 1;
@@ -108,7 +111,7 @@ int ALBHV_Navigation(task* tp) {
             // always start with walking, since they won't start navigation from water
             bhv->Mode = MD_WALK_START;
             bhv->SubMode = 0;
-            work->NaviAimPos = work->pNaviPoints[bhv->SubMode];
+            work_cwe->NaviAimPos = work_cwe->pNaviPoints[bhv->SubMode];
             [[fallthrough]];
         case MD_WALK_START:
             if(AL_ParameterGetSkill(tp, SKILL_RUN) < GET_GLOBAL()->SkillWalk) {
@@ -125,7 +128,7 @@ int ALBHV_Navigation(task* tp) {
             break;
 
         case MD_WALK: {
-            if(work->entity.Position.y + 2 < move->WaterY) {
+            if(work->pos.y + 2 < move->WaterY) {
                 bhv->Mode = MD_SWIM_START;
                 break;
             }
@@ -153,7 +156,7 @@ int ALBHV_Navigation(task* tp) {
         }
 
         case MD_JUMP_TO_POND_START: {
-            Angle ang = work->entity.Rotation.y;
+            Angle ang = work->ang.y;
 
             move->Velo.x = njSin(ang) * 0.4f;
             move->Velo.y = 0.35f;
@@ -178,7 +181,7 @@ int ALBHV_Navigation(task* tp) {
                 AL_SetMotionLink(tp, ALM_CRAWL);
             }
 
-            PlaySound_XYZ(0x1020, &GET_CHAOWK(tp)->entity.Position, 0, 0, 0);
+            SE_CallV2(0x1020, 0, 0, 0, &GET_CHAOWK(tp)->pos);
 
             bhv->Mode = MD_SWIM;
             break;
@@ -192,7 +195,7 @@ int ALBHV_Navigation(task* tp) {
             }
             
             // AL_CheckWater logic, but with flag logic removed, we can do that right here cleaner
-            if(work->entity.Position.y + 2 < move->WaterY) {
+            if(work->pos.y + 2 < move->WaterY) {
                 if(move->Velo.y < 0) {
                     move->Velo.y *= 0.1f;    
                 }
@@ -204,21 +207,21 @@ int ALBHV_Navigation(task* tp) {
             // swimcontrol code from match decomp
             TurnToNaviAim2(tp, 288);
 
-            if(work->entity.Position.y <= move->WaterY - 2.1f) {
+            if(work->pos.y <= move->WaterY - 2.1f) {
                 // swim at minimum speed
                 const float spd = GET_GLOBAL()->SkillSwimAccBase + GET_GLOBAL()->SkillSwimBataashi * GET_GLOBAL()->SkillSwimAccRatio;
 
-                work->entity.Position.y += 0.1f;
-                if(work->entity.Position.y > move->WaterY - 2.1f)
-                    work->entity.Position.y = move->WaterY - 2.1f;    
+                work->pos.y += 0.1f;
+                if(work->pos.y > move->WaterY - 2.1f)
+                    work->pos.y = move->WaterY - 2.1f;    
 
                 move->Acc.y = -move->Gravity - 0.1f * move->Velo.y;
 
-                move->Acc.x = njSin(work->entity.Rotation.y) * spd - move->Velo.x * 0.05f;
-                move->Acc.z = njCos(work->entity.Rotation.y) * spd - move->Velo.z * 0.05f;
+                move->Acc.x = njSin(work->ang.y) * spd - move->Velo.x * 0.05f;
+                move->Acc.z = njCos(work->ang.y) * spd - move->Velo.z * 0.05f;
             }
             
-            SE_CallV2_TIMER(tp, 0x101F, &GET_CHAOWK(tp)->entity.Position, 1, -25, 90);
+            SE_CallV2_TIMER(tp, 0x101F, &GET_CHAOWK(tp)->pos, 1, -25, 90);
 
             break;
         }
@@ -234,14 +237,14 @@ int ALBHV_Navigation(task* tp) {
         case MD_CLIMB_1:
             if(move->Flag & 0x4800) {
                 Angle ang = njArcTan2(move->FrontWall.vx, move->FrontWall.vz);
-                work->entity.Rotation.y = AdjustAngle(work->entity.Rotation.y, ang + NJM_DEG_ANG(180), 0x800);
+                work->ang.y = AdjustAngle(work->ang.y, ang + NJM_DEG_ANG(180), 0x800);
                 move->Flag &= ~0x4000;
                 bhv->Timer = 0;
             }
             else {
                 if(bhv->Timer++ > 2) {
                     bhv->Timer = 0;
-                    work->ClimbFirstPos = work->entity.Position.y;
+                    work->ClimbFirstPos = work->pos.y;
                     bhv->Mode++;
                 }
             }
@@ -260,7 +263,7 @@ int ALBHV_Navigation(task* tp) {
                 bhv->Mode--;
             }
 
-            if(bhv->Timer > 30 || (GET_CHAOWK(tp)->entity.Position.y - work->ClimbFirstPos) > 2.5f) {
+            if(bhv->Timer > 30 || (GET_CHAOWK(tp)->pos.y - work->ClimbFirstPos) > 2.5f) {
                 bhv->Mode = MD_WALK_START;
             }
             break;
@@ -273,24 +276,24 @@ int ALBHV_Navigation(task* tp) {
     switch (bhv->Mode) {
         case MD_CLIMB_1:
         case MD_CLIMB_2: {
-            const Angle ang = work->entity.Rotation.y;
+            const Angle ang = work->ang.y;
 
-            work->entity.Position.x += 0.1f * njSin(ang);
-            work->entity.Position.y += 0.08f;
-            work->entity.Position.z += 0.1f * njCos(ang);
+            work->pos.x += 0.1f * njSin(ang);
+            work->pos.y += 0.08f;
+            work->pos.z += 0.1f * njCos(ang);
 
             move->Acc.y = -move->Gravity;
         } break;
 
         case MD_WALK:
         case MD_SWIM:
-            const float dist = CheckDistance(&work->entity.Position, &work->NaviAimPos);
+            const float dist = njDistanceP2P(&work->pos, &work_cwe->NaviAimPos);
 			if (dist > 0 && dist < 4) {
-                if(bhv->SubMode == work->NaviPointCount - 1) {
+                if(bhv->SubMode == work_cwe->NaviPointCount - 1) {
                     bhv->Mode = MD_ARRIVE;
                 }
                 else {
-                    work->NaviAimPos = work->pNaviPoints[++bhv->SubMode];
+                    work_cwe->NaviAimPos = work_cwe->pNaviPoints[++bhv->SubMode];
                 }
 			}
             

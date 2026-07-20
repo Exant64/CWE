@@ -2,6 +2,18 @@
 
 #include "stdafx.h"
 
+enum {
+    SKILL_SWIM,
+    SKILL_FLY,
+    SKILL_RUN,
+    SKILL_POWER,
+    SKILL_STAMINA,
+    SKILL_GUTS,
+    SKILL_INTELLECT,
+    SKILL_EMPTY,
+    NB_SKILL,
+};
+
 struct ChaoItemStats {
 	__int16 Mood;
 	__int16 Belly;

@@ -10,7 +10,10 @@
 
 #ifdef IMGUIDEBUG
     #include "imgui/imgui.h"
-    #include <data/debugsphere.h>
+    #pragma warning(push)
+    #pragma warning( disable: 4838 )
+        #include <data/debugsphere.h>
+    #pragma warning(pop)
 #endif
 
 #include "ninja_functions.h"
@@ -36,9 +39,9 @@ void NavSysGenerator::DebugDrawMaxClimbLine() {
     NJS_POINT3 pos[2];
 
     pos[0] = pos[1] = {
-        MainCharObj1[0]->Position.x + 3,
-        MainCharObj1[0]->Position.y,
-        MainCharObj1[0]->Position.z + 3
+        playertwp[0]->pos.x + 3,
+        playertwp[0]->pos.y,
+        playertwp[0]->pos.z + 3
     };
 
     pos[1].y += m_config.m_agentMaxClimb;
@@ -215,11 +218,11 @@ void NavSys::ImGuiDebug() {
 
     static NJS_POINT3 spos, epos;
     if(ImGui::Button("Set Start")) {
-        spos = MainCharObj1[0]->Position;
+        spos = playertwp[0]->pos;
     }
 
     if(ImGui::Button("Set End")) {
-        epos = MainCharObj1[0]->Position;
+        epos = playertwp[0]->pos;
     }
 
     static bool excludeSwim = false;

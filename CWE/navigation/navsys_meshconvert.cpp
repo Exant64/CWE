@@ -34,21 +34,21 @@ NavSysMeshConvert::NavSysMeshConvert() {
 		m_areas.push_back(area);
 	};
 
-	const auto* landtable = CurrentLandTable;
-	const COL* cols = landtable->ChunkModelCount + landtable->COLList;
+	const auto* landtable = pObjLandTable;
+	const OBJ_LANDENTRY* cols = landtable->ssDispCount + landtable->pLandEntry;
 	int tcap = 0;
 
-	for (short i = 0; i < landtable->COLCount - landtable->ChunkModelCount; i++) {
+	for (short i = 0; i < landtable->ssCount - landtable->ssDispCount; i++) {
 		// check for "wall"/"cant stand" flag
-		if(cols->Flags & (1 << 12)) {
+		if(cols->slAttribute & (1 << 12)) {
 			cols++;
 			continue;
 		}
 		
-		const uint8_t area = (cols->Flags & (1<<1)) ? NAV_AREA_WATER : NAV_AREA_GROUND;
+		const uint8_t area = (cols->slAttribute & (1<<1)) ? NAV_AREA_WATER : NAV_AREA_GROUND;
 
-		const auto* pObj = cols->Model;
-		const auto* pMdl = cols->Model->basicmodel;
+		const NJS_OBJECT* pObj = (NJS_OBJECT*)cols->pObject;
+		const auto* pMdl = pObj->model;
 
 		njPushUnitMatrix();
 

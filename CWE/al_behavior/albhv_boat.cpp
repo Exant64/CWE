@@ -146,7 +146,7 @@ int ALBHV_GoToBoat(task* tp) {
 	AL_EmotionAdd(tp, EM_ST_THIRSTY, 100);
 	
 	//AL_GetRandomAttrPos(9, &a1->EntityData2->Waypoint);
-	sub_534F80((int)& stru_1A15938[9], &((MOVE_WORK*)a1->mwp)->AimPos, stru_1A15938[9].nbIndex);
+	sub_534F80((int)& stru_1A15938[9], &GET_MOVE_WORK(tp)->AimPos, stru_1A15938[9].nbIndex);
 	
 	AL_SetBehavior(tp, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(tp, ALBHV_Notice);

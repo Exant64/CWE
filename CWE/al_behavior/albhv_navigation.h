@@ -12,15 +12,15 @@ enum class NAVIGATION_TYPE {
 
 template <NAVIGATION_TYPE type>
 int ALBHV_SetNaviTarget(task* tp) {
-    auto work = GET_CHAOWK(tp);
-    MOVE_WORK* move = (MOVE_WORK*)tp->EntityData2;
+    auto work = GET_CHAOWK_CWE(tp);
+    MOVE_WORK* move = GET_MOVE_WORK(tp);
 
     switch (type) {
         case NAVIGATION_TYPE::AIM:
             work->NaviTargetPos = move->AimPos;
             break;
         case NAVIGATION_TYPE::LOCKON:
-            work->NaviTargetPos = ALW_GetLockOnTask(tp)->Data1.Entity->Position;
+            work->NaviTargetPos = ALW_GetLockOnTask(tp)->twp->pos;
             break;
     }
 
