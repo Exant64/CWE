@@ -211,7 +211,7 @@ DataPointer(ObjectListHead *, CurrentObjectList, 0x1DDE268);
 DataPointer(__int16, SETObjectCount, 0x1DDE270);
 DataPointer(void *, SETFile, 0x1DDE274);
 DataPointer(SETEntry *, SETEntries, 0x1DDE278);
-DataArray(SETObjectData, SETObjects, 0x1DDE280, 1535);
+DataArray(_OBJ_CONDITION, SETObjects, 0x1DDE280, 1535);
 DataArray(float, ProbablyFogTable, 0x1DE4280, 96);
 DataPointer(void*, GetCurrentChaoStage_ptr, 0x1DE4698);
 DataPointer(int, ArbitraryGravityAngle_X, 0x1DE9480);

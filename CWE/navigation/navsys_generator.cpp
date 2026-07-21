@@ -15,6 +15,11 @@
 
 #include <assert.h>
 
+#include <njdef.h>
+#include <data/misc/navsys_colli_capsule_shaft.nja>
+#include <data/misc/navsys_colli_cube.nja>
+#include <data/misc/navsys_colli_capsule_cap.nja>
+
 #ifdef MEMORY_PROFILE
     #include <memory_debug.h>
 #endif
@@ -233,6 +238,125 @@ void NavSysGenerator::PopulateClimbSpots(std::vector<NavSysGenerator::ClimbSpot>
 
         pTask = pTask->next;
     } while(pTask && pTask != btp[2]);
+}
+
+void NavSysGenerator::PopulateFurimukiCollision(NavSysMeshConvert& mesh) {
+    for(size_t i = 0; i < size_t(SETObjectCount); ++i) {
+        const task* tp = SETObjects[i].ptask;
+
+        if(!tp || !tp->twp || !tp->twp->cwp) {
+            continue;
+        }
+
+        const auto cwp = tp->twp->cwp;
+        for(size_t c = 0; c < cwp->nbInfo; ++c) {
+            auto& info = cwp->info[c];
+
+            // if collision doesn't have the bi-dir push flags
+            // skip it (0x77 = CI_PUSH_PO_CMN | CI_PUSH_TH_CMN)
+            if(info.push != 0x77) {
+                continue;
+            }
+
+            // only affecting furimuki ("turn around") collisions for now
+            if(info.kind != CI_KIND_AL_FURIMUKI) {
+                continue;
+            }
+
+            // thanks to kell and sora for all the collision matrix code!
+
+            njPushUnitMatrix();
+
+            if (!(info.attr & CI_ATTR_POS_ABSOLUTE)) {
+                njTranslateEx(&tp->twp->pos);
+
+                if (!(info.attr & CI_ATTR_ANG_ABSOLUTE)) {
+                    if (info.attr & CI_ATTR_ANG_YZX) {
+                        njRotateY(NULL, tp->twp->ang.y);
+                        njRotateZ(NULL, tp->twp->ang.z);
+                        njRotateX(NULL, tp->twp->ang.x);
+                    }
+                    else {
+                        njRotateZ(NULL, tp->twp->ang.z);
+                        njRotateX(NULL, tp->twp->ang.x);
+                        njRotateY(NULL, tp->twp->ang.y);
+                
+                    }
+                }
+            }
+
+            njTranslateEx(&info.center);
+
+            const auto area = RC_NULL_AREA;
+            
+            switch(info.form) {
+                case CI_FORM_SPHERE: {
+                    const float scl = info.a * 0.1f;
+                    njScale(NULL, scl, scl, scl);
+                    mesh.addModel(object_navsys_colli_cube->model, area);
+                } break;
+
+                case CI_FORM_RECTANGLE: {
+                    if (!(info.attr & CI_ATTR_POS_ABSOLUTE) && !(info.attr & CI_ATTR_ANG_ABSOLUTE) && (tp->twp->ang.x || tp->twp->ang.z)) {
+                        if (info.attr & CI_ATTR_ANG_YZX) {
+                            njRotateX(NULL, -tp->twp->ang.x);
+                            njRotateZ(NULL, -tp->twp->ang.z);
+                        }
+                        else {
+                            njRotateY(NULL, -tp->twp->ang.y);
+                            njRotateX(NULL, -tp->twp->ang.x);
+                            njRotateZ(NULL, -tp->twp->ang.z);
+                            njRotateY(NULL, tp->twp->ang.y);
+                        }
+                    }
+
+                    njRotateY(0, info.angy);
+
+                    njScale(0, (info.a * 0.2f), (info.b * 0.2f), (info.c * 0.2f));
+                    mesh.addModel(object_navsys_colli_cube->model, area);
+                } break;
+
+                case CI_FORM_CAPSULE: {
+                    const Float scly = info.b;
+                    const Float scl = info.a * 0.1f;
+
+                    if (info.attr & CI_ATTR_ANG_YZX) {
+                        njRotateY(NULL, info.angy);
+                        njRotateZ(NULL, info.angz);
+                        njRotateX(NULL, info.angx);
+                    }
+                    else {
+                        njRotateX(NULL, info.angx);
+                        njRotateY(NULL, info.angy);
+                        njRotateZ(NULL, info.angz);
+                    }
+
+                    // the shaft model is from SA1 directly, with 
+                    // mats, uvs, or any similar visual stuff removed
+                    njPushMatrixEx();
+                    njScale(NULL, scl, scly * 0.1f, scl);
+                    mesh.addModel(object_navsys_colli_capsule_shaft->model, area);
+                    njPopMatrixEx();
+
+                    njPushMatrixEx();
+                    njTranslate(NULL, 0, scly, 0);
+                    njScale(NULL, scl, scl, scl);
+                    mesh.addModel(object_navsys_colli_capsule_cap->model, area);
+                    njPopMatrixEx();
+
+                    njRotateX(NULL, 0x8000);
+                    njTranslate(NULL, 0, scly, 0);
+                    njScale(NULL, scl, scl, scl);
+                    mesh.addModel(object_navsys_colli_capsule_cap->model, area);
+                } break;
+
+                default:
+                    ___OutputDebugString("unsupported colli type when converting: %d (task: %s)", info.form, tp->name);
+            }
+
+            njPopMatrixEx();
+        }
+    }
 }
 
 bool NavSysGenerator::CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const {
@@ -463,12 +587,14 @@ std::shared_future<std::shared_ptr<dtNavMesh>> NavSysGenerator::TryGenerate(cons
         return m_inProgress[hash];
     }
 
-    // I rather do the mesh conversion not multithreaded, shouldnt be too expensive
+    // I rather do the mesh conversion steps not multithreaded
+    // none of these should be too expensive
     NavSysMeshConvert mesh;
 
-    // same here
     std::vector<ClimbSpot> spots;
     PopulateClimbSpots(spots);
+
+    PopulateFurimukiCollision(mesh);
 
     const std::shared_future<std::shared_ptr<dtNavMesh>> future = std::async(std::launch::async, [this, m_mesh{std::move(mesh)}, hash, spots{std::move(spots)}] {
         #ifdef MEMORY_PROFILE

@@ -28,55 +28,56 @@
 #include <math.h>
 #include <cassert>
 
-NavSysMeshConvert::NavSysMeshConvert() {
-	const auto addTriangle = [this](int a, int b, int c, uint8_t area) {
-		m_tris.insert(m_tris.end(), { a, b, c });
-		m_areas.push_back(area);
-	};
+NJS_VECTOR NavSysMeshConvert::calcNormal(int a, int b, int c) {
+	const float* v0 = &m_verts[a].x;
+	const float* v1 = &m_verts[b].x;
+	const float* v2 = &m_verts[c].x;
+	NJS_VECTOR n;
 
-	const auto* landtable = pObjLandTable;
-	const OBJ_LANDENTRY* cols = landtable->ssDispCount + landtable->pLandEntry;
-	int tcap = 0;
+	float e0[3], e1[3];
+	for (int j = 0; j < 3; ++j)
+	{
+		e0[j] = v1[j] - v0[j];
+		e1[j] = v2[j] - v0[j];
+	}
 
-	for (short i = 0; i < landtable->ssCount - landtable->ssDispCount; i++) {
-		// check for "wall"/"cant stand" flag
-		if(cols->slAttribute & (1 << 12)) {
-			cols++;
-			continue;
-		}
-		
-		const uint8_t area = (cols->slAttribute & (1<<1)) ? NAV_AREA_WATER : NAV_AREA_GROUND;
+	// cross vector
+	n.x = e0[1] * e1[2] - e0[2] * e1[1];
+	n.y = e0[2] * e1[0] - e0[0] * e1[2];
+	n.z = e0[0] * e1[1] - e0[1] * e1[0];
 
-		const NJS_OBJECT* pObj = (NJS_OBJECT*)cols->pObject;
-		const auto* pMdl = pObj->model;
+	njUnitVector(&n);
 
-		njPushUnitMatrix();
+	return n;
+}
 
-		njTranslate(NULL, pObj->pos[0], pObj->pos[1], pObj->pos[2]);
+void NavSysMeshConvert::addTriangle(int a, int b, int c, uint8_t area) {
+	m_tris.insert(m_tris.end(), { a, b, c });
+	m_areas.push_back(area);
 
-		njRotateZ(NULL, pObj->ang[2]);
-		njRotateY(NULL, pObj->ang[1]);
-		njRotateX(NULL, pObj->ang[0]);
+	m_normals.push_back(calcNormal(a, b, c));
+}
 
-		const auto vertexStart = m_verts.size();
+void NavSysMeshConvert::addModel(const NJS_MODEL* pMdl, const uint8_t area) {
+	const auto vertexStart = m_verts.size();
+	m_verts.reserve(vertexStart + pMdl->nbPoint);
 
-		m_verts.reserve(vertexStart + pMdl->nbPoint);
+	for (int p = 0; p < pMdl->nbPoint; p++) {
+		NJS_POINT3 point = pMdl->points[p];
+		sub_426CC0(_nj_current_matrix_ptr_, &point, &point, 0);
+		m_verts.push_back(point);
+	}
+	
+	for (Uint16 m = 0; m < pMdl->nbMeshset; m++) {
+		const auto& meshset = pMdl->meshsets[m];
+		const auto type = meshset.type_matId & NJD_MESHSET_MASK;
 
-		for (int p = 0; p < pMdl->nbPoint; p++) {
-			NJS_POINT3 point = pMdl->points[p];
-			sub_426CC0(_nj_current_matrix_ptr_, &point, &point, 0);
-			m_verts.push_back(point);
-		}
+		switch(type) {
+			default:
+				assert(false);
+				break;
 
-		njPopMatrixEx();
-
-		for (Uint16 m = 0; m < pMdl->nbMeshset; m++) {
-			const auto& meshset = pMdl->meshsets[m];
-			const auto type = meshset.type_matId >> 0xE;
-
-			assert(type == 0 || type == 3);
-
-			if (type == 0) {
+			case NJD_MESHSET_3:
 				for (size_t ind = 0; ind < meshset.nbMesh; ind += 3) {
 					addTriangle(
 						vertexStart + meshset.meshes[ind],
@@ -85,8 +86,27 @@ NavSysMeshConvert::NavSysMeshConvert() {
 						area
 					);
 				}
-			}
-			else if (type == 3) {
+				break;
+
+			case NJD_MESHSET_4:
+				for (size_t ind = 0; ind < meshset.nbMesh; ind += 4) {
+					addTriangle(
+						vertexStart + meshset.meshes[ind],
+						vertexStart + meshset.meshes[ind + 1],
+						vertexStart + meshset.meshes[ind + 2],
+						area
+					);
+
+					addTriangle(
+						vertexStart + meshset.meshes[ind + 2],
+						vertexStart + meshset.meshes[ind + 1],
+						vertexStart + meshset.meshes[ind + 3],
+						area
+					);
+				}
+				break;
+
+			case NJD_MESHSET_TRIMESH: {
 				const Sint16* strips = meshset.meshes;
 				for (size_t ind = 0; ind < meshset.nbMesh; ind++) {
 					const Sint16 lenRev = *(strips++);
@@ -115,33 +135,38 @@ NavSysMeshConvert::NavSysMeshConvert() {
 
 					strips += length;
 				}
-			}
+			} break;
 		}
-	
-		cols++;
 	}
+}
 
-	// Calculate normals.
-	m_normals.reserve(m_tris.size() / 3);
-	for (size_t i = 0; i < m_tris.size(); i += 3)
-	{
-		const float* v0 = &m_verts[m_tris[i]].x;
-		const float* v1 = &m_verts[m_tris[i + 1]].x;
-		const float* v2 = &m_verts[m_tris[i + 2]].x;
-		float e0[3], e1[3];
-		for (int j = 0; j < 3; ++j)
-		{
-			e0[j] = v1[j] - v0[j];
-			e1[j] = v2[j] - v0[j];
+void NavSysMeshConvert::addObject(const NJS_OBJECT* pObj, const uint8_t area) {
+	njPushUnitMatrix();
+
+	njTranslate(NULL, pObj->pos[0], pObj->pos[1], pObj->pos[2]);
+
+	njRotateZ(NULL, pObj->ang[2]);
+	njRotateY(NULL, pObj->ang[1]);
+	njRotateX(NULL, pObj->ang[0]);
+
+	addModel(pObj->model, area);
+
+	njPopMatrixEx();
+}
+
+NavSysMeshConvert::NavSysMeshConvert() {
+	const auto* pLand = pObjLandTable;
+	const OBJ_LANDENTRY* pEntries = pLand->ssDispCount + pLand->pLandEntry;
+
+	for (short i = 0; i < pLand->ssCount - pLand->ssDispCount; i++) {
+		const auto& entry = pEntries[i];
+
+		// check for "wall"/"cant stand" flag
+		if(entry.slAttribute & (1 << 12)) {
+			continue;
 		}
-
-		NJS_VECTOR n;
-		// cross vector
-		n.x = e0[1] * e1[2] - e0[2] * e1[1];
-		n.y = e0[2] * e1[0] - e0[0] * e1[2];
-		n.z = e0[0] * e1[1] - e0[1] * e1[0];
-		njUnitVector(&n);
-
-		m_normals.push_back(n);
+		
+		const uint8_t area = (entry.slAttribute & (1<<1)) ? NAV_AREA_WATER : NAV_AREA_GROUND;
+		addObject((NJS_OBJECT*)entry.pObject, area);
 	}
 }

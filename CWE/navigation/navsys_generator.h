@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+#include "navsys_meshconvert.h"
+
 #include <future>
 #include <set>
 #include <unordered_map>
@@ -92,6 +94,8 @@ private:
     void AssignWaterToGroundBelowWater(rcHeightfield* solid);
 
     void PopulateClimbSpots(std::vector<ClimbSpot>& spots) const;
+    void PopulateFurimukiCollision(NavSysMeshConvert& mesh);
+
     bool CheckIfPointInsideAnyClimbSpot(const std::vector<ClimbSpot>& spots, const NJS_POINT3& p) const;
     std::vector<NJS_POINT3> GenerateOffMeshClimbSpots(rcHeightfield* solid, const int walkableRadius, const int walkableClimb, const std::vector<ClimbSpot>& spots) const;
 public:
