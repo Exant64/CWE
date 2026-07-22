@@ -474,9 +474,6 @@ extern "C"
 
 		KCE_Init();
 
-		NavSysInit(path);
-		NavSysLogInit(path);
-
 		CWE_Codes_Init(path, config);
 
 		CWE_Fixes();
