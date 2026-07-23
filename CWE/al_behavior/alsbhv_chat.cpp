@@ -240,7 +240,7 @@ int ALS_Agree(SOCIAL_ACTOR* data)
 	return 0;
 }
 
-void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
+void __cdecl ALS_NegativeTalkFace(SOCIAL_ACTOR* data)
 {
 	data->bhvStatus.SubTimer--;
 	int multiplier = 1;

@@ -315,8 +315,8 @@ void __cdecl sub_545C20(task *tp)
 						AL_EmotionAdd(v16, EM_ST_BREED, 10000);
 						break;
 					default:
-						if (lastBiteFruit[v2.Entity->ang.x]) 
-							lastBiteFruit[v2.Entity->ang.x](v16, (CHAO_SAVE_INFO*)v17, a1);
+						if (lastBiteFruit[work->ang.x]) 
+							lastBiteFruit[work->ang.x]((CHAO_SAVE_INFO*)v17, tp, v16);
 						break;
 					}
 				}
