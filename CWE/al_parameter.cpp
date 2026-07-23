@@ -3,6 +3,7 @@
 #include "Chao.h"
 #include <cwe_api.h>
 #include "ChaoMain.h"
+#include "al_stage.h"
 
 void AL_NameSet(char* lval, char* rval) {
 	memcpy(lval, rval, sizeof(AL_NAME));
@@ -227,4 +228,14 @@ static void __declspec(naked) AL_CalcParameter_t()
 
 void AL_ParameterInit() {
 	WriteCall((void*)0x53640F, AL_CalcParameter_t);
+}
+
+int AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {
+    const int stg = AL_GetStageNumber();
+
+    if (stg == CHAO_STG_KINDER || stg > CHAO_STG_STADIUM && stg <= CHAO_STG_KARATE_2P) {
+        return GET_CHAOWK(tp)->pParamGC->Skill[SkillKind];
+    }
+
+    return 3 * GET_CHAOWK(tp)->pParamGC->Skill[SkillKind];
 }

@@ -3,12 +3,15 @@
 #include <al_garden_info.h>
 #include <al_behavior/al_intention.h>
 #include <al_behavior/albhv.h>
+#include <al_behavior/albhv_navigation.h>
 #include <alo_accessory.h>
 #include <ChaoMain.h>
 #include <ALifeSDK_Functions.h>
 #include <AL_ModAPI.h>
 #include <api/api_accessory.h>
 #include <api/api_metadata.h>
+#include <FunctionHook.h>
+#include <memory.h>
 
 extern void ALBHV_Life_Init();
 
@@ -550,7 +553,38 @@ static void AL_Behavior_PostureFix() {
 	WriteData((int*)(0x005A36D2 - 4), int(ALBHV_PostureChangeStand)); // WalkSelect
 }
 
+// AL_BehaviorResetParameter hook on bottom to free navigation points when not needed anymore
+// we make sure to free it in Chao_Delete_r aswell, incase the player leaves the garden mid-navigation behavior chain
+static void AL_BehaviorResetParameter_r(task* tp) {
+	// original behavior of the instructions we overwrite with our call
+	GET_CHAOWK(tp)->ChaoFlag |= 2; 
+	
+	auto work = GET_CHAOWK_CWE(tp);
+
+	if (work->pNaviPoints) {
+		FREE(work->pNaviPoints);
+		work->pNaviPoints = NULL;
+	}
+}
+static void __declspec(naked) AL_BehaviorResetParameter_t()
+{
+	__asm
+	{
+		push edi // a1
+
+		// Call your __cdecl function here:
+		call AL_BehaviorResetParameter_r
+
+		add esp, 4 // a1
+		retn
+	}
+}
+
 void AL_Behavior_Init() {
+	// writecall onto existing instructions on the bottom of behaviorresetparameter
+	WriteCall((void*)0x0053D881, AL_BehaviorResetParameter_t);
+	WriteData<0xB-0x6>((uint8_t*)0x0053D886, (uint8_t)0x90);
+
 	AL_Behavior_PostureFix();
 
 	AL_IntentionInit();
