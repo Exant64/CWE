@@ -97,6 +97,9 @@
 #include "cwe_c_colli.h"
 #include "rendertarget.h"
 
+#include "navigation/navsys.h"
+#include "navigation/navsys_log.h"
+
 const char* PathToModFolder = "";
 
 extern "C"
@@ -220,6 +223,7 @@ extern "C"
 				GrayscalifyCurrentLandtable();
 			}
 
+			NavSysCreate();
 			AL_CreateDayNightCycle();
 		}
 
@@ -400,6 +404,10 @@ extern "C"
 		CWE_Codes_OnFrame();
 	}
 	
+	__declspec(dllexport) void OnExit() {
+		NavSysLogExit();
+	}
+
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex) {
 		CWE_ModIndex = modIndex;
 
@@ -487,6 +495,10 @@ extern "C"
 		gConfigVal.StageAnimalChance = config->getInt("Chao World Extended", "StageAnimalChance", 50) / 100.f;
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
+
+		gConfigVal.PathfindingEnabled = config->getBool("Pathfinding", "Pathfinding", true);
+		gConfigVal.PathfindingVanilla = config->getBool("Pathfinding", "Vanilla", true);
+		gConfigVal.PathfindingLog = config->getBool("Pathfinding", "Log", true);
 
 		// Hard
 		gConfigVal.ChaoAttention = config->getBool("Hard", "HardChaoAttention", false);
@@ -607,6 +619,8 @@ extern "C"
 		if (gConfigVal.KeepAnimalParts) {
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
+
+		NavSysInit(path);
 
 		HDTexture_Init(path, config);
 

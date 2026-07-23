@@ -73,6 +73,10 @@ struct ConfigValues {
 	bool DayNightDebug;
 	bool DayNightCheat = true;
 
+	bool PathfindingEnabled;
+	bool PathfindingVanilla;
+	bool PathfindingLog;
+
 	float GlobalPriceMultiplier;
 
 	bool OmochaoParts = false;

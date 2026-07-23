@@ -14,7 +14,7 @@ struct ObjectListEntry;
 struct OBJ_LANDENTRY;
 struct ModelIndex;
 struct SETEntry;
-struct SETObjectData;
+struct _OBJ_CONDITION;
 struct colliwk;
 struct struct_0;
 struct AnimationIndex;
@@ -106,7 +106,7 @@ struct task
 	task_exec disp_late;
 	task_exec disp_last;
 	void *field_2C;
-	SETObjectData *SETData;
+	_OBJ_CONDITION *SETData;
 	taskwk* twp;
 	motionwk *mwp;
 	forcewk *fwp;
@@ -116,12 +116,12 @@ struct task
 	void *field_4C;
 };
 
-struct SETObjectData
+struct _OBJ_CONDITION
 {
 	uint8_t LoadCount;
 	char field_1;
 	__int16 Flags;
-	task *Object;
+	task *ptask;
 	SETEntry *SETEntry;
 	float field_C;
 };
@@ -493,7 +493,7 @@ struct __declspec(align(4)) chaowk
     int32_t RememberNum;
     int32_t pitch;
 	float ClimbFirstPos;
-	int IsParamCopy;
+	int field_58;
 	CHAO_PARAM_GC *pParamGC;
 	TMP_PARAM tmpParam;
 	int Stamina;
@@ -996,7 +996,7 @@ struct AnimationInfo
 };
 
 struct CCL_INFO {
-	char kind;
+	Uint8 kind;
 	char form;
 	char push;
 	char damage;
