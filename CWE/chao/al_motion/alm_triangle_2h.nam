@@ -267,4 +267,4 @@ NJS_MDATA2 _357001_mdat[] = {
 	{ NULL, _357001_39_rot, 0, LengthOfArray<Uint32>(_357001_39_rot) }
 };
 
-NJS_MOTION motion_alm_triangle = { _357001_mdat, 16, NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1, NJD_MTYPE_LINER | 2 };
+NJS_MOTION motion_alm_triangle_2h = { _357001_mdat, 16, NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1, NJD_MTYPE_LINER | 2 };

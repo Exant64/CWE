@@ -4,8 +4,11 @@
 #pragma warning( disable : 4305 )
 #pragma warning( disable : 4838 )
 
+#include "njdef.h"
+
 #include "alm_sunaasubi.nam"
-#include "alm_triangle.nam"
+#include "alm_triangle_1h.nam"
+#include "alm_triangle_2h.nam"
 #include "alm_accordion.nam"
 #include "alm_tailsfly.nam"
 #include "alm_dance_n.nam"
@@ -19,7 +22,8 @@
 
 MOTION_TABLE alm_sunaasubi = { &animation_00BE0FF4,   1, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 39.0f, 0.12f };
 MOTION_TABLE alm_tailsfly = { &motion_alm_tailsfly,  0, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 30.0f, 0.12f };
-MOTION_TABLE alm_triangle = { &motion_alm_triangle,  0, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 15.0f, 0.12f };
+MOTION_TABLE alm_triangle_1h = { motion_alm_triangle_1h,  0, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 12.0f, 0.12f };
+MOTION_TABLE alm_triangle_2h = { &motion_alm_triangle_2h,  1, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 15.0f, 0.12f };
 MOTION_TABLE alm_accordion = { &motion_alm_accordion, 2, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 8.0f, 0.12f };
 MOTION_TABLE alm_tailsfly_tired = { &motion_alm_tailsfly,  0, 0, 0xFFFFFFFF, 0xFFFFFFD8, 0, 30.0f, 0.12f / 2 };
 MOTION_TABLE alm_dance_n = { &animation_00C3025C ,  1, 0, 0xFFFFFFFF, -40, 0.0f, 25.0f, 0.12f };
