@@ -27,28 +27,6 @@ struct SA2CAMERADATA
 
 #define GET_WORK(tp) ((RAIN_WORK*)tp->awp)
 
-static char
-SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
-{
-	static const void* const ___fptr = ((void*)0x004374D0);
-
-	char result;
-
-	__asm
-	{
-		push[timer]
-		push[volofs]
-		push[pri]
-		push[id]
-		mov edi, [tone]
-		call[___fptr]
-		add esp, 16
-		mov[result], al
-	}
-
-	return result;
-}
-
 static void AL_DayNightRainExecutor(task* tp) {
 	auto* work = GET_WORK(tp);
 

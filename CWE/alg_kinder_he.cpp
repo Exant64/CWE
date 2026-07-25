@@ -108,30 +108,6 @@ SAlgKinderOrthoQuad plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4
 
 int UpgradeButtons[] = { BTN_UP, BTN_DOWN, BTN_RIGHT, BTN_LEFT, BTN_L};
 
-const int SE_Call_TIMERPtr = 0x04374D0;
-void SE_Call_TIMER(int a1, int a2, char a3, char a4, __int16 a5)
-{
-	__asm
-	{
-		push dword ptr[a5]
-		push dword ptr[a4]
-		push dword ptr[a3]
-		push a2
-		mov edi, a1
-		call SE_Call_TIMERPtr
-		add esp, 4 * 4
-	}
-}
-/*
-			write32 0058EA9A 0x80909090
-			write32 0058EA65 0x90909090
-			write32 0058EAA3 0x90909090
-	
-	ifeq16 01A529EC 0
-			write32 0058EA9A 0x801547FE
-			write32 0058EA65 0xFF154780
-			write32 0058EAA3 0x001547C6
-*/
 const int DrawMedicalChartTextPtr = 0x0058D880;
 void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float TextBoxLength, float TextSize, char TextAlignment)
 {
@@ -212,8 +188,8 @@ void PurchaseGradesCode(chaowk* data1)
 					data1->pParamGC->Lev[i] = 1;
 					data1->pParamGC->Skill[i] /= 100;
 					pParamCwe->UpgradeCounter++;
-					SE_Call_TIMER(TONE(8, 4), 0x616C7277, 1, 0, 120);
-					SE_Call_TIMER(TONE(1, 5), 0x616C7277, 1, 0, 120);
+					SE_Call_Timer(TONE(8, 4), (void*)0x616C7277, 1, 0, 120);
+					SE_Call_Timer(TONE(1, 5), (void*)0x616C7277, 1, 0, 120);
 
 					gu32TotalRing -= GradePurchasePrice[data1->pParamGC->Abl[i]];
 					data1->pParamGC->Abl[i]++;
