@@ -109,12 +109,6 @@ static void ScrollingLogic(task* a1) {
 	}
 }
 
-static bool AL_OdekakeIsGuest() {
-	CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
-
-	return Odekake_EnabledButtons && pParam && pParam->GBAType == 1;
-}
-
 static void AL_OdeScrollArrowExecutor(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
 		return;
@@ -173,13 +167,12 @@ static void AL_CreateOdeScrollArrow(task* pParent) {
 
 static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) {
 	const int isThereChao = Odekake_EnabledButtons;
-	const bool guest = AL_OdekakeIsGuest();
 
 	for (size_t i = 0; i < odekakeMenuEntries.size(); i++) {
 		const auto& entry = odekakeMenuEntries[i];
 
 		if (entry.Flags & ODE_FLAGS_REQUIRE_CHAO)
-			Odekake_EnabledButtonsCWE[i] = (isThereChao && !guest) ? 1 : 0;
+			Odekake_EnabledButtonsCWE[i] = isThereChao ? 1 : 0;
 		else if (entry.Flags & ODE_FLAGS_REQUIRE_NO_CHAO)
 			Odekake_EnabledButtonsCWE[i] = isThereChao ? 0 : 1; //flipped
 		else

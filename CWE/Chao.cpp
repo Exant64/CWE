@@ -259,9 +259,6 @@ static void Chao_Main_r(task* a1)
 	//some timer
 	if (GET_CHAOWK(a1)->Timer <= 2u)
 	{
-		if (pParam->GBAType == 2)
-			pParam->GBAType = 0;
-
 		//upgrade to 9.4
 		if (pParamCwe->IsInitializedAccessory == 0)
 		{
@@ -300,15 +297,6 @@ static void Chao_Main_r(task* a1)
 	}
 
 	memcpy(pParam->name, pParamCwe->Name, sizeof(pParam->name));
-
-	if (!(pParamCwe->Flags & AL_PARAM_FLAG_OLD_GUEST_CHECK)) {
-		if ((Uint8)pParamCwe->Name[6] == 0xFB) {
-			pParam->GBAType = 1;
-			pParamCwe->Name[6] = 0;
-		}
-
-		pParamCwe->Flags |= AL_PARAM_FLAG_OLD_GUEST_CHECK;
-	}
 
 	//these are ported xml codes
 	//immortality

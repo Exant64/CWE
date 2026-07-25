@@ -221,7 +221,7 @@ void AL_Odekake_Init()
 	//if (cweSaveFile.transporterFlag & eTRANSPORTER::CUSTOMIZATION)
 		odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
 
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	// odekakeMenuEntries.push_back(OdekakeGuestEntry);
 
 	odekakeMenuEntries.push_back(OdekakeGoodbyeEntry);
 

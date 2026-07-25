@@ -178,59 +178,6 @@ extern "C"
 		return retval;
 	}
 
-	static void GuestChao(CHAO_PARAM_GC& param) {
-
-		//to hopefully prevent chao getting capped when inside guest menu
-		if (AL_GetStageNumber() == CHAO_STG_ODEKAKE)
-			return;
-
-		if (param.GBAType != 1) return;
-
-		auto pParamCwe = GET_CWEPARAM(&param);
-		AL_GUEST& Guest = pParamCwe->Guest;
-
-		if (Guest.Type == 0) {
-			Guest.Type = param.type;
-			Guest.Alignment = param.body.APos;
-			Guest.Magnitude = param.body.growth;
-			Guest.FlySwim = param.body.VPos;
-			Guest.RunPower = param.body.HPos;
-
-		}
-		else {
-			param.type = Guest.Type;
-			param.body.APos = Guest.Alignment;
-			param.body.growth = Guest.Magnitude;
-			param.body.VPos = Guest.FlySwim;
-			param.body.HPos = Guest.RunPower;
-		}
-
-		param.life = 100;
-		param.LifeMax = 100;
-
-		*(Uint8*)(&param.GBARing) = 0; // ? sets byte at 0xC to 0
-
-		for (int i = 0; i < 5; i++) {
-			param.Exp[i] = 0;
-
-			if (param.Abl[i] > ChaoGrade_B) {
-				param.Abl[i] = ChaoGrade_B;
-			}
-
-			if (param.Skill[i] > 2000) {
-				param.Skill[i] = 2000;
-				param.Lev[i] = 109; //lock icon later
-			}
-
-			param.gene.Abl[i][1] = ChaoGrade_E;
-		}
-
-		param.Abl[6] = param.Abl[7] = 0;
-
-		pParamCwe->XGradeValue = 0;
-		pParamCwe->UpgradeCounter = 5;
-	}
-
 	void __cdecl ALW_Control_Main_Hook(task* a1);
 	Trampoline ALW_Control_t(0x00530850, 0x00530859, (void*)ALW_Control_Main_Hook);
 	void __cdecl ALW_Control_Main_Hook(task* a1)
@@ -359,8 +306,6 @@ extern "C"
 			//reset upgradecounter on egg chao, maybe move to reincarnation later
 			if (ChaoInfo::Instance()[i].type == 1)
 				GET_CWEPARAM(&ChaoInfo::Instance()[i])->UpgradeCounter = 0;
-
-			GuestChao(ChaoInfo::Instance()[i]);
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {

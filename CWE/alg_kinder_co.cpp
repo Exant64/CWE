@@ -52,37 +52,22 @@ struct al_stg_kinder_co_data
 };
 #pragma pack(pop)
 
-DataPointer(task*, pKinderChao, 0x01AED248);
-static bool IsValidRoom(int room) {
-	if (!pKinderChao) return true;
-
-	if (GET_CHAOPARAM(pKinderChao)->GBAType == 1 && room == 4)
-		return false;
-
-	return true;
-}
-
-char BlockedString[200];
 DataArray(int, dword_8A1AF8, 0x8A1AF8, 14);
 void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 {
-	if (pCoData->enteringRoom == 6)
+	if (pCoData->enteringRoom == 6) {
 		AlMsgFontCreateCStr(
 			Language == 0,
 			(int)"Credits",
 			(int)pCoData->dword1C,
 			640);
+	}
 	else {
 		char* titleString = (char*)((int)pCoData->msgLoaded + pCoData->msgLoaded[dword_8A1AF8[2 * pCoData->enteringRoom]]);
-		const char* suffix = "";
-		if (!IsValidRoom(pCoData->enteringRoom))
-			suffix = " (blocked)";
-
-		sprintf(BlockedString, "%s %s", titleString, suffix);
 
 		AlMsgFontCreateCStr(
 			Language == 0,
-			(int)BlockedString,
+			(int)titleString,
 			(int)pCoData->dword1C,
 			640);
 	}
