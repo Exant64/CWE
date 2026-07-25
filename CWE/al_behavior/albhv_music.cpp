@@ -33,7 +33,7 @@ int ALBHV_Guitar(task* tp) {
 	case 1:
 		bhv->SubTimer++;
 		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5) {
-			AL_SE_CallV2((24576 + 162), 0, 0, 56, &tp->twp->pos);
+			AL_SE_CallV2(TONE(6, 162), 0, 0, 56, &tp->twp->pos);
 		}
 		break;
 	}
@@ -93,12 +93,12 @@ static int ALBHV_Triangle(task* tp) {
             if (AL_GetMotionNum(tp) != ALM_CASTANETS_WAIT) {
                 if(!bhv->SubMode) {
                     if (bhv->SubTimer == 34) {
-                        AL_SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
+                        AL_SE_CallV2(TONE(6, 163), 0, 0, 75, &tp->twp->pos);
                     }
 				}
                 else {
                     if ((bhv->SubTimer == 34 || bhv->SubTimer == 65)) {
-                        AL_SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
+                        AL_SE_CallV2(TONE(6, 163), 0, 0, 75, &tp->twp->pos);
                     }
 				}
             }
@@ -126,7 +126,7 @@ int ALBHV_Accordion(task* tp) {
 		case 1:
 			bhv->SubTimer++;
 			if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5) {
-				AL_SE_CallV2((24576 + 161), 0, 0, 56, &tp->twp->pos);
+				AL_SE_CallV2(TONE(6, 161), 0, 0, 56, &tp->twp->pos);
 			}
 			break;
 	}

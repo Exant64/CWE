@@ -10,6 +10,7 @@
 
 #include <renderfix.h>
 #include <util.h>
+#include <playsound.h>
 
 struct __declspec(align(8)) MinimalData2
 {
@@ -382,11 +383,11 @@ static void LoadLevelDestroy_r() {
 
 static void AnimalPickupSoundHook_r(int a1, NJS_VECTOR *a2, int a3, int a4, int a5, int animalID) {
     if (animalID >= 21 && animalID < 25) {
-        SE_CallV2(0x8011, a3, a4, a5, a2);
+        SE_CallV2(TONE(8, 0x11), a3, a4, a5, a2);
         return;
     }
     
-    SE_CallV2(0x800F, a3, a4, a5, a2);
+    SE_CallV2(TONE(8, 0xF), a3, a4, a5, a2);
 }
 
 static void __declspec(naked) AnimalPickupSoundHook()

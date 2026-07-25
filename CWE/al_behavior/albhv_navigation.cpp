@@ -181,7 +181,7 @@ int ALBHV_Navigation(task* tp) {
                 AL_SetMotionLink(tp, ALM_CRAWL);
             }
 
-            AL_SE_CallV2(0x1020, 0, 0, 0, &GET_CHAOWK(tp)->pos);
+            AL_SE_CallV2(TONE(1, 0x20), 0, 0, 0, &GET_CHAOWK(tp)->pos);
 
             bhv->Mode = MD_SWIM;
             break;
@@ -221,7 +221,7 @@ int ALBHV_Navigation(task* tp) {
                 move->Acc.z = njCos(work->ang.y) * spd - move->Velo.z * 0.05f;
             }
             
-            AL_SE_CallV2_TIMER(tp, 0x101F, &GET_CHAOWK(tp)->pos, 1, -25, 90);
+            AL_SE_CallV2_TIMER(tp, TONE(1, 0x1F), &GET_CHAOWK(tp)->pos, 1, -25, 90);
 
             break;
         }
