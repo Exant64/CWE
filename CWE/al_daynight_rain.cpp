@@ -7,6 +7,7 @@
 #include <al_texlist.h>
 #include <al_omochao_build.h>
 #include "ChaoMain.h"
+#include <playsound.h>
 
 #pragma pack(push, 8)
 struct SA2CAMERADATA
@@ -48,19 +49,11 @@ SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
 	return result;
 }
 
-enum CWE_SOUND {
-	CWE_SOUND_ACCORDION = 161,
-	CWE_SOUND_GUITAR = 162,
-	CWE_SOUND_TRIANGLE = 163,
-	CWE_SOUND_SAND = 164,
-	CWE_SOUND_RAIN = 165
-};
-
 static void AL_DayNightRainExecutor(task* tp) {
 	auto* work = GET_WORK(tp);
 
 	if(gConfigVal.DayNightRainSounds) {
-		SE_Call_Timer(0x6000 + CWE_SOUND_RAIN, tp, 0, 0, 2);
+		SE_Call_Timer(TONE(6, CWE_SOUND_RAIN), tp, 0, 0, 2);
 	}
 
 	// slightly change angle overtime

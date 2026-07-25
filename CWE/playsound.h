@@ -3,6 +3,14 @@
 #include "stdafx.h"
 #include "al_stage.h"
 
+enum CWE_SOUND {
+	CWE_SOUND_ACCORDION = 161,
+	CWE_SOUND_GUITAR = 162,
+	CWE_SOUND_TRIANGLE = 163,
+	CWE_SOUND_SAND = 164,
+	CWE_SOUND_RAIN = 165
+};
+
 #define TONE(bnk, no) (Sint32)((((bnk)<<12)&0xF000)+(no))
 
 static const void* const SE_CallV2_TIMERPtr = (void*)0x437590;
