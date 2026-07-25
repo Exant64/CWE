@@ -5,6 +5,7 @@
 #include "../Chao.h"
 #include "../ChaoMain.h"
 #include "../al_sandhole.h"
+#include <playsound.h>
 #include "../data/toy/alo_pail.nja"
 
 signed int __cdecl ALBHV_SandHole(task* a1)
@@ -54,9 +55,8 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		break;
 	}
 	GET_CHAOWK(a1)->Behavior.SubTimer++;
-	if ((GET_CHAOWK(a1)->Behavior.SubTimer % 180) == 0 && njRandom() < 0.5f && ChaoStageNumber == ChaoNextStageNumber)
-	{
-		SE_CallV2((24576 + 164), 0, 0, 56, &a1->twp->pos);
+	if ((GET_CHAOWK(a1)->Behavior.SubTimer % 180) == 0 && njRandom() < 0.5f) {
+		AL_SE_CallV2((24576 + 164), 0, 0, 56, &a1->twp->pos);
 	}
 	return BHV_RET_CONTINUE;
 }

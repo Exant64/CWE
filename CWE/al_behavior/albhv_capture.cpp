@@ -8,6 +8,7 @@
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 #include <al_parts.h>
+#include <playsound.h>
 
 const int ParamFukidasiExecutor_LoadPtr = 0x05659E0;
 void ParamFukidasiExecutor_Load(task* a1)
@@ -109,12 +110,12 @@ int ALBHV_Capture(task* tp) {
 	switch (work->Behavior.Mode) {
 	case 0:
 		AL_SetMotionLink(tp, 203);
+		
 		work->Behavior.Mode = 1;
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
-		if (ChaoStageNumber == ChaoNextStageNumber)
-		{
-			SE_CallV2(4100, 0, 0, 0, &GET_CHAOWK(tp)->pos);
-		}
+
+		AL_SE_CallV2(4100, 0, 0, 0, &GET_CHAOWK(tp)->pos);
+
 		CreateChildTask(IM_TWK, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
 	case 1:
@@ -126,10 +127,8 @@ int ALBHV_Capture(task* tp) {
 
 			AL_SetMotionLink(tp, 204);
 			work->Behavior.Mode = 2;
-			if (ChaoStageNumber == ChaoNextStageNumber)
-			{
-				SE_CallV2(4101, 0, 0, 0, &GET_CHAOWK(tp)->pos);
-			}
+			
+			AL_SE_CallV2(4101, 0, 0, 0, &GET_CHAOWK(tp)->pos);
 
 			for (int i = 0; i < 40; i++) {
 				NJS_POINT3* pos = &work->pos;

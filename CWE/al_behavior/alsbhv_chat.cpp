@@ -148,7 +148,7 @@ int ALS_Laugh(SOCIALDATA* data)
 		AL_FaceChangeEye(data->chaoPointer, ChaoEyes_Painful);
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_ClosedSmile);
 		//PlaySoundXYZAlt(VOICEBANK5(47) /*0x48B*/ + (njRandom() * 4.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(47), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(VOICEBANK5(47), 0, 0, 110, &data->chaoPointer->twp->pos);
 		data->bhvStatus.Timer = 1 * 60;
 	}
 	else
@@ -174,7 +174,7 @@ int ALS_DoYouAgree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_Open);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(92), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(92), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(VOICEBANK5(92), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -199,7 +199,7 @@ int ALS_DoNotAgree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_ClosedFrown);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(89)/*0x4B5*/, data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(89), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(VOICEBANK5(89), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -224,7 +224,7 @@ int ALS_Agree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_None);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(94)/*0x4BA*/, data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(94), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(VOICEBANK5(94), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -247,10 +247,9 @@ void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 	if (data->bhvStatus.SubTimer <= 0)
 		data->bhvStatus.SubTimer = 60 * multiplier;
 
-	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (ChaoStageNumber == ChaoNextStageNumber)
-			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
-	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
+	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
+		AL_SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
+	}
 
 	if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
 		AL_FaceSetMouth(data->chaoPointer, ChaoMouth_Open, 15 * multiplier);
@@ -283,9 +282,9 @@ void __cdecl ALS_TalkFace(SOCIALDATA* data)
 	//if (data->bhvStatus.SubTimer <= 0)
 		//data->bhvStatus.SubTimer = 60 * multiplier;
 
-	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (ChaoStageNumber == ChaoNextStageNumber)
-			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
+	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
+		AL_SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
+	}
 	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
 
 	//if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
@@ -467,7 +466,7 @@ int ALS_SassyBye(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_None);
 		data->bhvStatus.Timer = 45;
 		if(data->actorIndex == 0)
-			SE_CallV2(VOICEBANK5(55), 0, 0, 110, &data->chaoPointer->twp->pos);
+			AL_SE_CallV2(VOICEBANK5(55), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else if (data->bhvStatus.Mode == 1)
 	{

@@ -10,6 +10,7 @@
 #include "al_knowledge.h"
 #include "..//AL_ModAPI.h"
 #include "al_intention.h"
+#include <playsound.h>
 #include "../data/toy/al_toy_triangle.nja"
 #include "../data/toy/alo_accordion.nja"
 #include "../data/toy/alo_guitar.nja"
@@ -31,9 +32,8 @@ int ALBHV_Guitar(task* tp) {
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
-		{
-			SE_CallV2((24576 + 162), 0, 0, 56, &tp->twp->pos);
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5) {
+			AL_SE_CallV2((24576 + 162), 0, 0, 56, &tp->twp->pos);
 		}
 		break;
 	}
@@ -90,15 +90,15 @@ static int ALBHV_Triangle(task* tp) {
             	bhv->SubTimer++;
 			}
 
-            if (AL_GetMotionNum(tp) != ALM_CASTANETS_WAIT && ChaoStageNumber == ChaoNextStageNumber) {
+            if (AL_GetMotionNum(tp) != ALM_CASTANETS_WAIT) {
                 if(!bhv->SubMode) {
                     if (bhv->SubTimer == 34) {
-                        SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
+                        AL_SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
                     }
 				}
                 else {
                     if ((bhv->SubTimer == 34 || bhv->SubTimer == 65)) {
-                        SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
+                        AL_SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
                     }
 				}
             }
@@ -125,9 +125,8 @@ int ALBHV_Accordion(task* tp) {
 			bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 		case 1:
 			bhv->SubTimer++;
-			if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
-			{
-				SE_CallV2((24576 + 161), 0, 0, 56, &tp->twp->pos);
+			if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5) {
+				AL_SE_CallV2((24576 + 161), 0, 0, 56, &tp->twp->pos);
 			}
 			break;
 	}
