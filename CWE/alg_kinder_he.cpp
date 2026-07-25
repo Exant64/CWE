@@ -16,6 +16,7 @@
 #include "al_modelcontainer.h"
 #include <api/api_tree.h>
 #include <al_garden_info.h>
+#include "playsound.h"
 
 DataPointer(CHAO_SAVE_INFO*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
@@ -211,8 +212,8 @@ void PurchaseGradesCode(chaowk* data1)
 					data1->pParamGC->Lev[i] = 1;
 					data1->pParamGC->Skill[i] /= 100;
 					pParamCwe->UpgradeCounter++;
-					SE_Call_TIMER(0x8004, 0x616C7277, 1, 0, 120);
-					SE_Call_TIMER(0x1005, 0x616C7277, 1, 0, 120);
+					SE_Call_TIMER(TONE(8, 4), 0x616C7277, 1, 0, 120);
+					SE_Call_TIMER(TONE(1, 5), 0x616C7277, 1, 0, 120);
 
 					gu32TotalRing -= GradePurchasePrice[data1->pParamGC->Abl[i]];
 					data1->pParamGC->Abl[i]++;
@@ -863,7 +864,7 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				{
 					a1->medicalChartMenu = 2;
 				}
-				SE_Call(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 			if ((per[0]->press & (BTN_R | BTN_A)) != 0 || per[0]->press & 0x80)
 			{
@@ -871,12 +872,12 @@ void __cdecl sub_58EA40(HealthCenter* a1)
 				{
 					a1->medicalChartMenu = 0;
 				}
-				SE_Call(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 			if ((per[0]->press & 0x402) != 0)
 			{
 				sub_58DB30((int)a1);
-				SE_Call(0x100A, 0, 0, 0);
+				SE_Call(TONE(1, 10), 0, 0, 0);
 			}
 		}
 		a1->field_16 += 16;

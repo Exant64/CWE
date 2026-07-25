@@ -5,6 +5,7 @@
 #include <ui/al_tween.h>
 #include <al_texlist.h>
 #include <ALifeSDK_Functions.h>
+#include "playsound.h"
 
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
 FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
@@ -270,7 +271,7 @@ void AL_Odekake_MenuMaster_Selection() {
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY < 0) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 		}
-		SE_Call(0x8000, 0, 0, 0);
+		SE_Call(TONE(8, 0), 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);
@@ -282,7 +283,7 @@ void AL_Odekake_MenuMaster_Selection() {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = 0;
 		}
 
-		SE_Call(0x8000, 0, 0, 0);
+		SE_Call(TONE(8, 0), 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);

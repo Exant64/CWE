@@ -9,6 +9,7 @@
 #include "ChaoMain.h"
 #include "alo_obakehead.h"
 #include "AL_ModAPI.h"
+#include "playsound.h"
 
 #pragma warning(push)
 #pragma warning( disable: 4838 )
@@ -236,12 +237,12 @@ public:
 			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
 
-			SE_Call(0x100E, 0, 0, 0);
+			SE_Call(TONE(1, 0xE), 0, 0, 0);
 			return;
 		}
 
 		if (!controller->IsCurrentLayer(m_layerEnter)) {
-			SE_Call(0x1007, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 
 			controller->SetCurrentLayer(m_layerEnter);
 
@@ -596,7 +597,7 @@ private:
 		return HatList.size() + AccessoryList.size();
 	}
 
-	void ScrollDisp(float posX, float posY, float length){
+	void ScrollDisp(float posX, float posY, float length) {
 		chDrawBillboardSR(
 			&m_scrollTop,
 			posX,
@@ -661,7 +662,7 @@ public:
 				canEquip = AL_Customization_CreateHat(pParam->body.ObakeHead, pParam->place);
 
 			if (canEquip) {
-				SE_Call(0x1007, 0, 0, 0);
+				SE_Call(TONE(1, 7), 0, 0, 0);
 				pParam->body.ObakeHead = Uint8(HatList[index]->kind);
 				AL_ClearItemSaveInfo(HatList[index]);
 				UpdateHatAccVector();
@@ -679,7 +680,7 @@ public:
 			canEquip = AL_Customization_CreateAcc(GET_CHAOWK_CWE(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
 
 		if (canEquip) {
-			SE_Call(0x1007, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 			AL_SetAccessory(pChao, pSaveInfo, pSaveInfo->IndexID);
 			AL_ClearItemSaveInfo(pSaveInfo);
 			UpdateHatAccVector();
@@ -1295,7 +1296,7 @@ public:
 
 		if (!m_inSliderMenu && (SWDATAE[0] & BTN_B)) {
 			// exits the color menu
-			SE_Call(0x100A, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 			ColorMenuOpened = false;
 			return;
 		}
@@ -1351,7 +1352,7 @@ public:
 		}
 
 		if (SWDATAE[0] & BTN_A && m_selectionY < sliderSelectionStart) {
-			SE_Call(0x1007, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 
 			const auto slotCount = GetColorSlotCount();
 			SelectColorSlot(m_selectionY * min(slotCount, 4) + m_selectionX);
@@ -1361,7 +1362,7 @@ public:
 		}
 
 		if (SWDATAE[0] & BTN_B && m_inSliderMenu) {
-			SE_Call(0x100A, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 
 			m_inSliderMenu = false;
 			m_sineAng = 0;
@@ -1510,7 +1511,7 @@ public:
 		}
 
 		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
-		SE_Call(0x100A, 0, 0, 0);
+		SE_Call(TONE(1, 10), 0, 0, 0);
 		if (!m_slot)
 		{
 			Uint8& headgear = pParam->body.ObakeHead;
@@ -1559,7 +1560,7 @@ public:
 					}
 					else {
 						if (SWDATAE[0] & BTN_LEFT) {
-							SE_Call(0x8009, 0, 0, 0);
+							SE_Call(TONE(8, 9), 0, 0, 0);
 						}
 					}
 
@@ -1567,7 +1568,7 @@ public:
 						if (!ColorMenuOpened && SWDATAE[0] & BTN_A) {
 							ColorMenuOpened = true;
 
-							SE_Call(0x1007, 0, 0, 0);
+							SE_Call(TONE(1, 7), 0, 0, 0);
 
 							auto colorEditElement = customizationController->GetButton("coloredit");
 							if (colorEditElement) {

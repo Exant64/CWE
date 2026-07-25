@@ -13,6 +13,7 @@
 #include "ChaoMain.h"
 #include "alo_fruit.h"
 #include "AL_ModAPI.h"
+#include "playsound.h"
 
 #include "data/cwe/object_common_cnk/alo_mannequin.nja"
 #include "data/accessory/ala_full_mannequin.nja"
@@ -1891,7 +1892,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	auto SetTabIfItHasItem = [&](int i) {
 		if (IsTabNotEmpty(i)) {
-			SE_Call(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 			a1->currentTab = i;
 			a1->mBuyListCursor = 0;
 			a1->mBuyListScroll = 0;
@@ -1929,7 +1930,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = a1->mBuyListCursor;
 				}
 				FBuyListSetItemDesc(a1);
-				SE_Call(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 		}
 		if (SWDATAE[0] & BTN_DOWN)
@@ -1942,7 +1943,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = v6;
 				}
 				FBuyListSetItemDesc(a1);
-				SE_Call(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 		}
 
@@ -1993,14 +1994,14 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				FMainWinWaitClose(a1);
 				//once the text is done mode 3 goes back to mode 0
 				a1->mBuyListMode = 3;
-				SE_Call(32777, 0, 0, 0);
+				SE_Call(TONE(8, 9), 0, 0, 0);
 			}
 		}
 		else if (per[0]->press & BTN_B)
 		{
 			a1->currentTab = 0;
 			a1->mMode = 9;
-			SE_Call(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		break;
 	case 1:
@@ -2011,12 +2012,12 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 		if ((SWDATAE[0] & 0x10) && a1->mBuyListSelect == 1)
 		{
 			a1->mBuyListSelect = 0;
-			SE_Call(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 		}
 		if ((SWDATAE[0] & 0x20) && !a1->mBuyListSelect)
 		{
 			a1->mBuyListSelect = 1;
-			SE_Call(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 		}
 			
 		if ((per[0]->press & 0x406) == 0) {
@@ -2025,7 +2026,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 		if ((per[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
 			a1->mBuyListSelect = 1;
-			SE_Call(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		else {
 			if (a1->mBuyListSelect)
@@ -2110,11 +2111,11 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 	LABEL_57:
 		if ((per[0]->press & 0x402) != 0)
 		{
-			SE_Call(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		else
 		{
-			SE_Call(4103, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 		}
 		break;
 	case 2:
