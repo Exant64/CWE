@@ -107,6 +107,7 @@
 #include <global_save.h>
 #include <minimal/minimal.h>
 #include <hd_texture.h>
+#include <al_guest.h>
 
 #include "land_grayscale.h"
 #include "api/api_main.h"
@@ -132,6 +133,8 @@ extern "C"
 				AL_ChaoCounterCreate();
 			break;
 		}
+
+		CWE_SpawnRandomGuestChao();
 
 		AL_NameDisplayCreate();
 		//ALO_Butterfly_Load();
@@ -592,6 +595,7 @@ extern "C"
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
 
+		CWE_GuestInit();
 		NavSysInit(path);
 
 		HDTexture_Init(path, config);
