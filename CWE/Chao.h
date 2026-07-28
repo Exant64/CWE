@@ -459,18 +459,6 @@ enum {
 	NB_ALW_KIND
 };
 
-struct POS_XZ
-{
-	int x;
-	int z;
-};
-struct LAND_ATTR_INDEX
-{
-	int nbIndex;
-	POS_XZ pos[512];
-};
-DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
-
 void AL_ChaoAccessoryConversion(CHAO_PARAM_CWE* pParam);
 void AL_ChaoAccessoryMainCheck(task* tp);
 
@@ -487,7 +475,6 @@ void AL_ChildFieldCreateT(task* a1, Uint8 a2, NJS_VECTOR* a3, float a4, int time
 task* GetClosestChao(task* a1);
 void AL_IconSet(task* a4, char a2, int a3);
 
-void AL_GetRandomAttrPos_0(task* a1);	
 typedef int(__cdecl* BHV_FUNC)(task*);
 void sub_54A730(task* a1);
 extern "C" __declspec(dllexport) signed int __cdecl ALBHV_WearAccessory(task* a1);

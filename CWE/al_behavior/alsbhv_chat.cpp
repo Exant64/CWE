@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "alsbhv.h"
 #include "playsound.h"
 #include <random>
@@ -246,7 +245,7 @@ void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 		data->bhvStatus.SubTimer = 60 * multiplier;
 
 	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
-		AL_SE_CallV2_TIMER(data->chaoPointer, TONE(6, 75 + int(njRandom() * 20.0f)), &data->chaoPointer->twp->pos, 0, 110, 100);
+		AL_SE_CallV2_TIMER(TONE(6, 75 + int(njRandom() * 20.0f)), data->chaoPointer, 0, 110, 100, &data->chaoPointer->twp->pos);
 	}
 
 	if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
@@ -281,7 +280,7 @@ void __cdecl ALS_TalkFace(SOCIALDATA* data)
 		//data->bhvStatus.SubTimer = 60 * multiplier;
 
 	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
-		AL_SE_CallV2_TIMER(data->chaoPointer, TONE(6, 75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
+		AL_SE_CallV2_TIMER(TONE(6, 75 + int(njRandom() * 20.0f)), data->chaoPointer, 0, 110, 100, &data->chaoPointer->twp->pos);
 	}
 	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
 

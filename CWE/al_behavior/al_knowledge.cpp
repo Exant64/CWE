@@ -3,7 +3,6 @@
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include <random>
 #include "al_knowledge.h"

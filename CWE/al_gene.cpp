@@ -11,16 +11,23 @@
 #include "ChaoMain.h"
 #include "api/api_accessory.h"
 #include "al_behavior/al_behavior.h"
+#include <asmutil.h>
 
-const int sub_536450Ptr = 0x536450;
-void sub_536450(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		mov esi, a2
-		call sub_536450Ptr
-	}
+ASM_FUNC void AL_GeneCreate(AL_GENE *a1) {
+	// save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5506B0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 //unused for now
@@ -31,16 +38,25 @@ void InitChaoDNA_Hook(AL_GENE* a1, int a2, size_t a3) //use this to edit how cha
 	//code here
 }
 
-const int AL_GeneAnalyzeCommmonPtr = 0x00551DA0;
-void AL_GeneAnalyzeCommon(AL_GENE* a1, CHAO_PARAM_GC* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		push a2
-		call AL_GeneAnalyzeCommmonPtr
-		add esp, 4
-	}
+ASM_FUNC void AL_GeneAnalyzeCommon(AL_GENE* a1, CHAO_PARAM_GC* a2) {
+	// save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00551DA0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_GeneColorMixing(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
@@ -271,7 +287,7 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 		memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
 		memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
 		memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParamCwe->motherData, motherParam);
+		AL_ShapeElementFromParam(&pParamCwe->motherData, motherParam);
 	}
 
 	if (pGene->FatherID.id[0] != 0) {
@@ -281,7 +297,7 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 		memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
 		memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
 		memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParamCwe->fatherData, fatherParam);
+		AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
 	}
 }
 static void __declspec(naked) AL_GeneAnalyzeCommonHook()
@@ -300,16 +316,23 @@ static void __declspec(naked) AL_GeneAnalyzeCommonHook()
 	}
 }
 
-const int AL_BlendGenePtr = 0x00551840;
-void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov eax, a2
-		mov esi, pDestGene
-		call AL_BlendGenePtr
-	}
+ASM_FUNC void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(3+0+1) ); // pDestGene
+    ASM_MOVE( eax, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00551840 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {

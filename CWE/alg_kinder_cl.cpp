@@ -6,6 +6,7 @@
 #include "ChaoMain.h"
 #include "alg_kinder_cl.h"
 #include <al_behavior/al_knowledge.h>
+#include <asmutil.h>
 
 enum eAL_SONG {
 	AL_SONG_1 = 0x0,
@@ -41,14 +42,19 @@ struct __declspec(align(2)) KinWhole
 };
 #pragma pack(pop)
 
-const int Classroom_GetMsgPtr = 0x00584B50;
-const char* Classroom_GetMsg(char a1, int a2) {
-	__asm {
-		mov ecx, a2
-		push dword ptr[a1]
-		call Classroom_GetMsgPtr
-		add esp, 4
-	}
+static ASM_FUNC const char* Classroom_GetMsg(char a1, int a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(1+0+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(2+1+0) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x00584B50 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 DataPointer(const char**, dword_1AED724, 0x1AED724);
@@ -404,7 +410,7 @@ void alg_kinder_cl_Init() {
 	WriteJump((void*)0x00585E00, IsLessonLearned_Hook);
 	WriteJump((void*)0x00585EC0, SetLessonLearned_Hook);
 
-	WriteJump((void*)Classroom_GetMsgPtr, Classroom_GetMsg_hook);
+	WriteJump((void*)0x00584B50, Classroom_GetMsg_hook);
 
 	if (gConfigVal.ClassroomTimerDisplay) {
 		WriteCall((void*)0x005861BF, AL_KinderPMessageExec_LoadTimer);

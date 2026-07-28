@@ -1,44 +1,48 @@
 #include "stdafx.h"
 #include <Chao.h>
+#include "asmutil.h"
 
-const int Chao_AnimationPtr = 0x00793C40;
-void Chao_Animation(MOTION_CTRL* a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call Chao_AnimationPtr
-	}
+ASM_FUNC void SetMotionLink(MOTION_CTRL* a1, int a2) {
+	// arguments
+    ASM_MOVE( edx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( ecx, 0x00793C40 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int Chao_PlayAnimationSpeedPtr = 0x00793D30;
-void  Chao_PlayAnimationSpeed(MOTION_CTRL* result, int a2, unsigned __int16 a3)
-{
-	__asm
-	{
-		push dword ptr[a3]
-		mov edx, a2
-		mov eax, result
-		call Chao_PlayAnimationSpeedPtr
-		add esp, 4
-	}
+ASM_FUNC void SetMotionLinkStep(MOTION_CTRL* result, int a2, unsigned __int16 a3) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+1+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // result
+
+    // call
+    ASM_CALL_R( ecx, 0x00793D30 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-unsigned int __cdecl AL_IsMotionStop(task* a1)
-{
+Bool AL_IsMotionStop(task* a1) {
 	return GET_CHAOWK(a1)->MotionCtrl.flag & 8;
 }
-void AL_SetMotionLink(task* a1, int index)
-{
-	Chao_Animation(&GET_CHAOWK(a1)->MotionCtrl, index);
+
+void AL_SetMotionLink(task* a1, int index) {
+	SetMotionLink(&GET_CHAOWK(a1)->MotionCtrl, index);
 }
-void AL_SetMotionLinkStep(task* a1, int index, int spd)
-{
-	Chao_PlayAnimationSpeed(&GET_CHAOWK(a1)->MotionCtrl, index, spd);
+
+void AL_SetMotionLinkStep(task* a1, int index, int spd) {
+	SetMotionLinkStep(&GET_CHAOWK(a1)->MotionCtrl, index, spd);
 }
-void __cdecl AL_SetMotionSpd(task* a1, float a2)
-{
+
+void AL_SetMotionSpd(task* a1, float a2) {
 	GET_CHAOWK(a1)->MotionCtrl.multi_spd = a2;
 }
 

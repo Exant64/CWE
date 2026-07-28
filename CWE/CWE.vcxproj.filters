@@ -5,7 +5,6 @@
     <ClCompile Include="alg_kinder_cl.cpp" />
     <ClCompile Include="alg_kinder_he.cpp" />
     <ClCompile Include="alg_kinder_ortho.cpp" />
-    <ClCompile Include="ALifeSDK_Functions.cpp" />
     <ClCompile Include="alo_accessory.cpp" />
     <ClCompile Include="alo_boat.cpp" />
     <ClCompile Include="alo_coffin.cpp" />
@@ -161,7 +160,6 @@
     <ClInclude Include="alg_kinder_cl.h" />
     <ClInclude Include="alg_kinder_he.h" />
     <ClInclude Include="alg_kinder_ortho.h" />
-    <ClInclude Include="ALifeSDK_Functions.h" />
     <ClInclude Include="alo_accessory.h" />
     <ClInclude Include="alo_fruit.h" />
     <ClInclude Include="alo_obakehead.h" />

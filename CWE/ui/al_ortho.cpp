@@ -3,14 +3,17 @@
 #include "d3dx9.h"
 #include "../ninja_functions.h"
 #include "../al_modelcontainer.h"
+#include "asmutil.h"
 
-const int GXSetProjectionPtr = 0x0041FE70;
-void GXSetProjection(int a1)
-{
-	__asm {
-		mov eax, a1
-		call GXSetProjectionPtr
-	}
+ASM_FUNC void GXSetProjection(int a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0041FE70 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 D3DXMATRIX ortho;

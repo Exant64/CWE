@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
@@ -137,7 +136,7 @@ int ALBHV_MayuDance(task *tp) {
 	return BHV_RET_CONTINUE;
 }
 
-void AL_CalcIntentionScore_Mayu(task* tp, float* pMaxScore) {
+void AL_CalcIntentionScore_MayuReact(task* tp, float* pMaxScore) {
 	task* pField;
 
 	if (GET_CHAOWK(tp)->Behavior.IntervalTimer[0x10]) return;

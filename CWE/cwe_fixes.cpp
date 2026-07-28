@@ -1,25 +1,22 @@
 #include "stdafx.h"
 
 #include <brightfixapi.h>
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "alg_kinder_bl.h"
 #include "al_behavior/al_behavior.h"
 #include "memory.h"
+#include <asmutil.h>
 
-//THEY DIDNT RESET THE SHADERS LOL
-void CocoonFix()
-{
+static void CocoonFix() {
 	SetShaderType(1);
 	DoLighting(LightIndex);
 }
 
-FunctionPointer(void, EGG_Display, (task*), 0x0057B640);
-void __cdecl EGG_Display_(task* a1)
-{
+static void EGG_Display_(task* a1) {
+	FunctionPointer(void, EGG_Display, (task*), 0x0057B640);
+
 	BrightFixPlus_ShinyCheck(1);
 	EGG_Display(a1);
-
 }
 
 task* dword_1946618[32];
@@ -56,23 +53,27 @@ void ChaoExpandPatch() {
 	WriteData((int*)0x0485CD0, (int)dword_1946618);
 	WriteData((int*)0x0485CD5, (int)dword_1946618);
 }
-const int njInitTexturePtr = 0x0042FA60;
-void njInitTexture(void* result)
-{
-	__asm
-	{
-		mov eax, result
-		call njInitTexturePtr
-	}
+
+static ASM_FUNC void njInitTexture(void* result) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0042FA60 );
+
+    // return
+    ASM_RET( 0 );
 }
-const int njInitTextureBufferPtr = 0x042FA90;
-void njInitTextureBuffer(void* result)
-{
-	__asm
-	{
-		mov eax, result
-		call njInitTextureBufferPtr
-	}
+
+static ASM_FUNC void njInitTextureBuffer(void* result) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x042FA90 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl ExpandTextureBuffer()

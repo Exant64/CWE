@@ -4,7 +4,6 @@
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_toy_move.h"
 

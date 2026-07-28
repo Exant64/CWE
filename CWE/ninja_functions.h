@@ -101,16 +101,15 @@ void  njCalcVector(NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_MATRIX* a3);
 void  njSetTexture(NJS_TEXLIST* texlist);
 float njUnitVector(NJS_VECTOR *a1);
 
-void njCalcPoint(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, int a4);
-
 DataPointer(NJS_ARGB, _nj_constant_material_, 0x025EFFD0);
 FunctionPointer(void, SetMaterial, (float a, float r, float g, float b), 0x44B2E0);
+
+void SetShaderType(int id);
 
 void  njTranslate(float *a1, float a2, float a3, float a4);
 
 void  njTranslateEx(NJS_VECTOR* a1);
 
-const int njCnkDrawObjectPtr = 0x0056E210;
 void chCnkDrawObject(NJS_CNK_OBJECT* a1);
 
 void njCnkDrawModel(NJS_CNK_MODEL* a1);
@@ -128,6 +127,8 @@ void DrawQuadTexture(int a1, float a2);
 
 void njSetTextureNum(int texid);
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered = false);
+
+void chCalcWorldPosFromScreenPos(const NJS_POINT3* a1, NJS_POINT3* a2);
 
 FunctionPointer(void, njCnkMotion, (NJS_CNK_OBJECT* a1, NJS_MOTION* a2, float a3), 0x782780);
 
@@ -150,6 +151,30 @@ DataArray(LightGC, LightsGC, 0x01DE4420, 12);
 #define RotateX(a) if(a) njRotateX(NULL, a)
 #define RotateY(a) if(a) njRotateY(NULL, a)
 #define RotateZ(a) if(a) njRotateZ(NULL, a)
+
+static Float njScalor2(const NJS_VECTOR* const v) {
+	return (v->x * v->x) + (v->y * v->y) + (v->z * v->z);
+}
+
+static Float njScalor(const NJS_VECTOR* const v) {
+	return sqrtf( njScalor2(v) );
+}
+
+static float njDistanceP2P(NJS_POINT3* p1, NJS_POINT3* p2) {
+	const NJS_VECTOR v = {
+		p2->x - p1->x,
+		p2->y - p1->y,
+		p2->z - p1->z
+	};
+
+	const float len = njScalor2(&v);
+
+	if(len < 0.025f) {
+		return 0.f;
+	}
+
+	return sqrtf(len);
+}
 
 struct Control3D {
 	Control3D(uint32_t on, uint32_t off)  {

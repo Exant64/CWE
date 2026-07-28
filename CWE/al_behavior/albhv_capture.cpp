@@ -3,22 +3,24 @@
 #include "../Chao.h"
 #include "../al_world.h"
 #include "..//ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include <random>
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 #include <al_parts.h>
 #include <playsound.h>
+#include <asmutil.h>
 
-const int ParamFukidasiExecutor_LoadPtr = 0x05659E0;
-void ParamFukidasiExecutor_Load(task* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call ParamFukidasiExecutor_LoadPtr
-	}
+ASM_FUNC void ParamFukidasiExecutor_Load(task* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x05659E0 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 FunctionPointer(void, sub_6EFF10, (NJS_VECTOR* a1, NJS_VECTOR* a2, float a3), 0x6EFF10);
 FunctionPointer(void, AL_CloseParameterFukidasiWait, (task*), 0x00565BC0);
 

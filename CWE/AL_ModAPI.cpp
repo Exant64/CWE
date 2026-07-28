@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "AL_ModAPI.h"
-#include "ALifeSDK_Functions.h"
 #include "alo_fruit.h"
 #include "ChaoMain.h"
 #include "alo_obakehead.h"

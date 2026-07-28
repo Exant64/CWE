@@ -1,22 +1,35 @@
 #include "stdafx.h"
 #include "alg_kinder_bl.h"
 #include "al_odekake.h"
-const int sub_579EF0Ptr = 0x579EF0;
-void sub_579EF0(int a1, KinderCoMessageThing* a2, int a3, int a4, float a5, float a6, float a7, float a8)
-{
-	__asm
-	{
-		mov ebx, a1
-		mov esi, a2
-		push a8
-		push a7
-		push a6
-		push a5
-		push a4
-		push a3
-		call sub_579EF0Ptr
-		add esp, 6 * 4
-	}
+#include "asmutil.h"
+
+static ASM_FUNC void sub_579EF0(int a1, KinderCoMessageThing* a2, int a3, int a4, float a5, float a6, float a7, float a8) {
+    // save regs
+    ASM_PUSH( ebx );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(8+0+2) ); // a8
+    ASM_PUSH(      ASM_ESP(7+1+2) ); // a7
+    ASM_PUSH(      ASM_ESP(6+2+2) ); // a6
+    ASM_PUSH(      ASM_ESP(5+3+2) ); // a5
+    ASM_PUSH(      ASM_ESP(4+4+2) ); // a4
+    ASM_PUSH(      ASM_ESP(3+5+2) ); // a3
+    ASM_MOVE( esi, ASM_ESP(2+6+2) ); // a2
+    ASM_MOVE( ebx, ASM_ESP(1+6+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x579EF0 );
+
+    // end arguments
+    ASM_ESP_ADD( 6 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 #pragma pack(push, 8)

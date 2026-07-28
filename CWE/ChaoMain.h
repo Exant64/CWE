@@ -117,7 +117,7 @@ ThiscallFunctionPointer(ITEM_SAVE_INFO*, AL_GetNewItemSaveInfo, (int a1), 0x52F9
 
 extern task* pBirthdayChao;
 
-void sub_46E5E0(int a1, int a2);
+void StopHoldingTaskP_inl(int pno, taskwk* ptwp);
 
 extern uint32_t CWE_ModIndex;
 

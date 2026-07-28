@@ -2,8 +2,8 @@
 #include <Chao.h>
 #include <random>
 #include <AL_ModAPI.h>
-#include <ALifeSDK_Functions.h>
 #include "albhv.h"
+#include "asmutil.h"
 
 int __cdecl ALBHV_EggChao(task* a1)
 {
@@ -113,7 +113,7 @@ void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
 	if (data1->pParamGC->body.FormNum == 1)
 		Chao_RegAnimationTbl(a1, "alm_egg_crawl_start");
 	else
-		Chao_Animation(a1, a2);
+		SetMotionLink(a1, a2);
 }
 static void __declspec(naked) EggChaoCrawlHook()
 {
@@ -142,17 +142,19 @@ void __cdecl EggChao_KeepOrDie(task* a1)
 		a1->exec = DestroyTask;
 }
 
+ASM_FUNC void LoadCocoon(task* a1, char a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
 
-const int LoadCocoonPtr = 0x00568CD0;
-void LoadCocoon(task* a1, char a2)
-{
-	__asm
-	{
-		mov eax, a1
-		push dword ptr[a2]
-		call LoadCocoonPtr
-		add esp, 4
-	}
+    // call
+    ASM_CALL_R( edx, 0x00568CD0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 enum MayuKind

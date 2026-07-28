@@ -18,5 +18,3 @@ void AL_SetAccessory(CHAO_PARAM_CWE* pParamCwe, int type);
 void AL_SetAccessory(task* a1, const AccessorySaveInfo* saveInfo, int type);
 
 void AL_Behavior_Init();
-
-void AL_GrabObjectBothHands(task* a2, task* a1);

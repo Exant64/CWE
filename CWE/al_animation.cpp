@@ -2,13 +2,14 @@
 
 #include "Chao.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_parameter.h"
 #include "al_behavior/albhv.h"
 #include "iostream"
 #include "al_behavior/al_behavior.h"
 #include <al_face.h>
 #include "playsound.h"
+#include "al_hold.h"
+#include "al_landmark.h"
 
 #define RandomChance (njRandom() < 0.5f)
 
@@ -165,7 +166,7 @@ void Chao_ExtraAnimations(task* tp)
 		if (data->MotionCtrl.next_num == 130)
 		{
 			AL_SetBehavior(tp, (BHV_FUNC)ChaoBehaviour_FLY);
-			AL_GetRandomAttrPos_0(tp);
+			AL_GetRandomAttrPos(LMA_GROUND1, &GET_MOVE_WORK(tp)->AimPos);
 		}
 		else if (data->MotionCtrl.next_num == 539)
 		{
@@ -279,7 +280,7 @@ void Chao_ExtraAnimations(task* tp)
 		if (data->Behavior.nbBhvFuncEntry == 1 && data->Behavior.Timer == 1 && RandomChance)
 		{
 			Chao_BehaviourQueue(tp, ChaoBehaviour_WALK);
-			AL_GetRandomAttrPos_0(tp);
+			AL_GetRandomAttrPos(LMA_GROUND1, &GET_MOVE_WORK(tp)->AimPos);
 		}
 	}
 

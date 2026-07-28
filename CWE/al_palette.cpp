@@ -275,19 +275,6 @@ __int16 sub_420F10(unsigned __int8 a1, unsigned __int8 a2, unsigned __int8 a3)
 }
 StdcallFunctionPointer(void, sub_41AB40, (signed int a1), 0x41AB40);
 
-const int UpdateChaoPalettePtr = 0x0534670;
-void __cdecl UpdateChaoPalette(CHAO_PARAM_GC* a1, task* a2, int a3)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		push a3
-		call UpdateChaoPalettePtr
-		add esp, 4
-	}
-}
-
 void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno, char gPalette[][48 * 4])
 {
 	Uint8 v3; // dl

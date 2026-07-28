@@ -2,7 +2,6 @@
 
 #include "ninja_functions.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_piano.h"
 #include "al_parts.h"
@@ -45,38 +44,20 @@
 #include "FunctionHook.h"
 #include "memory.h"
 
-const int AL_IconSetPtr = 0x53D660;
-void AL_IconSet(task* a4, char a2, int a3)
-{
-	__asm 
-	{
-		mov ecx, a4
-		mov dl, a2
-		push a3
-		call AL_IconSetPtr
-		add esp, 4
+ASM_FUNC void AL_IconSet(task* a4, char a2, int a3) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // a3
+    ASM_MOVE( dl,  ASM_ESP(2+1+0) ); // dl0
+    ASM_MOVE( ecx, ASM_ESP(1+1+0) ); // a4
 
-	}
-}
+    // call
+    ASM_CALL_R( eax, 0x53D660 );
 
-const int sub_534F80Ptr = 0x534F80;
-void sub_534F80alt(int a1, NJS_VECTOR* a2, signed int a3)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edi, a2
-		push a3
-		call sub_534F80Ptr
-		add esp, 4
-	}
-}
-void AL_GetRandomAttrPos_0(task* a1)
-{
-	if (stru_1A15938[1].nbIndex > 0)
-	{
-		sub_534F80alt((int)&stru_1A15938[1], &GET_MOVE_WORK(a1)->AimPos, stru_1A15938[1].nbIndex);
-	}
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 task* KarateCreateChao(CHAO_PARAM_GC* chaoData, int a2, AL_SHAPE_ELEMENT* a3, NJS_VECTOR* position, Angle angle)
@@ -439,17 +420,26 @@ enum {
 	RAKUGAKI_CWE_AMIGO, // this is unused atm
 };
 
-const int ALO_RakugakiExecutor_LoadPtr = 0x05AB200;
-void ALO_RakugakiExecutor_Load_(int a1, int a2, int a3)
-{
-	__asm
-	{
-		mov ebx, a1
-		push a3
-		push a2
-		call ALO_RakugakiExecutor_LoadPtr
-		add esp, 8 
-	}
+ASM_FUNC void ALO_RakugakiExecutor_Load_(int a1, int a2, int a3) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+1+1) ); // a2
+    ASM_MOVE( ebx, ASM_ESP(1+2+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x05AB200 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl NewDrawings(int a1, int ID, int a3)

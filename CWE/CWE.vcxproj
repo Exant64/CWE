@@ -393,7 +393,6 @@
     <ClInclude Include="alg_kinder_cl.h" />
     <ClInclude Include="alg_kinder_he.h" />
     <ClInclude Include="alg_kinder_ortho.h" />
-    <ClInclude Include="ALifeSDK_Functions.h" />
     <ClInclude Include="alo_accessory.h" />
     <ClInclude Include="alo_fruit.h" />
     <ClInclude Include="alo_obakehead.h" />
@@ -652,13 +651,13 @@
     <ClCompile Include="alg_kinder_cl.cpp" />
     <ClCompile Include="alg_kinder_he.cpp" />
     <ClCompile Include="alg_kinder_ortho.cpp" />
-    <ClCompile Include="ALifeSDK_Functions.cpp" />
     <ClCompile Include="alo_accessory.cpp" />
     <ClCompile Include="alo_boat.cpp" />
     <ClCompile Include="alo_coffin.cpp" />
     <ClCompile Include="alo_fruit.cpp" />
     <ClCompile Include="alo_obakehead.cpp" />
     <ClCompile Include="alo_special.cpp" />
+    <ClCompile Include="playsound.cpp" />
     <ClCompile Include="al_behavior\albhv_birthday.cpp" />
     <ClCompile Include="al_behavior\albhv_bully.cpp" />
     <ClCompile Include="al_behavior\albhv_boat.cpp" />
@@ -674,6 +673,7 @@
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
     <ClCompile Include="al_behavior\albhv_rain.cpp" />
     <ClCompile Include="al_behavior\albhv_stoy.cpp" />
+    <ClCompile Include="al_behavior\albhv_swim.cpp" />
     <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
     <ClCompile Include="al_behavior\albhv_tree.cpp" />
     <ClCompile Include="al_behavior\albhv_wrench.cpp" />
@@ -685,6 +685,7 @@
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
     <ClCompile Include="al_garden_info.cpp" />
+    <ClCompile Include="al_hold.cpp" />
     <ClCompile Include="al_landmark.cpp" />
     <ClCompile Include="al_daynight_rain.cpp" />
     <ClCompile Include="al_ode_mainmenubar.cpp" />

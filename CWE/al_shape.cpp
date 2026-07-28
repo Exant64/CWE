@@ -3,6 +3,7 @@
 #include "al_parts.h"
 #include "api/api_customchao.h"
 #include "ChaoMain.h"
+#include "asmutil.h"
 
 void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
 	if (pElement->type == 254) {
@@ -58,18 +59,16 @@ static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
 	}
 }
 
-const int sub_56CF40Ptr = 0x56CF40;
-static int AL_ShapeChangeType(task* a1, int typevalue)
-{
-	int retval;
-	__asm
-	{
-		mov ecx, a1
-		mov eax, typevalue
-		call sub_56CF40Ptr
-		mov retval, eax
-	}
-	return retval;
+static ASM_FUNC int AL_ShapeChangeType(task* a1, int typevalue) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x56CF40 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {

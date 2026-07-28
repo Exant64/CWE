@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "asmutil.h"
+
 #include "alg_kinder_he.h"
 #include "al_odekake.h"
 #include "ChaoMain.h"
@@ -138,14 +140,15 @@ void GoodbyeBar()
 	LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 }
 
-const int sub_582F60Ptr = 0x582F60;
-void sub_582F60(char* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call sub_582F60Ptr
-	}
+ASM_FUNC void sub_582F60(char* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x582F60 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl sub_582F60_CheckGuest(char* a1)

@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <array>
 
+#include "asmutil.h"
 #include "alg_kinder_bl.h"
 #include "al_minimal.h"
 #include "ninja_functions.h"
@@ -28,7 +30,6 @@
 #include "al_marketattr.h"
 
 #include "ui/al_ortho.h"
-#include "ALifeSDK_Functions.h"
 #include "al_stage.h"
 #include "al_msg_font.h"
 #include "al_chao_info.h"
@@ -108,21 +109,21 @@ int BM_GetInvSize(BlackMarketData* a1)
 	return GetMarketInvSize(TabCategory);
 }
 
-const int ALO_Kinder_Window_LoadPtr = 0x05A92B0;
-task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color)
-{
-	task* retval;
-	__asm
-	{
-		mov eax, result
-		push color
-		push a3
-		push dword ptr[layer]
-		call ALO_Kinder_Window_LoadPtr
-		add esp, 12
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // color
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // layer
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x05A92B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 #define ITEMSINBUYLIST 5
@@ -1019,17 +1020,29 @@ static void __declspec(naked) AlItemGetInfoHook()
 		retn
 	}
 }
-const int GXSetBlendModeAlphaPtr = 0x0420480;
-void GXSetBlendModeAlpha(int a1, int a2, int a3)
-{
-	__asm
-	{
-		push a3
-		mov esi, a2
-		mov edi, a1
-		call GXSetBlendModeAlphaPtr
-		add esp, 4
-	}
+
+ASM_FUNC void GXSetBlendModeAlpha(int a1, int a2, int a3) {
+    // save regs
+    ASM_PUSH( edi );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+2) ); // a3
+    ASM_MOVE( esi, ASM_ESP(2+1+2) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+1+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0420480 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 const char* BlackMarket_GetItemMsg(BlackMarketData const* data, int const msgID)
@@ -1045,7 +1058,6 @@ const char* BlackMarket_GetBlMsg(BlackMarketData const* data, int const msgID)
 	return (const char*)((char*)data->mMsgList + data->mMsgList[msgID]);
 }
 
-#pragma optimize("gty", off)
 void __cdecl FBuyListDispText(BlackMarketData const* a1)
 {
 	SetShaderType(1);
@@ -1262,7 +1274,7 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 	FBuyListDispText(a1);
 	FBuyListItemDisp(a1);
 }
-#pragma optimize("gty", on)
+
 const int JumpBackHere_ = 0x005897C3;
 void __declspec(naked) FItemDescDispHook()
 {
@@ -1313,17 +1325,15 @@ static void __declspec(naked) AL_GetMaxItemNum_hook()
 	}
 }
 
-const int sub_52F4F0Ptr = 0x52F4F0;
-int sub_52F4F0(int a1)
-{
-	int retval;
-	__asm
-	{
-		mov ecx, a1
-		call sub_52F4F0Ptr
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC int sub_52F4F0(int a1) {
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x52F4F0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl AL_GetExistItemNum(const int a1)
@@ -1340,27 +1350,33 @@ int __cdecl AL_GetExistItemNum(const int a1)
 		return sub_52F4F0(a1);
 }
 
-const int sub_5A64B0Ptr = 0x5A64B0;
-void sub_5A64B0(signed int a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call sub_5A64B0Ptr
-	}
+ASM_FUNC void sub_5A64B0(signed int a1, int a2) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( ecx, 0x5A64B0 );
+
+    // return
+    ASM_RET( 0 );
 }
-const int sub_5A6450Ptr = 0x5A6450;
-void sub_5A6450(int a1, float a2)
-{
-	__asm
-	{
-		push a2
-		mov eax, a1
-		call sub_5A6450Ptr
-		add esp, 4
-	}
+
+ASM_FUNC void sub_5A6450(int a1, float a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5A6450 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 #pragma pack(push, 8)
 struct __declspec(align(4)) SomeUI
 {
@@ -1836,14 +1852,15 @@ void FBuyListSetItemDesc(BlackMarketData* a1)
 	FItemDescSet(BM_GetSelectedItem(a1), a1);
 }
 
-const int ALO_RingWinAdd_Ptr = 0x005A6B30;
-void ALO_RingWinAdd_(int a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call ALO_RingWinAdd_Ptr
-	}
+ASM_FUNC void ALO_RingWinAdd_(int a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x005A6B30 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 DataPointer(int, RingDisplayFieldC, 0x01A2787C);
@@ -1852,25 +1869,33 @@ void ALO_RingWinAdd(int num) {
 	ALO_RingWinAdd_(RingDisplayFieldC + num);
 }
 
-const int FMainWinWaitClosePtr = 0x588C00;
-void FMainWinWaitClose(BlackMarketData* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call FMainWinWaitClosePtr
-	}
+ASM_FUNC void FMainWinWaitClose(BlackMarketData* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x588C00 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int FMainWinAddLineStrPtr = 0x588BA0;
-void FMainWinAddLineStr(BlackMarketData* a1, char* a2)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov ebx, a2
-		call FMainWinAddLineStrPtr
-	}
+ASM_FUNC void FMainWinAddLineStr(BlackMarketData* a1, char* a2) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x588BA0 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 FastcallFunctionPointer(void, FMainWinAddLineId, (BlackMarketData* a1, int a2), 0x588BD0);
@@ -2272,7 +2297,7 @@ void __cdecl sub_589850(BlackMarketData* data)
 	}
 
 	if (data->mItemDescWinExplOn) {
-		MsgDialog(&data->mItemDescWinExpl);
+		AlMsgWinExec(&data->mItemDescWinExpl);
 	}
 }
 static void __declspec(naked) sub_589850Hook()
@@ -2295,7 +2320,7 @@ static void SellHeldItem() {
 	{
 		pHeld->exec = DestroyTask;
 		if (playertwp[0]) {
-			sub_46E5E0(0, (int)playertwp[0]);
+			StopHoldingTaskP_inl(0, playertwp[0]);
 		}
 		playerpwp[0]->htp = 0;
 	}

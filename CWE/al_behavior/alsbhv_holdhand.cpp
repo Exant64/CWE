@@ -3,11 +3,11 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
 #include "albhv.h"
+#include <al_landmark.h>
 
 int ALBHV_HoldHands_Left(task* a1)
 {
@@ -127,7 +127,7 @@ int ALBHV_InitHoldHands(task* a1)
 	ALW_LockOn(otherChao, a1);
 	ALW_CommunicationOn(a1, otherChao);
 
-	AL_GetRandomAttrPos_0(a1);
+	AL_GetRandomAttrPos(LMA_GROUND1, &GET_MOVE_WORK(a1)->AimPos);
 
 	//MOV_SetAimPos(a1, );
 

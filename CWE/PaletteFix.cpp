@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include "ALifeSDK_Functions.h"
+#include "ninja_functions.h"
 
 struct TextureData
 {

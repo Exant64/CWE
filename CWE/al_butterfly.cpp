@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "ALifeSDK_Functions.h"
 #include "ninja_functions.h"
 #include "ChaoMain.h"
 #include "al_butterfly.h"
@@ -125,10 +124,10 @@ void ALO_Butterfly_Main(task* a1)
 
 	switch (work->mode) {
 	case MD_INIT:
-		work->target = GetChaoObject(3, 1);
+		work->target = ALW_GetTaskCount(3, 1);
 
-		sub_534F80((int)&stru_1A15938[1], &work->position, stru_1A15938[1].nbIndex);
-		sub_534F80((int)&stru_1A15938[1], &work->targetPosition, stru_1A15938[1].nbIndex);
+		// sub_534F80((int)&stru_1A15938[1], &work->position, stru_1A15938[1].nbIndex);
+		// sub_534F80((int)&stru_1A15938[1], &work->targetPosition, stru_1A15938[1].nbIndex);
 
 		if (work->target)
 			work->targetPosition = work->target->twp->pos;
@@ -147,7 +146,7 @@ void ALO_Butterfly_Main(task* a1)
 
 				work->speed = 0.15f + njRandom() * 0.15f;
 
-				work->target = GetChaoObject(3, 1);
+				work->target = ALW_GetTaskCount(3, 1);
 				work->targetPosition.y = 2.5f + njRandom() * 2.5f;
 
 				if (njRandom() < 0.15f)

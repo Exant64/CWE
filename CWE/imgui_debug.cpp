@@ -38,11 +38,11 @@ static bool ShowMoreFacesMenu = false;
 static bool ShowNavSysMenu = false;
 
 static task* GetSelectedChao() {
-    return GetChaoObject(0, SelectedChaoIndex);
+    return ALW_GetTaskCount(0, SelectedChaoIndex);
 }
 
 static task* GetSelectedOtherChao() {
-    return GetChaoObject(0, SelectedOtherChaoIndex);
+    return ALW_GetTaskCount(0, SelectedOtherChaoIndex);
 }
 
 static int SetMusicBhv(task* tp) {

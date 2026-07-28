@@ -14,20 +14,29 @@
 #include <string>
 #include "ninja_functions.h"
 #include "../include/brightfixapi.h"
-#include <ALifeSDK_Functions.h>
+#include <asmutil.h>
 
 const RFAPI_CORE* RenderFixAPI;
 
-const int sub_41FA60Ptr = 0x41FA60;
-void  sub_41FA60(WeirdChunkTexIndexThing* a1, signed int a2)
-{
-	__asm
-	{
-		mov edi, a1
-		push a2
-		call sub_41FA60Ptr
-		add esp, 4
-	}
+ASM_FUNC void sub_41FA60(WeirdChunkTexIndexThing* a1, signed int a2) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // index
+    ASM_MOVE( edi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x41FA60 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl SetChunkTexIndexNull(int a1)
@@ -162,14 +171,15 @@ extern "C"
 		//SetShaders(ShaderBackup);
 	}
 
-	const int DoLightingPtr = 0x00487060;
-	void DoLighting(int a1)
-	{
-		__asm
-		{
-			mov eax, a1
-			call DoLightingPtr
-		}
+	ASM_FUNC void DoLighting(int a1) {
+		// arguments
+		ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+		// call
+		ASM_CALL_R( edx, 0x00487060 );
+
+		// return
+		ASM_RET( 0 );
 	}
 
 	void EggStartShaderHook()
@@ -200,33 +210,39 @@ extern "C"
 			retn
 		}
 	}
-	const int GetChunkTexIndexPtr = 0x0056D1F0;
-	unsigned int GetChunkTexIndex(NJS_CNK_MODEL* a1)
-	{
-		int ret;
-		__asm
-		{
-			mov eax, a1
-			call GetChunkTexIndexPtr
-			mov ret, eax
-		}
-		return ret;
+
+	ASM_FUNC Uint32 GetChunkTexIndex(NJS_CNK_MODEL* a1) {
+		// arguments
+		ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+		// call
+		ASM_CALL_R( edx, 0x0056D1F0 );
+
+		// return
+		ASM_RET( 0 );
 	}
 
-	const int SetChunkTexIndexOrigPtr = 0x0056E3D0;
-	void  SetChunkTexIndexPrimary(int index, int a2, int a3)
-	{
-		__asm
-		{
-			push a3
-			mov ebx, a2
-			mov eax, index
-			call SetChunkTexIndexOrigPtr
-			add esp, 4
-		}
+	ASM_FUNC void SetChunkTexIndexPrimary(int index, int a2, int a3) {
+		// save regs
+		ASM_PUSH( ebx );
+
+		// arguments
+		ASM_PUSH(      ASM_ESP(3+0+1) ); // a3
+		ASM_MOVE( ebx, ASM_ESP(2+1+1) ); // a2
+		ASM_MOVE( eax, ASM_ESP(1+1+1) ); // index
+
+		// call
+		ASM_CALL_R( edx, 0x0056E3D0 );
+
+		// end arguments
+		ASM_ESP_ADD( 1 );
+
+		// restore regs
+		ASM_POP( ebx );
+
+		// return
+		ASM_RET( 0 );
 	}
-
-
 
 	void BrightFixPlus_ShinyCheck(int shiny);
 
@@ -323,18 +339,6 @@ extern "C"
 		}
 		//float test[4] = { 1,1,1,1 };
 		//device->SetPixelShaderConstantF(74, test, 1);
-	}
-
-	const int SetShadersPtr = 0x0041B1F0;
-	void OverwriteSetShaders()
-	{
-		__asm
-		{
-			call SetShadersPtr
-			push 2
-			call SetChunkTexIndexNull
-			add esp, 4
-		}
 	}
 
 	static void __declspec(naked) ChaoColoring()
@@ -526,28 +530,7 @@ extern "C"
 		}
 		else dontFixTEV = true;
 	}
-	const int GXLoadTexMtxImmPtr = 0x00424480;
-	__declspec(naked) void GXLoadTexMtxImm(NJS_MATRIX* a1, int index, signed int a3)
-	{
-		__asm
-		{
-			mov edx, a1
-			mov ebx, index
-			push a3
-			jmp GXLoadTexMtxImmPtr
 
-		}
-	}
-
-	void BrightFixPlus_UV()
-	{
-		//setting second index to 0 will restore env maps which will make shinies work
-		//since 1 is never used afaik because no multi tex support
-		if (!dontFixTEV)
-		{
-			GXLoadTexMtxImm((NJS_MATRIX*)0x01AF1620, 0, 1);
-		}
-	}
 	void BrightFixPlus_TEVModeCheck()
 	{
 		if (dontFixTEV)

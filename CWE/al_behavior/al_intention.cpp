@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include "albhv.h"
@@ -12,6 +11,7 @@
 #include <util.h>
 #include "al_intention.h"
 #include <ChaoMain.h>
+#include <asmutil.h>
 
 void AL_ScoreRandomize(float* pScore)
 {
@@ -72,7 +72,7 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 	score = 0.0;
 	for (int i = 0; i < ALW_CountEntry(0); i++)
 	{
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		if (!pChao || pChao == a1) continue;
 		
 		BHV_FUNC func = AL_GetBehavior(pChao);
@@ -144,17 +144,6 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 	}
 }
 
-const int sub_562800Ptr = 0x562800;
-void sub_562800(float* a1, task* a2)
-{
-	__asm
-	{
-		mov esi, a2
-		mov edi, a1
-		call sub_562800Ptr
-	}
-}
-
 signed int __cdecl ALBHV_FartReaction(task* a1)
 {
 	chaowk* v2;
@@ -191,13 +180,24 @@ static void __declspec(naked) AL_CalcIntentionScore_LToy_Hook()
 	}
 }
 
-const int AL_CalcIntentionScore_MayuPtr = 0x00562800;
-void AL_CalcIntentionScore_Mayua(task* a2, float* a1) {
-	__asm {
-		mov esi, a2
-		mov edi, a1
-		call AL_CalcIntentionScore_MayuPtr
-	}
+static ASM_FUNC void AL_CalcIntentionScore_Mayu(task* a2, float* a1) {
+    // save regs
+    ASM_PUSH( esi );
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( edi, ASM_ESP(2+0+2) ); // a1
+    ASM_MOVE( esi, ASM_ESP(1+0+2) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x00562800 );
+
+    // restore regs
+    ASM_POP( edi );
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 {
@@ -216,10 +216,10 @@ void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 	}
 
 	AL_CalcIntentionScore_JoinSToy(a1, a2);
-	AL_CalcIntentionScore_Mayu(a1, a2);
+	AL_CalcIntentionScore_MayuReact(a1, a2);
 	AL_CalcIntentionScore_Chat(a1, a2);
 	AL_CalcIntentionScore_Tree(a1, a2);
-	AL_CalcIntentionScore_Mayua(a1, a2);
+	AL_CalcIntentionScore_Mayu(a1, a2);
 
 }
 

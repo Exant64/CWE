@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "ALifeSDK_Functions.h"
 #include "al_world.h"
 #include "Chao.h"
 #include "al_toy_move.h"
@@ -11,6 +10,8 @@
 #include "UsercallFunctionHandler.h"
 #include "FunctionHook.h"
 #include "util.h"
+#include "asmutil.h"
+#include "memory.h"
 
 // HACK: so for the whole toy registering ordeal, the original version delayed the displaysub (because the displaysub needed the entrywork)
 // and we couldn't hook the actual ALW_Entry function and do all our business there (because the position and angle set in the load functions  
@@ -19,64 +20,6 @@
 // and call ALW_Entry there
 static task* pLastToyTask = NULL;
 
-const int MOV_ControlPtr = 0x00796780;
-void MOV_Control(task* eax0)
-{
-	__asm
-	{
-		mov eax, eax0
-		call MOV_ControlPtr
-	}
-}
-
-const int sub_54B230Ptr = 0x54B230;
-void sub_54B230(task* eax0, float a2)
-{
-	__asm
-	{
-		mov eax, eax0
-		push a2
-		call sub_54B230Ptr
-		add esp, 4
-	}
-}
-
-const int sub_47D9E0Ptr = 0x47D9E0;
-void ObjectMovableInitialize(taskwk* a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call sub_47D9E0Ptr
-	}
-}
-
-const int MoveFunc2Ptr = 0x00798300;
-void MoveFunc2(task* a1)
-{
-	__asm
-	{
-		mov esi, a1
-		call MoveFunc2Ptr
-	}
-}
-static const void* const AddToGlobalChaoThingMaybePtr_ = (void*)0x530750;
-static inline signed int AddToGlobalChaoThingMaybe_(unsigned __int16 a1, task* obj, __int16 a3, CHAO_SAVE_INFO* data)
-{
-	signed int result;
-	__asm
-	{
-		push dword ptr [data]
-		push dword ptr [a3]
-		mov ebx, [obj]
-		mov cx, [a1]
-		call AddToGlobalChaoThingMaybePtr_
-		add esp, 8
-		mov result, eax
-	}
-	return result;
-}
 void AL_Toy_Move_Register(task* obj, __int16 a3)
 {
 	ITEM_SAVE_INFO* info = NULL;
@@ -97,7 +40,7 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 		___OutputDebugString("AL_Toy_Move_Register: invalid toy area");
 	}
 
-	AddToGlobalChaoThingMaybe_(6, obj, a3, (CHAO_SAVE_INFO*)info);
+	ALW_Entry2(6, obj, a3, info);
 	if (info) {
 		obj->twp->pos = info->pos;
 		obj->twp->ang.y = info->nbVisit;
@@ -252,7 +195,9 @@ MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 {
 	MOVE_WORK* data2; // esi
 
-	data2 = (MOVE_WORK*)AllocateArray(0x26C + sizeof(AL_TOY_MOVE), 1, (char*)"..\\..\\src\\move.c", 64);
+	data2 = (MOVE_WORK*)syMalloc(0x26C + sizeof(AL_TOY_MOVE), "..\\..\\src\\move.c", 64);
+	memset(data2, 0, 0x26C + sizeof(AL_TOY_MOVE));
+	
 	obj->mwp = (motionwk*)data2;                   // different offset than SADX
 
 	data2->Top = 3.0f;
@@ -487,28 +432,14 @@ void __cdecl ALO_Ball_Main2_(task* a1)
 	AL_Toy_Move_Register(a1, ALW_KIND_BALL);
 }
 
-void ALO_Ball_Hook() {
-	__asm {
-		push ebx
-		call ALO_Ball_Main2_
-		add esp,4
-	}
+static ASM_FUNC void ALO_Ball_Hook() {
+	ASM_PUSH(ebx);
+	ASM_CALL(ALO_Ball_Main2_);
+	ASM_POP(ebx);
+	ASM_RET(0);
 }
 
 DataArray(int, dword_1DC0F80, 0x1DC0F80, 1);
-const int sub_530470Ptr = 0x530470;
-ALW_ENTRY_WORK* sub_530470(int a1, int a2)
-{
-	ALW_ENTRY_WORK* result;
-	__asm
-	{
-		mov edx, a1
-		mov ebx, a2
-		call sub_530470Ptr
-		mov result, eax
-	}
-	return result;
-}
 
 void SaveToyPos() {
 	ITEM_SAVE_INFO* v5;
@@ -521,7 +452,7 @@ void SaveToyPos() {
 		{
 			while (1)
 			{
-				v4 = sub_530470(6, --v2);
+				v4 = ALW_GetEntryCount(6, --v2);
 				if (v4)
 				{
 					v5 = (ITEM_SAVE_INFO*)v4->pSaveInfo;

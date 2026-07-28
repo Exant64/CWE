@@ -12,8 +12,6 @@
 
 #include <fstream>
 
-void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2);
-
 //split this into another file
 struct AL_ChaoSelect {
 	CHAO_SAVE_INFO* m_chaoData;
@@ -75,7 +73,7 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 		posIn.x = chaoSelect->m_posX + (i % chaoSelect->m_nbX) * (float)chaoSizeX;
 		posIn.y = chaoSelect->m_posY + (i / chaoSelect->m_nbX) * (float)chaoSizeY;
 		posIn.z = (float)(-54 + chaoSelect->m_zoom * 10); //-31
-		someUIProjectionCode(&posIn, &posOut);
+		chCalcWorldPosFromScreenPos(&posIn, &posOut);
 
 		if (chaoSelect->m_chaoTasks->at(i)) {
 			___OutputDebugString("AL_ChaoSelect_UpdateList: the vector should be empty, returning");

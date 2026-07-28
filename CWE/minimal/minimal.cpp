@@ -3,12 +3,12 @@
 #include <ninja_functions.h>
 #include <AL_ModAPI.h>
 #include <ChaoMain.h>
-#include <ALifeSDK_Functions.h>
 #include <FunctionHook.h>
 
 #include <api/api_texture.h>
 
 #include <renderfix.h>
+#include <asmutil.h>
 #include <util.h>
 #include <playsound.h>
 
@@ -50,32 +50,32 @@ struct __declspec(align(4)) AnimalInv
 FastcallFunctionPointer(AnimalInv*, GetAnimalInv, (int a1), 0x487260);
 DataArray(int, dword_8AC788, 0x8AC788, 1);
 
-const int njDrawTexturePtr = 0x0077F510;
-void njDrawTexture(int a1, int a2, int a3, int a5) {
-    __asm {
-        push a5
-        mov ecx, a3
-        mov edx, a2
-        mov eax, a1
-        call njDrawTexturePtr
-        add esp, 4
-    }
-}
+ASM_FUNC void njDrawTexture(const NJS_TEXTURE_VTX* polygon, Int count, Int tex, Int flag) {
+    // save regs
+    ASM_PUSH( ebx );
 
-const int njDrawPolygonPtr = 0x77F7F0;
-void njDrawPolygon(int alpha, int count, NJS_POLYGON_VTX* a4) {
-    __asm {
-        mov eax, alpha
-        mov ecx, count
-        push a4
-        call njDrawPolygonPtr
-        add esp, 4
-    }
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0 +1) ); // flag            : 0+1
+    ASM_MOVE( edx, ASM_ESP(3+1 +1) ); // tex             : 1
+    ASM_MOVE( eax, ASM_ESP(2+1 +1) ); // count           : 1
+    ASM_MOVE( ecx, ASM_ESP(1+1 +1) ); // polygon         : 1
+
+    // call
+    ASM_CALL_R( ebx, 0x0077F510 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
     if (type <= SA2BAnimal_PurpleChaosDrive) {
-        njDrawTexture(4, dword_8AC788[type], (int)vtx, 1);
+        njDrawTexture(vtx, 4, dword_8AC788[type], 1);
         return;
     }
 
@@ -165,13 +165,13 @@ static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
         vtx[i].col = insidePanelColor.color;
         vtx[i].z -= 0.75f;
     }
-    njDrawTexture(4, 44657589, (int)vtx, 1);
+    njDrawTexture(vtx, 4, 44657589, 1);
 
     // border panel
     for (size_t i = 0; i < 4; ++i) {
         vtx[i].col = borderColor.color;
     }
-    njDrawTexture(4, 44657590, (int)vtx, 1);
+    njDrawTexture(vtx, 4, 44657590, 1);
 
     const Angle3 rot = { 0, -4000, 0 };
     const SAlItemCwe item = { 2, type };
@@ -292,16 +292,27 @@ static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4,
     AL_MinimalCreate(a1, a2, a3, a4, a5);
 }
 
-const int sub_48ACD0Ptr = 0x48ACD0;
-static void sub_48ACD0(int a1, float a2, float a3, float a4) {
-    __asm {
-        mov esi, a1
-        push a4
-        push a3
-        push a2
-        call sub_48ACD0Ptr
-        add esp, 12
-    }
+static ASM_FUNC void sub_48ACD0(int a1, float a2, float a3, float a4) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+1) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+1) ); // a2
+    ASM_MOVE( esi, ASM_ESP(1+3+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x48ACD0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 FunctionPointer(task*, sub_48AAD0, (float posX, float posY, float posZ, int a4, int mode), 0x48AAD0);

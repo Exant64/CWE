@@ -6,38 +6,42 @@
 #include <al_behavior/albhv_navigation.h>
 #include <alo_accessory.h>
 #include <ChaoMain.h>
-#include <ALifeSDK_Functions.h>
 #include <AL_ModAPI.h>
 #include <api/api_accessory.h>
 #include <api/api_metadata.h>
 #include <FunctionHook.h>
 #include <memory.h>
+#include <al_hold.h>
+#include <asmutil.h>
 
 extern void ALBHV_Life_Init();
 
-const int Chao_BehaviourPtr = 0x0053D890;
-const int Chao_BehaviourQueuePtr = 0x0053D970;
+ASM_FUNC void AL_SetBehaviorWithTimer(task* a1, int a2, int a3) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+1+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+2+0) ); // a1
 
-void AL_SetBehaviorWithTimer(task* a1, int a2, int a3)
-{
-	__asm
-	{
-		push a3
-		push a2
-		mov eax, a1
-		call Chao_BehaviourPtr
-		add esp, 8
-	}
+    // call
+    ASM_CALL_R( edx, 0x0053D890 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-void Chao_BehaviourQueue(task* a1, int a2)
-{
-	__asm
-	{
-		mov edx, a2
-		mov eax, a1
-		call Chao_BehaviourQueuePtr
-	}
+ASM_FUNC void Chao_BehaviourQueue(task* a1, int a2) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( ecx, 0x0053D970 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 BHV_FUNC AL_GetBehavior(task* a1)
@@ -128,27 +132,21 @@ extern "C" __declspec(dllexport) int AL_GetAccessory(task * a1, int type)
 	return GET_CHAOWK_CWE(a1)->AccessoryIndices[type];
 }
 
-const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
-void AL_GrabObjectBothHands(task* a2, task* a1)
-{
-	__asm
-	{
-		mov esi, a2
-		mov ecx, a1
-		call AL_GrabObjectBothHandsPtr
-	}
-}
-const int sub_5691B0Ptr = 0x5691B0;
-signed int sub_5691B0(task* a1)
-{
-	int result;
-	__asm
-	{
-		mov esi, a1
-		call sub_5691B0Ptr
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC int AL_CheckObakeHead(task* a1) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5691B0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 //putting accessory on
@@ -270,12 +268,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 		{
 			return 0;
 		}
-		if (playertwp[0])
-		{
-			sub_46E5E0(0, (int)playertwp[0]);
+
+		if (playertwp[0]) {
+			StopHoldingTaskP_inl(0, playertwp[0]);
 		}
+
 		AL_GrabObjectBothHands(a1, v3);
 		AL_SetBehaviorWithTimer(a1, 0x569340, -1);
+
 		v5 = GET_CHAOPARAM(a1);
 		if (AL_GetAccessory(a1, GetAccessoryType(v3->twp->ang.x)) == -1)
 			Chao_BehaviourQueue(a1, (int)ALBHV_PutOnAccessoryTemp);
@@ -388,10 +388,10 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(task * tp) {
 		CCL_HIT_INFO* v2 = CCL_IsHitKindEx(tp, 0xCE);
 		if (v2 && (pSpecial = v2->hit_tp) != 0) {
 			if (!ALW_IsHeld(pSpecial)) {
-				//StopHoldingTaskP(0);
 				if (playertwp[0]) {
-					sub_46E5E0(0, (int)playertwp[0]);
+					StopHoldingTaskP_inl(0, playertwp[0]);
 				}
+
 				AL_GrabObjectBothHands(tp, pSpecial);
 				AL_SetBehavior(tp, ALBHV_HoldThink);
 
@@ -453,7 +453,7 @@ signed int __cdecl AL_CheckSpecial(task* a1)
 }
 signed int __cdecl AL_CheckObakeHeadAndAccessory(task* a1)
 {
-	if (AL_CheckAccessory(a1) || AL_CheckSpecial(a1) || sub_5691B0(a1))
+	if (AL_CheckAccessory(a1) || AL_CheckSpecial(a1) || AL_CheckObakeHead(a1))
 		return 1;
 	else
 		return 0;

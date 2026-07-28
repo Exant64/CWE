@@ -106,6 +106,7 @@ bool AL_IsDark(unsigned __int8 a1);
 bool AL_IsNegative(task* tp);
 bool AL_IsCustomChao(task* tp);
 
+void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2);
 void AL_ParameterClearAccessory(task* tp, int slot);
 
 void AL_ParameterAddAPos(task* a1, float a2);

@@ -4,7 +4,6 @@
 #include <al_ode_guide.h>
 #include <ui/al_tween.h>
 #include <al_texlist.h>
-#include <ALifeSDK_Functions.h>
 #include "playsound.h"
 
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);

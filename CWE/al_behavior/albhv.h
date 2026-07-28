@@ -18,7 +18,7 @@ signed int __cdecl AL_DecideBehaviorDance(task* a1);
 signed int __cdecl AL_DecideBehaviorSToy(task* a1); 
 void __cdecl AL_CalcIntentionScore_JoinDance(task* a1, float* a2);
 void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2);
-void AL_CalcIntentionScore_Mayu(task* tp, float* pMaxScore);
+void AL_CalcIntentionScore_MayuReact(task* tp, float* pMaxScore);
 signed int __cdecl ALBHV_GoToFloat(task* a1);
 signed int __cdecl ALBHV_GoToBoat(task* a1);
 void __cdecl  AL_CalcIntentionScore_LToy(task* a1, float* a2);

@@ -71,4 +71,4 @@ void AlMsgWinAddLineC(KinderCoMessageThing* self, const char* cstr, int ja);
 void AlMsgWinSetPos(KinderCoMessageThing* self, float px, float py, float pz);
 void AlMsgWinSetSize(KinderCoMessageThing* self, float sx, float sy);
 
-void MsgDialog(KinderCoMessageThing* a1);
+void AlMsgWinExec(KinderCoMessageThing* a1);

@@ -8,23 +8,27 @@
 #include <ninja_functions.h>
 #include <al_name.h>
 #include "ChaoMain.h"
+#include "asmutil.h"
 
-static const int DisplayChaoNamePtr = 0x00536BE0;
-static void DisplayChaoName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8)
-{
-	__asm
-	{
-		push a7
-		push a6
-		push a5
-		push a4
-		push a3
-		push a2
-		push a1
-		mov ecx, a8
-		call DisplayChaoNamePtr
-		add esp, 4 * 7
-	}
+static ASM_FUNC void AL_ParameterDrawName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(7+0+0) ); // a7
+    ASM_PUSH(      ASM_ESP(6+1+0) ); // a6
+    ASM_PUSH(      ASM_ESP(5+2+0) ); // a5
+    ASM_PUSH(      ASM_ESP(4+3+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+4+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+5+0) ); // a2
+    ASM_PUSH(      ASM_ESP(1+6+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(8+7+0) ); // a8
+
+    // call
+    ASM_CALL_R( edx, 0x00536BE0 );
+
+    // end arguments
+    ASM_ESP_ADD( 7 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static float GetSpacingRatio(const size_t index) {
@@ -333,7 +337,7 @@ static __declspec(naked) void FoNameWcConvFromCStrHook()
 }
 static void __cdecl sub_536BA0(const char* v6, float a1, float a2, float a3, float a4, int a5, int a6)
 {
-	DisplayChaoName(v6, a1, a2, a3, a4, a6, 0, a5);
+	AL_ParameterDrawName(v6, a1, a2, a3, a4, a6, 0, a5);
 }
 static void __declspec(naked) sub_536BA0_Hook()
 {

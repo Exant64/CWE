@@ -27,9 +27,13 @@ task* CWE_ALW_GetTaskCount(Sint8 category, Uint16 count);
 int CWE_ALW_CountEntry(Sint8 category);
 void CWE_ALW_ClearEntry(void);
 
+int ALW_Entry2(Uint16 category, task* tp, Uint16 kind, void* pSaveInfo);
+
 void ALW_ResetEntry(ALW_ENTRY_WORK* pEntry);
 
-task* GetChaoObject(int a1, int a2);
+task* ALW_GetTaskCount(int a1, int a2);
+ALW_ENTRY_WORK* ALW_GetEntryCount(int a1, int a2);
+
 task* __cdecl AL_GetFoundToyTask(task* a1);
 
 Bool ALW_SetHeldOffset(task* tp, float offset);
@@ -42,7 +46,6 @@ ThiscallFunctionPointer(float, ALW_CalcDistFromLockOn, (task* a1), 0x00530580);
 signed int __cdecl ALW_LockOn(task* a1, task* a2);
 ALW_ENTRY_WORK* __cdecl ALW_IsCommunication(task* a1);
 ALW_ENTRY_WORK* ALW_IsCommunicationEx(task* tp, Uint16 category);
-void ALW_CommunicationOff(task* a1);
 __int16 __cdecl ALW_RecieveCommand(task* a1);
 task* __cdecl ALW_GetLockOnTask(task* a1);
 signed int __cdecl ALW_SendCommand(task* a1, __int16 a2);
@@ -50,7 +53,8 @@ int ALW_TurnToLockOn(task* a1, int a2);
 void* __cdecl AL_GetItemSaveInfo(task* a1);
 void __cdecl AL_ClearItemSaveInfoPtr(task* a1);
 bool __cdecl ALW_IsHeld(task* a1);
-void ALW_CommunicationOn(task* a1, task* a2);
+Bool ALW_CommunicationOn(task* a1, task* a2);
+Bool ALW_CommunicationOff(task* a1);
 ALW_ENTRY_WORK* __cdecl ALW_IsCommunicating(task* a1);
 int __cdecl ALW_CountEntry(unsigned __int16 index);
 al_perception_link* __cdecl AL_GetFoundTree(task* a1);

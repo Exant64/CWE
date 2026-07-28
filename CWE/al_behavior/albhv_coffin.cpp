@@ -5,7 +5,6 @@
 #include "../Chao.h"
 #include "../al_world.h"
 #include "..//ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include <random>
 #include "albhv.h"
 #include "../AL_ModAPI.h"
@@ -107,7 +106,7 @@ signed int __cdecl ALBHV_GoToCoffin(task* a1)
 	ALW_LockOn(a1, v1);
 	AL_EmotionAdd(a1, EM_ST_THIRSTY, 100);
 
-	sub_534F80((int)& stru_1A15938[9], &((MOVE_WORK*)a1->mwp)->AimPos, stru_1A15938[9].nbIndex);
+	AL_GetRandomAttrPos(LMA_WATER, &GET_MOVE_WORK(a1)->AimPos);
 
 	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);

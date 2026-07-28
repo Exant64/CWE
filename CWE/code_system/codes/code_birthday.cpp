@@ -18,7 +18,7 @@ void BirthdayParty::OnALControl(task* tp) {
 		//should only run for one frame, around second frame of chao world
 		for (int i = 0; i < ALW_CountEntry(0); i++)
 		{
-			task* pChao = GetChaoObject(0, i);
+			task* pChao = ALW_GetTaskCount(0, i);
 			if (!pChao) continue;
 
 			CHAO_PARAM_GC* param = GET_CHAOPARAM(pChao);

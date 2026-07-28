@@ -33,7 +33,6 @@
 #include <cassert>
 #include "al_butterfly.h"
 #include "al_sandhole.h"
-#include "ALifeSDK_Functions.h"
 
 #include "al_odekake.h"
 #include "al_save.h"

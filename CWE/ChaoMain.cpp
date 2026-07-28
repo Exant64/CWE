@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "asmutil.h"
 #include "ChaoMain.h"
 #include "al_minimal.h"
 #include "ninja_functions.h"
@@ -29,17 +30,26 @@ int OrangeID;
 int BeeID;
 int MirrorID;
 
-const int LoadChaoTexlistPtr = 0x00530280;
-void AL_LoadTex(const char* a2, NJS_TEXLIST* texlist, int a1)
-{
-	__asm
-	{
-		mov ebx, a2
-		mov eax, a1
-		push texlist
-		call LoadChaoTexlistPtr
-		add esp, 4
-	}
+ASM_FUNC void AL_LoadTex(const char* a2, NJS_TEXLIST* texlist, int a1) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(1+0 +1) ); // lev
+    ASM_PUSH(      ASM_ESP(2+0 +1) ); // pTexlist
+    ASM_MOVE( eax, ASM_ESP(3+1 +1) ); // filename
+
+    // call
+    ASM_CALL_R( edx, 0x00530280 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 VoidFunc(Load_al_palette, 0x00534350);

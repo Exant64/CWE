@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include <FunctionHook.h>
 
+#include "c_colli.h"
 #include <vector>
 #include "ChaoMain.h"
 #include "IniFile.h"
-#include "ALifeSDK_Functions.h"
 
 // credit to sadx decomp for reference code
 
@@ -26,16 +26,6 @@ DataPointer(Uint16, object2_entry_num, 0x1946AC0);
 DataPointer(Uint16, item_entry_num, 0x19468B0);
 DataPointer(Uint16, item2_entry_num, 0x1945E10);
 DataPointer(Uint16, chao_entry_num, 0x1946ABC);
-
-FunctionPointer(void, CCL_CalcColli, (task *tp1, task *tp2), 0x485850);
-
-static const int CCL_ClearInfoPtr = 0x47E6C0;
-static void CCL_ClearInfo(task* tp) {
-    __asm {
-        mov eax, tp
-        call CCL_ClearInfoPtr
-    }
-}
 
 // naming convention based on symbols
 static std::vector<task*> cwe_entry_list;

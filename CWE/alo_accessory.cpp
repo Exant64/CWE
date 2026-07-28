@@ -6,7 +6,6 @@
 #include "ChaoMain.h"
 #include "al_sandhole.h"
 #include "al_modelcontainer.h"
-#include "ALifeSDK_Functions.h"
 #include "al_behavior/al_intention.h"
 #include <api/api_accessory.h>
 #include <save/save_item.h>

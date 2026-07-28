@@ -3,7 +3,6 @@
 
 #include <random>
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_world.h"
 #include "al_social.h"
 #include "al_behavior/al_behavior.h"

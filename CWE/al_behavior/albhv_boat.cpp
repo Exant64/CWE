@@ -3,12 +3,13 @@
 #include "../Chao.h"
 #include "../al_world.h"
 #include "..//ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include <random>
 #include "albhv.h"
 #include "../AL_ModAPI.h"
 #include <ChaoMain.h>
 #include "albhv_navigation.h"
+#include <al_landmark.h>
+#include "albhv_swim.h"
 
 signed int __cdecl ALBHV_GoToWaterWithBoat(task* a1)
 {
@@ -109,7 +110,7 @@ signed int ALBHV_RideBoat(task* a1)
 				AL_EmotionSetValue(a1, EM_ST_THIRSTY, 0);
 
 		if (MOV_DistFromAim(a1) < 36.0)
-			sub_561740((int)a1);
+			AL_DecideAimSwimPosition(a1);
 
 		a1->twp->pos.y = move->WaterY;
 		MOV_TurnToAim2(a1, 100);
@@ -145,9 +146,8 @@ int ALBHV_GoToBoat(task* tp) {
 	ALW_LockOn(tp, v1);
 	AL_EmotionAdd(tp, EM_ST_THIRSTY, 100);
 	
-	//AL_GetRandomAttrPos(9, &a1->EntityData2->Waypoint);
-	sub_534F80((int)& stru_1A15938[9], &GET_MOVE_WORK(tp)->AimPos, stru_1A15938[9].nbIndex);
-	
+	AL_GetRandomAttrPos(LMA_WATER, &GET_MOVE_WORK(tp)->AimPos);
+
 	AL_SetBehavior(tp, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(tp, ALBHV_Notice);
 

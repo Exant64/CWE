@@ -5,6 +5,7 @@
 #include <random>
 #include "ChaoMain.h"
 #include <vector>
+#include "asmutil.h"
 //#include "usercall.h"
 #include "rapidjson.h"
 #include <document.h>
@@ -288,21 +289,20 @@ void ReadCWESaveFiles() {
 	}
 }
 
-// int __usercall@<eax>(char *path@<ecx>, void *buffer@<edx>, size_t size)
-static const void *const ReadSaveFileThingPtr = (void*)0x426860;
-static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
-{
-	int result;
-	__asm
-	{
-		push[_size]
-		mov edx, [buffer]
-		mov ecx, [path]
-		call ReadSaveFileThingPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC int ReadSaveFileThing(char *path, void *buffer, size_t _size) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // size
+    ASM_MOVE( edx, ASM_ESP(2+1+0) ); // buffer
+    ASM_MOVE( ecx, ASM_ESP(1+1+0) ); // path
+
+    // call
+    ASM_CALL_R( eax, 0x426860 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl ReadCWESaveFile(char* path, void* buffer, size_t size) {

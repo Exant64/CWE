@@ -8,7 +8,6 @@
 #include "al_chao_info.h"
 #include "al_save.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 
 int off_1361888[] =

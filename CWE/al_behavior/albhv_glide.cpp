@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <ALifeSDK_Functions.h>
+
 #include <AL_ModAPI.h>
 #include <al_behavior/al_behavior.h>
 

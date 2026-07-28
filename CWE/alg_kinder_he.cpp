@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ninja_functions.h"
+#include "asmutil.h"
 #include "ChaoMain.h"
 #include "al_minimal.h"
 #include "alo_fruit.h"
@@ -24,14 +25,15 @@ FunctionPointer(void, sub_782780, (int a1, int a2, float a3), 0x782780);
 DataArray(NJS_CNK_OBJECT*, dword_171A240, 0x171A240, 4);
 DataArray(NJS_CNK_OBJECT*, off_12E537C, 0x12E537C, 7);
 
-const int sub_42D690Ptr = 0x42D690;
-void sub_42D690(int a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call sub_42D690Ptr
-	}
+static ASM_FUNC void sub_42D690(int a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x42D690 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl sub_58F980(task* a1)
@@ -108,21 +110,25 @@ SAlgKinderOrthoQuad plusHUD = { 0x240,0x255,0,0, (short)((39 / 76.0f) * 4096) ,4
 
 int UpgradeButtons[] = { BTN_UP, BTN_DOWN, BTN_RIGHT, BTN_LEFT, BTN_L};
 
-const int DrawMedicalChartTextPtr = 0x0058D880;
-void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float TextBoxLength, float TextSize, char TextAlignment)
-{
-	__asm
-	{
-		mov ecx, TextPtr
-		push dword ptr[TextAlignment]
-		push TextSize
-		push TextBoxLength
-		push YPos
-		push XPos
-		call DrawMedicalChartTextPtr
-		add esp, 20
-	}
+ASM_FUNC void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, float TextBoxLength, float TextSize, char TextAlignment) {
+	// arguments
+    ASM_PUSH(      ASM_ESP(6+0+0) ); // TextAlignment
+    ASM_PUSH(      ASM_ESP(5+1+0) ); // TextSize
+    ASM_PUSH(      ASM_ESP(4+2+0) ); // TextBoxLength
+    ASM_PUSH(      ASM_ESP(3+3+0) ); // YPos
+    ASM_PUSH(      ASM_ESP(2+4+0) ); // XPos
+    ASM_MOVE( ecx, ASM_ESP(1+5+0) ); // TextPtr
+
+    // call
+    ASM_CALL_R( edx, 0x0058D880 );
+
+    // end arguments
+    ASM_ESP_ADD( 5 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 bool CanStatBeUpgraded(chaowk* data1, int stat)
 {
 	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
@@ -219,16 +225,25 @@ __declspec(naked)void PurchaseGradesHook()
 
 }
 
-const int DisplayHealthCenterMedicalChartPtr = 0x0058DB70;
-void DisplayHealthCenterMedicalChart(int a1, HealthCenter* TextLocation)
-{
-	__asm
-	{
-		push TextLocation
-		mov esi, a1
-		call DisplayHealthCenterMedicalChartPtr
-		add esp, 4
-	}
+static ASM_FUNC void DisplayHealthCenterMedicalChart(int a1, HealthCenter* TextLocation) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // TextLocation
+    ASM_MOVE( esi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0058DB70 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int isInDNAMenu = 0;
@@ -549,38 +564,41 @@ void HealthCenterFriendsMenu(HealthCenter* a1)
 	DrawMedicalChartText(friendCountStr, 444, 110, 999, 20.0f, 5);
 }
 
-const int sub_536770Ptr = 0x536770;
-void sub_536770(unsigned int a1, float a2, float a3, float a4, float a5, float a6)
-{
-	__asm
-	{
-		push a6
-		push a5
-		push a4
-		push a3
-		push a2
-		mov eax, a1
-		call sub_536770Ptr
-		add esp, 20
-	}
+ASM_FUNC void sub_536770(unsigned int a1, float a2, float a3, float a4, float a5, float a6) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(6+0+0) ); // a6
+    ASM_PUSH(      ASM_ESP(5+1+0) ); // a5
+    ASM_PUSH(      ASM_ESP(4+2+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+3+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+4+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+5+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x536770 );
+
+    // end arguments
+    ASM_ESP_ADD( 5 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int sub_5369F0Ptr = 0x5369F0;
-void sub_5369F0(unsigned int a1, float a2, float a3, float a4)
-{
-	__asm
-	{
-		push a4
-		push a3
-		push a2
-		mov eax, a1
-		call sub_5369F0Ptr
-		add esp, 12
-	}
+ASM_FUNC void sub_5369F0(unsigned int a1, float a2, float a3, float a4) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5369F0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
-
-
-
 
 int bodyTypeBackup = -1; //HACK: used to make the chao disappear temporarily
 float tempAdjustment = 0.5f;
@@ -819,15 +837,24 @@ void __declspec(naked) DisplayHealthCenterMedicalChartCall()
 		retn
 	}
 }
-const int sub_58DB30Ptr = 0x58DB30;
-void sub_58DB30(int a1)
-{
-	__asm
-	{
-		mov edi, a1
-		call sub_58DB30Ptr
-	}
+
+ASM_FUNC void sub_58DB30(int a1) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( edi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x58DB30 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
+
 void __cdecl sub_58EA40(HealthCenter* a1)
 {
 	if (a1->openedMedicalChart)

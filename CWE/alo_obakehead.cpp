@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "ALifeSDK_Functions.h"
 #include "ninja_functions.h"
 #include "ChaoMain.h"
 #include "al_sandhole.h"

@@ -4,12 +4,12 @@
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "ChaoMain.h"
 #include "alo_obakehead.h"
 #include "AL_ModAPI.h"
 #include "playsound.h"
+#include "asmutil.h"
 
 #pragma warning(push)
 #pragma warning( disable: 4838 )
@@ -98,17 +98,6 @@ static std::map<ITEM_SAVE_INFO*, size_t, ItemSaveComparator> HatListCount;
 static std::vector<AccessorySaveInfo*> AccessoryList;
 static std::vector<ITEM_SAVE_INFO*> HatList;
 
-const int someUIProjectionCodePtr = 0x0055A060;
-void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		mov esi, a2
-		call someUIProjectionCodePtr
-	}
-}
-
 static void UpdateHatAccVector() {
 	HatList.clear();
 	AccessoryList.clear();
@@ -177,21 +166,24 @@ bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Ga
 	return true;
 }
 
-#pragma optimize("", off)
-static const void* const njDrawTextureEx_p = (void*)0x0077F6B0;
-static void njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans)
+ASM_FUNC
+void
+njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans)
 {
-	count;
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0) ); // trans           : 0+1
+//                 ASM_ESP(2+1)    // count           : 1     (unused)
+    ASM_MOVE( eax, ASM_ESP(1+1) ); // polygon         : 1
 
-	__asm
-	{
-		push[trans]
-		mov eax, [polygon]
-		call njDrawTextureEx_p
-		add esp, 4
-	}
+    // call
+    ASM_CALL_R( edx, 0x0077F6B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
-#pragma optimize("", on)
 
 class MainMenuButton : public UISelectable {
 private:
@@ -256,7 +248,7 @@ public:
 				break;
 			}
 
-			someUIProjectionCode(&posIn, &posOut);
+			chCalcWorldPosFromScreenPos(&posIn, &posOut);
 			CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->twp->pos, posOut, 15, NULL);
 		}
 	}
@@ -1621,7 +1613,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {
 			while (1) ___OutputDebugString("customizationController not 0, what happened?");
 		}
 
-		someUIProjectionCode(&ChaoHatPosition, &posOut);
+		chCalcWorldPosFromScreenPos(&ChaoHatPosition, &posOut);
 		pChao = CreateChaoExtra(GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
 		GET_CHAOWK(pChao)->ChaoFlag &= ~8u;
 		GET_CHAOWK(pChao)->ChaoFlag &= ~2u;
@@ -1685,7 +1677,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {
 					posIn = ChaoHatPosition;
 					targetMenuOffset = { 0, 0 };
 				}
-				someUIProjectionCode(&posIn, &posOut);
+				chCalcWorldPosFromScreenPos(&posIn, &posOut);
 				
 				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->twp->pos, posOut, 30, NULL);
 				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &HatAccMenuOffset, targetMenuOffset, 30, NULL);

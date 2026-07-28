@@ -13,6 +13,7 @@
 #include <FunctionHook.h>
 #include <memory.h>
 #include <set>
+#include <asmutil.h>
 
 //default character chao, maybe change later to some "cwe_placehold" thing
 static const char* DefaultCustomChao = "cwe_spartoi";
@@ -30,15 +31,17 @@ static int NodeCounter;
 //global vector for entries
 std::vector<CustomChaoEntry> CustomChaoTypeEntries;
 
-const int AL_CalcIconColorPtr = 0x0053B940;
-void AL_CalcIconColor(task* tp)
-{
-	__asm
-	{
-		mov eax, tp
-		call AL_CalcIconColorPtr
-	}
+static ASM_FUNC void AL_CalcIconColor(task* tp) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0053B940 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 void __cdecl AL_CalcIconColorMod(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	CHAO_PARAM_GC* pParam = work->pParamGC;

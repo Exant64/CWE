@@ -8,6 +8,36 @@
 #include <vector>
 #include <map>
 
+ASM_FUNC void AL_SetItemOffset(task *a1, int a2, int a3) {
+	ASM_PUSH(esi);
+
+	// arguments
+    ASM_MOVE( ecx, ASM_ESP(3+0+1) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+1) ); // a1
+
+	ASM_CALL_R(esi, 0x0566A20);
+
+	ASM_POP(esi);
+
+	ASM_RET(0);
+}
+
+ASM_FUNC void sub_5669B0(task *a1, int a2, int a3) {
+	ASM_PUSH(esi);
+
+	// arguments
+    ASM_MOVE( ecx, ASM_ESP(3+0+1) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+1) ); // a1
+
+	ASM_CALL_R(esi, 0x5669B0);
+
+	ASM_POP(esi);
+
+	ASM_RET(0);
+}
+
 void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist)
 {
 	chaowk* v4; // eax

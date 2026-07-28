@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "alo_fruit.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "ChaoMain.h"
 #include "ninja_functions.h"
 #include "al_sandhole.h"
@@ -13,9 +12,9 @@
 #include <al_daynight.h>
 #include <al_garden_info.h>
 #include "renderfix.h"
+#include "asmutil.h"
 
 std::vector<ChaoItemStats> ModAPI_FruitStats;
-
 
 void ALO_FruitExecutor_DisplayHack(task *eax0)
 {
@@ -162,30 +161,26 @@ void ALO_FruitExecutor_Main_r(task *tp)
 	}
 }
 
-const int sub_530690Ptr = 0x530690;
-signed int sub_530690(task *a1)
-{
-	int retval;
-	__asm
-	{
-		mov eax, a1
-		call sub_530690Ptr
-		mov retval, eax
-	}
-	return retval;
-}
+ASM_FUNC void sub_545790(task *a1, unsigned __int8 a2, int a3) {
+    // save regs
+    ASM_PUSH( esi );
 
-const int sub_545790Ptr = 0x545790;
-void sub_545790(task *a1, unsigned __int8 a2, int a3)
-{
-	__asm
-	{
-		push a3
-		push dword ptr[a2]
-		mov esi, a1
-		call sub_545790Ptr
-		add esp, 8
-	}
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+1+1) ); // a2
+    ASM_MOVE( esi, ASM_ESP(1+2+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x545790 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 FastcallFunctionPointer(signed int, sub_56D170, (int a1, task *a2), 0x56D170);
 void __cdecl sub_545C20(task *tp)
@@ -257,9 +252,8 @@ void __cdecl sub_545C20(task *tp)
 			--work->ang.z;
 			work->wtimer = 0;
 
-			if (v13)
-			{
-				sub_545790(v13->tp, work->ang.x, work->ang.z == 0); //PROBLEMATIC CALL, POSSIBLE STACK PROBLEM WATCH OUT YOURE GONNA CRASH AHHHH!!!
+			if (v13) {
+				sub_545790(v13->tp, work->ang.x, work->ang.z == 0);
 			}
 
 			v14 = (taskwk *)tp->twp;
@@ -337,7 +331,7 @@ LABEL_54:
 	if (work->flag < 0)
 	{
 		ALW_SendCommand(tp, 6);
-		sub_530690(tp);
+		ALW_CommunicationOff(tp);
 		work->mode = 3;
 		work->smode = 0;
 	}

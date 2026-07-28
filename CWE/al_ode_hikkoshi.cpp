@@ -1,10 +1,12 @@
 #include "stdafx.h"
 
-#include "alg_kinder_he.h"
-#include "al_odekake.h"
+#include <cstdio>
 
 #include "ninja_functions.h"
-#include <cstdio>
+#include "asmutil.h"
+
+#include "alg_kinder_he.h"
+#include "al_odekake.h"
 #include "ChaoMain.h"
 #include "al_ode_guide.h"
 #include "al_ode_menu.h"
@@ -158,14 +160,21 @@ static char GetMultiSaveIndex() {
 	return '0' + numberConverted;
 }
 
-static const void *const WriteChaoSaveChecksumPtr = (void*)0x52EEE0;
-static inline void WriteChaoSaveChecksum(char *a1)
-{
-	__asm
-	{
-		mov esi, [a1]
-		call WriteChaoSaveChecksumPtr
-	}
+static ASM_FUNC void WriteChaoSaveChecksum(char *a1) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x52EEE0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_SaveSecondFile() {

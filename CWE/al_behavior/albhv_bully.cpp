@@ -6,6 +6,7 @@
 #include <memory.h>
 #include "al_behavior.h"
 #include <playsound.h>
+#include <ninja_functions.h>
 
 enum {
     HIT_TYPE_PUNCH,
@@ -471,7 +472,7 @@ static task* FindChaoToBully(task* tp) {
     task* pSelectedChao = NULL;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		if (!pChao || pChao == tp) continue;
 		
 		BHV_FUNC func = AL_GetBehavior(pChao);
@@ -501,7 +502,7 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 	float distClosest = 100.f;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		chaowk* work = GET_CHAOWK(pChao);
 
 		if (!pChao || pChao == pBullyChao || pChao == pVictimChao) continue;

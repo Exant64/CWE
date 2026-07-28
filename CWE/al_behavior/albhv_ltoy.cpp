@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
 #include "../ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include "../Chao.h"
 #include <random>
 #include "../al_world.h"
