@@ -226,32 +226,29 @@ static void DisplayChaoName_GetNewPtr(char* pName, float xpos, float ypos, float
 	);
 }
 
-static void __declspec(naked) DisplayChaoName_Hook()
+static void ASM_FUNC DisplayChaoName_Hook()
 {
-	__asm
-	{
-		push ecx // a8
-		push[esp + 20h] // a7
-		push[esp + 20h] // a6
-		push[esp + 20h] // a5
-		push[esp + 20h] // a4
-		push[esp + 20h] // a3
-		push[esp + 20h] // a2
-		push[esp + 20h] // a1
+	ASM_PUSH(ecx); // a8
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
 
-		// Call your __cdecl function here:
-		call DisplayChaoName_GetNewPtr
+	// Call your __cdecl function here:
+	ASM_CALL (DisplayChaoName_GetNewPtr);
 
-		add esp, 4 // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		add esp, 4 // a7
-		pop ecx // a8
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_ESP_ADD( 1 ); // a7
+	ASM_POP(ecx); // a8
+	ASM_RET(0);
 }
 
 FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
@@ -265,20 +262,17 @@ static void __cdecl sub_58DA30(int a1, int a2) {
 	sub_57A6F0(name, (int)nameConv);
 	WcConvFromCStr((int)a1, (int)nameConv, Language == 0);
 }
-static void __declspec(naked) sub_58DA30Hook()
+static void ASM_FUNC sub_58DA30Hook()
 {
-	__asm
-	{
-		push[esp + 04h] // a2
-		push esi // a1
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call sub_58DA30
+	// Call your __cdecl function here:
+	ASM_CALL(sub_58DA30);
 
-		pop esi // a1
-		add esp, 4 // a2
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 static void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)
 {
@@ -305,18 +299,15 @@ static void __cdecl OpenNameMenu(char* NazukeyaBuff)
 	*(short*)&NazukeyaBuff[90] = 0;
 	*(short*)&NazukeyaBuff[92] = 0;
 }
-static void __declspec(naked) OpenNameMenuHook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call OpenNameMenu
+static void ASM_FUNC OpenNameMenuHook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (OpenNameMenu);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 AL_NAME FortuneTellerNameBuffer;
@@ -326,52 +317,56 @@ static void __fastcall sub_57A6F0_(char* a1, int a2)
 	sub_57A6F0(a1, (int)FortuneTellerNameBuffer);
 }
 
-static const int WcConvFromCStrPtr = 0x0057A680;
-static __declspec(naked) void FoNameWcConvFromCStrHook()
-{
-	__asm
-	{
-		mov edx, offset FortuneTellerNameBuffer
-		jmp WcConvFromCStrPtr
-	}
+static void FoNameWcConvFromCStr_r(int result, int a2, signed int a3) {
+	WcConvFromCStr(result, (int)FortuneTellerNameBuffer, a3);
 }
+
+static ASM_FUNC void FoNameWcConvFromCStrHook() {
+	ASM_PUSH (ecx); // int a3
+	ASM_PUSH (edx); // a2
+	ASM_PUSH (eax); // result
+
+	// Call your __cdecl function here:
+	ASM_CALL (FoNameWcConvFromCStr_r);
+
+	ASM_POP (eax); // result
+	ASM_POP (edx); // a2
+	ASM_POP (ecx); // int a3
+	ASM_RET(0);
+}
+
 static void __cdecl sub_536BA0(const char* v6, float a1, float a2, float a3, float a4, int a5, int a6)
 {
 	AL_ParameterDrawName(v6, a1, a2, a3, a4, a6, 0, a5);
 }
-static void __declspec(naked) sub_536BA0_Hook()
-{
-	__asm
-	{
-		push[esp + 18h] // a6
-		push[esp + 18h] // a5
-		push[esp + 18h] // a4
-		push[esp + 18h] // a3
-		push[esp + 18h] // a2
-		push[esp + 18h] // a1
-		push ecx // v6
 
-		// Call your __cdecl function here:
-		call sub_536BA0
+static void ASM_FUNC sub_536BA0_Hook() {
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ecx); // v6
 
-		pop ecx // v6
-		add esp, 4 // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL(sub_536BA0);
+
+	ASM_POP(ecx); // v6
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_RET(0);
 }
 
-static const int KarateOpponentNameHookTrampoline = 0x543280;
-static __declspec(naked) void KarateOpponentNameHook() {
-	__asm {
-		add edi, -0x12
-		add edi, 0x624
-		jmp KarateOpponentNameHookTrampoline
-	}
+static ASM_FUNC void KarateOpponentNameHook() {
+	ASM_ADD(edi, -0x12);
+	ASM_ADD(edi, 0x624);
+
+	ASM_JUMP(eax, 0x543280);
 }
 
 static FunctionHook<void, char*> NameMenuDisplayTrampoline(0x5827A0);

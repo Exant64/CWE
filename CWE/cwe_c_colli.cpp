@@ -106,16 +106,14 @@ static void CCL_CCheckColli_r() {
     cwe_entry_list.clear();
 }
 
-static void __declspec(naked) CCL_Entry_to_CWE_CCL_Entry_r() {
-    __asm {
-        push esi // a1
+static void ASM_FUNC CCL_Entry_to_CWE_CCL_Entry_r() {
+    ASM_PUSH(esi); // a1
 
-        // Call your __cdecl function here:
-        call CWE_CCL_Entry
+    // Call your __cdecl function here:
+    ASM_CALL (CWE_CCL_Entry);
 
-        pop esi // a1
-        retn
-    }
+    ASM_POP(esi); // a1
+    ASM_RET(0);
 }
 
 void CWE_CCL_Init() {

@@ -88,68 +88,59 @@ void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 	}
 }
 
-static void __declspec(naked)  KindergartenTextHook()
-{
-	__asm {
-		push edi
-		call KindergartenText
-		pop edi
-		retn
-	}
+static void ASM_FUNC KindergartenTextHook() {
+	ASM_PUSH(edi);
+	ASM_CALL (KindergartenText);
+	ASM_POP(edi);
+	ASM_RET(0);
 }
 
 void __cdecl CorridorText1(const char* a1, KinderCoMessageThing* a2, signed int a3)
 {
 	AlMsgWinAddLineC(a2, "This Mod is made by the \x0E\xFF\x11 Chao Modders Team \xFF\x10\x0F:", a3);
 }
-static void __declspec(naked) CorridorText1Hook()
-{
-	__asm
-	{
-		push[esp + 04h] // int a3
-		push esi // a2
-		push ebx // a1
 
-		// Call your __cdecl function here:
-		call CorridorText1
+static void ASM_FUNC CorridorText1Hook() {
+	ASM_PUSH(ASM_ESP(1)); // int a3
+	ASM_PUSH(esi); // a2
+	ASM_PUSH(ebx); // a1
 
-		pop ebx // a1
-		pop esi // a2
-		add esp, 4 // int a3
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (CorridorText1);
+
+	ASM_POP(ebx); // a1
+	ASM_POP(esi); // a2
+	ASM_ESP_ADD( 1 ); // int a3
+	ASM_RET(0);
 }
 
 void __cdecl CorridorHeader(int a1, KinderCoMessageThing* a2, int a3, int a4, float a5, float a6, float a7, float a8)
 {
 	sub_579EF0(a1, a2, (int)"Chao World Extended Credit & Info", a4, a5, a6, a7, a8);
 }
-static void __declspec(naked) CorridorHeaderHook()
-{
-	__asm
-	{
-		push[esp + 18h] // a8
-		push[esp + 18h] // a7
-		push[esp + 18h] // a6
-		push[esp + 18h] // a5
-		push[esp + 18h] // a4
-		push[esp + 18h] // a3
-		push esi // a2
-		push ebx // a1
 
-		// Call your __cdecl function here:
-		call CorridorHeader
+static void ASM_FUNC CorridorHeaderHook() {
+	ASM_PUSH(ASM_ESP(6)); // a8
+	ASM_PUSH(ASM_ESP(6)); // a7
+	ASM_PUSH(ASM_ESP(6)); // a6
+	ASM_PUSH(ASM_ESP(6)); // a5
+	ASM_PUSH(ASM_ESP(6)); // a4
+	ASM_PUSH(ASM_ESP(6)); // a3
+	ASM_PUSH(esi); // a2
+	ASM_PUSH(ebx); // a1
 
-		pop ebx // a1
-		pop esi // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		add esp, 4 // a7
-		add esp, 4 // a8
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (CorridorHeader);
+
+	ASM_POP(ebx); // a1
+	ASM_POP(esi); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_ESP_ADD( 1 ); // a7
+	ASM_ESP_ADD( 1 ); // a8
+	ASM_RET(0);
 }
 
 static const char* CorridorText2Str = "Darkybenji, Exant, Mindacos, CGBuster, Nostalgia Ninja, AWildDayDreamer, krzys2, Erubbu, Chao Professor, Roaxes, SSF1991, Runasutaru, Justin113D and Shaddatic. Check out the website \x0E\xFF\x11 Chao Island \xFF\x10\x0F for more information and join our community for tourney event and mods to download!";
@@ -157,22 +148,19 @@ void __cdecl CorridorText2(const char* a1, KinderCoMessageThing* a2, signed int 
 {
 	AlMsgWinAddLineC(a2, CorridorText2Str,  a3);
 }
-static void __declspec(naked) CorridorText2Hook()
-{
-	__asm
-	{
-		push[esp + 04h] // int a3
-		push esi // a2
-		push ebx // a1
 
-		// Call your __cdecl function here:
-		call CorridorText2
+static void ASM_FUNC CorridorText2Hook() {
+	ASM_PUSH(ASM_ESP(1)); // int a3
+	ASM_PUSH(esi); // a2
+	ASM_PUSH(ebx); // a1
 
-		pop ebx // a1
-		pop esi // a2
-		add esp, 4 // int a3
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (CorridorText2);
+
+	ASM_POP(ebx); // a1
+	ASM_POP(esi); // a2
+	ASM_ESP_ADD( 1 ); // int a3
+	ASM_RET(0);
 }
 
 
@@ -191,16 +179,13 @@ void __cdecl EnteringRoom(al_stg_kinder_co_data* pCoData, int room) {
 	}
 }
 
-static void __declspec(naked) EnteringRoomHook()
-{
-	__asm {
-		push esi
-		push edi
-		call EnteringRoom
-		pop edi
-		pop esi
-		retn
-	}
+static void ASM_FUNC EnteringRoomHook() {
+	ASM_PUSH(esi);
+	ASM_PUSH(edi);
+	ASM_CALL (EnteringRoom);
+	ASM_POP(edi);
+	ASM_POP(esi);
+	ASM_RET(0);
 }
 
 void alg_kinder_co_Init() {

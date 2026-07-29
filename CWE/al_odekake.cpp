@@ -164,18 +164,15 @@ void __cdecl sub_582F60_CheckGuest(char* a1)
 	
 	sub_582F60(a1);
 }
-static void __declspec(naked) sub_582F60Hook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call sub_582F60_CheckGuest
+static void ASM_FUNC sub_582F60Hook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_582F60_CheckGuest);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 void AddOdekakeMenu(const CWE_API_ODEKAKE_ENTRY& entry) {

@@ -211,18 +211,13 @@ void PurchaseGradesCode(chaowk* data1)
 	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 	njSetTextureNum(7, 0, 0, 0);
 }
-__declspec(naked)void PurchaseGradesHook()
-{
-	__asm
-	{
-		mov ecx, [ebp + 8]
-		//mov ecx, [ecx + 34h]
-		push[ecx + 34h]
-		call PurchaseGradesCode
-		add esp, 4
-		retn
-	}
 
+static ASM_FUNC void PurchaseGradesHook() {
+	ASM_MOVE(ecx, [ebp + 8]);
+	ASM_PUSH([ecx + 34h]);
+	ASM_CALL (PurchaseGradesCode);
+	ASM_ESP_ADD( 1 );
+	ASM_RET(0);
 }
 
 static ASM_FUNC void DisplayHealthCenterMedicalChart(int a1, HealthCenter* TextLocation) {
@@ -822,20 +817,17 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 		DrawMedicalChartText((const char*)buffer, 288.0, 392, 999.0, 20.0, 0);
 	}
 }
-void __declspec(naked) DisplayHealthCenterMedicalChartCall()
-{
-	__asm
-	{
-		push[esp + 04h] // TextLocation
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call HealthCenterDNAHook
+static void ASM_FUNC DisplayHealthCenterMedicalChartCall() {
+	ASM_PUSH(ASM_ESP(1)); // TextLocation
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		add esp, 4 // TextLocation
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (HealthCenterDNAHook);
+
+	ASM_POP(esi); // a1
+	ASM_ESP_ADD( 1 ); // TextLocation
+	ASM_RET(0);
 }
 
 ASM_FUNC void sub_58DB30(int a1) {
@@ -1139,30 +1131,22 @@ void __fastcall DoctorMessage(HealthCenter* a1, int a2)
 	MessageCondition = msgVal;
 }
 
-static void __declspec(naked) sub_58EA40Hook()
-{
-	__asm
-	{
-		push eax // a1
+static void ASM_FUNC sub_58EA40Hook() {
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call sub_58EA40
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58EA40);
 
-		pop eax // a1
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
-static void __declspec(naked) sub_58D9F0Hook()
-{
-	__asm
-	{
-		push eax // a2
-		// Call your __cdecl function here:
-		call ConditionText
-		pop eax // a2
 
-		retn
-	}
+static void ASM_FUNC sub_58D9F0Hook() {
+	ASM_PUSH(eax); // a2
+	ASM_CALL (ConditionText);
+	ASM_POP(eax); // a2
+
+	ASM_RET(0);
 }
 
 void alg_kinder_he_Init() {

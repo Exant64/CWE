@@ -450,22 +450,18 @@ void __cdecl NewDrawings(int a1, int ID, int a3)
 	ALO_RakugakiExecutor_Load_(a1, ID, a3);
 }
 
-static void __declspec(naked) NewDrawingsHook()
-{
-	__asm
-	{
-		push[esp + 08h] // a3
-		push[esp + 08h] // a2
-		push ebx // a1
+static void ASM_FUNC NewDrawingsHook() {
+	ASM_PUSH(ASM_ESP(2)); // a3
+	ASM_PUSH(ASM_ESP(2)); // a2
+	ASM_PUSH(ebx); // a1
 
-		// Call your __cdecl function here:
-		call NewDrawings
+	// Call your __cdecl function here:
+	ASM_CALL (NewDrawings);
 
-		pop ebx // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		retn
-	}
+	ASM_POP(ebx); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_RET(0);
 }
 
 static void Chao_Delete_r(task* tp);

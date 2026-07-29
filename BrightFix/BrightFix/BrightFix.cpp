@@ -193,22 +193,18 @@ extern "C"
 		DoLighting(LightIndexBackupMaybe);
 		SetChunkTexIndexNull(2);
 	}
-	static void __declspec(naked) SetChunkTexIndex()
+	static void ASM_FUNC SetChunkTexIndex()
 	{
-		__asm
-		{
-			push[esp + 04h] // a3
-			push ebx // a2
-			push eax // index
+		ASM_PUSH(ASM_ESP(1));
+		ASM_PUSH(ebx);
+		ASM_PUSH(eax);
 
-			// Call your __cdecl function here:
-			call SetChunkTexIndexSecondary
+		ASM_CALL(SetChunkTexIndexSecondary);
 
-			pop eax // index
-			pop ebx // a2
-			add esp, 4 // a3
-			retn
-		}
+		ASM_POP(eax);
+		ASM_POP(ebx);
+		ASM_ESP_ADD(1);
+		ASM_RET(0);
 	}
 
 	ASM_FUNC Uint32 GetChunkTexIndex(NJS_CNK_MODEL* a1) {
@@ -341,27 +337,21 @@ extern "C"
 		//device->SetPixelShaderConstantF(74, test, 1);
 	}
 
-	static void __declspec(naked) ChaoColoring()
+	static void ASM_FUNC ChaoColoring()
 	{
-		__asm
-		{
-			push[esp + 10h] // model
-			push[esp + 10h] // highlights
-			push[esp + 10h] // shiny
-			push[esp + 10h] // color
-			push edi // texture
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(edi);
 
-			// Call your __cdecl function here:
-			call ChaoColoringPatch
+		ASM_CALL(ChaoColoringPatch);
 
-			pop edi // texture
-			add esp, 4 // color
-			add esp, 4 // shiny
-			add esp, 4 // highlights
-			add esp, 4 // model
-			retn
-		}
+		ASM_POP(edi); 
+		ASM_ESP_ADD(4);
+		ASM_RET(0);
 	}
+
 	void PatchEyelidEyeIssue()
 	{
 		SetChunkTexIndexNull(2);
@@ -505,21 +495,16 @@ extern "C"
 			return;
 		}
 	}
-	static void __declspec(naked) EggColoringHook()
-	{
+	
+	static void ASM_FUNC EggColoringHook() {
+		ASM_PUSH(esi); // a2
+		ASM_PUSH(eax); // result
 
-		__asm
-		{
-			push esi // a2
-			push eax // result
+		ASM_CALL(EggColoring);
 
-			// Call your __cdecl function here:
-			call EggColoring
-
-			pop eax // result
-			pop esi // a2
-			retn
-		}
+		ASM_POP(eax); // result
+		ASM_POP(esi); // a2
+		ASM_RET(0);
 	}
 
 	void BrightFixPlus_ShinyCheck(int shiny)

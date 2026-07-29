@@ -107,18 +107,15 @@ static void __cdecl BreedPatch(task* a1)
 	}
 
 }
-static void __declspec(naked) BreedPatch_asm()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call BreedPatch
+static void ASM_FUNC BreedPatch_asm() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (BreedPatch);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 DataPointer(int, BallUsable, 0x01DBE574);
@@ -141,18 +138,15 @@ signed int __cdecl AL_CheckBallFix(task* tp) {
 	AL_SetBehaviorWithTimer(tp, (int)0x0563830, -1);
 	return 1;
 }
-static void __declspec(naked) AL_CheckBallHook()
-{
-	__asm
-	{
-		push edi // a1
 
-		// Call your __cdecl function here:
-		call AL_CheckBallFix
+static void ASM_FUNC AL_CheckBallHook() {
+	ASM_PUSH(edi); // a1
 
-		pop edi // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CheckBallFix);
+
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
 void Ball_Delete(task* a1) {

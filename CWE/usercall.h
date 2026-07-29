@@ -203,7 +203,7 @@ static constexpr T const GenerateUsercallWrapper(int ret, intptr_t address, TArg
 		memsz += 8;
 		break;
 	}
-	++memsz; // retn
+	++memsz; // ASM_RET(0);
 	auto codeData = AllocateCode(memsz);
 	int cdoff = 0;
 	char stackoff = 4;
@@ -536,7 +536,7 @@ static constexpr void const GenerateUsercallHook(T func, int ret, intptr_t addre
 	}
 	if (stackcnt > 0)
 		memsz += 3;
-	++memsz; // retn
+	++memsz; // ASM_RET(0);
 	auto codeData = AllocateCode(memsz);
 	int cdoff = 0;
 	char stackoff = stackcnt * 4;

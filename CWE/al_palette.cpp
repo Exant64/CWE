@@ -133,19 +133,6 @@ const char* off_1365D78[39] =
 #endif
 };
 
-#if 0
-const int sub_534E10Ptr = 0x534E10;
-void alpalSetBank(task* a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		call sub_534E10Ptr
-	}
-}
-#endif
-
 int dword_1365D30[] = 
 { 
 	0, 1, 2, //child chao
@@ -213,20 +200,16 @@ void __cdecl alpalSetBank(task* a1, int a2)
 	}
 }
 
-static void __declspec(naked) alpalSetBankHook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
+static void ASM_FUNC alpalSetBankHook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call alpalSetBank
+	// Call your __cdecl function here:
+	ASM_CALL (alpalSetBank);
 
-		pop eax // a1
-		pop ecx // a2
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
 //we removed the alpalSetBank calls from DrawChao, meaning now it only sets bank once before entering DrawChao
@@ -236,22 +219,17 @@ void __cdecl alpalAL_DrawHook(task* a1, int a2) {
 	alpalSetBank(a1, a2);
 }
 
-static void __declspec(naked) alpalSetBankDrawChaoHook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
+static void ASM_FUNC alpalSetBankDrawChaoHook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call alpalAL_DrawHook
+	// Call your __cdecl function here:
+	ASM_CALL(alpalAL_DrawHook);
 
-		pop eax // a1
-		pop ecx // a2
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
-
 
 void LoadPaletteHook();
 Trampoline LoadPalette_t(0x0534350, 0x053435A, LoadPaletteHook);
@@ -694,23 +672,21 @@ void __cdecl UpdateChaoPaletteNew(CHAO_PARAM_GC* chaoData, task* a1, int cno)
 		
 	}
 }
-static void __declspec(naked) UpdateChaoPaletteHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a3
-		push ecx // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call UpdateChaoPaletteNew
+static void ASM_FUNC UpdateChaoPaletteHook() {
+	ASM_PUSH(ASM_ESP(1)); // a3
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		pop ecx // a2
-		add esp, 4 // a3
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (UpdateChaoPaletteNew);
+
+	ASM_POP(eax); // a1
+	ASM_POP(ecx); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_RET(0);
 }
+
 void AL_Palette_Init()
 {
 	//explanation above function

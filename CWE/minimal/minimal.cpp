@@ -191,73 +191,61 @@ static void njDrawTextureGetType1(int a1, int a2, int a3, AnimalInvEntry* entry,
     njDrawTextureHook((NJS_TEXTURE_VTX*)a3, entry->type);
 }
 
-static void __declspec(naked) njDrawTextureHookPaused()
-{
-    __asm
-    {
-        push[esp + 04h] // a5
-        push ebx
-        push ecx // a3
-        push edx // a2
-        push eax // a1
+static void ASM_FUNC njDrawTextureHookPaused() {
+    ASM_PUSH(ASM_ESP(1)); // a5
+    ASM_PUSH(ebx);
+    ASM_PUSH(ecx); // a3
+    ASM_PUSH(edx); // a2
+    ASM_PUSH(eax); // a1
 
-        // Call your __cdecl function here:
-        call njDrawTextureGetType1
+    // Call your __cdecl function here:
+    ASM_CALL (njDrawTextureGetType1);
 
-        pop eax // a1
-        pop edx // a2
-        pop ecx // a3
-        pop ebx
-        add esp, 4 // a5
-        retn
-    }
+    ASM_POP(eax); // a1
+    ASM_POP(edx); // a2
+    ASM_POP(ecx); // a3
+    ASM_POP(ebx);
+    ASM_ESP_ADD( 1 ); // a5
+    ASM_RET(0);
 }
 
-static void __declspec(naked) njDrawTextureHook1()
-{
-    __asm
-    {
-        push [esp + 04h] // a5
-        push [esp + 08h + 0xE0 - 0xC0]
-        push ecx // a3
-        push edx // a2
-        push eax // a1
+static void ASM_FUNC njDrawTextureHook1() {
+    ASM_PUSH(ASM_ESP(1)); // a5
+    ASM_PUSH(ASM_ESP(10));
+    ASM_PUSH(ecx); // a3
+    ASM_PUSH(edx); // a2
+    ASM_PUSH(eax); // a1
 
-        // Call your __cdecl function here:
-        call njDrawTextureGetType1
+    // Call your __cdecl function here:
+    ASM_CALL (njDrawTextureGetType1);
 
-        pop eax // a1
-        pop edx // a2
-        pop ecx // a3
-        add esp, 8 // a5
-        retn
-    }
+    ASM_POP(eax); // a1
+    ASM_POP(edx); // a2
+    ASM_POP(ecx); // a3
+    ASM_ESP_ADD(2); // a5
+    ASM_RET(0);
 }
 
 static void njDrawTextureGetType2(int a1, int a2, int a3, int otherEntryIndex, int a5) {
     njDrawTextureHook((NJS_TEXTURE_VTX*)a3, GetAnimalInv(0)->OtherEntries[otherEntryIndex].type);
 }
 
-static void __declspec(naked) njDrawTextureHook2()
-{
-    __asm
-    {
-        push[esp + 04h] // a5
-        push edi
-        push ecx // a3
-        push edx // a2
-        push eax // a1
+static void ASM_FUNC njDrawTextureHook2() {
+    ASM_PUSH(ASM_ESP(1)); // a5
+    ASM_PUSH(edi);
+    ASM_PUSH(ecx); // a3
+    ASM_PUSH(edx); // a2
+    ASM_PUSH(eax); // a1
 
-        // Call your __cdecl function here:
-        call njDrawTextureGetType2
+    // Call your __cdecl function here:
+    ASM_CALL (njDrawTextureGetType2);
 
-        pop eax // a1
-        pop edx // a2
-        pop ecx // a3
-        pop edi
-        add esp, 4 // a5
-        retn
-    }
+    ASM_POP(eax); // a1
+    ASM_POP(edx); // a2
+    ASM_POP(ecx); // a3
+    ASM_POP(edi);
+    ASM_ESP_ADD( 1 ); // a5
+    ASM_RET(0);
 }
 
 static void RenderAnimal_r(task* tp) {
@@ -336,26 +324,22 @@ static void sub_48ACD0_r(int i, int a1, float a2, float a3, float a4) {
     sub_48ACD0(a1,a2,a3,a4);
 }
 
-static void __declspec(naked) sub_48ACD0_hook()
-{
-    __asm
-    {
-        push[esp + 0Ch] // a4
-        push[esp + 0Ch] // a3
-        push[esp + 0Ch] // a2
-        push esi // a1
-        push edi
+static void ASM_FUNC sub_48ACD0_hook() {
+    ASM_PUSH(ASM_ESP(3)); // a4
+    ASM_PUSH(ASM_ESP(3)); // a3
+    ASM_PUSH(ASM_ESP(3)); // a2
+    ASM_PUSH(esi); // a1
+    ASM_PUSH(edi);
 
-        // Call your __cdecl function here:
-        call sub_48ACD0_r
+    // Call your __cdecl function here:
+    ASM_CALL (sub_48ACD0_r);
 
-        pop edi
-        pop esi // a1
-        add esp, 4 // a2
-        add esp, 4 // a3
-        add esp, 4 // a4
-        retn
-    }
+    ASM_POP(edi);
+    ASM_POP(esi); // a1
+    ASM_ESP_ADD( 1 ); // a2
+    ASM_ESP_ADD( 1 ); // a3
+    ASM_ESP_ADD( 1 ); // a4
+    ASM_RET(0);
 }
 
 // hooks stolen from chao partner
@@ -401,28 +385,24 @@ static void AnimalPickupSoundHook_r(int a1, NJS_VECTOR *a2, int a3, int a4, int 
     SE_CallV2(TONE(8, 0xF), a3, a4, a5, a2);
 }
 
-static void __declspec(naked) AnimalPickupSoundHook()
-{
-        __asm
-        {
-                push ebx
-                push [esp + 0Ch] // a5
-                push [esp + 0Ch] // a4
-                push [esp + 0Ch] // a3
-                push esi // a2
-                push edi // a1
+static void ASM_FUNC AnimalPickupSoundHook() {
+    ASM_PUSH(ebx);
+    ASM_PUSH(ASM_ESP(3)); // a5
+    ASM_PUSH(ASM_ESP(3)); // a4
+    ASM_PUSH(ASM_ESP(3)); // a3
+    ASM_PUSH(esi); // a2
+    ASM_PUSH(edi); // a1
 
-                // Call your __cdecl function here:
-                call AnimalPickupSoundHook_r
+    // Call your __cdecl function here:
+    ASM_CALL (AnimalPickupSoundHook_r);
 
-                pop edi // a1
-                pop esi // a2
-                add esp, 4 // a3
-                add esp, 4 // a4
-                add esp, 4 // a5
-                add esp, 4 
-                retn
-        }
+    ASM_POP(edi); // a1
+    ASM_POP(esi); // a2
+    ASM_ESP_ADD( 1 ); // a3
+    ASM_ESP_ADD( 1 ); // a4
+    ASM_ESP_ADD( 1 ); // a5
+    ASM_ESP_ADD( 1 ); 
+    ASM_RET(0);
 }
 
 void Minimal_Init() {

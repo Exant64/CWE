@@ -300,20 +300,17 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 		AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
 	}
 }
-static void __declspec(naked) AL_GeneAnalyzeCommonHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push edi // a1
 
-		// Call your __cdecl function here:
-		call AL_GeneAnalyzeCommonAdd
+static void ASM_FUNC AL_GeneAnalyzeCommonHook() {
+	ASM_PUSH(ASM_ESP(1));
+	ASM_PUSH(edi); // a1
 
-		pop edi // a1
-		add esp, 4 // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL(AL_GeneAnalyzeCommonAdd);
+
+	ASM_POP(edi); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 ASM_FUNC void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene) {
@@ -525,22 +522,19 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
 	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }
-static void __declspec(naked) AL_CreateChildGeneHook()
-{
-	__asm
-	{
-		push edx // pChildGene
-		push[esp + 0Ch] // pFatherTask
-		push[esp + 0Ch] // pMotherTask
 
-		// Call your __cdecl function here:
-		call AL_CreateChildGene
+static void ASM_FUNC AL_CreateChildGeneHook() {
+	ASM_PUSH(edx); // pChildGene
+	ASM_PUSH(ASM_ESP(3));
+	ASM_PUSH(ASM_ESP(3));
 
-		add esp, 4 // pMotherTask
-		add esp, 4 // pFatherTask
-		pop edx // pChildGene
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CreateChildGene);
+
+	ASM_ESP_ADD( 1 ); // pMotherTask
+	ASM_ESP_ADD( 1 ); // pFatherTask
+	ASM_POP(edx); // pChildGene
+	ASM_RET(0);
 }
 
 void AL_Gene_Init() {

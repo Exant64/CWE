@@ -126,22 +126,17 @@ static void PaletteFix_SetPaletteShader(WeirdChunkTexIndexThing* a1, int bank)
 		SetShaderType(ShaderBackup);
 	}
 }
-static void __declspec(naked) PaletteFix_SetPaletteShaderHook()
-{
-	__asm
-	{
-		push edx // a2
-		push edi // a1
 
-		// Call your __cdecl function here:
-		call PaletteFix_SetPaletteShader
+static void ASM_FUNC PaletteFix_SetPaletteShaderHook() {
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(edi); // a1
 
-		add esp, 8
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (PaletteFix_SetPaletteShader);
+
+	ASM_ESP_ADD(2);
+	ASM_RET(0);
 }
-
-
 
 void __stdcall PaletteFix_SetPalette(int index) {
 	memcpy(PaletteBuffer[index], *(void**)0x01DBED80, sizeof(PaletteBuffer[index]));

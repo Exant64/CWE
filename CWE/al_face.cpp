@@ -203,22 +203,17 @@ LABEL_10:
 		}
 	}
 }
-static void __declspec(naked) AL_FaceSetEyeHook()
-{
-	__asm
-	{
-		push eax // a1
-		push edx // a2
-		push ecx // a3
+static void ASM_FUNC AL_FaceSetEyeHook() {
+	ASM_PUSH(eax); // a1
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(ecx); // a3
 
-		// Call your __cdecl function here:
-		call AL_FaceSetEyeCWE
+	ASM_CALL (AL_FaceSetEyeCWE);
 
-		pop ecx // a3
-		pop edx // a2
-		pop eax // a1
-		retn
-	}
+	ASM_POP(ecx); // a3
+	ASM_POP(edx); // a2
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 ASM_FUNC void  AL_FaceSetMouth(task* tp, int MouthNum, int32_t timer) {

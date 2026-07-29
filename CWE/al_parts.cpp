@@ -209,18 +209,14 @@ void sub_566B80(task* tp) {
 	sub_566B30(wk->Shape.pObject);
 }
 
-static void __declspec(naked) sub_566B80Hook()
-{
-	__asm
-	{
-		push edi // a1
+static void ASM_FUNC sub_566B80Hook() {
+	ASM_PUSH(edi); // a1
 
-		// Call your __cdecl function here:
-		call sub_566B80
+	// Call your __cdecl function here:
+	ASM_CALL (sub_566B80);
 
-		pop edi // a1
-		retn
-	}
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
 void AL_Parts_Init()

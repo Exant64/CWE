@@ -43,20 +43,17 @@ void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pPa
 
 	memcpy(pParam->Skill, pElement->Skill, sizeof(pParam->Skill));
 }
-static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
-{
-	__asm
-	{
-		push ecx // data
-		push eax // KarateOpponentData
 
-		// Call your __cdecl function here:
-		call AL_ShapeExpandElementToParam
+static void ASM_FUNC AL_ShapeExpandElementToParam_Hook() {
+	ASM_PUSH(ecx); // data
+	ASM_PUSH(eax); // KarateOpponentData
 
-		pop eax // KarateOpponentData
-		pop ecx // data
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_ShapeExpandElementToParam);
+
+	ASM_POP(eax); // KarateOpponentData
+	ASM_POP(ecx); // data
+	ASM_RET(0);
 }
 
 static ASM_FUNC int AL_ShapeChangeType(task* a1, int typevalue) {
@@ -126,20 +123,16 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 	return AL_ShapeChangeType(tp, type);
 }
 
-static void __declspec(naked) AL_ShapeChangeType_Hook()
-{
-	__asm
-	{
-		push eax // int a2
-		push ecx // a1
+static void ASM_FUNC AL_ShapeChangeType_Hook() {
+	ASM_PUSH(eax); // int a2
+	ASM_PUSH(ecx); // a1
 
-		// Call your __cdecl function here:
-		call AL_ShapeChangeType_Hack
+	// Call your __cdecl function here:
+	ASM_CALL (AL_ShapeChangeType_Hack);
 
-		pop ecx // a1
-		add esp, 4 // int a2
-		retn
-	}
+	ASM_POP(ecx); // a1
+	ASM_ESP_ADD( 1 ); // int a2
+	ASM_RET(0);
 }
 
 

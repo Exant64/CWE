@@ -163,21 +163,16 @@ signed int __cdecl ALBHV_FartReaction(task* a1)
 	return 0;
 }
 
+static void ASM_FUNC AL_CalcIntentionScore_LToy_Hook() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(edi); // a1
 
-static void __declspec(naked) AL_CalcIntentionScore_LToy_Hook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push edi // a1
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_LToy);
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_LToy
-
-		pop edi // a1
-		add esp, 4 // a2
-		retn
-	}
+	ASM_POP(edi); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 static ASM_FUNC void AL_CalcIntentionScore_Mayu(task* a2, float* a1) {
@@ -223,66 +218,51 @@ void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 
 }
 
-static void __declspec(naked) AL_CalcIntentionScore_Hook()
-{
-	__asm
-	{
-		push edi // a1
-		push esi // a2
+static void ASM_FUNC AL_CalcIntentionScore_Hook() {
+	ASM_PUSH(edi); // a1
+	ASM_PUSH(esi); // a2
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_All
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_All);
 
-		pop esi // a2
-		pop edi // a1
-		retn
-	}
+	ASM_POP(esi); // a2
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
 extern void __cdecl AL_CalcIntentionScore_JoinMusic(task* a1, float* a2);
-static void __declspec(naked) AL_CalcIntentionScore_JoinMusicH()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
+static void ASM_FUNC AL_CalcIntentionScore_JoinMusicH() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_JoinMusic
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_JoinMusic);
 
-		pop eax // a1
-		add esp, 4 // a2
-		retn
-	}
-}
-static void __declspec(naked) sub_55E7A0()
-{
-	__asm
-	{
-		push ebx // a1
-
-		// Call your __cdecl function here:
-		call AL_DecideBehaviorSToy
-
-		pop ebx // a1
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
-static void __declspec(naked) AL_CalcIntentionScore_JoinDanceHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
+static void ASM_FUNC sub_55E7A0() {
+	ASM_PUSH(ebx); // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_JoinDance
+	// Call your __cdecl function here:
+	ASM_CALL (AL_DecideBehaviorSToy);
 
-		pop eax // a1
-		add esp, 4 // a2
-		retn
-	}
+	ASM_POP(ebx); // a1
+	ASM_RET(0);
+}
+
+static void ASM_FUNC AL_CalcIntentionScore_JoinDanceHook() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_JoinDance);
+
+	ASM_POP(eax); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer)

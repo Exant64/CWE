@@ -66,18 +66,15 @@ void __cdecl AL_CalcIconColorMod(task* tp) {
 
 	AL_CalcIconColor(tp);
 }
-static void __declspec(naked) AL_CalcIconColorHook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcIconColorMod
+static void ASM_FUNC AL_CalcIconColorHook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIconColorMod);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 void __cdecl AL_IconDraw_r(task* a1);
@@ -435,30 +432,26 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 	DrawMedicalChartText(str, a4, a5, a6, a7, a1);
 }
 
-static void __declspec(naked) sub_58D9F0Hook()
-{
-	__asm
-	{
-		push[esp + 14h] // a7
-		push[esp + 14h] // a6
-		push[esp + 14h] // a5
-		push[esp + 14h] // a4
-		push[esp + 14h] // a3
-		push eax // a2
-		push ecx // a1
+static void ASM_FUNC sub_58D9F0Hook() {
+	ASM_PUSH(ASM_ESP(5)); // a7
+	ASM_PUSH(ASM_ESP(5)); // a6
+	ASM_PUSH(ASM_ESP(5)); // a5
+	ASM_PUSH(ASM_ESP(5)); // a4
+	ASM_PUSH(ASM_ESP(5)); // a3
+	ASM_PUSH(eax); // a2
+	ASM_PUSH(ecx); // a1
 
-		// Call your __cdecl function here:
-		call sub_58D9F0
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58D9F0);
 
-		pop ecx // a1
-		pop eax // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		add esp, 4 // a7
-		retn
-	}
+	ASM_POP(ecx); // a1
+	ASM_POP(eax); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_ESP_ADD( 1 ); // a7
+	ASM_RET(0);
 }
 
 int __cdecl sub_5366E0(task* a1, int a2)
@@ -486,20 +479,16 @@ int __cdecl sub_5366E0(task* a1, int a2)
 	}
 }
 
-static void __declspec(naked) sub_5366E0Hook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
+static void ASM_FUNC sub_5366E0Hook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call sub_5366E0
+	// Call your __cdecl function here:
+	ASM_CALL (sub_5366E0);
 
-		add esp, 4 // a1<eax> is also used for return value
-		pop ecx // a2
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp);

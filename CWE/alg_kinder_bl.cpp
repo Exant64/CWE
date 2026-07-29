@@ -248,18 +248,15 @@ SAlItemCwe* __cdecl sub_58B120(SAlItemCwe* result)
 
 	return result;
 }
-static void __declspec(naked) sub_58B120Hook()
-{
-	__asm
-	{
-		push eax // result
 
-		// Call your __cdecl function here:
-		call sub_58B120
-		
-		add esp, 4 // result<eax> is also used for return value
-		retn
-	}
+static void ASM_FUNC sub_58B120Hook() {
+	ASM_PUSH(eax); // result
+
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58B120);
+	
+	ASM_ESP_ADD( 1 ); // result<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void FBuyListGenericUpdate(Sint8 cat, float change = 0.75f) {
@@ -1007,18 +1004,15 @@ BlackMarketItemAttributes* __cdecl AlItemGetInfo_r(SAlItemCwe* a1)
 	}
 	return result;
 }
-static void __declspec(naked) AlItemGetInfoHook()
-{
-	__asm
-	{
-		push ecx // a1
 
-		// Call your __cdecl function here:
-		call AlItemGetInfo_r
+static void ASM_FUNC AlItemGetInfoHook() {
+	ASM_PUSH(ecx); // a1
 
-		pop ecx // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AlItemGetInfo_r);
+
+	ASM_POP(ecx); // a1
+	ASM_RET(0);
 }
 
 ASM_FUNC void GXSetBlendModeAlpha(int a1, int a2, int a3) {
@@ -1276,15 +1270,11 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 }
 
 const int JumpBackHere_ = 0x005897C3;
-void __declspec(naked) FItemDescDispHook()
-{
-	_asm
-	{
-		push[esp + 0x2C]
-		call FItemDescDisp
-		add esp, 4
-		jmp JumpBackHere_
-	}
+void ASM_FUNC FItemDescDispHook() {
+	ASM_PUSH(ASM_ESP(11));
+	ASM_CALL (FItemDescDisp);
+	ASM_ESP_ADD( 1 );
+	ASM_JUMP(JumpBackHere_);
 }
 
 //garden object count
@@ -1308,21 +1298,17 @@ signed int __cdecl AL_GetMaxItemNum(const int a1)
 	}
 	return 0;
 }
-int edxBackup;
-static void __declspec(naked) AL_GetMaxItemNum_hook()
-{
-	__asm
-	{
-		mov edxBackup, edx
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call AL_GetMaxItemNum
+static void ASM_FUNC AL_GetMaxItemNum_hook() {
+	ASM_PUSH(edx);
+	ASM_PUSH(eax); // a1
 
-		add esp, 4 // a1<eax> is also used for return value
-		mov edx, edxBackup
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_GetMaxItemNum);
+
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_POP(edx);
+	ASM_RET(0);
 }
 
 ASM_FUNC int sub_52F4F0(int a1) {
@@ -1710,24 +1696,21 @@ void __cdecl FixFontScale(__int16* a1, float a2, float a3, float a4)
 		DrawFontThing(a1, a2, a3, a4);
 	}
 }
-static void __declspec(naked) FixFontScaleHook()
-{
-	__asm
-	{
-		push[esp + 0Ch] // a4
-		push[esp + 0Ch] // a3
-		push[esp + 0Ch] // a2
-		push ebx // a1
 
-		// Call your __cdecl function here:
-		call FixFontScale
+static void ASM_FUNC FixFontScaleHook() {
+	ASM_PUSH(ASM_ESP(3)); // a4
+	ASM_PUSH(ASM_ESP(3)); // a3
+	ASM_PUSH(ASM_ESP(3)); // a2
+	ASM_PUSH(ebx); // a1
 
-		pop ebx // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FixFontScale);
+
+	ASM_POP(ebx); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_RET(0);
 }
 
 const char* BlackMarketGetNameMsg(BlackMarketData const* a1, BlackMarketItemAttributes const* a2) {
@@ -1768,20 +1751,17 @@ void __cdecl FItemDescSet(SAlItemCwe* pItem, BlackMarketData* a2) {
 		a2->mItemDescWinExplOn = 1;
 	}
 }
-static void __declspec(naked) FItemDescSetHook()
-{
-	__asm
-	{
-		push edi // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call FItemDescSet
+static void ASM_FUNC FItemDescSetHook() {
+	ASM_PUSH(edi); // a2
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		pop edi // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FItemDescSet);
+
+	ASM_POP(eax); // a1
+	ASM_POP(edi); // a2
+	ASM_RET(0);
 }
 
 void __cdecl FSellListStart(BlackMarketData* a1)
@@ -1832,19 +1812,15 @@ void __cdecl FSellListStart(BlackMarketData* a1)
 	*(Uint32*)0x01A267D0 = -1;
 	AlMsgWinAddLineC(a1->mMainWin, (const char*)v20, Language == 0);
 }
-int _ebxBackup;
-static void __declspec(naked) FSellListStartHook()
-{
-	__asm
-	{
-		push ecx // a1
 
-		// Call your __cdecl function here:
-		call FSellListStart
+static void ASM_FUNC FSellListStartHook() {
+	ASM_PUSH(ecx); // a1
 
-		pop ecx // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FSellListStart);
+
+	ASM_POP(ecx); // a1
+	ASM_RET(0);
 }
 
 void FBuyListSetItemDesc(BlackMarketData* a1)
@@ -2228,18 +2204,15 @@ void __cdecl sub_58A170(BlackMarketData* a1)
 	if (!NoText)
 		AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 15), Language == 0);
 }
-static void __declspec(naked) sub_58A170Hook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call sub_58A170
+static void ASM_FUNC sub_58A170Hook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58A170);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 float ringDisplayY = 80.0f;
@@ -2300,18 +2273,15 @@ void __cdecl sub_589850(BlackMarketData* data)
 		AlMsgWinExec(&data->mItemDescWinExpl);
 	}
 }
-static void __declspec(naked) sub_589850Hook()
-{
-	__asm
-	{
-		push ecx // data
 
-		// Call your __cdecl function here:
-		call sub_589850
+static void ASM_FUNC sub_589850Hook() {
+	ASM_PUSH(ecx); // data
 
-		pop ecx // data
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_589850);
+
+	ASM_POP(ecx); // data
+	ASM_RET(0);
 }
 
 static void SellHeldItem() {

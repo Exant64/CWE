@@ -174,15 +174,11 @@ task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle,
     return ALO_FruitCreate(lookup, position, angle, a4, a5);
 }
 
-__declspec(naked) void AL_GrowTree_CreateFruitHook()
-{
-    __asm
-    {
-        push ebx
-        call AL_GrowTree_CreateFruit
-        add esp,4
-        retn
-    }
+static ASM_FUNC void AL_GrowTree_CreateFruitHook() {
+    ASM_PUSH(ebx);
+    ASM_CALL (AL_GrowTree_CreateFruit);
+    ASM_ESP_ADD(1);
+    ASM_RET(0);
 }
 
 void __cdecl ALO_SeedExecutor_Display_(task* eax0)
@@ -243,16 +239,13 @@ void __cdecl FixTransition(ALO_GrowTreeExecutor_Data* v2)
     v2->growth = 0;
 }
 
-__declspec(naked) void FixTransitionHook()
-{
-    __asm
-    {
-        push ebx
-        call FixTransition
-        add esp, 4
-        retn
-    }
+ASM_FUNC void FixTransitionHook() {
+    ASM_PUSH(ebx);
+    ASM_CALL(FixTransition);
+    ASM_ESP_ADD( 1 );
+    ASM_RET(0);
 }
+
 void ALO_GrowTree_Init()
 {
     //WriteCall((void*)0x0547F47, nullsub_1);

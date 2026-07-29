@@ -57,18 +57,15 @@ void __cdecl sub_550620(task* a1)
 		a1->exec = DestroyTask;
 	}
 }
-static void __declspec(naked) sub_550620Hook()
-{
-	__asm
-	{
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call sub_550620
+static void ASM_FUNC sub_550620Hook() {
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_550620);
+
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 void __cdecl EggChao_ALO_Delete(task* a1)
@@ -76,19 +73,17 @@ void __cdecl EggChao_ALO_Delete(task* a1)
 	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
 		ALW_CancelEntry(a1);
 }
-static void __declspec(naked) EggChao_ALO_Delete_Hook()
-{
-	__asm
-	{
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call EggChao_ALO_Delete
+static void ASM_FUNC EggChao_ALO_Delete_Hook() {
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (EggChao_ALO_Delete);
+
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
+
 void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_PARAM_GC* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
 	GET_CWEPARAM(chaoData)->ForceReincarnate = false;
@@ -115,20 +110,17 @@ void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
 	else
 		SetMotionLink(a1, a2);
 }
-static void __declspec(naked) EggChaoCrawlHook()
-{
-	__asm
-	{
-		push edx // a2
-		push eax // result
 
-		// Call your __cdecl function here:
-		call EggChaoCrawl
+static void ASM_FUNC EggChaoCrawlHook() {
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(eax); // result
 
-		pop eax // result
-		pop edx // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (EggChaoCrawl);
+
+	ASM_POP(eax); // result
+	ASM_POP(edx); // a2
+	ASM_RET(0);
 }
 
 void __cdecl EggChao_KeepOrDie(task* a1)
@@ -182,20 +174,17 @@ void CreateMayuField(task* a1, char a2)
 		break;
 	}
 }
-static void __declspec(naked) CreateMayuHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call CreateMayuField
+static void ASM_FUNC CreateMayuHook() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
 
-		add esp, 4 // a1<eax> is also used for return value
-		add esp, 4 // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (CreateMayuField);
+
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 void ALBHV_Life_Init() {

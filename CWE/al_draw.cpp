@@ -760,15 +760,12 @@ void __cdecl DrawEggChao(task* tp)
 	njPopMatrixEx();
 }
 const int loc_55016E = 0x55016E;
-static void __declspec(naked) DrawEggChaoHook()
+static void ASM_FUNC DrawEggChaoHook()
 {
-	__asm
-	{
-		push ebx
-		call DrawEggChao
-		add    esp, 4
-		jmp loc_55016E
-	}
+	ASM_PUSH(ebx);
+	ASM_CALL(DrawEggChao);
+	ASM_ESP_ADD(1);
+	ASM_JUMP(loc_55016E);
 }
 
 ASM_FUNC void ColorEggModel(NJS_CNK_MODEL* a1, int a2) {

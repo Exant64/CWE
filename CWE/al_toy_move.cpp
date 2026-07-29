@@ -197,7 +197,7 @@ MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
 
 	data2 = (MOVE_WORK*)syMalloc(0x26C + sizeof(AL_TOY_MOVE), "..\\..\\src\\move.c", 64);
 	memset(data2, 0, 0x26C + sizeof(AL_TOY_MOVE));
-	
+
 	obj->mwp = (motionwk*)data2;                   // different offset than SADX
 
 	data2->Top = 3.0f;
@@ -263,18 +263,14 @@ void __cdecl AddToColliListToy(task* a1)
 	CCL_Entry(a1);
 }
 
-static void __declspec(naked) AddToCollisionListHook()
-{
-	__asm
-	{
-		push esi // a1
+static void ASM_FUNC AddToCollisionListHook() {
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call AddToColliListToy
+	// Call your __cdecl function here:
+	ASM_CALL (AddToColliListToy);
 
-		pop esi // a1
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 CCL_INFO ALO_Horse_collision = { '\0', '\0', 'w', '\f', 0u, {  0,  1.2f,  0 }, 2, 0, 0, 0, 0, 0, 0 };
@@ -289,18 +285,14 @@ void __cdecl AL_TV_Init(task* a1)
 	GET_MOVE_WORK(a1)->Offset.y = 1.75f;
 }
 
-static void __declspec(naked) AL_TV_Init_Hook()
-{
-	__asm
-	{
-		push eax // obj
+static void ASM_FUNC AL_TV_Init_Hook() {
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_TV_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_TV_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl AL_Toy_Update(task* a1)
@@ -316,18 +308,14 @@ void __cdecl AL_Toy_Update(task* a1)
 	CCL_Entry(a1);
 }
 
-static void __declspec(naked) AL_Toy_UpdateHook()
-{
-	__asm
-	{
-		push esi // a1
+static void ASM_FUNC AL_Toy_UpdateHook() {
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call AL_Toy_Update
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Toy_Update);
 
-		pop esi // a1
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 void __cdecl AL_Box_Init(task* a1)
@@ -336,18 +324,14 @@ void __cdecl AL_Box_Init(task* a1)
 	//a1->EntityData2->field_AC = 1.75f;
 }
 
-static void __declspec(naked) AL_Box_Init_Hook()
-{
-	__asm
-	{
-		push eax // obj
+static void ASM_FUNC AL_Box_Init_Hook() {
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_Box_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Box_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl AL_Radio_Init(task* a1)
@@ -356,18 +340,15 @@ void __cdecl AL_Radio_Init(task* a1)
 	GET_MOVE_WORK(a1)->Offset.y = 1.6f;
 }
 
-static void __declspec(naked) AL_Radio_Init_Hook()
+static void ASM_FUNC AL_Radio_Init_Hook()
 {
-	__asm
-	{
-		push eax // obj
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_Radio_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Radio_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl AL_Horse_Init(task* a1)
@@ -376,18 +357,14 @@ void __cdecl AL_Horse_Init(task* a1)
 	//a1->EntityData2->field_AC = 1.75f;
 }
 
-static void __declspec(naked) AL_Horse_Init_Hook()
-{
-	__asm
-	{
-		push eax // obj
+static void ASM_FUNC AL_Horse_Init_Hook() {
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_Horse_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Horse_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl ALO_BoxExecutor_Main_(task* a1)

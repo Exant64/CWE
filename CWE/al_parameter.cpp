@@ -269,17 +269,14 @@ static void AL_CalcParameter_r(task* tp) {
 	}
 }
 
-static void __declspec(naked) AL_CalcParameter_t()
-{
-	__asm {
-		push esi // a1
+static void ASM_FUNC AL_CalcParameter_t() {
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcParameter_r
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcParameter_r);
 
-		pop esi // a1
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 void AL_ParameterInit() {

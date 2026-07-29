@@ -458,18 +458,15 @@ signed int __cdecl AL_CheckObakeHeadAndAccessory(task* a1)
 	else
 		return 0;
 }
-static void __declspec(naked) sub_5691B0Hook()
-{
-	__asm
-	{
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call AL_CheckObakeHeadAndAccessory
+static void ASM_FUNC sub_5691B0Hook() {
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CheckObakeHeadAndAccessory);
+
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 static void AccessoryRemoveAll(task* tp) {
@@ -499,18 +496,14 @@ void __cdecl AccessoryRemove1(task* a1)
 	AccessoryRemoveAll(a1);
 }
 
-static void __declspec(naked) AccessoryRemoveHook()
-{
-	__asm
-	{
-		push eax // a1
+static void ASM_FUNC AccessoryRemoveHook() {
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call AccessoryRemove1
+	// Call your __cdecl function here:
+	ASM_CALL (AccessoryRemove1);
 
-		pop eax // a1
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 void __cdecl AccessoryRemove2(task* tp, int a2, int a3) {
@@ -518,18 +511,14 @@ void __cdecl AccessoryRemove2(task* tp, int a2, int a3) {
 	AccessoryRemoveAll(tp);
 }
 
-static void __declspec(naked) AccessoryRemove2Hook()
-{
-	__asm
-	{
-		push edi // a1
+static void ASM_FUNC AccessoryRemove2Hook() {
+	ASM_PUSH(edi); // a1
 
-		// Call your __cdecl function here:
-		call AccessoryRemove2
+	// Call your __cdecl function here:
+	ASM_CALL (AccessoryRemove2);
 
-		add esp, 4 // a1
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_RET(0);
 }
 
 static void AL_Behavior_PostureFix() {
@@ -566,18 +555,15 @@ static void AL_BehaviorResetParameter_r(task* tp) {
 		work->pNaviPoints = NULL;
 	}
 }
-static void __declspec(naked) AL_BehaviorResetParameter_t()
-{
-	__asm
-	{
-		push edi // a1
 
-		// Call your __cdecl function here:
-		call AL_BehaviorResetParameter_r
+static void ASM_FUNC AL_BehaviorResetParameter_t() {
+	ASM_PUSH(edi); // a1
 
-		add esp, 4 // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_BehaviorResetParameter_r);
+
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_RET(0);
 }
 
 void AL_Behavior_Init() {

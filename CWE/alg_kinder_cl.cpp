@@ -95,20 +95,16 @@ const char* Classroom_GetMsg_Custom(char a1, int a2) {
 	return (char*)v2 + ((((v5 << 16) | v5 & 0xFF00) << 8) | ((HIWORD(v5) | v5 & 0xFF0000) >> 8));
 }
 
-static void __declspec(naked) Classroom_GetMsg_hook()
-{
-	__asm
-	{
-		push ecx // a2
-		push[esp + 08h] // a1
+static void ASM_FUNC Classroom_GetMsg_hook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(ASM_ESP(2)); // a1
 
-		// Call your __cdecl function here:
-		call Classroom_GetMsg_Custom
+	// Call your __cdecl function here:
+	ASM_CALL (Classroom_GetMsg_Custom);
 
-		add esp, 4 // a1
-		pop ecx // a2
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
 //for the dance and music lessons it just checks if its already unlocked, those don't have any "levels"
@@ -163,22 +159,18 @@ Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
 	return TRUE;
 }
 
-static void __declspec(naked) IsLessonLearned_Hook()
-{
-	__asm
-	{
-		push esi // int a3
-		push edi // a2
-		push edx // a1
+static void ASM_FUNC IsLessonLearned_Hook() {
+	ASM_PUSH(esi); // int a3
+	ASM_PUSH(edi); // a2
+	ASM_PUSH(edx); // a1
 
-		// Call your __cdecl function here:
-		call IsLessonLearned
+	// Call your __cdecl function here:
+	ASM_CALL (IsLessonLearned);
 
-		pop edx // a1
-		pop edi // a2
-		pop esi // int a3
-		retn
-	}
+	ASM_POP(edx); // a1
+	ASM_POP(edi); // a2
+	ASM_POP(esi); // int a3
+	ASM_RET(0);
 }
 
 void SetLessonLearned(task* tp, char level, int LessonKind) {
@@ -212,22 +204,18 @@ void SetLessonLearned(task* tp, char level, int LessonKind) {
 	}
 }
 
-static void __declspec(naked) SetLessonLearned_Hook()
-{
-	__asm
-	{
-		push esi // int LessonKind
-		push edi // level
-		push eax // a1
+static void ASM_FUNC SetLessonLearned_Hook() {
+	ASM_PUSH(esi); // int LessonKind
+	ASM_PUSH(edi); // level
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call SetLessonLearned
+	// Call your __cdecl function here:
+	ASM_CALL (SetLessonLearned);
 
-		pop eax // a1
-		pop edi // level
-		pop esi // int LessonKind
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_POP(edi); // level
+	ASM_POP(esi); // int LessonKind
+	ASM_RET(0);
 }
 
 extern "C" __declspec(dllexport) int LessonRerollTimer = 108000;
@@ -318,20 +306,16 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 	return pTask;
 }
 
-static void __declspec(naked) AL_KinderPMessageExec_LoadTimer()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
+static void ASM_FUNC AL_KinderPMessageExec_LoadTimer() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call AL_KinderPMessageExec_Timer
+	// Call your __cdecl function here:
+	ASM_CALL (AL_KinderPMessageExec_Timer);
 
-		add esp, 4 // a1<eax> is also used for return value
-		add esp, 4 // a2
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 extern "C" __declspec(dllexport) int LessonLookupTable_new[] =
