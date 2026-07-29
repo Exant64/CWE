@@ -2,7 +2,7 @@
 
 #include "ninja_functions.h"
 #include "al_draw.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include "alo_accessory.h"
 #include "AL_ModAPI.h"
 #include "ChaoMain.h"

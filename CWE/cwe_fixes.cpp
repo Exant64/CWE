@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include <brightfixapi.h>
 #include "al_sandhole.h"
 #include "alg_kinder_bl.h"
 #include "al_behavior/al_behavior.h"
 #include "memory.h"
 #include <asmutil.h>
+#include <BrightFix/brightfixapi.h>
 
 static void CocoonFix() {
 	SetShaderType(1);

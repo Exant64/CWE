@@ -8,7 +8,7 @@
 #include "data/omochao/omobuild_all.h"
 
 #include "al_draw.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include "Chao.h"
 #include "al_omochao_build.h"
 #include <array>

@@ -23,7 +23,7 @@
 #include "memory.h"
 #include "cwe_api.h"
 #include <span>
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 
 #include "renderfix.h"
 #include <al_daynight_rain.h>

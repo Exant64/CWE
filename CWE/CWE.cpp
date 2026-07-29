@@ -29,7 +29,7 @@
 #include <ctime>  
 #include "al_piano.h"
 
-#include "brightfixapi.h"
+#include "BrightFix/brightfixapi.h"
 #include <cassert>
 #include "al_butterfly.h"
 #include "al_sandhole.h"

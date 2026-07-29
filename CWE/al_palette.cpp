@@ -6,7 +6,7 @@
 
 #include "Trampoline.h"
 #include "PaletteFix.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include <al_draw.h>
 
 #include "ninja_functions.h"

@@ -6,7 +6,7 @@
 #include "Chao.h"
 #include "al_sandhole.h"
 #include "ChaoMain.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include "al_daynight.h"
 #include "al_save.h"
 #include "al_draw.h"
