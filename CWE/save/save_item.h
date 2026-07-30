@@ -42,7 +42,7 @@ struct ItemSaveInfoBase {
 	NJS_POINT3 Position;
 	Angle Angle;
 
-	virtual Sint8 GetCategory() const = NULL;
+	virtual Sint8 GetCategory() const = 0;
 
 	virtual void Save(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) const {
 		if (IndexID == -1) return;

@@ -35,7 +35,7 @@ enum eAL_ART {
 //i think this might be shifting the rest of the lessons up, filling in the empty spaces: 00586F2E
 
 #pragma pack(push, 8)
-struct __declspec(align(2)) KinWhole
+struct ALIGN(2) KinWhole
 {
 	__int16 a;
 	__int16 b;
@@ -358,7 +358,7 @@ extern "C" __declspec(dllexport) int LessonLookupTable_new[] =
 DataArray(int, LessonTable_orig, 0x011D2DC8, 21);
 
 #pragma pack(push, 8)
-struct __declspec(align(16)) ClassroomData
+struct ALIGN(16) ClassroomData
 {
 	char byte0;
 	char field_1;
@@ -386,18 +386,18 @@ static char LessonTableHack() {
 void alg_kinder_cl_Init() {
 	//nasty lessontable lookup hack, null out everything till table lookup instruction
 	WriteData<52>((char*)0x005860F8, (char)0x90);
-	WriteCall((void*)0x005860F8, LessonTableHack);
+	WriteCall((void*)0x005860F8, (void*)LessonTableHack);
 
 	//fixing "lesson already learned" text
 	WriteData((char*)0x00586723, (char)19);
 
-	WriteJump((void*)0x00585E00, IsLessonLearned_Hook);
-	WriteJump((void*)0x00585EC0, SetLessonLearned_Hook);
+	WriteJump((void*)0x00585E00, (void*)IsLessonLearned_Hook);
+	WriteJump((void*)0x00585EC0, (void*)SetLessonLearned_Hook);
 
-	WriteJump((void*)0x00584B50, Classroom_GetMsg_hook);
+	WriteJump((void*)0x00584B50, (void*)Classroom_GetMsg_hook);
 
 	if (gConfigVal.ClassroomTimerDisplay) {
-		WriteCall((void*)0x005861BF, AL_KinderPMessageExec_LoadTimer);
-		WriteCall((void*)0x00588485, AL_KinderPMessageExec_LoadTimer);
+		WriteCall((void*)0x005861BF, (void*)AL_KinderPMessageExec_LoadTimer);
+		WriteCall((void*)0x00588485, (void*)AL_KinderPMessageExec_LoadTimer);
 	}
 }

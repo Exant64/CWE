@@ -1,6 +1,5 @@
 #include <stdafx.h>
 #include <math.h>
-#include <corecrt_math_defines.h>
 
 #include "al_tween_types.h"
 
@@ -8,15 +7,15 @@
 // simultaneously they are also ported from http://robertpenner.com/easing/
 
 static float SineEaseIn(float t, float b, float c, float d) {
-	return -c * cos(t / d * (M_PI / 2)) + c + b;
+	return -c * cos(t / d * (NJD_PI / 2)) + c + b;
 }
 
 static float SineEaseOut(float t, float b, float c, float d) {
-	return c * sin(t / d * (M_PI / 2)) + b;
+	return c * sin(t / d * (NJD_PI / 2)) + b;
 }
 
 static float SineEaseInOut(float t, float b, float c, float d) {
-	return -c / 2 * (cos(M_PI * t / d) - 1) + b;
+	return -c / 2 * (cos(NJD_PI * t / d) - 1) + b;
 }
 
 static float CubicEaseIn(float t, float b, float c, float d) {
@@ -89,7 +88,7 @@ static float ElasticEaseIn(float t, float b, float c, float d) {
 	float a = c;
 	float s = p / 4;
 	float postFix = a * pow(2, 10 * (t -= 1)); // this is a fix, again, with post-increment operators
-	return -(postFix * sin((t * d - s) * (2 * M_PI) / p)) + b;
+	return -(postFix * sin((t * d - s) * (2 * NJD_PI) / p)) + b;
 }
 
 float ElasticEaseOut(float t, float b, float c, float d) {
@@ -97,7 +96,7 @@ float ElasticEaseOut(float t, float b, float c, float d) {
 	float p = d * .3f;
 	float a = c;
 	float s = p / 4;
-	return max(0,(a * pow(2, -10 * t) * sin((t * d - s) * (2 * M_PI) / p) + c + b));
+	return NJM_MAX(0.f, (a * powf(2, -10 * t) * sinf((t * d - s) * (2 * NJD_PI) / p) + c + b));
 }
 
 float ElasticEaseInOut(float t, float b, float c, float d) {
@@ -108,10 +107,10 @@ float ElasticEaseInOut(float t, float b, float c, float d) {
 
 	if (t < 1) {
 		float postFix = a * pow(2, 10 * (t -= 1)); // postIncrement is evil
-		return -.5f * (postFix * sin((t * d - s) * (2 * M_PI) / p)) + b;
+		return -.5f * (postFix * sin((t * d - s) * (2 * NJD_PI) / p)) + b;
 	}
 	float postFix = a * pow(2, -10 * (t -= 1)); // postIncrement is evil
-	return postFix * sin((t * d - s) * (2 * M_PI) / p) * .5f + c + b;
+	return postFix * sin((t * d - s) * (2 * NJD_PI) / p) * .5f + c + b;
 }
 
 TweenInterpolation TweenInterpolationMethods[INTERP_TYPE_COUNT][EASE_TYPE_COUNT] = {

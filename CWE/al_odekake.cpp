@@ -201,7 +201,7 @@ void AL_Odekake_Update() {
 void AL_Odekake_Init()
 {
 	//name guest check
-	//WriteCall((void*)0x00583B2F, sub_582F60Hook);
+	//WriteCall((void*)0x00583B2F, (void*)sub_582F60Hook);
 
 	// this kills... something? in ChaoSelectMenuManager?? im assuming some weird patch related to the move menu
 	WriteData<2>((char*)0x0055426D, (char)0x90);
@@ -211,7 +211,7 @@ void AL_Odekake_Init()
 	WriteData((int*)0x005541EE, (int)BTN_B); 
 
 	// fixes id on bar (goodbye bar needs to use "CurrStage" instead of baked in "1") 
-	WriteCall((void*)0x05A6F8E, GoodbyeBar);
+	WriteCall((void*)0x05A6F8E, (void*)GoodbyeBar);
 
 	odekakeMenuEntries.clear();
 	//if(cweSaveFile.transporterFlag & eTRANSPORTER::NAME)
@@ -242,8 +242,8 @@ void AL_Odekake_Init()
 	WriteData((char*)0x01314165, (char)0x45);
 
 	//obviously hook the menumaster
-	WriteJump((void*)0x57E5F0, AL_OdekakeMenuMaster_);
+	WriteJump((void*)0x57E5F0, (void*)AL_OdekakeMenuMaster_);
 
 	//kill the "select/confirm/back" drawing for every background tile, ported to a separate object (al_ode_guide)
-	WriteCall((void*)0x005A7771, nullsub_1);
+	WriteCall((void*)0x005A7771, (void*)nullsub_1);
 }

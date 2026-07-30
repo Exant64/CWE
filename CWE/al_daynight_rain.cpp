@@ -35,7 +35,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 	}
 
 	// slightly change angle overtime
-	work->angle = lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
+	work->angle = std::lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
 
 	if (work->timer++ >= work->timerLimit) {
 		DestroyTask(tp);
@@ -182,9 +182,9 @@ static void AL_DayNightRainDisplayer(task* tp) {
 		const float sclVar = drop.scale / 100.f;
 		const Uint8 alpha = Uint8(0xFF * (0.85f + sclVar * 0.25f));
 
-		const float progressX = lerp(drop.startPos.x + angOffsetX * fallRadius, drop.startPos.x, drop.progress);
-		const float progressY = lerp(drop.startPos.y, drop.collisionY, drop.progress);
-		const float progressZ = lerp(drop.startPos.z + angOffsetZ * fallRadius, drop.startPos.z, drop.progress);
+		const float progressX = std::lerp(drop.startPos.x + angOffsetX * fallRadius, drop.startPos.x, drop.progress);
+		const float progressY = std::lerp(drop.startPos.y, drop.collisionY, drop.progress);
+		const float progressZ = std::lerp(drop.startPos.z + angOffsetZ * fallRadius, drop.startPos.z, drop.progress);
 
 		if (dropCount > 0) {
 			if ((dropCount % 2) == 1) {

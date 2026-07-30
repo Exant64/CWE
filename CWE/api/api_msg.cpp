@@ -158,11 +158,11 @@ void AL_ModAPI_Msg_Init() {
 	LoadMsgFileIntoVec("MsgAlKinderFoName", MsgFoName);
 
 	//load msgalitem custom
-	WriteCall((void*)0x0058B71C, GenerateMsgItemBuffer);
+	WriteCall((void*)0x0058B71C, (void*)GenerateMsgItemBuffer);
 	WriteData<2>((char*)0x0058B534, (char)0x90); //kill dealloc
 	WriteData<6>((char*)0x0058B525, (char)0x90);
 
-	WriteCall((void*)0x005835B6, GenerateMsgFoNameBuffer);
+	WriteCall((void*)0x005835B6, (void*)GenerateMsgFoNameBuffer);
 	WriteData<2>((char*)0x00583463, (char)0x90);
 	WriteData<6>((char*)0x00583459, (char)0x90);
 }

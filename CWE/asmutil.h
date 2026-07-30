@@ -18,7 +18,7 @@
 /****** Macro Helper ****************************************************************************/
 #define ASM__GETVAL(_v)             #_v
 
-#if defined(MT_C_CLANG) || defined(MT_C_GCC) /* clang or gnuc                                   */
+#ifndef _MSC_VER
 
 /****** Func Tag ********************************************************************************/
 #define ASM_FUNC                    __attribute__((naked))
@@ -43,15 +43,17 @@
 #define ASM_ESP_SUB(_n)             __asm volatile ("sub esp, 4*(" #_n ")")
 
 /****** Jump ************************************************************************************/
-#define ASM_CALL(_t)                __asm volatile ("call " ASM__GETVAL(_t))
-#define ASM_JUMP(_t)                __asm volatile ("jmp "  ASM__GETVAL(_t))
+#define ASM_CALL(_t)                __asm volatile ("call %P0" : : "i" (_t))
+#define ASM_JUMP(_t)                __asm volatile ("asd" : : "i" (_t))
+// #define ASM_JUMP_PTR(_t)            __asm volatile ("jmp dword ptr [%0]" : : "m" (_t))
+#define ASM_JUMP_PTR(_t)            __asm volatile ("jmp dword ptr %0" : : "m" (_t))
 #define ASM_RET(_n)                 __asm volatile ("ret "  ASM__GETVAL(_n))
 
 /****** Jump + Reg ******************************************************************************/
 #define ASM_CALL_R(_r, _t)          __asm volatile ("mov " #_r ", " ASM__GETVAL(_t) "\n\tcall " #_r)
-#define ASM_JUMP_R(_r, _t)          __asm volatile ("mov " #_r ", " ASM__GETVAL(_t) "\n\tcall " #_r)
+#define ASM_JUMP_R(_r, _t)          __asm volatile ("mov " #_r ", " ASM__GETVAL(_t) "\n\tjmp " #_r)
 
-#elif 1                                      
+#else                                      
 
 #pragma warning( disable : 4100 )   /* 'x': unreferenced parameter                              */
 
@@ -80,6 +82,7 @@
 /****** Jump ************************************************************************************/
 #define ASM_CALL(_t)                __asm { __asm call _t }
 #define ASM_JUMP(_t)                __asm { __asm jmp  _t }
+#define ASM_JUMP_PTR(_t)            __asm { __asm jmp dword ptr [ _t ] }
 #define ASM_RET(_n)                 __asm { __asm ret  _n }
 
 /****** Jump + Reg ******************************************************************************/

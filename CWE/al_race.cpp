@@ -233,9 +233,9 @@ void al_race_Init() {
 
 	//prize
 	WriteData((int*)0x539EA1, (int)off_1361888);
-	WriteCall((void*)0x0052C34D, nullsub_1);
-	WriteCall((void*)0x0052C663, nullsub_1);
+	WriteCall((void*)0x0052C34D, (void*)nullsub_1);
+	WriteCall((void*)0x0052C663, (void*)nullsub_1);
 	WriteData<6>((unsigned char*)0x0052C683, (unsigned char)0x90);
 	WriteData<4>((unsigned char*)0x0052C370, (unsigned char)0x90);
-	WriteCall((void*)0x052C8C3, RaceNewPrize);
+	WriteCall((void*)0x052C8C3, (void*)RaceNewPrize);
 }

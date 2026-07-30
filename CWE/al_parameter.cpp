@@ -280,7 +280,7 @@ static void ASM_FUNC AL_CalcParameter_t() {
 }
 
 void AL_ParameterInit() {
-	WriteCall((void*)0x53640F, AL_CalcParameter_t);
+	WriteCall((void*)0x53640F, (void*)AL_CalcParameter_t);
 }
 
 int AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {

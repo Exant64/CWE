@@ -42,7 +42,7 @@ ASM_FUNC void AnimateChao(int a1) {
     ASM_RET( 0 );
 }
 
-#define MASK_OBJ_STR(...) {##__VA_ARGS__, nullptr} 
+#define MASK_OBJ_STR(...) { __VA_ARGS__, nullptr} 
 const char* MaskObjObjectListDllNames[OBAKE_HEAD_PARTS_EGG][4] = {
 	{nullptr},
 	MASK_OBJ_STR("object_al_pumpkinhead_pumpkinhead"),
@@ -759,13 +759,13 @@ void __cdecl DrawEggChao(task* tp)
 	}
 	njPopMatrixEx();
 }
-const int loc_55016E = 0x55016E;
-static void ASM_FUNC DrawEggChaoHook()
-{
+
+static const void* jumpTo = (void*)0x55016E;
+static void ASM_FUNC DrawEggChaoHook() {
 	ASM_PUSH(ebx);
 	ASM_CALL(DrawEggChao);
 	ASM_ESP_ADD(1);
-	ASM_JUMP(loc_55016E);
+	ASM_JUMP_PTR(jumpTo);
 }
 
 ASM_FUNC void ColorEggModel(NJS_CNK_MODEL* a1, int a2) {
@@ -1181,11 +1181,11 @@ void AL_Draw_Init() {
 	ColorEggModel_t.Hook(ColorEggModel_r);
 
 	//draw chao
-	WriteJump((void*)0x0053FCF0, DrawChao);
+	WriteJump((void*)0x0053FCF0, (void*)DrawChao);
 
 	//draw other bodytype
-	WriteJump((void*)0x0054FFEB, DrawEggChaoHook);
-	WriteJump((void*)0x00550074, DrawEggChaoHook);
+	WriteJump((void*)0x0054FFEB, (void*)DrawEggChaoHook);
+	WriteJump((void*)0x00550074, (void*)DrawEggChaoHook);
 
 	AL_Mask_Init();
 }

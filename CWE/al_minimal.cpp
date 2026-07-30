@@ -160,7 +160,7 @@ int AnimalInfluence[] =
 
 FunctionPointer(void, sub_57BD40, (task*), 0x0057BD40);
 #pragma pack(push, 8)
-struct __declspec(align(4)) ParticleData
+struct ALIGN(4) ParticleData
 {
 	int rotY;
 	float scale;
@@ -176,7 +176,7 @@ struct __declspec(align(4)) ParticleData
 };
 #pragma pack(pop)
 #pragma pack(push, 8)
-struct __declspec(align(4)) ParticleUserData
+struct ALIGN(4) ParticleUserData
 {
 	int a1;
 	NJS_TEXLIST* texlist;
@@ -409,5 +409,5 @@ void al_minimal_Init()
 		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
-	WriteJump((void*)0x5489D0, AL_MinimalExecutor_Display_);
+	WriteJump((void*)0x5489D0, (void*)AL_MinimalExecutor_Display_);
 }

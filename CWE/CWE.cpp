@@ -145,7 +145,7 @@ extern "C"
 				NJS_VECTOR DCPos[] = { {-48, 0, 16}, {-71, 0, -27} };
 				Uint32 Rot[] = { 0x5B0, 0x4000 };
 				int index = (AL_GetStageNumber() == 2) ? 0 : 1;
-				if (GetModuleHandle(L"DCGarden"))
+				if (GetModuleHandleA("DCGarden"))
 					ALO_PianoCreate(index, &DCPos[index], Rot[index]);
 				else
 					ALO_PianoCreate(index, &GCPos[index], Rot[index]);
@@ -208,7 +208,7 @@ extern "C"
 	}
 
 	void __cdecl ALW_Control_Main_Hook(task* a1);
-	Trampoline ALW_Control_t(0x00530850, 0x00530859, ALW_Control_Main_Hook);
+	Trampoline ALW_Control_t(0x00530850, 0x00530859, (void*)ALW_Control_Main_Hook);
 	void __cdecl ALW_Control_Main_Hook(task* a1)
 	{
 		if (a1->twp->mode == 0) {
@@ -466,7 +466,7 @@ extern "C"
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
 
-		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
+		//_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
 
 		ClearAllItemSave();
 		GlobalSave_Init();
@@ -644,14 +644,14 @@ extern "C"
 			___OutputDebugString("Load UnusedToys");
 
 			//unused rattles
-			WriteJump((void*)0x55DDE0, ALBHV_Garagara);
+			WriteJump((void*)0x55DDE0, (void*)ALBHV_Garagara);
 		}
-		WriteCall((void*)0x0054C9B3, CreateToyHook);
-		WriteCall((void*)0x0054D395, CreateToyHook);
-		WriteCall((void*)0x0054B8B5, CreateToyHook);
+		WriteCall((void*)0x0054C9B3, (void*)CreateToyHook);
+		WriteCall((void*)0x0054D395, (void*)CreateToyHook);
+		WriteCall((void*)0x0054B8B5, (void*)CreateToyHook);
 
 		if (config->getBool("Cheat", "CheatBlackMarket", false))
-			WriteJump((void*)0x058C027, BlackMarketDebugHook);
+			WriteJump((void*)0x058C027, (void*)BlackMarketDebugHook);
 
 		//shiny jewel colors array
 		WriteData((int*)0x0055E8DC, (int)ShinyJewelColors);

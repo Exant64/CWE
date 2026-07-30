@@ -11,60 +11,10 @@
 #include "al_intention.h"
 #include "albhv.h"
 
-struct FRUIT_INFO
-{
-	float growth;
-	float AimGrowth;
-	int SwingCounter;
-	NJS_POINT3 pos;
-	int angx;
-	int angy;
-};
-
-#pragma pack(push, 8)
-struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
-{
-	taskwk entityData;
-	char kind;
-	char state;
-	__int16 field_32;
-	float growth;
-	int life;
-	int water;
-	int pos_num;
-	FRUIT_INFO fruit[3];
-	float scale;
-	float ScaleSpd;
-	int ThirstyFlag;
-	int WaterFlag;
-	int LeafRotAng;
-	float LeafWidth;
-	int LeafDispNum;
-	int FruitRotAng;
-	float FruitWidth;
-	int FruitDispNum;
-	int SwingFlag;
-	int SwingCountFlag;
-	float SwingDist;
-	int RollAngle;
-	int TouchAngle;
-	int ChaoSwingPhase;
-	int RollPhase;
-	int garden;
-	void* pMySaveInfo;
-	NJS_TEXLIST* texlist;
-	NJS_CNK_OBJECT* pLocalObject;
-	NJS_CNK_OBJECT* pShadowObject;
-	NJS_CNK_OBJECT* pCopyObject;
-};
-#pragma pack(pop)
-
-
 //FunctionPointer(al_perception_link*, AL_GetFoundTree, (task* a1), 0x073E660);
 int ALBHV_TreeShake(task* a1)
 {
 	chaowk* wk = GET_CHAOWK(a1);
-	ALO_GrowTreeExecutor_Data* treedata = nullptr;
 
 	switch (wk->Behavior.Mode)
 	{

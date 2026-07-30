@@ -14,6 +14,7 @@
 #include "external/Recast/Include/RecastAlloc.h"
 
 #include <assert.h>
+#include <algorithm>
 
 #include <njdef.h>
 #include <data/misc/navsys_colli_capsule_shaft.nja>

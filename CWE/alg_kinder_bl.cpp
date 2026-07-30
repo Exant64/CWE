@@ -53,7 +53,7 @@ const std::array<int, MarketTabCount> MarketTabIndices =
 #define TabCategory MarketTabIndices[a1->currentTab]
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ALK_WINDOW_TABLE
+struct ALIGN(4) ALK_WINDOW_TABLE
 {
 	float posX;
 	float posY;
@@ -181,7 +181,7 @@ struct SSet100
 {
 	unsigned int flag[8];
 };
-struct __declspec(align(2)) SSellEgg
+struct ALIGN(2) SSellEgg
 {
 	__int16 emblem0;
 	__int16 emblem1;
@@ -226,7 +226,7 @@ static void FBuyListUniformDistributionUpdate(Sint8 category, const size_t minIt
 	std::uniform_int_distribution<int> distr(0, totalObtainableItem - 1);
 
 	const size_t randomItemCount = minItems + size_t(njRandom() * (maxItems - minItems - 0.1f));
-	const size_t itemCount = min(totalObtainableItem, randomItemCount);
+	const size_t itemCount = NJM_MIN(totalObtainableItem, randomItemCount);
 	std::set<size_t> items; 
 
 	while (items.size() < itemCount) {
@@ -308,7 +308,7 @@ static void FBuyListUpdateAccessory() {
 		allAccessories[modIndex].push_back(i);
 	}
 
-	const size_t totalCount = min(BlackMarketInventorySize, size_t(6.f + njRandom() * 26.999f));
+	const size_t totalCount = NJM_MIN(size_t(BlackMarketInventorySize), size_t(6.f + njRandom() * 26.999f));
 	for(size_t i = 0; i < totalCount; ++i) {
 		if(allMods.empty()) {
 			break;
@@ -1269,12 +1269,12 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 	FBuyListItemDisp(a1);
 }
 
-const int JumpBackHere_ = 0x005897C3;
+const static void* jumpTo = (void*)0x005897C3;
 void ASM_FUNC FItemDescDispHook() {
 	ASM_PUSH(ASM_ESP(11));
 	ASM_CALL (FItemDescDisp);
 	ASM_ESP_ADD( 1 );
-	ASM_JUMP(JumpBackHere_);
+	ASM_JUMP_PTR(jumpTo);
 }
 
 //garden object count
@@ -1364,7 +1364,7 @@ ASM_FUNC void sub_5A6450(int a1, float a2) {
 }
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) SomeUI
+struct ALIGN(4) SomeUI
 {
 	float left;
 	float top;
@@ -2325,33 +2325,33 @@ void alg_kinder_bl_Init()
 	WriteData<4>((char*)0x005890AB, (char)0x90);
 
 	//draw inventory
-	WriteJump((void*)0x005341D0, DrawPurchasedItem);
+	WriteJump((void*)0x005341D0, (void*)DrawPurchasedItem);
 	WriteData((char*)0x0052AE5B, (char)0x1C); //set purchased item displayer from DisplaySub to disp_dely
 	//if cwe inventory is empty, force a black market reload
 	//also move ring display position
-	WriteCall((void*)0x0058B810, LoadRingDisplayHook);
+	WriteCall((void*)0x0058B810, (void*)LoadRingDisplayHook);
 	WriteData((float**)0x00588CAA, &ringDisplayY);
 
-	WriteJump((void*)0x00589A00, FBuyListUpdate);
-	WriteJump((void*)0x0058A210, FBuyListDisp);
-	WriteJump((void*)0x58AB40, FBuyListExec);
-	WriteJump((void*)0x58A170, sub_58A170Hook); //buylist "init", fixes starting on the correct tab and showing the correct item
+	WriteJump((void*)0x00589A00, (void*)FBuyListUpdate);
+	WriteJump((void*)0x0058A210, (void*)FBuyListDisp);
+	WriteJump((void*)0x58AB40, (void*)FBuyListExec);
+	WriteJump((void*)0x58A170, (void*)sub_58A170Hook); //buylist "init", fixes starting on the correct tab and showing the correct item
 
 	//item desc
-	WriteJump((void*)0x005891E8, FItemDescDispHook);
-	WriteJump((void*)0x52F650, AL_GetMaxItemNum_hook);
+	WriteJump((void*)0x005891E8, (void*)FItemDescDispHook);
+	WriteJump((void*)0x52F650, (void*)AL_GetMaxItemNum_hook);
 
 	//selling code
-	WriteJump((void*)0x52F470, SellHeldItem);
-	WriteCall((void*)0x0058BDF1, AlItemGetInfoHook);
-	WriteCall((void*)0x0058BE2D, FItemDescSetHook);
-	WriteCall((void*)0x0058BDEA, sub_58B120Hook);
-	WriteJump((void*)0x58B140, FSellListStartHook);
+	WriteJump((void*)0x52F470, (void*)SellHeldItem);
+	WriteCall((void*)0x0058BDF1, (void*)AlItemGetInfoHook);
+	WriteCall((void*)0x0058BE2D, (void*)FItemDescSetHook);
+	WriteCall((void*)0x0058BDEA, (void*)sub_58B120Hook);
+	WriteJump((void*)0x58B140, (void*)FSellListStartHook);
 
-	WriteCall((void*)0x005891C4, FixFontScaleHook);
+	WriteCall((void*)0x005891C4, (void*)FixFontScaleHook);
 
 	//fixing animal motion thing
-	WriteJump((void*)0x589850, sub_589850Hook);
+	WriteJump((void*)0x589850, (void*)sub_589850Hook);
 
 	//memory size for bm exec
 	WriteData((int*)0x0058BFDF, (int)(sizeof(BlackMarketData) + 4));
@@ -2363,7 +2363,7 @@ void alg_kinder_bl_Init()
 	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData<0x1B>((char*)0x0058B97B, (char)0x90);
-	WriteCall((void*)0x0058B97B, CreateMenuThemeItem);
+	WriteCall((void*)0x0058B97B, (void*)CreateMenuThemeItem);
 
 	if (gConfigVal.BlackMarketShort)
 	{
@@ -2371,27 +2371,27 @@ void alg_kinder_bl_Init()
 
 		//exit text
 		WriteJump((void*)0x0058BCD4, (void*)0x0058BD21); //text about "getting more emblems"
-		WriteCall((void*)0x0058BD23, nullsub_1);
+		WriteCall((void*)0x0058BD23, (void*)nullsub_1);
 
 		WriteData<2>((char*)0x0058BE88, (char)0x90);//kills the message box check in case 14 (exit text)
 		WriteData<6>((char*)0x0058BA06, (char)0x90); //kills the message box check in case 3 (entry text)
 
 		//i think this might be the "you cant sell this item" no reason to shorten
 		//WriteData<2>((char*)0x0058BE6E, (char)0x90);//kills the message box check in case 13 (sell text)
-		//WriteCall((void*)0x58BE39, nullsub_1);
-		//WriteCall((void*)0x58BE40, nullsub_1);
+		//WriteCall((void*)0x58BE39, (void*)nullsub_1);
+		//WriteCall((void*)0x58BE40, (void*)nullsub_1);
 
 		//"you dont have anything to sell"
-		WriteCall((void*)0x0058BD44, nullsub_1);
-		WriteCall((void*)0x0058BD57, nullsub_1);
-		WriteCall((void*)0x0058BD63, nullsub_1);
-		WriteCall((void*)0x0058BD6A, nullsub_1);
+		WriteCall((void*)0x0058BD44, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD57, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD63, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD6A, (void*)nullsub_1);
 
 		//kills the msg calls in case 0
-		WriteCall((void*)0x0058B82E, nullsub_1);
-		WriteCall((void*)0x0058B835, nullsub_1);
-		WriteCall((void*)0x0058B848, nullsub_1);
-		WriteCall((void*)0x0058B841, nullsub_1);
-		WriteCall((void*)0x0058B854, nullsub_1);
+		WriteCall((void*)0x0058B82E, (void*)nullsub_1);
+		WriteCall((void*)0x0058B835, (void*)nullsub_1);
+		WriteCall((void*)0x0058B848, (void*)nullsub_1);
+		WriteCall((void*)0x0058B841, (void*)nullsub_1);
+		WriteCall((void*)0x0058B854, (void*)nullsub_1);
 	}
 }

@@ -24,7 +24,7 @@ struct FRUIT_INFO
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
+struct ALIGN(4) ALO_GrowTreeExecutor_Data
 {
     taskwk entityData;
     char kind;
@@ -248,14 +248,14 @@ ASM_FUNC void FixTransitionHook() {
 
 void ALO_GrowTree_Init()
 {
-    //WriteCall((void*)0x0547F47, nullsub_1);
+    //WriteCall((void*)0x0547F47, (void*)nullsub_1);
     WriteData((int*)0x005482AB, (int)ALO_GrowTreeExecutor_Display_);
     
-    WriteCall((void*)0x00546CA1, FixTransitionHook);
+    WriteCall((void*)0x00546CA1, (void*)FixTransitionHook);
     WriteData<2>((char*)0x00546CA6, (char)0x90);
 
-    WriteJump((void*)0x5498E0, ALO_SeedExecutor_Display_);
-    WriteCall((Void*)0x05470CB, sub_546670Hook);
-    WriteCall((void*)0x005471D7, AL_GrowTree_CreateFruit);
-    WriteJump((void*)0x547440, sub_547440);
+    WriteJump((void*)0x5498E0, (void*)ALO_SeedExecutor_Display_);
+    WriteCall((Void*)0x05470CB, (void*)sub_546670Hook);
+    WriteCall((void*)0x005471D7, (void*)AL_GrowTree_CreateFruit);
+    WriteJump((void*)0x547440, (void*)sub_547440);
 }

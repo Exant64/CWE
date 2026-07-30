@@ -27,21 +27,33 @@ signed int ALBHV_RideFloat(task* a1);
 signed int __cdecl ALBHV_GoToHorse(task* a1);
 int ALBHV_Capture(task* tp);
 
-#define ALBHV_Think ((BHV_FUNC)0x00565BE0)
-#define ALBHV_GoToAim ((BHV_FUNC)0x56B560)
-#define ALBHV_TurnToAim ((BHV_FUNC)0x56B500)
-#define ALBHV_TurnToLockOn ((BHV_FUNC)0x56B6C0)
-#define ALBHV_GoToLockOn ((BHV_FUNC)0x56BA80)
-#define ALBHV_PickUpLockOn ((BHV_FUNC)0x5613C0)
-#define ALBHV_Cry ((BHV_FUNC)0x59FCA0)
-#define ALBHV_HoldThink ((BHV_FUNC)0x569340)
-#define ALBHV_Notice ((BHV_FUNC)0x56B480)
-#define ALBHV_Touch ((BHV_FUNC)0x56BBA0)
-#define ALBHV_ListenMusic ((BHV_FUNC)0x0059E710)
+#define ALBHV_GoToLockOn_p 0x56BA80
+#define ALBHV_PickUpLockOn_p 0x56BA80
+#define ALBHV_Notice_p 0x56B480
+#define ALBHV_Touch_p 0x56BBA0
+#define ALBHV_GoToAim_p 0x56B560
+#define ALBHV_TurnToAim_p 0x56B500
+#define ALBHV_TurnToLockOn_p 0x56B6C0
 
-#define ALBHV_RideHorse ((BHV_FUNC)0x598F40)
-#define ALBHV_WatchTV ((BHV_FUNC)0x598890)
-#define ALBHV_ListenRadicase ((BHV_FUNC)0x598B90)
+#define ALBHV_RideHorse_p 0x598F40
+#define ALBHV_WatchTV_p 0x598890
+#define ALBHV_ListenRadicase_p 0x598B90
+
+#define ALBHV_Think ((BHV_FUNC)uintptr_t(0x00565BE0))
+#define ALBHV_GoToAim ((BHV_FUNC)uintptr_t(ALBHV_GoToAim_p))
+#define ALBHV_TurnToAim ((BHV_FUNC)uintptr_t(ALBHV_TurnToAim_p))
+#define ALBHV_TurnToLockOn ((BHV_FUNC)uintptr_t(ALBHV_TurnToLockOn_p))
+#define ALBHV_GoToLockOn ((BHV_FUNC)uintptr_t(ALBHV_GoToLockOn_p))
+#define ALBHV_PickUpLockOn ((BHV_FUNC)uintptr_t(0x5613C0))
+#define ALBHV_Cry ((BHV_FUNC)uintptr_t(0x59FCA0))
+#define ALBHV_HoldThink ((BHV_FUNC)uintptr_t(0x569340))
+#define ALBHV_Notice ((BHV_FUNC)uintptr_t(ALBHV_Notice_p))
+#define ALBHV_Touch ((BHV_FUNC)uintptr_t(ALBHV_Touch_p))
+#define ALBHV_ListenMusic ((BHV_FUNC)uintptr_t(0x0059E710))
+
+#define ALBHV_RideHorse ((BHV_FUNC)uintptr_t(ALBHV_RideHorse_p))
+#define ALBHV_WatchTV ((BHV_FUNC)uintptr_t(ALBHV_WatchTV_p))
+#define ALBHV_ListenRadicase ((BHV_FUNC)uintptr_t(ALBHV_ListenRadicase_p))
 
 template <BHV_FUNC bhv>
 int __cdecl ALBHV_ToyMoveCheck(task* a1)
@@ -49,4 +61,12 @@ int __cdecl ALBHV_ToyMoveCheck(task* a1)
 	if (ALW_LockOnPickedUp(a1))
 		return 3;
 	return bhv(a1);
+}
+
+template <uint32_t bhv>
+int __cdecl ALBHV_ToyMoveCheck(task* a1)
+{
+	if (ALW_LockOnPickedUp(a1))
+		return 3;
+	return BHV_FUNC(bhv)(a1);
 }

@@ -332,7 +332,7 @@ static void AL_CreateHoldingItem() {
 				v6 = ALO_SpecialCreate(v1->kind, &a2, playertwp[0]->ang.y, &a4, v1);
 				break;
 			default:
-				throw std::exception("CWE: holding incorrect item");
+				throw std::exception();
 				return;
 			}
 
@@ -540,14 +540,14 @@ static void AL_PackageItemSaveInfo_Hook() {
 void AL_GardenInfo_Init() {
 	// we hook the fruit state saving function call to package our own stuff too
 	// code is super ugly because i used the other save functions decompiled as a base
-	WriteCall((void*)0x0052F09F, AL_PackageItemSaveInfo_Hook);
+	WriteCall((void*)0x0052F09F, (void*)AL_PackageItemSaveInfo_Hook);
 
 	//fixed hat/accessory/special slot problem
 	DataArray(int, dword_8AB838, 0x8AB838, 1);
 	dword_8AB838[ALW_CATEGORY_MASK] = 64;
 
-	WriteJump((void*)0x548F40, AL_MinimalCreateManagerExecutor_New);
-	WriteCall((void*)0x0052EBD8, AL_SetObjectOnTheGarden_Hook);
-	WriteJump((void*)0x52E920, AL_SetItemOnTheGarden);
-	WriteJump((void*)0x52F2A0, AL_CreateHoldingItem);
+	WriteJump((void*)0x548F40, (void*)AL_MinimalCreateManagerExecutor_New);
+	WriteCall((void*)0x0052EBD8, (void*)AL_SetObjectOnTheGarden_Hook);
+	WriteJump((void*)0x52E920, (void*)AL_SetItemOnTheGarden);
+	WriteJump((void*)0x52F2A0, (void*)AL_CreateHoldingItem);
 }

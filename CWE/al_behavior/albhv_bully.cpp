@@ -627,7 +627,7 @@ void AL_CalcIntentionScore_Bully(task* tp, float* pMaxScore) {
     ALW_LockOn(tp, pVictimChao);
     ALW_LockOn(pVictimChao, tp);
 
-	const int angerDecrease = max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
+	const int angerDecrease = NJM_MAX(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
 	AL_EmotionAdd(tp, EM_MD_ANGER, angerDecrease);
 
 	const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->Skill[3] - GET_CHAOPARAM(tp)->Skill[3]) > 500 || 

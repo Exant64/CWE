@@ -395,11 +395,11 @@ void __cdecl ALO_RadicaseExecutor_Display_(task* a1)
 	ALO_RadicaseDisplayer(a1);
 }
 
-template<task_exec func, int index>
+template<Uint32 func, int index>
 void __cdecl ALO_ToyDisplayHook(task* tp) {
-	tp->disp = func;
+	tp->disp = task_exec(func);
 	AL_Toy_Move_Register(tp, index);
-	func(tp);
+	(task_exec(func))(tp);
 }
 
 void __cdecl ALO_Ball_Main2_(task* a1)
@@ -509,43 +509,43 @@ void AL_Toy_Moveable_Init()
 	// Ball
 	// the ball is a special case, it already has moving so we only have to handle ALW_Entry stuff to save its position, and we don't even need to delay it
 	// because they already do it?? (some objects in SA2 do this, where the mainsub they set is actually another "sub-init" thing)
-	WriteCall((void*)0x0055D693, ALO_Ball_Hook);
+	WriteCall((void*)0x0055D693, (void*)ALO_Ball_Hook);
 
 	// Box
 	
-	WriteCall((void*)0x005808F4, nullsub_1); 
+	WriteCall((void*)0x005808F4, (void*)nullsub_1); 
 	//HookToyLoad<ALW_KIND_BOX>(ALO_BoxExecutor_Load_t);
 	//HookToyLoad<ALW_KIND_BOX, 0x00580890>();
 	WriteData((int*)0x058089E, (int)ALO_BoxExecutor_Main_); //box doesnt check cameradist, no fix needed, so we delay the mainsub not the displaysub
-	WriteCall((void*)0x005808E4, AL_Box_Init_Hook); 
-	WriteCall((void*)0x00580462, AL_Toy_UpdateHook);
-	WriteCall((void*)0x58047F, AL_Toy_UpdateHook);
-	WriteCall((void*)0x5804D5, AL_Toy_UpdateHook);
-	WriteCall((void*)0x005804E4, AL_Toy_UpdateHook);
+	WriteCall((void*)0x005808E4, (void*)AL_Box_Init_Hook); 
+	WriteCall((void*)0x00580462, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x58047F, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x5804D5, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x005804E4, (void*)AL_Toy_UpdateHook);
 
 	// TV
-	WriteCall((void*)0x0055CBF3, nullsub_1);
+	WriteCall((void*)0x0055CBF3, (void*)nullsub_1);
 	//HookToyLoad<ALW_KIND_TV, 0x0055CB90>();
 	//HookToyLoad<ALW_KIND_TV>(ALO_TVExecutor_Load_t);
 	WriteData((int*)(0x0055CC3C - 4), (int)ALO_TVExecutor_Display_);
-	WriteCall((void*)0x0055CBE2, AL_TV_Init_Hook);
-	WriteCall((void*)0x0055C719, AL_Toy_UpdateHook);
-	WriteCall((void*)0x55C99F, AL_Toy_UpdateHook);
+	WriteCall((void*)0x0055CBE2, (void*)AL_TV_Init_Hook);
+	WriteCall((void*)0x0055C719, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x55C99F, (void*)AL_Toy_UpdateHook);
 
 	// radio
-	WriteCall((void*)0x0057CD00, nullsub_1);
+	WriteCall((void*)0x0057CD00, (void*)nullsub_1);
 	//HookToyLoad<ALW_KIND_RADICASE, 0x0057CCA0>();
 	//HookToyLoad<ALW_KIND_RADICASE>(ALO_RadicaseExecutor_Load_t);
-	WriteData((int*)(0x0057CD2B - 4), (int)ALO_ToyDisplayHook<(task_exec)0x57CA80, 3>);
-	WriteCall((void*)0x0057CCF2, AL_Radio_Init_Hook);
-	WriteCall((void*)0x0057C9F5, AL_Toy_UpdateHook);
-	WriteCall((void*)0x0057CA58, AL_Toy_UpdateHook);
+	WriteData((int*)(0x0057CD2B - 4), (int)ALO_ToyDisplayHook<0x57CA80, 3>);
+	WriteCall((void*)0x0057CCF2, (void*)AL_Radio_Init_Hook);
+	WriteCall((void*)0x0057C9F5, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x0057CA58, (void*)AL_Toy_UpdateHook);
 
 	// horse
-	WriteCall((void*)0x00580F19, nullsub_1);
+	WriteCall((void*)0x00580F19, (void*)nullsub_1);
 	WriteData((int*)(0x00580F09 - 4), (int)ALO_HorseExecutor_Display_);
 	WriteData<7>((char*)0x00580EDF, (char)0x90);
-	WriteCall((void*)0x00580ECC, AL_Horse_Init);
-	WriteCall((void*)0x00580EEF, nullsub_1);
-	WriteCall((void*)0x00580C8F, AddToCollisionListHook);
+	WriteCall((void*)0x00580ECC, (void*)AL_Horse_Init);
+	WriteCall((void*)0x00580EEF, (void*)nullsub_1);
+	WriteCall((void*)0x00580C8F, (void*)AddToCollisionListHook);
 }

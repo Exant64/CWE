@@ -54,7 +54,7 @@ struct MENU_PORT
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(32)) ChaoSelectMenuManager_Data
+struct ALIGN(32) ChaoSelectMenuManager_Data
 {
 	int purpose;
 	float offsetx;
@@ -119,13 +119,10 @@ enum EMenuPurpose {
 };
 
 static const int ChaoSelectMenuManager_LoadPtr = 0x00554490;
-static void AL_CreateChaoSelectMenu(int a1)
-{
-	_asm
-	{
-		mov eax, a1
-		call ChaoSelectMenuManager_LoadPtr
-	}
+static ASM_FUNC void AL_CreateChaoSelectMenu(int a1) {
+	ASM_MOVE(eax, ASM_ESP(1));
+	ASM_CALL_R(edx, 0x00554490);
+	ASM_RET( 0 );
 }
 
 // creates the "saving chao file" dialog (which also saves the chao file)

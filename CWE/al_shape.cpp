@@ -137,7 +137,7 @@ static void ASM_FUNC AL_ShapeChangeType_Hook() {
 
 
 void AL_Shape_Init() {
-	WriteJump((void*)0x536550, AL_ShapeExpandElementToParam_Hook);
+	WriteJump((void*)0x536550, (void*)AL_ShapeExpandElementToParam_Hook);
 	//Custom Character Chao
-	WriteCall((void*)0x00568E10, AL_ShapeChangeType_Hook);
+	WriteCall((void*)0x00568E10, (void*)AL_ShapeChangeType_Hook);
 }

@@ -275,15 +275,15 @@ Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer)
 void AL_IntentionInit()
 {
 	//small toy intention
-	WriteJump((void*)0x55E7A0, sub_55E7A0);
+	WriteJump((void*)0x55E7A0, (void*)sub_55E7A0);
 
 	//dance
-	WriteJump((void*)0x59C6D0, AL_DecideBehaviorDance);
-	WriteJump((void*)0x0059C3D0, AL_CalcIntentionScore_JoinDanceHook);
+	WriteJump((void*)0x59C6D0, (void*)AL_DecideBehaviorDance);
+	WriteJump((void*)0x0059C3D0, (void*)AL_CalcIntentionScore_JoinDanceHook);
 
 	//new instruments
-	WriteJump((void*)0x59D410, AL_DecideBehaviorMusic_r);
-	WriteJump((void*)0x0059D0D0, AL_CalcIntentionScore_JoinMusicH);
-	WriteJump((void*)0x00599B60, AL_CalcIntentionScore_LToy_Hook);
-	WriteCall((void*)0x0562B65, AL_CalcIntentionScore_Hook);
+	WriteJump((void*)0x59D410, (void*)AL_DecideBehaviorMusic_r);
+	WriteJump((void*)0x0059D0D0, (void*)AL_CalcIntentionScore_JoinMusicH);
+	WriteJump((void*)0x00599B60, (void*)AL_CalcIntentionScore_LToy_Hook);
+	WriteCall((void*)0x0562B65, (void*)AL_CalcIntentionScore_Hook);
 }

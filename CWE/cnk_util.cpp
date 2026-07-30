@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <deque>
 #include <cnk_util.h>
+#include <algorithm>
 
 // functions borrowed from Shaddatic's SAMT, thanks shad
 size_t mtCnkVListSize(const Sint32* pVList) {

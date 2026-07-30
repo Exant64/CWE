@@ -315,7 +315,7 @@ void AL_Odekake_MainMenuBar_Init() {
 	WriteData<5>((char*)0x005AC345, (char)0x90);
 
 	// hook button creation
-	WriteCall((void*)0x005A6CFA, AL_OdekakeButtons);
+	WriteCall((void*)0x005A6CFA, (void*)AL_OdekakeButtons);
 
 	// kills first button so i can fully create my own
 	WriteData<5>((char*)0x005A6CD3, (char)0x90);

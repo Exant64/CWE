@@ -108,7 +108,7 @@ void ALO_FruitExecutor_DisplayHack(task *eax0)
 
 #define RATIO(x,y) random >= (x / 100.0f) && random <= (y / 100.0f)
 void ALO_FruitExecutor_Main_r(task* tp);
-Trampoline ALO_FruitExecutor_Main_t(0x00545E40, 0x00545E4A, ALO_FruitExecutor_Main_r);
+Trampoline ALO_FruitExecutor_Main_t(0x00545E40, 0x00545E4A, (void*)ALO_FruitExecutor_Main_r);
 void ALO_FruitExecutor_Main_r(task *tp)
 {
 	FunctionPointer(void, original, (task*), ALO_FruitExecutor_Main_t.Target());
@@ -345,6 +345,6 @@ LABEL_54:
 void ALO_Fruit_Init()
 {
 	FruitModels[ChaoFruit_MushroomAlt] = &object_02FC056C;
-	WriteJump((void*)0x545EE0, ALO_FruitExecutor_DisplayHack);
-	WriteJump((void*)0x545C20, sub_545C20);
+	WriteJump((void*)0x545EE0, (void*)ALO_FruitExecutor_DisplayHack);
+	WriteJump((void*)0x545C20, (void*)sub_545C20);
 }

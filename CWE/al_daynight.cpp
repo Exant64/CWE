@@ -250,7 +250,7 @@ public:
 		size_t sz = ftell(fp);
 
 		// rapidjson expects a buffer with size of atleast 4
-		sz = max(sz, 4);
+		sz = NJM_MAX(sz, size_t(4));
 		std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 		fseek(fp, 0, SEEK_SET);
@@ -1339,16 +1339,16 @@ static void AL_DayNightCycle_Init(task* tp) {
 
 // Lerp color for RGB only (without alpha) which we represent with an NJS_VECTOR for now
 static void LerpColor(NJS_VECTOR& out, const NJS_VECTOR& a, const NJS_VECTOR& b, float t) {
-	out.x = lerp(a.x, b.x, t);
-	out.y = lerp(a.y, b.y, t);
-	out.z = lerp(a.z, b.z, t);
+	out.x = std::lerp(a.x, b.x, t);
+	out.y = std::lerp(a.y, b.y, t);
+	out.z = std::lerp(a.z, b.z, t);
 }
 
 // Lerp color for RGB part of an NJS_ARGB
 static void LerpColor(NJS_ARGB& out, const NJS_ARGB& a, const NJS_ARGB& b, float t) {
-	out.r = lerp(a.r, b.r, t);
-	out.g = lerp(a.g, b.g, t);
-	out.b = lerp(a.b, b.b, t);
+	out.r = std::lerp(a.r, b.r, t);
+	out.g = std::lerp(a.g, b.g, t);
+	out.b = std::lerp(a.b, b.b, t);
 }
 
 // Applies the color we want to the destination vertexdata, using the source vertexdata as the base color (for chunk model)

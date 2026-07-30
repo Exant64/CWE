@@ -152,12 +152,12 @@ int ALBHV_GoToBoat(task* tp) {
 	AL_SetNextBehavior(tp, ALBHV_Notice);
 
 	if(!gConfigVal.PathfindingVanilla) {
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 	}
 	else {
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
 	}
 
 	AL_SetNextBehavior(tp, ALBHV_PickUpLockOn);

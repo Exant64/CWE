@@ -529,7 +529,7 @@ static void AL_Behavior_PostureFix() {
 	// PostureChangeStand now uses the tripping get up animation (ALM_KOKEOKE)
 
 	// PostureChangeSit is only used in garden, so we can hook it directly
-	WriteJump((void*)0x55C430, ALBHV_PostureChangeSit);
+	WriteJump((void*)0x55C430, (void*)ALBHV_PostureChangeSit);
 	
 	// PostureChangeStand is used in race too, and i don't wanna affect the timings
 	// so ill manually change all garden references to it
@@ -568,7 +568,7 @@ static void ASM_FUNC AL_BehaviorResetParameter_t() {
 
 void AL_Behavior_Init() {
 	// writecall onto existing instructions on the bottom of behaviorresetparameter
-	WriteCall((void*)0x0053D881, AL_BehaviorResetParameter_t);
+	WriteCall((void*)0x0053D881, (void*)AL_BehaviorResetParameter_t);
 	WriteData<0xB-0x6>((uint8_t*)0x0053D886, (uint8_t)0x90);
 
 	AL_Behavior_PostureFix();
@@ -577,12 +577,12 @@ void AL_Behavior_Init() {
 	ALBHV_Life_Init();
 
 	//accessories
-	WriteCall((void*)0x0053DB87, sub_5691B0Hook);
-	WriteCall((void*)0x00563DE7, AccessoryRemoveHook);
-	WriteCall((void*)0x00565F0B, AccessoryRemove2Hook);
+	WriteCall((void*)0x0053DB87, (void*)sub_5691B0Hook);
+	WriteCall((void*)0x00563DE7, (void*)AccessoryRemoveHook);
+	WriteCall((void*)0x00565F0B, (void*)AccessoryRemove2Hook);
 
 	//shovel action 
 	WriteData((int*)0x012FE9A0, (int)&ALBHV_SandHole);
 
-	WriteJump((void*)0x566DF0, ALBHV_Capture);
+	WriteJump((void*)0x566DF0, (void*)ALBHV_Capture);
 }

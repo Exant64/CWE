@@ -232,7 +232,7 @@ static void ASM_FUNC alpalSetBankDrawChaoHook() {
 }
 
 void LoadPaletteHook();
-Trampoline LoadPalette_t(0x0534350, 0x053435A, LoadPaletteHook);
+Trampoline LoadPalette_t(0x0534350, 0x053435A, (void*)LoadPaletteHook);
 void LoadPaletteHook()
 {
 	VoidFunc(original, LoadPalette_t.Target());
@@ -690,10 +690,10 @@ static void ASM_FUNC UpdateChaoPaletteHook() {
 void AL_Palette_Init()
 {
 	//explanation above function
-	WriteCall((void*)0x00540C81, alpalSetBankDrawChaoHook);
+	WriteCall((void*)0x00540C81, (void*)alpalSetBankDrawChaoHook);
 
 	//also afaik we are in control of all the calls now so this might be redundant but im keeping it for external mods ig
-	WriteJump((void*)0x534E10, alpalSetBankHook);
+	WriteJump((void*)0x534E10, (void*)alpalSetBankHook);
 
 	//argb8888 fix
 	WriteData((int*)0x05345A2, (int)48);
@@ -702,8 +702,8 @@ void AL_Palette_Init()
 	WriteData((int*)0x00534381, (int)gPaletteFilename);
 	WriteData((int*)0x00534603, (int)&gPaletteFilename[39]);
 	WriteData((int*)0x0053437C, (int)gPaletteNegative);
-	WriteCall((void*)0x0054FFBE, UpdateChaoPaletteHook);
-	WriteCall((void*)0x005A4D18, UpdateChaoPaletteHook);
-	WriteCall((void*)0x005A4D56, UpdateChaoPaletteHook);
-	WriteCall((void*)0x052ACA0, LoadPaletteHook);
+	WriteCall((void*)0x0054FFBE, (void*)UpdateChaoPaletteHook);
+	WriteCall((void*)0x005A4D18, (void*)UpdateChaoPaletteHook);
+	WriteCall((void*)0x005A4D56, (void*)UpdateChaoPaletteHook);
+	WriteCall((void*)0x052ACA0, (void*)LoadPaletteHook);
 }

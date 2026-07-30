@@ -146,5 +146,5 @@ void CWE_CCL_Init() {
     // moves ObakeHeadExecutor's CCL_Entry to use our new system
     // this means both hats and accessories 
     // (since accessories "reuse" ObakeHeadExecutor at the time of writing)
-    WriteCall((void*)0x0054A0AE, CCL_Entry_to_CWE_CCL_Entry_r);
+    WriteCall((void*)0x0054A0AE, (void*)CCL_Entry_to_CWE_CCL_Entry_r);
 }

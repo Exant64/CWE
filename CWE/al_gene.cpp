@@ -539,10 +539,10 @@ static void ASM_FUNC AL_CreateChildGeneHook() {
 
 void AL_Gene_Init() {
 
-	//WriteCall((void*)0x005506BF, InitChaoDNA_Hook); not needed for now
+	//WriteCall((void*)0x005506BF, (void*)InitChaoDNA_Hook); not needed for now
 
 	//dna mother-father name restoration
-	WriteJump((void*)0x00551D20, AL_CreateChildGeneHook);
-	WriteCall((void*)0x005504A1, AL_GeneAnalyzeCommonHook);
-	WriteCall((void*)0x0057BCDB, AL_GeneAnalyzeCommonHook);
+	WriteJump((void*)0x00551D20, (void*)AL_CreateChildGeneHook);
+	WriteCall((void*)0x005504A1, (void*)AL_GeneAnalyzeCommonHook);
+	WriteCall((void*)0x0057BCDB, (void*)AL_GeneAnalyzeCommonHook);
 }

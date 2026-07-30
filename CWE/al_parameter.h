@@ -61,6 +61,7 @@ struct CHAO_PARAM_CWE {
 	char UpgradeCounter;
 	char freeSpace3;
 	char XGradeValue;
+	char _pad[1];
 	AL_SHAPE_ELEMENT motherData;
 	AL_SHAPE_ELEMENT fatherData;
 	unsigned char IsInitializedAccessory;
@@ -89,6 +90,7 @@ struct CHAO_PARAM_CWE {
 };
 #pragma pack(pop)
 
+static_assert(sizeof(bool) == 1);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Padding1) == 0x520);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, LobbyTextureValue) == 0x597);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, fatherData) == 0x5D4);

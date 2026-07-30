@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef _MSC_VER
+#define ALIGN(x) __declspec(align(x))
+#else
+#define ALIGN(x) __attribute__((aligned(x)))
+#endif
+
 #include <stdint.h>
 #include "ninja.h"
 #include "SA2Enums.h"
@@ -204,7 +210,7 @@ struct AL_OBJECT
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AL_FACE_CTRL
+struct ALIGN(4) AL_FACE_CTRL
 {
 	int EyeTimer;
 	__int16 EyeColorNum;
@@ -235,7 +241,7 @@ struct __declspec(align(4)) AL_FACE_CTRL
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) MotionTableAction
+struct ALIGN(4) MotionTableAction
 {
 	NJS_MOTION *NJS_MOTION;
 	__int16 FlagThing1;
@@ -272,7 +278,7 @@ typedef struct {
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) MOTION_CTRL
+struct ALIGN(4) MOTION_CTRL
 {
 	short flag;
 	__int16 posture;
@@ -287,7 +293,7 @@ struct __declspec(align(4)) MOTION_CTRL
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AL_BEHAVIOR
+struct ALIGN(4) AL_BEHAVIOR
 {
 	unsigned __int16 Flag;
 	unsigned __int16 Mode;
@@ -337,7 +343,7 @@ struct ALW_ENTRY_WORK
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) al_perception_link
+struct ALIGN(4) al_perception_link
 {
 	__int16 info[4];
 	float dist;
@@ -349,7 +355,7 @@ struct __declspec(align(4)) al_perception_link
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AL_PERCEPTION_INFO
+struct ALIGN(4) AL_PERCEPTION_INFO
 {
 	int nbPerception;
 	int InSightFlag;
@@ -470,7 +476,7 @@ typedef struct {
 } TMP_PARAM;
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) chaowk
+struct ALIGN(4) chaowk
 {
 	char mode;
 	char smode;
@@ -794,7 +800,7 @@ struct AL_KNOWLEDGE_PLAYER
 	unsigned __int16 distance;
 	unsigned __int16 meet;
 };
-struct __declspec(align(4)) AL_KNOWLEDGE_CHAO
+struct ALIGN(4) AL_KNOWLEDGE_CHAO
 {
 	CHAO_ID id;
 	char like;
@@ -840,7 +846,7 @@ struct AL_KNOWLEDGE_DX
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AL_SHAPE_ELEMENT
+struct ALIGN(4) AL_SHAPE_ELEMENT
 {
 	Uint8 type;
 	Uint8 DefaultEyeNum;
@@ -1699,7 +1705,7 @@ struct RaceData
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) BlackMarketSaveData
+struct ALIGN(4) BlackMarketSaveData
 {
 	char gap0[28];
 	int dword1C;
@@ -1811,7 +1817,7 @@ struct ProbablyShaderRelated
 	int field_28;
 };
 
-struct __declspec(align(8)) struct_a2
+struct ALIGN(8) struct_a2
 {
 	void *vtbl;
 	int field_4;

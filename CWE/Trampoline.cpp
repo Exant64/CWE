@@ -16,12 +16,12 @@ Trampoline::Trampoline(intptr_t start, intptr_t end, void* func, bool destructRe
 {
 	if (start > end)
 	{
-		throw std::exception("Start address cannot exceed end address.");
+		throw std::exception();
 	}
 
 	if (end - start < 5)
 	{
-		throw std::exception("Length cannot be less than 5 bytes.");
+		throw std::exception();
 	}
 
 	originalSize = end - start;
@@ -31,7 +31,7 @@ Trampoline::Trampoline(intptr_t start, intptr_t end, void* func, bool destructRe
 
 	if (codeData == nullptr)
 	{
-		throw std::exception("VirtualAlloc failure.");
+		throw std::exception();
 	}
 
 	// memcpy() can be used instead of ReadProcessMemory

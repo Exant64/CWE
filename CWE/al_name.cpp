@@ -97,7 +97,7 @@ static Float CalculateStringSizeRatio(const char* pName, float xpos, float xsize
 // used by name menu to find the position of the cursor, it's basically CalculateLastLetterXPos but with sizeRatio calculated
 static Float CalculateStringXPos(const char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
 	Float sizeRatio = CalculateStringSizeRatio(pName, xpos, xsize, length);
-	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
+	return CalculateLastLetterXPos(xpos, xsize, pName, NJM_MIN(selectLen, length), sizeRatio);
 }
 
 void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
@@ -362,11 +362,12 @@ static void ASM_FUNC sub_536BA0_Hook() {
 	ASM_RET(0);
 }
 
+static const void* jumpTo = (void*)0x543280;
 static ASM_FUNC void KarateOpponentNameHook() {
 	ASM_ADD(edi, -0x12);
 	ASM_ADD(edi, 0x624);
 
-	ASM_JUMP(eax, 0x543280);
+	ASM_JUMP_PTR(jumpTo);
 }
 
 static FunctionHook<void, char*> NameMenuDisplayTrampoline(0x5827A0);
@@ -408,17 +409,17 @@ static void NameMenuDisplayHook(char* work) {
 
 void AL_Name_Init() {
 	//fortune teller name conversion new buffer
-	WriteCall((void*)0x005824BF, sub_57A6F0_);
-	WriteCall((void*)0x05824D9, FoNameWcConvFromCStrHook);
+	WriteCall((void*)0x005824BF, (void*)sub_57A6F0_);
+	WriteCall((void*)0x05824D9, (void*)FoNameWcConvFromCStrHook);
 
 	//name menu name draw
 	NameMenuDisplayTrampoline.Hook(NameMenuDisplayHook);
-	WriteCall((void*)0x00582EAF, nullsub_1); // kill original name sprite draw
-	WriteCall((void*)0x00582F45, nullsub_1); // kill blinking cursor bar
+	WriteCall((void*)0x00582EAF, (void*)nullsub_1); // kill original name sprite draw
+	WriteCall((void*)0x00582F45, (void*)nullsub_1); // kill blinking cursor bar
 
 	//fortune teller copy name to chao
-	WriteCall((void*)0x0058242E, FortuneTeller_SetName);
-	WriteJump((void*)0x00582730, OpenNameMenuHook);
+	WriteCall((void*)0x0058242E, (void*)FortuneTeller_SetName);
+	WriteJump((void*)0x00582730, (void*)OpenNameMenuHook);
 
 	//fortune teller allocation strings
 	WriteData((Uint8*)(0x00583C10 - 1), Uint8(0x60 + 4 + sizeof(AL_NAME) + 4));
@@ -446,26 +447,26 @@ void AL_Name_Init() {
 	WriteData((Uint8*)(0x00583134), Uint8(sizeof(AL_NAME) - 1));
 
 	//karate name fix offset
-	WriteCall((void*)0x0057904F, KarateOpponentNameHook);
+	WriteCall((void*)0x0057904F, (void*)KarateOpponentNameHook);
 
 	//dont delete name object if empty (i cant fix the check, because its name offset is a byte)
 	WriteData<2>((char*)0x005719FF, (char)0x90);
 	WriteData((char*)0x00571A01, (char)0xEB);
 
-	WriteCall((void*)0x0565986, DisplayChaoName_Hook); //stat panel
-	WriteCall((void*)0x0058832D, DisplayChaoName_Hook); //classroom
+	WriteCall((void*)0x0565986, (void*)DisplayChaoName_Hook); //stat panel
+	WriteCall((void*)0x0058832D, (void*)DisplayChaoName_Hook); //classroom
 
-	WriteCall((void*)0x00536BCF, DisplayChaoName_Hook); //multiple things (4 calls to this function)
+	WriteCall((void*)0x00536BCF, (void*)DisplayChaoName_Hook); //multiple things (4 calls to this function)
 
 	// this uses the race record shape element name and the offset hack in our hook breaks it
 	// we manually redirect the call to the original draw since it cannot exceed 7 characters anyways
-	WriteCall((void*)0x00556A26, sub_536BA0_Hook);
+	WriteCall((void*)0x00556A26, (void*)sub_536BA0_Hook);
 
-	WriteCall((void*)0x00593122, DisplayChaoName_Hook); //entrance chaodata panel
-	WriteJump((void*)0x58DA30, sub_58DA30Hook);			//health center
-	WriteCall((void*)0x00597C35, DisplayChaoName_Hook); //might be too small, cant test
-	WriteCall((void*)0x00571994, DisplayChaoName_Hook); //karate1
-	WriteCall((void*)0x005719A2, DisplayChaoName_Hook); //karate2
-	WriteCall((void*)0x00597C35, DisplayChaoName_Hook); //stamina manager
-	WriteCall((void*)0x005AD604, DisplayChaoName_Hook); //goodbye menu param window
+	WriteCall((void*)0x00593122, (void*)DisplayChaoName_Hook); //entrance chaodata panel
+	WriteJump((void*)0x58DA30, (void*)sub_58DA30Hook);			//health center
+	WriteCall((void*)0x00597C35, (void*)DisplayChaoName_Hook); //might be too small, cant test
+	WriteCall((void*)0x00571994, (void*)DisplayChaoName_Hook); //karate1
+	WriteCall((void*)0x005719A2, (void*)DisplayChaoName_Hook); //karate2
+	WriteCall((void*)0x00597C35, (void*)DisplayChaoName_Hook); //stamina manager
+	WriteCall((void*)0x005AD604, (void*)DisplayChaoName_Hook); //goodbye menu param window
 }

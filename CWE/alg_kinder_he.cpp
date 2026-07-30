@@ -152,8 +152,8 @@ bool CanChaoUpgrade(chaowk* data1)
 	}
 	return false;
 }
-void PurchaseGradesCode(chaowk* data1)
-{
+void PurchaseGradesCode(task* tp) {
+	chaowk* data1 = GET_CHAOWK(tp);
 	char buff[256];
 	
 	auto pParamCwe = GET_CWEPARAM(data1->pParamGC);
@@ -214,7 +214,7 @@ void PurchaseGradesCode(chaowk* data1)
 
 static ASM_FUNC void PurchaseGradesHook() {
 	ASM_MOVE(ecx, [ebp + 8]);
-	ASM_PUSH([ecx + 34h]);
+	ASM_PUSH(ecx);
 	ASM_CALL (PurchaseGradesCode);
 	ASM_ESP_ADD( 1 );
 	ASM_RET(0);
@@ -1151,22 +1151,22 @@ static void ASM_FUNC sub_58D9F0Hook() {
 
 void alg_kinder_he_Init() {
 	//health center
-	WriteCall((void*)0x0058E01F, nullsub_1); //killing the grade draw call
-	WriteCall((void*)0x0058E8FC, nullsub_1); //killing the age call so that i can run my own 
-	WriteCall((void*)0x0058F9A3, DisplayHealthCenterMedicalChartCall);
-	WriteJump((void*)0x58EA40, sub_58EA40Hook);
+	WriteCall((void*)0x0058E01F, (void*)nullsub_1); //killing the grade draw call
+	WriteCall((void*)0x0058E8FC, (void*)nullsub_1); //killing the age call so that i can run my own 
+	WriteCall((void*)0x0058F9A3, (void*)DisplayHealthCenterMedicalChartCall);
+	WriteJump((void*)0x58EA40, (void*)sub_58EA40Hook);
 	if (gConfigVal.DoctorChaoInfo)
 	{
-		WriteCall((void*)0x0058F6FE, DoctorMessage);
-		WriteCall((void*)0x0058F558, InitDoctorHook);
-		WriteCall((void*)0x0058E9BA, sub_58D9F0Hook);
+		WriteCall((void*)0x0058F6FE, (void*)DoctorMessage);
+		WriteCall((void*)0x0058F558, (void*)InitDoctorHook);
+		WriteCall((void*)0x0058E9BA, (void*)sub_58D9F0Hook);
 	}
 
 	//doctor item display
-	WriteJump((void*)0x58F980, sub_58F980);
+	WriteJump((void*)0x58F980, (void*)sub_58F980);
 
 	//Upgrade stats
-	WriteCall((void*)0x0058DF7E, PurchaseGradesHook);
+	WriteCall((void*)0x0058DF7E, (void*)PurchaseGradesHook);
 	WriteData((int*)0x0058EFE5, (int)0x800);
 	WriteData((int*)0x0058F040, (int)0x800);
 

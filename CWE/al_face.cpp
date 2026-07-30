@@ -268,10 +268,10 @@ void AL_FaceInit() {
 	WriteData((unsigned char*)0x008A7ABC, (unsigned char)0x12); //13-0
 	WriteData((unsigned char*)0x008A7ABE, (unsigned char)0x11); //13-1
 
-	WriteJump((void*)0x0053A4B0, AL_FaceSetEyeHook);
+	WriteJump((void*)0x0053A4B0, (void*)AL_FaceSetEyeHook);
 
 	//eye coloring
 	//game sets texture ID on eyes to 5 if half closed eyes
-	WriteCall((void*)0x0053A49F, nullsub_1);
-	WriteCall((void*)0x0053A487, nullsub_1);
+	WriteCall((void*)0x0053A49F, (void*)nullsub_1);
+	WriteCall((void*)0x0053A487, (void*)nullsub_1);
 }

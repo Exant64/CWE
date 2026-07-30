@@ -12,7 +12,7 @@
 #include <util.h>
 #include <playsound.h>
 
-struct __declspec(align(8)) MinimalData2
+struct ALIGN(8) MinimalData2
 {
 	int mode;
 	int ID;
@@ -35,7 +35,7 @@ struct AnimalInvEntry
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AnimalInv
+struct ALIGN(4) AnimalInv
 {
     AnimalInvEntry OtherEntries[10];
     AnimalInvEntry ActualEntries[10];
@@ -412,24 +412,24 @@ void Minimal_Init() {
     LoadLevelDestroy_hook.Hook(LoadLevelDestroy_r);
 
     // sound hook to make custom animals not emit chaos drive sound
-    WriteCall((void*)0x00487375, AnimalPickupSoundHook);
+    WriteCall((void*)0x00487375, (void*)AnimalPickupSoundHook);
 
     // minimalcreatemanager hooks to remove safety check
     WriteData<5>((char*)0x0054942F, (char)0x90);
-    WriteCall((void*)0x0054944E, AL_MinimalExecutor_Load_r);
+    WriteCall((void*)0x0054944E, (void*)AL_MinimalExecutor_Load_r);
 
     // second chaobox animal spawn call
-    WriteCall((void*)0x6DE711, sub_48ACD0_hook);
+    WriteCall((void*)0x6DE711, (void*)sub_48ACD0_hook);
 
     // kills the completely unseeable njDrawPolygon calls left in the animal inventory display
     // cuz it hides our stuff
-    WriteCall((void*)0x0048789B, nullsub_1);
-    WriteCall((void*)0x00487BBA, nullsub_1);
+    WriteCall((void*)0x0048789B, (void*)nullsub_1);
+    WriteCall((void*)0x00487BBA, (void*)nullsub_1);
 
     // the animal inventory display, separate hooks because different ways of retrieving the type of the animal
-    WriteCall((void*)0x00487698, njDrawTextureHookPaused);
-    WriteCall((void*)0x004879B8, njDrawTextureHook1);
-    WriteCall((void*)0x00487CE3, njDrawTextureHook2);
+    WriteCall((void*)0x00487698, (void*)njDrawTextureHookPaused);
+    WriteCall((void*)0x004879B8, (void*)njDrawTextureHook1);
+    WriteCall((void*)0x00487CE3, (void*)njDrawTextureHook2);
     
     // stage animal rendering
 	RenderAnimal.Hook(RenderAnimal_r);

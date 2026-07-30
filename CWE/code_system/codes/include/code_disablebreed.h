@@ -4,5 +4,5 @@
 PATCH_CODE(DisableBreed);
 
 void DisableBreed::Init() {
-	WriteJump((void*)0x00562880, nullsub_1);
+	WriteJump((void*)0x00562880, (void*)nullsub_1);
 }

@@ -72,7 +72,7 @@ void ChaoMain_subprgmanager_Hook()  //use this to do something on ChaoWorld load
 }
 
 void ChaoMain_Init() {	
-	WriteCall((void*)0x0052B2DA, ChaoMain_subprgmanager_Hook);
+	WriteCall((void*)0x0052B2DA, (void*)ChaoMain_subprgmanager_Hook);
 
-	WriteCall((void*)0x0052ABEE, ChaoMain_Constructor_Hook);
+	WriteCall((void*)0x0052ABEE, (void*)ChaoMain_Constructor_Hook);
 }

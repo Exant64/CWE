@@ -191,7 +191,7 @@ void Chao_ExtraAnimations(task* tp)
 		}
 	}
 
-	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGTV || AL_GetBehavior(tp) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGTV> || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGRADIO || AL_GetBehavior(tp) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGRADIO> || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGSING || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGDANCE || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGMUSIC)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGTV || AL_GetBehavior(tp) == (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_WatchTV_p> || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGRADIO || AL_GetBehavior(tp) == (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_ListenRadicase_p> || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGSING || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGDANCE || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGMUSIC)
 	{
 		if (cwe_work->AnimRandomized == 0)
 		{

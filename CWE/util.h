@@ -4,10 +4,6 @@
 
 #define clamp(val, mini,maxi) (std::clamp(val,mini,maxi))
 
-static float lerp(float a, float b, float f) {
-	return (a * (1.0f - f)) + (b * f);
-}
-
 // from https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
 static NJS_VECTOR slerp(const NJS_VECTOR& start, const NJS_VECTOR& end, float percent) {
     // Dot product - the cosine of the angle between 2 vectors.

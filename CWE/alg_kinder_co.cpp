@@ -190,12 +190,12 @@ static void ASM_FUNC EnteringRoomHook() {
 
 void alg_kinder_co_Init() {
 
-	WriteCall((void*)0x00590283, EnteringRoomHook);
+	WriteCall((void*)0x00590283, (void*)EnteringRoomHook);
 	WriteJump((void*)0x00590288, (void*)0x5902BF);
 
 	//corridor CWE credits
-	WriteCall((void*)0x00590416, KindergartenTextHook);
-	WriteCall((void*)0x0058FC31, CorridorText1Hook);
-	WriteCall((void*)0x0058FC58, CorridorText2Hook);
-	WriteCall((void*)0x0058FD34, CorridorHeaderHook);
+	WriteCall((void*)0x00590416, (void*)KindergartenTextHook);
+	WriteCall((void*)0x0058FC31, (void*)CorridorText1Hook);
+	WriteCall((void*)0x0058FC58, (void*)CorridorText2Hook);
+	WriteCall((void*)0x0058FD34, (void*)CorridorHeaderHook);
 }

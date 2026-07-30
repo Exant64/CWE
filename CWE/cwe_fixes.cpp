@@ -120,7 +120,7 @@ static void ASM_FUNC BreedPatch_asm() {
 
 DataPointer(int, BallUsable, 0x01DBE574);
 DataPointer(task*, ALO_BallPtr, 0x01DBE570);
-signed int __cdecl AL_CheckBallFix(task* tp) {
+static int __cdecl AL_CheckBallFix(task* tp) {
 	if (ALO_BallPtr == nullptr || ALO_BallPtr->twp == nullptr || !BallUsable) {
 		return 0;
 	}
@@ -175,10 +175,10 @@ void CWE_Fixes() {
 	WriteData((int*)0x0057C5EB, 4144); // Batman
 
 	//fixes ball usable crash
-	WriteJump((void*)0x0563B70, AL_CheckBallHook);
+	WriteJump((void*)0x0563B70, (void*)AL_CheckBallHook);
 	WriteData((int*)0x0055D678, (int)Ball_Delete);
 
-	WriteCall((void*)0x0059BB76, BreedPatch_asm); //breed patch
+	WriteCall((void*)0x0059BB76, (void*)BreedPatch_asm); //breed patch
 
 	//attempt at fixing fruit-pickup race condition thing
 	WriteJump((void*)0x0053052A, (void*)0x530569); //alw_turntolockon
@@ -198,7 +198,7 @@ void CWE_Fixes() {
 	WriteData((int*)0x005A74D1, (int)&vResN);
 
 	//cocoon fix
-	WriteCall((void*)0x0568AA1, CocoonFix);
+	WriteCall((void*)0x0568AA1, (void*)CocoonFix);
 
 	//tree fix
 	WriteData((char*)0x54AEE1, (char)0x6);//change offset they use from the first short to the last one

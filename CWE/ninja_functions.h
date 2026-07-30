@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include <cmath>
 
 /****** Texture Surface *************************************************************/
 typedef struct

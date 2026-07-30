@@ -128,7 +128,7 @@ namespace save {
 			size_t sz = ftell(fp);
 
 			// rapidjson expects a buffer with size of atleast 4
-			sz = max(sz, 4);
+			sz = NJM_MAX(sz, size_t(4));
 			std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 			fseek(fp, 0, SEEK_SET);
@@ -281,7 +281,7 @@ void ReadCWESaveFiles() {
 		fopen_s(&f, strBuffer, "rb");
 		if (f)
 		{
-			fread_s(ModAPI_SaveAPI[i].pointer, ModAPI_SaveAPI[i].fileSize, ModAPI_SaveAPI[i].fileSize, 1, f);
+			fread(ModAPI_SaveAPI[i].pointer, ModAPI_SaveAPI[i].fileSize, 1, f);
 			fclose(f);
 		}
 		else
@@ -382,15 +382,15 @@ void AL_SaveInit()
 	memset(&cweSaveFile, 0, sizeof(CWESaveFile));
 	for (int i = 0; i < 30; i++)
 		cweSaveFile.specialItems[i].kind = -1;
-	WriteCall((void*)0x0052DF4C, ReadCWESaveFileHook);
+	WriteCall((void*)0x0052DF4C, (void*)ReadCWESaveFileHook);
 
 	//i hook every single save file load, which also means the second memory card load for karate/transporter which fails on PC
 	//however it causes the cwe savefile to reload which can delete items obtained before saving
 	//hence this being commented out
 	//lot of explanation for something commented out
-	//WriteCall((void*)0x00532653, ReadCWESaveFileHook);
+	//WriteCall((void*)0x00532653, (void*)ReadCWESaveFileHook);
 
-	WriteCall((void*)0x52E2AC, SaveCWESaveFileHook);
-	WriteCall((void*)0x52FECB, SaveCWESaveFileHook);
-	WriteCall((void*)0x532483, SaveCWESaveFileHook);
+	WriteCall((void*)0x52E2AC, (void*)SaveCWESaveFileHook);
+	WriteCall((void*)0x52FECB, (void*)SaveCWESaveFileHook);
+	WriteCall((void*)0x532483, (void*)SaveCWESaveFileHook);
 }

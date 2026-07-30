@@ -388,7 +388,7 @@ static void AL_Deform_r(task* tp) {
 
 
 static void RaceChaoExecutor(task* tp);
-static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, RaceChaoExecutor);
+static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, (void*)RaceChaoExecutor);
 static void RaceChaoExecutor(task* tp) {
 	AL_ChaoAccessoryConversion(GET_CWEPARAM(tp));
 
@@ -520,7 +520,7 @@ void Chao_Init()
 	// new drawings
 	// note: there's an extra texture at texture 0 because that's how it is in AL_OBJECT too
 	// i used an aiai texture which managed to mislead me earlier, hence this comment lol
-	WriteCall((void*)0x005AB3D2, NewDrawingsHook);
+	WriteCall((void*)0x005AB3D2, (void*)NewDrawingsHook);
 	WriteData((int*)0x5AB091, (int)&AL_DRAWING_TEXLIST);
 	WriteData((int*)0x5AB0D8, (int)&AL_DRAWING_TEXLIST);
 
@@ -531,7 +531,7 @@ void Chao_Init()
 	AL_Shape_Init();
 
 	//minda karate chao
-	WriteCall((void*)0x0057902D, KarateCreateChao);
+	WriteCall((void*)0x0057902D, (void*)KarateCreateChao);
 
 	AL_Parts_Init();
 }

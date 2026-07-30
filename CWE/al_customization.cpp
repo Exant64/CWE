@@ -438,7 +438,7 @@ public:
 			-0.5f
 		);
 
-		float progress = (max(0, m_textProgress - 0.5f) / 0.5f);
+		float progress = (NJM_MAX(0.f, m_textProgress - 0.5f) / 0.5f);
 
 		NJS_COLOR rightSideColor = (NJS_COLOR)-1;
 		rightSideColor.argb.a = Uint8(progress * 255.f);
@@ -704,7 +704,7 @@ public:
 		// the min/max stuff is there to not draw literally all items and let them break
 		// somewhat "narrows it down" to what can render
 		// the reason for the massive range is because of the animations, though ill be honest, didnt think much about the amounts
-		for (size_t y = max(0, m_uiSelectY - 3); y < min(1 + GetItemCount() / m_horizItemCount, m_uiSelectY + 4); ++y) {
+		for (size_t y = NJM_MAX(0, m_uiSelectY - 3); y < NJM_MIN(int(1 + GetItemCount() / m_horizItemCount), m_uiSelectY + 4); ++y) {
 			for (size_t x = 0; x < m_horizItemCount; ++x) {
 				const size_t index = x + y * m_horizItemCount;
 				if (index >= GetItemCount()) break;
@@ -987,8 +987,8 @@ private:
 
 	// sets sliders based on input rgb
 	void SetHSLSliders(float r, float g, float b) {
-		const float cMax = max(max(r, g), b);
-		const float cMin = min(min(r, g), b);
+		const float cMax = NJM_MAX(NJM_MAX(r, g), b);
+		const float cMin = NJM_MIN(NJM_MIN(r, g), b);
 
 		const float delta = cMax - cMin;
 
@@ -1055,7 +1055,7 @@ private:
 		const auto slotCount = GetColorSlotCount();
 
 		// max 4 in one row
-		const auto index = m_selectionY * min(slotCount, 4) + m_selectionX;
+		const auto index = m_selectionY * NJM_MIN(slotCount, size_t(4)) + m_selectionX;
 
 		// hacky repositioning based on the row count of slots
 		const float slotPosY1 = (GetVerticalSlotCount() > 1) ? 45 : 40;
@@ -1078,14 +1078,14 @@ private:
 			float scl = m_initialColorSlotScale;
 			if (m_inSliderMenu && i == m_colorSlotIndex) {
 				// if slot was pressed
-				scl = lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
+				scl = std::lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
 			}
 			else if (m_selectionY < GetVerticalSlotCount() && index == i) {
 				// if slot is highlighted but not pressed
 				// this logic also tries to take into account the "comeback" animation when you exit the sliders
 				scl = (0.5f * njSin(m_sineAng) + 0.5f) * 0.3f + 0.7f;
 				if (i == m_colorSlotIndex) {
-					scl *= lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
+					scl *= std::lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
 				}
 			}
 
@@ -1110,7 +1110,7 @@ private:
 	}
 
 	float GetColorSlotX(size_t index) const {
-		const size_t count = min(4, GetColorSlotCount());
+		const size_t count = NJM_MIN(size_t(4), GetColorSlotCount());
 		if (index >= 4) index -= 4;
 
 		const float start = (count - 1) * -0.5f;
@@ -1120,7 +1120,7 @@ private:
 	float GetPanelWidth() const {
 		const float slotPosX1 = 0;
 		const float slotPosX2 = m_colorPanel.wd + 10;
-		return max(GetSliderLength() + 30, 100 + GetColorSlotX(min(GetColorSlotCount() - 1, 3)));
+		return NJM_MAX(GetSliderLength() + 30, 100 + GetColorSlotX(NJM_MIN(GetColorSlotCount() - 1, size_t(3))));
 	}
 
 	float GetSliderSpeed() const {
@@ -1347,7 +1347,7 @@ public:
 			SE_Call(TONE(1, 7), 0, 0, 0);
 
 			const auto slotCount = GetColorSlotCount();
-			SelectColorSlot(m_selectionY * min(slotCount, 4) + m_selectionX);
+			SelectColorSlot(m_selectionY * NJM_MIN(slotCount, size_t(4)) + m_selectionX);
 
 			// scale up selected slot
 			CreateTween(NULL, EASE_OUT, INTERP_ELASTIC, &m_colorSlotScaleAnim, 1.f, 15, NULL);
@@ -1361,8 +1361,8 @@ public:
 
 			const auto slotCount = GetColorSlotCount();
 			if (slotCount) {
-				m_selectionX = *m_colorSlotIndex % min(4, slotCount);
-				m_selectionY = *m_colorSlotIndex / min(4, slotCount);
+				m_selectionX = *m_colorSlotIndex % NJM_MIN(size_t(4), slotCount);
+				m_selectionY = *m_colorSlotIndex / NJM_MIN(size_t(4), slotCount);
 				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_colorSlotScaleAnim, 0.f, 15, NULL);
 			}
 		}

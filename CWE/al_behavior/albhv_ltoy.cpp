@@ -51,22 +51,22 @@ int ALBHV_GoToTV(task* tp) {
         ALW_LockOn(tp, pToy);
         MOV_SetAimPos(tp, &pos);
 
-        AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
+        AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
 		if(!gConfigVal.PathfindingVanilla) {
-        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+        	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 		}
 		else {
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
 		}
 
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Touch>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_WatchTV>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Touch_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_WatchTV_p>);
 
         return BHV_RET_CONTINUE;
     }
@@ -82,22 +82,22 @@ int ALBHV_GoToRadicase(task* tp) {
 		ALW_LockOn(tp, pToy);
 		MOV_SetAimPos(tp, &pos);
 
-		AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
+		AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
 		if(!gConfigVal.PathfindingVanilla) {
-        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+        	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 		}
 		else {
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
 		}
 
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Touch>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_ListenRadicase>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Touch_p>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn_p>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_ListenRadicase_p>);
 
 		return BHV_RET_CONTINUE;
 	}
@@ -113,20 +113,20 @@ int ALBHV_GoToHorse(task* tp) {
         MOV_SetAimPos(tp, &pToy->twp->pos);
         ALW_CommunicationOn(tp, pToy);
 
-        AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
+        AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
         if(!gConfigVal.PathfindingVanilla) {
-        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+        	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
 		}
 		else {
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
 		}
 
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToAim>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_RideHorse>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToAim_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_RideHorse_p>);
 
         return BHV_RET_CONTINUE;
     }

@@ -71,7 +71,7 @@ void TexturePaletteInsertInCache(Uint32* pSurface, Uint32 bank) {
 
 	int index = TexPalMap.size();
 	if (index >= 3) {
-		throw std::exception("more than 3 palletized textures per chao??? report this");
+		throw std::exception();
 	}
 
 	TexPalMap.push_back(tex);
@@ -152,6 +152,6 @@ void PaletteFix_Init(IDirect3DDevice9* device)
 		pDevice->CreateTexture(32, 32, 1, 0, D3DFMT_R5G6B5, D3DPOOL_MANAGED, &PaletteSource[i], 0);
 	}
 	
-	WriteJump((void*)0x41AB40, PaletteFix_SetPalette);
-	WriteJump((void*)0x004243F0, PaletteFix_SetPaletteShaderHook);
+	WriteJump((void*)0x41AB40, (void*)PaletteFix_SetPalette);
+	WriteJump((void*)0x004243F0, (void*)PaletteFix_SetPaletteShaderHook);
 }

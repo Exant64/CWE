@@ -6,6 +6,7 @@
 #include "api_util.h"
 #include "ModelInfo.h"
 #include <error/en.h>
+#include <algorithm>
 
 #define MEMBER(member) "\"" #member "\" "
 
@@ -46,7 +47,8 @@ static NJS_CNK_OBJECT* GenericParseChunkObj(const rapidjson::Document& document,
 		return NULL;
 	}
 
-	ModelInfo* pModel = new ModelInfo(jsonPath.parent_path() / document["model"].GetString());
+	const auto modelPath = jsonPath.parent_path() / document["model"].GetString();
+	ModelInfo* pModel = new ModelInfo(modelPath.c_str());
 	auto pObj = pModel->getmodel();
 
 	if (pModel->getformat() != ModelFormat_Chunk) {
@@ -546,7 +548,7 @@ static void ParseJSONEntry(const JSONItemEntry& entry, const JSONItemCollection&
 			size_t sz = ftell(fp);
 
 			// rapidjson expects a buffer with size of atleast 4
-			sz = max(sz, 4);
+			sz = NJM_MAX(sz, size_t(4));
 			std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 			fseek(fp, 0, SEEK_SET);
@@ -601,7 +603,7 @@ void ScanAllMods() {
 	for (size_t i = 0; i < mods->size(); ++i) {
 		const auto& mod = mods->data()[i];
 		const auto &cweFolder = std::filesystem::path(mod.Folder) / "CWE";
-		DWORD dwAttrib = GetFileAttributes(cweFolder.c_str());
+		DWORD dwAttrib = GetFileAttributesW(cweFolder.c_str());
 
 		if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
 			continue;
@@ -611,7 +613,7 @@ void ScanAllMods() {
 			auto& item = ItemEntries[j];
 			const auto& folder = cweFolder / item.DirectoryToLookFor;
 
-			DWORD dwAttrib = GetFileAttributes(folder.c_str());
+			DWORD dwAttrib = GetFileAttributesW(folder.c_str());
 
 			if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
 				continue;

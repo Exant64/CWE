@@ -254,5 +254,5 @@ void AL_Parts_Init()
 		ModAPI_MiniParts.push_back({ sadxparts_child, sadxparts_adult });
 	}
 
-	WriteJump((void*)0x566B80, sub_566B80Hook);
+	WriteJump((void*)0x566B80, (void*)sub_566B80Hook);
 }

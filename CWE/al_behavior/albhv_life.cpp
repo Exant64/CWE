@@ -189,18 +189,18 @@ static void ASM_FUNC CreateMayuHook() {
 
 void ALBHV_Life_Init() {
 	//egg chao code
-	WriteCall((void*)0x0059C2D7, EggChaoSpawnEgg);
+	WriteCall((void*)0x0059C2D7, (void*)EggChaoSpawnEgg);
 
-	WriteCall((void*)0x005685A4, EggChaoReincarnationEgg);
-	WriteCall((void*)0x00568591, EggChao_ALO_Delete_Hook);
-	WriteJump((void*)0x00550620, sub_550620Hook);
+	WriteCall((void*)0x005685A4, (void*)EggChaoReincarnationEgg);
+	WriteCall((void*)0x00568591, (void*)EggChao_ALO_Delete_Hook);
+	WriteJump((void*)0x00550620, (void*)sub_550620Hook);
 	WriteData((int*)0x00569173, (int)EggChao_KeepOrDie);
 
-	WriteCall((void*)0x005A32A8, EggChaoCrawlHook);
-	WriteJump((void*)0x0054B151, EggChaoCrawlHook);
+	WriteCall((void*)0x005A32A8, (void*)EggChaoCrawlHook);
+	WriteJump((void*)0x0054B151, (void*)EggChaoCrawlHook);
 
 	//cocoon reactions
-	WriteCall((void*)0x00568DE4, CreateMayuHook);
-	WriteCall((void*)0x00569048, CreateMayuHook);
-	WriteCall((void*)0x0569059, CreateMayuHook);
+	WriteCall((void*)0x00568DE4, (void*)CreateMayuHook);
+	WriteCall((void*)0x00569048, (void*)CreateMayuHook);
+	WriteCall((void*)0x0569059, (void*)CreateMayuHook);
 }

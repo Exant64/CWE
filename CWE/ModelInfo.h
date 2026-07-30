@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <cstdint>
+#include <list>
+#include <vector>
 #include "ninja.h"
 
 enum ModelFormat
@@ -22,7 +24,6 @@ public:
 	ModelInfo(const char* filename);
 	ModelInfo(const wchar_t* filename);
 	ModelInfo(const std::string& filename);
-	ModelInfo(const std::wstring& filename);
 	ModelInfo(std::istream& stream);
 
 	ModelFormat getformat();

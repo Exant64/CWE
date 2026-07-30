@@ -69,7 +69,7 @@ void AL_CalcIntentionScore_Rain(task* tp, float* pMaxScore) {
 
 	const auto emotion = 3000 + njRandom() * 7000.f;
 	const float calmValue = (AL_EmotionGetValue(tp, EM_PER_CALM) + 100) / 200.f;
-	float score = 0.99f * AL_CalcScoreTypeA(emotion, lerp(2500, 6000, calmValue));
+	float score = 0.99f * AL_CalcScoreTypeA(emotion, std::lerp(2500, 6000, calmValue));
 	//AL_ScoreRandomize(&score);
 
 	if (true || score > *pMaxScore) {

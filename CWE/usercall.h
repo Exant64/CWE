@@ -681,8 +681,8 @@ static constexpr void const GenerateUsercallHook(T func, int ret, intptr_t addre
 	codeData[cdoff++] = 0xC3;
 	assert(cdoff == memsz);
 	if (*(char*)address == 0xE8)
-		WriteCall((void*)address, codeData);
+		WriteCall((void*)address, (void*)codeData);
 	else
-		WriteJump((void*)address, codeData);
+		WriteJump((void*)address, (void*)codeData);
 }
 #pragma warning(pop)

@@ -102,7 +102,7 @@ void AL_ChaoSelect_UpdateChaoData(AL_ChaoSelect* chaoSelect, CHAO_SAVE_INFO* pCh
 	//we delete before so the resize doesnt cut off any existing chao
 	AL_ChaoSelect_DeleteChao(chaoSelect);
 
-	int nbPerPage = min(maxChao, chaoSelect->m_nbX * chaoSelect->m_nbY);
+	int nbPerPage = NJM_MIN(maxChao, chaoSelect->m_nbX * chaoSelect->m_nbY);
 	chaoSelect->m_chaoTasks->resize(nbPerPage);
 
 	AL_ChaoSelect_UpdateList(chaoSelect);

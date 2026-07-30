@@ -4,7 +4,7 @@
 #include "alg_kinder_bl.h"
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) HealthCenter
+struct ALIGN(4) HealthCenter
 {
 	int gap0;
 	int field_4;
@@ -38,8 +38,6 @@ DataArray(SAlgKinderOrthoQuad, HealthCenter_MenuYellow, 0x008A2150, 20);
 DataArray(SAlgKinderOrthoQuad, HealthCenter_MenuPink, 0x008A2480, 20);
 
 void __cdecl sub_58F980(task *a1);
-void DisplayHealthCenterMedicalChartCall();
-void PurchaseGradesHook();
 void __cdecl sub_58EA40(HealthCenter* a1);
 extern __int16 word_8A2754[];
 void alg_kinder_he_Init();

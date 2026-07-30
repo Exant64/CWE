@@ -544,27 +544,27 @@ extern "C"
 			MessageBoxA(0, "BrightFix", "Cant load shader!", 0);
 		}
 
-		WriteCall((void*)0x0056DC1A, BrightFixPlus_TEVModeCheck);
+		WriteCall((void*)0x0056DC1A, (void*)BrightFixPlus_TEVModeCheck);
 
-		WriteCall((void*)0x057B6C5, EggStartShaderHook); //egg
-		WriteJump((void*)0x0057B979, EggEndHook);
+		WriteCall((void*)0x057B6C5, (void*)EggStartShaderHook); //egg
+		WriteJump((void*)0x0057B979, (void*)EggEndHook);
 
-		WriteJump((void*)0x0056D2A0, EggColoringHook); //hooks eggcoloring
+		WriteJump((void*)0x0056D2A0, (void*)EggColoringHook); //hooks eggcoloring
 
-		WriteCall((void*)0x054FFA1, LoadNewShaders); //chao setshaders hook
-		WriteCall((void*)0x0055017E, CancelNewShaders);
-		WriteCall((void*)0x0056D54D, LoadNewShaders); //eggcoloring general hook
-		WriteJump((void*)0x0056D58A, CancelNewShaders);
+		WriteCall((void*)0x054FFA1, (void*)LoadNewShaders); //chao setshaders hook
+		WriteCall((void*)0x0055017E, (void*)CancelNewShaders);
+		WriteCall((void*)0x0056D54D, (void*)LoadNewShaders); //eggcoloring general hook
+		WriteJump((void*)0x0056D58A, (void*)CancelNewShaders);
 
 		//this doesnt do anything on brightfixplus since we hook it anyways for coexistence
 		WriteData((char*)0x56DC17, (char)0); //hack tevmode so brightness doesnt happen
 
 		//WriteData((char*)0x56DC71, (char)0); //reenable environment map
-		//WriteCall((void*)0x0056DC77, BrightFixPlus_UV);
-		WriteCall((void*)0x0056DC8A, sub_5A57C0Hook);
+		//WriteCall((void*)0x0056DC77, (void*)BrightFixPlus_UV);
+		WriteCall((void*)0x0056DC8A, (void*)sub_5A57C0Hook);
 
-		WriteJump((void*)0x0056D470, ChaoColoring); //chaocoloring hook
-		WriteCall((void*)0x00540402, PatchEyelidEyeIssue); //fixes the "Everything is shiny" glitch
+		WriteJump((void*)0x0056D470, (void*)ChaoColoring); //chaocoloring hook
+		WriteCall((void*)0x00540402, (void*)PatchEyelidEyeIssue); //fixes the "Everything is shiny" glitch
 	}
 }
 

@@ -4,7 +4,6 @@
 #include "../memory.h"
 
 #include <math.h>
-#include <corecrt_math_defines.h>
 
 #include "al_tween_types.h"
 #include "al_tween_interp.h"
@@ -35,18 +34,18 @@ static void TweenInterpolateValue(TweenData<T>* data, T* value, const T& origina
 }
 
 template <>
-static void TweenInterpolateValue(TweenData<float>* data, float* value, const float& original, const float& target, float time, float duration) {
+void TweenInterpolateValue(TweenData<float>* data, float* value, const float& original, const float& target, float time, float duration) {
 	*value = data->InterpolationMethod(time, original, target - original, duration);
 }
 
 template <>
-static void TweenInterpolateValue(TweenData<NJS_POINT2>* data, NJS_POINT2* value, const NJS_POINT2& original, const NJS_POINT2& target, float time, float duration) {
+void TweenInterpolateValue(TweenData<NJS_POINT2>* data, NJS_POINT2* value, const NJS_POINT2& original, const NJS_POINT2& target, float time, float duration) {
 	value->x = data->InterpolationMethod(time, original.x, target.x - original.x, duration);
 	value->y = data->InterpolationMethod(time, original.y, target.y - original.y, duration);
 }
 
 template <>
-static void TweenInterpolateValue(TweenData<NJS_POINT3>* data, NJS_POINT3* value, const NJS_POINT3& original, const NJS_POINT3& target, float time, float duration) {
+void TweenInterpolateValue(TweenData<NJS_POINT3>* data, NJS_POINT3* value, const NJS_POINT3& original, const NJS_POINT3& target, float time, float duration) {
 	value->x = data->InterpolationMethod(time, original.x, target.x - original.x, duration);
 	value->y = data->InterpolationMethod(time, original.y, target.y - original.y, duration);
 	value->z = data->InterpolationMethod(time, original.z, target.z - original.z, duration);
