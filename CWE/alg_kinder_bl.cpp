@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <array>
 
+#include "asmutil.h"
 #include "alg_kinder_bl.h"
 #include "al_minimal.h"
 #include "ninja_functions.h"
@@ -13,6 +15,7 @@
 #include "ChaoMain.h"
 #include "alo_fruit.h"
 #include "AL_ModAPI.h"
+#include "playsound.h"
 
 #include "data/cwe/object_common_cnk/alo_mannequin.nja"
 #include "data/accessory/ala_full_mannequin.nja"
@@ -27,7 +30,6 @@
 #include "al_marketattr.h"
 
 #include "ui/al_ortho.h"
-#include "ALifeSDK_Functions.h"
 #include "al_stage.h"
 #include "al_msg_font.h"
 #include "al_chao_info.h"
@@ -51,7 +53,7 @@ const std::array<int, MarketTabCount> MarketTabIndices =
 #define TabCategory MarketTabIndices[a1->currentTab]
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ALK_WINDOW_TABLE
+struct ALIGN(4) ALK_WINDOW_TABLE
 {
 	float posX;
 	float posY;
@@ -107,21 +109,21 @@ int BM_GetInvSize(BlackMarketData* a1)
 	return GetMarketInvSize(TabCategory);
 }
 
-const int ALO_Kinder_Window_LoadPtr = 0x05A92B0;
-task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color)
-{
-	task* retval;
-	__asm
-	{
-		mov eax, result
-		push color
-		push a3
-		push dword ptr[layer]
-		call ALO_Kinder_Window_LoadPtr
-		add esp, 12
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // color
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // layer
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x05A92B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 #define ITEMSINBUYLIST 5
@@ -179,7 +181,7 @@ struct SSet100
 {
 	unsigned int flag[8];
 };
-struct __declspec(align(2)) SSellEgg
+struct ALIGN(2) SSellEgg
 {
 	__int16 emblem0;
 	__int16 emblem1;
@@ -224,7 +226,7 @@ static void FBuyListUniformDistributionUpdate(Sint8 category, const size_t minIt
 	std::uniform_int_distribution<int> distr(0, totalObtainableItem - 1);
 
 	const size_t randomItemCount = minItems + size_t(njRandom() * (maxItems - minItems - 0.1f));
-	const size_t itemCount = min(totalObtainableItem, randomItemCount);
+	const size_t itemCount = NJM_MIN(totalObtainableItem, randomItemCount);
 	std::set<size_t> items; 
 
 	while (items.size() < itemCount) {
@@ -246,18 +248,15 @@ SAlItemCwe* __cdecl sub_58B120(SAlItemCwe* result)
 
 	return result;
 }
-static void __declspec(naked) sub_58B120Hook()
-{
-	__asm
-	{
-		push eax // result
 
-		// Call your __cdecl function here:
-		call sub_58B120
-		
-		add esp, 4 // result<eax> is also used for return value
-		retn
-	}
+static void ASM_FUNC sub_58B120Hook() {
+	ASM_PUSH(eax); // result
+
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58B120);
+	
+	ASM_ESP_ADD( 1 ); // result<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void FBuyListGenericUpdate(Sint8 cat, float change = 0.75f) {
@@ -309,7 +308,7 @@ static void FBuyListUpdateAccessory() {
 		allAccessories[modIndex].push_back(i);
 	}
 
-	const size_t totalCount = min(BlackMarketInventorySize, size_t(6.f + njRandom() * 26.999f));
+	const size_t totalCount = NJM_MIN(size_t(BlackMarketInventorySize), size_t(6.f + njRandom() * 26.999f));
 	for(size_t i = 0; i < totalCount; ++i) {
 		if(allMods.empty()) {
 			break;
@@ -1005,30 +1004,39 @@ BlackMarketItemAttributes* __cdecl AlItemGetInfo_r(SAlItemCwe* a1)
 	}
 	return result;
 }
-static void __declspec(naked) AlItemGetInfoHook()
-{
-	__asm
-	{
-		push ecx // a1
 
-		// Call your __cdecl function here:
-		call AlItemGetInfo_r
+static void ASM_FUNC AlItemGetInfoHook() {
+	ASM_PUSH(ecx); // a1
 
-		pop ecx // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AlItemGetInfo_r);
+
+	ASM_POP(ecx); // a1
+	ASM_RET(0);
 }
-const int GXSetBlendModeAlphaPtr = 0x0420480;
-void GXSetBlendModeAlpha(int a1, int a2, int a3)
-{
-	__asm
-	{
-		push a3
-		mov esi, a2
-		mov edi, a1
-		call GXSetBlendModeAlphaPtr
-		add esp, 4
-	}
+
+ASM_FUNC void GXSetBlendModeAlpha(int a1, int a2, int a3) {
+    // save regs
+    ASM_PUSH( edi );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+2) ); // a3
+    ASM_MOVE( esi, ASM_ESP(2+1+2) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+1+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0420480 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 const char* BlackMarket_GetItemMsg(BlackMarketData const* data, int const msgID)
@@ -1044,7 +1052,6 @@ const char* BlackMarket_GetBlMsg(BlackMarketData const* data, int const msgID)
 	return (const char*)((char*)data->mMsgList + data->mMsgList[msgID]);
 }
 
-#pragma optimize("gty", off)
 void __cdecl FBuyListDispText(BlackMarketData const* a1)
 {
 	SetShaderType(1);
@@ -1077,9 +1084,14 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 	}
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
-#pragma warning(disable: 4838)
-#pragma warning(disable: 4244)
+#pragma warning( disable: 4838 )
+#endif
 NJS_TEXANIM BuyListBasePanel[] = {
 	{42 / 2,34 / 2,  0,0, 0,0, 42,             34,		12, NJD_SPRITE_ALPHA},//top left
 	{20 / 2, 1,    0,0, 0,34,20,             34,		12, NJD_SPRITE_ALPHA},//middle left
@@ -1125,7 +1137,11 @@ const SAlgKinderOrthoQuad stru_8A33E8[6] =
   {  SELECTION_BOX_SX - 16, SELECTION_BOX_SX , SELECTION_BOX_SY / 2, SELECTION_BOX_SY , 2952, 3192 ,  1432, 1784  }  //bottom half right
 };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 void DrawTimer();
 VoidFunc(sub_42C170, 0x42C170);
@@ -1261,17 +1277,13 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 	FBuyListDispText(a1);
 	FBuyListItemDisp(a1);
 }
-#pragma optimize("gty", on)
-const int JumpBackHere_ = 0x005897C3;
-void __declspec(naked) FItemDescDispHook()
-{
-	_asm
-	{
-		push[esp + 0x2C]
-		call FItemDescDisp
-		add esp, 4
-		jmp JumpBackHere_
-	}
+
+const static void* jumpTo = (void*)0x005897C3;
+void ASM_FUNC FItemDescDispHook() {
+	ASM_PUSH(ASM_ESP(11));
+	ASM_CALL (FItemDescDisp);
+	ASM_ESP_ADD( 1 );
+	ASM_JUMP_PTR(jumpTo);
 }
 
 //garden object count
@@ -1295,34 +1307,28 @@ signed int __cdecl AL_GetMaxItemNum(const int a1)
 	}
 	return 0;
 }
-int edxBackup;
-static void __declspec(naked) AL_GetMaxItemNum_hook()
-{
-	__asm
-	{
-		mov edxBackup, edx
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call AL_GetMaxItemNum
+static void ASM_FUNC AL_GetMaxItemNum_hook() {
+	ASM_PUSH(edx);
+	ASM_PUSH(eax); // a1
 
-		add esp, 4 // a1<eax> is also used for return value
-		mov edx, edxBackup
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_GetMaxItemNum);
+
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_POP(edx);
+	ASM_RET(0);
 }
 
-const int sub_52F4F0Ptr = 0x52F4F0;
-int sub_52F4F0(int a1)
-{
-	int retval;
-	__asm
-	{
-		mov ecx, a1
-		call sub_52F4F0Ptr
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC int sub_52F4F0(int a1) {
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x52F4F0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl AL_GetExistItemNum(const int a1)
@@ -1339,29 +1345,35 @@ int __cdecl AL_GetExistItemNum(const int a1)
 		return sub_52F4F0(a1);
 }
 
-const int sub_5A64B0Ptr = 0x5A64B0;
-void sub_5A64B0(signed int a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call sub_5A64B0Ptr
-	}
+ASM_FUNC void sub_5A64B0(signed int a1, int a2) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( ecx, 0x5A64B0 );
+
+    // return
+    ASM_RET( 0 );
 }
-const int sub_5A6450Ptr = 0x5A6450;
-void sub_5A6450(int a1, float a2)
-{
-	__asm
-	{
-		push a2
-		mov eax, a1
-		call sub_5A6450Ptr
-		add esp, 4
-	}
+
+ASM_FUNC void sub_5A6450(int a1, float a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5A6450 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 #pragma pack(push, 8)
-struct __declspec(align(4)) SomeUI
+struct ALIGN(4) SomeUI
 {
 	float left;
 	float top;
@@ -1693,24 +1705,21 @@ void __cdecl FixFontScale(__int16* a1, float a2, float a3, float a4)
 		DrawFontThing(a1, a2, a3, a4);
 	}
 }
-static void __declspec(naked) FixFontScaleHook()
-{
-	__asm
-	{
-		push[esp + 0Ch] // a4
-		push[esp + 0Ch] // a3
-		push[esp + 0Ch] // a2
-		push ebx // a1
 
-		// Call your __cdecl function here:
-		call FixFontScale
+static void ASM_FUNC FixFontScaleHook() {
+	ASM_PUSH(ASM_ESP(3)); // a4
+	ASM_PUSH(ASM_ESP(3)); // a3
+	ASM_PUSH(ASM_ESP(3)); // a2
+	ASM_PUSH(ebx); // a1
 
-		pop ebx // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FixFontScale);
+
+	ASM_POP(ebx); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_RET(0);
 }
 
 const char* BlackMarketGetNameMsg(BlackMarketData const* a1, BlackMarketItemAttributes const* a2) {
@@ -1722,7 +1731,7 @@ const char* BlackMarketGetNameMsg(BlackMarketData const* a1, BlackMarketItemAttr
 
 const char* BlackMarketGetDescMsg(BlackMarketData const* a1, BlackMarketItemAttributes const* a2) {
 	if (!a2) return "GetDescMsg ITEM NULL";
-	if (a2->Descriptions < 0) "GetDescMsg Desc invalid";
+	if (a2->Descriptions < 0) return "GetDescMsg Desc invalid";
 
 	return BlackMarket_GetItemMsg(a1, a2->Descriptions);
 }
@@ -1751,20 +1760,17 @@ void __cdecl FItemDescSet(SAlItemCwe* pItem, BlackMarketData* a2) {
 		a2->mItemDescWinExplOn = 1;
 	}
 }
-static void __declspec(naked) FItemDescSetHook()
-{
-	__asm
-	{
-		push edi // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call FItemDescSet
+static void ASM_FUNC FItemDescSetHook() {
+	ASM_PUSH(edi); // a2
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		pop edi // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FItemDescSet);
+
+	ASM_POP(eax); // a1
+	ASM_POP(edi); // a2
+	ASM_RET(0);
 }
 
 void __cdecl FSellListStart(BlackMarketData* a1)
@@ -1815,19 +1821,15 @@ void __cdecl FSellListStart(BlackMarketData* a1)
 	*(Uint32*)0x01A267D0 = -1;
 	AlMsgWinAddLineC(a1->mMainWin, (const char*)v20, Language == 0);
 }
-int _ebxBackup;
-static void __declspec(naked) FSellListStartHook()
-{
-	__asm
-	{
-		push ecx // a1
 
-		// Call your __cdecl function here:
-		call FSellListStart
+static void ASM_FUNC FSellListStartHook() {
+	ASM_PUSH(ecx); // a1
 
-		pop ecx // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FSellListStart);
+
+	ASM_POP(ecx); // a1
+	ASM_RET(0);
 }
 
 void FBuyListSetItemDesc(BlackMarketData* a1)
@@ -1835,14 +1837,15 @@ void FBuyListSetItemDesc(BlackMarketData* a1)
 	FItemDescSet(BM_GetSelectedItem(a1), a1);
 }
 
-const int ALO_RingWinAdd_Ptr = 0x005A6B30;
-void ALO_RingWinAdd_(int a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call ALO_RingWinAdd_Ptr
-	}
+ASM_FUNC void ALO_RingWinAdd_(int a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x005A6B30 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 DataPointer(int, RingDisplayFieldC, 0x01A2787C);
@@ -1851,25 +1854,33 @@ void ALO_RingWinAdd(int num) {
 	ALO_RingWinAdd_(RingDisplayFieldC + num);
 }
 
-const int FMainWinWaitClosePtr = 0x588C00;
-void FMainWinWaitClose(BlackMarketData* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call FMainWinWaitClosePtr
-	}
+ASM_FUNC void FMainWinWaitClose(BlackMarketData* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x588C00 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int FMainWinAddLineStrPtr = 0x588BA0;
-void FMainWinAddLineStr(BlackMarketData* a1, char* a2)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov ebx, a2
-		call FMainWinAddLineStrPtr
-	}
+ASM_FUNC void FMainWinAddLineStr(BlackMarketData* a1, char* a2) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x588BA0 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 FastcallFunctionPointer(void, FMainWinAddLineId, (BlackMarketData* a1, int a2), 0x588BD0);
@@ -1891,7 +1902,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	auto SetTabIfItHasItem = [&](int i) {
 		if (IsTabNotEmpty(i)) {
-			SE_Call(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 			a1->currentTab = i;
 			a1->mBuyListCursor = 0;
 			a1->mBuyListScroll = 0;
@@ -1929,7 +1940,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = a1->mBuyListCursor;
 				}
 				FBuyListSetItemDesc(a1);
-				SE_Call(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 		}
 		if (SWDATAE[0] & BTN_DOWN)
@@ -1942,7 +1953,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = v6;
 				}
 				FBuyListSetItemDesc(a1);
-				SE_Call(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 		}
 
@@ -1993,14 +2004,14 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				FMainWinWaitClose(a1);
 				//once the text is done mode 3 goes back to mode 0
 				a1->mBuyListMode = 3;
-				SE_Call(32777, 0, 0, 0);
+				SE_Call(TONE(8, 9), 0, 0, 0);
 			}
 		}
 		else if (per[0]->press & BTN_B)
 		{
 			a1->currentTab = 0;
 			a1->mMode = 9;
-			SE_Call(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		break;
 	case 1:
@@ -2011,12 +2022,12 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 		if ((SWDATAE[0] & 0x10) && a1->mBuyListSelect == 1)
 		{
 			a1->mBuyListSelect = 0;
-			SE_Call(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 		}
 		if ((SWDATAE[0] & 0x20) && !a1->mBuyListSelect)
 		{
 			a1->mBuyListSelect = 1;
-			SE_Call(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 		}
 			
 		if ((per[0]->press & 0x406) == 0) {
@@ -2025,7 +2036,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 		if ((per[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
 			a1->mBuyListSelect = 1;
-			SE_Call(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		else {
 			if (a1->mBuyListSelect)
@@ -2110,11 +2121,11 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 	LABEL_57:
 		if ((per[0]->press & 0x402) != 0)
 		{
-			SE_Call(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		else
 		{
-			SE_Call(4103, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 		}
 		break;
 	case 2:
@@ -2202,18 +2213,15 @@ void __cdecl sub_58A170(BlackMarketData* a1)
 	if (!NoText)
 		AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 15), Language == 0);
 }
-static void __declspec(naked) sub_58A170Hook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call sub_58A170
+static void ASM_FUNC sub_58A170Hook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58A170);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 float ringDisplayY = 80.0f;
@@ -2271,21 +2279,18 @@ void __cdecl sub_589850(BlackMarketData* data)
 	}
 
 	if (data->mItemDescWinExplOn) {
-		MsgDialog(&data->mItemDescWinExpl);
+		AlMsgWinExec(&data->mItemDescWinExpl);
 	}
 }
-static void __declspec(naked) sub_589850Hook()
-{
-	__asm
-	{
-		push ecx // data
 
-		// Call your __cdecl function here:
-		call sub_589850
+static void ASM_FUNC sub_589850Hook() {
+	ASM_PUSH(ecx); // data
 
-		pop ecx // data
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_589850);
+
+	ASM_POP(ecx); // data
+	ASM_RET(0);
 }
 
 static void SellHeldItem() {
@@ -2294,7 +2299,7 @@ static void SellHeldItem() {
 	{
 		pHeld->exec = DestroyTask;
 		if (playertwp[0]) {
-			sub_46E5E0(0, (int)playertwp[0]);
+			StopHoldingTaskP_inl(0, playertwp[0]);
 		}
 		playerpwp[0]->htp = 0;
 	}
@@ -2329,33 +2334,33 @@ void alg_kinder_bl_Init()
 	WriteData<4>((char*)0x005890AB, (char)0x90);
 
 	//draw inventory
-	WriteJump((void*)0x005341D0, DrawPurchasedItem);
+	WriteJump((void*)0x005341D0, (void*)DrawPurchasedItem);
 	WriteData((char*)0x0052AE5B, (char)0x1C); //set purchased item displayer from DisplaySub to disp_dely
 	//if cwe inventory is empty, force a black market reload
 	//also move ring display position
-	WriteCall((void*)0x0058B810, LoadRingDisplayHook);
+	WriteCall((void*)0x0058B810, (void*)LoadRingDisplayHook);
 	WriteData((float**)0x00588CAA, &ringDisplayY);
 
-	WriteJump((void*)0x00589A00, FBuyListUpdate);
-	WriteJump((void*)0x0058A210, FBuyListDisp);
-	WriteJump((void*)0x58AB40, FBuyListExec);
-	WriteJump((void*)0x58A170, sub_58A170Hook); //buylist "init", fixes starting on the correct tab and showing the correct item
+	WriteJump((void*)0x00589A00, (void*)FBuyListUpdate);
+	WriteJump((void*)0x0058A210, (void*)FBuyListDisp);
+	WriteJump((void*)0x58AB40, (void*)FBuyListExec);
+	WriteJump((void*)0x58A170, (void*)sub_58A170Hook); //buylist "init", fixes starting on the correct tab and showing the correct item
 
 	//item desc
-	WriteJump((void*)0x005891E8, FItemDescDispHook);
-	WriteJump((void*)0x52F650, AL_GetMaxItemNum_hook);
+	WriteJump((void*)0x005891E8, (void*)FItemDescDispHook);
+	WriteJump((void*)0x52F650, (void*)AL_GetMaxItemNum_hook);
 
 	//selling code
-	WriteJump((void*)0x52F470, SellHeldItem);
-	WriteCall((void*)0x0058BDF1, AlItemGetInfoHook);
-	WriteCall((void*)0x0058BE2D, FItemDescSetHook);
-	WriteCall((void*)0x0058BDEA, sub_58B120Hook);
-	WriteJump((void*)0x58B140, FSellListStartHook);
+	WriteJump((void*)0x52F470, (void*)SellHeldItem);
+	WriteCall((void*)0x0058BDF1, (void*)AlItemGetInfoHook);
+	WriteCall((void*)0x0058BE2D, (void*)FItemDescSetHook);
+	WriteCall((void*)0x0058BDEA, (void*)sub_58B120Hook);
+	WriteJump((void*)0x58B140, (void*)FSellListStartHook);
 
-	WriteCall((void*)0x005891C4, FixFontScaleHook);
+	WriteCall((void*)0x005891C4, (void*)FixFontScaleHook);
 
 	//fixing animal motion thing
-	WriteJump((void*)0x589850, sub_589850Hook);
+	WriteJump((void*)0x589850, (void*)sub_589850Hook);
 
 	//memory size for bm exec
 	WriteData((int*)0x0058BFDF, (int)(sizeof(BlackMarketData) + 4));
@@ -2367,7 +2372,7 @@ void alg_kinder_bl_Init()
 	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData<0x1B>((char*)0x0058B97B, (char)0x90);
-	WriteCall((void*)0x0058B97B, CreateMenuThemeItem);
+	WriteCall((void*)0x0058B97B, (void*)CreateMenuThemeItem);
 
 	if (gConfigVal.BlackMarketShort)
 	{
@@ -2375,27 +2380,27 @@ void alg_kinder_bl_Init()
 
 		//exit text
 		WriteJump((void*)0x0058BCD4, (void*)0x0058BD21); //text about "getting more emblems"
-		WriteCall((void*)0x0058BD23, nullsub_1);
+		WriteCall((void*)0x0058BD23, (void*)nullsub_1);
 
 		WriteData<2>((char*)0x0058BE88, (char)0x90);//kills the message box check in case 14 (exit text)
 		WriteData<6>((char*)0x0058BA06, (char)0x90); //kills the message box check in case 3 (entry text)
 
 		//i think this might be the "you cant sell this item" no reason to shorten
 		//WriteData<2>((char*)0x0058BE6E, (char)0x90);//kills the message box check in case 13 (sell text)
-		//WriteCall((void*)0x58BE39, nullsub_1);
-		//WriteCall((void*)0x58BE40, nullsub_1);
+		//WriteCall((void*)0x58BE39, (void*)nullsub_1);
+		//WriteCall((void*)0x58BE40, (void*)nullsub_1);
 
 		//"you dont have anything to sell"
-		WriteCall((void*)0x0058BD44, nullsub_1);
-		WriteCall((void*)0x0058BD57, nullsub_1);
-		WriteCall((void*)0x0058BD63, nullsub_1);
-		WriteCall((void*)0x0058BD6A, nullsub_1);
+		WriteCall((void*)0x0058BD44, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD57, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD63, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD6A, (void*)nullsub_1);
 
 		//kills the msg calls in case 0
-		WriteCall((void*)0x0058B82E, nullsub_1);
-		WriteCall((void*)0x0058B835, nullsub_1);
-		WriteCall((void*)0x0058B848, nullsub_1);
-		WriteCall((void*)0x0058B841, nullsub_1);
-		WriteCall((void*)0x0058B854, nullsub_1);
+		WriteCall((void*)0x0058B82E, (void*)nullsub_1);
+		WriteCall((void*)0x0058B835, (void*)nullsub_1);
+		WriteCall((void*)0x0058B848, (void*)nullsub_1);
+		WriteCall((void*)0x0058B841, (void*)nullsub_1);
+		WriteCall((void*)0x0058B854, (void*)nullsub_1);
 	}
 }

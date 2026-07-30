@@ -3,8 +3,8 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "alsbhv.h"
+#include "playsound.h"
 #include <random>
 
 #define OTHERCHAO social, !flipped ? SOCIAL_CHAO2 : SOCIAL_CHAO1
@@ -133,8 +133,6 @@ FACE_ANIM faces[] = {
 	{15,2,0},
 };
 
-#define VOICEBANK5(a1) 24576 + a1
-
 int ALS_Laugh(SOCIALDATA* data)
 {
 	if (data->bhvStatus.Mode == 0)
@@ -147,7 +145,7 @@ int ALS_Laugh(SOCIALDATA* data)
 		AL_FaceChangeEye(data->chaoPointer, ChaoEyes_Painful);
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_ClosedSmile);
 		//PlaySoundXYZAlt(VOICEBANK5(47) /*0x48B*/ + (njRandom() * 4.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(47), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(TONE(6, 47), 0, 0, 110, &data->chaoPointer->twp->pos);
 		data->bhvStatus.Timer = 1 * 60;
 	}
 	else
@@ -173,7 +171,7 @@ int ALS_DoYouAgree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_Open);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(92), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(92), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(TONE(6, 92), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -198,7 +196,7 @@ int ALS_DoNotAgree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_ClosedFrown);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(89)/*0x4B5*/, data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(89), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(TONE(6, 89), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -223,7 +221,7 @@ int ALS_Agree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_None);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(94)/*0x4BA*/, data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		SE_CallV2(VOICEBANK5(94), 0, 0, 110, &data->chaoPointer->twp->pos);
+		AL_SE_CallV2(TONE(6, 94), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -238,21 +236,7 @@ int ALS_Agree(SOCIALDATA* data)
 	}
 	return 0;
 }
-static const void* const SE_CallV2_TIMERPtr = (void*)0x437590;
-static inline void SE_CallV2_TIMER(task* obj, int a1, NJS_VECTOR* a2, char a4, char a5, __int16 a6)
-{
-	__asm
-	{
-		push dword ptr[a6]
-		push dword ptr[a5]
-		push dword ptr[a4]
-		mov esi, a2
-		mov edi, a1
-		mov ebx, obj
-		call SE_CallV2_TIMERPtr
-		add esp, 12
-	}
-}
+
 void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 {
 	data->bhvStatus.SubTimer--;
@@ -260,10 +244,9 @@ void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 	if (data->bhvStatus.SubTimer <= 0)
 		data->bhvStatus.SubTimer = 60 * multiplier;
 
-	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (ChaoStageNumber == ChaoNextStageNumber)
-			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
-	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
+	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
+		AL_SE_CallV2_TIMER(TONE(6, 75 + int(njRandom() * 20.0f)), data->chaoPointer, 0, 110, 100, &data->chaoPointer->twp->pos);
+	}
 
 	if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
 		AL_FaceSetMouth(data->chaoPointer, ChaoMouth_Open, 15 * multiplier);
@@ -296,9 +279,9 @@ void __cdecl ALS_TalkFace(SOCIALDATA* data)
 	//if (data->bhvStatus.SubTimer <= 0)
 		//data->bhvStatus.SubTimer = 60 * multiplier;
 
-	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (ChaoStageNumber == ChaoNextStageNumber)
-			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
+	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
+		AL_SE_CallV2_TIMER(TONE(6, 75 + int(njRandom() * 20.0f)), data->chaoPointer, 0, 110, 100, &data->chaoPointer->twp->pos);
+	}
 	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
 
 	//if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
@@ -480,7 +463,7 @@ int ALS_SassyBye(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_None);
 		data->bhvStatus.Timer = 45;
 		if(data->actorIndex == 0)
-			SE_CallV2(VOICEBANK5(55), 0, 0, 110, &data->chaoPointer->twp->pos);
+			AL_SE_CallV2(TONE(6, 55), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else if (data->bhvStatus.Mode == 1)
 	{

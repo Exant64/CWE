@@ -5,6 +5,8 @@
 
 #include <memory.h>
 #include "al_behavior.h"
+#include <playsound.h>
+#include <ninja_functions.h>
 
 enum {
     HIT_TYPE_PUNCH,
@@ -98,7 +100,7 @@ static int ALBHV_HitChao(task* tp) {
 			break;
 
 		case 2: {
-            const int dmgType = int(njRandom() * NB_HIT_TYPE);
+            const int dmgType = int(njRandom() * float(NB_HIT_TYPE));
 
             AL_FaceChangeEye(tp, ChaoEyes_Mean);
 
@@ -117,7 +119,7 @@ static int ALBHV_HitChao(task* tp) {
                     break;
             }
 
-			SE_CallV2(0x601E, 0, 0, 110, &GET_CHAOWK(tp)->pos);
+			AL_SE_CallV2(TONE(6, 0x1E), 0, 0, 110, &GET_CHAOWK(tp)->pos);
 
 			// this may feel hacky, but I decided it's the best way to sync up the sequence
 			// if you think about it, it's the same thing as a behaviorinterrupt
@@ -188,7 +190,7 @@ static int ALBHV_WaitForStopper(task* tp) {
 				AL_FaceChangeEye(tp, ChaoEyes_Painful);
 
 				if(njRandom() < 0.7f) {
-					SE_CallV2(0x602D, 0, 0, 110, &GET_CHAOWK(tp)->pos);
+					AL_SE_CallV2(TONE(6, 0x2D), 0, 0, 110, &GET_CHAOWK(tp)->pos);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -236,10 +238,10 @@ static int ALBHV_GetHit(task* tp) {
 
 			
             if(njRandom() < 0.5f) {
-				SE_CallV2(24617, 0, 0, 110, &GET_CHAOWK(tp)->pos);
+				AL_SE_CallV2(TONE(6, 0x29), 0, 0, 110, &GET_CHAOWK(tp)->pos);
             }
             else {
-				SE_CallV2(24685, 0, 0, 110, &GET_CHAOWK(tp)->pos);
+				AL_SE_CallV2(TONE(6, 0x6D), 0, 0, 110, &GET_CHAOWK(tp)->pos);
             }
 
             bhv->Mode++;
@@ -347,7 +349,7 @@ static int ALBHV_AfraidWait(task* tp) {
 		case AFRAIDWAIT_TURN: 
 			if (ALW_TurnToLockOn(tp, 384) < 384) {
 				if(njRandom() < 0.7f) {
-					SE_CallV2(0x602D, 0, 0, 110, &GET_CHAOWK(tp)->pos);
+					AL_SE_CallV2(TONE(6, 0x2D), 0, 0, 110, &GET_CHAOWK(tp)->pos);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -461,16 +463,12 @@ int ALBHV_ConfidentWait(task* tp) {
 	return BHV_RET_CONTINUE;
 }
 
-static bool IsChaoAttackCapable(task* tp) {
-	
-}
-
 static task* FindChaoToBully(task* tp) {
     chaowk* work = GET_CHAOWK(tp);
     task* pSelectedChao = NULL;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		if (!pChao || pChao == tp) continue;
 		
 		BHV_FUNC func = AL_GetBehavior(pChao);
@@ -500,7 +498,7 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 	float distClosest = 100.f;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		chaowk* work = GET_CHAOWK(pChao);
 
 		if (!pChao || pChao == pBullyChao || pChao == pVictimChao) continue;
@@ -625,7 +623,7 @@ void AL_CalcIntentionScore_Bully(task* tp, float* pMaxScore) {
     ALW_LockOn(tp, pVictimChao);
     ALW_LockOn(pVictimChao, tp);
 
-	const int angerDecrease = max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
+	const int angerDecrease = NJM_MAX(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
 	AL_EmotionAdd(tp, EM_MD_ANGER, angerDecrease);
 
 	const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->Skill[3] - GET_CHAOPARAM(tp)->Skill[3]) > 500 || 

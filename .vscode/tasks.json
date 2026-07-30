@@ -3,22 +3,38 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "windows": {
-        "options": {
-        "shell": {
-            "executable": "cmd.exe",
-            "args": [
-            "/C",
-            // The path to VsDevCmd.bat depends on the version of Visual Studio you have installed.
-            "\"call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat\" && ",
-            //"&&"
-            ]
-        }
-        }
+       
     },
     "tasks": [
         {
+            "label": "CMake Build (debug)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset",
+                "release"
+            ],
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "ImGuiBuild",
             "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C",
+                        // The path to VsDevCmd.bat depends on the version of Visual Studio you have installed.
+                        "\"call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\Tools\\VsDevCmd.bat\" && ",
+                        //"&&"
+                    ]
+                }
+            },
             "command": "msbuild",
             "args": [
                 "/property:GenerateFullPaths=true",
@@ -27,10 +43,7 @@
                 "/t:build",
                 "/consoleloggerparameters:NoSummary\""
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "presentation": {
                 "reveal": "silent"
             },

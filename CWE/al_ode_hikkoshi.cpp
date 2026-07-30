@@ -1,10 +1,12 @@
 #include "stdafx.h"
 
-#include "alg_kinder_he.h"
-#include "al_odekake.h"
+#include <cstdio>
 
 #include "ninja_functions.h"
-#include <cstdio>
+#include "asmutil.h"
+
+#include "alg_kinder_he.h"
+#include "al_odekake.h"
 #include "ChaoMain.h"
 #include "al_ode_guide.h"
 #include "al_ode_menu.h"
@@ -52,7 +54,7 @@ struct MENU_PORT
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(32)) ChaoSelectMenuManager_Data
+struct ALIGN(32) ChaoSelectMenuManager_Data
 {
 	int purpose;
 	float offsetx;
@@ -117,13 +119,10 @@ enum EMenuPurpose {
 };
 
 static const int ChaoSelectMenuManager_LoadPtr = 0x00554490;
-static void AL_CreateChaoSelectMenu(int a1)
-{
-	_asm
-	{
-		mov eax, a1
-		call ChaoSelectMenuManager_LoadPtr
-	}
+static ASM_FUNC void AL_CreateChaoSelectMenu(int a1) {
+	ASM_MOVE(eax, ASM_ESP(1));
+	ASM_CALL_R(edx, 0x00554490);
+	ASM_RET( 0 );
 }
 
 // creates the "saving chao file" dialog (which also saves the chao file)
@@ -158,14 +157,21 @@ static char GetMultiSaveIndex() {
 	return '0' + numberConverted;
 }
 
-static const void *const WriteChaoSaveChecksumPtr = (void*)0x52EEE0;
-static inline void WriteChaoSaveChecksum(char *a1)
-{
-	__asm
-	{
-		mov esi, [a1]
-		call WriteChaoSaveChecksumPtr
-	}
+static ASM_FUNC void WriteChaoSaveChecksum(char *a1) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x52EEE0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_SaveSecondFile() {

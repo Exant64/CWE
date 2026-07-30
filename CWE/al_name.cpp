@@ -8,23 +8,27 @@
 #include <ninja_functions.h>
 #include <al_name.h>
 #include "ChaoMain.h"
+#include "asmutil.h"
 
-static const int DisplayChaoNamePtr = 0x00536BE0;
-static void DisplayChaoName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8)
-{
-	__asm
-	{
-		push a7
-		push a6
-		push a5
-		push a4
-		push a3
-		push a2
-		push a1
-		mov ecx, a8
-		call DisplayChaoNamePtr
-		add esp, 4 * 7
-	}
+static ASM_FUNC void AL_ParameterDrawName(const char* a1, float a2, float a3, float a4, float a5, int a6, int a7, int a8) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(7+0+0) ); // a7
+    ASM_PUSH(      ASM_ESP(6+1+0) ); // a6
+    ASM_PUSH(      ASM_ESP(5+2+0) ); // a5
+    ASM_PUSH(      ASM_ESP(4+3+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+4+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+5+0) ); // a2
+    ASM_PUSH(      ASM_ESP(1+6+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(8+7+0) ); // a8
+
+    // call
+    ASM_CALL_R( edx, 0x00536BE0 );
+
+    // end arguments
+    ASM_ESP_ADD( 7 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static float GetSpacingRatio(const size_t index) {
@@ -93,7 +97,7 @@ static Float CalculateStringSizeRatio(const char* pName, float xpos, float xsize
 // used by name menu to find the position of the cursor, it's basically CalculateLastLetterXPos but with sizeRatio calculated
 static Float CalculateStringXPos(const char* pName, float xpos, float xsize, size_t length, size_t selectLen = 999) {
 	Float sizeRatio = CalculateStringSizeRatio(pName, xpos, xsize, length);
-	return CalculateLastLetterXPos(xpos, xsize, pName, min(selectLen, length), sizeRatio);
+	return CalculateLastLetterXPos(xpos, xsize, pName, NJM_MIN(selectLen, length), sizeRatio);
 }
 
 void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xsize, float ysize, NJS_COLOR col, int FreeStrlen, DrawAnchorH ancH) {
@@ -222,32 +226,29 @@ static void DisplayChaoName_GetNewPtr(char* pName, float xpos, float ypos, float
 	);
 }
 
-static void __declspec(naked) DisplayChaoName_Hook()
+static void ASM_FUNC DisplayChaoName_Hook()
 {
-	__asm
-	{
-		push ecx // a8
-		push[esp + 20h] // a7
-		push[esp + 20h] // a6
-		push[esp + 20h] // a5
-		push[esp + 20h] // a4
-		push[esp + 20h] // a3
-		push[esp + 20h] // a2
-		push[esp + 20h] // a1
+	ASM_PUSH(ecx); // a8
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
+	ASM_PUSH(ASM_ESP(8));
 
-		// Call your __cdecl function here:
-		call DisplayChaoName_GetNewPtr
+	// Call your __cdecl function here:
+	ASM_CALL (DisplayChaoName_GetNewPtr);
 
-		add esp, 4 // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		add esp, 4 // a7
-		pop ecx // a8
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_ESP_ADD( 1 ); // a7
+	ASM_POP(ecx); // a8
+	ASM_RET(0);
 }
 
 FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
@@ -261,20 +262,17 @@ static void __cdecl sub_58DA30(int a1, int a2) {
 	sub_57A6F0(name, (int)nameConv);
 	WcConvFromCStr((int)a1, (int)nameConv, Language == 0);
 }
-static void __declspec(naked) sub_58DA30Hook()
+static void ASM_FUNC sub_58DA30Hook()
 {
-	__asm
-	{
-		push[esp + 04h] // a2
-		push esi // a1
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call sub_58DA30
+	// Call your __cdecl function here:
+	ASM_CALL(sub_58DA30);
 
-		pop esi // a1
-		add esp, 4 // a2
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 static void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)
 {
@@ -301,18 +299,15 @@ static void __cdecl OpenNameMenu(char* NazukeyaBuff)
 	*(short*)&NazukeyaBuff[90] = 0;
 	*(short*)&NazukeyaBuff[92] = 0;
 }
-static void __declspec(naked) OpenNameMenuHook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call OpenNameMenu
+static void ASM_FUNC OpenNameMenuHook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (OpenNameMenu);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 AL_NAME FortuneTellerNameBuffer;
@@ -322,52 +317,57 @@ static void __fastcall sub_57A6F0_(char* a1, int a2)
 	sub_57A6F0(a1, (int)FortuneTellerNameBuffer);
 }
 
-static const int WcConvFromCStrPtr = 0x0057A680;
-static __declspec(naked) void FoNameWcConvFromCStrHook()
-{
-	__asm
-	{
-		mov edx, offset FortuneTellerNameBuffer
-		jmp WcConvFromCStrPtr
-	}
+static void FoNameWcConvFromCStr_r(int result, int a2, signed int a3) {
+	WcConvFromCStr(result, (int)FortuneTellerNameBuffer, a3);
 }
+
+static ASM_FUNC void FoNameWcConvFromCStrHook() {
+	ASM_PUSH (ecx); // int a3
+	ASM_PUSH (edx); // a2
+	ASM_PUSH (eax); // result
+
+	// Call your __cdecl function here:
+	ASM_CALL (FoNameWcConvFromCStr_r);
+
+	ASM_POP (eax); // result
+	ASM_POP (edx); // a2
+	ASM_POP (ecx); // int a3
+	ASM_RET(0);
+}
+
 static void __cdecl sub_536BA0(const char* v6, float a1, float a2, float a3, float a4, int a5, int a6)
 {
-	DisplayChaoName(v6, a1, a2, a3, a4, a6, 0, a5);
-}
-static void __declspec(naked) sub_536BA0_Hook()
-{
-	__asm
-	{
-		push[esp + 18h] // a6
-		push[esp + 18h] // a5
-		push[esp + 18h] // a4
-		push[esp + 18h] // a3
-		push[esp + 18h] // a2
-		push[esp + 18h] // a1
-		push ecx // v6
-
-		// Call your __cdecl function here:
-		call sub_536BA0
-
-		pop ecx // v6
-		add esp, 4 // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		retn
-	}
+	AL_ParameterDrawName(v6, a1, a2, a3, a4, a6, 0, a5);
 }
 
-static const int KarateOpponentNameHookTrampoline = 0x543280;
-static __declspec(naked) void KarateOpponentNameHook() {
-	__asm {
-		add edi, -0x12
-		add edi, 0x624
-		jmp KarateOpponentNameHookTrampoline
-	}
+static void ASM_FUNC sub_536BA0_Hook() {
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ASM_ESP(6));
+	ASM_PUSH(ecx); // v6
+
+	// Call your __cdecl function here:
+	ASM_CALL(sub_536BA0);
+
+	ASM_POP(ecx); // v6
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_RET(0);
+}
+
+static const void* jumpTo = (void*)0x543280;
+static ASM_FUNC void KarateOpponentNameHook() {
+	ASM_ADD(edi, -0x12);
+	ASM_ADD(edi, 0x624);
+
+	ASM_JUMP_PTR(jumpTo);
 }
 
 static FunctionHook<void, char*> NameMenuDisplayTrampoline(0x5827A0);
@@ -409,17 +409,17 @@ static void NameMenuDisplayHook(char* work) {
 
 void AL_Name_Init() {
 	//fortune teller name conversion new buffer
-	WriteCall((void*)0x005824BF, sub_57A6F0_);
-	WriteCall((void*)0x05824D9, FoNameWcConvFromCStrHook);
+	WriteCall((void*)0x005824BF, (void*)sub_57A6F0_);
+	WriteCall((void*)0x05824D9, (void*)FoNameWcConvFromCStrHook);
 
 	//name menu name draw
 	NameMenuDisplayTrampoline.Hook(NameMenuDisplayHook);
-	WriteCall((void*)0x00582EAF, nullsub_1); // kill original name sprite draw
-	WriteCall((void*)0x00582F45, nullsub_1); // kill blinking cursor bar
+	WriteCall((void*)0x00582EAF, (void*)nullsub_1); // kill original name sprite draw
+	WriteCall((void*)0x00582F45, (void*)nullsub_1); // kill blinking cursor bar
 
 	//fortune teller copy name to chao
-	WriteCall((void*)0x0058242E, FortuneTeller_SetName);
-	WriteJump((void*)0x00582730, OpenNameMenuHook);
+	WriteCall((void*)0x0058242E, (void*)FortuneTeller_SetName);
+	WriteJump((void*)0x00582730, (void*)OpenNameMenuHook);
 
 	//fortune teller allocation strings
 	WriteData((Uint8*)(0x00583C10 - 1), Uint8(0x60 + 4 + sizeof(AL_NAME) + 4));
@@ -447,26 +447,26 @@ void AL_Name_Init() {
 	WriteData((Uint8*)(0x00583134), Uint8(sizeof(AL_NAME) - 1));
 
 	//karate name fix offset
-	WriteCall((void*)0x0057904F, KarateOpponentNameHook);
+	WriteCall((void*)0x0057904F, (void*)KarateOpponentNameHook);
 
 	//dont delete name object if empty (i cant fix the check, because its name offset is a byte)
 	WriteData<2>((char*)0x005719FF, (char)0x90);
 	WriteData((char*)0x00571A01, (char)0xEB);
 
-	WriteCall((void*)0x0565986, DisplayChaoName_Hook); //stat panel
-	WriteCall((void*)0x0058832D, DisplayChaoName_Hook); //classroom
+	WriteCall((void*)0x0565986, (void*)DisplayChaoName_Hook); //stat panel
+	WriteCall((void*)0x0058832D, (void*)DisplayChaoName_Hook); //classroom
 
-	WriteCall((void*)0x00536BCF, DisplayChaoName_Hook); //multiple things (4 calls to this function)
+	WriteCall((void*)0x00536BCF, (void*)DisplayChaoName_Hook); //multiple things (4 calls to this function)
 
 	// this uses the race record shape element name and the offset hack in our hook breaks it
 	// we manually redirect the call to the original draw since it cannot exceed 7 characters anyways
-	WriteCall((void*)0x00556A26, sub_536BA0_Hook);
+	WriteCall((void*)0x00556A26, (void*)sub_536BA0_Hook);
 
-	WriteCall((void*)0x00593122, DisplayChaoName_Hook); //entrance chaodata panel
-	WriteJump((void*)0x58DA30, sub_58DA30Hook);			//health center
-	WriteCall((void*)0x00597C35, DisplayChaoName_Hook); //might be too small, cant test
-	WriteCall((void*)0x00571994, DisplayChaoName_Hook); //karate1
-	WriteCall((void*)0x005719A2, DisplayChaoName_Hook); //karate2
-	WriteCall((void*)0x00597C35, DisplayChaoName_Hook); //stamina manager
-	WriteCall((void*)0x005AD604, DisplayChaoName_Hook); //goodbye menu param window
+	WriteCall((void*)0x00593122, (void*)DisplayChaoName_Hook); //entrance chaodata panel
+	WriteJump((void*)0x58DA30, (void*)sub_58DA30Hook);			//health center
+	WriteCall((void*)0x00597C35, (void*)DisplayChaoName_Hook); //might be too small, cant test
+	WriteCall((void*)0x00571994, (void*)DisplayChaoName_Hook); //karate1
+	WriteCall((void*)0x005719A2, (void*)DisplayChaoName_Hook); //karate2
+	WriteCall((void*)0x00597C35, (void*)DisplayChaoName_Hook); //stamina manager
+	WriteCall((void*)0x005AD604, (void*)DisplayChaoName_Hook); //goodbye menu param window
 }

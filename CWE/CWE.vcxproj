@@ -201,15 +201,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)navigation\external\Detour\Include;$(ProjectDir)navigation\external\Recast\Include;$(SolutionDir)api;$(DXSDK_DIR)Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BrightFixDebug.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">
@@ -220,15 +220,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CWEV9;WIN32;_DEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;IMGUIDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)navigation\external\Detour\Include;$(ProjectDir)navigation\external\Recast\Include;$(SolutionDir)api;$(SolutionDir)\external\minidx9\Include;$(SolutionDir)rapidjson\include\rapidjson;%(AdditionalIncludeDirectories);$(SolutionDir)\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(SolutionDir)\external\minidx9\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BrightFixDebug.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\external\minidx9\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -269,15 +269,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Coding\SAModding\BrightFix\BrightFix\include;F:\Coding\VSRepos\SA2ModLoaderNew\libmodutils;$(SolutionDir)external\xxhash;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Coding\VSRepos\SA2ModLoaderNew\libmodutils;$(SolutionDir)external\xxhash;%(AdditionalIncludeDirectories);C:\Coding\VSRepos\CWENew\external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>F:\SA2\mods\BrightFix;F:\Coding\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\Coding\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -292,7 +292,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)navigation\external\Detour\Include;$(ProjectDir)navigation\external\Recast\Include;$(SolutionDir)api;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -302,8 +302,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -318,7 +318,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;CWE_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;CWEV9;SOL_PRINT_ERRORS;IMGUIDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)api;$(SolutionDir)BrightFix\include;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)api;$(DXSDK_DIR)\Include;$(SolutionDir)rapidjson\include\rapidjson;$(SolutionDir)external;%(AdditionalIncludeDirectories);$(SolutionDir)external\xxhash;$(SolutionDir)external\sa2b-render-fix\api</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -328,8 +328,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)BrightFix\lib;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BrightFix.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -393,7 +393,6 @@
     <ClInclude Include="alg_kinder_cl.h" />
     <ClInclude Include="alg_kinder_he.h" />
     <ClInclude Include="alg_kinder_ortho.h" />
-    <ClInclude Include="ALifeSDK_Functions.h" />
     <ClInclude Include="alo_accessory.h" />
     <ClInclude Include="alo_fruit.h" />
     <ClInclude Include="alo_obakehead.h" />
@@ -648,17 +647,18 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BrightFix/BrightFix.cpp" />
     <ClCompile Include="alg_kinder_bl.cpp" />
     <ClCompile Include="alg_kinder_cl.cpp" />
     <ClCompile Include="alg_kinder_he.cpp" />
     <ClCompile Include="alg_kinder_ortho.cpp" />
-    <ClCompile Include="ALifeSDK_Functions.cpp" />
     <ClCompile Include="alo_accessory.cpp" />
     <ClCompile Include="alo_boat.cpp" />
     <ClCompile Include="alo_coffin.cpp" />
     <ClCompile Include="alo_fruit.cpp" />
     <ClCompile Include="alo_obakehead.cpp" />
     <ClCompile Include="alo_special.cpp" />
+    <ClCompile Include="playsound.cpp" />
     <ClCompile Include="al_behavior\albhv_birthday.cpp" />
     <ClCompile Include="al_behavior\albhv_bully.cpp" />
     <ClCompile Include="al_behavior\albhv_boat.cpp" />
@@ -675,6 +675,7 @@
     <ClCompile Include="al_behavior\albhv_posture.cpp" />
     <ClCompile Include="al_behavior\albhv_rain.cpp" />
     <ClCompile Include="al_behavior\albhv_stoy.cpp" />
+    <ClCompile Include="al_behavior\albhv_swim.cpp" />
     <ClCompile Include="al_behavior\albhv_sunaasubi.cpp" />
     <ClCompile Include="al_behavior\albhv_tree.cpp" />
     <ClCompile Include="al_behavior\albhv_wrench.cpp" />
@@ -686,6 +687,8 @@
     <ClCompile Include="al_behavior\alsbhv_mayu.cpp" />
     <ClCompile Include="al_behavior\al_behavior.cpp" />
     <ClCompile Include="al_garden_info.cpp" />
+    <ClCompile Include="al_hold.cpp" />
+    <ClCompile Include="al_landmark.cpp" />
     <ClCompile Include="al_daynight_rain.cpp" />
     <ClCompile Include="al_ode_mainmenubar.cpp" />
     <ClCompile Include="api\api_accessory.cpp" />
@@ -864,10 +867,38 @@
     <ClCompile Include="ui\al_ortho.cpp" />
     <ClCompile Include="land_grayscale.cpp" />
     <ClCompile Include="cwe_c_colli.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\Recast.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastAlloc.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastArea.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastAssert.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastContour.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastFilter.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastLayers.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastMesh.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastMeshDetail.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastRasterization.cpp" />
+    <ClCompile Include="navigation\external\Recast\Source\RecastRegion.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourAlloc.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourAssert.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourCommon.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNavMesh.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNavMeshBuilder.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNavMeshQuery.cpp" />
+    <ClCompile Include="navigation\external\Detour\Source\DetourNode.cpp" />
+    <ClCompile Include="navigation\navsys_meshconvert.cpp" />
+    <ClCompile Include="navigation\navsys_generator.cpp" />
+    <ClCompile Include="navigation\navsys.cpp" />
+    <ClCompile Include="navigation\navsys_log.cpp" />
+    <ClCompile Include="al_behavior\albhv_navigation.cpp" />
+    <ClCompile Include="navigation\navsys_debug.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CWEV9|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ImGuiDebug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="al_animation.cpp" />
-    <None Include="..\BrightFix\BrightFix.sln" />
     <None Include="al_animation.h" />
     <None Include="chao\al_motion\alm_dance_d.nam" />
     <None Include="chao\al_motion\alm_dance_h.nja" />

@@ -2,6 +2,8 @@
 #include "ModelInfo.h"
 #include <fstream>
 #include <iostream>
+#include <string>
+
 using std::default_delete;
 using std::ifstream;
 using std::ios;
@@ -29,13 +31,6 @@ ModelInfo::ModelInfo(const wchar_t* filename)
 }
 
 ModelInfo::ModelInfo(const string& filename)
-{
-	ifstream str(filename, ios::binary);
-	init(str);
-	str.close();
-}
-
-ModelInfo::ModelInfo(const wstring& filename)
 {
 	ifstream str(filename, ios::binary);
 	init(str);

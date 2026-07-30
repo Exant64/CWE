@@ -11,16 +11,23 @@
 #include "ChaoMain.h"
 #include "api/api_accessory.h"
 #include "al_behavior/al_behavior.h"
+#include <asmutil.h>
 
-const int sub_536450Ptr = 0x536450;
-void sub_536450(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		mov esi, a2
-		call sub_536450Ptr
-	}
+ASM_FUNC void AL_GeneCreate(AL_GENE *a1) {
+	// save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5506B0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 //unused for now
@@ -31,16 +38,25 @@ void InitChaoDNA_Hook(AL_GENE* a1, int a2, size_t a3) //use this to edit how cha
 	//code here
 }
 
-const int AL_GeneAnalyzeCommmonPtr = 0x00551DA0;
-void AL_GeneAnalyzeCommon(AL_GENE* a1, CHAO_PARAM_GC* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		push a2
-		call AL_GeneAnalyzeCommmonPtr
-		add esp, 4
-	}
+ASM_FUNC void AL_GeneAnalyzeCommon(AL_GENE* a1, CHAO_PARAM_GC* a2) {
+	// save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00551DA0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_GeneColorMixing(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
@@ -271,7 +287,7 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 		memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
 		memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
 		memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParamCwe->motherData, motherParam);
+		AL_ShapeElementFromParam(&pParamCwe->motherData, motherParam);
 	}
 
 	if (pGene->FatherID.id[0] != 0) {
@@ -281,35 +297,39 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 		memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
 		memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
 		memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		sub_536450(&pParamCwe->fatherData, fatherParam);
-	}
-}
-static void __declspec(naked) AL_GeneAnalyzeCommonHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push edi // a1
-
-		// Call your __cdecl function here:
-		call AL_GeneAnalyzeCommonAdd
-
-		pop edi // a1
-		add esp, 4 // a2
-		retn
+		AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
 	}
 }
 
-const int AL_BlendGenePtr = 0x00551840;
-void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov eax, a2
-		mov esi, pDestGene
-		call AL_BlendGenePtr
-	}
+static void ASM_FUNC AL_GeneAnalyzeCommonHook() {
+	ASM_PUSH(ASM_ESP(1));
+	ASM_PUSH(edi); // a1
+
+	// Call your __cdecl function here:
+	ASM_CALL(AL_GeneAnalyzeCommonAdd);
+
+	ASM_POP(edi); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
+}
+
+ASM_FUNC void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(3+0+1) ); // pDestGene
+    ASM_MOVE( eax, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00551840 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
@@ -502,30 +522,27 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	pChildGene->MotherID = GET_CHAOPARAM(pMotherTask)->ChaoID;
 	pChildGene->FatherID = GET_CHAOPARAM(pFatherTask)->ChaoID;
 }
-static void __declspec(naked) AL_CreateChildGeneHook()
-{
-	__asm
-	{
-		push edx // pChildGene
-		push[esp + 0Ch] // pFatherTask
-		push[esp + 0Ch] // pMotherTask
 
-		// Call your __cdecl function here:
-		call AL_CreateChildGene
+static void ASM_FUNC AL_CreateChildGeneHook() {
+	ASM_PUSH(edx); // pChildGene
+	ASM_PUSH(ASM_ESP(3));
+	ASM_PUSH(ASM_ESP(3));
 
-		add esp, 4 // pMotherTask
-		add esp, 4 // pFatherTask
-		pop edx // pChildGene
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CreateChildGene);
+
+	ASM_ESP_ADD( 1 ); // pMotherTask
+	ASM_ESP_ADD( 1 ); // pFatherTask
+	ASM_POP(edx); // pChildGene
+	ASM_RET(0);
 }
 
 void AL_Gene_Init() {
 
-	//WriteCall((void*)0x005506BF, InitChaoDNA_Hook); not needed for now
+	//WriteCall((void*)0x005506BF, (void*)InitChaoDNA_Hook); not needed for now
 
 	//dna mother-father name restoration
-	WriteJump((void*)0x00551D20, AL_CreateChildGeneHook);
-	WriteCall((void*)0x005504A1, AL_GeneAnalyzeCommonHook);
-	WriteCall((void*)0x0057BCDB, AL_GeneAnalyzeCommonHook);
+	WriteJump((void*)0x00551D20, (void*)AL_CreateChildGeneHook);
+	WriteCall((void*)0x005504A1, (void*)AL_GeneAnalyzeCommonHook);
+	WriteCall((void*)0x0057BCDB, (void*)AL_GeneAnalyzeCommonHook);
 }

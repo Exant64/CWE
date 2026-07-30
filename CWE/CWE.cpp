@@ -29,11 +29,10 @@
 #include <ctime>  
 #include "al_piano.h"
 
-#include "brightfixapi.h"
+#include "BrightFix/brightfixapi.h"
 #include <cassert>
 #include "al_butterfly.h"
 #include "al_sandhole.h"
-#include "ALifeSDK_Functions.h"
 
 #include "al_odekake.h"
 #include "al_save.h"
@@ -80,8 +79,25 @@
 #include <kce_helper.h>
 #include <renderfix.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
+#pragma warning(push)
+#pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
+
 #include <data/heroskyboxfix/object_ghero_nk_kumoback_kumoback.h>
 #include <data/heroskyboxfix/object_ghero_nk_kumofront_kumofront.h>
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>
@@ -96,6 +112,9 @@
 #include "api/api_main.h"
 #include "cwe_c_colli.h"
 #include "alo_coffin.h"
+
+#include "navigation/navsys.h"
+#include "navigation/navsys_log.h"
 
 const char* PathToModFolder = "";
 
@@ -150,13 +169,10 @@ extern "C"
 				NJS_VECTOR DCPos[] = { {-48, 0, 16}, {-71, 0, -27} };
 				Uint32 Rot[] = { 0x5B0, 0x4000 };
 				int index = (AL_GetStageNumber() == 2) ? 0 : 1;
-
-				#if 0
-				if (GetModuleHandle(L"DCGarden"))
+				if (GetModuleHandleA("DCGarden"))
 					ALO_PianoCreate(index, &DCPos[index], Rot[index]);
 				else
 					ALO_PianoCreate(index, &GCPos[index], Rot[index]);
-				#endif
 			}
 		}
 		return retval;
@@ -216,7 +232,7 @@ extern "C"
 	}
 
 	void __cdecl ALW_Control_Main_Hook(task* a1);
-	Trampoline ALW_Control_t(0x00530850, 0x00530859, ALW_Control_Main_Hook);
+	Trampoline ALW_Control_t(0x00530850, 0x00530859, (void*)ALW_Control_Main_Hook);
 	void __cdecl ALW_Control_Main_Hook(task* a1)
 	{
 		if (a1->twp->mode == 0) {
@@ -229,6 +245,7 @@ extern "C"
 				GrayscalifyCurrentLandtable();
 			}
 
+			NavSysCreate();
 			AL_CreateDayNightCycle();
 		}
 
@@ -409,6 +426,10 @@ extern "C"
 		CWE_Codes_OnFrame();
 	}
 	
+	__declspec(dllexport) void OnExit() {
+		NavSysLogExit();
+	}
+
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions, uint32_t modIndex) {
 		CWE_ModIndex = modIndex;
 
@@ -469,7 +490,7 @@ extern "C"
 		SafetyCheckExternalMods();
 		CWE_Patch_Init(config);
 
-		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
+		//_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
 
 		ClearAllItemSave();
 		GlobalSave_Init();
@@ -501,6 +522,10 @@ extern "C"
 		gConfigVal.StageAnimalChance = config->getInt("Chao World Extended", "StageAnimalChance", 50) / 100.f;
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
+
+		gConfigVal.PathfindingEnabled = config->getBool("Pathfinding", "Pathfinding", true);
+		gConfigVal.PathfindingVanilla = config->getBool("Pathfinding", "Vanilla", true);
+		gConfigVal.PathfindingLog = config->getBool("Pathfinding", "Log", true);
 
 		// Hard
 		gConfigVal.ChaoAttention = config->getBool("Hard", "HardChaoAttention", false);
@@ -622,6 +647,8 @@ extern "C"
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
 
+		NavSysInit(path);
+
 		HDTexture_Init(path, config);
 
 		AL_DayNight_Init(iniPath, config, helperFunctions);
@@ -641,14 +668,14 @@ extern "C"
 			___OutputDebugString("Load UnusedToys");
 
 			//unused rattles
-			WriteJump((void*)0x55DDE0, ALBHV_Garagara);
+			WriteJump((void*)0x55DDE0, (void*)ALBHV_Garagara);
 		}
-		WriteCall((void*)0x0054C9B3, CreateToyHook);
-		WriteCall((void*)0x0054D395, CreateToyHook);
-		WriteCall((void*)0x0054B8B5, CreateToyHook);
+		WriteCall((void*)0x0054C9B3, (void*)CreateToyHook);
+		WriteCall((void*)0x0054D395, (void*)CreateToyHook);
+		WriteCall((void*)0x0054B8B5, (void*)CreateToyHook);
 
 		if (config->getBool("Cheat", "CheatBlackMarket", false))
-			WriteJump((void*)0x058C027, BlackMarketDebugHook);
+			WriteJump((void*)0x058C027, (void*)BlackMarketDebugHook);
 
 		//shiny jewel colors array
 		WriteData((int*)0x0055E8DC, (int)ShinyJewelColors);

@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "asmutil.h"
 #include "al_minimal.h"
 #include "data/minimal/AnimalModels.h"
 #include "data/minimal/AnimalAnims.h"
@@ -6,7 +8,6 @@
 
 #include "ninja_functions.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_parts.h"
 #include "al_motion.h"
@@ -159,7 +160,7 @@ int AnimalInfluence[] =
 
 FunctionPointer(void, sub_57BD40, (task*), 0x0057BD40);
 #pragma pack(push, 8)
-struct __declspec(align(4)) ParticleData
+struct ALIGN(4) ParticleData
 {
 	int rotY;
 	float scale;
@@ -175,7 +176,7 @@ struct __declspec(align(4)) ParticleData
 };
 #pragma pack(pop)
 #pragma pack(push, 8)
-struct __declspec(align(4)) ParticleUserData
+struct ALIGN(4) ParticleUserData
 {
 	int a1;
 	NJS_TEXLIST* texlist;
@@ -210,18 +211,24 @@ ParticleUserData stru_B0964C_ =
   0,
   0
 };
-const int AllocateParticlePtr = 0x0492660;
-int  AllocateParticle(ParticleUserData* a2)
-{
-	int te;
-	__asm
-	{
-		mov ebx, a2
-		call AllocateParticlePtr
-		mov te, eax
-	}
-	return te;
+
+ASM_FUNC int AllocateParticle(ParticleUserData* a2) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(1+0+1) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x0492660 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
+
 void __cdecl sub_6EFF10_(NJS_VECTOR* a1, NJS_VECTOR* a2, float a3)
 {
 	ParticleData* v3; // esi
@@ -262,21 +269,16 @@ void AL_Minimal_Timer(task* a1)
 	}
 }
 
+ASM_FUNC void sub_793F90(NJS_CNK_OBJECT* a1, MOTION_CTRL* a2) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // eax0
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
 
-void SetAnimalTexEntity(taskwk* data)
-{
-	njSetTexture(ModAPI_MinimalTexlists[data->btimer]);
-}
+    // call
+    ASM_CALL_R( edx, 0x793F90 );
 
-const int sub_793F90Ptr = 0x793F90;
-void sub_793F90(NJS_CNK_OBJECT* a1, MOTION_CTRL* a2)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov eax, a2
-		call sub_793F90Ptr
-	}
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl AL_MinimalExecutor_Display_(task* a1)
@@ -298,7 +300,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 			v3 = -1.2f;
 		}
 		DoLighting(LightIndex);
-		SetAnimalTexEntity(a1->twp);
+		njSetTexture(ModAPI_MinimalTexlists[a1->twp->btimer]);
 		njPushMatrixEx();
 		njTranslateEx(&v2->entity.pos);
 		njTranslate(NULL, 0, v3, 0);
@@ -351,8 +353,6 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 		}
 	}
 }
-
-
 
 void al_minimal_Init()
 {
@@ -409,5 +409,5 @@ void al_minimal_Init()
 		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
-	WriteJump((void*)0x5489D0, AL_MinimalExecutor_Display_);
+	WriteJump((void*)0x5489D0, (void*)AL_MinimalExecutor_Display_);
 }

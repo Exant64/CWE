@@ -5,6 +5,7 @@
 #include <random>
 #include "ChaoMain.h"
 #include <vector>
+#include "asmutil.h"
 //#include "usercall.h"
 #include "rapidjson.h"
 #include <document.h>
@@ -64,7 +65,7 @@ namespace save {
 			strncpy_s(id, value["id"].GetString(), sizeof(id));
 
 			outItem.mId = ItemMetadata::Get()->GetIndex(outItem.mCategory, id);
-			if (outItem.mId == -1) {
+			if (outItem.mId == Uint16(-1)) {
 				return false;
 			}
 		}
@@ -127,7 +128,7 @@ namespace save {
 			size_t sz = ftell(fp);
 
 			// rapidjson expects a buffer with size of atleast 4
-			sz = max(sz, 4);
+			sz = NJM_MAX(sz, size_t(4));
 			std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 			fseek(fp, 0, SEEK_SET);
@@ -280,7 +281,7 @@ void ReadCWESaveFiles() {
 		fopen_s(&f, strBuffer, "rb");
 		if (f)
 		{
-			fread_s(ModAPI_SaveAPI[i].pointer, ModAPI_SaveAPI[i].fileSize, ModAPI_SaveAPI[i].fileSize, 1, f);
+			fread(ModAPI_SaveAPI[i].pointer, ModAPI_SaveAPI[i].fileSize, 1, f);
 			fclose(f);
 		}
 		else
@@ -288,21 +289,20 @@ void ReadCWESaveFiles() {
 	}
 }
 
-// int __usercall@<eax>(char *path@<ecx>, void *buffer@<edx>, size_t size)
-static const void *const ReadSaveFileThingPtr = (void*)0x426860;
-static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
-{
-	int result;
-	__asm
-	{
-		push[_size]
-		mov edx, [buffer]
-		mov ecx, [path]
-		call ReadSaveFileThingPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC int ReadSaveFileThing(char *path, void *buffer, size_t _size) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // size
+    ASM_MOVE( edx, ASM_ESP(2+1+0) ); // buffer
+    ASM_MOVE( ecx, ASM_ESP(1+1+0) ); // path
+
+    // call
+    ASM_CALL_R( eax, 0x426860 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl ReadCWESaveFile(char* path, void* buffer, size_t size) {
@@ -310,22 +310,19 @@ int __cdecl ReadCWESaveFile(char* path, void* buffer, size_t size) {
 	ReadCWESaveFiles();
 	return ret;
 }
-static void __declspec(naked) ReadCWESaveFileHook()
-{
-	__asm
-	{
-		push[esp + 04h] // size
-		push edx // buffer
-		push ecx // path
 
-		// Call your __cdecl function here:
-		call ReadCWESaveFile
+static void ASM_FUNC ReadCWESaveFileHook() {
+	ASM_PUSH(ASM_ESP(1)); // size
+	ASM_PUSH(edx); // buffer
+	ASM_PUSH(ecx); // path
 
-		pop ecx // path
-		pop edx // buffer
-		add esp, 4 // size
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (ReadCWESaveFile);
+
+	ASM_POP(ecx); // path
+	ASM_POP(edx); // buffer
+	ASM_ESP_ADD( 1 ); // size
+	ASM_RET(0);
 }
 
 #include "usercall.h"
@@ -355,200 +352,19 @@ int __cdecl SaveCWESaveFile(char* path, void* a2, int count) {
 	return ret;	
 }
 
-static void __declspec(naked) SaveCWESaveFileHook()
-{
-	__asm
-	{
-		push[esp + 04h] // count
-		push edx // a2
-		push ecx // path
+static void ASM_FUNC SaveCWESaveFileHook() {
+	ASM_PUSH(ASM_ESP(1)); // size
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(ecx); // path
 
-		// Call your __cdecl function here:
-		call SaveCWESaveFile
+	// Call your __cdecl function here:
+	ASM_CALL (SaveCWESaveFile);
 
-		pop ecx // path
-		pop edx // a2
-		add esp, 4 // count
-		retn
-	}
+	ASM_POP(ecx); // path
+	ASM_POP(edx); // a2
+	ASM_ESP_ADD( 1 ); // count
+	ASM_RET(0);
 }
-
-#ifdef CHAO_48
-CHAO_SAVE_INFO* GetFreeCWESlot()
-{
-	CHAO_SAVE_INFO* dataPtr = 0;
-	for (int i = 0; i < 24; i++)
-	{
-		if (cweSaveFile.chaoParam[i].param.type == 0)
-		{
-			dataPtr = &cweSaveFile.chaoParam[i];
-			break;
-		}
-	}
-	return dataPtr;
-}
-
-char* GetFreeChaoSlot()
-{
-	signed int v0; // esi
-	
-	v0 = 0;
-	CHAO_SAVE_INFO* dataPtr = 0;
-	for(int i = 0; i < 24; i++)
-	{
-		if (ChaoSlots[i].param.type == 0)
-		{
-			dataPtr = &ChaoSlots[i];
-			break;
-		}
-	}
-	dataPtr = GetFreeCWESlot();
-	if (dataPtr != 0)
-	{
-		memset(dataPtr, 0, sizeof(CHAO_SAVE_INFO));
-		return (char*)dataPtr;
-	}
-	else 
-		return 0;
-}
-int GetFreeChaoCWE(int a1)
-{
-	int count = 0;
-	for (int i = 0; i < 24; i++)
-	{
-		if (cweSaveFile.chaoParam[i].param.type && cweSaveFile.chaoParam[i].param.place == a1)
-			count++;
-	}
-	return count;
-}
-
-int GetFreeChaoCWE2()
-{
-	int count = 0;
-	for (int i = 0; i < 24; i++)
-	{
-		if (cweSaveFile.chaoParam[i].param.type)
-			count++;
-	}
-	return count;
-}
-
-int __cdecl sub_5319F0_(int a1)
-{
-	char* v1; // eax
-	int v2; // edx
-	int v3; // ecx
-
-	v1 = &ChaoSlots[0].param.place;
-	v2 = 0;
-	v3 = 24;
-	do
-	{
-		if (*(v1 - 1) && (unsigned __int8)* v1 == a1)
-		{
-			++v2;
-		}
-		v1 += 2048;
-		--v3;
-	}
-	while (v3);
-
-	return v2 + GetFreeChaoCWE(a1);
-}
-static void __declspec(naked) sub_5319F0()
-{
-	__asm
-	{
-		push esi // a1
-
-		// Call your __cdecl function here:
-		call sub_5319F0_
-
-		pop esi // a1
-		retn
-	}
-}
-DataArray(SAlItem, PurchasedInventory, 0x01DBEDA0, 6);
-int sub_531A20()
-{
-	char* v0; // eax
-	int v1; // edx
-	int v2; // ecx
-	int i; // eax
-	
-	v0 = (char*)&ChaoSlots[0].param.type;
-	v1 = 0;
-	v2 = 24;
-	do
-	{
-		if (*v0)
-		{
-			++v1;
-		}
-		v0 += 2048;
-		--v2;
-	} while (v2);
-	v1 += GetFreeChaoCWE2();
-	for (i = 0; i < *(int*)0x01DBEDAC; ++i)
-	{
-		if (PurchasedInventory[i].mCategory == 1)
-		{
-			++v1;
-		}
-	}
-	if (!(ChaoGardensUnlocked & 0x10))
-	{
-		v1 += 7;
-	}
-	if (!(ChaoGardensUnlocked & 0x40))
-	{
-		v1 += 7;
-	}
-	return v1;
-}
-void SpawnCWEChao()
-{
-	AL_SetChaoOnTheGarden();
-	if (AL_IsGarden())
-	{
-		for (int i = 0; i < 24; i++)
-		{
-			CHAO_SAVE_INFO* chao = &cweSaveFile.chaoParam[i];
-			if (chao->param.place == AL_GetStageNumber()
-				&& chao != *(CHAO_SAVE_INFO**)0x01A5CA5C)
-				//&& chao != (ChaoData*)GBAManager_GetChaoDataPointer())
-			{
-				NJS_VECTOR* spawn = &ProbablyChaoSpawnPoints[16 * AL_GetStageNumber()
-					+ (int)(njRandom() * 15.9f) - 16];
-
-				if (chao->param.type)
-				{
-					if (chao->param.type == 1)
-					{
-						CreateChaoExtra(chao, 0, 0, spawn, NJM_DEG_ANG(njRandom() * 360.f));
-					}
-					else if (chao->param.ClassNum == -1)
-					{
-						task* task = CreateChaoExtra(
-							chao,
-							0,
-							0,
-							spawn,
-							NJM_DEG_ANG(njRandom() * 360.f));
-						if (task)
-						{
-							if (AL_EmotionGetValue(task, EM_ST_SLEEP_DEPTH))
-							{
-								AL_SetBehavior(task, (BHV_FUNC)0x54EF10);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-#endif
 
 ITEM_SAVE_INFO* AL_GetSpecialItemSave() {
 	for (int i = 0; i < _countof(cweSaveFile.specialItems); i++) {
@@ -560,33 +376,21 @@ ITEM_SAVE_INFO* AL_GetSpecialItemSave() {
 	return NULL;
 }
 
-
 void AL_SaveInit()
 {
-#ifdef CHAO_48
-	WriteJump((void*)0x531AA0, GetFreeChaoSlot);
-	WriteCall((void*)0x0054C9C2, SpawnCWEChao);
-
-	//has enough space to create egg
-	WriteJump((void*)0x5319F0, sub_5319F0);
-
-	//black market limit
-	WriteJump((void*)0x531A20, sub_531A20);
-	WriteData((char*)0x0058AF4B, (char)48);
-#endif
 	// no mem leftover (just to be safe)
 	memset(&cweSaveFile, 0, sizeof(CWESaveFile));
 	for (int i = 0; i < 30; i++)
 		cweSaveFile.specialItems[i].kind = -1;
-	WriteCall((void*)0x0052DF4C, ReadCWESaveFileHook);
+	WriteCall((void*)0x0052DF4C, (void*)ReadCWESaveFileHook);
 
 	//i hook every single save file load, which also means the second memory card load for karate/transporter which fails on PC
 	//however it causes the cwe savefile to reload which can delete items obtained before saving
 	//hence this being commented out
 	//lot of explanation for something commented out
-	//WriteCall((void*)0x00532653, ReadCWESaveFileHook);
+	//WriteCall((void*)0x00532653, (void*)ReadCWESaveFileHook);
 
-	WriteCall((void*)0x52E2AC, SaveCWESaveFileHook);
-	WriteCall((void*)0x52FECB, SaveCWESaveFileHook);
-	WriteCall((void*)0x532483, SaveCWESaveFileHook);
+	WriteCall((void*)0x52E2AC, (void*)SaveCWESaveFileHook);
+	WriteCall((void*)0x52FECB, (void*)SaveCWESaveFileHook);
+	WriteCall((void*)0x532483, (void*)SaveCWESaveFileHook);
 }

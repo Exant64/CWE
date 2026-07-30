@@ -3,20 +3,18 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "albhv.h"
 #include <random>
 #include "al_knowledge.h"
 #include "..//AL_ModAPI.h"
 #include "al_intention.h"
+#include <playsound.h>
 #include "../data/toy/al_toy_triangle.nja"
 #include "../data/toy/alo_accordion.nja"
 #include "../data/toy/alo_guitar.nja"
 #include "../ChaoMain.h"
 #include <al_draw.h>
-
-BHVFunc(ALBHV_ListenMusic, 0x0059E710);
 
 int ALBHV_Guitar(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
@@ -27,21 +25,14 @@ int ALBHV_Guitar(task* tp) {
 		AL_FaceChangeEye(tp, 4);
 		AL_FaceChangeMouth(tp, 3);
 
-		sub_5669B0(tp, (int)&object_alo_guitar, AL_PART_HAND_R);
-
-		//hack, normally the function above should ask for the texlist, but since sega always used
-		//al_toy, the function got automatically optimized to always use al_toy inside the code
-		//so i gotta do it manually
-		//todo: fix with decomp function in al_parts or something		
-		GET_CHAOWK(tp)->Shape.CurrObjectList[AL_PART_HAND_R]->pItemTexlist = texlist_cwe_object;
+		AL_SetItem(tp, AL_PART_HAND_R, &object_alo_guitar, texlist_cwe_object);
 		
 		++bhv->Mode;
 		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
 	case 1:
 		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
-		{
-			SE_CallV2((24576 + 162), 0, 0, 56, &tp->twp->pos);
+		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5) {
+			AL_SE_CallV2(TONE(6, CWE_SOUND_GUITAR), 0, 0, 56, &tp->twp->pos);
 		}
 		break;
 	}
@@ -49,47 +40,94 @@ int ALBHV_Guitar(task* tp) {
 	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;//if the band/music field is gone, end the action
 }
 
-int ALBHV_Triangle(task* tp) {
+static int ALBHV_Triangle(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
 	switch (bhv->Mode) {
-	case 0:
-		Chao_RegAnimation(tp, "alm_triangle");
-		AL_FaceChangeEye(tp, 4);
-		AL_FaceChangeMouth(tp, 3);
-		sub_5669B0(tp, (int)&Cylinder, AL_PART_HAND_L);
-		sub_5669B0(tp, (int)&Cylinder_001, AL_PART_HAND_R);
-		++bhv->Mode;
-		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
-	case 1:
-		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5f && ChaoStageNumber == ChaoNextStageNumber)
-		{
-			SE_CallV2((24576 + 163), 0, 0, 75, &tp->twp->pos);
-		}
-		break;
+		case 0:
+			AL_SetMotionLinkStep(tp, ALM_CASTANETS_WAIT, 10);
+
+			AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+			AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
+			
+			AL_SetItem(tp, AL_PART_HAND_L, &Cylinder, &AL_TOY_TEXLIST);
+			AL_SetItem(tp, AL_PART_HAND_R, &Cylinder_001, &AL_TOY_TEXLIST);
+
+			bhv->Mode++;
+			bhv->Timer = 300 + int(njRandom() * 301.f);
+		case 1:
+			// we're reusing the CASTANETS_WAIT animation instead of a custom one
+			// code is based off of ALBHV_Castanets in sa2dc decomp
+		 	if (bhv->Timer-- <= 0 && AL_IsMotionEnd(tp)) {
+                switch (AL_GetMotionNum(tp)) {
+                    case ALM_CASTANETS_WAIT:
+                        if (njRandom() < 0.6f) {
+                            Chao_RegAnimation(tp, "alm_triangle_2h");
+							bhv->SubMode = 1;
+                        } else {
+                            Chao_RegAnimation(tp, "alm_triangle_1h");
+							bhv->SubMode = 0;
+                        }
+
+                        bhv->Timer = 120 + int(njRandom() * 120.f);
+                        bhv->SubTimer = 0;
+                        break;
+                    default:
+                        AL_SetMotionLinkStep(tp, ALM_CASTANETS_WAIT, 10);
+
+                        bhv->Timer = 60 + int(njRandom() * 180.f);
+                        bhv->SubTimer = 0;
+                        break;
+                }
+            }
+
+			// reset the sound timer once the animation looped
+			if(AL_IsMotionEnd(tp)) {
+				bhv->SubTimer = 0;
+			}
+			else {
+            	bhv->SubTimer++;
+			}
+
+            if (AL_GetMotionNum(tp) != ALM_CASTANETS_WAIT) {
+                if(!bhv->SubMode) {
+                    if (bhv->SubTimer == 34) {
+                        AL_SE_CallV2(TONE(6, CWE_SOUND_TRIANGLE), 0, 0, 75, &tp->twp->pos);
+                    }
+				}
+                else {
+                    if ((bhv->SubTimer == 34 || bhv->SubTimer == 65)) {
+                        AL_SE_CallV2(TONE(6, CWE_SOUND_TRIANGLE), 0, 0, 75, &tp->twp->pos);
+                    }
+				}
+            }
+
+			break;
 	}
-	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL; //if the band/music field is gone, end the action
+
+	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
 }
 
 int ALBHV_Accordion(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
 	switch (bhv->Mode) {
-	case 0:
-		Chao_RegAnimation(tp, "alm_accordion");
-		AL_FaceChangeEye(tp, 4);
-		AL_FaceChangeMouth(tp, 3);
-		sub_5669B0(tp, (int)&object_alo_accordion, AL_PART_ARM_R);
-		++bhv->Mode;
-		bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
-	case 1:
-		bhv->SubTimer++;
-		if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5 && ChaoStageNumber == ChaoNextStageNumber)
-		{
-			SE_CallV2((24576 + 161), 0, 0, 56, &tp->twp->pos);
-		}
-		break;
+		case 0:
+			Chao_RegAnimation(tp, "alm_accordion");
+			
+			AL_FaceChangeEye(tp, 4);
+			AL_FaceChangeMouth(tp, 3);
+
+			AL_SetItem(tp, AL_PART_ARM_R, &object_alo_accordion, &AL_TOY_TEXLIST);
+
+			++bhv->Mode;
+			bhv->Timer = (unsigned __int16)(300 + (signed int)(njRandom() * 301.f));
+		case 1:
+			bhv->SubTimer++;
+			if ((bhv->SubTimer % 180) == 0 && njRandom() < 0.5) {
+				AL_SE_CallV2(TONE(6, CWE_SOUND_ACCORDION), 0, 0, 56, &tp->twp->pos);
+			}
+			break;
 	}
 
 	return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
@@ -109,7 +147,7 @@ extern "C" __declspec(dllexport) const BHV_FUNC ALBHV_MusicFunc_CWE[NB_AL_MUSIC_
 	ALBHV_Accordion
 };
 
-Bool __cdecl AL_DecideBehaviorMusic(task* tp) {
+Bool AL_DecideBehaviorMusic_r(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 
 	int InstList[NB_AL_MUSIC_CWE];

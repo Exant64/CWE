@@ -1,8 +1,15 @@
 #pragma once
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
-
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
 
 /* NINJA Chunk model
  *
@@ -36,4 +43,8 @@ NJS_CNK_MODEL attach_00E98D14 = { vertex_00E98AC8, poly_00E98960, { 0.247595f, -
 
 NJS_CNK_OBJECT RaccoonArmsLeft = { NJD_EVAL_UNIT_SCL, &attach_00E98D14, -0.070859f, 0.056757f, -0.005765f, 0xFFFFFBE1, 0, 0, 1, 1, 1, &object_00E988F4, NULL };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

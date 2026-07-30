@@ -9,13 +9,13 @@ enum eAL_PST {
 	AL_PST_OTHERS = 4
 };
 
-void Chao_Animation(MOTION_CTRL* a1, int a2);
-void  Chao_PlayAnimationSpeed(MOTION_CTRL* result, int a2, unsigned __int16 a3);
+void SetMotionLink(MOTION_CTRL* a1, int a2);
+void SetMotionLinkStep(MOTION_CTRL* result, int a2, unsigned __int16 a3);
 
-unsigned int __cdecl AL_IsMotionStop(task* a1);
+Bool AL_IsMotionStop(task* a1);
 void AL_SetMotionLink(task* a1, int index);
 void AL_SetMotionLinkStep(task* a1, int index, int spd);
-void __cdecl AL_SetMotionSpd(task* a1, float a2);
+void AL_SetMotionSpd(task* a1, float a2);
 
 int AL_GetMotionNum(task* tp);
 int AL_GetMotionPosture(task* tp);

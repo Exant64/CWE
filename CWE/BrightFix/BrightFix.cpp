@@ -1,0 +1,568 @@
+#include "stdafx.h"
+#include "SA2ModLoader.h"
+#include <chaoenum.h>
+
+#include <d3d9.h>
+//#include <d3dx9.h>
+#include <string>
+#include "structs.h"
+
+#include "variables.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "ninja_functions.h"
+#include "brightfixapi.h"
+#include <asmutil.h>
+
+const RFAPI_CORE* RenderFixAPI;
+
+ASM_FUNC void sub_41FA60(WeirdChunkTexIndexThing* a1, signed int a2) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // index
+    ASM_MOVE( edi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x41FA60 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
+}
+
+void __cdecl SetChunkTexIndexNull(int a1)
+{
+	WeirdChunkTexIndex.texturePointer = 0;
+	WeirdChunkTexIndex.bank = -1;
+
+	WeirdChunkTexIndex.tes3 = 1;
+	WeirdChunkTexIndex.tes4 = 1;
+	WeirdChunkTexIndex.a2 = 1;
+	WeirdChunkTexIndex.a3 = 1;
+	WeirdChunkTexIndex.tes5 = 0;
+
+	sub_41FA60(&WeirdChunkTexIndex, a1);
+}
+extern "C"
+{
+	void SetPixelShaderFloat(int reg, float val)
+	{
+		float vector[4] = { val,0,0,0 };
+		device->SetPixelShaderConstantF(reg, vector, 1);
+	}
+
+	void SetChunkTexIndexSecondary(int index, int a2, int a3)
+	{
+		int v3; // esi
+		int index_; // ecx
+		Uint32 v5; // eax
+		int v6; // edx
+		int v7; // ecx
+
+		v3 = (int)_nj_curr_ctx_->texlist;
+		index_ = 12 * index;
+		v5 = *(int*)(*(int*)(*(int*)v3 + 12 * index + 8) + 12) + 4;
+		v6 = *(int*)(v5 + 24) >> 31;
+		if (*(int*)(v5 + 24) & 0x8000)
+		{
+			v7 = *(int*)(*(int*)(*(int*)v3 + index_ + 8) + 8);
+			WeirdChunkTexIndex.texturePointer = *(TextureData**)(v5 + 28);
+			WeirdChunkTexIndex.bank = v7;
+		}
+		else
+		{
+			WeirdChunkTexIndex.texturePointer = *(TextureData**)(v5 + 28);
+			WeirdChunkTexIndex.bank = -1;
+		}
+		WeirdChunkTexIndex.tes3 = 1;
+		WeirdChunkTexIndex.tes4 = 1;
+		WeirdChunkTexIndex.a2 = a2;
+		WeirdChunkTexIndex.a3 = a3;
+		WeirdChunkTexIndex.tes5 = v6 != 0;
+		//sub_41FA60(&WeirdChunkTexIndex, 0);
+
+		sub_41FA60(&WeirdChunkTexIndex, 2);
+		DWORD addressU;
+		DWORD addressV;
+		device->GetSamplerState(0, D3DSAMPLERSTATETYPE::D3DSAMP_ADDRESSU, &addressU); //texture clipped off in very specific parts, this works around that
+		device->GetSamplerState(0, D3DSAMPLERSTATETYPE::D3DSAMP_ADDRESSV, &addressV);
+		device->SetSamplerState(2, D3DSAMPLERSTATETYPE::D3DSAMP_ADDRESSU, addressU);
+		device->SetSamplerState(2, D3DSAMPLERSTATETYPE::D3DSAMP_ADDRESSV, addressV);
+	}
+
+	static RFS_VSHADER* pBackupVertexShader;
+	static RFS_VSHADER* pBackupFogVertexShader;
+	static RFS_PSHADER* pBackupPixelShader;
+	static RFS_PSHADER* pBackupFogPixelShader;
+
+	// this bool is a quick hack to not backup multiple times if we already replaced the shader
+	static int InLoadNewShaders = 0;
+
+	API __declspec(noinline) void LoadNewShaders()
+	{
+		if (RenderFixAPI && RFAPI_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			// if InLoadNewShaders was already > 0 by the time we entered here, dont do anything
+			// just note down that this was called through the increment
+			if (InLoadNewShaders++) {
+				return;
+			}
+
+			pBackupVertexShader = RenderFixAPI->pShader->GetGameVShader(RFE_SHADERIX_MDL_NONE);
+			pBackupFogVertexShader = RenderFixAPI->pShader->GetGameVShader(RFE_SHADERIX_MDL_F);
+			pBackupPixelShader = RenderFixAPI->pShader->GetGamePShader(RFE_SHADERIX_MDL_NONE);
+			pBackupFogPixelShader = RenderFixAPI->pShader->GetGamePShader(RFE_SHADERIX_MDL_F);
+
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, (RFS_VSHADER*)chaoVertexSimpleShader);
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_F, (RFS_VSHADER*)chaoVertexSimpleShader);
+
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, (RFS_PSHADER*)chaoPixelSimpleShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, (RFS_PSHADER*)chaoPixelSimpleShader);
+
+			SetShaderType(1);
+
+			return;
+		}
+
+		SetShaderType(1);
+		device->SetVertexShader(chaoVertexSimpleShader);
+		device->SetPixelShader(chaoPixelSimpleShader);
+	}
+	API __declspec(noinline) void CancelNewShaders()
+	{
+		if (RenderFixAPI && RFAPI_CHECKVER(RenderFixAPI, 1, 4, 1, 0)) {
+			// if prefix decrementing results in non 0 value (aka InLoadNewShaders was > 1 before this was entered)
+			// dont do nothing
+			if (--InLoadNewShaders) {
+				return;
+			}
+
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_NONE, pBackupVertexShader);
+			RenderFixAPI->pShader->SetGameVShader(RFE_SHADERIX_MDL_F, pBackupFogVertexShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_NONE, pBackupPixelShader);
+			RenderFixAPI->pShader->SetGamePShader(RFE_SHADERIX_MDL_F, pBackupFogPixelShader);
+
+			SetShaderType(1);
+
+			SetChunkTexIndexNull(2);
+			return;
+		}
+
+		device->SetVertexShader((IDirect3DVertexShader9*)struc_36Instance->Shaders[1]->VertexShader->shaderData);
+		device->SetPixelShader((IDirect3DPixelShader9*)struc_36Instance->Shaders[1]->PixelShader->shaderData);
+		SetChunkTexIndexNull(2);
+		//SetShaders(1);
+		//SetShaders(ShaderBackup);
+	}
+
+	ASM_FUNC void DoLighting(int a1) {
+		// arguments
+		ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+		// call
+		ASM_CALL_R( edx, 0x00487060 );
+
+		// return
+		ASM_RET( 0 );
+	}
+
+	void EggStartShaderHook()
+	{
+		LoadNewShaders();
+		DoLighting(LightIndex);
+	}
+	void EggEndHook()
+	{
+		CancelNewShaders();
+		DoLighting(LightIndexBackupMaybe);
+		SetChunkTexIndexNull(2);
+	}
+	static void ASM_FUNC SetChunkTexIndex()
+	{
+		ASM_PUSH(ASM_ESP(1));
+		ASM_PUSH(ebx);
+		ASM_PUSH(eax);
+
+		ASM_CALL(SetChunkTexIndexSecondary);
+
+		ASM_POP(eax);
+		ASM_POP(ebx);
+		ASM_ESP_ADD(1);
+		ASM_RET(0);
+	}
+
+	ASM_FUNC Uint32 GetChunkTexIndex(NJS_CNK_MODEL* a1) {
+		// arguments
+		ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+		// call
+		ASM_CALL_R( edx, 0x0056D1F0 );
+
+		// return
+		ASM_RET( 0 );
+	}
+
+	ASM_FUNC void SetChunkTexIndexPrimary(int index, int a2, int a3) {
+		// save regs
+		ASM_PUSH( ebx );
+
+		// arguments
+		ASM_PUSH(      ASM_ESP(3+0+1) ); // a3
+		ASM_MOVE( ebx, ASM_ESP(2+1+1) ); // a2
+		ASM_MOVE( eax, ASM_ESP(1+1+1) ); // index
+
+		// call
+		ASM_CALL_R( edx, 0x0056E3D0 );
+
+		// end arguments
+		ASM_ESP_ADD( 1 );
+
+		// restore regs
+		ASM_POP( ebx );
+
+		// return
+		ASM_RET( 0 );
+	}
+
+	void BrightFixPlus_ShinyCheck(int shiny);
+
+	void  ChaoColoringPatch(int texture, int color, int shiny, int highlights, int model)
+	{
+		signed int v5; // esi
+		unsigned __int16 v6; // ax
+		int v7; // eax
+		bool v8; // zf
+		unsigned __int16 v9; // ax
+
+#ifdef SHINY_JEWEL_MONOTONE
+		if (shiny == 2 && texture && highlights) // lil extra I added, maybe will resurrect later
+		{
+			int flag = SecondTextureEnvironmentMap | HasSecondTexture | DontUseTexture;
+			ChunkMatEnable = 1;
+			SetChunkTexIndexPrimary(17 + texture, 1, 1);
+			SetChunkTexIndexSecondary(34, 0, 1);
+			if (color)
+			{
+				flag |= UseChunkObjectColor;
+				ChunkObjectColor = dword_1298448[color]; //dword_1298448 = chaoColors
+			}
+			ChunkMatFlag = flag;
+#ifdef BRIGHTFIX_PLUS
+			BrightFixPlus_ShinyCheck(shiny);
+#endif		
+			return;
+		}
+#endif
+#ifdef BRIGHTFIX_PLUS
+		BrightFixPlus_ShinyCheck(shiny);
+#endif		
+		v5 = 0;
+		if (!model)
+		{
+			return;
+		}
+		if (shiny)
+		{
+			v5 = 6;
+			v6 = GetChunkTexIndex((NJS_CNK_MODEL*)model);
+			SetChunkTexIndexPrimary(v6, 1, 1);
+			v7 = 34;
+		LABEL_6:
+			if (highlights && !texture) //HACK: !texture is to fix a problem regarding Shiny jewel monotones
+				SetChunkTexIndexPrimary(v7, 1, 1);
+			else
+				SetChunkTexIndexSecondary(v7, 1, 1);
+			//if(highlights && !texture) //HACK: !texture is to fix a problem regarding Shiny jewel monotones
+				//SetChunkTexIndexTempDisableFlag(v7, 1, 1);
+			//else SetChunkTexIndexReplace(texture + 17, 0, 1);
+			v8 = texture == 0;
+			goto LABEL_7;
+		}
+		v8 = texture == 0;
+		if (texture > 0)
+		{
+			ChunkObjectColor = -1;
+			v5 = 12;
+			v7 = texture + 17;
+			SetChunkTexIndexPrimary(v7, 1, 1);
+			//SetChunkTexIndexNullZero();
+			v8 = texture == 0;
+			goto LABEL_7;
+		}
+	LABEL_7:
+		if (v8)
+		{
+			if (color > 0)
+			{
+				v5 |= 8u;
+				ChunkObjectColor = dword_1298448[color];
+			}
+			if (highlights)
+			{
+				v5 |= 1u;
+			}
+			else
+			{
+				v9 = GetChunkTexIndex((NJS_CNK_MODEL*)model);
+				SetChunkTexIndexPrimary(v9, 1, 1);
+			}
+		}
+		if (v5)
+		{
+			ChunkMatEnable = 1;
+			ChunkMatFlag = v5;
+		}
+		else
+		{
+			ChunkMatEnable = 0;
+			ChunkMatFlag = 0;
+		}
+		//float test[4] = { 1,1,1,1 };
+		//device->SetPixelShaderConstantF(74, test, 1);
+	}
+
+	static void ASM_FUNC ChaoColoring()
+	{
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(ASM_ESP(4));
+		ASM_PUSH(edi);
+
+		ASM_CALL(ChaoColoringPatch);
+
+		ASM_POP(edi); 
+		ASM_ESP_ADD(4);
+		ASM_RET(0);
+	}
+
+	void PatchEyelidEyeIssue()
+	{
+		SetChunkTexIndexNull(2);
+		ChunkMatEnable = 0;
+	}
+
+	void  EggColoring(int result, int a2)
+	{
+		int v2; // edx
+		unsigned __int16 v3; // ax
+		unsigned __int16 v4; // ax
+		int v5; // ecx
+		int v6; // ecx
+
+		switch (a2)
+		{
+		case ChaoEggColor_Normal:
+			ChunkMatEnable = 0;
+			return;
+		case ChaoEggColor_Yellow_MonoTone:
+		case ChaoEggColor_White_MonoTone:
+		case ChaoEggColor_Brown_MonoTone:
+		case ChaoEggColor_SkyBlue_MonoTone:
+		case ChaoEggColor_Pink_MonoTone:
+		case ChaoEggColor_Blue_MonoTone:
+		case ChaoEggColor_Grey_MonoTone:
+		case ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_Red_MonoTone:
+		case ChaoEggColor_LimeGreen_MonoTone:
+		case ChaoEggColor_Purple_MonoTone:
+		case ChaoEggColor_Orange_MonoTone:
+		case ChaoEggColor_Black_MonoTone:
+			v2 = dword_1298448[a2];
+			ChunkMatEnable = 1;
+			ChunkMatFlag = 9;
+			ChunkObjectColor = v2;
+			return;
+		case ChaoEggColor_Yellow_TwoTone:
+		case ChaoEggColor_White_TwoTone:
+		case ChaoEggColor_Brown_TwoTone:
+		case ChaoEggColor_SkyBlue_TwoTone:
+		case ChaoEggColor_Pink_TwoTone:
+		case ChaoEggColor_Blue_TwoTone:
+		case ChaoEggColor_Grey_TwoTone:
+		case ChaoEggColor_Green_TwoTone:
+		case ChaoEggColor_Red_TwoTone:
+		case ChaoEggColor_LimeGreen_TwoTone:
+		case ChaoEggColor_Purple_TwoTone:
+		case ChaoEggColor_Orange_TwoTone:
+		case ChaoEggColor_Black_TwoTone:
+			ChunkMatEnable = 1;
+			ChunkMatFlag = UseChunkObjectColor;
+			v3 = GetChunkTexIndex((NJS_CNK_MODEL*)result);
+			SetChunkTexIndexPrimary(v3, 1, 1);
+			ChunkObjectColor = dword_1298414[a2];
+			return;
+		case ChaoEggColor_NormalShiny:
+			ChunkMatFlag = SecondTextureEnvironmentMap | HasSecondTexture;
+			njSetTexture(&AL_BODY);
+			goto LABEL_6;
+		case ChaoEggColor_YellowShiny_MonoTone:
+		case ChaoEggColor_WhiteShiny_MonoTone:
+		case ChaoEggColor_BrownShiny_MonoTone:
+		case ChaoEggColor_SkyBlueShiny_MonoTone:
+		case ChaoEggColor_PinkShiny_MonoTone:
+		case ChaoEggColor_BlueShiny_MonoTone:
+		case ChaoEggColor_GreyShiny_MonoTone:
+		case ChaoEggColor_GreenShiny_MonoTone:
+		case ChaoEggColor_RedShiny_MonoTone:
+		case ChaoEggColor_LimeGreenShiny_MonoTone:
+		case ChaoEggColor_PurpleShiny_MonoTone:
+		case ChaoEggColor_OrangeShiny_MonoTone:
+		case ChaoEggColor_BlackShiny_MonoTone:
+			njSetTexture(&AL_BODY);
+			v5 = dword_12983DC[a2];
+			ChunkMatFlag = UseChunkObjectColor | SecondTextureEnvironmentMap | HasSecondTexture | DontUseTexture;
+			ChunkObjectColor = v5;
+			ChunkMatEnable = 1;
+			v4 = GetChunkTexIndex((NJS_CNK_MODEL*)result);
+			SetChunkTexIndexPrimary(34, 1, 1);
+			break;
+		case ChaoEggColor_YellowShiny_TwoTone:
+		case ChaoEggColor_WhiteShiny_TwoTone:
+		case ChaoEggColor_BrownShiny_TwoTone:
+		case ChaoEggColor_SkyBlueShiny_TwoTone:
+		case ChaoEggColor_PinkShiny_TwoTone:
+		case ChaoEggColor_BlueShiny_TwoTone:
+		case ChaoEggColor_GreyShiny_TwoTone:
+		case ChaoEggColor_GreenShiny_TwoTone:
+		case ChaoEggColor_RedShiny_TwoTone:
+		case ChaoEggColor_LimeGreenShiny_TwoTone:
+		case ChaoEggColor_PurpleShiny_TwoTone:
+		case ChaoEggColor_OrangeShiny_TwoTone:
+		case ChaoEggColor_BlackShiny_TwoTone:
+			njSetTexture(&AL_BODY);
+			v6 = dword_12983A8[a2];
+			ChunkMatFlag = UseChunkObjectColor | SecondTextureEnvironmentMap | HasSecondTexture;
+			ChunkObjectColor = v6;
+		LABEL_6:
+			ChunkMatEnable = 1;
+			v4 = GetChunkTexIndex((NJS_CNK_MODEL*)result);
+			SetChunkTexIndexPrimary(v4, 1, 1);
+			SetChunkTexIndexSecondary(34, 1, 1);
+			break;
+		case ChaoEggColor_GlitchyNormal:										//nice IDA thing lol
+		case ChaoEggColor_GlitchyNormal | ChaoEggColor_Yellow_MonoTone:
+		case ChaoEggColor_GreenShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_RedShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_LimeGreenShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_PurpleShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_OrangeShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_BlackShiny_TwoTone | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_GlitchyNormal | ChaoEggColor_Green_MonoTone:
+		case ChaoEggColor_GlitchyNormal | ChaoEggColor_Red_MonoTone:
+		case 0x40:
+		case 0x41:
+		case 0x42:
+		case ChaoEggColor_Brown_MonoTone | 0x40:
+		case 0x44:
+			ChunkObjectColor = -1;
+			ChunkMatEnable = 1;
+			ChunkMatFlag = 12; //also fixed the egg problem , i made a patch for this before but now it's "baked" into this.
+			njSetTexture(&AL_BODY);
+			SetChunkTexIndexPrimary(a2 - 36, 1, 1);
+			break;
+		default:
+			return;
+		}
+	}
+	
+	static void ASM_FUNC EggColoringHook() {
+		ASM_PUSH(esi); // a2
+		ASM_PUSH(eax); // result
+
+		ASM_CALL(EggColoring);
+
+		ASM_POP(eax); // result
+		ASM_POP(esi); // a2
+		ASM_RET(0);
+	}
+
+	void BrightFixPlus_ShinyCheck(int shiny)
+	{
+		if (shiny == 2)
+		{
+			dontFixTEV = false;
+		}
+		else dontFixTEV = true;
+	}
+
+	void BrightFixPlus_TEVModeCheck()
+	{
+		if (dontFixTEV)
+		{
+			//bright chao
+			SetPixelShaderFloatAlmostAlwaysTEVMode(0, 7);
+		}
+		else
+			SetPixelShaderFloatAlmostAlwaysTEVMode(0, 8);
+	}
+
+	DataPointer(int, dword_1A27590, 0x1A27590);
+	DataPointer(int, dword_1A27598, 0x1A27590);
+	DataPointer(float, dword_1AED2D0, 0x1AED2D0);
+
+	DataPointer(NJS_ARGB, GlobalColorThing, 0x025EFFD0);
+
+	FunctionPointer(int, sub_5A57C0, (int a1, __int16 a2, int a3), 0x5A57C0);
+	DataPointer(int, struct36Instance, 0x01A557BC);
+	void __cdecl sub_5A57C0Hook(int a1, __int16 a2, int a3)
+	{
+		//on shiny twotone, copy secondary unused env map matrix into main matrix
+		//shader has an untouched UV slot so i just use that when i see that its in shiny twotone mode
+		if (!dontFixTEV)
+		{
+			float texGenSrc = 1;
+			device->SetVertexShaderConstantF(160, (float*)(struct36Instance + 0x3E8 + 64), 4);
+			device->SetVertexShaderConstantF(140, &texGenSrc, 1);
+		}
+
+		sub_5A57C0(a1, a2, a3);
+	}
+
+	API void __cdecl BrightFix_Init(const char* path, BYTE* vertexShader, BYTE* shaderData, const RFAPI_CORE* rfapi_core)
+	{ 
+		RenderFixAPI = rfapi_core;
+
+		device = dword_1A557C0->pointerToDevice;
+
+		if ((device->CreateVertexShader((DWORD*)vertexShader, &chaoVertexSimpleShader)) != D3D_OK)//creates shaders
+		{
+			MessageBoxA(0, "BrightFix", "Cant load shader!", 0);
+		}
+
+		if ((device->CreatePixelShader((DWORD*)shaderData, &chaoPixelSimpleShader)) != D3D_OK)//creates shaders
+		{
+			MessageBoxA(0, "BrightFix", "Cant load shader!", 0);
+		}
+
+		WriteCall((void*)0x0056DC1A, (void*)BrightFixPlus_TEVModeCheck);
+
+		WriteCall((void*)0x057B6C5, (void*)EggStartShaderHook); //egg
+		WriteJump((void*)0x0057B979, (void*)EggEndHook);
+
+		WriteJump((void*)0x0056D2A0, (void*)EggColoringHook); //hooks eggcoloring
+
+		WriteCall((void*)0x054FFA1, (void*)LoadNewShaders); //chao setshaders hook
+		WriteCall((void*)0x0055017E, (void*)CancelNewShaders);
+		WriteCall((void*)0x0056D54D, (void*)LoadNewShaders); //eggcoloring general hook
+		WriteJump((void*)0x0056D58A, (void*)CancelNewShaders);
+
+		//this doesnt do anything on brightfixplus since we hook it anyways for coexistence
+		WriteData((char*)0x56DC17, (char)0); //hack tevmode so brightness doesnt happen
+
+		//WriteData((char*)0x56DC71, (char)0); //reenable environment map
+		//WriteCall((void*)0x0056DC77, (void*)BrightFixPlus_UV);
+		WriteCall((void*)0x0056DC8A, (void*)sub_5A57C0Hook);
+
+		WriteJump((void*)0x0056D470, (void*)ChaoColoring); //chaocoloring hook
+		WriteCall((void*)0x00540402, (void*)PatchEyelidEyeIssue); //fixes the "Everything is shiny" glitch
+	}
+}
+

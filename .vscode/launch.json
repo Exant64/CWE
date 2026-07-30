@@ -16,6 +16,20 @@
                 "moduleLoad": false,
                 "trace": true
             },
+            "preLaunchTask": "CMake Build (debug)"
+        },
+        {
+            "name": "Release launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${env:SA2_PATH}\\sonic2app.exe",
+            "symbolSearchPath": "${workspaceFolder}\\build",
+            "cwd": "${env:SA2_PATH}",
+            "args": ["-l","chaoworld"],
+            "logging": {
+                "moduleLoad": false,
+                "trace": true
+            },
             "preLaunchTask": "ImGuiBuild"
         }
     ]

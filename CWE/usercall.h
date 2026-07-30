@@ -203,7 +203,7 @@ static constexpr T const GenerateUsercallWrapper(int ret, intptr_t address, TArg
 		memsz += 8;
 		break;
 	}
-	++memsz; // retn
+	++memsz; // ASM_RET(0);
 	auto codeData = AllocateCode(memsz);
 	int cdoff = 0;
 	char stackoff = 4;
@@ -536,7 +536,7 @@ static constexpr void const GenerateUsercallHook(T func, int ret, intptr_t addre
 	}
 	if (stackcnt > 0)
 		memsz += 3;
-	++memsz; // retn
+	++memsz; // ASM_RET(0);
 	auto codeData = AllocateCode(memsz);
 	int cdoff = 0;
 	char stackoff = stackcnt * 4;
@@ -680,9 +680,9 @@ static constexpr void const GenerateUsercallHook(T func, int ret, intptr_t addre
 		writebytes(codeData, cdoff, 0x83, 0xC4, (char)(stackcnt * 4));
 	codeData[cdoff++] = 0xC3;
 	assert(cdoff == memsz);
-	if (*(char*)address == 0xE8)
-		WriteCall((void*)address, codeData);
+	if (*(Uint8*)address == 0xE8)
+		WriteCall((void*)address, (void*)codeData);
 	else
-		WriteJump((void*)address, codeData);
+		WriteJump((void*)address, (void*)codeData);
 }
 #pragma warning(pop)

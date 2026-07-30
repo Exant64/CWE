@@ -17,7 +17,11 @@
 #include <al_behavior/al_behavior.h>
 #include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
+
 #include <data/more_faces.h>
+#include "navigation/navsys.h"
+#include "navigation/navsys_generator.h"
+#include "navigation/navsys_internal.h"
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -31,13 +35,14 @@ static bool ShowAccessoryMenu = false;
 static bool ShowMarketMenu = false;
 static bool ShowSoundsMenu = false;
 static bool ShowMoreFacesMenu = false;
+static bool ShowNavSysMenu = false;
 
 static task* GetSelectedChao() {
-    return GetChaoObject(0, SelectedChaoIndex);
+    return ALW_GetTaskCount(0, SelectedChaoIndex);
 }
 
 static task* GetSelectedOtherChao() {
-    return GetChaoObject(0, SelectedOtherChaoIndex);
+    return ALW_GetTaskCount(0, SelectedOtherChaoIndex);
 }
 
 static int SetMusicBhv(task* tp) {
@@ -54,7 +59,7 @@ static int SetSToyBhv(task* tp) {
 
 static void MoreFacesMenu() {
     if(!ShowMoreFacesMenu) return;
-    if(!playerpwp[0]);
+    if(!playerpwp[0]) return;
 
     task* pHeld = playerpwp[0]->htp;
     if(!pHeld) return;
@@ -210,6 +215,11 @@ static void ChaoInfoMenu() {
 
             if (ImGui::BeginTabItem("Behavior")) {
                 if (ImGui::TreeNode("Start behaviors")) {
+                    if (ImGui::Button("TV")) {
+                        int ALBHV_GoToTV(task* tp);
+                        
+                        AL_SetBehavior(pChao, ALBHV_GoToTV);
+                    }
                     if (ImGui::Button("Piano")) {
                         AL_SetBehavior(pChao, ALBHV_GoToPiano);
                     }
@@ -303,7 +313,7 @@ static void ChaoInfoMenu() {
                                 if (!ImGui::TreeNode(buf, "Entry %d", int(j))) continue;
 
                                 auto* link = &perception->field_18[j];
-                                ImGui::Text("Info: %h %h %h %h", link->info[0], link->info[1], link->info[2], link->info[3]);
+                                ImGui::Text("Info: %d %d %d %d", int(link->info[0]), int(link->info[1]), int(link->info[2]), int(link->info[3]));
                                 ImGui::Text("dist: %f", link->dist);
                                 ImGui::Text("InSightFlag: %d", link->InSightFlag);
                                 ImGui::Text("HearFlag: %d", link->HearFlag);
@@ -571,7 +581,7 @@ static void TaskListMenu() {
                 auto* obj = btp[i];
                 if (obj) {
                     do {
-                        ImGui::Text(!obj->name ? "" : obj->name);
+                        ImGui::Text("%s", !obj->name ? "" : obj->name);
                         obj = obj->last;
                     } while (obj != btp[i]);
                 }
@@ -776,7 +786,7 @@ static void SoundsMenu() {
                 ImGui::Text("%d", entry.sctimer);
                 ImGui::TableNextColumn();
 
-                ImGui::Text("%x", entry.idp);
+                ImGui::Text("%x", Uint32(entry.idp));
                 ImGui::TableNextColumn();
 
                 ImGui::Text("%d", entry.tone);
@@ -794,6 +804,27 @@ static void SoundsMenu() {
     }
 }
 
+static void NavSysMenu() {
+    if(ShowNavSysMenu && ImGui::Begin("NavSys", &ShowNavSysMenu)) {
+        if(ImGui::BeginTabBar("NavSysTabs")) {
+            task* pNavSys = GetNavSysTask();
+            if(ImGui::BeginTabItem("Generator")) {
+                gNavSysGenerator.ImGuiDebug();
+                ImGui::EndTabItem();
+            }
+
+            if(pNavSys && ImGui::BeginTabItem("Task")) {
+                GET_NAV_SYS(pNavSys)->ImGuiDebug();
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
+
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
@@ -807,6 +838,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Market", NULL, &ShowMarketMenu);
             ImGui::MenuItem("Sound System", NULL, &ShowSoundsMenu);
             ImGui::MenuItem("More Chao Faces", NULL, &ShowMoreFacesMenu);
+            ImGui::MenuItem("Navi System", NULL, &ShowNavSysMenu);
             
             ImGui::EndMenu();
         }
@@ -821,6 +853,7 @@ static void ImGuiMenu() {
         MarketMenu();
         SoundsMenu();
         MoreFacesMenu();
+        NavSysMenu();
 
         ImGui::EndMainMenuBar();
     }

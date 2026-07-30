@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
@@ -44,7 +43,6 @@ int ALBHV_Hug1(task* a1)
 	}
 	return 0;
 }
-//FunctionPointer(signed int, AL_GetRandomAttrPos_0, (task* a1), 0x0073AEE0);
 
 int ALBHV_Hug2(task* a1)
 {
@@ -134,8 +132,6 @@ int ALBHV_InitHug(task* a1)
 	ALW_LockOn(a1, otherChao);
 	ALW_LockOn(otherChao, a1);
 	ALW_CommunicationOn(a1, otherChao);
-
-	//AL_GetRandomAttrPos_0(a1);
 
 	MOV_SetAimPos(a1, &otherChao->twp->pos);
 

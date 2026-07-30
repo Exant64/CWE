@@ -1,21 +1,30 @@
 #include "stdafx.h"
 
-#include "ALifeSDK_Functions.h"
 #include "Chao.h"
+#include "asmutil.h"
 
 DataArray(__int16, word_8A7A70, 0x8A7A70, 3);
 DataArray(__int16, word_8A7AC0, 0x8A7AC0, 3);
 DataPointer(__int8, byte_0053A5BC, 0x0053A5BC);
-const int SetChunkTextureIDPtr = 0x0055EA00;
-void  SetChunkTextureID_(NJS_CNK_MODEL* a1, int a2)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov edi, a2
-		call SetChunkTextureIDPtr
-	}
+
+ASM_FUNC void AL_MatChangeModelTexture(NJS_CNK_MODEL* pModel, uint16_t TexID) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( edi, ASM_ESP(2+0 +1) ); // TexID
+    ASM_MOVE( ecx, ASM_ESP(1+0 +1) ); // pModel
+
+    // call
+    ASM_CALL_R( edx, 0x0055EA00 );
+
+    // pull regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
+
 
 // todo: refactor with decomp
 void __cdecl AL_FaceSetEyeCWE(task* a3, int a2, int a1)
@@ -181,7 +190,7 @@ LABEL_10:
 		v8 = (NJS_CNK_MODEL*)v7->pModel;
 		if (v8)
 		{
-			SetChunkTextureID_(v8, v6);
+			AL_MatChangeModelTexture(v8, v6);
 		}
 	}
 	v9 = v3->pEyeObject[1];
@@ -190,51 +199,56 @@ LABEL_10:
 		v10 = (NJS_CNK_MODEL*)v9->pModel;
 		if (v10)
 		{
-			SetChunkTextureID_(v10, v6);
+			AL_MatChangeModelTexture(v10, v6);
 		}
 	}
 }
-static void __declspec(naked) AL_FaceSetEyeHook()
-{
-	__asm
-	{
-		push eax // a1
-		push edx // a2
-		push ecx // a3
+static void ASM_FUNC AL_FaceSetEyeHook() {
+	ASM_PUSH(eax); // a1
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(ecx); // a3
 
-		// Call your __cdecl function here:
-		call AL_FaceSetEyeCWE
+	ASM_CALL (AL_FaceSetEyeCWE);
 
-		pop ecx // a3
-		pop edx // a2
-		pop eax // a1
-		retn
-	}
+	ASM_POP(ecx); // a3
+	ASM_POP(edx); // a2
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
-const int Chao_SetMouthPtr = 0x0053A5A0;
-void AL_FaceSetMouth(task* a2, int a3, int a1)
-{
-	__asm
-	{
-		mov edx, a1
-		mov ecx, a2
-		push a3
-		call Chao_SetMouthPtr
-		add esp, 4
-	}
+ASM_FUNC void  AL_FaceSetMouth(task* tp, int MouthNum, int32_t timer) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(3+0) ); // timer
+    ASM_PUSH(      ASM_ESP(2+0) ); // MouthNum
+    ASM_MOVE( ecx, ASM_ESP(1+1) ); // tp
+
+    // call
+    ASM_CALL_R( eax, 0x0053A5A0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int Chao_SetEyePtr = 0x0053A4B0;
-void AL_FaceSetEye(task* a3, int a2, int a1)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		mov ecx, a3
-		call Chao_SetEyePtr
-	}
+ASM_FUNC void AL_FaceSetEye(task* tp, int EyeNum, int32_t timer) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(3+0 +1) ); // timer
+    ASM_MOVE( edx, ASM_ESP(2+0 +1) ); // EyeNum
+    ASM_MOVE( ecx, ASM_ESP(1+0 +1) ); // tp
+
+    // call
+    ASM_CALL_R( ebx, 0x0053A4B0 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void AL_FaceChangeEye(task* tp, int EyeNum) {
@@ -254,10 +268,10 @@ void AL_FaceInit() {
 	WriteData((unsigned char*)0x008A7ABC, (unsigned char)0x12); //13-0
 	WriteData((unsigned char*)0x008A7ABE, (unsigned char)0x11); //13-1
 
-	WriteJump((void*)Chao_SetEyePtr, AL_FaceSetEyeHook);
+	WriteJump((void*)0x0053A4B0, (void*)AL_FaceSetEyeHook);
 
 	//eye coloring
 	//game sets texture ID on eyes to 5 if half closed eyes
-	WriteCall((void*)0x0053A49F, nullsub_1);
-	WriteCall((void*)0x0053A487, nullsub_1);
+	WriteCall((void*)0x0053A49F, (void*)nullsub_1);
+	WriteCall((void*)0x0053A487, (void*)nullsub_1);
 }

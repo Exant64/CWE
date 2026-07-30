@@ -26,7 +26,8 @@ void AL_PartsMinimalFlagOn_DX(task* tp, int MinimalType);
 int  AL_PartsIsMinimalFlagOn(task* tp, int MinimalType);
 
 void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist);
-
+void AL_SetItemOffset(task *a1, int a2, int a3);
+void sub_5669B0(task* a1, int a2, int a3);
 
 bool AL_IsExistPartsChild(int MinimalNum, int PartsKind);
 bool AL_IsExistPartsAdult(int MinimalNum, int PartsKind);

@@ -18,3 +18,7 @@ enum eCHAO_STAGE_NUMBER
     CHAO_STG_KARATE_2P = 11,
     CHAO_STG_ODEKAKE = 12
 };
+
+static bool AL_IsChangeStageRequested() {
+    return ChaoStageNumber != ChaoNextStageNumber;
+}

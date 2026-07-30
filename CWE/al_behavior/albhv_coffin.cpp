@@ -101,6 +101,8 @@ static int ALBHV_WaitForCoffin(task* tp) {
             }
             break;
     }
+
+    return BHV_RET_CONTINUE;
 }
 
 int ALBHV_GoToCoffin(task* tp) {
@@ -117,12 +119,12 @@ int ALBHV_GoToCoffin(task* tp) {
     ALW_LockOn(tp, pToy);
 
     AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-    AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>);
-    AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+    AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<0x56B480>);
+    AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
     AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_NoAnim>);
     AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOnFast>);
     AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-    AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56BBA0>);
+    AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<0x56BBA0>);
     AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_WaitForCoffin>);
 
     ALW_CommunicationOn(tp, pToy);

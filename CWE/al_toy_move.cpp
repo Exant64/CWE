@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "ALifeSDK_Functions.h"
 #include "al_world.h"
 #include "Chao.h"
 #include "al_toy_move.h"
@@ -11,6 +10,8 @@
 #include "UsercallFunctionHandler.h"
 #include "FunctionHook.h"
 #include "util.h"
+#include "asmutil.h"
+#include "memory.h"
 #include "asm_util.h"
 
 enum {
@@ -33,76 +34,6 @@ struct TOY_MOVE_WK {
 // we set this pointer when AL_Toy_Move_Init gets called, and then inside our FunctionHook/UsercallHooks, we use it to get the currently being spawned toy's task ptr
 // and call ALW_Entry there
 static task* pLastToyTask = NULL;
-
-const int MOV_ControlPtr = 0x00796780;
-void MOV_Control(task* eax0)
-{
-	__asm
-	{
-		mov eax, eax0
-		call MOV_ControlPtr
-	}
-}
-
-const int sub_54B230Ptr = 0x54B230;
-void sub_54B230(task* eax0, float a2)
-{
-	__asm
-	{
-		mov eax, eax0
-		push a2
-		call sub_54B230Ptr
-		add esp, 4
-	}
-}
-
-const int sub_47D9E0Ptr = 0x47D9E0;
-void ObjectMovableInitialize(taskwk* a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call sub_47D9E0Ptr
-	}
-}
-
-const int MoveFunc2Ptr = 0x00798300;
-void MOV_DetectCollision(task* a1)
-{
-	__asm
-	{
-		mov esi, a1
-		call MoveFunc2Ptr
-	}
-}
-
-#define ALW_Entry2_p                0x00530750
-ASM_FUNC
-Sint32
-ALW_Entry2(Uint16 category, task* tp, Uint16 kind, void* pSaveInfo)
-{
-    // save regs
-    ASM_PUSH( ebx );
-
-    // arguments
-    ASM_PUSH(      ASM_ESP(4+0 +1) ); // pSaveInfo
-    ASM_PUSH(      ASM_ESP(3+1 +1) ); // kind
-    ASM_MOVE( ebx, ASM_ESP(2+2 +1) ); // tp
-    ASM_MOVE( ecx, ASM_ESP(1+2 +1) ); // category
-
-    // call
-    ASM_CALL_R( edx, ALW_Entry2_p );
-
-    // end arguments
-    ASM_ESP_ADD( 2 );
-
-    // pull regs
-    ASM_POP( ebx );
-
-    // return
-    ASM_RET( 0 );
-}
 
 void AL_Toy_Move_Register(task* obj, __int16 a3)
 {
@@ -271,7 +202,9 @@ void AL_Toy_Move_Update(task *tp) {
 static MOVE_WORK* MOV_Init_ToyHack(task* obj) {
 	MOVE_WORK* move; // esi
 
-	move = (MOVE_WORK*)AllocateArray(0x26C + sizeof(TOY_MOVE_WK), 1, (char*)"..\\..\\src\\move.c", 64);
+	move = (MOVE_WORK*)syMalloc(0x26C + sizeof(TOY_MOVE_WK), "..\\..\\src\\move.c", 64);
+	memset(move, 0, 0x26C + sizeof(TOY_MOVE_WK));
+
 	obj->mwp = (motionwk*)move;                   // different offset than SADX
 
 	move->Top = 3.0f;
@@ -331,18 +264,14 @@ void __cdecl AddToColliListToy(task* a1)
 	CCL_Entry(a1);
 }
 
-static void __declspec(naked) AddToCollisionListHook()
-{
-	__asm
-	{
-		push esi // a1
+static void ASM_FUNC AddToCollisionListHook() {
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call AddToColliListToy
+	// Call your __cdecl function here:
+	ASM_CALL (AddToColliListToy);
 
-		pop esi // a1
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 CCL_INFO ALO_Horse_collision = { '\0', '\0', 'w', '\f', 0u, {  0,  1.2f,  0 }, 2, 0, 0, 0, 0, 0, 0 };
@@ -357,18 +286,14 @@ void __cdecl AL_TV_Init(task* a1)
 	GET_MOVE_WORK(a1)->Offset.y = 1.75f;
 }
 
-static void __declspec(naked) AL_TV_Init_Hook()
-{
-	__asm
-	{
-		push eax // obj
+static void ASM_FUNC AL_TV_Init_Hook() {
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_TV_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_TV_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl AL_Toy_Update(task* a1)
@@ -384,18 +309,14 @@ void __cdecl AL_Toy_Update(task* a1)
 	CCL_Entry(a1);
 }
 
-static void __declspec(naked) AL_Toy_UpdateHook()
-{
-	__asm
-	{
-		push esi // a1
+static void ASM_FUNC AL_Toy_UpdateHook() {
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call AL_Toy_Update
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Toy_Update);
 
-		pop esi // a1
-		retn
-	}
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 void __cdecl AL_Box_Init(task* a1)
@@ -404,18 +325,14 @@ void __cdecl AL_Box_Init(task* a1)
 	//a1->EntityData2->field_AC = 1.75f;
 }
 
-static void __declspec(naked) AL_Box_Init_Hook()
-{
-	__asm
-	{
-		push eax // obj
+static void ASM_FUNC AL_Box_Init_Hook() {
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_Box_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Box_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl AL_Radio_Init(task* a1)
@@ -424,18 +341,15 @@ void __cdecl AL_Radio_Init(task* a1)
 	GET_MOVE_WORK(a1)->Offset.y = 1.6f;
 }
 
-static void __declspec(naked) AL_Radio_Init_Hook()
+static void ASM_FUNC AL_Radio_Init_Hook()
 {
-	__asm
-	{
-		push eax // obj
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_Radio_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Radio_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl AL_Horse_Init(task* a1)
@@ -444,18 +358,14 @@ void __cdecl AL_Horse_Init(task* a1)
 	//a1->EntityData2->field_AC = 1.75f;
 }
 
-static void __declspec(naked) AL_Horse_Init_Hook()
-{
-	__asm
-	{
-		push eax // obj
+static void ASM_FUNC AL_Horse_Init_Hook() {
+	ASM_PUSH(eax); // obj
 
-		// Call your __cdecl function here:
-		call AL_Horse_Init
+	// Call your __cdecl function here:
+	ASM_CALL (AL_Horse_Init);
 
-		add esp, 4 // obj<eax> is also used for return value
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
 }
 
 void __cdecl ALO_BoxExecutor_Main_(task* a1)
@@ -486,11 +396,11 @@ void __cdecl ALO_RadicaseExecutor_Display_(task* a1)
 	ALO_RadicaseDisplayer(a1);
 }
 
-template<task_exec func, int index>
+template<Uint32 func, int index>
 void __cdecl ALO_ToyDisplayHook(task* tp) {
-	tp->disp = func;
+	tp->disp = task_exec(func);
 	AL_Toy_Move_Register(tp, index);
-	func(tp);
+	(task_exec(func))(tp);
 }
 
 void __cdecl ALO_Ball_Main2_(task* a1)
@@ -500,28 +410,14 @@ void __cdecl ALO_Ball_Main2_(task* a1)
 	AL_Toy_Move_Register(a1, ALW_KIND_BALL);
 }
 
-void ALO_Ball_Hook() {
-	__asm {
-		push ebx
-		call ALO_Ball_Main2_
-		add esp,4
-	}
+static ASM_FUNC void ALO_Ball_Hook() {
+	ASM_PUSH(ebx);
+	ASM_CALL(ALO_Ball_Main2_);
+	ASM_POP(ebx);
+	ASM_RET(0);
 }
 
 DataArray(int, dword_1DC0F80, 0x1DC0F80, 1);
-const int sub_530470Ptr = 0x530470;
-ALW_ENTRY_WORK* sub_530470(int a1, int a2)
-{
-	ALW_ENTRY_WORK* result;
-	__asm
-	{
-		mov edx, a1
-		mov ebx, a2
-		call sub_530470Ptr
-		mov result, eax
-	}
-	return result;
-}
 
 void SaveToyPos() {
 	ITEM_SAVE_INFO* v5;
@@ -534,7 +430,7 @@ void SaveToyPos() {
 		{
 			while (1)
 			{
-				v4 = sub_530470(6, --v2);
+				v4 = ALW_GetEntryCount(6, --v2);
 				if (v4)
 				{
 					v5 = (ITEM_SAVE_INFO*)v4->pSaveInfo;
@@ -614,43 +510,43 @@ void AL_Toy_Moveable_Init()
 	// Ball
 	// the ball is a special case, it already has moving so we only have to handle ALW_Entry stuff to save its position, and we don't even need to delay it
 	// because they already do it?? (some objects in SA2 do this, where the mainsub they set is actually another "sub-init" thing)
-	WriteCall((void*)0x0055D693, ALO_Ball_Hook);
+	WriteCall((void*)0x0055D693, (void*)ALO_Ball_Hook);
 
 	// Box
 	
-	WriteCall((void*)0x005808F4, nullsub_1); 
+	WriteCall((void*)0x005808F4, (void*)nullsub_1); 
 	//HookToyLoad<ALW_KIND_BOX>(ALO_BoxExecutor_Load_t);
 	//HookToyLoad<ALW_KIND_BOX, 0x00580890>();
 	WriteData((int*)0x058089E, (int)ALO_BoxExecutor_Main_); //box doesnt check cameradist, no fix needed, so we delay the mainsub not the displaysub
-	WriteCall((void*)0x005808E4, AL_Box_Init_Hook); 
-	WriteCall((void*)0x00580462, AL_Toy_UpdateHook);
-	WriteCall((void*)0x58047F, AL_Toy_UpdateHook);
-	WriteCall((void*)0x5804D5, AL_Toy_UpdateHook);
-	WriteCall((void*)0x005804E4, AL_Toy_UpdateHook);
+	WriteCall((void*)0x005808E4, (void*)AL_Box_Init_Hook); 
+	WriteCall((void*)0x00580462, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x58047F, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x5804D5, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x005804E4, (void*)AL_Toy_UpdateHook);
 
 	// TV
-	WriteCall((void*)0x0055CBF3, nullsub_1);
+	WriteCall((void*)0x0055CBF3, (void*)nullsub_1);
 	//HookToyLoad<ALW_KIND_TV, 0x0055CB90>();
 	//HookToyLoad<ALW_KIND_TV>(ALO_TVExecutor_Load_t);
 	WriteData((int*)(0x0055CC3C - 4), (int)ALO_TVExecutor_Display_);
-	WriteCall((void*)0x0055CBE2, AL_TV_Init_Hook);
-	WriteCall((void*)0x0055C719, AL_Toy_UpdateHook);
-	WriteCall((void*)0x55C99F, AL_Toy_UpdateHook);
+	WriteCall((void*)0x0055CBE2, (void*)AL_TV_Init_Hook);
+	WriteCall((void*)0x0055C719, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x55C99F, (void*)AL_Toy_UpdateHook);
 
 	// radio
-	WriteCall((void*)0x0057CD00, nullsub_1);
+	WriteCall((void*)0x0057CD00, (void*)nullsub_1);
 	//HookToyLoad<ALW_KIND_RADICASE, 0x0057CCA0>();
 	//HookToyLoad<ALW_KIND_RADICASE>(ALO_RadicaseExecutor_Load_t);
-	WriteData((int*)(0x0057CD2B - 4), (int)ALO_ToyDisplayHook<(task_exec)0x57CA80, 3>);
-	WriteCall((void*)0x0057CCF2, AL_Radio_Init_Hook);
-	WriteCall((void*)0x0057C9F5, AL_Toy_UpdateHook);
-	WriteCall((void*)0x0057CA58, AL_Toy_UpdateHook);
+	WriteData((int*)(0x0057CD2B - 4), (int)ALO_ToyDisplayHook<0x57CA80, 3>);
+	WriteCall((void*)0x0057CCF2, (void*)AL_Radio_Init_Hook);
+	WriteCall((void*)0x0057C9F5, (void*)AL_Toy_UpdateHook);
+	WriteCall((void*)0x0057CA58, (void*)AL_Toy_UpdateHook);
 
 	// horse
-	WriteCall((void*)0x00580F19, nullsub_1);
+	WriteCall((void*)0x00580F19, (void*)nullsub_1);
 	WriteData((int*)(0x00580F09 - 4), (int)ALO_HorseExecutor_Display_);
 	WriteData<7>((char*)0x00580EDF, (char)0x90);
-	WriteCall((void*)0x00580ECC, AL_Horse_Init);
-	WriteCall((void*)0x00580EEF, nullsub_1);
-	WriteCall((void*)0x00580C8F, AddToCollisionListHook);
+	WriteCall((void*)0x00580ECC, (void*)AL_Horse_Init);
+	WriteCall((void*)0x00580EEF, (void*)nullsub_1);
+	WriteCall((void*)0x00580C8F, (void*)AddToCollisionListHook);
 }

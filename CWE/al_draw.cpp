@@ -2,7 +2,7 @@
 
 #include "ninja_functions.h"
 #include "al_draw.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include "alo_accessory.h"
 #include "AL_ModAPI.h"
 #include "ChaoMain.h"
@@ -16,31 +16,45 @@
 #include <FunctionHook.h>
 #include <UsercallFunctionHandler.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
 #include <data/debugsphere.h>
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #include <al_daynight.h>
 #include <api/api_accessory.h>
 #include <optional>
 #include <renderfix.h>
+#include <asmutil.h>
 
 extern NJS_CNK_OBJECT object_alo_missing;
 
-const int AnimateChaoPtr = 0x0056EF80;
-void AnimateChao(int a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call AnimateChaoPtr
-	}
+ASM_FUNC void AnimateChao(int a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0056EF80 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-#define MASK_OBJ_STR(...) {##__VA_ARGS__, nullptr} 
+#define MASK_OBJ_STR(...) { __VA_ARGS__, nullptr} 
 const char* MaskObjObjectListDllNames[OBAKE_HEAD_PARTS_EGG][4] = {
 	{nullptr},
 	MASK_OBJ_STR("object_al_pumpkinhead_pumpkinhead"),
@@ -287,23 +301,33 @@ void ChaoColoring(int texture, int color, int shiny, int monotone, int shinyJewe
 void AL_SetRareMaterial(task* tp, NJS_CNK_MODEL* pModel)
 {
 	ChaoColoring(
-		GET_CHAOWK(tp)->pParamGC->body.JewelNum,
-		GET_CHAOWK(tp)->pParamGC->body.ColorNum,
-		GET_CHAOWK(tp)->pParamGC->body.MultiNum,
-		GET_CHAOWK(tp)->pParamGC->body.NonTex,
+		GET_CHAOPARAM(tp)->body.JewelNum,
+		GET_CHAOPARAM(tp)->body.ColorNum,
+		GET_CHAOPARAM(tp)->body.MultiNum,
+		GET_CHAOPARAM(tp)->body.NonTex,
 		GET_CWEPARAM(tp)->ShinyJewelMonotone,
 		pModel
 	);
 }
 
 static const int C_MTXConcatPtr = 0x00426E40;
-static void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3) {
-	__asm {
-		mov eax, a1
-		mov edx, a2
-		mov ecx, a3
-		call C_MTXConcatPtr
-	}
+static ASM_FUNC void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3) {
+	// save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0 +1) ); // md
+    ASM_MOVE( ecx, ASM_ESP(3+0 +1) ); // mpst
+    ASM_MOVE( eax, ASM_ESP(1+0 +1) ); // mpre
+
+    // call
+    ASM_CALL_R( ebx, 0x00426E40 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static NJS_MATRIX StartViewMatrix;
@@ -673,15 +697,18 @@ void DrawOtherChao(task* tp, AL_OBJECT* pObject, NJS_CNK_OBJECT* pOriginalObj)
 		pOriginalObj = pOriginalObj->sibling;
 	}
 }
-const int sub_56E9C0Ptr = 0x56E9C0;
-void sub_56E9C0(task* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call sub_56E9C0Ptr
-	}
+
+ASM_FUNC void AL_InitCalcMotionMatrix(task* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x56E9C0 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 void __cdecl DrawEggChao(task* tp)
 {
 	chaowk* work = GET_CHAOWK(tp);
@@ -706,7 +733,7 @@ void __cdecl DrawEggChao(task* tp)
 	}
 
 	njSetTexture(&AL_BODY);
-	sub_56E9C0(tp);
+	AL_InitCalcMotionMatrix(tp);
 	alpalSetBank(tp, tp->twp->btimer);
 	SaveControl3D();
 
@@ -744,28 +771,34 @@ void __cdecl DrawEggChao(task* tp)
 	}
 	njPopMatrixEx();
 }
-const int loc_55016E = 0x55016E;
-static void __declspec(naked) DrawEggChaoHook()
-{
-	__asm
-	{
-		push ebx
-		call DrawEggChao
-		add    esp, 4
-		jmp loc_55016E
-	}
+
+static const void* jumpTo = (void*)0x55016E;
+static void ASM_FUNC DrawEggChaoHook() {
+	ASM_PUSH(ebx);
+	ASM_CALL(DrawEggChao);
+	ASM_ESP_ADD(1);
+	ASM_JUMP_PTR(jumpTo);
 }
 
-const int ColorEggModelPtr = 0x0056D540;
-void ColorEggModel(NJS_CNK_MODEL* a1, int a2)
-{
-	__asm
-	{
-		push a2
-		mov edi, a1
-		call ColorEggModelPtr
-		add esp, 4
-	}
+ASM_FUNC void ColorEggModel(NJS_CNK_MODEL* a1, int a2) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0056D540 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void AL_SetBodyTexture(task* tp)
@@ -1160,11 +1193,11 @@ void AL_Draw_Init() {
 	ColorEggModel_t.Hook(ColorEggModel_r);
 
 	//draw chao
-	WriteJump((void*)0x0053FCF0, DrawChao);
+	WriteJump((void*)0x0053FCF0, (void*)DrawChao);
 
 	//draw other bodytype
-	WriteJump((void*)0x0054FFEB, DrawEggChaoHook);
-	WriteJump((void*)0x00550074, DrawEggChaoHook);
+	WriteJump((void*)0x0054FFEB, (void*)DrawEggChaoHook);
+	WriteJump((void*)0x00550074, (void*)DrawEggChaoHook);
 
 	AL_Mask_Init();
 }

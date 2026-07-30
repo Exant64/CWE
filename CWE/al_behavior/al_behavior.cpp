@@ -3,38 +3,45 @@
 #include <al_garden_info.h>
 #include <al_behavior/al_intention.h>
 #include <al_behavior/albhv.h>
+#include <al_behavior/albhv_navigation.h>
 #include <alo_accessory.h>
 #include <ChaoMain.h>
-#include <ALifeSDK_Functions.h>
 #include <AL_ModAPI.h>
 #include <api/api_accessory.h>
 #include <api/api_metadata.h>
+#include <FunctionHook.h>
+#include <memory.h>
+#include <al_hold.h>
+#include <asmutil.h>
 
 extern void ALBHV_Life_Init();
 
-const int Chao_BehaviourPtr = 0x0053D890;
-const int Chao_BehaviourQueuePtr = 0x0053D970;
+ASM_FUNC void AL_SetBehaviorWithTimer(task* a1, BHV_FUNC a2, int a3) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+1+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+2+0) ); // a1
 
-void AL_SetBehaviorWithTimer(task* a1, BHV_FUNC a2, int a3)
-{
-	__asm
-	{
-		push a3
-		push a2
-		mov eax, a1
-		call Chao_BehaviourPtr
-		add esp, 8
-	}
+    // call
+    ASM_CALL_R( edx, 0x0053D890 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-void Chao_BehaviourQueue(task* a1, int a2)
-{
-	__asm
-	{
-		mov edx, a2
-		mov eax, a1
-		call Chao_BehaviourQueuePtr
-	}
+ASM_FUNC void Chao_BehaviourQueue(task* a1, int a2) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( ecx, 0x0053D970 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 BHV_FUNC AL_GetBehavior(task* a1)
@@ -125,27 +132,21 @@ extern "C" __declspec(dllexport) int AL_GetAccessory(task * a1, int type)
 	return GET_CHAOWK_CWE(a1)->AccessoryIndices[type];
 }
 
-const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
-void AL_GrabObjectBothHands(task* a2, task* a1)
-{
-	__asm
-	{
-		mov esi, a2
-		mov ecx, a1
-		call AL_GrabObjectBothHandsPtr
-	}
-}
-const int sub_5691B0Ptr = 0x5691B0;
-signed int sub_5691B0(task* a1)
-{
-	int result;
-	__asm
-	{
-		mov esi, a1
-		call sub_5691B0Ptr
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC int AL_CheckObakeHead(task* a1) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5691B0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 //putting accessory on
@@ -267,12 +268,14 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 		{
 			return 0;
 		}
-		if (playertwp[0])
-		{
-			sub_46E5E0(0, (int)playertwp[0]);
+
+		if (playertwp[0]) {
+			StopHoldingTaskP_inl(0, playertwp[0]);
 		}
+
 		AL_GrabObjectBothHands(a1, v3);
 		AL_SetBehaviorWithTimer(a1, (BHV_FUNC)0x569340, -1);
+
 		v5 = GET_CHAOPARAM(a1);
 		if (AL_GetAccessory(a1, GetAccessoryType(v3->twp->ang.x)) == -1)
 			Chao_BehaviourQueue(a1, (int)ALBHV_PutOnAccessoryTemp);
@@ -385,10 +388,10 @@ extern "C" __declspec(dllexport) int __cdecl ALBHV_TurnToSpecial(task * tp) {
 		CCL_HIT_INFO* v2 = CCL_IsHitKindEx(tp, 0xCE);
 		if (v2 && (pSpecial = v2->hit_tp) != 0) {
 			if (!ALW_IsHeld(pSpecial)) {
-				//StopHoldingTaskP(0);
 				if (playertwp[0]) {
-					sub_46E5E0(0, (int)playertwp[0]);
+					StopHoldingTaskP_inl(0, playertwp[0]);
 				}
+
 				AL_GrabObjectBothHands(tp, pSpecial);
 				AL_SetBehavior(tp, ALBHV_HoldThink);
 
@@ -450,23 +453,20 @@ signed int __cdecl AL_CheckSpecial(task* a1)
 }
 signed int __cdecl AL_CheckObakeHeadAndAccessory(task* a1)
 {
-	if (AL_CheckAccessory(a1) || AL_CheckSpecial(a1) || sub_5691B0(a1))
+	if (AL_CheckAccessory(a1) || AL_CheckSpecial(a1) || AL_CheckObakeHead(a1))
 		return 1;
 	else
 		return 0;
 }
-static void __declspec(naked) sub_5691B0Hook()
-{
-	__asm
-	{
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call AL_CheckObakeHeadAndAccessory
+static void ASM_FUNC sub_5691B0Hook() {
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CheckObakeHeadAndAccessory);
+
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 static void AccessoryRemoveAll(task* tp) {
@@ -496,18 +496,14 @@ void __cdecl AccessoryRemove1(task* a1)
 	AccessoryRemoveAll(a1);
 }
 
-static void __declspec(naked) AccessoryRemoveHook()
-{
-	__asm
-	{
-		push eax // a1
+static void ASM_FUNC AccessoryRemoveHook() {
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call AccessoryRemove1
+	// Call your __cdecl function here:
+	ASM_CALL (AccessoryRemove1);
 
-		pop eax // a1
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 void __cdecl AccessoryRemove2(task* tp, int a2, int a3) {
@@ -515,18 +511,14 @@ void __cdecl AccessoryRemove2(task* tp, int a2, int a3) {
 	AccessoryRemoveAll(tp);
 }
 
-static void __declspec(naked) AccessoryRemove2Hook()
-{
-	__asm
-	{
-		push edi // a1
+static void ASM_FUNC AccessoryRemove2Hook() {
+	ASM_PUSH(edi); // a1
 
-		// Call your __cdecl function here:
-		call AccessoryRemove2
+	// Call your __cdecl function here:
+	ASM_CALL (AccessoryRemove2);
 
-		add esp, 4 // a1
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_RET(0);
 }
 
 static void AL_Behavior_PostureFix() {
@@ -537,7 +529,7 @@ static void AL_Behavior_PostureFix() {
 	// PostureChangeStand now uses the tripping get up animation (ALM_KOKEOKE)
 
 	// PostureChangeSit is only used in garden, so we can hook it directly
-	WriteJump((void*)0x55C430, ALBHV_PostureChangeSit);
+	WriteJump((void*)0x55C430, (void*)ALBHV_PostureChangeSit);
 	
 	// PostureChangeStand is used in race too, and i don't wanna affect the timings
 	// so ill manually change all garden references to it
@@ -559,39 +551,66 @@ static void AL_CheckBikkuri_SetBehavior_r(task* tp, BHV_FUNC Func, int ReserveTi
 	AL_SetBehaviorWithTimer(tp, Func, ReserveTimer);
 }
 
-static void __declspec(naked) AL_CheckBikkuri_SetBehavior_t() {
-	__asm {
-		push [esp + 08h] // a3
-		push [esp + 08h] // a2
-		push eax // a1
+static void ASM_FUNC AL_CheckBikkuri_SetBehavior_t() {
+	ASM_PUSH(ASM_ESP(2)); // a3
+	ASM_PUSH(ASM_ESP(2)); // a2
+	ASM_PUSH(eax);
 
-		// Call your __cdecl function here:
-		call AL_CheckBikkuri_SetBehavior_r
+	// Call your __cdecl function here:
+	ASM_CALL(AL_CheckBikkuri_SetBehavior_r);
 
-		pop eax // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		retn
+	ASM_POP(eax);
+	ASM_ESP_ADD(1);
+	ASM_ESP_ADD(1);
+	
+	ASM_RET(0);
+}
+
+// AL_BehaviorResetParameter hook on bottom to free navigation points when not needed anymore
+// we make sure to free it in Chao_Delete_r aswell, incase the player leaves the garden mid-navigation behavior chain
+static void AL_BehaviorResetParameter_r(task* tp) {
+	// original behavior of the instructions we overwrite with our call
+	GET_CHAOWK(tp)->ChaoFlag |= 2; 
+	
+	auto work = GET_CHAOWK_CWE(tp);
+
+	if (work->pNaviPoints) {
+		FREE(work->pNaviPoints);
+		work->pNaviPoints = NULL;
 	}
 }
 
+static void ASM_FUNC AL_BehaviorResetParameter_t() {
+	ASM_PUSH(edi); // a1
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_BehaviorResetParameter_r);
+
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_RET(0);
+}
+
 void AL_Behavior_Init() {
+	// writecall onto existing instructions on the bottom of behaviorresetparameter
+	WriteCall((void*)0x0053D881, (void*)AL_BehaviorResetParameter_t);
+	WriteData<0xB-0x6>((uint8_t*)0x0053D886, (uint8_t)0x90);
+
 	AL_Behavior_PostureFix();
 
 	AL_IntentionInit();
 	ALBHV_Life_Init();
 
 	if (gConfigVal.MoreAnimation) {
-		WriteCall((void*)0x0056479F, AL_CheckBikkuri_SetBehavior_t);
+		WriteCall((void*)0x0056479F, (void*)AL_CheckBikkuri_SetBehavior_t);
 	}
 
 	//accessories
-	WriteCall((void*)0x0053DB87, sub_5691B0Hook);
-	WriteCall((void*)0x00563DE7, AccessoryRemoveHook);
-	WriteCall((void*)0x00565F0B, AccessoryRemove2Hook);
+	WriteCall((void*)0x0053DB87, (void*)sub_5691B0Hook);
+	WriteCall((void*)0x00563DE7, (void*)AccessoryRemoveHook);
+	WriteCall((void*)0x00565F0B, (void*)AccessoryRemove2Hook);
 
 	//shovel action 
 	WriteData((int*)0x012FE9A0, (int)&ALBHV_SandHole);
 
-	WriteJump((void*)0x566DF0, ALBHV_Capture);
+	WriteJump((void*)0x566DF0, (void*)ALBHV_Capture);
 }

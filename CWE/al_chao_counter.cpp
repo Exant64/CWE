@@ -3,7 +3,6 @@
 #include "ninja_functions.h"
 #include "al_texlist.h"
 #include "alg_kinder_ortho.h"
-#include "ALifeSDK_Functions.h"
 #include <ChaoMain.h>
 
 DataArray(CHS_BILL_INFO, StatText, 0x13128B0, 10);

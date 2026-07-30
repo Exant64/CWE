@@ -2,4 +2,4 @@
 #include <SA2ModLoader.h>
 #include <Chao.h>
 
-Bool __cdecl AL_DecideBehaviorMusic(task* tp);
+Bool AL_DecideBehaviorMusic_r(task* tp);

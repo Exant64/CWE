@@ -1,11 +1,12 @@
 #include "stdafx.h"
-#include "sa2modloader.h"
+#include "SA2ModLoader.h"
 #include "al_msg_font.h"
 #include "memory.h"
 #include <stdio.h>
 #include "ChaoMain.h"
 #include "alg_kinder_cl.h"
 #include <al_behavior/al_knowledge.h>
+#include <asmutil.h>
 
 enum eAL_SONG {
 	AL_SONG_1 = 0x0,
@@ -34,21 +35,26 @@ enum eAL_ART {
 //i think this might be shifting the rest of the lessons up, filling in the empty spaces: 00586F2E
 
 #pragma pack(push, 8)
-struct __declspec(align(2)) KinWhole
+struct ALIGN(2) KinWhole
 {
 	__int16 a;
 	__int16 b;
 };
 #pragma pack(pop)
 
-const int Classroom_GetMsgPtr = 0x00584B50;
-const char* Classroom_GetMsg(char a1, int a2) {
-	__asm {
-		mov ecx, a2
-		push dword ptr[a1]
-		call Classroom_GetMsgPtr
-		add esp, 4
-	}
+static ASM_FUNC const char* Classroom_GetMsg(char a1, int a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(1+0+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(2+1+0) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x00584B50 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 DataPointer(const char**, dword_1AED724, 0x1AED724);
@@ -89,20 +95,16 @@ const char* Classroom_GetMsg_Custom(char a1, int a2) {
 	return (char*)v2 + ((((v5 << 16) | v5 & 0xFF00) << 8) | ((HIWORD(v5) | v5 & 0xFF0000) >> 8));
 }
 
-static void __declspec(naked) Classroom_GetMsg_hook()
-{
-	__asm
-	{
-		push ecx // a2
-		push[esp + 08h] // a1
+static void ASM_FUNC Classroom_GetMsg_hook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(ASM_ESP(2)); // a1
 
-		// Call your __cdecl function here:
-		call Classroom_GetMsg_Custom
+	// Call your __cdecl function here:
+	ASM_CALL (Classroom_GetMsg_Custom);
 
-		add esp, 4 // a1
-		pop ecx // a2
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
 //for the dance and music lessons it just checks if its already unlocked, those don't have any "levels"
@@ -157,22 +159,18 @@ Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
 	return TRUE;
 }
 
-static void __declspec(naked) IsLessonLearned_Hook()
-{
-	__asm
-	{
-		push esi // int a3
-		push edi // a2
-		push edx // a1
+static void ASM_FUNC IsLessonLearned_Hook() {
+	ASM_PUSH(esi); // int a3
+	ASM_PUSH(edi); // a2
+	ASM_PUSH(edx); // a1
 
-		// Call your __cdecl function here:
-		call IsLessonLearned
+	// Call your __cdecl function here:
+	ASM_CALL (IsLessonLearned);
 
-		pop edx // a1
-		pop edi // a2
-		pop esi // int a3
-		retn
-	}
+	ASM_POP(edx); // a1
+	ASM_POP(edi); // a2
+	ASM_POP(esi); // int a3
+	ASM_RET(0);
 }
 
 void SetLessonLearned(task* tp, char level, int LessonKind) {
@@ -206,22 +204,18 @@ void SetLessonLearned(task* tp, char level, int LessonKind) {
 	}
 }
 
-static void __declspec(naked) SetLessonLearned_Hook()
-{
-	__asm
-	{
-		push esi // int LessonKind
-		push edi // level
-		push eax // a1
+static void ASM_FUNC SetLessonLearned_Hook() {
+	ASM_PUSH(esi); // int LessonKind
+	ASM_PUSH(edi); // level
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call SetLessonLearned
+	// Call your __cdecl function here:
+	ASM_CALL (SetLessonLearned);
 
-		pop eax // a1
-		pop edi // level
-		pop esi // int LessonKind
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_POP(edi); // level
+	ASM_POP(esi); // int LessonKind
+	ASM_RET(0);
 }
 
 extern "C" __declspec(dllexport) int LessonRerollTimer = 108000;
@@ -312,20 +306,16 @@ task* __cdecl AL_KinderPMessageExec_Timer(task* a1, AL_KinderPMessage* a2) {
 	return pTask;
 }
 
-static void __declspec(naked) AL_KinderPMessageExec_LoadTimer()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
+static void ASM_FUNC AL_KinderPMessageExec_LoadTimer() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call AL_KinderPMessageExec_Timer
+	// Call your __cdecl function here:
+	ASM_CALL (AL_KinderPMessageExec_Timer);
 
-		add esp, 4 // a1<eax> is also used for return value
-		add esp, 4 // a2
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 extern "C" __declspec(dllexport) int LessonLookupTable_new[] =
@@ -368,7 +358,7 @@ extern "C" __declspec(dllexport) int LessonLookupTable_new[] =
 DataArray(int, LessonTable_orig, 0x011D2DC8, 21);
 
 #pragma pack(push, 8)
-struct __declspec(align(16)) ClassroomData
+struct ALIGN(16) ClassroomData
 {
 	char byte0;
 	char field_1;
@@ -396,18 +386,18 @@ static char LessonTableHack() {
 void alg_kinder_cl_Init() {
 	//nasty lessontable lookup hack, null out everything till table lookup instruction
 	WriteData<52>((char*)0x005860F8, (char)0x90);
-	WriteCall((void*)0x005860F8, LessonTableHack);
+	WriteCall((void*)0x005860F8, (void*)LessonTableHack);
 
 	//fixing "lesson already learned" text
 	WriteData((char*)0x00586723, (char)19);
 
-	WriteJump((void*)0x00585E00, IsLessonLearned_Hook);
-	WriteJump((void*)0x00585EC0, SetLessonLearned_Hook);
+	WriteJump((void*)0x00585E00, (void*)IsLessonLearned_Hook);
+	WriteJump((void*)0x00585EC0, (void*)SetLessonLearned_Hook);
 
-	WriteJump((void*)Classroom_GetMsgPtr, Classroom_GetMsg_hook);
+	WriteJump((void*)0x00584B50, (void*)Classroom_GetMsg_hook);
 
 	if (gConfigVal.ClassroomTimerDisplay) {
-		WriteCall((void*)0x005861BF, AL_KinderPMessageExec_LoadTimer);
-		WriteCall((void*)0x00588485, AL_KinderPMessageExec_LoadTimer);
+		WriteCall((void*)0x005861BF, (void*)AL_KinderPMessageExec_LoadTimer);
+		WriteCall((void*)0x00588485, (void*)AL_KinderPMessageExec_LoadTimer);
 	}
 }

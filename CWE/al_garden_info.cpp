@@ -5,29 +5,39 @@
 #include <ninja_functions.h>
 #include <save/save_item.h>
 #include <al_toy_move.h>
+#include "al_gene.h"
+#include "asmutil.h"
 
-const int sub_46E5E0Ptr = 0x46E5E0;
-void sub_46E5E0(int a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call sub_46E5E0Ptr
-	}
+ASM_FUNC void StopHoldingTaskP_inl(int pno, taskwk* ptwp) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0) ); // ptwp
+    ASM_MOVE( eax, ASM_ESP(1+0) ); // pno
+
+    // call
+    ASM_CALL_R( ecx, 0x46E5E0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int sub_46E5B0Ptr = 0x46E5B0;
-void sub_46E5B0(task* a1, int a2)
+ASM_FUNC
+void
+HoldTaskP(int pno, task* htp)
 {
-	__asm
-	{
-		push a1
-		mov ecx, a2
-		call sub_46E5B0Ptr
-		add esp, 4
-	}
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0) ); // htp
+    ASM_MOVE( ecx, ASM_ESP(1+1) ); // pno
+
+    // call
+    ASM_CALL_R( edx, 0x46E5B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 
 DataPointer(int, HeldItemType, 0x19F6450);
 DataPointer(ITEM_SAVE_INFO*, dword_19F6454, 0x19F6454);
@@ -146,7 +156,6 @@ void AL_SetItemOnTheGarden(int a1)
 			v8 = &v5->pos;
 			do
 			{
-				result = (CHAO_GARDEN_INFO*)(unsigned __int16)v5->kind;
 				if ((signed __int16)v5->kind < 0)
 				{
 					goto LABEL_30;
@@ -240,10 +249,10 @@ static void AL_CreateCustomHoldingItem() {
 	const NJS_VECTOR velocity = { 0,0,0 };
 	ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)dword_19F6454;
 
-	if (playerpwp[0])
-	{
-		sub_46E5E0(0, (int)playerpwp[0]);
+	if (playertwp[0]) {
+		StopHoldingTaskP_inl(0, playertwp[0]);
 	}
+
 	playerpwp[0]->htp = 0;
 
 	task* tp = NULL;
@@ -254,7 +263,7 @@ static void AL_CreateCustomHoldingItem() {
 			break;
 	}
 
-	sub_46E5B0(tp, 0);
+	HoldTaskP(0, tp);
 }
 
 static void AL_CreateHoldingItem() {
@@ -292,10 +301,10 @@ static void AL_CreateHoldingItem() {
 			a2.x += njSin(v3) * 3.0f;
 			a2.z += njCos(v3) * 3.0f;
 
-			if (v2)
-			{
-				sub_46E5E0(0, (int)v2);
+			if (v2) {
+				StopHoldingTaskP_inl(0, v2);
 			}
+
 			playerpwp[0]->htp = 0;
 			switch (HeldItemType)
 			{
@@ -322,7 +331,7 @@ static void AL_CreateHoldingItem() {
 				v6 = ALO_SpecialCreate(v1->kind, &a2, playertwp[0]->ang.y, &a4, v1);
 				break;
 			default:
-				throw std::exception("CWE: holding incorrect item");
+				throw std::exception();
 				return;
 			}
 
@@ -330,7 +339,7 @@ static void AL_CreateHoldingItem() {
 			{
 				v7->place = AL_GetStageNumber();
 			}
-			sub_46E5B0(v6, 0);
+			HoldTaskP(0, v6);
 		}
 		break;
 	default:
@@ -338,17 +347,21 @@ static void AL_CreateHoldingItem() {
 	}
 }
 
-const int sub_5319F0Ptr = 0x5319F0;
-int AL_GetLocalChaoCount(int a1)
-{
-	int retVal;
-	__asm
-	{
-		mov esi, a1
-		call sub_5319F0Ptr
-		mov retVal, eax
-	}
-	return retVal;
+ASM_FUNC int AL_GetLocalChaoCount(int a1) {
+	// save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5319F0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static bool AL_CreatePurchasedCustomItem(const SAlItemCwe& item, NJS_POINT3& position, NJS_VECTOR& velocity) {
@@ -526,14 +539,14 @@ static void AL_PackageItemSaveInfo_Hook() {
 void AL_GardenInfo_Init() {
 	// we hook the fruit state saving function call to package our own stuff too
 	// code is super ugly because i used the other save functions decompiled as a base
-	WriteCall((void*)0x0052F09F, AL_PackageItemSaveInfo_Hook);
+	WriteCall((void*)0x0052F09F, (void*)AL_PackageItemSaveInfo_Hook);
 
 	//fixed hat/accessory/special slot problem
 	DataArray(int, dword_8AB838, 0x8AB838, 1);
 	dword_8AB838[ALW_CATEGORY_MASK] = 64;
 
-	WriteJump((void*)0x548F40, AL_MinimalCreateManagerExecutor_New);
-	WriteCall((void*)0x0052EBD8, AL_SetObjectOnTheGarden_Hook);
-	WriteJump((void*)0x52E920, AL_SetItemOnTheGarden);
-	WriteJump((void*)0x52F2A0, AL_CreateHoldingItem);
+	WriteJump((void*)0x548F40, (void*)AL_MinimalCreateManagerExecutor_New);
+	WriteCall((void*)0x0052EBD8, (void*)AL_SetObjectOnTheGarden_Hook);
+	WriteJump((void*)0x52E920, (void*)AL_SetItemOnTheGarden);
+	WriteJump((void*)0x52F2A0, (void*)AL_CreateHoldingItem);
 }

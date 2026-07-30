@@ -66,7 +66,7 @@ enum ChunkMaterialFlagsEnum
 
 void AL_Draw_Init();
 void AnimateChao(int a1);
-void sub_56E9C0(task* a1);
+void AL_InitCalcMotionMatrix(task* a1);
 void ChaoColoring(int texture, int color, int shiny, int highlights, int shinyJewelMonotone, NJS_CNK_MODEL* model);
 
 void AL_SetBodyTexture(task* tp);

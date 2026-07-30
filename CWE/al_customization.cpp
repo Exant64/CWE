@@ -1,24 +1,36 @@
-#pragma once
 #include "stdafx.h"
 
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "ChaoMain.h"
 #include "alo_obakehead.h"
 #include "AL_ModAPI.h"
+#include "playsound.h"
+#include "asmutil.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 #include "data/al_model/ali_medal_ame.nja"
 #include "data/al_model/ali_medal_eme.nja"
 #include "data/al_model/ali_medal_pal.nja"
 #include "data/al_model/ali_medal_rub.nja"
 #include "data/al_model/ali_model_saf.nja"
 #include "data/al_model/ali_medal_none.nja"
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #include "alg_kinder_he.h"
 #include "al_odekake.h"
@@ -97,17 +109,6 @@ static std::map<ITEM_SAVE_INFO*, size_t, ItemSaveComparator> HatListCount;
 static std::vector<AccessorySaveInfo*> AccessoryList;
 static std::vector<ITEM_SAVE_INFO*> HatList;
 
-const int someUIProjectionCodePtr = 0x0055A060;
-void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		mov esi, a2
-		call someUIProjectionCodePtr
-	}
-}
-
 static void UpdateHatAccVector() {
 	HatList.clear();
 	AccessoryList.clear();
@@ -176,21 +177,24 @@ bool AL_Customization_CreateAcc(int ID, AL_PARAM_ACCESSORY_INFO& accInfo, int Ga
 	return true;
 }
 
-#pragma optimize("", off)
-static const void* const njDrawTextureEx_p = (void*)0x0077F6B0;
-static void njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans)
+ASM_FUNC
+void
+njDrawTextureEx(const NJS_TEXTURE_VTX* polygon, Int count, Int trans)
 {
-	count;
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0) ); // trans           : 0+1
+//                 ASM_ESP(2+1)    // count           : 1     (unused)
+    ASM_MOVE( eax, ASM_ESP(1+1) ); // polygon         : 1
 
-	__asm
-	{
-		push[trans]
-		mov eax, [polygon]
-		call njDrawTextureEx_p
-		add esp, 4
-	}
+    // call
+    ASM_CALL_R( edx, 0x0077F6B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
-#pragma optimize("", on)
 
 class MainMenuButton : public UISelectable {
 private:
@@ -236,12 +240,12 @@ public:
 			AL_OdekakeMenuMaster_Data_ptr->mode = 2;
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
 
-			SE_Call(0x100E, 0, 0, 0);
+			SE_Call(TONE(1, 0xE), 0, 0, 0);
 			return;
 		}
 
 		if (!controller->IsCurrentLayer(m_layerEnter)) {
-			SE_Call(0x1007, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 
 			controller->SetCurrentLayer(m_layerEnter);
 
@@ -255,7 +259,7 @@ public:
 				break;
 			}
 
-			someUIProjectionCode(&posIn, &posOut);
+			chCalcWorldPosFromScreenPos(&posIn, &posOut);
 			CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->twp->pos, posOut, 15, NULL);
 		}
 	}
@@ -373,6 +377,7 @@ public:
 				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 5 };
 			case LeftBarType::Medal:
 				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, &CWE_UI_TEXLIST, 5 };
+			default:
 			case LeftBarType::Exit:
 				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, &CWE_UI_TEXLIST, 5 };
 		}
@@ -384,6 +389,7 @@ public:
 			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
 		case LeftBarType::Medal:
 			return { 1, 44, 63, 213 / 256.f, 153 / 256.f, 1, 215 / 256.f, &CWE_UI_TEXLIST, 5 };
+		default:
 		case LeftBarType::Exit:
 			return { 1, 29 * 1.25f, 31 * 1.25f, 133 / 256.f, 225 / 256.f, 161 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
 		}
@@ -396,13 +402,13 @@ public:
 		auto& originalIconSprite = IsSelected() ? m_selectedIcon : m_icon;
 
 		NJS_TEXANIM texanim = {
-			originalIconSprite.wd,
-			originalIconSprite.ht,
-			originalIconSprite.wd / 2.f,
-			originalIconSprite.ht / 2.f,
+			Sint16(originalIconSprite.wd),
+			Sint16(originalIconSprite.ht),
+			Sint16(originalIconSprite.wd / 2.f),
+			Sint16(originalIconSprite.ht / 2.f),
 			Sint16(originalIconSprite.s0 * 256.f), Sint16(originalIconSprite.t0 * 256.f),
 			Sint16(originalIconSprite.s1 * 256.f), Sint16(originalIconSprite.t1 * 256.f),
-			originalIconSprite.TexNum,
+			Sint16(originalIconSprite.TexNum),
 			NJD_SPRITE_ALPHA
 		};
 
@@ -445,7 +451,7 @@ public:
 			-0.5f
 		);
 
-		float progress = (max(0, m_textProgress - 0.5f) / 0.5f);
+		float progress = (NJM_MAX(0.f, m_textProgress - 0.5f) / 0.5f);
 
 		NJS_COLOR rightSideColor = (NJS_COLOR)-1;
 		rightSideColor.argb.a = Uint8(progress * 255.f);
@@ -596,7 +602,7 @@ private:
 		return HatList.size() + AccessoryList.size();
 	}
 
-	void ScrollDisp(float posX, float posY, float length){
+	void ScrollDisp(float posX, float posY, float length) {
 		chDrawBillboardSR(
 			&m_scrollTop,
 			posX,
@@ -661,7 +667,7 @@ public:
 				canEquip = AL_Customization_CreateHat(pParam->body.ObakeHead, pParam->place);
 
 			if (canEquip) {
-				SE_Call(0x1007, 0, 0, 0);
+				SE_Call(TONE(1, 7), 0, 0, 0);
 				pParam->body.ObakeHead = Uint8(HatList[index]->kind);
 				AL_ClearItemSaveInfo(HatList[index]);
 				UpdateHatAccVector();
@@ -679,7 +685,7 @@ public:
 			canEquip = AL_Customization_CreateAcc(GET_CHAOWK_CWE(pChao)->AccessoryIndices[accType], GET_CWEPARAM(pChao)->Accessories[accType], pParam->place);
 
 		if (canEquip) {
-			SE_Call(0x1007, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 			AL_SetAccessory(pChao, pSaveInfo, pSaveInfo->IndexID);
 			AL_ClearItemSaveInfo(pSaveInfo);
 			UpdateHatAccVector();
@@ -711,7 +717,7 @@ public:
 		// the min/max stuff is there to not draw literally all items and let them break
 		// somewhat "narrows it down" to what can render
 		// the reason for the massive range is because of the animations, though ill be honest, didnt think much about the amounts
-		for (size_t y = max(0, m_uiSelectY - 3); y < min(1 + GetItemCount() / m_horizItemCount, m_uiSelectY + 4); ++y) {
+		for (size_t y = NJM_MAX(0, m_uiSelectY - 3); y < NJM_MIN(int(1 + GetItemCount() / m_horizItemCount), m_uiSelectY + 4); ++y) {
 			for (size_t x = 0; x < m_horizItemCount; ++x) {
 				const size_t index = x + y * m_horizItemCount;
 				if (index >= GetItemCount()) break;
@@ -994,8 +1000,8 @@ private:
 
 	// sets sliders based on input rgb
 	void SetHSLSliders(float r, float g, float b) {
-		const float cMax = max(max(r, g), b);
-		const float cMin = min(min(r, g), b);
+		const float cMax = NJM_MAX(NJM_MAX(r, g), b);
+		const float cMin = NJM_MIN(NJM_MIN(r, g), b);
 
 		const float delta = cMax - cMin;
 
@@ -1062,7 +1068,7 @@ private:
 		const auto slotCount = GetColorSlotCount();
 
 		// max 4 in one row
-		const auto index = m_selectionY * min(slotCount, 4) + m_selectionX;
+		const auto index = m_selectionY * NJM_MIN(slotCount, size_t(4)) + m_selectionX;
 
 		// hacky repositioning based on the row count of slots
 		const float slotPosY1 = (GetVerticalSlotCount() > 1) ? 45 : 40;
@@ -1085,14 +1091,14 @@ private:
 			float scl = m_initialColorSlotScale;
 			if (m_inSliderMenu && i == m_colorSlotIndex) {
 				// if slot was pressed
-				scl = lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
+				scl = std::lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
 			}
 			else if (m_selectionY < GetVerticalSlotCount() && index == i) {
 				// if slot is highlighted but not pressed
 				// this logic also tries to take into account the "comeback" animation when you exit the sliders
 				scl = (0.5f * njSin(m_sineAng) + 0.5f) * 0.3f + 0.7f;
 				if (i == m_colorSlotIndex) {
-					scl *= lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
+					scl *= std::lerp(m_initialColorSlotScale, m_selectedColorSlotScale, m_colorSlotScaleAnim);
 				}
 			}
 
@@ -1117,7 +1123,7 @@ private:
 	}
 
 	float GetColorSlotX(size_t index) const {
-		const size_t count = min(4, GetColorSlotCount());
+		const size_t count = NJM_MIN(size_t(4), GetColorSlotCount());
 		if (index >= 4) index -= 4;
 
 		const float start = (count - 1) * -0.5f;
@@ -1127,7 +1133,7 @@ private:
 	float GetPanelWidth() const {
 		const float slotPosX1 = 0;
 		const float slotPosX2 = m_colorPanel.wd + 10;
-		return max(GetSliderLength() + 30, 100 + GetColorSlotX(min(GetColorSlotCount() - 1, 3)));
+		return NJM_MAX(GetSliderLength() + 30, 100 + GetColorSlotX(NJM_MIN(GetColorSlotCount() - 1, size_t(3))));
 	}
 
 	float GetSliderSpeed() const {
@@ -1295,7 +1301,7 @@ public:
 
 		if (!m_inSliderMenu && (SWDATAE[0] & BTN_B)) {
 			// exits the color menu
-			SE_Call(0x100A, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 			ColorMenuOpened = false;
 			return;
 		}
@@ -1351,25 +1357,25 @@ public:
 		}
 
 		if (SWDATAE[0] & BTN_A && m_selectionY < sliderSelectionStart) {
-			SE_Call(0x1007, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 
 			const auto slotCount = GetColorSlotCount();
-			SelectColorSlot(m_selectionY * min(slotCount, 4) + m_selectionX);
+			SelectColorSlot(m_selectionY * NJM_MIN(slotCount, size_t(4)) + m_selectionX);
 
 			// scale up selected slot
 			CreateTween(NULL, EASE_OUT, INTERP_ELASTIC, &m_colorSlotScaleAnim, 1.f, 15, NULL);
 		}
 
 		if (SWDATAE[0] & BTN_B && m_inSliderMenu) {
-			SE_Call(0x100A, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 
 			m_inSliderMenu = false;
 			m_sineAng = 0;
 
 			const auto slotCount = GetColorSlotCount();
 			if (slotCount) {
-				m_selectionX = *m_colorSlotIndex % min(4, slotCount);
-				m_selectionY = *m_colorSlotIndex / min(4, slotCount);
+				m_selectionX = *m_colorSlotIndex % NJM_MIN(size_t(4), slotCount);
+				m_selectionY = *m_colorSlotIndex / NJM_MIN(size_t(4), slotCount);
 				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &m_colorSlotScaleAnim, 0.f, 15, NULL);
 			}
 		}
@@ -1462,7 +1468,7 @@ public:
 		Angle3 rot = { 0, IsSelected() ? m_rotY : 0, 0 };
 
 		SAlItemCwe _item = {
-			(m_slot > 0) ? ALW_CATEGORY_ACCESSORY : ALW_CATEGORY_MASK,
+			(m_slot > 0) ? Sint8(ALW_CATEGORY_ACCESSORY) : Sint8(ALW_CATEGORY_MASK),
 			(Uint16)item
 		};
 
@@ -1510,7 +1516,7 @@ public:
 		}
 
 		CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
-		SE_Call(0x100A, 0, 0, 0);
+		SE_Call(TONE(1, 10), 0, 0, 0);
 		if (!m_slot)
 		{
 			Uint8& headgear = pParam->body.ObakeHead;
@@ -1559,7 +1565,7 @@ public:
 					}
 					else {
 						if (SWDATAE[0] & BTN_LEFT) {
-							SE_Call(0x8009, 0, 0, 0);
+							SE_Call(TONE(8, 9), 0, 0, 0);
 						}
 					}
 
@@ -1567,7 +1573,7 @@ public:
 						if (!ColorMenuOpened && SWDATAE[0] & BTN_A) {
 							ColorMenuOpened = true;
 
-							SE_Call(0x1007, 0, 0, 0);
+							SE_Call(TONE(1, 7), 0, 0, 0);
 
 							auto colorEditElement = customizationController->GetButton("coloredit");
 							if (colorEditElement) {
@@ -1620,7 +1626,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {
 			while (1) ___OutputDebugString("customizationController not 0, what happened?");
 		}
 
-		someUIProjectionCode(&ChaoHatPosition, &posOut);
+		chCalcWorldPosFromScreenPos(&ChaoHatPosition, &posOut);
 		pChao = CreateChaoExtra(GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
 		GET_CHAOWK(pChao)->ChaoFlag &= ~8u;
 		GET_CHAOWK(pChao)->ChaoFlag &= ~2u;
@@ -1684,7 +1690,7 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {
 					posIn = ChaoHatPosition;
 					targetMenuOffset = { 0, 0 };
 				}
-				someUIProjectionCode(&posIn, &posOut);
+				chCalcWorldPosFromScreenPos(&posIn, &posOut);
 				
 				CreateTween(pChao, EASE_OUT, INTERP_CIRC, &pChao->twp->pos, posOut, 30, NULL);
 				CreateTween(NULL, EASE_OUT, INTERP_CIRC, &HatAccMenuOffset, targetMenuOffset, 30, NULL);

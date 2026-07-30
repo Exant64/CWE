@@ -4,14 +4,15 @@
 #include "data/toy/NeutralSandCastleModel.h"
 #include "data/toy/SandHoleModel.h"
 
-__declspec(naked) void DoLighting(int a1)
-{
-	__asm
-	{
-		mov eax, [esp+4]
-		call DoLightingPtr
-		ret
-	}
+ASM_FUNC void DoLighting(int a1) {
+	// arguments
+	ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+	// call
+	ASM_CALL_R( edx, 0x00487060 );
+
+	// return
+	ASM_RET( 0 );
 }
 
 static NJS_CNK_OBJECT* object_sandpit[] = {

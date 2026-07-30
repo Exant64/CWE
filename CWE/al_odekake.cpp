@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "asmutil.h"
+
 #include "alg_kinder_he.h"
 #include "al_odekake.h"
 #include "ChaoMain.h"
@@ -138,14 +140,15 @@ void GoodbyeBar()
 	LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 }
 
-const int sub_582F60Ptr = 0x582F60;
-void sub_582F60(char* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call sub_582F60Ptr
-	}
+ASM_FUNC void sub_582F60(char* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x582F60 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl sub_582F60_CheckGuest(char* a1)
@@ -161,18 +164,15 @@ void __cdecl sub_582F60_CheckGuest(char* a1)
 	
 	sub_582F60(a1);
 }
-static void __declspec(naked) sub_582F60Hook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call sub_582F60_CheckGuest
+static void ASM_FUNC sub_582F60Hook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_582F60_CheckGuest);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 void AddOdekakeMenu(const CWE_API_ODEKAKE_ENTRY& entry) {
@@ -201,7 +201,7 @@ void AL_Odekake_Update() {
 void AL_Odekake_Init()
 {
 	//name guest check
-	//WriteCall((void*)0x00583B2F, sub_582F60Hook);
+	//WriteCall((void*)0x00583B2F, (void*)sub_582F60Hook);
 
 	// this kills... something? in ChaoSelectMenuManager?? im assuming some weird patch related to the move menu
 	WriteData<2>((char*)0x0055426D, (char)0x90);
@@ -211,7 +211,7 @@ void AL_Odekake_Init()
 	WriteData((int*)0x005541EE, (int)BTN_B); 
 
 	// fixes id on bar (goodbye bar needs to use "CurrStage" instead of baked in "1") 
-	WriteCall((void*)0x05A6F8E, GoodbyeBar);
+	WriteCall((void*)0x05A6F8E, (void*)GoodbyeBar);
 
 	odekakeMenuEntries.clear();
 	//if(cweSaveFile.transporterFlag & eTRANSPORTER::NAME)
@@ -242,8 +242,8 @@ void AL_Odekake_Init()
 	WriteData((char*)0x01314165, (char)0x45);
 
 	//obviously hook the menumaster
-	WriteJump((void*)0x57E5F0, AL_OdekakeMenuMaster_);
+	WriteJump((void*)0x57E5F0, (void*)AL_OdekakeMenuMaster_);
 
 	//kill the "select/confirm/back" drawing for every background tile, ported to a separate object (al_ode_guide)
-	WriteCall((void*)0x005A7771, nullsub_1);
+	WriteCall((void*)0x005A7771, (void*)nullsub_1);
 }

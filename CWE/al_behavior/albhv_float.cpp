@@ -3,11 +3,15 @@
 #include "../Chao.h"
 #include "../al_world.h"
 #include "..//ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include <random>
 #include "albhv.h"
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
+
+#include "albhv_navigation.h"
+
+#include "albhv_navigation.h"
+#include "albhv_swim.h"
 
 signed int ALBHV_RideFloat(task* a1)
 {
@@ -74,7 +78,7 @@ signed int ALBHV_RideFloat(task* a1)
 				AL_EmotionSetValue(a1, EM_ST_THIRSTY, 0);
 
 		if (MOV_DistFromAim(a1) < 36.0)
-			sub_561740((int)a1);
+			AL_DecideAimSwimPosition(a1);
 
 		a1->twp->pos.y = move->WaterY;
 		MOV_TurnToAim2(a1, 100);
@@ -100,30 +104,38 @@ signed int ALBHV_RideFloat(task* a1)
 }
 
 signed int __cdecl ALBHV_GoToWaterWithBoat(task* a1);
-signed int __cdecl ALBHV_GoToFloat(task* a1)
+signed int __cdecl ALBHV_GoToFloat(task* tp)
 {
 	task* v1; // edi
 
-	v1 = AL_GetFoundToyTask(a1);
+	v1 = AL_GetFoundToyTask(tp);
 	if (!v1)
 	{
 		return BHV_RET_FINISH;
 	}
-	ALW_LockOn(a1, v1);
-	AL_EmotionAdd(a1, EM_ST_THIRSTY, 100);
-
-	//sub_534F80((int)& stru_1A15938[9], &a1->EntityData2->Waypoint, stru_1A15938[9].index);
+	ALW_LockOn(tp, v1);
+	AL_EmotionAdd(tp, EM_ST_THIRSTY, 100);
 
 	//tbh, im not sure what this is, i think we use this as the first waypoint to go to 
 	//(but why don't we just select a random water waypoint like it does afterwards?)
 	NJS_POINT3 waterWaypointMaybe = { 75, -6.5f, -60 };
-	MOV_SetAimPos(a1, &waterWaypointMaybe);
+	MOV_SetAimPos(tp, &waterWaypointMaybe);
 
-	AL_SetBehavior(a1, ALBHV_PostureChangeStand);
-	AL_SetNextBehavior(a1, (BHV_FUNC)0x056B480);
-	AL_SetNextBehavior(a1, ALBHV_GoToLockOn);
-	AL_SetNextBehavior(a1, (BHV_FUNC)0x5613C0);
-	AL_SetNextBehavior(a1, ALBHV_GoToWaterWithBoat);
-	AL_SetNextBehavior(a1, ALBHV_RideFloat);
+	AL_SetBehavior(tp, ALBHV_PostureChangeStand);
+	AL_SetNextBehavior(tp, ALBHV_Notice);
+
+	if(!gConfigVal.PathfindingVanilla) {
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
+	}
+	else {
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+	}
+
+	AL_SetNextBehavior(tp, ALBHV_PickUpLockOn);
+	AL_SetNextBehavior(tp, ALBHV_GoToWaterWithBoat);
+	AL_SetNextBehavior(tp, ALBHV_RideFloat);
+	
 	return BHV_RET_CONTINUE;
 }

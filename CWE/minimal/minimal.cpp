@@ -3,15 +3,16 @@
 #include <ninja_functions.h>
 #include <AL_ModAPI.h>
 #include <ChaoMain.h>
-#include <ALifeSDK_Functions.h>
 #include <FunctionHook.h>
 
 #include <api/api_texture.h>
 
 #include <renderfix.h>
+#include <asmutil.h>
 #include <util.h>
+#include <playsound.h>
 
-struct __declspec(align(8)) MinimalData2
+struct ALIGN(8) MinimalData2
 {
 	int mode;
 	int ID;
@@ -34,7 +35,7 @@ struct AnimalInvEntry
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AnimalInv
+struct ALIGN(4) AnimalInv
 {
     AnimalInvEntry OtherEntries[10];
     AnimalInvEntry ActualEntries[10];
@@ -49,32 +50,32 @@ struct __declspec(align(4)) AnimalInv
 FastcallFunctionPointer(AnimalInv*, GetAnimalInv, (int a1), 0x487260);
 DataArray(int, dword_8AC788, 0x8AC788, 1);
 
-const int njDrawTexturePtr = 0x0077F510;
-void njDrawTexture(int a1, int a2, int a3, int a5) {
-    __asm {
-        push a5
-        mov ecx, a3
-        mov edx, a2
-        mov eax, a1
-        call njDrawTexturePtr
-        add esp, 4
-    }
-}
+ASM_FUNC void njDrawTexture(const NJS_TEXTURE_VTX* polygon, Int count, Int tex, Int flag) {
+    // save regs
+    ASM_PUSH( ebx );
 
-const int njDrawPolygonPtr = 0x77F7F0;
-void njDrawPolygon(int alpha, int count, NJS_POLYGON_VTX* a4) {
-    __asm {
-        mov eax, alpha
-        mov ecx, count
-        push a4
-        call njDrawPolygonPtr
-        add esp, 4
-    }
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0 +1) ); // flag            : 0+1
+    ASM_MOVE( edx, ASM_ESP(3+1 +1) ); // tex             : 1
+    ASM_MOVE( eax, ASM_ESP(2+1 +1) ); // count           : 1
+    ASM_MOVE( ecx, ASM_ESP(1+1 +1) ); // polygon         : 1
+
+    // call
+    ASM_CALL_R( ebx, 0x0077F510 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
     if (type <= SA2BAnimal_PurpleChaosDrive) {
-        njDrawTexture(4, dword_8AC788[type], (int)vtx, 1);
+        njDrawTexture(vtx, 4, dword_8AC788[type], 1);
         return;
     }
 
@@ -164,16 +165,16 @@ static void njDrawTextureHook(NJS_TEXTURE_VTX* vtx, size_t type) {
         vtx[i].col = insidePanelColor.color;
         vtx[i].z -= 0.75f;
     }
-    njDrawTexture(4, 44657589, (int)vtx, 1);
+    njDrawTexture(vtx, 4, 44657589, 1);
 
     // border panel
     for (size_t i = 0; i < 4; ++i) {
         vtx[i].col = borderColor.color;
     }
-    njDrawTexture(4, 44657590, (int)vtx, 1);
+    njDrawTexture(vtx, 4, 44657590, 1);
 
     const Angle3 rot = { 0, -4000, 0 };
-    const SAlItemCwe item = { 2, type };
+    const SAlItemCwe item = { ALW_CATEGORY_MINIMAL, Uint16(type) };
     
     const float scale = 1.65f;
     NJS_POINT3 center;
@@ -190,73 +191,61 @@ static void njDrawTextureGetType1(int a1, int a2, int a3, AnimalInvEntry* entry,
     njDrawTextureHook((NJS_TEXTURE_VTX*)a3, entry->type);
 }
 
-static void __declspec(naked) njDrawTextureHookPaused()
-{
-    __asm
-    {
-        push[esp + 04h] // a5
-        push ebx
-        push ecx // a3
-        push edx // a2
-        push eax // a1
+static void ASM_FUNC njDrawTextureHookPaused() {
+    ASM_PUSH(ASM_ESP(1)); // a5
+    ASM_PUSH(ebx);
+    ASM_PUSH(ecx); // a3
+    ASM_PUSH(edx); // a2
+    ASM_PUSH(eax); // a1
 
-        // Call your __cdecl function here:
-        call njDrawTextureGetType1
+    // Call your __cdecl function here:
+    ASM_CALL (njDrawTextureGetType1);
 
-        pop eax // a1
-        pop edx // a2
-        pop ecx // a3
-        pop ebx
-        add esp, 4 // a5
-        retn
-    }
+    ASM_POP(eax); // a1
+    ASM_POP(edx); // a2
+    ASM_POP(ecx); // a3
+    ASM_POP(ebx);
+    ASM_ESP_ADD( 1 ); // a5
+    ASM_RET(0);
 }
 
-static void __declspec(naked) njDrawTextureHook1()
-{
-    __asm
-    {
-        push [esp + 04h] // a5
-        push [esp + 08h + 0xE0 - 0xC0]
-        push ecx // a3
-        push edx // a2
-        push eax // a1
+static void ASM_FUNC njDrawTextureHook1() {
+    ASM_PUSH(ASM_ESP(1)); // a5
+    ASM_PUSH(ASM_ESP(10));
+    ASM_PUSH(ecx); // a3
+    ASM_PUSH(edx); // a2
+    ASM_PUSH(eax); // a1
 
-        // Call your __cdecl function here:
-        call njDrawTextureGetType1
+    // Call your __cdecl function here:
+    ASM_CALL (njDrawTextureGetType1);
 
-        pop eax // a1
-        pop edx // a2
-        pop ecx // a3
-        add esp, 8 // a5
-        retn
-    }
+    ASM_POP(eax); // a1
+    ASM_POP(edx); // a2
+    ASM_POP(ecx); // a3
+    ASM_ESP_ADD(2); // a5
+    ASM_RET(0);
 }
 
 static void njDrawTextureGetType2(int a1, int a2, int a3, int otherEntryIndex, int a5) {
     njDrawTextureHook((NJS_TEXTURE_VTX*)a3, GetAnimalInv(0)->OtherEntries[otherEntryIndex].type);
 }
 
-static void __declspec(naked) njDrawTextureHook2()
-{
-    __asm
-    {
-        push[esp + 04h] // a5
-        push edi
-        push ecx // a3
-        push edx // a2
-        push eax // a1
+static void ASM_FUNC njDrawTextureHook2() {
+    ASM_PUSH(ASM_ESP(1)); // a5
+    ASM_PUSH(edi);
+    ASM_PUSH(ecx); // a3
+    ASM_PUSH(edx); // a2
+    ASM_PUSH(eax); // a1
 
-        // Call your __cdecl function here:
-        call njDrawTextureGetType2
+    // Call your __cdecl function here:
+    ASM_CALL (njDrawTextureGetType2);
 
-        pop eax // a1
-        pop edx // a2
-        pop ecx // a3
-        pop edi
-        add esp, 4 // a5
-        retn
-    }
+    ASM_POP(eax); // a1
+    ASM_POP(edx); // a2
+    ASM_POP(ecx); // a3
+    ASM_POP(edi);
+    ASM_ESP_ADD( 1 ); // a5
+    ASM_RET(0);
 }
 
 static void RenderAnimal_r(task* tp) {
@@ -291,16 +280,27 @@ static void AL_MinimalExecutor_Load_r(char a1, NJS_VECTOR* a2, int a3, void* a4,
     AL_MinimalCreate(a1, a2, a3, a4, a5);
 }
 
-const int sub_48ACD0Ptr = 0x48ACD0;
-static void sub_48ACD0(int a1, float a2, float a3, float a4) {
-    __asm {
-        mov esi, a1
-        push a4
-        push a3
-        push a2
-        call sub_48ACD0Ptr
-        add esp, 12
-    }
+static ASM_FUNC void sub_48ACD0(int a1, float a2, float a3, float a4) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+1) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+1) ); // a2
+    ASM_MOVE( esi, ASM_ESP(1+3+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x48ACD0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 FunctionPointer(task*, sub_48AAD0, (float posX, float posY, float posZ, int a4, int mode), 0x48AAD0);
@@ -324,26 +324,22 @@ static void sub_48ACD0_r(int i, int a1, float a2, float a3, float a4) {
     sub_48ACD0(a1,a2,a3,a4);
 }
 
-static void __declspec(naked) sub_48ACD0_hook()
-{
-    __asm
-    {
-        push[esp + 0Ch] // a4
-        push[esp + 0Ch] // a3
-        push[esp + 0Ch] // a2
-        push esi // a1
-        push edi
+static void ASM_FUNC sub_48ACD0_hook() {
+    ASM_PUSH(ASM_ESP(3)); // a4
+    ASM_PUSH(ASM_ESP(3)); // a3
+    ASM_PUSH(ASM_ESP(3)); // a2
+    ASM_PUSH(esi); // a1
+    ASM_PUSH(edi);
 
-        // Call your __cdecl function here:
-        call sub_48ACD0_r
+    // Call your __cdecl function here:
+    ASM_CALL (sub_48ACD0_r);
 
-        pop edi
-        pop esi // a1
-        add esp, 4 // a2
-        add esp, 4 // a3
-        add esp, 4 // a4
-        retn
-    }
+    ASM_POP(edi);
+    ASM_POP(esi); // a1
+    ASM_ESP_ADD( 1 ); // a2
+    ASM_ESP_ADD( 1 ); // a3
+    ASM_ESP_ADD( 1 ); // a4
+    ASM_RET(0);
 }
 
 // hooks stolen from chao partner
@@ -382,35 +378,31 @@ static void LoadLevelDestroy_r() {
 
 static void AnimalPickupSoundHook_r(int a1, NJS_VECTOR *a2, int a3, int a4, int a5, int animalID) {
     if (animalID >= 21 && animalID < 25) {
-        SE_CallV2(0x8011, a3, a4, a5, a2);
+        SE_CallV2(TONE(8, 0x11), a3, a4, a5, a2);
         return;
     }
     
-    SE_CallV2(0x800F, a3, a4, a5, a2);
+    SE_CallV2(TONE(8, 0xF), a3, a4, a5, a2);
 }
 
-static void __declspec(naked) AnimalPickupSoundHook()
-{
-        __asm
-        {
-                push ebx
-                push [esp + 0Ch] // a5
-                push [esp + 0Ch] // a4
-                push [esp + 0Ch] // a3
-                push esi // a2
-                push edi // a1
+static void ASM_FUNC AnimalPickupSoundHook() {
+    ASM_PUSH(ebx);
+    ASM_PUSH(ASM_ESP(3)); // a5
+    ASM_PUSH(ASM_ESP(3)); // a4
+    ASM_PUSH(ASM_ESP(3)); // a3
+    ASM_PUSH(esi); // a2
+    ASM_PUSH(edi); // a1
 
-                // Call your __cdecl function here:
-                call AnimalPickupSoundHook_r
+    // Call your __cdecl function here:
+    ASM_CALL (AnimalPickupSoundHook_r);
 
-                pop edi // a1
-                pop esi // a2
-                add esp, 4 // a3
-                add esp, 4 // a4
-                add esp, 4 // a5
-                add esp, 4 
-                retn
-        }
+    ASM_POP(edi); // a1
+    ASM_POP(esi); // a2
+    ASM_ESP_ADD( 1 ); // a3
+    ASM_ESP_ADD( 1 ); // a4
+    ASM_ESP_ADD( 1 ); // a5
+    ASM_ESP_ADD( 1 ); 
+    ASM_RET(0);
 }
 
 void Minimal_Init() {
@@ -420,24 +412,24 @@ void Minimal_Init() {
     LoadLevelDestroy_hook.Hook(LoadLevelDestroy_r);
 
     // sound hook to make custom animals not emit chaos drive sound
-    WriteCall((void*)0x00487375, AnimalPickupSoundHook);
+    WriteCall((void*)0x00487375, (void*)AnimalPickupSoundHook);
 
     // minimalcreatemanager hooks to remove safety check
     WriteData<5>((char*)0x0054942F, (char)0x90);
-    WriteCall((void*)0x0054944E, AL_MinimalExecutor_Load_r);
+    WriteCall((void*)0x0054944E, (void*)AL_MinimalExecutor_Load_r);
 
     // second chaobox animal spawn call
-    WriteCall((void*)0x6DE711, sub_48ACD0_hook);
+    WriteCall((void*)0x6DE711, (void*)sub_48ACD0_hook);
 
     // kills the completely unseeable njDrawPolygon calls left in the animal inventory display
     // cuz it hides our stuff
-    WriteCall((void*)0x0048789B, nullsub_1);
-    WriteCall((void*)0x00487BBA, nullsub_1);
+    WriteCall((void*)0x0048789B, (void*)nullsub_1);
+    WriteCall((void*)0x00487BBA, (void*)nullsub_1);
 
     // the animal inventory display, separate hooks because different ways of retrieving the type of the animal
-    WriteCall((void*)0x00487698, njDrawTextureHookPaused);
-    WriteCall((void*)0x004879B8, njDrawTextureHook1);
-    WriteCall((void*)0x00487CE3, njDrawTextureHook2);
+    WriteCall((void*)0x00487698, (void*)njDrawTextureHookPaused);
+    WriteCall((void*)0x004879B8, (void*)njDrawTextureHook1);
+    WriteCall((void*)0x00487CE3, (void*)njDrawTextureHook2);
     
     // stage animal rendering
 	RenderAnimal.Hook(RenderAnimal_r);

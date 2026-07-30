@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <sa2modloader.h>
+#include <SA2ModLoader.h>
 #include <vector>
 #include <map>
 #include <AL_ModAPI.h>
@@ -13,6 +13,7 @@
 #include <FunctionHook.h>
 #include <memory.h>
 #include <set>
+#include <asmutil.h>
 
 //default character chao, maybe change later to some "cwe_placehold" thing
 static const char* DefaultCustomChao = "cwe_spartoi";
@@ -30,15 +31,17 @@ static int NodeCounter;
 //global vector for entries
 std::vector<CustomChaoEntry> CustomChaoTypeEntries;
 
-const int AL_CalcIconColorPtr = 0x0053B940;
-void AL_CalcIconColor(task* tp)
-{
-	__asm
-	{
-		mov eax, tp
-		call AL_CalcIconColorPtr
-	}
+static ASM_FUNC void AL_CalcIconColor(task* tp) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0053B940 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 void __cdecl AL_CalcIconColorMod(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
 	CHAO_PARAM_GC* pParam = work->pParamGC;
@@ -63,22 +66,19 @@ void __cdecl AL_CalcIconColorMod(task* tp) {
 
 	AL_CalcIconColor(tp);
 }
-static void __declspec(naked) AL_CalcIconColorHook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcIconColorMod
+static void ASM_FUNC AL_CalcIconColorHook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIconColorMod);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 void __cdecl AL_IconDraw_r(task* a1);
-Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, AL_IconDraw_r);
+Trampoline AL_IconDraw_t(0x005501A0, 0x005501A7, (void*)AL_IconDraw_r);
 void __cdecl AL_IconDraw_r(task* tp)
 {
 	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
@@ -160,7 +160,7 @@ static int EditChunkModelTexture(NJS_CNK_MODEL* model, int baseTexture, int texC
 		}
 
 		texChunkCount++;
-		foundChunk[1] = (unsigned short)((foundChunk[1] & ~0x1FFF) | min(baseTexture + (foundChunk[1] & 0x1FFF), (unsigned short)0x1FFF));
+		foundChunk[1] = (unsigned short)((foundChunk[1] & ~0x1FFF) | NJM_MIN(baseTexture + (foundChunk[1] & 0x1FFF), 0x1FFF));
 		foundChunk = FindChunk(foundChunk, NJD_CT_TID);
 	}
 
@@ -293,7 +293,7 @@ static int AL_CustomChao_SearchID(const char* pID) {
 }
 
 static int __cdecl AL_ShapeInit_r(task* tp);
-static Trampoline AL_ShapeInit_Tramp(0x0056C9D0, 0x0056C9D7, AL_ShapeInit_r);
+static Trampoline AL_ShapeInit_Tramp(0x0056C9D0, 0x0056C9D7, (void*)AL_ShapeInit_r);
 static int __cdecl AL_ShapeInit_r(task* tp) {
 	chaowk_cwe* work = GET_CHAOWK_CWE(tp);
 	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
@@ -380,17 +380,6 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	return result;
 }
 
-static void Chao_Delete_r(task* tp);
-static FunctionHook<void, task*> Chao_Delete_hook(0x0054FF30, Chao_Delete_r);
-static void Chao_Delete_r(task* tp) {
-	Chao_Delete_hook.Original(tp);
-
-	auto* work = GET_CHAOWK_CWE(tp);
-	if (work->pBaldAdjacencyIndices) {
-		syFree(work->pBaldAdjacencyIndices, __FILE__, __LINE__);
-	}
-}
-
 static void AL_BuyoBuyoControl_r(task* tp);
 static FunctionHook<void, task*> AL_BuyoBuyoControl(0x56FC20, AL_BuyoBuyoControl_r);
 static void AL_BuyoBuyoControl_r(task* tp) {
@@ -443,30 +432,26 @@ void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5,
 	DrawMedicalChartText(str, a4, a5, a6, a7, a1);
 }
 
-static void __declspec(naked) sub_58D9F0Hook()
-{
-	__asm
-	{
-		push[esp + 14h] // a7
-		push[esp + 14h] // a6
-		push[esp + 14h] // a5
-		push[esp + 14h] // a4
-		push[esp + 14h] // a3
-		push eax // a2
-		push ecx // a1
+static void ASM_FUNC sub_58D9F0Hook() {
+	ASM_PUSH(ASM_ESP(5)); // a7
+	ASM_PUSH(ASM_ESP(5)); // a6
+	ASM_PUSH(ASM_ESP(5)); // a5
+	ASM_PUSH(ASM_ESP(5)); // a4
+	ASM_PUSH(ASM_ESP(5)); // a3
+	ASM_PUSH(eax); // a2
+	ASM_PUSH(ecx); // a1
 
-		// Call your __cdecl function here:
-		call sub_58D9F0
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58D9F0);
 
-		pop ecx // a1
-		pop eax // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		add esp, 4 // a5
-		add esp, 4 // a6
-		add esp, 4 // a7
-		retn
-	}
+	ASM_POP(ecx); // a1
+	ASM_POP(eax); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a4
+	ASM_ESP_ADD( 1 ); // a5
+	ASM_ESP_ADD( 1 ); // a6
+	ASM_ESP_ADD( 1 ); // a7
+	ASM_RET(0);
 }
 
 int __cdecl sub_5366E0(task* a1, int a2)
@@ -494,28 +479,24 @@ int __cdecl sub_5366E0(task* a1, int a2)
 	}
 }
 
-static void __declspec(naked) sub_5366E0Hook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
+static void ASM_FUNC sub_5366E0Hook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call sub_5366E0
+	// Call your __cdecl function here:
+	ASM_CALL (sub_5366E0);
 
-		add esp, 4 // a1<eax> is also used for return value
-		pop ecx // a2
-		retn
-	}
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp);
-static Trampoline AL_ChaoParamWindowExecutorDisplay_t(0x005928A0, 0x005928A8, AL_ChaoParamWindowExecutorDisplay_r);
+static Trampoline AL_ChaoParamWindowExecutorDisplay_t(0x005928A0, 0x005928A8, (void*)AL_ChaoParamWindowExecutorDisplay_r);
 DataArray(CHS_BILL_INFO, AL_ChaoParamWindow_HudThingB, 0x011D1658, 1);
 static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 #pragma pack(push, 8)
-	struct __declspec(align(16)) AL_ChaoParamWindowExecutor_Data
+	struct ALIGN(16) AL_ChaoParamWindowExecutor_Data
 	{
 		char Action;
 		char pad1[3];
@@ -702,16 +683,16 @@ void AL_ModAPI_CharacterChao_Init() {
 	//we hook the function that returns the chaotype message index thing
 	//but we also return 7 for character chao so the code enters the switch statement
 	//where the text render happens, which we hook below to overwrite the text
-	WriteCall((void*)0x0058DDF4, sub_5366E0Hook);
+	WriteCall((void*)0x0058DDF4, (void*)sub_5366E0Hook);
 	//and here we hook said text rendering,
-	WriteCall((void*)0x0058DE84, sub_58D9F0Hook);
+	WriteCall((void*)0x0058DE84, (void*)sub_58D9F0Hook);
 	
 	//killing type check memset
-	WriteCall((void*)0x052B35D, nullsub_1);
+	WriteCall((void*)0x052B35D, (void*)nullsub_1);
 
 	//killing the chao type draw calls in AL_ChaoParamWindowExecutor_Display so we can do our own thing in the trampoline above
-	WriteCall((void*)0x00592DDA, nullsub_1);
-	WriteCall((void*)0x00592E74, nullsub_1);
+	WriteCall((void*)0x00592DDA, (void*)nullsub_1);
+	WriteCall((void*)0x00592E74, (void*)nullsub_1);
 
 	//jiggle buffer expansion to chunk model vertex limit
 	int mallocExpand = (int)malloc(32768 * sizeof(NJS_VECTOR));
@@ -725,6 +706,6 @@ void AL_ModAPI_CharacterChao_Init() {
 	//AL_ShapeChangeType type >= 26 check increased
 	WriteData((Uint8*)0x0056CF4F, (Uint8)0xFF); 
 	//custom emotion ball colors
-	WriteCall((void*)0x005A4D22, AL_CalcIconColorHook);
-	WriteCall((void*)0x005A4D60, AL_CalcIconColorHook);
+	WriteCall((void*)0x005A4D22, (void*)AL_CalcIconColorHook);
+	WriteCall((void*)0x005A4D60, (void*)AL_CalcIconColorHook);
 }

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "al_piano.h"
-#include "ALifeSDK_Functions.h"
 #include "ChaoMain.h"
 #include "Chao.h"
 #include "al_toy_move.h"

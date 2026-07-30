@@ -4,6 +4,27 @@
 #include <cwe_api.h>
 #include "ChaoMain.h"
 #include "al_stage.h"
+#include "asmutil.h"
+
+ASM_FUNC void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2) {
+    // save regs
+    ASM_PUSH( edi );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(2+0+2) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+0+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x536450 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
+}
 
 void AL_NameSet(char* lval, char* rval) {
 	memcpy(lval, rval, sizeof(AL_NAME));
@@ -84,30 +105,45 @@ void AL_ParameterAddAPos(task* a1, float a2)
 	work->Shape.Flag |= 2u;
 }
 
-const int sub_536320Ptr = 0x536320;
-void AL_ParameterAddUserLike(task* tp, int add, float AddAttr)
-{
-	__asm
-	{
-		mov edi, add
-		mov esi, tp
-		push AddAttr
-		call sub_536320Ptr
-		add esp, 4
-	}
+ASM_FUNC void AL_ParameterAddUserLike(task* tp, int add, float AddAttr) {
+    // save regs
+    ASM_PUSH( esi );
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+2) ); // a3
+    ASM_MOVE( edi, ASM_ESP(2+1+2) ); // a1
+    ASM_MOVE( esi, ASM_ESP(1+1+2) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x536320 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( edi );
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
-const int sub_535F00Ptr = 0x535F00;
-void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4)
-{
-	__asm
-	{
-		mov eax, a1
-		mov dx, a2
-		push a4
-		push a3
-		call sub_535F00Ptr
-		add esp, 6
-	}
+
+ASM_FUNC void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+2+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+2+0) ); // a1
+
+    // call
+    ASM_CALL_R( ecx, 0x535F00 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void IncrementFlySwim(task* a1, float a2)
@@ -148,21 +184,41 @@ void IncrementPowerRun(task* a1, float a2)
 }
 
 // levelup function in AL_ParameterGrow, no symbols name :(
-void sub_535E90(CHAO_PARAM_GC *a1, int a2) {
-	static const void* fptr = (void*)0x535E90;
-	__asm {
-		mov edi, a1
-		mov esi, a2
-		call fptr
-	}
+ASM_FUNC void sub_535E90(CHAO_PARAM_GC *a1, int a2) {
+    // save regs
+    ASM_PUSH( edi );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(2+0+2) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+0+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x535E90 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
-static void AL_CalcParameter(task* tp) {
-	static const void* fptr = (const void*)0x005353C0;
-	__asm {
-		mov esi, tp
-		call fptr
-	}
+static ASM_FUNC void AL_CalcParameter(task* tp) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x005353C0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void AL_CalcParameter_r(task* tp) {
@@ -226,29 +282,26 @@ static void AL_CalcParameter_r(task* tp) {
 	}
 }
 
-static void __declspec(naked) AL_CalcParameter_t()
-{
-	__asm {
-		push esi // a1
+static void ASM_FUNC AL_CalcParameter_t() {
+	ASM_PUSH(esi); // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcParameter_r
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcParameter_r);
 
-		pop esi // a1
-		retn
-	}
-}
-
-Uint32 AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {
-    const int stg = AL_GetStageNumber();
-
-    if (stg == CHAO_STG_KINDER || stg > CHAO_STG_STADIUM && stg <= CHAO_STG_KARATE_2P) {
-        return GET_CHAOPARAM(tp)->Skill[SkillKind];
-    }
-    
-	return 3 * GET_CHAOPARAM(tp)->Skill[SkillKind];
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 void AL_ParameterInit() {
-	WriteCall((void*)0x53640F, AL_CalcParameter_t);
+	WriteCall((void*)0x53640F, (void*)AL_CalcParameter_t);
+}
+
+int AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {
+    const int stg = AL_GetStageNumber();
+
+    if (stg == CHAO_STG_KINDER || stg > CHAO_STG_STADIUM && stg <= CHAO_STG_KARATE_2P) {
+        return GET_CHAOWK(tp)->pParamGC->Skill[SkillKind];
+    }
+
+    return 3 * GET_CHAOWK(tp)->pParamGC->Skill[SkillKind];
 }

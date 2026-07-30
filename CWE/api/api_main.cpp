@@ -39,7 +39,7 @@ CWE_API CWE_API_Main = {
 
 struct CWE_API_MOD_ENTRY {
     using InitPtr = void(*)();
-    using APILoadPtr = void(*)(const CWE_API const* pAPI);
+    using APILoadPtr = void(*)(const CWE_API* pAPI);
 
     // todo: i'm not sure honestly if we can just use the pointers from the Mod struct or not
     std::string m_id;
@@ -71,10 +71,10 @@ public:
 
         // todo: can this occur? rn this isn't read anyways so i'll safety check to be safe
         if(pMod->ID) {
-            entry.m_id = {pMod->ID};
+            entry.m_id = pMod->ID;
         }
 
-        entry.m_name = {pMod->Name};
+        entry.m_name = pMod->Name;
 
         return entry;
     }

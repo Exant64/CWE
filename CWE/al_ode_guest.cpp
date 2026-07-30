@@ -21,18 +21,6 @@ static CHS_BILL_INFO GuestMenu[] = {
 
 CWE_API_ODEKAKE_ENTRY OdekakeGuestEntry = { AL_OdekakeGuest, nullptr, ODE_FLAGS_REQUIRE_CHAO, &GuestMenu[2],&GuestMenu[0],&GuestMenu[1],&GuestMenu[3] , &GuestMenu[0], 1.0, 1.0, 0.5, 0.5 };
 
-//please please please clean this up
-const int someUIProjectionCodeCopyPtr = 0x0055A060;
-void someUIProjectionCodeCopy(NJS_VECTOR* a1, NJS_VECTOR* a2)
-{
-	__asm
-	{
-		mov edi, a1
-		mov esi, a2
-		call someUIProjectionCodeCopyPtr
-	}
-}
-
 FunctionPointer(int, ChaoParamWindowExecutor_Load, (float, float), 0x5AD690);
 
 static task* pGuestChao = NULL;
@@ -47,17 +35,10 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* pMaster)
 		LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650, 66);
 
 		ChaoParamWindowExecutor_Load(160, 248);
-		/*
-		someUIProjectionCodeCopy(&posIn, &posOut);
-		pGuestChao = CreateChao((ChaoData*)GBAManager_GetChaoDataPointer(), 0, 0, &posOut, 0);
-		pGuestChao->Data1.Chao->field_B0 &= ~8u;
-		pGuestChao->Data1.Chao->field_B0 &= ~2u;
-		pGuestChao->Data1.Chao->field_B0 &= ~0x10u;
-		*/
 
 		AlMsgWarnCreate(0,300, 125, 320, 250);
 		AlMsgWarnOpen(0);
-		AlMsgWarnAddLineC(0,"If you export this Chao through the editor while you're in this menu, the exported file will be a Guest Chao. You can send Guest Chao to other players.");
+		AlMsgWarnAddLineC(0, "If you export this Chao through the editor while you're in this menu, the exported file will be a Guest Chao. You can send Guest Chao to other players.");
 		AlMsgWarnWaitClose(0);
 		AlMsgWarnAddLineC(0, "Guest Chao are immortal, and can't be edited.");
 
@@ -68,9 +49,6 @@ static void AL_OdekakeGuest(ODE_MENU_MASTER_WORK* pMaster)
 	case 1:
 		if (SWDATAE[0] & BTN_B) {
 			AL_OdekakeMenuMaster_Data_ptr->EndFlag = 1;
-
-			//DeleteObject_(pGuestChao);
-			//pGuestChao = nullptr;
 
 			GBAManager_GetChaoDataPointer()->GBAType = 0;
 			pMaster->mode++;

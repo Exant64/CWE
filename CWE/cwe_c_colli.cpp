@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include <FunctionHook.h>
 
+#include "c_colli.h"
 #include <vector>
 #include "ChaoMain.h"
 #include "IniFile.h"
-#include "ALifeSDK_Functions.h"
 
 // credit to sadx decomp for reference code
 
@@ -26,16 +26,6 @@ DataPointer(Uint16, object2_entry_num, 0x1946AC0);
 DataPointer(Uint16, item_entry_num, 0x19468B0);
 DataPointer(Uint16, item2_entry_num, 0x1945E10);
 DataPointer(Uint16, chao_entry_num, 0x1946ABC);
-
-FunctionPointer(void, CCL_CalcColli, (task *tp1, task *tp2), 0x485850);
-
-static const int CCL_ClearInfoPtr = 0x47E6C0;
-static void CCL_ClearInfo(task* tp) {
-    __asm {
-        mov eax, tp
-        call CCL_ClearInfoPtr
-    }
-}
 
 // naming convention based on symbols
 static std::vector<task*> cwe_entry_list;
@@ -116,16 +106,14 @@ static void CCL_CCheckColli_r() {
     cwe_entry_list.clear();
 }
 
-static void __declspec(naked) CCL_Entry_to_CWE_CCL_Entry_r() {
-    __asm {
-        push esi // a1
+static void ASM_FUNC CCL_Entry_to_CWE_CCL_Entry_r() {
+    ASM_PUSH(esi); // a1
 
-        // Call your __cdecl function here:
-        call CWE_CCL_Entry
+    // Call your __cdecl function here:
+    ASM_CALL (CWE_CCL_Entry);
 
-        pop esi // a1
-        retn
-    }
+    ASM_POP(esi); // a1
+    ASM_RET(0);
 }
 
 void CWE_CCL_Init() {
@@ -158,5 +146,5 @@ void CWE_CCL_Init() {
     // moves ObakeHeadExecutor's CCL_Entry to use our new system
     // this means both hats and accessories 
     // (since accessories "reuse" ObakeHeadExecutor at the time of writing)
-    WriteCall((void*)0x0054A0AE, CCL_Entry_to_CWE_CCL_Entry_r);
+    WriteCall((void*)0x0054A0AE, (void*)CCL_Entry_to_CWE_CCL_Entry_r);
 }

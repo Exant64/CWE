@@ -1,25 +1,22 @@
 #include "stdafx.h"
 
-#include <brightfixapi.h>
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "alg_kinder_bl.h"
 #include "al_behavior/al_behavior.h"
 #include "memory.h"
+#include <asmutil.h>
+#include <BrightFix/brightfixapi.h>
 
-//THEY DIDNT RESET THE SHADERS LOL
-void CocoonFix()
-{
+static void CocoonFix() {
 	SetShaderType(1);
 	DoLighting(LightIndex);
 }
 
-FunctionPointer(void, EGG_Display, (task*), 0x0057B640);
-void __cdecl EGG_Display_(task* a1)
-{
+static void EGG_Display_(task* a1) {
+	FunctionPointer(void, EGG_Display, (task*), 0x0057B640);
+
 	BrightFixPlus_ShinyCheck(1);
 	EGG_Display(a1);
-
 }
 
 task* dword_1946618[32];
@@ -56,23 +53,27 @@ void ChaoExpandPatch() {
 	WriteData((int*)0x0485CD0, (int)dword_1946618);
 	WriteData((int*)0x0485CD5, (int)dword_1946618);
 }
-const int njInitTexturePtr = 0x0042FA60;
-void njInitTexture(void* result)
-{
-	__asm
-	{
-		mov eax, result
-		call njInitTexturePtr
-	}
+
+static ASM_FUNC void njInitTexture(void* result) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0042FA60 );
+
+    // return
+    ASM_RET( 0 );
 }
-const int njInitTextureBufferPtr = 0x042FA90;
-void njInitTextureBuffer(void* result)
-{
-	__asm
-	{
-		mov eax, result
-		call njInitTextureBufferPtr
-	}
+
+static ASM_FUNC void njInitTextureBuffer(void* result) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x042FA90 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl ExpandTextureBuffer()
@@ -106,23 +107,20 @@ static void __cdecl BreedPatch(task* a1)
 	}
 
 }
-static void __declspec(naked) BreedPatch_asm()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call BreedPatch
+static void ASM_FUNC BreedPatch_asm() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (BreedPatch);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 DataPointer(int, BallUsable, 0x01DBE574);
 DataPointer(task*, ALO_BallPtr, 0x01DBE570);
-signed int __cdecl AL_CheckBallFix(task* tp) {
+static int __cdecl AL_CheckBallFix(task* tp) {
 	if (ALO_BallPtr == nullptr || ALO_BallPtr->twp == nullptr || !BallUsable) {
 		return 0;
 	}
@@ -140,18 +138,15 @@ signed int __cdecl AL_CheckBallFix(task* tp) {
 	AL_SetBehavior(tp, (BHV_FUNC)0x0563830);
 	return 1;
 }
-static void __declspec(naked) AL_CheckBallHook()
-{
-	__asm
-	{
-		push edi // a1
 
-		// Call your __cdecl function here:
-		call AL_CheckBallFix
+static void ASM_FUNC AL_CheckBallHook() {
+	ASM_PUSH(edi); // a1
 
-		pop edi // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CheckBallFix);
+
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
 void Ball_Delete(task* a1) {
@@ -180,10 +175,10 @@ void CWE_Fixes() {
 	WriteData((int*)0x0057C5EB, 4144); // Batman
 
 	//fixes ball usable crash
-	WriteJump((void*)0x0563B70, AL_CheckBallHook);
+	WriteJump((void*)0x0563B70, (void*)AL_CheckBallHook);
 	WriteData((int*)0x0055D678, (int)Ball_Delete);
 
-	WriteCall((void*)0x0059BB76, BreedPatch_asm); //breed patch
+	WriteCall((void*)0x0059BB76, (void*)BreedPatch_asm); //breed patch
 
 	//attempt at fixing fruit-pickup race condition thing
 	WriteJump((void*)0x0053052A, (void*)0x530569); //alw_turntolockon
@@ -203,7 +198,7 @@ void CWE_Fixes() {
 	WriteData((int*)0x005A74D1, (int)&vResN);
 
 	//cocoon fix
-	WriteCall((void*)0x0568AA1, CocoonFix);
+	WriteCall((void*)0x0568AA1, (void*)CocoonFix);
 
 	//tree fix
 	WriteData((char*)0x54AEE1, (char)0x6);//change offset they use from the first short to the last one

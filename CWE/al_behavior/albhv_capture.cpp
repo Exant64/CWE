@@ -3,21 +3,24 @@
 #include "../Chao.h"
 #include "../al_world.h"
 #include "..//ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include <random>
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 #include <al_parts.h>
+#include <playsound.h>
+#include <asmutil.h>
 
-const int ParamFukidasiExecutor_LoadPtr = 0x05659E0;
-void ParamFukidasiExecutor_Load(task* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call ParamFukidasiExecutor_LoadPtr
-	}
+ASM_FUNC void ParamFukidasiExecutor_Load(task* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x05659E0 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 FunctionPointer(void, sub_6EFF10, (NJS_VECTOR* a1, NJS_VECTOR* a2, float a3), 0x6EFF10);
 FunctionPointer(void, AL_CloseParameterFukidasiWait, (task*), 0x00565BC0);
 
@@ -109,12 +112,12 @@ int ALBHV_Capture(task* tp) {
 	switch (work->Behavior.Mode) {
 	case 0:
 		AL_SetMotionLink(tp, 203);
+		
 		work->Behavior.Mode = 1;
 		work->Behavior.SubTimer = (unsigned __int16)(signed int)(njRandom() * 200.0) + 90;
-		if (ChaoStageNumber == ChaoNextStageNumber)
-		{
-			SE_CallV2(4100, 0, 0, 0, &GET_CHAOWK(tp)->pos);
-		}
+
+		AL_SE_CallV2(TONE(1, 4), 0, 0, 0, &GET_CHAOWK(tp)->pos);
+
 		CreateChildTask(IM_TWK, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
 	case 1:
@@ -126,10 +129,8 @@ int ALBHV_Capture(task* tp) {
 
 			AL_SetMotionLink(tp, 204);
 			work->Behavior.Mode = 2;
-			if (ChaoStageNumber == ChaoNextStageNumber)
-			{
-				SE_CallV2(4101, 0, 0, 0, &GET_CHAOWK(tp)->pos);
-			}
+
+			AL_SE_CallV2(TONE(1, 5), 0, 0, 0, &GET_CHAOWK(tp)->pos);
 
 			for (int i = 0; i < 40; i++) {
 				NJS_POINT3* pos = &work->pos;

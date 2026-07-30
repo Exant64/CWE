@@ -3,6 +3,7 @@
 #include "al_parts.h"
 #include "api/api_customchao.h"
 #include "ChaoMain.h"
+#include "asmutil.h"
 
 void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
 	if (pElement->type == 254) {
@@ -42,34 +43,29 @@ void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pPa
 
 	memcpy(pParam->Skill, pElement->Skill, sizeof(pParam->Skill));
 }
-static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
-{
-	__asm
-	{
-		push ecx // data
-		push eax // KarateOpponentData
 
-		// Call your __cdecl function here:
-		call AL_ShapeExpandElementToParam
+static void ASM_FUNC AL_ShapeExpandElementToParam_Hook() {
+	ASM_PUSH(ecx); // data
+	ASM_PUSH(eax); // KarateOpponentData
 
-		pop eax // KarateOpponentData
-		pop ecx // data
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_ShapeExpandElementToParam);
+
+	ASM_POP(eax); // KarateOpponentData
+	ASM_POP(ecx); // data
+	ASM_RET(0);
 }
 
-const int sub_56CF40Ptr = 0x56CF40;
-static int AL_ShapeChangeType(task* a1, int typevalue)
-{
-	int retval;
-	__asm
-	{
-		mov ecx, a1
-		mov eax, typevalue
-		call sub_56CF40Ptr
-		mov retval, eax
-	}
-	return retval;
+static ASM_FUNC int AL_ShapeChangeType(task* a1, int typevalue) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x56CF40 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
@@ -127,25 +123,21 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 	return AL_ShapeChangeType(tp, type);
 }
 
-static void __declspec(naked) AL_ShapeChangeType_Hook()
-{
-	__asm
-	{
-		push eax // int a2
-		push ecx // a1
+static void ASM_FUNC AL_ShapeChangeType_Hook() {
+	ASM_PUSH(eax); // int a2
+	ASM_PUSH(ecx); // a1
 
-		// Call your __cdecl function here:
-		call AL_ShapeChangeType_Hack
+	// Call your __cdecl function here:
+	ASM_CALL (AL_ShapeChangeType_Hack);
 
-		pop ecx // a1
-		add esp, 4 // int a2
-		retn
-	}
+	ASM_POP(ecx); // a1
+	ASM_ESP_ADD( 1 ); // int a2
+	ASM_RET(0);
 }
 
 
 void AL_Shape_Init() {
-	WriteJump((void*)0x536550, AL_ShapeExpandElementToParam_Hook);
+	WriteJump((void*)0x536550, (void*)AL_ShapeExpandElementToParam_Hook);
 	//Custom Character Chao
-	WriteCall((void*)0x00568E10, AL_ShapeChangeType_Hook);
+	WriteCall((void*)0x00568E10, (void*)AL_ShapeChangeType_Hook);
 }

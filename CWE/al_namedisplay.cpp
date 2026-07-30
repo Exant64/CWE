@@ -1,13 +1,11 @@
-#pragma once
 #include "stdafx.h"
 
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "ChaoMain.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include "al_daynight.h"
 #include "al_save.h"
 #include "al_draw.h"

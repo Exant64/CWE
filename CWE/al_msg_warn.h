@@ -4,7 +4,7 @@
 #include "memory.h"
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AL_MSGWarnKinderCoMessageThing
+struct ALIGN(4) AL_MSGWarnKinderCoMessageThing
 {
 	char mActive;
 	char mOpen;

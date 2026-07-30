@@ -6,6 +6,7 @@
 #include <al_behavior/al_knowledge.h>
 #include <al_omochao_build.h>
 #include <al_behavior/albhv.h>
+#include <al_hold.h>
 
 size_t SpartoiLensID = 0;
 
@@ -49,21 +50,11 @@ bool ALS_BrushCondition(task* chao, task* item)
 	return AL_IsHero(GET_CHAOPARAM(chao)->type);
 }
 
-const int AL_GrabObjectBothHandsPtr = 0x0056CFB0;
-void AL_GrabObjectBothHands(task* a2, int a1)
-{
-	__asm
-	{
-		mov esi, a2
-		mov ecx, a1
-		call AL_GrabObjectBothHandsPtr
-	}
-}
-void ALS_Omobuild(task* chao, task* item)
-{
-	AL_GrabObjectBothHands(chao, (int)item);
+static void ALS_Omobuild(task* chao, task* item) {
+	AL_GrabObjectBothHands(chao, item);
 	AL_SetBehavior(chao, ALBHV_BuildStart);
 }
+
 bool ALS_OmobuildCondition(task* chao, task* item)
 {
 	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(chao);

@@ -1,4 +1,3 @@
-#pragma once
 #include "stdafx.h"
 #include "Chao.h"
 #include "al_field.h"

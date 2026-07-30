@@ -1,48 +1,54 @@
 #include "stdafx.h"
 
+#include "asmutil.h"
 #include "alg_kinder_ortho.h"
 
-const int WcConvFromCStrPtr = 0x0057A680;
-void WcConvFromCStr(int result, int a2, signed int a3)
-{
-    __asm
-    {
-        mov eax, result
-        mov edx, a2
-        mov ecx, a3
-        call WcConvFromCStrPtr
-    }
+ASM_FUNC void WcConvFromCStr(int result, int a2, signed int a3) {
+    ASM_PUSH (esi);
+
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(3+1+0) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+1+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // result
+
+    ASM_CALL_R ( esi, 0x0057A680 );
+
+    ASM_POP ( esi );
+
+    ASM_RET ( 0 );
 }
 
-#pragma optimize( "gty", off )
-const int DrawChaoHudThingBptr = 0x00558BE0;
-void chDrawBillboardSR(CHS_BILL_INFO* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8)
-{
-    __asm
-    {
-        push [a8]
-        push [a7]
-        push [a6]
-        push [a5]
-        push [a4]
-        push [a3]
-        push [a2]
-        mov eax, a1
-        call DrawChaoHudThingBptr
-        add esp, 7 * 4
-    }
-}
-#pragma optimize( "gty", on )
+ASM_FUNC void chDrawBillboardSR(CHS_BILL_INFO* a1, float a2, float a3, float a4, float a5, float a6, int a7, int a8) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(8+0+0) ); // a8
+    ASM_PUSH(      ASM_ESP(7+1+0) ); // a7
+    ASM_PUSH(      ASM_ESP(6+2+0) ); // a6
+    ASM_PUSH(      ASM_ESP(5+3+0) ); // a5
+    ASM_PUSH(      ASM_ESP(4+4+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+5+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+6+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+7+0) ); // a1
 
-const int DrawChaoHudThingPtr = 0x0583F50;
-void AlgKinderOrthoQuadDraw(SAlgKinderOrthoQuad* a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		call DrawChaoHudThingPtr
-	}
+    // call
+    ASM_CALL_R( edx, 0x00558BE0 );
+
+    // end arguments
+    ASM_ESP_ADD( 7 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+ASM_FUNC void AlgKinderOrthoQuadDraw(SAlgKinderOrthoQuad* a1, int a2) {
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0583F50 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl AlgKinderOrthoQuadDrawArrayTileOffset(SAlgKinderOrthoQuad const* a4, int a5, unsigned int a6, int a7, int a8, int a9, __int16 a10)

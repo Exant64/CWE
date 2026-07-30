@@ -32,10 +32,10 @@ public:
 	void Hook(FuncType hook)
 	{
 		if (hookaddr)
-			throw new std::exception("Cannot apply hook to already hooked function!");
-		memcpy(origbytes, origaddr, 5);
+			throw new std::exception();
+		memcpy(origbytes, (void*)origaddr, 5);
 		hookaddr = hook;
-		WriteJump(origaddr, hook);
+		WriteJump((void*)origaddr, (void*)hook);
 	}
 
 	// Call the original function, bypassing the hook.
@@ -44,10 +44,10 @@ public:
 		if (hookaddr)
 		{
 			uint8_t hookbytes[5];
-			memcpy(hookbytes, origaddr, 5);
-			memcpy(origaddr, origbytes, 5);
+			memcpy(hookbytes, (void*)origaddr, 5);
+			memcpy((void*)origaddr, origbytes, 5);
 			TRet retval = origaddr(args...);
-			memcpy(origaddr, hookbytes, 5);
+			memcpy((void*)origaddr, hookbytes, 5);
 			return retval;
 		}
 		else
@@ -103,10 +103,10 @@ public:
 	void Hook(FuncType hook)
 	{
 		if (hookaddr)
-			throw new std::exception("Cannot apply hook to already hooked function!");
-		memcpy(origbytes, origaddr, 5);
+			throw new std::exception();
+		memcpy(origbytes, (void*)origaddr, 5);
 		hookaddr = hook;
-		WriteJump(origaddr, hook);
+		WriteJump((void*)origaddr, (void*)hook);
 	}
 
 	// Call the original function, bypassing the hook.
@@ -115,10 +115,10 @@ public:
 		if (hookaddr)
 		{
 			uint8_t hookbytes[5];
-			memcpy(hookbytes, origaddr, 5);
-			memcpy(origaddr, origbytes, 5);
+			memcpy(hookbytes, (void*)origaddr, 5);
+			memcpy((void*)origaddr, origbytes, 5);
 			origaddr(args...);
-			memcpy(origaddr, hookbytes, 5);
+			memcpy((void*)origaddr, hookbytes, 5);
 		}
 		else
 			origaddr(args...);
@@ -173,10 +173,10 @@ public:
 	void Hook(FuncType hook)
 	{
 		if (hookaddr)
-			throw new std::exception("Cannot apply hook to already hooked function!");
-		memcpy(origbytes, origaddr, 5);
+			throw new std::exception();
+		memcpy(origbytes, (void*)origaddr, 5);
 		hookaddr = hook;
-		WriteJump(origaddr, hook);
+		WriteJump((void*)origaddr, (void*)hook);
 	}
 
 	// Call the original function, bypassing the hook.
@@ -185,10 +185,10 @@ public:
 		if (hookaddr)
 		{
 			uint8_t hookbytes[5];
-			memcpy(hookbytes, origaddr, 5);
-			memcpy(origaddr, origbytes, 5);
+			memcpy(hookbytes, (void*)origaddr, 5);
+			memcpy((void*)origaddr, origbytes, 5);
 			TRet retval = origaddr(args...);
-			memcpy(origaddr, hookbytes, 5);
+			memcpy((void*)origaddr, hookbytes, 5);
 			return retval;
 		}
 		else
@@ -244,10 +244,10 @@ public:
 	void Hook(FuncType hook)
 	{
 		if (hookaddr)
-			throw new std::exception("Cannot apply hook to already hooked function!");
-		memcpy(origbytes, origaddr, 5);
+			throw new std::exception();
+		memcpy(origbytes, (void*)origaddr, 5);
 		hookaddr = hook;
-		WriteJump(origaddr, hook);
+		WriteJump((void*)origaddr, (void*)hook);
 	}
 
 	// Call the original function, bypassing the hook.
@@ -256,10 +256,10 @@ public:
 		if (hookaddr)
 		{
 			uint8_t hookbytes[5];
-			memcpy(hookbytes, origaddr, 5);
-			memcpy(origaddr, origbytes, 5);
+			memcpy(hookbytes, (void*)origaddr, 5);
+			memcpy((void*)origaddr, origbytes, 5);
 			origaddr(args...);
-			memcpy(origaddr, hookbytes, 5);
+			memcpy((void*)origaddr, hookbytes, 5);
 		}
 		else
 			origaddr(args...);
@@ -314,10 +314,10 @@ public:
 	void Hook(FuncType hook)
 	{
 		if (hookaddr)
-			throw new std::exception("Cannot apply hook to already hooked function!");
-		memcpy(origbytes, origaddr, 5);
+			throw new std::exception();
+		memcpy(origbytes, (void*)origaddr, 5);
 		hookaddr = hook;
-		WriteJump(origaddr, hook);
+		WriteJump((void*)origaddr, (void*)hook);
 	}
 
 	// Call the original function, bypassing the hook.
@@ -326,10 +326,10 @@ public:
 		if (hookaddr)
 		{
 			uint8_t hookbytes[5];
-			memcpy(hookbytes, origaddr, 5);
-			memcpy(origaddr, origbytes, 5);
+			memcpy(hookbytes, (void*)origaddr, 5);
+			memcpy((void*)origaddr, origbytes, 5);
 			TRet retval = origaddr(args...);
-			memcpy(origaddr, hookbytes, 5);
+			memcpy((void*)origaddr, hookbytes, 5);
 			return retval;
 		}
 		else
@@ -385,10 +385,10 @@ public:
 	void Hook(FuncType hook)
 	{
 		if (hookaddr)
-			throw new std::exception("Cannot apply hook to already hooked function!");
-		memcpy(origbytes, origaddr, 5);
+			throw new std::exception();
+		memcpy(origbytes, (void*)origaddr, 5);
 		hookaddr = hook;
-		WriteJump(origaddr, hook);
+		WriteJump((void*)origaddr, (void*)hook);
 	}
 
 	// Call the original function, bypassing the hook.
@@ -397,10 +397,10 @@ public:
 		if (hookaddr)
 		{
 			uint8_t hookbytes[5];
-			memcpy(hookbytes, origaddr, 5);
-			memcpy(origaddr, origbytes, 5);
+			memcpy(hookbytes, (void*)origaddr, 5);
+			memcpy((void*)origaddr, origbytes, 5);
 			origaddr(args...);
-			memcpy(origaddr, hookbytes, 5);
+			memcpy((void*)origaddr, hookbytes, 5);
 		}
 		else
 			origaddr(args...);

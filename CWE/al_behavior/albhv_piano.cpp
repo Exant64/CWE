@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
 #include "../ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include "../Chao.h"
 #include <random>
 #include "../al_piano.h"
@@ -10,6 +9,8 @@
 #include <al_face.h>
 #include <al_field.h>
 #include <util.h>
+#include <ChaoMain.h>
+#include <al_behavior/albhv_navigation.h>
 
 static int GetPianoType (task* pToy) {
 	return pToy->twp->btimer;
@@ -131,19 +132,28 @@ int ALBHV_GoToPiano(task* tp) {
 
 	MOV_SetAimPos(tp, &toyPos);
 
-	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B480>); // Notice
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<(BHV_FUNC)0x56B560>); // GoToAim
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);
+	AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
+	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>); // Notice
+
+	if(!gConfigVal.PathfindingVanilla) {
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
+	}
+	else {
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+	}
+
+	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);
 	switch (GetPianoType(pToy)) {
 		case PIANOTYPE_PIANO:
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeSit>); // PostureChangeSit
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeSit>); // PostureChangeSit
 			break;	
 		case PIANOTYPE_ORGAN:
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
 			break;
 	}
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PlayPiano>);
+	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PlayPiano>);
 
 	return BHV_RET_CONTINUE;
 

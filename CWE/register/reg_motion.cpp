@@ -10,7 +10,8 @@ void ALAPI_RegisterMotion(CWE_REGAPI* cwe_api) {
 	mdata[1].nb[1] = 0;
 
 	cwe_api->RegisterChaoAnimation("alm_sunaasubi", &alm_sunaasubi);
-	cwe_api->RegisterChaoAnimation("alm_triangle", &alm_triangle);
+	cwe_api->RegisterChaoAnimation("alm_triangle_1h", &alm_triangle_1h);
+	cwe_api->RegisterChaoAnimation("alm_triangle_2h", &alm_triangle_2h);
 	cwe_api->RegisterChaoAnimation("alm_accordion", &alm_accordion);
 	cwe_api->RegisterChaoAnimation("alm_tailsfly", &alm_tailsfly);
 	cwe_api->RegisterChaoAnimation("alm_tailsfly_tired", &alm_tailsfly_tired);
