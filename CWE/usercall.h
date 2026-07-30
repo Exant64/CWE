@@ -680,7 +680,7 @@ static constexpr void const GenerateUsercallHook(T func, int ret, intptr_t addre
 		writebytes(codeData, cdoff, 0x83, 0xC4, (char)(stackcnt * 4));
 	codeData[cdoff++] = 0xC3;
 	assert(cdoff == memsz);
-	if (*(char*)address == 0xE8)
+	if (*(Uint8*)address == 0xE8)
 		WriteCall((void*)address, (void*)codeData);
 	else
 		WriteJump((void*)address, (void*)codeData);

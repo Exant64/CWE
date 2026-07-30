@@ -79,8 +79,25 @@
 #include <kce_helper.h>
 #include <renderfix.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
+#pragma warning(push)
+#pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
+
 #include <data/heroskyboxfix/object_ghero_nk_kumoback_kumoback.h>
 #include <data/heroskyboxfix/object_ghero_nk_kumofront_kumofront.h>
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #ifdef IMGUIDEBUG
 	#include <imgui_debug.h>

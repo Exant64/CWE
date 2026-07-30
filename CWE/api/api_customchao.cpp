@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <sa2modloader.h>
+#include <SA2ModLoader.h>
 #include <vector>
 #include <map>
 #include <AL_ModAPI.h>

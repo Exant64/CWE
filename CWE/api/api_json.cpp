@@ -480,9 +480,9 @@ static bool AccessoryParse(const char* path, const rapidjson::Document& document
 			}
 
 			const CWE_API_ACCESSORY_COLOR_ENTRY colorEntry = {
-				node_index.GetInt(),
-				material_index.GetInt(),
-				slot_index.GetInt()
+				Uint32(node_index.GetInt()),
+				Uint32(material_index.GetInt()),
+				Uint32(slot_index.GetInt())
 			};
 
 			colorEntries.push_back(colorEntry);

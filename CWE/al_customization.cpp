@@ -1,4 +1,3 @@
-#pragma once
 #include "stdafx.h"
 
 #include "ninja_functions.h"
@@ -11,15 +10,27 @@
 #include "playsound.h"
 #include "asmutil.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 #include "data/al_model/ali_medal_ame.nja"
 #include "data/al_model/ali_medal_eme.nja"
 #include "data/al_model/ali_medal_pal.nja"
 #include "data/al_model/ali_medal_rub.nja"
 #include "data/al_model/ali_model_saf.nja"
 #include "data/al_model/ali_medal_none.nja"
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #include "alg_kinder_he.h"
 #include "al_odekake.h"
@@ -366,6 +377,7 @@ public:
 				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 5 };
 			case LeftBarType::Medal:
 				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, &CWE_UI_TEXLIST, 5 };
+			default:
 			case LeftBarType::Exit:
 				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, &CWE_UI_TEXLIST, 5 };
 		}
@@ -377,6 +389,7 @@ public:
 			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
 		case LeftBarType::Medal:
 			return { 1, 44, 63, 213 / 256.f, 153 / 256.f, 1, 215 / 256.f, &CWE_UI_TEXLIST, 5 };
+		default:
 		case LeftBarType::Exit:
 			return { 1, 29 * 1.25f, 31 * 1.25f, 133 / 256.f, 225 / 256.f, 161 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
 		}
@@ -389,13 +402,13 @@ public:
 		auto& originalIconSprite = IsSelected() ? m_selectedIcon : m_icon;
 
 		NJS_TEXANIM texanim = {
-			originalIconSprite.wd,
-			originalIconSprite.ht,
-			originalIconSprite.wd / 2.f,
-			originalIconSprite.ht / 2.f,
+			Sint16(originalIconSprite.wd),
+			Sint16(originalIconSprite.ht),
+			Sint16(originalIconSprite.wd / 2.f),
+			Sint16(originalIconSprite.ht / 2.f),
 			Sint16(originalIconSprite.s0 * 256.f), Sint16(originalIconSprite.t0 * 256.f),
 			Sint16(originalIconSprite.s1 * 256.f), Sint16(originalIconSprite.t1 * 256.f),
-			originalIconSprite.TexNum,
+			Sint16(originalIconSprite.TexNum),
 			NJD_SPRITE_ALPHA
 		};
 
@@ -1455,7 +1468,7 @@ public:
 		Angle3 rot = { 0, IsSelected() ? m_rotY : 0, 0 };
 
 		SAlItemCwe _item = {
-			(m_slot > 0) ? ALW_CATEGORY_ACCESSORY : ALW_CATEGORY_MASK,
+			(m_slot > 0) ? Sint8(ALW_CATEGORY_ACCESSORY) : Sint8(ALW_CATEGORY_MASK),
 			(Uint16)item
 		};
 

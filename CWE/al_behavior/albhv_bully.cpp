@@ -100,7 +100,7 @@ static int ALBHV_HitChao(task* tp) {
 			break;
 
 		case 2: {
-            const int dmgType = int(njRandom() * NB_HIT_TYPE);
+            const int dmgType = int(njRandom() * float(NB_HIT_TYPE));
 
             AL_FaceChangeEye(tp, ChaoEyes_Mean);
 
@@ -461,10 +461,6 @@ int ALBHV_ConfidentWait(task* tp) {
 	}
 
 	return BHV_RET_CONTINUE;
-}
-
-static bool IsChaoAttackCapable(task* tp) {
-	
 }
 
 static task* FindChaoToBully(task* tp) {

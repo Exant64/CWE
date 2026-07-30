@@ -71,10 +71,10 @@ public:
 
         // todo: can this occur? rn this isn't read anyways so i'll safety check to be safe
         if(pMod->ID) {
-            entry.m_id = {pMod->ID};
+            entry.m_id = pMod->ID;
         }
 
-        entry.m_name = {pMod->Name};
+        entry.m_name = pMod->Name;
 
         return entry;
     }

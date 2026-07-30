@@ -156,7 +156,6 @@ void AL_SetItemOnTheGarden(int a1)
 			v8 = &v5->pos;
 			do
 			{
-				result = (CHAO_GARDEN_INFO*)(unsigned __int16)v5->kind;
 				if ((signed __int16)v5->kind < 0)
 				{
 					goto LABEL_30;

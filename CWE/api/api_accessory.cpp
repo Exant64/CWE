@@ -240,7 +240,7 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		return -1;
 	}
 
-	if (!pAccessoryData->ID) {
+	if (!pAccessoryData->ID[0]) {
 		error.print("ID is NULL!");
 		return -1;
 	}

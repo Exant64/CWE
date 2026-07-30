@@ -1,4 +1,3 @@
-#pragma once
 #include "stdafx.h"
 #if 0
 #include "ninja_functions.h"

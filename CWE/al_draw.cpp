@@ -16,12 +16,24 @@
 #include <FunctionHook.h>
 #include <UsercallFunctionHandler.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 #include "data/al_model/al_egg_chao.nja"
 #include "data/al_model/al_omochao.nja"
 #include <data/debugsphere.h>
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #include <al_daynight.h>
 #include <api/api_accessory.h>

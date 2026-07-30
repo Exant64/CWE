@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "sa2modloader.h"
+#include "SA2ModLoader.h"
 #include "al_msg_font.h"
 #include "memory.h"
 #include <stdio.h>

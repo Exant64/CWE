@@ -3,7 +3,7 @@
 #include <prettywriter.h>
 #include <document.h>
 #include <filewritestream.h>
-#include <chao.h>
+#include <Chao.h>
 #include <api/api_metadata.h>
 #include <unordered_map>
 
@@ -91,7 +91,7 @@ struct AccessorySaveInfo : ItemSaveInfoBase {
 	Uint32 Colors[8];
 	Uint32 UsedColors;
 
-	Sint8 GetCategory() const {
+	Sint8 GetCategory() const override {
 		return ALW_CATEGORY_ACCESSORY;
 	}
 
@@ -100,7 +100,7 @@ struct AccessorySaveInfo : ItemSaveInfoBase {
 		UsedColors = 0;
 	}
 
-	void Save(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) const {
+	void Save(rapidjson::PrettyWriter<rapidjson::FileWriteStream>& writer) const override {
 		ItemSaveInfoBase::Save(writer);
 
 		writer.Key("colors");

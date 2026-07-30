@@ -59,7 +59,7 @@ static int SetSToyBhv(task* tp) {
 
 static void MoreFacesMenu() {
     if(!ShowMoreFacesMenu) return;
-    if(!playerpwp[0]);
+    if(!playerpwp[0]) return;
 
     task* pHeld = playerpwp[0]->htp;
     if(!pHeld) return;
@@ -313,7 +313,7 @@ static void ChaoInfoMenu() {
                                 if (!ImGui::TreeNode(buf, "Entry %d", int(j))) continue;
 
                                 auto* link = &perception->field_18[j];
-                                ImGui::Text("Info: %h %h %h %h", link->info[0], link->info[1], link->info[2], link->info[3]);
+                                ImGui::Text("Info: %d %d %d %d", int(link->info[0]), int(link->info[1]), int(link->info[2]), int(link->info[3]));
                                 ImGui::Text("dist: %f", link->dist);
                                 ImGui::Text("InSightFlag: %d", link->InSightFlag);
                                 ImGui::Text("HearFlag: %d", link->HearFlag);
@@ -581,7 +581,7 @@ static void TaskListMenu() {
                 auto* obj = btp[i];
                 if (obj) {
                     do {
-                        ImGui::Text(!obj->name ? "" : obj->name);
+                        ImGui::Text("%s", !obj->name ? "" : obj->name);
                         obj = obj->last;
                     } while (obj != btp[i]);
                 }
@@ -786,7 +786,7 @@ static void SoundsMenu() {
                 ImGui::Text("%d", entry.sctimer);
                 ImGui::TableNextColumn();
 
-                ImGui::Text("%x", entry.idp);
+                ImGui::Text("%x", Uint32(entry.idp));
                 ImGui::TableNextColumn();
 
                 ImGui::Text("%d", entry.tone);

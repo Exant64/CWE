@@ -7,8 +7,15 @@
 #include "Chao.h"
 #include "al_draw.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 Sint32 cnk_Mesh_001_vtx[] = { 0x1F0029, 0x50000, 0xB346A84Cu, 0x3F17FCFB, 0x3E88A3BD, 0x3F760919, 0xBDE9260Eu, 0x3E80E3D8, 0x3EA9BF82, 0x3F88D245, 0xBF48B19Fu, 0x3F76091B, 0xBDE92614u, 0x3E80E3D9, 0xB1457B2Fu, 0xBBC22218u, 0xBB8CA706u, 0x3F76091A, 0xBDE92613u, 0x3E80E3D8, 0x3EA9BF85, 0xBF06D944u, 0xBFC0B63Au, 0x3F760919, 0xBDE92613u, 0x3E80E3D8, 0x32B08051, 0xBF80406Au, 0xBEE8D1ECu, 0x3F760919, 0xBDE92613u, 0x3E80E3D7, 0xFF, 0x0 };
 
 Sint16 cnk_Mesh_001_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0xFF, 0x8, 0x6016, 0x1041, 0x11, 0x1, 0xFFFBu, 0x0, 0x4, 0x2, 0x1, 0xFD, 0x2, 0x2, 0x4, 0x60, 0x3, 0xFD, 0xFE, 0x4, 0x4, 0xFE, 0xFF };
@@ -26,7 +33,12 @@ NJS_CNK_MODEL cnk_Mesh = { cnk_Mesh_vtx, cnk_Mesh_poly, { -0.1854102f, 0.0309984
 NJS_CNK_OBJECT object_butterfly_wing2 = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Mesh, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
 
 NJS_CNK_OBJECT object_butterfly_root = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE | NJD_EVAL_SHAPE_SKIP, NULL, 0, 0, 0, 0, 0, 0, 1, 1, 1, &object_butterfly_wing2, NULL };
-#pragma warning(pop)
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 enum {
 	MD_INIT = 0,

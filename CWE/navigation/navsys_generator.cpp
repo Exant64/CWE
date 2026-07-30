@@ -17,9 +17,27 @@
 #include <algorithm>
 
 #include <njdef.h>
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
+#pragma warning(push)
+#pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
+
 #include <data/misc/navsys_colli_capsule_shaft.nja>
 #include <data/misc/navsys_colli_cube.nja>
 #include <data/misc/navsys_colli_capsule_cap.nja>
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 #ifdef MEMORY_PROFILE
     #include <memory_debug.h>

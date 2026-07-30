@@ -35,7 +35,8 @@ static float CubicEaseInOut(float t, float b, float c, float d) {
 }
 
 static float CircEaseIn(float t, float b, float c, float d) {
-	return -c * (sqrt(1 - (t /= d) * t) - 1) + b;
+	t /= d;
+	return -c * (sqrt(1 - t * t) - 1) + b;
 }
 
 static float CircEaseOut(float t, float b, float c, float d) {

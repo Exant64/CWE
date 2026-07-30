@@ -1084,9 +1084,14 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 	}
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
-#pragma warning(disable: 4838)
-#pragma warning(disable: 4244)
+#pragma warning( disable: 4838 )
+#endif
 NJS_TEXANIM BuyListBasePanel[] = {
 	{42 / 2,34 / 2,  0,0, 0,0, 42,             34,		12, NJD_SPRITE_ALPHA},//top left
 	{20 / 2, 1,    0,0, 0,34,20,             34,		12, NJD_SPRITE_ALPHA},//middle left
@@ -1132,7 +1137,11 @@ const SAlgKinderOrthoQuad stru_8A33E8[6] =
   {  SELECTION_BOX_SX - 16, SELECTION_BOX_SX , SELECTION_BOX_SY / 2, SELECTION_BOX_SY , 2952, 3192 ,  1432, 1784  }  //bottom half right
 };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 void DrawTimer();
 VoidFunc(sub_42C170, 0x42C170);
@@ -1722,7 +1731,7 @@ const char* BlackMarketGetNameMsg(BlackMarketData const* a1, BlackMarketItemAttr
 
 const char* BlackMarketGetDescMsg(BlackMarketData const* a1, BlackMarketItemAttributes const* a2) {
 	if (!a2) return "GetDescMsg ITEM NULL";
-	if (a2->Descriptions < 0) "GetDescMsg Desc invalid";
+	if (a2->Descriptions < 0) return "GetDescMsg Desc invalid";
 
 	return BlackMarket_GetItemMsg(a1, a2->Descriptions);
 }

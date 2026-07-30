@@ -30,10 +30,22 @@
 #include <al_draw.h>
 #include "api/api_main.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 #include "data/alo_missing_tree.nja"
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 extern NJS_CNK_OBJECT object_alo_missing;
 

@@ -1,8 +1,13 @@
 #pragma once
-#pragma warning( push )
-#pragma warning( disable : 4309 )
-#pragma warning( disable : 4305 )
-#pragma warning( disable : 4838 )
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
+#pragma warning(push)
+#pragma warning( disable: 4838 )
+#endif
 
 #include "njdef.h"
 
@@ -38,4 +43,8 @@ MOTION_TABLE alm_wrench = { &motion_alm_wrench,    7, 0, 0xFFFFFFFF, -40, 28, 36
 MOTION_TABLE alm_egg_crawl = { &motion_alm_egg_crawl, 2, 0, 0xFFFFFFFF, -40, 2.0f, 13.0f, 0.1f };
 MOTION_TABLE alm_egg_crawl_start = { &motion_alm_egg_crawl, 6, 0, 0xFFFFFFFF, -40, 0,    2.0f,  0.05f };
 
-#pragma warning( pop )
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

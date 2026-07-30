@@ -1,5 +1,3 @@
-#pragma once
-
 #include "stdafx.h"
 #include "SA2ModLoader.h"
 #include <chaoenum.h>

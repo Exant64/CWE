@@ -3,12 +3,26 @@
 #include <ChaoMain.h>
 #include <data/al_fonames.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
+
 #include <data/chaotree.nja>
 #include <data/cwe/object_common_cnk/ali_chaoseed.nja>
 #include <data/al_model/al_spartoi.nja>
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 const char* TwotoneEggs[] = {
 	"Yellow twotone egg",

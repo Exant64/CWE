@@ -1,5 +1,4 @@
-﻿#pragma once
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "ninja_functions.h"
 #include "al_world.h"

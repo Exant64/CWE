@@ -65,7 +65,7 @@ namespace save {
 			strncpy_s(id, value["id"].GetString(), sizeof(id));
 
 			outItem.mId = ItemMetadata::Get()->GetIndex(outItem.mCategory, id);
-			if (outItem.mId == -1) {
+			if (outItem.mId == Uint16(-1)) {
 				return false;
 			}
 		}

@@ -1,6 +1,15 @@
 #pragma once
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
 
 Sint32 cnk_Cylinder_vtx[] = { 0x3D0029, 0xA0000, 0xB43F4013u, 0xBDA767A0u, 0xBCC9F276u, 0x0, 0xBF187F31u, 0xBF4D9D9Bu, 0xB439BDA1u, 0x3EADAAEC, 0xBCC9F27Eu, 0x0, 0x3F187F31, 0xBF4D9D9Bu, 0x3CC00FCB, 0xBDA767A0u, 0xBBF99EC4u, 0x3F438D87, 0xBF187F31u, 0xBE7E21FCu, 0x3CC00FCE, 0x3EADAAEC, 0xBBF99EE8u, 0x3F438D87, 0x3F187F31, 0xBE7E21FCu, 0x3C6D6666, 0xBDA767A0u, 0x3CA360F4, 0x3EF1B5E3, 0xBF187F31u, 0x3F26594D, 0x3C6D6670, 0x3EADAAEC, 0x3CA360EC, 0x3EF1B5E3, 0x3F187F31, 0x3F26594D, 0xBC6D67FCu, 0xBDA767A0u, 0x3CA360F4, 0xBEF1B5E3u, 0xBF187F31u, 0x3F26594D, 0xBC6D67F8u, 0x3EADAAEC, 0x3CA360EC, 0xBEF1B5E3u, 0x3F187F31, 0x3F26594D, 0xBCC0108Du, 0xBDA767A0u, 0xBBF99EE0u, 0xBF438D87u, 0xBF187F31u, 0xBE7E21FCu, 0xBCC0108Bu, 0x3EADAAEC, 0xBBF99F06u, 0xBF438D87u, 0x3F187F31, 0xBE7E21FCu, 0xFF, 0x0 };
 
@@ -18,4 +27,8 @@ NJS_CNK_MODEL cnk_Cylinder_001 = { cnk_Cylinder_001_vtx, cnk_Cylinder_001_poly, 
 
 NJS_CNK_OBJECT Cylinder = { NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Cylinder_001, -0.00000007450581f, -0.23f, -0.00000007450581f, 0xC000, 0, 0xC000, 1, 1, 1, NULL, NULL };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
