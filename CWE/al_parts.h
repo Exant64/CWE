@@ -4,6 +4,13 @@
 #include "al_minimal.h"
 #include "cwe_api.h"
 
+struct AL_ITEM_INFO {
+	NJS_CNK_OBJECT *pObject;
+	NJS_TEXLIST *pTexlist;
+	NJS_POINT3 OffsetPos;
+	Angle3 OffsetAng;
+};
+
 enum
 {
 	PARTS_KIND_ARM = 0x0,
@@ -28,6 +35,7 @@ int  AL_PartsIsMinimalFlagOn(task* tp, int MinimalType);
 void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist);
 void AL_SetItemOffset(task *a1, int a2, int a3);
 void sub_5669B0(task* a1, int a2, int a3);
+void AL_SetItemParallelLeftHand(task* tp, NJS_CNK_OBJECT* pObject, NJS_TEXLIST* pTexlist);
 
 bool AL_IsExistPartsChild(int MinimalNum, int PartsKind);
 bool AL_IsExistPartsAdult(int MinimalNum, int PartsKind);
