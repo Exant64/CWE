@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\SA2ModLoader.h"
+#include "../SA2ModLoader.h"
 #include <al_save.h>
 #include <ChaoMain.h>
 #define CHAO_BASE (0x019F6EC4)
