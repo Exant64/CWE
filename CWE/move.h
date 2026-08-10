@@ -14,6 +14,8 @@ enum {
 #define GET_MOVE_WORK(tp) ((MOVE_WORK*)tp->mwp)
 ThiscallFunctionPointer(float, MOV_DistFromAim, (task* a1), 0x007968A0);
 
+int MOV_TurnToPlayer2(task *a1, int a3, int a2);
+float MOV_Dist2FromPlayer(task* tp, int player_num);
 void MOV_Control(task* eax0);
 void sub_54B230(task* eax0, float a2);
 void ObjectMovableInitialize(taskwk* a1, int a2);
