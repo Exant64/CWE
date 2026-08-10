@@ -214,6 +214,9 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Behavior")) {
+                AL_BEHAVIOR* bhv = &GET_CHAOWK(pChao)->Behavior;
+                ImGui::Text("Mode %d SubMode %d Timer %d SubTimer %d", bhv->Mode, bhv->SubMode, bhv->Timer, bhv->SubTimer);
+                
                 if (ImGui::TreeNode("Start behaviors")) {
                     if (ImGui::Button("TV")) {
                         int ALBHV_GoToTV(task* tp);
