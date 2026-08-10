@@ -12,6 +12,41 @@ enum ChaoGrade : __int8
 	ChaoGrade_S = 0x5,
 };
 
+typedef enum eAL_MOUTH_NUM {
+    AL_MOUTH_NUM_NONE = 0x0,
+    AL_MOUTH_NUM_SHARK = 0x1,
+    AL_MOUTH_NUM_HOYO = 0x2,
+    AL_MOUTH_NUM_NIKO = 0x3,
+    AL_MOUTH_NUM_MUSU = 0x4,
+    AL_MOUTH_NUM_WAAI = 0x5,
+    AL_MOUTH_NUM_UEEN = 0x6,
+    AL_MOUTH_NUM_NEE = 0x7,
+    AL_MOUTH_NUM_KOIKE = 0x8,
+    AL_MOUTH_NUM_GEE = 0x9,
+    AL_MOUTH_NUM_MUU = 0xA,
+    AL_MOUTH_NUM_UWAAN = 0xB,
+    AL_MOUTH_NUM_INO = 0xC,
+    AL_MOUTH_NUM_END = 0xD,
+} eAL_MOUTH_NUM;
+
+typedef enum eAL_EYE_NUM {
+    AL_EYE_NUM_NORMAL = 0x0,
+    AL_EYE_NUM_KYA = 0x1,
+    AL_EYE_NUM_NAMU = 0x2,
+    AL_EYE_NUM_TOHOHO = 0x3,
+    AL_EYE_NUM_NIKO = 0x4,
+    AL_EYE_NUM_BIKKURI = 0x5,
+    AL_EYE_NUM_GURUGURU = 0x6,
+    AL_EYE_NUM_SUYASUYA = 0x7,
+    AL_EYE_NUM_SHIROME = 0x8,
+    AL_EYE_NUM_TRON = 0x9,
+    AL_EYE_NUM_ANGER = 10,
+    AL_EYE_NUM_NCHAOS = 11,
+    AL_EYE_NUM_HCHAOS = 12,
+    AL_EYE_NUM_DCHAOS = 13,
+    AL_EYE_NUM_END = 0xE,
+} eAL_EYE_NUM;
+
 enum ChaoEyes : __int8
 {
 	ChaoEyes_Normal = 0x0,
