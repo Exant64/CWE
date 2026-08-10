@@ -8,6 +8,43 @@
 #include "al_knowledge.h"
 #include <al_chao_info.h>
 
+Uint16 AL_KW_GetPlayerCharacterNum(void) {
+	if(!playerpwp[0]) return 0;
+
+    int retval;
+    switch (playerpwp[0]->CharID) {
+        case 0:
+            retval = 0;
+            break;
+        case 1:
+            retval = 1;
+            break;
+        case 2:
+            retval = 2;
+            break;
+        case 3:
+            retval = 3;
+            break;
+        case 4:
+            retval = 4;
+            break;
+        case 5:
+            retval = 5;
+            break;
+        default:
+            retval = 0;
+            break;
+    }
+	
+    return retval;
+}
+
+Sint8 AL_KW_GetPlayerLike(task* pChaoTask) {
+    AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
+    Uint16 charNum = AL_KW_GetPlayerCharacterNum();
+    return kwlg->player[charNum].like;
+}
+
 Bool AL_KW_IsSToyFlagOn(task* pChaoTask, int Kind) {
 	AL_KNOWLEDGE_BTL* kwlg = &GET_CHAOPARAM(pChaoTask)->knowledge;
 
