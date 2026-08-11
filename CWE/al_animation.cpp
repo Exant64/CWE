@@ -1,15 +1,23 @@
 #include "stdafx.h"
+#include "al_emotion.h"
+#include "al_motion.h"
+#include "asmutil.h"
+#include "ninja.h"
 
 #include "Chao.h"
 #include "ChaoMain.h"
 #include "al_parameter.h"
 #include "al_behavior/albhv.h"
-#include "iostream"
 #include "al_behavior/al_behavior.h"
 #include <al_face.h>
 #include "playsound.h"
 #include "al_hold.h"
 #include "al_landmark.h"
+#include "al_draw.h"
+#include "ninja_functions.h"
+#include "FunctionHook.h"
+#include "al_parts.h"
+#include "al_behavior/al_knowledge.h"
 
 #define RandomChance (njRandom() < 0.5f)
 
@@ -861,7 +869,692 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 	return --bhv->LimitTimer > 0 ? BHV_RET_CONTINUE : BHV_RET_BREAK;
 }
 
+static int ALBHV_Brake(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	switch(bhv->Mode) {
+		case 0:
+			AL_SetMotionLinkStep(tp, ALM_BRAKE, 15);
+			bhv->Mode++;
+			[[fallthrough]];
+		case 1:
+			if(AL_IsMotionEnd(tp) && njScalor(&GET_MOVE_WORK(tp)->Velo) < 0.1f) {
+				return BHV_RET_FINISH;
+			}
+			break;
+	}
+
+	AL_Brake(tp, 0.8f);
+
+	return BHV_RET_CONTINUE;
+}
+
+static FunctionHook<int, task*> ALBHV_Run2_t(0x5A3580);
+static int ALBHV_Run2_r(task* tp) {
+	int prevBhvMode = GET_CHAOWK(tp)->Behavior.Mode;
+
+	int ret = ALBHV_Run2_t.Original(tp);
+
+	if(prevBhvMode == 0) {
+		if(GET_CHAOPARAM(tp)->Lev[SKILL_RUN] == 99 && njRandom() < 0.5f) {
+			AL_SetMotionLink(tp, ALM_DASH);
+		}
+	}
+
+	if(ret == BHV_RET_FINISH) {
+		if(njRandom() < 0.5f && AL_GetMotionNum(tp) == ALM_DASH) {
+			AL_SetBehavior(tp, ALBHV_Brake);
+		}
+
+		return BHV_RET_CONTINUE;
+	}
+
+	return ret;
+}
+
+static int ALBHV_Greet_r(task* tp) {
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+    switch(bhv->Mode) {
+        case 0:
+            if(GET_CHAOPARAM(tp)->body.APos > 0.5f) {
+				const float jumpChance = float(NJM_MAX(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE))) / 100.f;
+				if(njRandom() < jumpChance) {
+					AL_SetMotionLinkStep(tp, ALM_ESAJUMP, 20);
+				}
+				else {
+					AL_SetMotionLinkStep(tp, ALM_OJIGI, 20);
+				}
+
+                AL_SE_CallV2(TONE(6, 145), 0, 0, 0, &tp->twp->pos);
+            }
+            else {
+				const auto calm = AL_EmotionGetValue(tp, EM_PER_CALM);
+				const float calmChance = float(NJM_MAX(0, calm)) / 100.f;
+
+				if(njRandom() < 0.33f) {
+					const float randVal = njRandom();
+
+					if(randVal < 0.25f) {
+						AL_SetMotionLinkStep(tp, ALM_NEE_L, 20);
+					}
+					else if (randVal < 0.5f) {
+						AL_SetMotionLinkStep(tp, ALM_NEE_R, 20);
+					}
+					else if (randVal < 0.75f) {
+						AL_SetMotionLinkStep(tp, ALM_NEE_P_L, 20);
+					}
+					else {
+						AL_SetMotionLinkStep(tp, ALM_NEE_P_R, 20);
+					}
+				}
+				else if (njRandom() < calmChance) {
+					if(njRandom() < 0.5f) {
+						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_A, 20);    
+					}
+					else {
+						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_B, 20);   
+					}
+				}
+				else {
+					AL_SetMotionLinkStep(tp, ALM_HELLO, 20);    
+				}
+            }
+
+            AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+            AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
+
+            bhv->Timer = 200;
+            bhv->Mode++;
+        case 1:
+            if(bhv->Timer-- <= 0) {
+                return BHV_RET_FINISH;
+            }
+            
+            break;
+    }
+
+    return BHV_RET_CONTINUE;
+}
+
+static int ALBHV_Tameiki_r(task* tp) {
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+    switch(bhv->Mode) {
+        case 0: {
+            int posture = AL_GetMotionPosture(tp);
+            switch(posture) {
+                case 1:
+                case 2:
+                case 3:
+                    AL_SetMotionLinkStep(tp, ALM_TAMEIKI_SIT, 35);
+                    break;
+                case 0:
+                default:
+					if(njRandom() < 0.5f) {
+						AL_SetMotionLinkStep(tp, ALM_TAMEIKI_STAND, 30);
+					}
+					else {
+						AL_SetMotionLinkStep(tp, ALM_GUTTARI_STAND, 30);
+					}
+                    break;
+            }
+
+            AL_FaceChangeEye(tp, ChaoEyes_ClosedHappy);
+            AL_FaceChangeMouth(tp, ChaoMouth_ClosedFrown); 
+
+            bhv->Timer = (Uint16)(180 + (int)(njRandom() * ((300 - 180) + 1.0f)));
+            bhv->Mode++;
+        }
+        case 1:
+            if(bhv->Timer-- <= 0) {
+                return BHV_RET_FINISH;
+            }
+            break;
+    }
+
+    return BHV_RET_CONTINUE;
+}
+
+static int ALBHV_Cymbal_r(task* tp) {
+	DataArray(NJS_CNK_OBJECT, object_alo_sinbal_pos_l_sinbal2, 0x11C8964, 1);
+	DataArray(NJS_CNK_OBJECT, object_alo_sinbal_pos_r_sinbal1, 0x11C8FFC, 1);
+
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    int mot_num;
+
+    switch (bhv->Mode) {
+        case 0:
+            AL_SetMotionLink(tp, ALM_CYMBAL_WAIT);
+            AL_FaceSetEye(tp, 4, -1);
+            AL_FaceSetMouth(tp, 3, -1);
+
+            AL_SetItem(tp, AL_PART_HAND_L, object_alo_sinbal_pos_l_sinbal2, &AL_TOY_TEXLIST);
+            AL_SetItem(tp, AL_PART_HAND_R, object_alo_sinbal_pos_r_sinbal1, &AL_TOY_TEXLIST);
+
+            bhv->Timer = RAND_RANGE(300, 600);
+            ++bhv->Mode;
+        case 1:
+            if (bhv->Timer-- <= 0) {
+                mot_num = AL_GetMotionNum(tp);
+                switch (mot_num) {
+                    case ALM_CYMBAL_WAIT: {
+						const float randVal = njRandom();
+						if(randVal < 0.5f) {
+                        	AL_SetMotionLinkStep(tp, ALM_CYMBAL_PAN, 10);
+						}
+						else if (randVal < 0.75f) {
+							AL_SetMotionLinkStep(tp, ALM_CYMBAL_PANPAN, 10);
+						}
+						else {
+							AL_SetMotionLinkStep(tp, ALM_CYMBAL_PAPAPAN, 10);
+						}
+
+                        bhv->Timer = RAND_RANGE(60, 240);
+                        bhv->SubTimer = 0;
+					} break;
+                    default:
+                        AL_SetMotionLinkStep(tp, ALM_CYMBAL_WAIT, 10);
+
+                        bhv->Timer = RAND_RANGE(60, 240);
+                        break;
+                }
+            }
+
+            mot_num = AL_GetMotionNum(tp);
+            bhv->SubTimer++;
+            switch (mot_num) {
+                case ALM_CYMBAL_WAIT:
+                    break;
+                case ALM_CYMBAL_PAN:
+                    if (bhv->SubTimer == 30) {
+                        AL_SE_CallV2(TONE(4, 7), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+                    }
+                    break;
+				case ALM_CYMBAL_PANPAN:
+                    switch (bhv->SubTimer) {
+						case 30:
+						case 60:
+                        	AL_SE_CallV2(TONE(4, 7), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+							break;
+                    }
+					
+                    break;
+				case ALM_CYMBAL_PAPAPAN:
+                    switch (bhv->SubTimer) {
+						case 30:
+						case 45:
+						case 60:
+                        	AL_SE_CallV2(TONE(4, 7), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+							break;
+                    }
+                    break;
+            }
+            break;
+    }
+
+    return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+}
+
+static int ALBHV_Rappa_r(task* tp) {
+	DataArray(NJS_CNK_OBJECT, object_alo_rappa_pos_pos, 0x11C830C, 1);
+	
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    int mot_num;
+
+    switch (bhv->Mode) {
+        case 0: {
+            const float randval = njRandom();
+            if (randval < 0.33f) {
+                AL_SetMotionLink(tp, ALM_RAPPA_UP);
+            } 
+			else if (randval < 0.66f) {
+                AL_SetMotionLink(tp, ALM_RAPPA_DOWN);
+            }
+			else {
+                AL_SetMotionLink(tp, ALM_RAPPA_FB);
+            }
+
+            AL_FaceSetEye(tp, 4, -1);
+            AL_FaceSetMouth(tp, 3, -1);
+
+            AL_SetItemParallelLeftHand(tp, object_alo_rappa_pos_pos, &AL_TOY_TEXLIST);
+
+            bhv->Timer = RAND_RANGE(300, 600);
+            ++bhv->Mode;
+		
+		}
+        case 1:
+            if (bhv->Timer-- <= 0) {
+				const float randval = njRandom();
+				int mot_num;
+
+				if (randval < 0.33f) {
+					mot_num = ALM_RAPPA_UP;
+				} 
+				else if (randval < 0.66f) {
+					mot_num = ALM_RAPPA_DOWN;
+				}
+				else {
+					mot_num = ALM_RAPPA_FB;
+				}
+
+				if(AL_GetMotionNum(tp) != mot_num) {
+					AL_SetMotionLink(tp, mot_num);
+				}
+
+				bhv->Timer = RAND_RANGE(60, 240);
+            }
+
+            if ((bhv->SubTimer++ % 180) == 0 && njRandom() < 0.5f) {
+                AL_SE_CallV2(TONE(4, 16), 0, 0, -200, &GET_CHAOWK(tp)->pos);
+            }
+            break;
+    }
+
+    return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+}
+
+static int ALBHV_Fue_r(task* tp) {
+	DataPointer(AL_ITEM_INFO, FueItemInfo, 0x11C9B74);
+	
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    int mot_num;
+
+    switch (bhv->Mode) {
+        case 0: {
+            if (njRandom() < 0.5f) {
+                AL_SetMotionLink(tp, ALM_FUE_LR);
+            } 
+			else {
+                AL_SetMotionLink(tp, ALM_FUE_UD);
+            }
+
+            AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+            AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
+
+            AL_SetItemOffset(tp, (int)&FueItemInfo, AL_PART_HAND_R);
+
+            bhv->Timer = RAND_RANGE(300, 600);
+            ++bhv->Mode;
+		}
+        case 1:
+            if (bhv->Timer-- <= 0) {
+				int mot_num;
+
+				if (njRandom() < 0.5f) {
+					mot_num = ALM_FUE_LR;
+				} 
+				else {
+					mot_num = ALM_FUE_UD;
+				}
+
+				if(AL_GetMotionNum(tp) != mot_num) {
+					AL_SetMotionLink(tp, mot_num);
+				}
+
+				bhv->Timer = RAND_RANGE(60, 240);
+            }
+
+            if ((bhv->SubTimer++ % 180) == 0 && njRandom() < 0.5f) {
+                AL_SE_CallV2(TONE(4, 10), 0, 0, -40, &GET_CHAOWK(tp)->pos);
+            }
+            break;
+    }
+
+    return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+}
+
+void AL_DisableTouch(task* tp) {
+    tp->twp->flag &= ~0x240u;
+    CCL_Disable(tp, 0);
+    CCL_Disable(tp, 2);
+}
+
+static FunctionHook<int, task*> ALBHV_Nade_t(0x05648A0);
+static int ALBHV_Nade_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	// case 0-4 are used by the vanilla func
+	// rest are free game
+
+	if(bhv->Mode == 1) {
+		switch(AL_GetMotionPosture(tp)) {
+			case AL_PST_SIT:
+			case AL_PST_LIE:
+				break;
+
+			case AL_PST_STAND:
+			default:
+				if(AL_KW_GetPlayerLike(tp) < 0) {
+					AL_SetMotionLink(tp, ALM_NADE_TERE);
+
+					AL_FaceChangeEye(tp, ChaoEyes_Painful);
+					AL_FaceChangeMouth(tp, ChaoMouth_ClosedFrown);
+
+					bhv->Mode = 5;
+					bhv->Timer = RAND_RANGE(2, 5);
+				}
+				break;
+		}
+	}
+
+	switch (bhv->Mode) {
+		case 5:
+			if (AL_IsMotionEnd(tp)) {
+				if(--bhv->Timer <= 0) {
+					AL_SetMotionLink(tp, ALM_NADE_IYA);
+
+					bhv->Mode = 6;
+				}
+			}
+			break;
+		case 6:
+			if(AL_IsMotionEnd(tp)) {
+				AL_DisableTouch(tp);
+				bhv->Mode = 7;
+				bhv->Timer = RAND_RANGE(60, 90);
+			}
+			break;
+		case 7:
+			if(!--bhv->Timer) {
+				AL_SetMotionLink(tp, ALM_NADE_IYA_END);
+
+				bhv->Mode = 8;
+			}
+			break;
+		case 8:
+			if(AL_IsMotionEnd(tp)) {
+				return BHV_RET_FINISH;
+			}
+			break;
+	}
+
+	if(bhv->Mode >= 5) {
+		if (!CCL_IsHitKindEx(tp, 2)) {
+			bhv->Mode = 4;
+			AL_SetMotionLink(tp, ALM_NADE_IYA_END);
+		}
+	}
+
+	return ALBHV_Nade_t.Original(tp);
+}
+
+static ASM_FUNC void SpawnCryingParticle (NJS_POINT3* a3, NJS_POINT3* a2, float a4) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+1) ); // a4
+    ASM_PUSH(      ASM_ESP(1+1+1) ); // a3
+    ASM_MOVE( edi, ASM_ESP(2+2+1) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x006ED270 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static int ALBHV_CryWalkToPlayer(task* tp) {
+	taskwk* twk = tp->twp;
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    MOVE_WORK* move = GET_MOVE_WORK(tp);
+
+    switch(bhv->Mode) {
+        case 0: {
+			if(njRandom() < 0.5f) {
+				AL_SetMotionLink(tp, ALM_CRY_WALK_A);
+			}
+			else {
+				AL_SetMotionLink(tp, ALM_CRY_WALK_B);
+			}			
+
+			AL_FaceChangeEye(tp, ChaoEyes_ClosedHappy);
+			AL_FaceChangeMouth(tp, ChaoMouth_ClosedFrown); 
+
+			bhv->Mode = 1;
+			bhv->Timer = RAND_RANGE(200, 360);
+        } break;
+
+        case 1:
+            if(!--bhv->Timer) {
+                if (njRandom() < 0.75f) {
+                    switch(AL_GetMotionNum(tp)) {
+                        case ALM_CRY_WALK_A:
+                            AL_SetMotionLink(tp, ALM_CRY_WALK_A2B);
+
+                            if(njRandom() < 0.3f) {
+                                AL_SE_CallV2(TONE(6, 1), 0, 0, 110, &tp->twp->pos);
+                            }
+                            break;
+                        case ALM_CRY_WALK_B:
+                            AL_SetMotionLink(tp, ALM_CRY_WALK_B2A);
+                            break;
+                    }            
+                }
+
+                bhv->Timer = RAND_RANGE(200, 360);
+            }
+
+			MOV_TurnToPlayer2(tp, 288, 0);
+
+			if (move->Flag & 0x400) {
+				move->Acc.x = njSin(twk->ang.y) * GET_GLOBAL()->WalkAcc;
+				move->Acc.z = njCos(twk->ang.y) * GET_GLOBAL()->WalkAcc;
+			}
+
+			if (MOV_Dist2FromPlayer(tp, 0) < 25) {
+			    AL_EmotionAdd(tp, EM_MD_SORROW, -10);
+
+				AL_SetMotionLink(tp, ALM_NAKU_START);
+				bhv->Mode = 2;
+				bhv->Timer = RAND_RANGE(200, 360);
+			}
+            break;
+		
+		case 2:
+			if (!--bhv->Timer) {
+				AL_EmotionAdd(tp, EM_MD_SORROW, -10);
+
+                if(AL_EmotionGetValue(tp, EM_MD_SORROW) < 10) {
+                    return BHV_RET_FINISH;
+                }
+
+				if(AL_IsMotionEnd(tp) && njRandom() < 0.5f) {
+					switch(AL_GetMotionNum(tp)) {
+						case ALM_NAKU_UD:
+							if(njRandom() < 0.5f) {
+								AL_SetMotionLink(tp, ALM_NAKU_LR);
+							}
+							else {
+								AL_SetMotionLink(tp, ALM_NAKU_LOOKUP);
+							}
+
+							break;
+
+						case ALM_NAKU_LR:
+							if(njRandom() < 0.5f) {
+								AL_SetMotionLink(tp, ALM_NAKU_UD);
+							}
+							else {
+								AL_SetMotionLink(tp, ALM_NAKU_LOOKUP);
+							}
+							break;
+
+						case ALM_NAKU_LOOKUP:
+							if(njRandom() < 0.5f) {
+								AL_SetMotionLink(tp, ALM_NAKU_LR);
+							}
+							else {
+								AL_SetMotionLink(tp, ALM_NAKU_UD);
+							}
+							break;
+					}
+				}
+
+				bhv->Timer = RAND_RANGE(100, 200);
+			}
+			break;
+    }
+
+ 	if((bhv->SubTimer++ % 8) < 4) {
+        NJS_POINT3 pos;
+        NJS_VECTOR vec;
+        
+        AL_SHAPE* pShape = &GET_CHAOWK(tp)->Shape;
+
+        pos = pShape->LeftEyePos;
+        pos.y -= 0.2f;
+        vec.x = pShape->LeftEyeVec.x * 0.1f;
+        vec.y = 0.1f + pShape->LeftEyeVec.y * 0.1f;
+        vec.z = pShape->LeftEyeVec.z * 0.1f;
+        
+        SpawnCryingParticle(&pos, &vec, 0.1f);
+
+        pos = pShape->RightEyePos;
+        pos.y -= 0.2f;
+
+        vec.x = pShape->RightEyeVec.x * 0.1f;
+        vec.y = 0.1f + pShape->RightEyeVec.y * 0.1f;
+        vec.z = pShape->RightEyeVec.z * 0.1f;
+        
+        SpawnCryingParticle(&pos, &vec, 0.1f);
+    }
+    
+    return BHV_RET_CONTINUE;
+}
+
+static FunctionHook<int, task*> ALBHV_Cry_t(0x59FCA0);
+static int ALBHV_Cry_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f && AL_KW_GetPlayerLike(tp) >= 10) {
+		AL_SetBehavior(tp, ALBHV_CryWalkToPlayer);
+		return BHV_RET_CONTINUE;
+	}
+
+	return ALBHV_Cry_t.Original(tp);
+}
+
+static ASM_FUNC void AL_CalcIntentionScore_Hima(task* tp, float* pMaxScore) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5A10B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static int ALBHV_Hima(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	switch (bhv->Mode) {
+		case 0:
+			AL_SetMotionLink(tp, ALM_HIMATATI_PATA);
+			
+			bhv->Timer = RAND_RANGE(90, 320);
+			bhv->SubTimer = RAND_RANGE(3, 6);
+			bhv->Mode++;
+			[[fallthrough]];
+		case 1:
+			if(!--bhv->Timer) {
+				if(!--bhv->SubTimer) {
+					bhv->Mode++;
+				}
+
+				if(AL_GetMotionNum(tp) == ALM_HIMATATI_PATA_LOOP) {
+					if(njRandom() < 0.5f) {
+						AL_SetMotionLink(tp, ALM_HIMATATI_PATA2MOJI);
+					}
+				}
+
+				bhv->Timer = RAND_RANGE(90, 320);
+			}
+			break;
+
+		case 2:
+			AL_SetMotionLink(tp, ALM_HIMATATI_END);
+			bhv->Mode++;
+			[[fallthrough]];
+		case 3:
+			if (AL_IsMotionEnd(tp)) {
+				return BHV_RET_FINISH;
+			}
+			break;
+	}
+
+	return BHV_RET_CONTINUE;
+}
+
+static void AL_CalcIntentionScore_Hima_r(task* tp, float* pMaxScore) {
+	float scoreBefore = *pMaxScore;
+
+	AL_CalcIntentionScore_Hima(tp, pMaxScore);
+
+	if(*pMaxScore != scoreBefore) {
+		return;
+	}
+
+	float score = 0.f;
+    CHAO_GLOBAL* Global = GET_GLOBAL();
+
+    Uint32 himatrigger = GET_GLOBAL()->IntentionHimaTrigger;
+    Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
+
+    if (*pMaxScore < 1) {
+        if (value > himatrigger) {
+            score = AL_CalcScoreTypeA(value, himatrigger);
+            score *= GET_GLOBAL()->IntentionHimaMaxScore;
+            AL_ScoreRandomize(&score);
+        }
+
+	    if (score > *pMaxScore) {
+			*pMaxScore = score;
+			AL_SetBehavior(tp, ALBHV_Hima);
+		}
+	}
+}
+
+static void ASM_FUNC AL_CalcIntentionScore_Hima_t() {
+    ASM_PUSH(ASM_ESP(1));
+    ASM_PUSH(eax);
+
+	// Call your __cdecl function here:
+	ASM_CALL(AL_CalcIntentionScore_Hima_r);
+
+	ASM_POP(eax);
+	ASM_ESP_ADD(1);
+	ASM_RET(0);
+}
+
+
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
 	WriteData((int*)0x005615DA, (int)ALBHV_PickUpLockOn_MoreAnim);
+
+	if(gConfigVal.MoreAnimation) {
+		WriteCall((void*)0x00562B3E, (void*)AL_CalcIntentionScore_Hima_t);
+
+		ALBHV_Run2_t.Hook(ALBHV_Run2_r);
+		WriteJump((void*)0x005A03B0, (void*)ALBHV_Greet_r);
+		WriteJump((void*)0x0059F970, (void*)ALBHV_Tameiki_r);
+
+		ALBHV_Cry_t.Hook(ALBHV_Cry_r);
+		ALBHV_Nade_t.Hook(ALBHV_Nade_r);
+
+		WriteJump((void*)0x0059E2D0, (void*)ALBHV_Cymbal_r);
+		WriteJump((void*)0x0059E120, (void*)ALBHV_Rappa_r);
+		WriteJump((void*)0x0059DD10, (void*)ALBHV_Fue_r);
+	}
 }
