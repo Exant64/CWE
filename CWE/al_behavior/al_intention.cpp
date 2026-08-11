@@ -1,3 +1,5 @@
+#include "al_emotion.h"
+#include "al_parameter.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
@@ -12,6 +14,7 @@
 #include "al_intention.h"
 #include <ChaoMain.h>
 #include <asmutil.h>
+#include <al_behavior/albhv_walk.h>
 
 void AL_ScoreRandomize(float* pScore)
 {
@@ -271,9 +274,42 @@ Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer)
 	return 0;
 }
 
+static ASM_FUNC void AL_DecideIntention(task *tp) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00562A80 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static void AL_DecideIntention_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	AL_DecideIntention(tp);
+
+	if(bhv->BhvFuncList[0] == ALBHV_Move) {
+		AL_SetBehavior(tp, ALBHV_Move_r);
+	}
+}
+
+static void ASM_FUNC AL_DecideIntention_t() {
+	ASM_PUSH(eax); // a1
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_DecideIntention_r);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
+}
+
 //possible API for this too?
-void AL_IntentionInit()
-{
+void AL_IntentionInit() {
+	// hooking the ALBHV_Move set indirectly
+	WriteCall((void*)0x0053DD10, (void*)AL_DecideIntention_t);
+
 	//small toy intention
 	WriteJump((void*)0x55E7A0, (void*)sub_55E7A0);
 

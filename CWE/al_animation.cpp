@@ -248,42 +248,6 @@ void Chao_ExtraAnimations(task* tp)
 		}
 	}
 
-	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WALK)
-	{
-		if (data->MotionCtrl.next_num == 100)
-		{
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_ANGER)
-			{
-				AL_SetMotionLink(tp, 126);
-			}
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_URGETOCRY)
-			{
-				AL_SetMotionLink(tp, 105);
-			}
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_URGETOCRY2)
-			{
-				const int CryWalkAnim[] = { 534, 536 };
-				int CryWalkRNG = rand() % std::size(CryWalkAnim);
-
-				AL_SetMotionLink(tp, CryWalkAnim[CryWalkRNG]);
-			}
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_DIZZY)
-			{
-				AL_SetMotionLink(tp, 127);
-			}
-		}
-
-	}
-
-	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_ANGER || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_URGETOCRY || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_URGETOCRY2 || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_DIZZY)
-	{
-		if (data->Behavior.nbBhvFuncEntry == 1 && data->Behavior.Timer == 1 && RandomChance)
-		{
-			Chao_BehaviourQueue(tp, ChaoBehaviour_WALK);
-			AL_GetRandomAttrPos(LMA_GROUND1, &GET_MOVE_WORK(tp)->AimPos);
-		}
-	}
-
 	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTOPLAYER || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 	{
 		if (cwe_work->AnimRandomized == 0)

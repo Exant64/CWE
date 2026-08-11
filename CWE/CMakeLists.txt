@@ -30,6 +30,7 @@ add_library(CWE SHARED
     al_behavior/albhv_swim.cpp
     al_behavior/albhv_sunaasubi.cpp
     al_behavior/albhv_tree.cpp
+    al_behavior/albhv_walk.cpp
     al_behavior/albhv_wrench.cpp
     al_behavior/alsbhv_chat.cpp
     al_behavior/alsbhv_common.cpp
