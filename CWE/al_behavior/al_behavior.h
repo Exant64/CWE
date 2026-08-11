@@ -1,6 +1,8 @@
 #pragma once
 #include "save/save_item.h"
 
+#define RAND_RANGE(min, max) ((Uint16)(min + (int)(njRandom() * ((max - min) + 1.0f))))
+
 void  AL_SetBehaviorWithTimer(task* a1, int a2, int a3);
 void  Chao_BehaviourQueue(task* a1, int a2);
 
