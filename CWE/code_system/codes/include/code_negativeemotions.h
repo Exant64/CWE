@@ -92,7 +92,7 @@ static int ALBHV_Koke_r(task* tp) {
         AL_EmotionAdd(tp, EM_MD_PAIN, int(30 + njRandom() * 15 + njRandom() * 90 * regain));
     }
 
-    return ALBHV_HungryDada_t.Original(tp);
+    return ALBHV_Koke_t.Original(tp);
 }
 
 void NegativeEmotions::Init() {
