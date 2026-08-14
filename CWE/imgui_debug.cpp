@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include <imgui/imgui_impl_win32.h>
 #include <imgui/imgui_impl_dx9.h>
+#include "imgui/imgui.h"
 #include <exception>
 #include <FunctionHook.h>
 #include <d3d9.h>
 #include <al_world.h>
 #include <Chao.h>
+#include "al_emotion.h"
 #include <al_behavior/albhv.h>
 #include <al_behavior/alsbhv.h>
 #include <al_daynight.h>
@@ -134,6 +136,63 @@ static void ChaoInfoMenu() {
                 }
                 else {
                     ChaoDebugDistSelected = NULL;
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Emotion")) {
+                static const char* EmotionStrings[] = {
+                    "PLEASURE",
+                    "ANGER",
+                    "SORROW",
+                    "FEAR",
+                    "SURPRISE",
+                    "PAIN",
+                    "RELAX",
+                    "TOTAL",
+                    "SLEEPY",
+                    "SLPDPTH",
+                    "HUNGER",
+                    "BREED",
+                    "TEDIOUS",
+                    "LONELY",
+                    "TIRE",
+                    "STRESS",
+                    "NOURISH",
+                    "CONDITN",
+                    "THIRSTY",
+                    "CURIOSITY",
+                    "KINDNESS",
+                    "AGRESSIVE",
+                    "SLEEPY_HEAD",
+                    "SOLITUDE",
+                    "VITALITY",
+                    "GLUTTON",
+                    "REGAIN",
+                    "SKILLFUL",
+                    "CHARM",
+                    "CHATTY",
+                    "CALM",
+                    "FICKLE"
+                };
+
+                for(size_t i = 0; i < _countof(EmotionStrings); ++i) {
+                    if(i < EM_ST_SLEEPY) {
+                        static Uint8 sliderMin = 0;
+                        static Uint8 sliderMax = 200;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U8, &GET_CHAOPARAM(pChao)->emotion.Mood[i], &sliderMin, &sliderMax);
+                    }
+                    else if (i < EM_PER_CURIOSITY) {
+                        static Uint16 sliderMin = 0;
+                        static Uint16 sliderMax = 10000;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U16, &GET_CHAOPARAM(pChao)->emotion.State[i - EM_ST_SLEEPY], &sliderMin, &sliderMax);
+                    }
+                    else {
+                        static Sint8 sliderMin = -100;
+                        static Sint8 sliderMax = 100;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_S8, &GET_CHAOPARAM(pChao)->emotion.Personality[i - EM_PER_CURIOSITY], &sliderMin, &sliderMax);
+                    }
                 }
 
                 ImGui::EndTabItem();
