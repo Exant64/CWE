@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Chao.h>
+#include "al_emotion.h"
 #include <al_garden_info.h>
 #include <al_behavior/al_intention.h>
 #include <al_behavior/albhv.h>
@@ -544,7 +545,7 @@ static void AL_Behavior_PostureFix() {
 
 static void AL_CheckBikkuri_SetBehavior_r(task* tp, BHV_FUNC Func, int ReserveTimer) {
 	if(njRandom() < 0.3f) {
-		AL_SetBehavior(tp, ALBHV_Runaway);
+		AL_SetBehavior(tp, ALBHV_BikkuriReact);
 		return;
 	}
 

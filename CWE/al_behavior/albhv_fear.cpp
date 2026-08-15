@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Chao.h"
 
 #include "ninja_functions.h"
 #include "albhv.h"
@@ -103,5 +104,23 @@ int ALBHV_Runaway(task* tp) {
         AL_SetMotionSpd(tp, velo * 8);
     }
     
+    return BHV_RET_CONTINUE;
+}
+
+int ALBHV_BikkuriReact(task* tp) {
+    if(AL_EmotionGetValue(tp, EM_PER_AGRESSIVE) < -int(njRandom() * 100.f)) {
+        AL_EmotionAdd(tp, EM_MD_SORROW, 20 + int(njRandom() * -int(AL_EmotionGetValue(tp, EM_PER_AGRESSIVE) * 0.75f)));
+
+        if(njRandom() < 0.5f) {
+            AL_SetBehavior(tp, ALBHV_Cry);
+        }
+        else {
+            AL_SetBehavior(tp, ALBHV_MesoMeso);
+        }
+
+        return BHV_RET_CONTINUE;
+    }
+
+    AL_SetBehavior(tp, ALBHV_Runaway);
     return BHV_RET_CONTINUE;
 }

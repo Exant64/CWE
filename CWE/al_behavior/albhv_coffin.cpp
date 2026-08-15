@@ -92,7 +92,7 @@ static int ALBHV_WaitForCoffin(task* tp) {
 
                 case ALW_CMD_GO:
                     if(gConfigVal.MoreAnimation && njRandom() < 0.3f) {
-                        AL_SetBehavior(tp, ALBHV_Runaway);
+                        AL_SetBehavior(tp, ALBHV_BikkuriReact);
                         break;
                     }
                     

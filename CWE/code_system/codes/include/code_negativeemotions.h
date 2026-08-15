@@ -1,5 +1,6 @@
 #pragma once
 #include "../../cwe_code.h"
+#include "al_behavior/albhv.h"
 #include "al_behavior/al_intention.h"
 #include "al_emotion.h"
 #include <al_stage.h>
@@ -11,7 +12,7 @@ PATCH_CODE(NegativeEmotions);
 static FunctionHook<int, task*> ALBHV_DakkoDislike_t(0x566300);
 static FunctionHook<int, task*> ALBHV_Eat_t(0x5607C0);
 static FunctionHook<int, task*> ALBHV_Akanbe_t(0x5A1800);
-static FunctionHook<int, task*> ALBHV_MesoMeso_t(0x59FA50);
+static FunctionHook<int, task*> ALBHV_MesoMeso_t(ALBHV_MesoMeso_p);
 static FunctionHook<int, task*> ALBHV_HungryDada_t(0x59EF40);
 static FunctionHook<int, task*> ALBHV_Koke_t(0x562D50);
 
