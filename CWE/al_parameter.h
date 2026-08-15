@@ -111,6 +111,7 @@ bool AL_IsCustomChao(task* tp);
 void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2);
 void AL_ParameterClearAccessory(task* tp, int slot);
 
+Bool AL_IsEmotionTimerReset(task* tp);
 void AL_ParameterAddAPos(task* a1, float a2);
 
 void sub_535E90(CHAO_PARAM_GC *a1, int a2);

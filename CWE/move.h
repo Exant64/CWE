@@ -19,7 +19,7 @@ float MOV_Dist2FromPlayer(task* tp, int player_num);
 void MOV_Control(task* eax0);
 void sub_54B230(task* eax0, float a2);
 void ObjectMovableInitialize(taskwk* a1, int a2);
-void MoveFunc2(task* a1);
+void MOV_DetectCollision(task* a1);
 
 float MOV_DistFromAimXZ(task* tp);
 int MOV_TurnToAim2(task* tp, int ang);

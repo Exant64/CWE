@@ -135,7 +135,7 @@ static int __cdecl AL_CheckBallFix(task* tp) {
 	}
 
 	AL_EmotionAdd(tp, EM_ST_TEDIOUS, -2000);
-	AL_SetBehaviorWithTimer(tp, (int)0x0563830, -1);
+	AL_SetBehavior(tp, (BHV_FUNC)0x0563830);
 	return 1;
 }
 

@@ -111,6 +111,7 @@
 #include "land_grayscale.h"
 #include "api/api_main.h"
 #include "cwe_c_colli.h"
+#include "alo_coffin.h"
 
 #include "navigation/navsys.h"
 #include "navigation/navsys_log.h"
@@ -141,21 +142,27 @@ extern "C"
 			ALO_OmoBuildCreate(&pos, ang);
 		}
 
-		if (gConfigVal.UnusedToys)
-		{
-			if (ChaoStageNumber == 1)
-			{
+		if (gConfigVal.UnusedToys) {
+			const auto stage = AL_GetStageNumber();
+
+			if (stage == CHAO_STG_NEUT) {
 				NJS_POINT3 pos = { -51, 0.448f, -16 };
 				ALO_BoatCreate(&pos, 0);
 			}
-			if (ChaoStageNumber == 2)
-			{
+
+			if (stage == CHAO_STG_HERO && (AL_GetCurrGardenInfo()->ToyGetFlag & (1 << AL_LTOY_UKIWA))) {
 				NJS_POINT3 pos = { 88, 0, 50 };
 				ALO_FloatCreate(&pos, 0);
 			}
+
+			if(stage == CHAO_STG_DARK && (AL_GetCurrGardenInfo()->ToyGetFlag & (1 << AL_LTOY_KANOKE))) {
+				const NJS_POINT3 pos = {-16.875, 0.f, -111.65f};
+				ALO_CoffinCreate(&pos, 0);
+			}
+			
 			if (
-				(ChaoStageNumber == 2 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x400)) || 
-				(ChaoStageNumber == 3 && (AL_GetCurrGardenInfo()->ToyGetFlag & 0x800))
+				(ChaoStageNumber == CHAO_STG_HERO && (AL_GetCurrGardenInfo()->ToyGetFlag & (1 << AL_LTOY_PIANO))) || 
+				(ChaoStageNumber == CHAO_STG_DARK && (AL_GetCurrGardenInfo()->ToyGetFlag & (1 << AL_LTOY_ORGAN)))
 				)
 			{
 				NJS_VECTOR GCPos[] = { {-45, 0, 6}, {-102, 0.05f, 4.5f} };

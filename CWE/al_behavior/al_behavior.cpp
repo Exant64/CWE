@@ -16,7 +16,7 @@
 
 extern void ALBHV_Life_Init();
 
-ASM_FUNC void AL_SetBehaviorWithTimer(task* a1, int a2, int a3) {
+ASM_FUNC void AL_SetBehaviorWithTimer(task* a1, BHV_FUNC a2, int a3) {
     // arguments
     ASM_PUSH(      ASM_ESP(3+0+0) ); // a3
     ASM_PUSH(      ASM_ESP(2+1+0) ); // a2
@@ -50,7 +50,7 @@ BHV_FUNC AL_GetBehavior(task* a1)
 }
 void AL_SetBehavior(task* a1, BHV_FUNC a2)
 {
-	AL_SetBehaviorWithTimer(a1, (int)a2, -1);
+	AL_SetBehaviorWithTimer(a1, a2, -1);
 }
 void AL_SetNextBehavior(task* a1, BHV_FUNC a2)
 {
@@ -274,7 +274,7 @@ extern "C" __declspec(dllexport) signed int __cdecl ALBHV_TurnToAccessory(task *
 		}
 
 		AL_GrabObjectBothHands(a1, v3);
-		AL_SetBehaviorWithTimer(a1, 0x569340, -1);
+		AL_SetBehaviorWithTimer(a1, (BHV_FUNC)0x569340, -1);
 
 		v5 = GET_CHAOPARAM(a1);
 		if (AL_GetAccessory(a1, GetAccessoryType(v3->twp->ang.x)) == -1)
@@ -335,7 +335,7 @@ signed int __cdecl AL_CheckAccessory(task* a1)
 	}
 
 	MOV_SetAimPos(a1, &v3->twp->pos);
-	AL_SetBehaviorWithTimer(a1, (int)ALBHV_TurnToAccessory, -1);
+	AL_SetBehaviorWithTimer(a1, ALBHV_TurnToAccessory, -1);
 	return 1;
 }
 //putting accessory on
@@ -492,7 +492,7 @@ static void AccessoryRemoveAll(task* tp) {
 //removing accessory
 void __cdecl AccessoryRemove1(task* a1)
 {
-	AL_SetBehaviorWithTimer(a1, (int)0x563EB0, -1);
+	AL_SetBehavior(a1, (BHV_FUNC)0x563EB0);
 	AccessoryRemoveAll(a1);
 }
 
@@ -542,6 +542,30 @@ static void AL_Behavior_PostureFix() {
 	WriteData((int*)(0x005A36D2 - 4), int(ALBHV_PostureChangeStand)); // WalkSelect
 }
 
+static void AL_CheckBikkuri_SetBehavior_r(task* tp, BHV_FUNC Func, int ReserveTimer) {
+	if(njRandom() < 0.3f) {
+		AL_SetBehavior(tp, ALBHV_Runaway);
+		return;
+	}
+
+	AL_SetBehaviorWithTimer(tp, Func, ReserveTimer);
+}
+
+static void ASM_FUNC AL_CheckBikkuri_SetBehavior_t() {
+	ASM_PUSH(ASM_ESP(2)); // a3
+	ASM_PUSH(ASM_ESP(2)); // a2
+	ASM_PUSH(eax);
+
+	// Call your __cdecl function here:
+	ASM_CALL(AL_CheckBikkuri_SetBehavior_r);
+
+	ASM_POP(eax);
+	ASM_ESP_ADD(1);
+	ASM_ESP_ADD(1);
+	
+	ASM_RET(0);
+}
+
 // AL_BehaviorResetParameter hook on bottom to free navigation points when not needed anymore
 // we make sure to free it in Chao_Delete_r aswell, incase the player leaves the garden mid-navigation behavior chain
 static void AL_BehaviorResetParameter_r(task* tp) {
@@ -575,6 +599,10 @@ void AL_Behavior_Init() {
 
 	AL_IntentionInit();
 	ALBHV_Life_Init();
+
+	if (gConfigVal.MoreAnimation) {
+		WriteCall((void*)0x0056479F, (void*)AL_CheckBikkuri_SetBehavior_t);
+	}
 
 	//accessories
 	WriteCall((void*)0x0053DB87, (void*)sub_5691B0Hook);

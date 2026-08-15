@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <SA2ModLoader.h>
+#include <c_colli.h>
 #include <asmutil.h>
 
 ASM_FUNC void CCL_ClearInfo(task* tp) {
@@ -69,4 +70,10 @@ ASM_FUNC task* AL_IsHitKindWithNum(task *a1, int a2, Uint8 a3) {
 
     // return
     ASM_RET( 0 );
+}
+
+task* CCL_IsHitKind(task* tp, Uint8 kind) {
+    CCL_HIT_INFO* v2 = CCL_IsHitKindEx(tp, kind);
+
+    return v2 ? v2->hit_tp : nullptr;
 }

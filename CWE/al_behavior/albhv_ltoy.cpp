@@ -189,6 +189,9 @@ void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
 					case ALW_KIND_UKIWA:
 						AL_SetBehavior(tp, ALBHV_GoToFloat);
 						break;
+					case ALW_KIND_COFFIN:
+						AL_SetBehavior(tp, ALBHV_GoToCoffin);
+						break;
 					default:
 						break;
 				}

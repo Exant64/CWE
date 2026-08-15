@@ -18,6 +18,7 @@ add_library(CWE SHARED
     al_behavior/albhv_capture.cpp
     al_behavior/albhv_coffin.cpp
     al_behavior/albhv_dance.cpp
+    al_behavior/albhv_fear.cpp
     al_behavior/albhv_float.cpp
     al_behavior/albhv_glide.cpp
     al_behavior/albhv_life.cpp

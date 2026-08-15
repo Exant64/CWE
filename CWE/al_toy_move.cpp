@@ -12,6 +12,21 @@
 #include "util.h"
 #include "asmutil.h"
 #include "memory.h"
+#include "asm_util.h"
+
+enum {
+	MD_IDLE = 0,
+	MD_STATIC = 1,
+	MD_DYNAMIC = 2,
+	MD_HOLDP = 3,
+};
+
+struct TOY_MOVE_WK {
+	Uint8 mode;
+	Uint8 smode;
+	int timer;
+	float floatVal;
+};
 
 // HACK: so for the whole toy registering ordeal, the original version delayed the displaysub (because the displaysub needed the entrywork)
 // and we couldn't hook the actual ALW_Entry function and do all our business there (because the position and angle set in the load functions  
@@ -40,110 +55,102 @@ void AL_Toy_Move_Register(task* obj, __int16 a3)
 		___OutputDebugString("AL_Toy_Move_Register: invalid toy area");
 	}
 
-	ALW_Entry2(6, obj, a3, info);
+	ALW_Entry2(ALW_CATEGORY_TOY, obj, a3, info);
+
 	if (info) {
 		obj->twp->pos = info->pos;
 		obj->twp->ang.y = info->nbVisit;
 	}
 }
 
-AL_TOY_MOVE* GetToyMove(task* a1)
+TOY_MOVE_WK* GetToyMove(task* a1)
 {
-	return (AL_TOY_MOVE*)((int)a1->mwp + 0x26C);
+	return (TOY_MOVE_WK*)((int)a1->mwp + 0x26C);
 }
 
 void AL_Toy_Move_Update(task *tp) {
 	MOVE_WORK* move = GET_MOVE_WORK(tp);
-	AL_TOY_MOVE* toyMove = GetToyMove(tp);
+	TOY_MOVE_WK* toyMove = GetToyMove(tp);
 
 	//todo: "nextaction" for collision changes?
-	switch (toyMove->state)
+	switch (toyMove->mode)
 	{
-	case TOY_MOVE_IDLE:
+		case MD_IDLE:
+			if (!toyMove->smode) {
+				CCL_Disable(tp, 0);
+				CCL_Disable(tp, 1);
 
-		if (toyMove->flag == 0)
-		{
-			CCL_Disable(tp, 0);
-			CCL_Disable(tp, 1);
-			CCL_Disable(tp, 2);
-			toyMove->flag++;
-		}
-
-		//run collision for 30 frames, after that become static
-		MOV_Control(tp);
-		MoveFunc2(tp);
-		toyMove->timer++;
-		if (toyMove->timer > 30)
-		{
-			toyMove->timer = 0;
-			toyMove->flag = 0;
-			toyMove->state = TOY_MOVE_STATIC;
-		}
-		break;
-	case TOY_MOVE_STATIC:
-
-		if (toyMove->flag == 0)
-		{
-			CCL_Enable(tp, 0);
-			CCL_Enable(tp, 1);
-			CCL_Disable(tp, 2);
-			toyMove->flag++;
-		}
-
-		//if not picked up
-		if (tp->twp->flag >= 0)
-		{
-			colliwk* v8 = tp->twp->cwp;
-			if (v8)
-			{
-				//if the object is touched, start running collision
-				if ((v8->flag & 0x10) != 0)
-				{
-					toyMove->timer = 0;
-					toyMove->flag = 0;
-					toyMove->state = TOY_MOVE_DYNAMIC;
-				}
+				toyMove->smode++;
 			}
-		}
-		else
-		{
-			//if it is picked up, run pickup
-			toyMove->timer = 0;
-			toyMove->flag = 0;
-			toyMove->state = TOY_MOVE_HOLDP;
-		}
-		break;
-	case TOY_MOVE_DYNAMIC:
-		if (toyMove->flag == 0)
-		{
-			CCL_Enable(tp, 0);
-			CCL_Enable(tp, 1);
-			CCL_Disable(tp, 2);
-			toyMove->flag++;
-		}
-		//water handler
-		sub_54B230(tp, toyMove->floatVal);
 
-		if (tp->twp->flag & 1)
-		{
+			//run collision for 30 frames, after that become static
+			MOV_Control(tp);
+			MOV_DetectCollision(tp);
 
-			NJS_VECTOR veloVec;
-			veloVec.x = move->Velo.x;
-			veloVec.y = 0.0;
-			veloVec.z = move->Velo.z;
-
-			//if it has velocity, reset timer to 0
-			if (njScalor(&veloVec) >= 0.01f)
-			{
+			if (++toyMove->timer > 30) {
 				toyMove->timer = 0;
+				toyMove->smode = 0;
+				toyMove->mode = MD_STATIC;
+			}
+			break;
+
+		case MD_STATIC:
+			if (!toyMove->smode) {
+				CCL_Enable(tp, 0);
+				CCL_Enable(tp, 1);
+
+				toyMove->smode++;
+			}
+
+			//if not picked up
+			if (tp->twp->flag >= 0)
+			{
+				colliwk* v8 = tp->twp->cwp;
+				if (v8)
+				{
+					//if the object is touched, start running collision
+					if ((v8->flag & 0x10) != 0)
+					{
+						toyMove->timer = 0;
+						toyMove->smode = 0;
+						toyMove->mode = MD_DYNAMIC;
+					}
+				}
 			}
 			else
 			{
-				//if it doesnt have velocity start running timer
-				//if the the timer reaches 30, become static again
-				toyMove->timer++;
-				if (toyMove->timer > 30)
-				{
+				//if it is picked up, run pickup
+				toyMove->timer = 0;
+				toyMove->smode = 0;
+				toyMove->mode = MD_HOLDP;
+			}
+			break;
+
+		case MD_DYNAMIC:
+			if (!toyMove->smode) {
+				CCL_Enable(tp, 0);
+				CCL_Enable(tp, 1);
+
+				toyMove->smode++;
+			}
+
+			//water handler
+			sub_54B230(tp, toyMove->floatVal);
+
+			if (tp->twp->flag & 1) {
+				NJS_VECTOR veloVec;
+				veloVec.x = move->Velo.x;
+				veloVec.y = 0.0;
+				veloVec.z = move->Velo.z;
+
+				//if it has velocity, reset timer to 0
+				if (njScalor(&veloVec) >= 0.01f) {
+					toyMove->timer = 0;
+				}
+				else if (++toyMove->timer > 30) {
+					//if it doesnt have velocity start running timer
+					//if the the timer reaches 30, become static again
+
 					move->Velo.x = 0.0;
 					move->Velo.y = 0.0;
 					move->Velo.z = 0.0;
@@ -151,74 +158,74 @@ void AL_Toy_Move_Update(task *tp) {
 					move->Acc.y = 0.0;
 					move->Acc.z = 0.0;
 
-					toyMove->flag = 0;
+					toyMove->smode = 0;
 					toyMove->timer = 0;
-					toyMove->state = TOY_MOVE_STATIC;
+					toyMove->mode = MD_STATIC;
 				}
 			}
-		}
-		//if picked up
-		if (tp->twp->flag < 0)
-		{
-			toyMove->flag = 0;
-			toyMove->timer = 0;
-			toyMove->state = TOY_MOVE_HOLDP;
-		}
-		MOV_Control(tp);
-		MoveFunc2(tp);
-		break;
-	case TOY_MOVE_HOLDP:
 
-		if (toyMove->flag == 0)
-		{
-			CCL_Disable(tp, 0);
-			CCL_Disable(tp, 1);
-			CCL_Disable(tp, 2);
-			toyMove->flag++;
-		}
-		ALW_CommunicationOff(tp);
-		tp->twp->ang.y = 0x4000 - playertwp[0]->ang.y;
-		//if it gets put down, go back to dynamic
-		if (tp->twp->flag >= 0)
-		{
-			toyMove->timer = 0;
-			toyMove->flag = 0;
-			toyMove->state = TOY_MOVE_DYNAMIC;
-		}
-		break;
+			//if picked up
+			if (tp->twp->flag < 0) {
+				toyMove->smode = 0;
+				toyMove->timer = 0;
+				toyMove->mode = MD_HOLDP;
+			}
+
+			MOV_Control(tp);
+			MOV_DetectCollision(tp);
+			break;
+
+		case MD_HOLDP:
+			if (!toyMove->smode) {
+				CCL_Disable(tp, 0);
+				CCL_Disable(tp, 1);
+
+				toyMove->smode++;
+			}
+
+			ALW_CommunicationOff(tp);
+			tp->twp->ang.y = 0x4000 - playertwp[0]->ang.y;
+
+			//if it gets put down, go back to dynamic
+			if (tp->twp->flag >= 0) {
+				toyMove->timer = 0;
+				toyMove->smode = 0;
+				toyMove->mode = MD_DYNAMIC;
+			}
+
+			break;
 	}
 
 	move->PrePos = tp->twp->pos;
-	
-}
-MOVE_WORK* __cdecl AllocateUnknownData2New(task* obj)
-{
-	MOVE_WORK* data2; // esi
-
-	data2 = (MOVE_WORK*)syMalloc(0x26C + sizeof(AL_TOY_MOVE), "..\\..\\src\\move.c", 64);
-	memset(data2, 0, 0x26C + sizeof(AL_TOY_MOVE));
-
-	obj->mwp = (motionwk*)data2;                   // different offset than SADX
-
-	data2->Top = 3.0f;
-	data2->RotSpd.y = 256;                      // different offset than SADX
-	data2->Side = 2.2f;	
-	data2->Bottom = -3.0f;
-	data2->CliffHeight = 40.0f;
-	data2->BoundSide = 0.80000001f;
-	data2->BoundFloor = 0.89999998f;
-	data2->BoundCeiling = 0.2f;
-	data2->BoundFriction = 0.80000001f;
-	data2->Offset.y = 3.0f;
-	return data2;
 }
 
-void AL_Toy_Move_Init(task* p, const CCL_INFO* col)
-{
-	MOVE_WORK* mov = AllocateUnknownData2New(p);
+static MOVE_WORK* MOV_Init_ToyHack(task* obj) {
+	MOVE_WORK* move; // esi
+
+	move = (MOVE_WORK*)syMalloc(0x26C + sizeof(TOY_MOVE_WK), "..\\..\\src\\move.c", 64);
+	memset(move, 0, 0x26C + sizeof(TOY_MOVE_WK));
+
+	obj->mwp = (motionwk*)move;                   // different offset than SADX
+
+	move->Top = 3.0f;
+	move->RotSpd.y = 256;                      // different offset than SADX
+	move->Side = 2.2f;	
+	move->Bottom = -3.0f;
+	move->CliffHeight = 40.0f;
+	move->BoundSide = 0.80000001f;
+	move->BoundFloor = 0.89999998f;
+	move->BoundCeiling = 0.2f;
+	move->BoundFriction = 0.80000001f;
+	move->Offset.y = 3.0f;
+
+	return move;
+}
+
+void AL_Toy_Move_Init(task* tp, const CCL_INFO* pInfo, size_t count) {
+	MOVE_WORK* mov = MOV_Init_ToyHack(tp);
 
 	// this pointer's purpose is explained at the declaration
-	pLastToyTask = p;
+	pLastToyTask = tp;
 
 	mov->Gravity = -0.05f;
 	mov->Offset.y = 3.0f;
@@ -227,27 +234,21 @@ void AL_Toy_Move_Init(task* p, const CCL_INFO* col)
 	mov->unk = 3;
 	mov->Flag |= 8;
 
-	GetToyMove(p)->floatVal = 1.0f;
+	GetToyMove(tp)->floatVal = 1.0f;
 
-	CCL_INFO collisions[3] = { 0 };
-	collisions[0] = pickupableColli;
-	collisions[1] = *(CCL_INFO*)0x008A76F8;
-	collisions[2] = *col;
+	CCL_INFO info[16] = { 0 };
 
-	collisions[1].push = 0x77;
-	collisions[1].attr = 0x8000;
+	assert(count + 1 <= _countof(info));
+	
+	info[0] = pickupableColli;
+	for(size_t i = 0; i < count; ++i) {
+		info[1 + i] = pInfo[i];
+	}
 
-	collisions[1].form = collisions[2].form;
-	collisions[1].center = collisions[2].center;
-	collisions[1].a = collisions[2].a;
-	collisions[1].b = collisions[2].b;
-	collisions[1].c = collisions[2].c;
-	collisions[1].d = collisions[2].d;
+	CCL_Init(tp, info, count + 1, 5);
 
-	CCL_Init(p, collisions, 3, 5);
-	if (p->mwp)
-	{
-		ObjectMovableInitialize(p->twp, 10);
+	if (tp->mwp) {
+		ObjectMovableInitialize(tp->twp, 10);
 	}
 }
 
@@ -281,7 +282,7 @@ CCL_INFO ALO_BoxExecutor_collision = { '\0', '\0', 'w', '\f', 32768u, {  0,  1.6
 
 void __cdecl AL_TV_Init(task* a1)
 {
-	AL_Toy_Move_Init(a1, &stru_8A5C10);
+	AL_Toy_Move_Init(a1, &stru_8A5C10, 1);
 	GET_MOVE_WORK(a1)->Offset.y = 1.75f;
 }
 
@@ -320,7 +321,7 @@ static void ASM_FUNC AL_Toy_UpdateHook() {
 
 void __cdecl AL_Box_Init(task* a1)
 {
-	AL_Toy_Move_Init(a1, &ALO_BoxExecutor_collision);
+	AL_Toy_Move_Init(a1, &ALO_BoxExecutor_collision, 1);
 	//a1->EntityData2->field_AC = 1.75f;
 }
 
@@ -336,7 +337,7 @@ static void ASM_FUNC AL_Box_Init_Hook() {
 
 void __cdecl AL_Radio_Init(task* a1)
 {
-	AL_Toy_Move_Init(a1, &RadioCol);
+	AL_Toy_Move_Init(a1, &RadioCol, 1);
 	GET_MOVE_WORK(a1)->Offset.y = 1.6f;
 }
 
@@ -353,7 +354,7 @@ static void ASM_FUNC AL_Radio_Init_Hook()
 
 void __cdecl AL_Horse_Init(task* a1)
 {
-	AL_Toy_Move_Init(a1, &ALO_Horse_collision);
+	AL_Toy_Move_Init(a1, &ALO_Horse_collision, 1);
 	//a1->EntityData2->field_AC = 1.75f;
 }
 

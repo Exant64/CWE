@@ -2,6 +2,7 @@
 #include "../al_world.h"
 #include "albhv_music.h"
 #include "albhv_bully.h"
+#include "albhv_fear.h"
 
 int ALBHV_PostureChangeStand(task* tp);
 int ALBHV_PostureChangeSit(task* tp);
@@ -21,6 +22,7 @@ void __cdecl AL_CalcIntentionScore_JoinSToy(task* a1, float* a2);
 void AL_CalcIntentionScore_MayuReact(task* tp, float* pMaxScore);
 signed int __cdecl ALBHV_GoToFloat(task* a1);
 signed int __cdecl ALBHV_GoToBoat(task* a1);
+int ALBHV_GoToCoffin(task* tp);
 void __cdecl  AL_CalcIntentionScore_LToy(task* a1, float* a2);
 signed int ALBHV_RideBoat(task* a1);
 signed int ALBHV_RideFloat(task* a1);
@@ -57,6 +59,9 @@ int ALBHV_Capture(task* tp);
 #define ALBHV_RideHorse ((BHV_FUNC)uintptr_t(ALBHV_RideHorse_p))
 #define ALBHV_WatchTV ((BHV_FUNC)uintptr_t(ALBHV_WatchTV_p))
 #define ALBHV_ListenRadicase ((BHV_FUNC)uintptr_t(ALBHV_ListenRadicase_p))
+
+#define ALBHV_Koke ((BHV_FUNC)0x562D50)
+#define ALBHV_Bikkuri ((BHV_FUNC)0x5647B0)
 
 template <BHV_FUNC bhv>
 int __cdecl ALBHV_ToyMoveCheck(task* a1)

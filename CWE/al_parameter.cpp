@@ -72,6 +72,19 @@ void AL_ParameterClearAccessory(task* tp, int slot) {
 	memset(&pParam->Accessories[slot], 0, sizeof(pParam->Accessories[slot]));
 }
 
+Bool AL_IsEmotionTimerReset(task* tp) {
+    AL_EMOTION* pEmotion = &GET_CHAOPARAM(tp)->emotion;
+
+    if (0);
+    else if (pEmotion->Timer);
+    else {
+        pEmotion->Timer++;
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 void AL_ParameterAddAPos(task* a1, float a2)
 {
 	CHAO_PARAM_GC* v3; // ecx

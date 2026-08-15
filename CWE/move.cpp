@@ -68,7 +68,7 @@ ASM_FUNC void ObjectMovableInitialize(taskwk* a1, int a2) {
     ASM_RET( 0 );
 }
 
-ASM_FUNC void MoveFunc2(task* a1) {
+ASM_FUNC void MOV_DetectCollision(task* a1) {
     // save regs
     ASM_PUSH( esi );
 
