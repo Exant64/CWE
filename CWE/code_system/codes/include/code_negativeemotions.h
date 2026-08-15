@@ -88,8 +88,8 @@ static int ALBHV_Koke_r(task* tp) {
         const float calm = NJM_MAX(10, -AL_EmotionGetValue(tp, EM_PER_CALM)) / 100.f;
         const float regain = NJM_MAX(10, -AL_EmotionGetValue(tp, EM_PER_REGAIN)) / 100.f;
 
-        AL_EmotionAdd(tp, EM_MD_SURPRISE, int(30 + njRandom() * 15 + njRandom() * 90 * calm));
-        AL_EmotionAdd(tp, EM_MD_PAIN, int(30 + njRandom() * 15 + njRandom() * 90 * regain));
+        AL_EmotionAdd(tp, EM_MD_SURPRISE, int(10 + njRandom() * 5 + njRandom() * 60 * calm));
+        AL_EmotionAdd(tp, EM_MD_PAIN, int(10 + njRandom() * 5 + njRandom() * 60 * regain));
     }
 
     return ALBHV_Koke_t.Original(tp);
