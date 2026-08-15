@@ -5,7 +5,8 @@
             "name": "base",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/cmake/${presetName}"
+            "binaryDir": "${sourceDir}/cmake/${presetName}",
+            "toolchainFile": "${sourceDir}/toolchains/mingw32.cmake"
         },
         {
             "name": "debug",

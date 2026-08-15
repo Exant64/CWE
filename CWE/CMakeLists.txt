@@ -31,6 +31,7 @@ add_library(CWE SHARED
     al_behavior/albhv_swim.cpp
     al_behavior/albhv_sunaasubi.cpp
     al_behavior/albhv_tree.cpp
+    al_behavior/albhv_walk.cpp
     al_behavior/albhv_wrench.cpp
     al_behavior/alsbhv_chat.cpp
     al_behavior/alsbhv_common.cpp
@@ -50,6 +51,7 @@ add_library(CWE SHARED
     api/api_motion.cpp
     api/api_texture.cpp
     api/api_main.cpp
+    chaofile.cpp
     cnk_util.cpp
     global_save.cpp
     hd_texture.cpp

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Trampoline.h"
 
-#include <Windows.h>
+#include <windows.h>
 #include <exception>
 #include <vector>
 #include <cstdint>

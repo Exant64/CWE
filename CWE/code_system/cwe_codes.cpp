@@ -26,7 +26,7 @@
 
 #include "codes/include/bonus/code_mergeherodark.h"
 
-#include "codes/include/code_moreanger.h"
+#include "codes/include/code_negativeemotions.h"
 
 #include "codes/include/code_racecam_switch.h"
 #include "codes/include/code_multisave.h"
@@ -122,7 +122,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<MonsterEvo>("EnableMonsterEvolution", 0, 0);
 	CodeManager::Instance().Add<ChaoSick>("ChaoSick", 0, 0);
 
-	CodeManager::Instance().Add<MoreAnger>("Hard", "MoreAnger", false);
+	CodeManager::Instance().Add<NegativeEmotions>("Hard", "MoreAnger", false);
 	CodeManager::Instance().Add<DisableBreed>("DisableBreed", false);
 	CodeManager::Instance().Add<ChaoHunger>("ChaoHunger", false);
 	CodeManager::Instance().Add<ChaoDrown>("ChaoDrown", false);

@@ -41,6 +41,9 @@ int ALBHV_Capture(task* tp);
 #define ALBHV_WatchTV_p 0x598890
 #define ALBHV_ListenRadicase_p 0x598B90
 
+#define ALBHV_Move_p 0x562D20
+
+#define ALBHV_Move ((BHV_FUNC)uintptr_t(ALBHV_Move_p))
 #define ALBHV_Think ((BHV_FUNC)uintptr_t(0x00565BE0))
 #define ALBHV_GoToAim ((BHV_FUNC)uintptr_t(ALBHV_GoToAim_p))
 #define ALBHV_TurnToAim ((BHV_FUNC)uintptr_t(ALBHV_TurnToAim_p))

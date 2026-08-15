@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include <imgui/imgui_impl_win32.h>
 #include <imgui/imgui_impl_dx9.h>
-#include <exception>
+#include "imgui/imgui.h"
 #include <FunctionHook.h>
 #include <d3d9.h>
 #include <al_world.h>
 #include <Chao.h>
+#include "chaofile.h"
+#include "al_emotion.h"
 #include <al_behavior/albhv.h>
 #include <al_behavior/alsbhv.h>
 #include <al_daynight.h>
@@ -19,6 +21,9 @@
 #include <al_daynight_rain.h>
 
 #include <data/more_faces.h>
+#include <libloaderapi.h>
+#include <windows.h>
+#include <commdlg.h>
 #include "navigation/navsys.h"
 #include "navigation/navsys_generator.h"
 #include "navigation/navsys_internal.h"
@@ -124,6 +129,23 @@ static void ChaoInfoMenu() {
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
+                if(ImGui::Button("Load .chao File")) {
+                    OPENFILENAME ofn {};
+                    char filename[MAX_PATH] {};
+
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = MainWindowHandle;
+                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0";
+                    ofn.lpstrFile = filename;
+                    ofn.nMaxFile = sizeof(filename);
+                    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
+                    ofn.lpstrDefExt = "txt";
+
+                    if(GetOpenFileName(&ofn)) {
+                        *(CHAO_SAVE_INFO*)work->pParamGC = LoadChaoFile(filename);
+                    }
+                }
+
                 ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
 
                 static bool ChaoDebugDistEnabled = false;
@@ -134,6 +156,63 @@ static void ChaoInfoMenu() {
                 }
                 else {
                     ChaoDebugDistSelected = NULL;
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Emotion")) {
+                static const char* EmotionStrings[] = {
+                    "PLEASURE",
+                    "ANGER",
+                    "SORROW",
+                    "FEAR",
+                    "SURPRISE",
+                    "PAIN",
+                    "RELAX",
+                    "TOTAL",
+                    "SLEEPY",
+                    "SLPDPTH",
+                    "HUNGER",
+                    "BREED",
+                    "TEDIOUS",
+                    "LONELY",
+                    "TIRE",
+                    "STRESS",
+                    "NOURISH",
+                    "CONDITN",
+                    "THIRSTY",
+                    "CURIOSITY",
+                    "KINDNESS",
+                    "AGRESSIVE",
+                    "SLEEPY_HEAD",
+                    "SOLITUDE",
+                    "VITALITY",
+                    "GLUTTON",
+                    "REGAIN",
+                    "SKILLFUL",
+                    "CHARM",
+                    "CHATTY",
+                    "CALM",
+                    "FICKLE"
+                };
+
+                for(size_t i = 0; i < _countof(EmotionStrings); ++i) {
+                    if(i < EM_ST_SLEEPY) {
+                        static Uint8 sliderMin = 0;
+                        static Uint8 sliderMax = 200;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U8, &GET_CHAOPARAM(pChao)->emotion.Mood[i], &sliderMin, &sliderMax);
+                    }
+                    else if (i < EM_PER_CURIOSITY) {
+                        static Uint16 sliderMin = 0;
+                        static Uint16 sliderMax = 10000;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U16, &GET_CHAOPARAM(pChao)->emotion.State[i - EM_ST_SLEEPY], &sliderMin, &sliderMax);
+                    }
+                    else {
+                        static Sint8 sliderMin = -100;
+                        static Sint8 sliderMax = 100;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_S8, &GET_CHAOPARAM(pChao)->emotion.Personality[i - EM_PER_CURIOSITY], &sliderMin, &sliderMax);
+                    }
                 }
 
                 ImGui::EndTabItem();
@@ -214,6 +293,9 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Behavior")) {
+                AL_BEHAVIOR* bhv = &GET_CHAOWK(pChao)->Behavior;
+                ImGui::Text("Mode %d SubMode %d Timer %d SubTimer %d", bhv->Mode, bhv->SubMode, bhv->Timer, bhv->SubTimer);
+                
                 if (ImGui::TreeNode("Start behaviors")) {
                     if (ImGui::Button("TV")) {
                         int ALBHV_GoToTV(task* tp);
@@ -260,6 +342,18 @@ static void ChaoInfoMenu() {
                         }
                     }
                     ImGui::TreePop();
+                }
+
+                for(size_t b = 0; b < 16; ++b) {
+                    if(b == work->Behavior.CurrBhvFuncNum) {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImColor(100,255,100).Value);
+                    }
+
+                    ImGui::Text("%p", work->Behavior.BhvFuncList[b]);
+
+                    if(b == work->Behavior.CurrBhvFuncNum) {
+                        ImGui::PopStyleColor();
+                    }
                 }
                 ImGui::EndTabItem();
             }

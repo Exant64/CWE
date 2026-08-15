@@ -4,6 +4,32 @@
 #include "ninja_functions.h"
 #include "asmutil.h"
 
+ASM_FUNC int MOV_TurnToPlayer2(task *a1, int a3, int a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a3
+    ASM_MOVE( ecx, ASM_ESP(3+1+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x796AB0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+float MOV_Dist2FromPlayer(task* tp, int player_num) {
+    const NJS_VECTOR v = {
+		playertwp[player_num]->pos.x - tp->twp->pos.x,
+		playertwp[player_num]->pos.y - tp->twp->pos.y,
+		playertwp[player_num]->pos.z - tp->twp->pos.z
+	};
+
+	return njScalor2(&v);
+}
+
 ASM_FUNC void MOV_Control(task* eax0) {
     // arguments
     ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result

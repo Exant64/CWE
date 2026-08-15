@@ -55,6 +55,14 @@ void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* te
 	v4->Shape.CurrObjectList[a2]->ItemOffsetFlag = 0;
 }
 
+void AL_SetItemParallelLeftHand(task* tp, NJS_CNK_OBJECT* pObject, NJS_TEXLIST* pTexlist) {
+    chaowk* work = GET_CHAOWK(tp);
+    work->Shape.pLeftHandItemObject = pObject;
+    work->Shape.pLeftHandItemTexlist = pTexlist;
+    work->Shape.LeftHandItemScale = 0;
+    work->Shape.LeftHandItemActiveFlag = 1;
+}
+
 void  AL_PartsMinimalFlagOn(task* tp, int MinimalType)
 {
 	chaowk* work = GET_CHAOWK(tp);

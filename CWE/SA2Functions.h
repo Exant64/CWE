@@ -509,11 +509,22 @@ static ASM_FUNC void njDrawSprite2D(NJS_SPRITE *_sp, Int n, Float pri, char attr
 }
 
 static Angle AdjustAngle(Angle ang0, Angle ang1, Angle dang) {
-    const Angle diff = (ang1 - ang0);
+    Sint16 diff;
 
-    if ( diff > dang || diff < -dang ) {
-        return (diff < 0) ? (ang0 - dang) : (ang0 + dang);
+    ang0 = (Uint16)ang0;
+    ang1 = (Uint16)ang1;
+    
+    diff = ang1 - ang0;
+    if(diff <= dang && diff >= -dang) {
+        return ang1;
+    }
+    
+    if (diff & 0x8000) {
+        diff = ang0 - dang;
+    }   
+    else {
+        diff = ang0 + dang;
     }
 
-	return ang1;
+    return (Uint16)diff;
 }
