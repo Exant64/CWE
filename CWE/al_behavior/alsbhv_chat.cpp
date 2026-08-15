@@ -1,8 +1,11 @@
+#include "ChaoMain.h"
+#include "al_behavior/albhv_navigation.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
+#include "albhv.h"
 #include "alsbhv.h"
 #include "playsound.h"
 #include <random>
@@ -674,6 +677,8 @@ int ALBHV_HandShake(task* a1)
 	}
 	else
 	{
+		ALW_TurnToLockOn(a1, 512);
+
 		wk->Behavior.Timer--;
 		if (!wk->Behavior.Timer)
 		{
@@ -711,6 +716,23 @@ int ALBHV_StepBack(task* a1)
 	return 0;
 }
 
+template <BHV_FUNC bhv>
+static int ALBHV_SocialCheck(task* tp) {
+	if (ALW_RecieveCommand(tp) == ALW_CMD_CHANGE) {
+		return BHV_RET_BREAK;
+	}
+	return bhv(tp);
+}
+
+template <uint32_t bhv>
+static int ALBHV_SocialCheck(task* tp)
+{
+		if (ALW_RecieveCommand(tp) == ALW_CMD_CHANGE) {
+		return BHV_RET_BREAK;
+	}
+	return BHV_FUNC(bhv)(tp);
+}
+
 int ALBHV_Talk(task* a1)
 {
 	task* otherChao = ALW_GetLockOnTask(a1); //hardcoded select second chao
@@ -728,7 +750,15 @@ int ALBHV_Talk(task* a1)
 	AL_SetNextBehavior(otherChao, ALBHV_HandShake);       //shake hands
 	AL_SetNextBehavior(otherChao, ALBHV_LockUp);          //wait until other chao steps back and inits talking
 
-	AL_SetBehavior(a1, ALBHV_GoToSocial);                 //go to selected chao and turn to it
+	if(!gConfigVal.PathfindingEnabled) {
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_GoToLockOn_p>);
+	}
+	else {
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_Navigation>);
+	}
+
 	AL_SetNextBehavior(a1, ALBHV_HandShake);              //shake hands
 	AL_SetNextBehavior(a1, ALBHV_StepBack);               //step back a bit so that theyre not super close to eachother when talking
 	AL_SetNextBehavior(a1, ALBHV_TalkTest);               //init talking
