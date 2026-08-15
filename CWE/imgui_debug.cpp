@@ -323,6 +323,18 @@ static void ChaoInfoMenu() {
                     }
                     ImGui::TreePop();
                 }
+
+                for(size_t b = 0; b < 16; ++b) {
+                    if(b == work->Behavior.CurrBhvFuncNum) {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImColor(100,255,100).Value);
+                    }
+
+                    ImGui::Text("%p", work->Behavior.BhvFuncList[b]);
+
+                    if(b == work->Behavior.CurrBhvFuncNum) {
+                        ImGui::PopStyleColor();
+                    }
+                }
                 ImGui::EndTabItem();
             }
 
