@@ -50,6 +50,7 @@ add_library(CWE SHARED
     api/api_motion.cpp
     api/api_texture.cpp
     api/api_main.cpp
+    chaofile.cpp
     cnk_util.cpp
     global_save.cpp
     hd_texture.cpp

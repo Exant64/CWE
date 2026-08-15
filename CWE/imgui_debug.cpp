@@ -2,11 +2,11 @@
 #include <imgui/imgui_impl_win32.h>
 #include <imgui/imgui_impl_dx9.h>
 #include "imgui/imgui.h"
-#include <exception>
 #include <FunctionHook.h>
 #include <d3d9.h>
 #include <al_world.h>
 #include <Chao.h>
+#include "chaofile.h"
 #include "al_emotion.h"
 #include <al_behavior/albhv.h>
 #include <al_behavior/alsbhv.h>
@@ -21,6 +21,9 @@
 #include <al_daynight_rain.h>
 
 #include <data/more_faces.h>
+#include <libloaderapi.h>
+#include <windows.h>
+#include <commdlg.h>
 #include "navigation/navsys.h"
 #include "navigation/navsys_generator.h"
 #include "navigation/navsys_internal.h"
@@ -126,6 +129,23 @@ static void ChaoInfoMenu() {
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
+                if(ImGui::Button("Load .chao File")) {
+                    OPENFILENAME ofn {};
+                    char filename[MAX_PATH] {};
+
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = MainWindowHandle;
+                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0";
+                    ofn.lpstrFile = filename;
+                    ofn.nMaxFile = sizeof(filename);
+                    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
+                    ofn.lpstrDefExt = "txt";
+
+                    if(GetOpenFileName(&ofn)) {
+                        *(CHAO_SAVE_INFO*)work->pParamGC = LoadChaoFile(filename);
+                    }
+                }
+
                 ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
 
                 static bool ChaoDebugDistEnabled = false;
