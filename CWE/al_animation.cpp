@@ -904,9 +904,8 @@ static int ALBHV_Run2_r(task* tp) {
 	if(ret == BHV_RET_FINISH) {
 		if(njRandom() < 0.5f && AL_GetMotionNum(tp) == ALM_DASH) {
 			AL_SetBehavior(tp, ALBHV_Brake);
+			return BHV_RET_CONTINUE;
 		}
-
-		return BHV_RET_CONTINUE;
 	}
 
 	return ret;
@@ -1163,7 +1162,7 @@ static int ALBHV_Fue_r(task* tp) {
 
     switch (bhv->Mode) {
         case 0: {
-            if (njRandom() < 0.5f) {
+        	if (njRandom() < 0.5f) {
                 AL_SetMotionLink(tp, ALM_FUE_LR);
             } 
 			else {
