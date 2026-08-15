@@ -164,17 +164,17 @@ int ALBHV_Move_r(task* tp) {
             return ret;
         }
 
-        if(AL_EmotionGetValue(tp, EM_MD_PAIN) > 0) {
+        if(AL_EmotionGetValue(tp, EM_MD_PAIN) > 10) {
             AL_SetBehavior(tp, ALBHV_PainWalk);
             return BHV_RET_CONTINUE;
         }
 
-        if(AL_EmotionGetValue(tp, EM_MD_ANGER) > 0 || AL_EmotionGetValue(tp, EM_MD_SURPRISE) > 0) {
+        if(AL_EmotionGetValue(tp, EM_MD_ANGER) > 10 || AL_EmotionGetValue(tp, EM_MD_SURPRISE) > 10) {
             AL_SetBehavior(tp, ALBHV_AngerWalk);
             return BHV_RET_CONTINUE;
         }
 
-        if(AL_EmotionGetValue(tp, EM_MD_SORROW) > 0) {
+        if(AL_EmotionGetValue(tp, EM_MD_SORROW) > 10) {
             AL_SetBehavior(tp, ALBHV_SorrowWalk);
             return BHV_RET_CONTINUE;
         }
