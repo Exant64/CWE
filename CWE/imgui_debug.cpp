@@ -30,6 +30,7 @@
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
+static bool ShowGardenInfo = false;
 static bool ShowChaoInfo = false;
 static bool ShowDNC = false;
 static bool ShowLight = false;
@@ -919,10 +920,40 @@ static void NavSysMenu() {
     }
 }
 
+static void GardenInfoMenu() {
+    if(ShowGardenInfo && ImGui::Begin("Garden Info", &ShowGardenInfo)) {
+        if(ImGui::TreeNode("Toys")) {
+            static const char* ToyStrings[] = {
+                "AL_LTOY_TV",
+	            "AL_LTOY_RADICASE",
+	            "AL_LTOY_BOX",
+	            "AL_LTOY_BALL_N",
+	            "AL_LTOY_BALL_H",
+	            "AL_LTOY_BALL_D",
+	            "AL_LTOY_HORSE",
+	            "AL_LTOY_UKIWA",
+	            "AL_LTOY_DUCK",
+	            "AL_LTOY_KANOKE",
+	            "AL_LTOY_PIANO",
+	            "AL_LTOY_ORGAN",
+            };
+
+            for(size_t i = 0; i < _countof(ToyStrings); ++i) {
+                ImGui::CheckboxFlags(ToyStrings[i], &AL_GetCurrGardenInfo()->ToyGetFlag, int(1 << i));
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::End();
+    }
+}
+
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
+            ImGui::MenuItem("Garden", NULL, &ShowGardenInfo);
             ImGui::MenuItem("Light", NULL, &ShowLight);
             // ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
             ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
@@ -937,6 +968,7 @@ static void ImGuiMenu() {
             ImGui::EndMenu();
         }
 
+        GardenInfoMenu();
         ChaoSoundMenu();
         ChaoInfoMenu();
         // DayNightMenu();
