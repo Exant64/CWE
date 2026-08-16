@@ -162,6 +162,15 @@ static void ChaoInfoMenu() {
                 ImGui::EndTabItem();
             }
 
+            if (ImGui::BeginTabItem("World")) {
+                ImGui::Text("IsCommunication: %p", ALW_IsCommunication(pChao));
+                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
+                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
+                ImGui::Text("command_value: %d", GET_ALW_ENTRY_WORK(pChao)->command_value);
+
+                ImGui::EndTabItem();
+            }
+
             if (ImGui::BeginTabItem("Emotion")) {
                 static const char* EmotionStrings[] = {
                     "PLEASURE",
