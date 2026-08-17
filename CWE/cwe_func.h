@@ -21,4 +21,6 @@ struct CWE_FUNCS {
 
 	task* (*AL_ChaoCounterCreate)();
 	task* (*AL_NameDisplayCreate)();
+
+	task* (*ALO_CoffinCreate)(const NJS_POINT3* pPos, Angle angY);
 };

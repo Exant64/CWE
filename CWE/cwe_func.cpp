@@ -2,13 +2,14 @@
 #include "cwe_func.h"
 #include "alo_boat.h"
 #include "al_piano.h"
+#include "alo_coffin.h"
 #include "al_omochao_build.h"
 #include "al_chao_counter.h"
 #include "ChaoMain.h"
 #include "al_save.h"
 
 extern "C" __declspec(dllexport) CWE_FUNCS cwe_funcs = {
-	.Version = 0,
+	.Version = 1,
 	.SaveCWESaveFiles = SaveCWESaveFiles,
 	.ReadCWESaveFiles = ReadCWESaveFiles,
 	.ALO_BoatCreate = ALO_BoatCreate,
@@ -16,5 +17,6 @@ extern "C" __declspec(dllexport) CWE_FUNCS cwe_funcs = {
 	.ALO_PianoCreate = ALO_PianoCreate,
 	.ALO_OmoBuildCreate = ALO_OmoBuildCreate,
 	.AL_ChaoCounterCreate = AL_ChaoCounterCreate,
-	.AL_NameDisplayCreate = AL_NameDisplayCreate
+	.AL_NameDisplayCreate = AL_NameDisplayCreate,
+	.ALO_CoffinCreate = ALO_CoffinCreate
 };

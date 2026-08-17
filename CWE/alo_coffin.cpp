@@ -217,7 +217,7 @@ static void ALO_CoffinInit(task* tp) {
 	AL_Toy_Move_Register(tp, ALW_KIND_COFFIN);
 }
 
-void ALO_CoffinCreate(const NJS_POINT3* pPos, Angle angY) {
+task* ALO_CoffinCreate(const NJS_POINT3* pPos, Angle angY) {
     task* tp = CreateElementalTask(IM_TWK, LEV_4, ALO_CoffinInit, "ALO_CoffinExecutor");
     taskwk* work = tp->twp;
 
@@ -230,4 +230,6 @@ void ALO_CoffinCreate(const NJS_POINT3* pPos, Angle angY) {
     work->ang.z = 0;
 
 	AL_Toy_Move_Init(tp, colli, 1);
+
+    return tp;
 }
