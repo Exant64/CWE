@@ -1,5 +1,5 @@
 #pragma once
-#include <ninja.h>
+#include <SA2ModLoader.h>
 
 //for ALO_PianoCreate
 enum {
@@ -13,12 +13,12 @@ struct CWE_FUNCS {
 	void (*SaveCWESaveFiles)();
 	void (*ReadCWESaveFiles)();
 	
-	void (*ALO_BoatCreate)(NJS_POINT3* pPos, Angle ang);
-	void (*ALO_FloatCreate)(NJS_POINT3* pPos, Angle ang);
-	void(*ALO_PianoCreate)(int index, NJS_POINT3* pPos, Angle ang);
+	task* (*ALO_BoatCreate)(NJS_POINT3* pPos, Angle ang);
+	task* (*ALO_FloatCreate)(NJS_POINT3* pPos, Angle ang);
+	task* (*ALO_PianoCreate)(int index, NJS_POINT3* pPos, Angle ang);
 
-	void (*ALO_OmoBuildCreate)(NJS_POINT3* pPos, Angle ang);
+	task* (*ALO_OmoBuildCreate)(NJS_POINT3* pPos, Angle ang);
 
-	void(*AL_ChaoCounterCreate)();
-	void(*AL_NameDisplayCreate)();
+	task* (*AL_ChaoCounterCreate)();
+	task* (*AL_NameDisplayCreate)();
 };

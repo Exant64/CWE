@@ -140,7 +140,7 @@ void ALO_Float_Load(task* a1)
 	AL_Toy_Move_Register(a1, ALW_KIND_UKIWA);
 }
 
-void ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
+task* ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
 	static const CCL_INFO float_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 
 	task* p = CreateElementalTask(IM_TWK, LEV_4, ALO_Float_Load, "ALO_Float");
@@ -152,4 +152,6 @@ void ALO_FloatCreate(NJS_POINT3* pPos, Angle ang) {
 	p->twp->scl = p->twp->pos; //scale = default pos
 	
 	AL_Toy_Move_Init(p, &float_colli_info, 1);
+
+	return p;
 }

@@ -141,10 +141,15 @@ static void ALO_OmoBuildExecutor(task* tp) {
 }
 
 static CCL_INFO omoColli = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
-void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
+
+task* ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
 	task* obj = CreateElementalTask(IM_TWK, LEV_4, ALO_OmoBuildExecutor, "AL_OmoBuild");
+
 	CCL_Init(obj, &omoColli, 1, 5);
+
 	obj->twp->pos = *pPos;
 	obj->twp->ang.y = ang;
 	obj->disp = ALO_OmoBuildDisplayer;
+
+	return obj;
 }

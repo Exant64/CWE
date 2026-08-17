@@ -49,8 +49,10 @@ static void AL_ChaoCounterDisplayer(task* tp) {
 	SetShaderType(shaderBackup);
 }
 
-void AL_ChaoCounterCreate() {
+task* AL_ChaoCounterCreate() {
 	task* tp = CreateElementalTask(0, LEV_4, [] (task*) {}, "AL_ChaoCounter");
 
 	tp->disp = AL_ChaoCounterDisplayer;
+
+	return tp;
 }

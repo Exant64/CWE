@@ -155,7 +155,7 @@ void ALO_Piano_Init(task *a1)
 	AL_Toy_Move_Register(a1, ALW_KIND_PIANO);
 }
 
-void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
+task* ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	task *piano;
 
 	piano = CreateElementalTask(IM_TWK, LEV_4, ALO_Piano_Init, "ALO_Piano");
@@ -167,4 +167,6 @@ void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	piano->twp->ang.y = ang;
 
 	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision, 1);
+
+	return piano;
 }

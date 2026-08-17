@@ -12,7 +12,7 @@ DataArray(CHAO_SAVE_INFO*, ChaoSelectData, 0x01DBEE80, 48);
 DataPointer(char, ControlEnabled, 0x0174AFFE);
 DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
 
-void AL_NameDisplayCreate();
+task* AL_NameDisplayCreate();
 task* AL_LargeTitleBar_Create();
 DataPointer(int, ChaoSaveTimer, 0x019F6474);
 VoidFunc(sub_583C60, 0x583C60);

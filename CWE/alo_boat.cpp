@@ -131,7 +131,7 @@ void ALO_Boat_Init(task *a1)
 }
 
 
-void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
+task* ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
 	static const CCL_INFO boat_colli_info = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
 
 	task* p = CreateElementalTask(IM_TWK, LEV_4, ALO_Boat_Init, "ALO_Boat");
@@ -143,4 +143,5 @@ void ALO_BoatCreate(NJS_POINT3* pPos, Angle ang) {
 
 	AL_Toy_Move_Init(p, &boat_colli_info, 1);
 
+	return p;
 }
