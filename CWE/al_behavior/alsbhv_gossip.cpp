@@ -87,9 +87,11 @@ int ALBHV_GossipTest(task* a1)
 
 int ALBHV_SnapToGossip(task* a1)
 {
-	task* otherChao = ALW_IsCommunicating(a1)->tp;
+	task* otherChao = ALW_GetLockOnTask(a1);
+	
 	NJS_VECTOR v8;
 	NJS_VECTOR testVectr = { 3.2f,0,0 };
+
 	if(GET_CHAOWK(a1)->Behavior.Mode == 0)
 	{
 		AL_FixPosition(a1);
@@ -104,7 +106,7 @@ int ALBHV_SnapToGossip(task* a1)
 		a1->twp->pos.y = (v8.y - a1->twp->pos.y) * 0.1f + a1->twp->pos.y;
 		a1->twp->pos.z = (v8.z - a1->twp->pos.z) * 0.1f + a1->twp->pos.z;
 
-		a1->twp->ang.y = AdjustAngle_(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
+		a1->twp->ang.y = AdjustAngle(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
 
 		v8.y = a1->twp->pos.y;
 		if (njDistanceP2P(&a1->twp->pos, &v8) <= 0.2)

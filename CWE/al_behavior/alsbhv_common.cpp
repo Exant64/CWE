@@ -6,26 +6,6 @@
 #include <random>
 #include "albhv.h"
 
-int __cdecl AdjustAngle_(__int16 bams_a, unsigned __int16 bams_b, int dang)
-{
-	int result; // eax
-	__int16 v4; // cx
-
-	result = bams_b;
-	v4 = bams_b - bams_a;
-	if ((bams_b - bams_a) > dang || v4 < -dang)
-	{
-		if (v4 >= 0)
-		{
-			result = (dang + bams_a);
-		}
-		else
-		{
-			result = (bams_a - dang);
-		}
-	}
-	return result;
-}
 int __cdecl DiffAngle(int a1, int a2)
 {
 	int result; // eax
@@ -85,7 +65,7 @@ signed int __cdecl ALBHV_GoNextToSocial(task* a1)
 		break;
 	case 2:
 
-		v1->ang.y = AdjustAngle_(v1->ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
+		v1->ang.y = AdjustAngle(v1->ang.y, ALW_GetLockOnTask(a1)->twp->ang.y, 1024);
 		if (v3->Timer++ > 30)
 			return 1;
 		break;

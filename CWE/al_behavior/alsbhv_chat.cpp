@@ -716,23 +716,6 @@ int ALBHV_StepBack(task* a1)
 	return 0;
 }
 
-template <BHV_FUNC bhv>
-static int ALBHV_SocialCheck(task* tp) {
-	if (ALW_RecieveCommand(tp) == ALW_CMD_CHANGE) {
-		return BHV_RET_BREAK;
-	}
-	return bhv(tp);
-}
-
-template <uint32_t bhv>
-static int ALBHV_SocialCheck(task* tp)
-{
-		if (ALW_RecieveCommand(tp) == ALW_CMD_CHANGE) {
-		return BHV_RET_BREAK;
-	}
-	return BHV_FUNC(bhv)(tp);
-}
-
 int ALBHV_Talk(task* a1)
 {
 	task* otherChao = ALW_GetLockOnTask(a1); //hardcoded select second chao
