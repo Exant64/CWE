@@ -167,14 +167,15 @@ signed int __cdecl ALBHV_FartReaction(task* a1)
 }
 
 static void ASM_FUNC AL_CalcIntentionScore_LToy_Hook() {
-	ASM_PUSH(ASM_ESP(1)); // a2
 	ASM_PUSH(edi); // a1
 
+	ASM_PUSH(ASM_ESP(2)); // a2
+	ASM_PUSH(edi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AL_CalcIntentionScore_LToy);
+	ASM_ESP_ADD( 2 ); // a2
 
 	ASM_POP(edi); // a1
-	ASM_ESP_ADD( 1 ); // a2
 	ASM_RET(0);
 }
 
@@ -225,8 +226,11 @@ static void ASM_FUNC AL_CalcIntentionScore_Hook() {
 	ASM_PUSH(edi); // a1
 	ASM_PUSH(esi); // a2
 
+	ASM_PUSH(edi); // a1
+	ASM_PUSH(esi); // a2
 	// Call your __cdecl function here:
 	ASM_CALL (AL_CalcIntentionScore_All);
+	ASM_ESP_ADD(2); // a2
 
 	ASM_POP(esi); // a2
 	ASM_POP(edi); // a1
@@ -248,9 +252,11 @@ static void ASM_FUNC AL_CalcIntentionScore_JoinMusicH() {
 
 static void ASM_FUNC sub_55E7A0() {
 	ASM_PUSH(ebx); // a1
-
+	
+	ASM_PUSH(ebx); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AL_DecideBehaviorSToy);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(ebx); // a1
 	ASM_RET(0);

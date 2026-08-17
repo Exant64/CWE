@@ -186,15 +186,16 @@ extern "C"
 	}
 	static void ASM_FUNC SetChunkTexIndex()
 	{
-		ASM_PUSH(ASM_ESP(1));
+		ASM_PUSH(ebx);
+
+		ASM_PUSH(ASM_ESP(2));
 		ASM_PUSH(ebx);
 		ASM_PUSH(eax);
-
 		ASM_CALL(SetChunkTexIndexSecondary);
-
 		ASM_POP(eax);
+		ASM_ESP_ADD(2);
+
 		ASM_POP(ebx);
-		ASM_ESP_ADD(1);
 		ASM_RET(0);
 	}
 
@@ -330,16 +331,17 @@ extern "C"
 
 	static void ASM_FUNC ChaoColoring()
 	{
-		ASM_PUSH(ASM_ESP(4));
-		ASM_PUSH(ASM_ESP(4));
-		ASM_PUSH(ASM_ESP(4));
-		ASM_PUSH(ASM_ESP(4));
 		ASM_PUSH(edi);
 
+		ASM_PUSH(ASM_ESP(5));
+		ASM_PUSH(ASM_ESP(5));
+		ASM_PUSH(ASM_ESP(5));
+		ASM_PUSH(ASM_ESP(5));
+		ASM_PUSH(edi);
 		ASM_CALL(ChaoColoringPatch);
+		ASM_ESP_ADD(5);
 
-		ASM_POP(edi); 
-		ASM_ESP_ADD(4);
+		ASM_POP(edi);
 		ASM_RET(0);
 	}
 
@@ -475,11 +477,13 @@ extern "C"
 	
 	static void ASM_FUNC EggColoringHook() {
 		ASM_PUSH(esi); // a2
+
+		ASM_PUSH(esi); // a2
 		ASM_PUSH(eax); // result
-
 		ASM_CALL(EggColoring);
-
 		ASM_POP(eax); // result
+		ASM_ESP_ADD(1); // a2
+
 		ASM_POP(esi); // a2
 		ASM_RET(0);
 	}

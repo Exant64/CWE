@@ -819,14 +819,15 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 }
 
 static void ASM_FUNC DisplayHealthCenterMedicalChartCall() {
-	ASM_PUSH(ASM_ESP(1)); // TextLocation
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(ASM_ESP(2)); // TextLocation
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (HealthCenterDNAHook);
+	ASM_ESP_ADD( 2 ); // TextLocation
 
 	ASM_POP(esi); // a1
-	ASM_ESP_ADD( 1 ); // TextLocation
 	ASM_RET(0);
 }
 

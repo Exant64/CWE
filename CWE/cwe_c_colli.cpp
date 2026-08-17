@@ -109,9 +109,11 @@ static void CCL_CCheckColli_r() {
 static void ASM_FUNC CCL_Entry_to_CWE_CCL_Entry_r() {
     ASM_PUSH(esi); // a1
 
+    ASM_PUSH(esi); // a1
     // Call your __cdecl function here:
     ASM_CALL (CWE_CCL_Entry);
-
+    ASM_ESP_ADD(1); // a1
+    
     ASM_POP(esi); // a1
     ASM_RET(0);
 }

@@ -142,8 +142,10 @@ static int __cdecl AL_CheckBallFix(task* tp) {
 static void ASM_FUNC AL_CheckBallHook() {
 	ASM_PUSH(edi); // a1
 
+	ASM_PUSH(edi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AL_CheckBallFix);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(edi); // a1
 	ASM_RET(0);

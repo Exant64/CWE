@@ -264,14 +264,17 @@ static void __cdecl sub_58DA30(int a1, int a2) {
 }
 static void ASM_FUNC sub_58DA30Hook()
 {
-	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(esi); // a1
+
+	ASM_PUSH(ASM_ESP(2)); // a2
 	ASM_PUSH(esi); // a1
 
 	// Call your __cdecl function here:
 	ASM_CALL(sub_58DA30);
 
+	ASM_ESP_ADD( 2 ); // a2
+
 	ASM_POP(esi); // a1
-	ASM_ESP_ADD( 1 ); // a2
 	ASM_RET(0);
 }
 static void __cdecl FortuneTeller_SetName(char* a1, char* a2, unsigned int a3)

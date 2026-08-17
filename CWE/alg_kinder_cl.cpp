@@ -162,12 +162,18 @@ Bool IsLessonLearned(task* tp, int* pLessonLevel, int LessonKind) {
 static void ASM_FUNC IsLessonLearned_Hook() {
 	ASM_PUSH(esi); // int a3
 	ASM_PUSH(edi); // a2
+
+	ASM_PUSH(esi); // int a3
+	ASM_PUSH(edi); // a2
 	ASM_PUSH(edx); // a1
 
 	// Call your __cdecl function here:
 	ASM_CALL (IsLessonLearned);
 
 	ASM_POP(edx); // a1
+	ASM_POP(edi); // a2
+	ASM_POP(esi); // int a3
+
 	ASM_POP(edi); // a2
 	ASM_POP(esi); // int a3
 	ASM_RET(0);
@@ -207,12 +213,18 @@ void SetLessonLearned(task* tp, char level, int LessonKind) {
 static void ASM_FUNC SetLessonLearned_Hook() {
 	ASM_PUSH(esi); // int LessonKind
 	ASM_PUSH(edi); // level
+
+	ASM_PUSH(esi); // int LessonKind
+	ASM_PUSH(edi); // level
 	ASM_PUSH(eax); // a1
 
 	// Call your __cdecl function here:
 	ASM_CALL (SetLessonLearned);
 
 	ASM_POP(eax); // a1
+	ASM_POP(edi); // level
+	ASM_POP(esi); // int LessonKind
+
 	ASM_POP(edi); // level
 	ASM_POP(esi); // int LessonKind
 	ASM_RET(0);

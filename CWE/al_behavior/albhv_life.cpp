@@ -61,8 +61,10 @@ void __cdecl sub_550620(task* a1)
 static void ASM_FUNC sub_550620Hook() {
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (sub_550620);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
 	ASM_RET(0);
@@ -77,8 +79,10 @@ void __cdecl EggChao_ALO_Delete(task* a1)
 static void ASM_FUNC EggChao_ALO_Delete_Hook() {
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (EggChao_ALO_Delete);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
 	ASM_RET(0);

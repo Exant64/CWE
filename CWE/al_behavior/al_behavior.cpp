@@ -463,8 +463,10 @@ signed int __cdecl AL_CheckObakeHeadAndAccessory(task* a1)
 static void ASM_FUNC sub_5691B0Hook() {
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AL_CheckObakeHeadAndAccessory);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
 	ASM_RET(0);

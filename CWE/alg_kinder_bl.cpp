@@ -1707,18 +1707,17 @@ void __cdecl FixFontScale(__int16* a1, float a2, float a3, float a4)
 }
 
 static void ASM_FUNC FixFontScaleHook() {
-	ASM_PUSH(ASM_ESP(3)); // a4
-	ASM_PUSH(ASM_ESP(3)); // a3
-	ASM_PUSH(ASM_ESP(3)); // a2
 	ASM_PUSH(ebx); // a1
 
+	ASM_PUSH(ASM_ESP(4)); // a4
+	ASM_PUSH(ASM_ESP(4)); // a3
+	ASM_PUSH(ASM_ESP(4)); // a2
+	ASM_PUSH(ebx); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (FixFontScale);
+	ASM_ESP_ADD( 4 ); // a1
 
 	ASM_POP(ebx); // a1
-	ASM_ESP_ADD( 1 ); // a2
-	ASM_ESP_ADD( 1 ); // a3
-	ASM_ESP_ADD( 1 ); // a4
 	ASM_RET(0);
 }
 
@@ -1763,12 +1762,14 @@ void __cdecl FItemDescSet(SAlItemCwe* pItem, BlackMarketData* a2) {
 
 static void ASM_FUNC FItemDescSetHook() {
 	ASM_PUSH(edi); // a2
-	ASM_PUSH(eax); // a1
 
+	ASM_PUSH(edi); // a2
+	ASM_PUSH(eax); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (FItemDescSet);
-
 	ASM_POP(eax); // a1
+	ASM_ESP_ADD(1); // a2
+
 	ASM_POP(edi); // a2
 	ASM_RET(0);
 }

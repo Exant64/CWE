@@ -451,16 +451,16 @@ void __cdecl NewDrawings(int a1, int ID, int a3)
 }
 
 static void ASM_FUNC NewDrawingsHook() {
-	ASM_PUSH(ASM_ESP(2)); // a3
-	ASM_PUSH(ASM_ESP(2)); // a2
 	ASM_PUSH(ebx); // a1
-
+	
+	ASM_PUSH(ASM_ESP(3)); // a3
+	ASM_PUSH(ASM_ESP(3)); // a2
+	ASM_PUSH(ebx); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (NewDrawings);
+	ASM_ESP_ADD( 3 ); // a2
 
 	ASM_POP(ebx); // a1
-	ASM_ESP_ADD( 1 ); // a2
-	ASM_ESP_ADD( 1 ); // a3
 	ASM_RET(0);
 }
 

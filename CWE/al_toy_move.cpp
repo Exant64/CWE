@@ -267,8 +267,10 @@ void __cdecl AddToColliListToy(task* a1)
 static void ASM_FUNC AddToCollisionListHook() {
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AddToColliListToy);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
 	ASM_RET(0);
@@ -312,8 +314,10 @@ void __cdecl AL_Toy_Update(task* a1)
 static void ASM_FUNC AL_Toy_UpdateHook() {
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AL_Toy_Update);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
 	ASM_RET(0);
@@ -412,7 +416,11 @@ void __cdecl ALO_Ball_Main2_(task* a1)
 
 static ASM_FUNC void ALO_Ball_Hook() {
 	ASM_PUSH(ebx);
+
+	ASM_PUSH(ebx);
 	ASM_CALL(ALO_Ball_Main2_);
+	ASM_ESP_ADD(1);
+
 	ASM_POP(ebx);
 	ASM_RET(0);
 }

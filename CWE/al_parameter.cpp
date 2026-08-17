@@ -285,8 +285,10 @@ static void AL_CalcParameter_r(task* tp) {
 static void ASM_FUNC AL_CalcParameter_t() {
 	ASM_PUSH(esi); // a1
 
+	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (AL_CalcParameter_r);
+	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
 	ASM_RET(0);

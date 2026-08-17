@@ -90,7 +90,11 @@ void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
 
 static void ASM_FUNC KindergartenTextHook() {
 	ASM_PUSH(edi);
+
+	ASM_PUSH(edi);
 	ASM_CALL (KindergartenText);
+	ASM_ESP_ADD(1);
+
 	ASM_POP(edi);
 	ASM_RET(0);
 }
@@ -101,16 +105,22 @@ void __cdecl CorridorText1(const char* a1, KinderCoMessageThing* a2, signed int 
 }
 
 static void ASM_FUNC CorridorText1Hook() {
-	ASM_PUSH(ASM_ESP(1)); // int a3
+	ASM_PUSH(esi); // a2
+	ASM_PUSH(ebx); // a1
+
+	ASM_PUSH(ASM_ESP(3)); // int a3
 	ASM_PUSH(esi); // a2
 	ASM_PUSH(ebx); // a1
 
 	// Call your __cdecl function here:
 	ASM_CALL (CorridorText1);
 
+	ASM_ESP_ADD( 1 ); // int a1
+	ASM_ESP_ADD( 1 ); // int a2
+	ASM_ESP_ADD( 1 ); // int a3
+
 	ASM_POP(ebx); // a1
 	ASM_POP(esi); // a2
-	ASM_ESP_ADD( 1 ); // int a3
 	ASM_RET(0);
 }
 
@@ -120,26 +130,32 @@ void __cdecl CorridorHeader(int a1, KinderCoMessageThing* a2, int a3, int a4, fl
 }
 
 static void ASM_FUNC CorridorHeaderHook() {
-	ASM_PUSH(ASM_ESP(6)); // a8
-	ASM_PUSH(ASM_ESP(6)); // a7
-	ASM_PUSH(ASM_ESP(6)); // a6
-	ASM_PUSH(ASM_ESP(6)); // a5
-	ASM_PUSH(ASM_ESP(6)); // a4
-	ASM_PUSH(ASM_ESP(6)); // a3
+	ASM_PUSH(esi); // a2
+	ASM_PUSH(ebx); // a1
+
+	ASM_PUSH(ASM_ESP(8)); // a8
+	ASM_PUSH(ASM_ESP(8)); // a7
+	ASM_PUSH(ASM_ESP(8)); // a6
+	ASM_PUSH(ASM_ESP(8)); // a5
+	ASM_PUSH(ASM_ESP(8)); // a4
+	ASM_PUSH(ASM_ESP(8)); // a3
 	ASM_PUSH(esi); // a2
 	ASM_PUSH(ebx); // a1
 
 	// Call your __cdecl function here:
 	ASM_CALL (CorridorHeader);
 
-	ASM_POP(ebx); // a1
-	ASM_POP(esi); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_ESP_ADD( 1 ); // a3
 	ASM_ESP_ADD( 1 ); // a3
 	ASM_ESP_ADD( 1 ); // a4
 	ASM_ESP_ADD( 1 ); // a5
 	ASM_ESP_ADD( 1 ); // a6
 	ASM_ESP_ADD( 1 ); // a7
 	ASM_ESP_ADD( 1 ); // a8
+
+	ASM_POP(ebx);
+	ASM_POP(esi);
 	ASM_RET(0);
 }
 
@@ -150,16 +166,18 @@ void __cdecl CorridorText2(const char* a1, KinderCoMessageThing* a2, signed int 
 }
 
 static void ASM_FUNC CorridorText2Hook() {
-	ASM_PUSH(ASM_ESP(1)); // int a3
 	ASM_PUSH(esi); // a2
 	ASM_PUSH(ebx); // a1
 
+	ASM_PUSH(ASM_ESP(3)); // int a3
+	ASM_PUSH(esi); // a2
+	ASM_PUSH(ebx); // a1
 	// Call your __cdecl function here:
 	ASM_CALL (CorridorText2);
+	ASM_ESP_ADD( 3 ); // int a3
 
 	ASM_POP(ebx); // a1
 	ASM_POP(esi); // a2
-	ASM_ESP_ADD( 1 ); // int a3
 	ASM_RET(0);
 }
 
@@ -182,7 +200,12 @@ void __cdecl EnteringRoom(al_stg_kinder_co_data* pCoData, int room) {
 static void ASM_FUNC EnteringRoomHook() {
 	ASM_PUSH(esi);
 	ASM_PUSH(edi);
+
+	ASM_PUSH(esi);
+	ASM_PUSH(edi);
 	ASM_CALL (EnteringRoom);
+	ASM_ESP_ADD(2);
+
 	ASM_POP(edi);
 	ASM_POP(esi);
 	ASM_RET(0);

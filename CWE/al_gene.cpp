@@ -302,14 +302,17 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 }
 
 static void ASM_FUNC AL_GeneAnalyzeCommonHook() {
-	ASM_PUSH(ASM_ESP(1));
+	ASM_PUSH(edi); // a1
+	
+	ASM_PUSH(ASM_ESP(2));
 	ASM_PUSH(edi); // a1
 
 	// Call your __cdecl function here:
 	ASM_CALL(AL_GeneAnalyzeCommonAdd);
 
+	ASM_ESP_ADD( 2 ); // a2
+
 	ASM_POP(edi); // a1
-	ASM_ESP_ADD( 1 ); // a2
 	ASM_RET(0);
 }
 
