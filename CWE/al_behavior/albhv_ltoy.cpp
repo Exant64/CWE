@@ -164,10 +164,8 @@ void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
 						AL_SetBehavior(tp, (BHV_FUNC)0x40AD80);
 						break;
 					case ALW_KIND_PIANO:
-						AL_SetBehavior(tp, ALBHV_GoToPiano);
-						break;
 					case ALW_KIND_ORGAN:
-						AL_SetBehavior(tp, (BHV_FUNC)0x40AD80);
+						AL_SetBehavior(tp, ALBHV_GoToPiano);
 						break;
 					case ALW_KIND_HORSE: {
 						int landattr = AL_GetCurrLandAttr(&GET_CHAOWK(tp)->pos);
