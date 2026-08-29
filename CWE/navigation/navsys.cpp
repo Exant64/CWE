@@ -317,12 +317,14 @@ static void NavSysDisplayer(task* tp) {
 		AlMsgFontDelete(&messageBuffer);
     }
 
-    #ifdef IMGUIDEBUG
+#ifdef IMGUIDEBUG
+    if(RenderFix_IsEnabled()) {
         sys->DebugDrawNavMesh();
         sys->DebugDrawPathResult();
 
         gNavSysGenerator.DebugDrawMaxClimbLine();
-    #endif
+    }
+#endif
 }
 
 task* GetNavSysTask() {
