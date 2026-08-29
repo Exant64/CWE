@@ -19,14 +19,21 @@
 #include <al_behavior/al_behavior.h>
 #include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
+#include "al_chao_info.h"
 
 #include <data/more_faces.h>
 #include <libloaderapi.h>
 #include <windows.h>
 #include <commdlg.h>
+#include <cstddef>
+#include <cstdint>
 #include "navigation/navsys.h"
 #include "navigation/navsys_generator.h"
 #include "navigation/navsys_internal.h"
+
+static bool ShowParamMenu = false;
+static int ParamIndex = 0;
+static CHAO_PARAM_GC* ParamPointer = NULL;
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
@@ -42,6 +49,15 @@ static bool ShowMarketMenu = false;
 static bool ShowSoundsMenu = false;
 static bool ShowMoreFacesMenu = false;
 static bool ShowNavSysMenu = false;
+
+static void ConvertName(char* pName, char* pOut) {
+    FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
+
+    wchar_t namebuf[128];
+
+    sub_57A6F0(pName, (int)namebuf);
+    WcConvFromCStr((int)pOut, (int)namebuf, Language == 0);
+}
 
 static task* GetSelectedChao() {
     return ALW_GetTaskCount(0, SelectedChaoIndex);
@@ -111,63 +127,93 @@ static void MoreFacesMenu() {
     }
 }
 
-static void ChaoInfoMenu() {
-    if (ShowChaoInfo && ImGui::Begin("Chao Info", &ShowChaoInfo)) {
-        ImGui::SliderInt("ID", &SelectedChaoIndex, 0, ALW_CountEntry(0));
+static void ChaoParamMenu() {
+    if(!ShowParamMenu) return;
 
-        task* pChao = GetSelectedChao();
-        if (!pChao) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
-            ImGui::Text("Chao with selected ID not found!");
+    if(ImGui::Begin("ChaoParam", &ShowParamMenu)) {
+        ImGui::SliderInt("Index", &ParamIndex, 0, 23);
+
+        if(ParamPointer) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImColor(128,128,255,255).Value);
+
+            ImGui::Text("Selected param pointer: %p", ParamPointer);
+            ImGui::SameLine();
+            if(ImGui::Button("Deselect")) {
+                ParamPointer = nullptr;
+            }
+
             ImGui::PopStyleColor();
-            ImGui::End();
-            return;
         }
 
-        chaowk* work = GET_CHAOWK(pChao);
-        auto pParamCwe = GET_CWEPARAM(pChao);
-        auto* move_work = GET_MOVE_WORK(pChao);
+        CHAO_PARAM_GC* pParam = !ParamPointer ? &ChaoInfo::Instance()[ParamIndex] : ParamPointer;
 
-        if (ImGui::BeginTabBar("chao_tab_bar")) {
+        if (ImGui::BeginTabBar("param_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
-                if(ImGui::Button("Load .chao File")) {
-                    OPENFILENAME ofn {};
-                    char filename[MAX_PATH] {};
+                {
+                    char namebuf[256];
 
-                    ofn.lStructSize = sizeof(ofn);
-                    ofn.hwndOwner = MainWindowHandle;
-                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0";
-                    ofn.lpstrFile = filename;
-                    ofn.nMaxFile = sizeof(filename);
-                    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
-                    ofn.lpstrDefExt = "txt";
+                    ConvertName(pParam->name, namebuf);
+                    ImGui::Text("Vanilla Name: %s", namebuf);
 
-                    if(GetOpenFileName(&ofn)) {
-                        *(CHAO_SAVE_INFO*)work->pParamGC = LoadChaoFile(filename);
-                    }
+                    ConvertName(GET_CWEPARAM(pParam)->Name, namebuf);
+                    ImGui::Text("CWE Name: %s", namebuf);
                 }
 
-                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
+                ImGui::InputScalar("Type", ImGuiDataType_U8, &pParam->type);
+                ImGui::InputScalar("Place", ImGuiDataType_S8, &pParam->place);
 
-                static bool ChaoDebugDistEnabled = false;
-                ImGui::Checkbox("Distance Debug", &ChaoDebugDistEnabled);
-                if (ChaoDebugDistEnabled) {
-                    ChaoDebugDistSelected = pChao;
-                    ImGui::SliderFloat("Distance", &ChaoDebugDist, 1, 1000);
+                {
+                    Sint16 min = -100, max = 100;
+                    ImGui::SliderScalar("Like", ImGuiDataType_S16, &pParam->like, &min, &max);
                 }
-                else {
-                    ChaoDebugDistSelected = NULL;
+
+                ImGui::InputScalar("ClassNum", ImGuiDataType_S8, &pParam->ClassNum);
+                ImGui::InputScalar("age", ImGuiDataType_S16, &pParam->age);
+                ImGui::InputScalar("old", ImGuiDataType_S16, &pParam->old);
+                ImGui::InputScalar("life", ImGuiDataType_S16, &pParam->life);
+                ImGui::InputScalar("LifeMax", ImGuiDataType_S16, &pParam->LifeMax);
+
+                if(ImGui::TreeNode("ID")) {
+                    ImGui::Text("gid[2] = { %x, %x }", pParam->ChaoID.gid[0], pParam->ChaoID.gid[1]);
+                    ImGui::Text("id[2] = { %x, %x }", pParam->ChaoID.id[0], pParam->ChaoID.id[1]);
+
+                    ImGui::Text("num = %d", pParam->ChaoID.num);
+
+                    ImGui::TreePop();
                 }
+
+                ImGui::InputInt("LifeTimer", &pParam->LifeTimer);
 
                 ImGui::EndTabItem();
             }
 
-            if (ImGui::BeginTabItem("World")) {
-                ImGui::Text("IsCommunication: %p", ALW_IsCommunication(pChao));
-                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
-                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
-                ImGui::Text("command_value: %d", GET_ALW_ENTRY_WORK(pChao)->command_value);
+            if (ImGui::BeginTabItem("BodyInfo")) {
+                ImGui::SliderFloat("growth", &pParam->body.growth, 0, 1.2f);
+                ImGui::SliderFloat("HPos", &pParam->body.HPos, -1, 1);
+                ImGui::SliderFloat("VPos", &pParam->body.VPos, -1, 1);
+                ImGui::Separator();
+                ImGui::InputScalar("DefaultEyeNum", ImGuiDataType_U8, &pParam->body.DefaultEyeNum);
+                ImGui::InputScalar("DefaultMouthNum", ImGuiDataType_U8, &pParam->body.DefaultMouthNum);
+                ImGui::InputScalar("HonbuNum", ImGuiDataType_U8, &pParam->body.HonbuNum);
+                ImGui::InputScalar("ObakeHead", ImGuiDataType_U8, &pParam->body.ObakeHead);
+                ImGui::InputScalar("ObakeBody", ImGuiDataType_U8, &pParam->body.ObakeBody);
+                ImGui::InputScalar("MedalNum", ImGuiDataType_U8, &pParam->body.MedalNum);
+                ImGui::InputScalar("ColorNum", ImGuiDataType_U8, &pParam->body.ColorNum);
+                ImGui::Checkbox("NonTex", (bool*)&pParam->body.NonTex);
+                ImGui::InputScalar("JewelNum", ImGuiDataType_U8, &pParam->body.JewelNum);
 
+                {
+                    uint8_t min = 0;
+                    uint8_t max = 2;
+                    ImGui::SliderScalar("MultiNum", ImGuiDataType_U8, &pParam->body.MultiNum, &min, &max);
+                }
+
+                ImGui::InputScalar("EggColor", ImGuiDataType_S8, &pParam->body.EggColor);
+
+                ImGui::InputScalar("FormNum", ImGuiDataType_U8, &pParam->body.FormNum);
+                ImGui::InputScalar("FormSubNum", ImGuiDataType_U8, &pParam->body.FormSubNum);
+
+                static_assert(sizeof(bool) == sizeof(uint8_t));
                 ImGui::EndTabItem();
             }
 
@@ -211,19 +257,133 @@ static void ChaoInfoMenu() {
                     if(i < EM_ST_SLEEPY) {
                         static Uint8 sliderMin = 0;
                         static Uint8 sliderMax = 200;
-                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U8, &GET_CHAOPARAM(pChao)->emotion.Mood[i], &sliderMin, &sliderMax);
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U8, &pParam->emotion.Mood[i], &sliderMin, &sliderMax);
                     }
                     else if (i < EM_PER_CURIOSITY) {
                         static Uint16 sliderMin = 0;
                         static Uint16 sliderMax = 10000;
-                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U16, &GET_CHAOPARAM(pChao)->emotion.State[i - EM_ST_SLEEPY], &sliderMin, &sliderMax);
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U16, &pParam->emotion.State[i - EM_ST_SLEEPY], &sliderMin, &sliderMax);
                     }
                     else {
                         static Sint8 sliderMin = -100;
                         static Sint8 sliderMax = 100;
-                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_S8, &GET_CHAOPARAM(pChao)->emotion.Personality[i - EM_PER_CURIOSITY], &sliderMin, &sliderMax);
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_S8, &pParam->emotion.Personality[i - EM_PER_CURIOSITY], &sliderMin, &sliderMax);
                     }
                 }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("CWE")) {
+                CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(pParam);
+
+                for (size_t i = 0; i < 4; ++i) {
+                    const char* paramFlagNames[] = {
+                        "NAME_NEW",
+                        "OLD_GUEST_CHECK",
+                        "PARTS_CONVERSION",
+                        "ACCESSORIES_NEW",
+                    };
+                    
+                    ImGui::CheckboxFlags(paramFlagNames[i], &pParamCwe->Flags, (1 << i));
+                }
+
+                ImGui::Checkbox("ShinyJewelMonotone", (bool*)&pParamCwe->ShinyJewelMonotone);
+                ImGui::InputScalar("LobbyTextureValue", ImGuiDataType_S8, &pParamCwe->LobbyTextureValue);
+                ImGui::InputScalar("EyeAlignment", ImGuiDataType_S8, &pParamCwe->EyeAlignment);
+                ImGui::InputScalar("EyeColor", ImGuiDataType_S8, &pParamCwe->EyeColor);
+                ImGui::InputScalar("UpgradeCounter", ImGuiDataType_S8, &pParamCwe->UpgradeCounter);
+                ImGui::InputScalar("XGradeValue", ImGuiDataType_S8, &pParamCwe->XGradeValue);
+                ImGui::Checkbox("DCWings", &pParamCwe->DCWings);
+                ImGui::Checkbox("Negative", &pParamCwe->Negative);
+                ImGui::InputScalar("Birthday", ImGuiDataType_S16, &pParamCwe->Birthday);
+                ImGui::Checkbox("ForceReincarnate", &pParamCwe->ForceReincarnate);
+
+                ImGui::InputText("TypeID", pParamCwe->TypeID, sizeof(pParamCwe->TypeID));
+
+                ImGui::InputScalar("MusicFlag_CWE", ImGuiDataType_U8, &pParamCwe->MusicFlag_CWE);
+                ImGui::InputScalar("DanceFlag_CWE", ImGuiDataType_U8, &pParamCwe->DanceFlag_CWE);
+
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
+
+        ImGui::End();
+    }
+}
+
+static void ChaoInfoMenu() {
+    if (ShowChaoInfo && ImGui::Begin("Chao Info", &ShowChaoInfo)) {
+        ImGui::SliderInt("ID", &SelectedChaoIndex, 0, ALW_CountEntry(0));
+
+        task* pChao = GetSelectedChao();
+        if (!pChao) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1));
+            ImGui::Text("Chao with selected ID not found!");
+            ImGui::PopStyleColor();
+            ImGui::End();
+            return;
+        }
+
+        chaowk* work = GET_CHAOWK(pChao);
+        auto pParamCwe = GET_CWEPARAM(pChao);
+        auto* move_work = GET_MOVE_WORK(pChao);
+
+        if (ImGui::Button("Show Param")) {
+            const CHAO_SAVE_INFO* pInfo = (CHAO_SAVE_INFO*)work->pParamGC;
+            const CHAO_SAVE_INFO* pInfoList = GardenInfoList[0].chao;
+            if(pInfo >= pInfoList && pInfo <= &pInfoList[23]) {
+                ParamPointer = NULL;
+                ParamIndex = int(pInfo - pInfoList);
+            }
+            else {
+                ParamPointer = work->pParamGC;
+            }
+
+            ShowParamMenu = true;
+        }
+
+        if (ImGui::BeginTabBar("chao_tab_bar")) {
+            if (ImGui::BeginTabItem("General")) {
+                if(ImGui::Button("Load .chao File")) {
+                    OPENFILENAME ofn {};
+                    char filename[MAX_PATH] {};
+
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = MainWindowHandle;
+                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0";
+                    ofn.lpstrFile = filename;
+                    ofn.nMaxFile = sizeof(filename);
+                    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
+                    ofn.lpstrDefExt = "txt";
+
+                    if(GetOpenFileName(&ofn)) {
+                        *(CHAO_SAVE_INFO*)work->pParamGC = LoadChaoFile(filename);
+                    }
+                }
+
+                ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
+
+                static bool ChaoDebugDistEnabled = false;
+                ImGui::Checkbox("Distance Debug", &ChaoDebugDistEnabled);
+                if (ChaoDebugDistEnabled) {
+                    ChaoDebugDistSelected = pChao;
+                    ImGui::SliderFloat("Distance", &ChaoDebugDist, 1, 1000);
+                }
+                else {
+                    ChaoDebugDistSelected = NULL;
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("World")) {
+                ImGui::Text("IsCommunication: %p", ALW_IsCommunication(pChao));
+                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
+                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
+                ImGui::Text("command_value: %d", GET_ALW_ENTRY_WORK(pChao)->command_value);
 
                 ImGui::EndTabItem();
             }
@@ -283,20 +443,6 @@ static void ChaoInfoMenu() {
                         }
                         ImGui::PopID();
                     }
-                }
-
-                ImGui::EndTabItem();
-            }
-
-            if (ImGui::BeginTabItem("ParamFlags")) {
-                const char* paramFlagNames[] = {
-                    "NAME_NEW",
-                    "OLD_GUEST_CHECK",
-                    "PARTS_CONVERSION",
-                    "ACCESSORIES_NEW",
-                };
-                for (size_t i = 0; i < 4; ++i) {
-                    ImGui::CheckboxFlags(paramFlagNames[i], &pParamCwe->Flags, (1 << i));
                 }
 
                 ImGui::EndTabItem();
@@ -962,6 +1108,7 @@ static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
+            ImGui::MenuItem("ChaoParam", NULL, &ShowParamMenu);
             ImGui::MenuItem("Garden", NULL, &ShowGardenInfo);
             ImGui::MenuItem("Light", NULL, &ShowLight);
             // ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
@@ -980,6 +1127,7 @@ static void ImGuiMenu() {
         GardenInfoMenu();
         ChaoSoundMenu();
         ChaoInfoMenu();
+        ChaoParamMenu();
         // DayNightMenu();
         LightMenu();
         ItemsMenu();
