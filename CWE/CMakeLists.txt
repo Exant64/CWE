@@ -1,6 +1,7 @@
 add_library(CWE SHARED
     BrightFix/BrightFix.cpp
     al_animation.cpp
+    al_guest.cpp
     alg_kinder_bl.cpp
     alg_kinder_cl.cpp
     alg_kinder_he.cpp
