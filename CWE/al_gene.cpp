@@ -494,10 +494,10 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	if (*(char*)0x0053FD6C == 1)
 	{
 		float Chance = 0.0f;
-		if (!AL_ParameterIsGuest(pMotherTask) && GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
+		if (GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
-		if (AL_ParameterIsGuest(pFatherTask) && GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
+		if (GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
 		if (Chance > 0)
