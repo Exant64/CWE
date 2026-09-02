@@ -52,7 +52,7 @@ struct CHAO_PARAM_CWE {
 	char ShinyJewelMonotone;
 	char FreeSpace;
 	char GiftChaoValue; //unused for a while, we might pick this up again some time
-	char FreeSpace_;
+	Sint8 IsGuest;
 	char LobbyTextureValue; //same here
 	char FreeSpace__;
 	char EyeAlignment;

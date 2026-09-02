@@ -30,6 +30,7 @@
 #include "navigation/navsys.h"
 #include "navigation/navsys_generator.h"
 #include "navigation/navsys_internal.h"
+#include <al_guest.h>
 
 static bool ShowParamMenu = false;
 static int ParamIndex = 0;
@@ -49,6 +50,7 @@ static bool ShowMarketMenu = false;
 static bool ShowSoundsMenu = false;
 static bool ShowMoreFacesMenu = false;
 static bool ShowNavSysMenu = false;
+static bool ShowGuestMenu = false;
 
 static void ConvertName(char* pName, char* pOut) {
     FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
@@ -1120,6 +1122,7 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Sound System", NULL, &ShowSoundsMenu);
             ImGui::MenuItem("More Chao Faces", NULL, &ShowMoreFacesMenu);
             ImGui::MenuItem("Navi System", NULL, &ShowNavSysMenu);
+            ImGui::MenuItem("Guest", NULL, &ShowGuestMenu);
             
             ImGui::EndMenu();
         }
@@ -1137,6 +1140,7 @@ static void ImGuiMenu() {
         SoundsMenu();
         MoreFacesMenu();
         NavSysMenu();
+        Guest_Debug(ShowGuestMenu);
 
         ImGui::EndMainMenuBar();
     }

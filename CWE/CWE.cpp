@@ -129,12 +129,16 @@ extern "C"
 		case CHAO_STG_NEUT:
 		case CHAO_STG_HERO:
 		case CHAO_STG_DARK:
-			if(gConfigVal.ChaoCounter)
+			if(gConfigVal.ChaoCounter) {
 				AL_ChaoCounterCreate();
+			}
+
+			if (gConfigVal.GuestChao) {
+				GuestManagerCreate();
+			}
+
 			break;
 		}
-
-		CWE_SpawnRandomGuestChao();
 
 		AL_NameDisplayCreate();
 		//ALO_Butterfly_Load();
@@ -548,6 +552,18 @@ extern "C"
 		gConfigVal.HeroGrayscale = config->getBool("Misc", "HeroGrayscale", false);
 		gConfigVal.DarkGrayscale = config->getBool("Misc", "DarkGrayscale", false);
 
+		// Guest
+		gConfigVal.GuestChao = config->getBool("Guest", "Enabled", true);
+		gConfigVal.GuestSave = config->getBool("Guest", "Save", false);
+		gConfigVal.GuestVisitCounter = config->getInt("Guest", "VisitCounter", 3);
+		gConfigVal.GuestMin = config->getInt("Guest", "Min", 1);
+		gConfigVal.GuestMax = config->getInt("Guest", "Max", 8);
+		gConfigVal.GuestRollType = config->getInt("Guest", "RollType", GUEST_ROLL_ROTATE);
+		gConfigVal.GuestRotateCount = config->getInt("Guest", "RotateCount", 4);
+		gConfigVal.GuestRandomizeEmotions = config->getBool("Guest", "RandomEmotions", true);
+		gConfigVal.GuestBlockStatChanges = config->getBool("Guest", "BlockStats", true);
+		gConfigVal.GuestBlockNameChange = config->getBool("Guest", "BlockName", true);
+
 		// the other half of this code is in al_parameter.cpp AL_CalcParameter_r
 		// we kinda need a better place for this to be written
 		if (gConfigVal.ChaoAttention) {
@@ -595,7 +611,10 @@ extern "C"
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
 
-		CWE_GuestInit();
+		if(gConfigVal.GuestChao) {
+			CWE_GuestInit();
+		}
+
 		NavSysInit(path);
 
 		HDTexture_Init(path, config);

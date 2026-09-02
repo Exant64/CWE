@@ -27,7 +27,7 @@ ASM_FUNC void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2) 
 }
 
 bool AL_ParameterIsGuest(task* tp) {
-	return GET_CHAOWK(tp)->IsParamCopy;
+	return GET_CWEPARAM(tp)->IsGuest != 0;
 }
 
 void AL_NameSet(char* lval, char* rval) {
