@@ -1,5 +1,8 @@
 #pragma once
+#include <stdafx.h>
 #include <save/save_item.h>
+
+DataPointer(CHAO_SAVE_INFO*, pHoldingChaoSaveInfo, 0x1A5CA5C);
 
 void AL_ClearItemSaveInfo(ItemSaveInfoBase* pSaveInfo);
 void AL_ClearItemSaveInfo(ITEM_SAVE_INFO* pSaveInfo);
