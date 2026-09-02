@@ -1,6 +1,7 @@
 
+#include "al_parameter.h"
 #include "stdafx.h"
-#include "..//SA2ModLoader.h"
+#include "ChaoMain.h"
 #include "..//Chao.h"
 #include "../al_world.h"
 #include "../ninja_functions.h"
@@ -165,6 +166,12 @@ int AL_KW_AlreadyKnows(task* a1, task* a2)
 
 int AL_KW_GetRelationIndex(task* a1, task* a2)
 {
+	if (gConfigVal.GuestBlockSocialRelations) {
+		if(AL_ParameterIsGuest(a1) || AL_ParameterIsGuest(a2)) {
+			return -1;
+		}
+	}
+
 	chaowk* wk1 = GET_CHAOWK(a1);
 	chaowk* wk2 = GET_CHAOWK(a2);
 
@@ -222,6 +229,10 @@ int AL_KW_GetFriendCount(task* a1)
 
 void __cdecl AL_KW_MeetChao(task* a1, int index, KW_MEET_TYPE meetType)
 {
+	if (gConfigVal.GuestBlockSocialRelations && AL_ParameterIsGuest(a1)) {
+		return;
+	}
+
 	chaowk* wk1 = GET_CHAOWK(a1);
 
 	//increment meet
@@ -272,6 +283,12 @@ int AL_KW_GetMeetChao(task* a1, task* a2)
 
 void AL_KW_MeetEachother(task* a1, task* a2, KW_MEET_TYPE type)
 {
+	if (gConfigVal.GuestBlockSocialRelations) {
+		if(AL_ParameterIsGuest(a1) || AL_ParameterIsGuest(a2)) {
+			return;
+		}
+	}
+
 	int relationIndex1 = AL_KW_GetRelationIndex(a1, a2);
 	int relationIndex2 = AL_KW_GetRelationIndex(a2, a1);
 	if (relationIndex1 > -1)

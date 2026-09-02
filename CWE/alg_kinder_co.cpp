@@ -1,6 +1,8 @@
+#include "al_parameter.h"
 #include "stdafx.h"
 #include "alg_kinder_bl.h"
 #include "al_odekake.h"
+#include "ChaoMain.h"
 #include "asmutil.h"
 
 static ASM_FUNC void sub_579EF0(int a1, KinderCoMessageThing* a2, int a3, int a4, float a5, float a6, float a7, float a8) {
@@ -52,22 +54,58 @@ struct al_stg_kinder_co_data
 };
 #pragma pack(pop)
 
+static bool IsValidRoom(int doorEntry) {
+	struct KinderDoorThing {
+		int room;
+		int spawnPos;
+		int doorIndex;
+		NJS_VECTOR position;
+		int rotation;
+	};
+	DataArray(KinderDoorThing, DoorInfo, 0x8A1A50, 6);
+
+	const int room = DoorInfo[doorEntry].room;
+
+	DataPointer(task*, pKinderChaoTask, 0x1AED248);
+	if(!pKinderChaoTask) {
+		return true;
+	}
+
+	if(AL_ParameterIsGuest(pKinderChaoTask)) {
+		switch(room) {
+			case 3: // classroom
+				return false;
+			case 8: // fortune teller
+				return !gConfigVal.GuestBlockNameChange;
+		}
+	}
+
+	return true;
+}
+
 DataArray(int, dword_8A1AF8, 0x8A1AF8, 14);
-void __cdecl KindergartenText(al_stg_kinder_co_data* pCoData)
-{
+static void KindergartenText(al_stg_kinder_co_data* pCoData) {
+	static char BlockedString[200];
+
 	if (pCoData->enteringRoom == 6) {
 		AlMsgFontCreateCStr(
 			Language == 0,
 			(int)"Credits",
 			(int)pCoData->dword1C,
-			640);
+			640
+		);
 	}
 	else {
 		char* titleString = (char*)((int)pCoData->msgLoaded + pCoData->msgLoaded[dword_8A1AF8[2 * pCoData->enteringRoom]]);
+		const char* suffix = "";
+		if (!IsValidRoom(pCoData->enteringRoom))
+			suffix = " (blocked)";
+
+		sprintf(BlockedString, "%s %s", titleString, suffix);
 
 		AlMsgFontCreateCStr(
 			Language == 0,
-			(int)titleString,
+			(int)BlockedString,
 			(int)pCoData->dword1C,
 			640);
 	}
@@ -165,8 +203,6 @@ static void ASM_FUNC CorridorText2Hook() {
 	ASM_POP(esi); // a2
 	ASM_RET(0);
 }
-
-
 
 DataArray(task*, doorObjectArray, 0x01A27850, 6);
 void __cdecl EnteringRoom(al_stg_kinder_co_data* pCoData, int room) {

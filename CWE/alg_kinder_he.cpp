@@ -1,3 +1,4 @@
+#include "al_parameter.h"
 #include "stdafx.h"
 
 #include "ninja_functions.h"
@@ -129,49 +130,60 @@ ASM_FUNC void DrawMedicalChartText(const char* TextPtr, float XPos, float YPos, 
     ASM_RET( 0 );
 }
 
-bool CanStatBeUpgraded(chaowk* data1, int stat)
-{
-	if (GET_CWEPARAM(data1->pParamGC)->UpgradeCounter < 3 &&
-		data1->pParamGC->Lev[stat] == 99 &&
-		data1->pParamGC->Abl[stat] < ChaoGrade_A &&
-		gu32TotalRing >= GradePurchasePrice[data1->pParamGC->Abl[stat]])
+static bool IsUpgradeBlockedByGuest(task* tp) {
+	return AL_ParameterIsGuest(tp) && gConfigVal.GuestBlockStatChanges;
+}
+
+static bool CanStatBeUpgraded(task* tp, int stat) {
+	if (IsUpgradeBlockedByGuest(tp)) {
+		return false;
+	}
+
+	if (GET_CWEPARAM(tp)->UpgradeCounter < 3 &&
+		GET_CHAOPARAM(tp)->Lev[stat] == 99 &&
+		GET_CHAOPARAM(tp)->Abl[stat] < ChaoGrade_A &&
+		gu32TotalRing >= GradePurchasePrice[GET_CHAOPARAM(tp)->Abl[stat]])
 	{
 		return true;
 	}
 
 	return false;
 }
-bool CanChaoUpgrade(chaowk* data1)
-{
-	for (int i = 0; i < 5; i++)
-	{
-		if (CanStatBeUpgraded(data1,i))
-		{
+
+static bool CanChaoUpgrade(task* tp) {
+	for (size_t i = 0; i < 5; ++i) {
+		if (CanStatBeUpgraded(tp, i)) {
 			return true;
 		}
 	}
+
 	return false;
 }
 void PurchaseGradesCode(task* tp) {
 	chaowk* data1 = GET_CHAOWK(tp);
 	char buff[256];
 	
-	auto pParamCwe = GET_CWEPARAM(data1->pParamGC);
+	auto pParamCwe = GET_CWEPARAM(tp);
 
-	if (pParamCwe->UpgradeCounter < 3 )
-	{
-		if (CanChaoUpgrade(data1)) 
-		{
-			if (SWDATA[0] & BTN_Y)
-				sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
-			else
-				sprintf(buff, "Hold Y to Upgrade");
-		}
-		else 
-			sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
+	if (IsUpgradeBlockedByGuest(tp)) {
+		sprintf(buff, "Upgrades Blocked!");
 	}
-	else 
+	else if (pParamCwe->UpgradeCounter < 3) {
+		if (CanChaoUpgrade(tp)) {
+			if (SWDATA[0] & BTN_Y) {
+				sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
+			}
+			else {
+				sprintf(buff, "Hold Y to Upgrade");
+			}
+		}
+		else {
+			sprintf(buff, "Upgrades Left: %d", 3 - pParamCwe->UpgradeCounter);
+		}
+	}
+	else {
 		sprintf(buff, "No Upgrades Left");
+	}
 
 	DrawMedicalChartText(
 		buff,
@@ -179,18 +191,17 @@ void PurchaseGradesCode(task* tp) {
 		251.0,
 		999.0,
 		13.0f,
-		5);
+		5
+	);
+
 	sub_583C60();
 	njSetTexture(&CWE_UI_TEXLIST);
 	njSetTextureNum(25, 0, 0, 0);
-	if (SWDATA[0] & BTN_Y)
-	{
-		for (int i = 0; i < 5; i++)
-		{
-			if (CanStatBeUpgraded(data1, i))
-			{
-				if (SWDATAE[0] & UpgradeButtons[i])
-				{
+
+	if (SWDATA[0] & BTN_Y) {
+		for (int i = 0; i < 5; i++) {
+			if (CanStatBeUpgraded(tp, i)) {
+				if (SWDATAE[0] & UpgradeButtons[i]) {
 					data1->pParamGC->Lev[i] = 1;
 					data1->pParamGC->Skill[i] /= 100;
 					pParamCwe->UpgradeCounter++;
@@ -200,13 +211,14 @@ void PurchaseGradesCode(task* tp) {
 					gu32TotalRing -= GradePurchasePrice[data1->pParamGC->Abl[i]];
 					data1->pParamGC->Abl[i]++;
 				}
+
 				plusHUD.y0 = 32 * i + 262;
 				plusHUD.y1 = 32 * i + 282;
 				AlgKinderOrthoQuadDraw(&plusHUD, -1);
 			}
-
 		}
 	}
+
 	sub_583C60();
 	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
 	njSetTextureNum(7, 0, 0, 0);

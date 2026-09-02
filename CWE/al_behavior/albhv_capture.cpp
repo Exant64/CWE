@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "al_parameter.h"
 #include "..//SA2ModLoader.h"
 #include "../Chao.h"
 #include "../al_world.h"
@@ -254,7 +255,10 @@ int ALBHV_Capture(task* tp) {
 					}
 					break;
 				}
-				AL_ParameterGrow(tp, minitype, 2u, 0);
+
+				if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockStatChanges) {
+					AL_ParameterGrow(tp, minitype, 2u, 0);
+				}
 			}
 			AL_CloseParameterFukidasiWait(tp);
 			ALW_CommunicationOff(tp);

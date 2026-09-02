@@ -1,3 +1,4 @@
+#include "al_parameter.h"
 #include "stdafx.h"
 
 #include "asmutil.h"
@@ -153,8 +154,8 @@ ASM_FUNC void sub_582F60(char* a1) {
 
 void __cdecl sub_582F60_CheckGuest(char* a1)
 {
-	task* chaoPtr = *(task**)(&a1[0x1c]);
-	if (chaoPtr && GET_CHAOPARAM(chaoPtr)->GBAType == 1 && a1[0x50])
+	task* pChaoTask = *(task**)(&a1[0x1c]);
+	if (pChaoTask && AL_ParameterIsGuest(pChaoTask) && a1[0x50])
 	{
 		if(*(void**)(&a1[0x44]))
 			AlMsgWinAddLineC(*(KinderCoMessageThing**)(&a1[0x44]), "This is a Guest Chao.", Language == 0);
