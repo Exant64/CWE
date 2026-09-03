@@ -100,7 +100,9 @@ static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, MGroundMotherName
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Accessories) == 0x6B1);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, XGradeValue) == 0x59e);
 
-bool AL_ParameterIsGuest(task* tp);
+bool AL_ParameterIsGuest(const CHAO_PARAM_GC* pParam);
+bool AL_ParameterIsGuest(const task* tp);
+
 void AL_NameSet(char* lval, char* rval);
 bool AL_IsChild(task* tp);
 bool AL_IsHero(unsigned __int8 a1);
