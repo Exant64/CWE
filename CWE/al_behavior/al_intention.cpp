@@ -294,6 +294,10 @@ static ASM_FUNC void AL_DecideIntention(task *tp) {
 static void AL_DecideIntention_r(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
 
+	if (AL_ParameterIsGuest(tp) && gConfigVal.GuestBlockBreeding) {
+		AL_EmotionSetValue(tp, EM_ST_BREED, 0);
+	}
+
 	AL_DecideIntention(tp);
 
 	if(bhv->BhvFuncList[0] == ALBHV_Move) {
