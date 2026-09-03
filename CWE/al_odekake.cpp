@@ -1,5 +1,5 @@
-#include "al_parameter.h"
 #include "stdafx.h"
+#include "al_parameter.h"
 
 #include "asmutil.h"
 
@@ -129,8 +129,14 @@ void BarDraw(task* tp)
 	NewBarDraw(tp);
 }
 
+static bool OdekakeGoodbyeCondition() {
+	CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
+
+	return pParam && !AL_ParameterIsGuest(pParam);
+}
+
 // todo: maybe move these somewhere more findable?
-static CWE_API_ODEKAKE_ENTRY OdekakeGoodbyeEntry = { AL_OdekakeGoodbye, nullptr, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[33],&stru_11BA528[10],&stru_11BA528[11],&stru_11BA528[24],&stru_11BA528[25], 1.0, 0.0, 0.7265625, 0.74609375 };
+static CWE_API_ODEKAKE_ENTRY OdekakeGoodbyeEntry = { AL_OdekakeGoodbye, OdekakeGoodbyeCondition, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[33],&stru_11BA528[10],&stru_11BA528[11],&stru_11BA528[24],&stru_11BA528[25], 1.0, 0.0, 0.7265625, 0.74609375 };
 
 // the quit entry is basically dummied out (except for the button sprites), because the menu is hardcoded to exit on the last button, so no functionality is needed for it
 static CWE_API_ODEKAKE_ENTRY OdekakeQuitEntry = { nullptr, nullptr, ODE_FLAGS_NONE, &stru_11BA528[34],&stru_11BA528[12],&stru_11BA528[13],nullptr,nullptr };
@@ -150,30 +156,6 @@ ASM_FUNC void sub_582F60(char* a1) {
 
     // return
     ASM_RET( 0 );
-}
-
-void __cdecl sub_582F60_CheckGuest(char* a1)
-{
-	task* pChaoTask = *(task**)(&a1[0x1c]);
-	if (pChaoTask && AL_ParameterIsGuest(pChaoTask) && a1[0x50])
-	{
-		if(*(void**)(&a1[0x44]))
-			AlMsgWinAddLineC(*(KinderCoMessageThing**)(&a1[0x44]), "This is a Guest Chao.", Language == 0);
-		a1[0x50] = 0;
-		a1[0x51] = 2;
-	}
-	
-	sub_582F60(a1);
-}
-
-static void ASM_FUNC sub_582F60Hook() {
-	ASM_PUSH(eax); // a1
-
-	// Call your __cdecl function here:
-	ASM_CALL (sub_582F60_CheckGuest);
-
-	ASM_POP(eax); // a1
-	ASM_RET(0);
 }
 
 void AddOdekakeMenu(const CWE_API_ODEKAKE_ENTRY& entry) {
@@ -199,10 +181,25 @@ void AL_Odekake_Update() {
 	WriteData((char*)0x005A6D9C, (char)LastMenuButton); //exit
 }
 
-void AL_Odekake_Init()
-{
-	//name guest check
-	//WriteCall((void*)0x00583B2F, (void*)sub_582F60Hook);
+static void __fastcall AlMsgWarnAddLineC_Odekake_t(int msg) {
+	VoidFunc(sub_543860, 0x543860);
+
+	assert(AL_OdekakeMenuMaster_Data_ptr->cursorY < odekakeMenuEntries.size());
+
+	if (odekakeMenuEntries[AL_OdekakeMenuMaster_Data_ptr->cursorY].pConditionFunc) {
+		return;
+	}
+
+	AlMsgWarnAddLineC(0, msg);
+	sub_543860();
+}
+
+void AL_Odekake_Init() {
+	/* this disables the extra line after "Unable to select." on custom condition
+	   the nullsub_1 is to also remove the controller wait call after it (sub_543860())
+	   so that we're in control of it */
+	WriteCall((void*)0x005A6E6C, (void*)AlMsgWarnAddLineC_Odekake_t);
+	WriteCall((void*)0x005A6E71, (void*)nullsub_1);
 
 	// this kills... something? in ChaoSelectMenuManager?? im assuming some weird patch related to the move menu
 	WriteData<2>((char*)0x0055426D, (char)0x90);
@@ -215,14 +212,9 @@ void AL_Odekake_Init()
 	WriteCall((void*)0x05A6F8E, (void*)GoodbyeBar);
 
 	odekakeMenuEntries.clear();
-	//if(cweSaveFile.transporterFlag & eTRANSPORTER::NAME)
-		odekakeMenuEntries.push_back(OdekakeNameEntry);
-	//if (cweSaveFile.transporterFlag & eTRANSPORTER::MOVE)
-		odekakeMenuEntries.push_back(OdakakeMoveEntry);
-	//if (cweSaveFile.transporterFlag & eTRANSPORTER::CUSTOMIZATION)
-		odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
-
-	// odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeNameEntry);
+	odekakeMenuEntries.push_back(OdakakeMoveEntry);
+	odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
 
 	odekakeMenuEntries.push_back(OdekakeGoodbyeEntry);
 

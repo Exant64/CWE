@@ -29,7 +29,9 @@ struct CWE_API_ODEKAKE_ENTRY {
 	// the function ran every frame for the menu logic
 	OdekakeFuncPtr pMenuFunc;
 
-	// placeholder for future (intended to be used for "unlocking" menus, ignore for now)
+	/* optional function that specifies if button is available or not
+	   when this pointer is NULL, the flags are used to determine the
+	   buttons' availability */
 	OdekakeConditionPtr pConditionFunc;
 
 	// flags are above the struct ("ODE_FLAGS")
