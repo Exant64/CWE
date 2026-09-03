@@ -1,3 +1,4 @@
+#include "al_emotion.h"
 #include "stdafx.h"
 #include "al_garden_info.h"
 #include "ChaoMain.h"
@@ -29,6 +30,8 @@ struct GuestInfo {
         __int16 Skill[8];
         
         Sint8 place;
+
+        AL_EMOTION emotion;
     } m_backup;
 };
 
@@ -130,10 +133,17 @@ static bool ValidateChaoFile(const char* path) {
 
 static void SaveGuestChao(size_t infoIndex) {
     auto& info = GuestInfoList[infoIndex];
+    CHAO_PARAM_GC* pParam = &info.m_saveInfo.param;
 
     assert(info.m_occupied);
 
-    info.m_saveInfo.param.place = info.m_backup.place;
+    pParam->place = info.m_backup.place;
+
+    if (gConfigVal.GuestBlockBreeding) {
+        const auto breedIndex = EM_ST_BREED - EM_ST_SLEEPY;
+        pParam->emotion.State[breedIndex] = info.m_backup.emotion.State[breedIndex];
+    }
+
     GET_CWEPARAM(&info.m_saveInfo)->IsGuest = FALSE;
 
     const auto path = GuestChaoFilePaths[info.m_pathIndex].c_str();
@@ -158,15 +168,22 @@ void LoadGuestChao(size_t infoIndex, size_t pathIndex) {
 
     info.m_occupied = true;
     info.m_pathIndex = pathIndex;
-    info.m_saveInfo = LoadChaoFile(GuestChaoFilePaths[pathIndex].c_str());
 
-    info.m_backup.place = info.m_saveInfo.param.place;
+    info.m_saveInfo = LoadChaoFile(GuestChaoFilePaths[pathIndex].c_str());
+    CHAO_PARAM_GC* pParam = &info.m_saveInfo.param;
+
+    info.m_backup.place = pParam->place;
 
     for(size_t s = 0; s < 8; ++s) {
-        info.m_backup.Exp[s] = info.m_saveInfo.param.Exp[s];
-        info.m_backup.Abl[s] = info.m_saveInfo.param.Abl[s];
-        info.m_backup.Lev[s] = info.m_saveInfo.param.Lev[s];
-        info.m_backup.Skill[s] = info.m_saveInfo.param.Skill[s];
+        info.m_backup.Exp[s] = pParam->Exp[s];
+        info.m_backup.Abl[s] = pParam->Abl[s];
+        info.m_backup.Lev[s] = pParam->Lev[s];
+        info.m_backup.Skill[s] = pParam->Skill[s];
+    }
+
+    if (gConfigVal.GuestBlockBreeding) {
+        const auto breedIndex = EM_ST_BREED - EM_ST_SLEEPY;
+        info.m_backup.emotion.State[breedIndex] = pParam->emotion.State[breedIndex];
     }
 
     GET_CWEPARAM(&info.m_saveInfo)->IsGuest = TRUE;

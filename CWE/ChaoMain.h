@@ -139,6 +139,7 @@ struct ConfigValues {
 	bool GuestBlockVisualGrowthChanges;
 	bool GuestBlockVisualChanges;
 	bool GuestBlockSocialRelations;
+	bool GuestBlockBreeding;
 };
 extern ConfigValues gConfigVal;
 
