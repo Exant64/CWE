@@ -166,12 +166,6 @@ int AL_KW_AlreadyKnows(task* a1, task* a2)
 
 int AL_KW_GetRelationIndex(task* a1, task* a2)
 {
-	if (gConfigVal.GuestBlockSocialRelations) {
-		if(AL_ParameterIsGuest(a1) || AL_ParameterIsGuest(a2)) {
-			return -1;
-		}
-	}
-
 	chaowk* wk1 = GET_CHAOWK(a1);
 	chaowk* wk2 = GET_CHAOWK(a2);
 
@@ -180,6 +174,13 @@ int AL_KW_GetRelationIndex(task* a1, task* a2)
 	if (alreadyKnowsID > -1)
 		return alreadyKnowsID;
 
+	// if guest and blocked, don't create new relationships
+	if (gConfigVal.GuestBlockSocialRelations) {
+		if(AL_ParameterIsGuest(a1) || AL_ParameterIsGuest(a2)) {
+			return -1;
+		}
+	}
+	
 	//if not registered, find new slot for it
 	for (int i = 0; i < 20; i++)
 	{
