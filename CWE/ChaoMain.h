@@ -136,10 +136,17 @@ struct ConfigValues {
 	bool GuestRandomizeEmotions;
 	bool GuestBlockStatChanges;
 	bool GuestBlockNameChange;
-	bool GuestBlockVisualGrowthChanges;
+	bool GuestBlockBodyChanges;
 	bool GuestBlockVisualChanges;
+	bool GuestBlockWearableChanges;
+	bool GuestBlockPlayerRelations;
 	bool GuestBlockSocialRelations;
 	bool GuestBlockBreeding;
+	bool GuestBlockLifeChanges;
+	bool GuestBlockMinimalFlagChanges;
+	bool GuestBlockMinimalPartChanges;
+	bool GuestBlockOmoBuild;
+	bool GuestIndicator;
 };
 extern ConfigValues gConfigVal;
 

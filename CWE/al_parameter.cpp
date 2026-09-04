@@ -212,7 +212,7 @@ ASM_FUNC void sub_535E90(CHAO_PARAM_GC *a1, int a2) {
     ASM_RET( 0 );
 }
 
-static ASM_FUNC void AL_CalcParameter(task* tp) {
+ASM_FUNC void AL_CalcParameter(task* tp) {
     // save regs
     ASM_PUSH( esi );
 

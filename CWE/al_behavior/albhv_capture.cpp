@@ -35,75 +35,72 @@ void ALBHV_Capture_Parts(task* tp, int minitype) {
 	//actually this was inside the loop, and also duplicated in a lot of other places
 	//since I have to do "unfaithful" modifications to the code already I just cleaned it up
 	if (minitype < 21) {
-		AL_PartsMinimalFlagOn(tp, minitype);
-	}
-	else if (minitype > 24) {
-		//we still support dx behaviors incase we ever wanna do custom bhv
-		//AL_PartsMinimalFlagOn_DX(tp, minitype - 25);
+		if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockMinimalFlagChanges) {
+			AL_PartsMinimalFlagOn(tp, minitype);
+		}
 	}
 
 	//we return after turning on the animal behavior because we don't intend to lock those
 	if (gConfigVal.KeepAnimalParts) return;
 
 	for (int part = 0; part < NB_PARTS_KIND; part++) {
-		if (AL_IsChild(tp))
-		{
-			if (AL_IsExistPartsChild(minitype, part))
-			{
-				if (njRandom() < ChaoGlobal.PartsSetProb)
-				{
-					AL_SetMinimalParts(tp, part, minitype);
+		if (AL_IsChild(tp)) {
+			if (AL_IsExistPartsChild(minitype, part)) {
+				if (njRandom() < ChaoGlobal.PartsSetProb) {
+					if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockMinimalPartChanges) {
+						AL_SetMinimalParts(tp, part, minitype);
+					}
 				}
 			}
-			else if (njRandom() < ChaoGlobal.PartsRemoveProb)
-			{
-				AL_RemoveMinimalParts(tp, part);
+			else if (njRandom() < ChaoGlobal.PartsRemoveProb) {
+				if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockMinimalPartChanges) {
+					AL_RemoveMinimalParts(tp, part);
+				}
 				//if (minitype == SA2BAnimal_SkeletonDog)
 				//	Chao_InitAnimalParts(v1, v17, -1);
-				if (part == PARTS_KIND_REG && minitype != SA2BAnimal_Bat)
-				{
+				if (part == PARTS_KIND_REG && minitype != SA2BAnimal_Bat) {
 					pParamGC->body.ObakeBody = 0;
 				}
 			}
 		}
-		else
-		{
-			if (AL_IsExistPartsAdult(minitype, part))
-			{
-				if (ChaoGlobal.PartsSetProb > njRandom())
-				{
-					//AL_PartsMinimalFlagOn(tp, minitype);
-					AL_SetMinimalParts(tp, part, minitype);
+		else {
+			if (AL_IsExistPartsAdult(minitype, part)) {
+				if (ChaoGlobal.PartsSetProb > njRandom()) {
+					if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockMinimalPartChanges) {
+						AL_SetMinimalParts(tp, part, minitype);
+					}
 				}
 			}
-			else if (ChaoGlobal.PartsRemoveProb > njRandom())
-			{
-				AL_RemoveMinimalParts(tp, part);
+			else if (ChaoGlobal.PartsRemoveProb > njRandom()) {
+				if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockMinimalPartChanges) {
+					AL_RemoveMinimalParts(tp, part);
+				}
 
-				if (part == 4 && minitype != 17)
-				{
+				if (part == PARTS_KIND_REG && minitype != SA2BAnimal_Bat) {
 					pParamGC->body.ObakeBody = 0;
 				}
 			}
 		}
 	}
 
-	int ear;
-	switch(AL_GetMinimalPart(tp, PARTS_KIND_HORN)){
-	case SA2BAnimal_Dragon:
-		ear = AL_GetMinimalPart(tp, PARTS_KIND_EAR);
+	if(!AL_ParameterIsGuest(tp) || !gConfigVal.GuestBlockMinimalPartChanges) {
+		int ear;
+		switch(AL_GetMinimalPart(tp, PARTS_KIND_HORN)){
+		case SA2BAnimal_Dragon:
+			ear = AL_GetMinimalPart(tp, PARTS_KIND_EAR);
 
-		if (ear != -1 && ear != SA2BAnimal_Dragon) {
-			AL_RemoveMinimalParts(tp, PARTS_KIND_EAR);	
-		}
-		break;
-	case SA2BAnimal_Sheep:
-		ear = AL_GetMinimalPart(tp, PARTS_KIND_EAR);
+			if (ear != -1 && ear != SA2BAnimal_Dragon) {
+				AL_RemoveMinimalParts(tp, PARTS_KIND_EAR);	
+			}
+			break;
+		case SA2BAnimal_Sheep:
+			ear = AL_GetMinimalPart(tp, PARTS_KIND_EAR);
 
-		if (ear != -1 && ear != SA2BAnimal_Sheep) {
-			AL_RemoveMinimalParts(tp, PARTS_KIND_EAR);	
+			if (ear != -1 && ear != SA2BAnimal_Sheep) {
+				AL_RemoveMinimalParts(tp, PARTS_KIND_EAR);	
+			}
+			break;
 		}
-		break;
 	}
 }
 
@@ -125,6 +122,7 @@ int ALBHV_Capture(task* tp) {
 		if (!AL_MoveHoldingObject(tp)) {
 			return BHV_RET_FINISH;
 		}
+
 		if (AL_IsMotionEnd(tp)) {
 			ALW_ENTRY_WORK* pEntryMinimal = ALW_IsCommunication(tp);
 
