@@ -1,3 +1,4 @@
+#include "al_parameter.h"
 #include "stdafx.h"
 #include <Chao.h>
 #include "al_emotion.h"
@@ -454,10 +455,17 @@ signed int __cdecl AL_CheckSpecial(task* a1)
 }
 signed int __cdecl AL_CheckObakeHeadAndAccessory(task* a1)
 {
-	if (AL_CheckAccessory(a1) || AL_CheckSpecial(a1) || AL_CheckObakeHead(a1))
+	if (!AL_ParameterIsGuest(a1) || !gConfigVal.GuestBlockWearableChanges) {
+		if (AL_CheckAccessory(a1) || AL_CheckObakeHead(a1)) {
+			return 1;
+		}
+	}
+	
+	if (AL_CheckSpecial(a1)) {
 		return 1;
-	else
-		return 0;
+	}
+
+	return 0;
 }
 
 static void ASM_FUNC sub_5691B0Hook() {
@@ -473,6 +481,10 @@ static void ASM_FUNC sub_5691B0Hook() {
 }
 
 static void AccessoryRemoveAll(task* tp) {
+	if (AL_ParameterIsGuest(tp) && gConfigVal.GuestBlockWearableChanges) {
+		return;
+	}
+
 	chaowk* work = GET_CHAOWK(tp);
 	auto pParam = GET_CWEPARAM(tp);
 	
@@ -593,7 +605,38 @@ static void ASM_FUNC AL_BehaviorResetParameter_t() {
 	ASM_RET(0);
 }
 
+static ASM_FUNC void AL_BehaviorControl(task* tp) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x53DC40 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static void AL_BehaviorControl_r(task* tp) {
+	AL_BehaviorControl(tp);
+
+	if(AL_ParameterIsGuest(tp) && gConfigVal.GuestBlockBodyChanges) {
+		GET_CHAOWK(tp)->Shape.Flag &= ~2;
+	}
+}
+
+static void ASM_FUNC AL_BehaviorControl_t() {
+	ASM_PUSH(eax); // obj
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_BehaviorControl_r);
+
+	ASM_ESP_ADD( 1 ); // obj<eax> is also used for return value
+	ASM_RET(0);
+}
+
 void AL_Behavior_Init() {
+	WriteCall((void*)0x54FE49, (void*)AL_BehaviorControl_t);
+
 	// writecall onto existing instructions on the bottom of behaviorresetparameter
 	WriteCall((void*)0x0053D881, (void*)AL_BehaviorResetParameter_t);
 	WriteData<0xB-0x6>((uint8_t*)0x0053D886, (uint8_t)0x90);

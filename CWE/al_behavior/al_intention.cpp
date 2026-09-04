@@ -218,8 +218,10 @@ void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 	AL_CalcIntentionScore_MayuReact(a1, a2);
 	AL_CalcIntentionScore_Chat(a1, a2);
 	AL_CalcIntentionScore_Tree(a1, a2);
-	AL_CalcIntentionScore_Mayu(a1, a2);
 
+	if (!AL_ParameterIsGuest(a1) || !gConfigVal.GuestBlockLifeChanges) {
+		AL_CalcIntentionScore_Mayu(a1, a2);
+	}
 }
 
 static void ASM_FUNC AL_CalcIntentionScore_Hook() {
@@ -293,9 +295,18 @@ static ASM_FUNC void AL_DecideIntention(task *tp) {
 
 static void AL_DecideIntention_r(task* tp) {
 	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+	const bool isGuest = AL_ParameterIsGuest(tp);
 
-	if (AL_ParameterIsGuest(tp) && gConfigVal.GuestBlockBreeding) {
-		AL_EmotionSetValue(tp, EM_ST_BREED, 0);
+	if (isGuest) {
+		if (gConfigVal.GuestBlockLifeChanges) {
+			const auto life = GET_CHAOPARAM(tp)->life;
+			GET_CHAOPARAM(tp)->life = NJM_MAX(1, life);
+		}
+
+		if(gConfigVal.GuestBlockBreeding) {
+			// this is restored on saving
+			AL_EmotionSetValue(tp, EM_ST_BREED, 0);
+		}
 	}
 
 	AL_DecideIntention(tp);

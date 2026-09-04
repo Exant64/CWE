@@ -556,13 +556,24 @@ extern "C"
 		gConfigVal.GuestChao = config->getBool("Guest", "Enabled", true);
 		gConfigVal.GuestSave = config->getBool("Guest", "Save", false);
 		gConfigVal.GuestVisitCounter = config->getInt("Guest", "VisitCounter", 3);
-		gConfigVal.GuestMin = config->getInt("Guest", "Min", 1);
+		gConfigVal.GuestMin = config->getInt("Guest", "Min", 4);
 		gConfigVal.GuestMax = config->getInt("Guest", "Max", 8);
-		gConfigVal.GuestRollType = config->getInt("Guest", "RollType", GUEST_ROLL_ROTATE);
+		gConfigVal.GuestRollType = config->getInt("Guest", "RollType", GUEST_ROLL_ROTATE_RANDOM);
 		gConfigVal.GuestRotateCount = config->getInt("Guest", "RotateCount", 4);
 		gConfigVal.GuestRandomizeEmotions = config->getBool("Guest", "RandomEmotions", true);
 		gConfigVal.GuestBlockStatChanges = config->getBool("Guest", "BlockStats", true);
 		gConfigVal.GuestBlockNameChange = config->getBool("Guest", "BlockName", true);
+		gConfigVal.GuestBlockBodyChanges = config->getBool("Guest", "BlockBody", true);
+		gConfigVal.GuestBlockVisualChanges = config->getBool("Guest", "BlockVisual", true);
+		gConfigVal.GuestBlockMinimalPartChanges = config->getBool("Guest", "BlockMiniPart", true);
+		gConfigVal.GuestBlockWearableChanges = config->getBool("Guest", "BlockWearable", true);
+		gConfigVal.GuestBlockSocialRelations = config->getBool("Guest", "BlockSocial", true);
+		gConfigVal.GuestBlockPlayerRelations = config->getBool("Guest", "BlockPlayer", true);
+		gConfigVal.GuestBlockBreeding = config->getBool("Guest", "BlockBreed", true);
+		gConfigVal.GuestBlockLifeChanges = config->getBool("Guest", "BlockLife", true);
+		gConfigVal.GuestBlockMinimalFlagChanges = config->getBool("Guest", "BlockMiniFlag", true);
+		gConfigVal.GuestBlockOmoBuild = config->getBool("Guest", "BlockOmoBuild", true);
+		gConfigVal.GuestIndicator = config->getBool("Guest", "Indicator", true);
 
 		// the other half of this code is in al_parameter.cpp AL_CalcParameter_r
 		// we kinda need a better place for this to be written

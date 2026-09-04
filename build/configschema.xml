@@ -387,6 +387,80 @@
         <HelpText>HD Chao CWE lens textures (only the regular color lenses!) </HelpText>
       </Property>
     </Group>
+    <Group name="Guest" display="12 - Guest Chao">
+      <Property name="Enabled" type="bool" defaultvalue="True" display="Enabled">
+        <HelpText>Enables the Guest Chao feature. Chao are read from .chao files stored in the resource/gd_PC/SAVEDATA/Guest folder.</HelpText>
+      </Property>
+      <Property name="Save" type="bool" defaultvalue="False" display="Save Guest Chao">
+        <HelpText>Enables saving Guest Chao, recommended to be used with the blocking options disabled to make them behave more like regular Chao (note that you can't enter them in the classroom, and they can't enter race or karate).</HelpText>
+      </Property>
+      <Property name="VisitCounter" type="int" defaultvalue="3" display="Visit Counter">
+        <HelpText>The number of garden visits before the guests get rerolled (behaves similarly to how fruit ages).</HelpText>
+      </Property>
+      <Property name="Min" type="int" defaultvalue="4" display="Minimum Chao" minvalue="1" maxvalue="40">
+        <HelpText>The minimum number of Guest Chao that get spawned. The number of Chao that spawn gets randomly picked between the specified minimum and maximum.</HelpText>
+      </Property>
+      <Property name="Max" type="int" defaultvalue="8" display="Maximum Chao" minvalue="1" maxvalue="40">
+        <HelpText>The maximum number of Guest Chao that get spawned. The number of Chao that spawn gets randomly picked between the specified minimum and maximum.</HelpText>
+      </Property>
+      <Property name="RollType" type="GuestRotate" defaultvalue="2" display="Roll Type">
+        <HelpText>
+          The method used to pick Guest Chao when they get rerolled. 
+          "Random" randomly selects Chao files from the folder. 
+          "Rotate" cycles through the Chao files in alphabetical order, replacing a set number of Chao with the next ones in the list. 
+          "Random Rotate" is a combination of the two methods, it functions like "Rotate" but randomizes the file order each time the game is started.
+        </HelpText>
+      </Property>
+      <Property name="RotateCount" type="int" defaultvalue="8" display="Number of Chao to rotate" minvalue="1" maxvalue="39">
+        <HelpText>When using "Rotate" or "Random Rotate", this option specifies the number of Chao that get replaced on a reroll.</HelpText>
+      </Property>
+      <Property name="RandomEmotions" type="bool" defaultvalue="True" display="Randomize Emotions">
+        <HelpText>Simulates a random amount of emotion changes when a Guest Chao gets loaded to eliminate consistency in their behavior.</HelpText>
+      </Property>
+      <Property name="BlockStats" type="bool" defaultvalue="True" display="Block Stat Changes">
+        <HelpText>Blocks upgrade controls and any changes to stats (grades, levels, etc).</HelpText>
+      </Property>
+      <Property name="BlockName" type="bool" defaultvalue="True" display="Block Name Changes">
+        <HelpText>Blocks entry to Name Menu and Fortune Teller room when holding a Guest Chao.</HelpText>
+      </Property>
+      <Property name="BlockBody" type="bool" defaultvalue="True" display="Block Body Changes">
+        <HelpText>Blocks changes to magnitude ("Evolution Progress"), alignment, and stat sliders.</HelpText>
+      </Property>
+      <Property name="BlockVisual" type="bool" defaultvalue="True" display="Block General Visual Changes">
+        <HelpText>Blocks changes to general appearance (negativity, eye color, shininess, anything that can be changed by items).</HelpText>
+      </Property>
+      <Property name="BlockMiniPart" type="bool" defaultvalue="True" display="Block Animal Part Changes">
+        <HelpText>Blocks changes to animal parts.</HelpText>
+      </Property>
+      <Property name="BlockWearable" type="bool" defaultvalue="True" display="Block Wearable Changes">
+        <HelpText>
+          Blocks changes to wearable items (medals, hats, and accessories). 
+          Customization entry is blocked with Guest Chao. 
+          Damaging Chao does not remove their hats and accessories, and they cannot equip them either.
+        </HelpText>
+      </Property>
+      <Property name="BlockSocial" type="bool" defaultvalue="True" display="Block Chao Relationship Changes">
+        <HelpText>Blocks changes to Chao social relationships.</HelpText>
+      </Property>
+      <Property name="BlockPlayer" type="bool" defaultvalue="True" display="Block Player Relationship Changes">
+        <HelpText>Blocks changes to happiness (general player likeness), and character specific relations.</HelpText>
+      </Property>
+      <Property name="BlockBreed" type="bool" defaultvalue="True" display="Block Breeding">
+        <HelpText>Blocks breeding.</HelpText>
+      </Property>
+      <Property name="BlockLife" type="bool" defaultvalue="True" display="Block Life Cycle Changes">
+        <HelpText>Prevents evolution, reincarnation, and blocks changes to lifespan and age.</HelpText>
+      </Property>
+      <Property name="BlockMiniFlag" type="bool" defaultvalue="True" display="Block Animal Behavior Changes">
+        <HelpText>Blocks changes to unlocked animal behaviors.</HelpText>
+      </Property>
+      <Property name="BlockOmoBuild" type="bool" defaultvalue="True" display="Block Omochao Building">
+        <HelpText>Blocks building Omochao.</HelpText>
+      </Property>
+      <Property name="Indicator" type="bool" defaultvalue="True" display="Guest Chao Indicator">
+        <HelpText>Shows a globe icon on the stat panel to indicate if the Chao is a guest or not.</HelpText>
+      </Property>
+    </Group>
     <Group name="Cheat" display="99 - Cheat and Debug">
       <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display="Black Market Global Price Percentage" minvalue="0" maxvalue="100">
         <HelpText>All modded item prices are multiplied with the specified percentage.</HelpText>
@@ -439,6 +513,11 @@
       <EnumMember name="1" display="Keyboard (without Numpad)"></EnumMember>
       <EnumMember name="2" display="Keyboard (with Numpad)"></EnumMember>
       <EnumMember name="3" display="Controller"></EnumMember>
+    </Enum>
+    <Enum name="GuestRotate">
+      <EnumMember name="0" display="Random"></EnumMember>
+      <EnumMember name="1" display="Rotate"></EnumMember>
+      <EnumMember name="2" display="Random Rotate"></EnumMember>
     </Enum>
   </Enums>
 </ConfigSchema>
