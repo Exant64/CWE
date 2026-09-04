@@ -19,7 +19,7 @@ static void EGG_Display_(task* a1) {
 	EGG_Display(a1);
 }
 
-task* dword_1946618[32];
+task* dword_1946618[64];
 FunctionPointer(void, free_, (void* lpMem), 0x07A80DD);
 FunctionPointer(void*, new_, (int size), 0x007A5DA1);
 void ChaoExpandPatch() {
@@ -35,7 +35,7 @@ void ChaoExpandPatch() {
 	}
 	*(unsigned int*)0x1A55790 = (unsigned int)v37;
 
-	WriteData((char*)0x0047E912, (char)32);
+	WriteData((char*)0x0047E912, (char)64);
 
 	WriteData((int*)0x485C81, ((int)dword_1946618) - 4);
 
@@ -163,6 +163,8 @@ const float vResN = 853.0;
 
 void CWE_Fixes() {
 	ChaoExpandPatch();
+	*(int*)0x8AB838 = 64;
+
 	ExpandTextureBuffer();
 
 	//fruit growth getting divided by 2 fix
