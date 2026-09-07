@@ -6,6 +6,129 @@
 #define CHAO_SLOT(a) (CHAO_BASE + a * 0x800)
 int Regs[16];
 
+void ChaoTranspiledMainCode(CHAO_SAVE_INFO& info) {
+	//reset upgradecounter on egg chao, maybe move to reincarnation later
+	if (info.param.type == 1) {
+		GET_CWEPARAM(&info)->UpgradeCounter = 0;
+	}
+
+	//x rank
+	//todo clean this up
+	uint8_t* pBytes = (uint8_t*)&info;
+	if (*(uint8_t*)(pBytes + 0x59e) == 0)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 1)
+	{
+		*(uint8_t*)(pBytes + 0x28) = 7;
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 2)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		*(uint8_t*)(pBytes + 0x29) = 7;
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 3)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		*(uint8_t*)(pBytes + 0x2a) = 6;
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 4)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		*(uint8_t*)(pBytes + 0x2b) = 7;
+	}
+
+	//x rank reincarnation stat cap
+	if (info.param.type == 1) //if chao is egg
+	{
+		GET_CWEPARAM(&info)->XGradeValue = 0;
+
+		int cap;
+		switch (info.param.nbSucceed) {
+		case 0:
+			cap = 0;
+			break;
+		case 1:
+			cap = 297;
+			break;
+		case 2:
+			cap = 323;
+			break;
+		default: // >= 3
+			cap = 326;
+			break;
+		}
+
+		if (cap > 0) {
+			for (int j = 0; j < 4; j++) {
+				if (info.param.Skill[j] > cap)
+					info.param.Skill[j] = cap;
+			}
+		}
+	}
+}
+
 void ChaoWorldExtendedRequired()
 {
 	CHAO_SAVE_INFO* ChaoSlots = GardenInfoList[0].chao;
@@ -14,121 +137,7 @@ void ChaoWorldExtendedRequired()
 	if (ssStageNumber == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
 		for (int i = 0; i < 24; i++) {
 			//REMOVED: shiny fruit value for FCE hack (FCE is not very common anymore)
-
-			//x rank
-			//todo clean this up
-			if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 0)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 1)
-			{
-				*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 7;
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 2)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 7;
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 3)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 6;
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 4)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 7;
-			}
-
-			//x rank reincarnation stat cap
-			if (ChaoSlots[i].param.type == 1) //if chao is egg
-			{
-				GET_CWEPARAM(&ChaoSlots[i])->XGradeValue = 0;
-
-				int cap;
-				switch (ChaoSlots[i].param.nbSucceed) {
-				case 0:
-					cap = 0;
-					break;
-				case 1:
-					cap = 297;
-					break;
-				case 2:
-					cap = 323;
-					break;
-				default: // >= 3
-					cap = 326;
-					break;
-				}
-
-				if (cap > 0) {
-					for (int j = 0; j < 4; j++) {
-						if (ChaoSlots[i].param.Skill[j] > cap)
-							ChaoSlots[i].param.Skill[j] = cap;
-					}
-				}
-			}
+			ChaoTranspiledMainCode(ChaoSlots[i]);
 		}
 	}
 

@@ -185,6 +185,14 @@ extern "C"
 		return retval;
 	}
 
+	void OnChaoData(CHAO_PARAM_GC& info) {
+		AL_ChaoAccessoryConversion(GET_CWEPARAM(&info));
+
+		for (auto& c : CodeManager::Instance()) {
+			c->OnChaoData(info);
+		}
+	}
+
 	void __cdecl ALW_Control_Main_Hook(task* a1);
 	Trampoline ALW_Control_t(0x00530850, 0x00530859, (void*)ALW_Control_Main_Hook);
 	void __cdecl ALW_Control_Main_Hook(task* a1)
@@ -207,49 +215,10 @@ extern "C"
 		original(a1);
 
 		for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
-			AL_ChaoAccessoryConversion(GET_CWEPARAM(&ChaoInfo::Instance()[i]));
+			OnChaoData(ChaoInfo::Instance()[i]);
 		}
 
 		for (auto& c : CodeManager::Instance()) {
-			for (size_t chaoIndex = 0; chaoIndex < ChaoInfo::Instance().Count(); chaoIndex++) {
-				c->OnChaoData(ChaoInfo::Instance()[chaoIndex]);
-
-				CHAO_PARAM_CWE* pParam = GET_CWEPARAM(&ChaoInfo::Instance()[chaoIndex]);
-
-				if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
-					for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
-						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
-
-						char id[METADATA_ID_SIZE];
-						bool foundID = ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, pParam->Accessories_[i] - 1, id);
-						if (!foundID) {
-							// TODO: error
-							continue;
-						}
-
-						// hacky way to patch the old pink hoodie and force it to blue hoodie, then recolor it to resemble the pink one
-						if (!strcmp(id, "accdummhoodie")) {
-							strcpy_s(pParam->Accessories[i].ID, "acc96a6abf7");
-
-							pParam->Accessories[i].ColorFlags |= BIT_0;
-
-							// pink color
-							NJS_COLOR* colorSlot = (NJS_COLOR*)&pParam->Accessories[i].ColorSlots[0];
-							colorSlot->argb.a = 255;
-							colorSlot->argb.r = 255;
-							colorSlot->argb.g = 121;
-							colorSlot->argb.b = 213;
-
-							continue;
-						}
-
-						strcpy_s(pParam->Accessories[i].ID, id);
-					}
-
-					pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
-				}
-			}
-
 			c->OnALControl(a1);
 		}
 
@@ -309,10 +278,6 @@ extern "C"
 			ITEM_SAVE_INFO* objData = AL_GetCurrGardenInfo()->fruit;
 			if (objData[i].kind >= 29 && objData[i].kind <= 32)
 				objData[i].nbVisit = 0;
-
-			//reset upgradecounter on egg chao, maybe move to reincarnation later
-			if (ChaoInfo::Instance()[i].type == 1)
-				GET_CWEPARAM(&ChaoInfo::Instance()[i])->UpgradeCounter = 0;
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {

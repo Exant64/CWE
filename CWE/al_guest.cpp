@@ -1,8 +1,9 @@
+#include "stdafx.h"
 #include "al_emotion.h"
 #include "al_parameter.h"
 #include "alg_kinder_ortho.h"
-#include "stdafx.h"
 #include "al_garden_info.h"
+#include "al_behavior/albhv.h"
 #include "ChaoMain.h"
 #include <cstring>
 #include <filesystem>
@@ -13,6 +14,7 @@
 #include <minwindef.h>
 #include <windows.h>
 #include <FunctionHook.h>
+#include <code_system/cwe_transpile.h>
 
 #ifdef IMGUIDEBUG
 #include "imgui/imgui.h"
@@ -172,6 +174,7 @@ static void SaveGuestChao(size_t infoIndex) {
 
     assert(info.m_occupied);
 
+    info.m_occupied = false;
     pParam->place = info.m_backup.place;
 
     if (gConfigVal.GuestBlockLifeChanges) {
@@ -297,6 +300,8 @@ static void LoadGuestChao(size_t infoIndex, size_t pathIndex) {
 
 void Guest_SaveAllChao() {
     for(size_t i = 0; i < GuestMax; ++i) {
+        if (!GuestInfoList[i].m_occupied) continue;
+
         SaveGuestChao(i);
     }
 }
@@ -351,8 +356,15 @@ static void RerollGuestChao() {
     RotationWindowIndex += RotateCount;
 }
 
+extern "C" void OnChaoData(CHAO_PARAM_GC& info);
+
 static void GuestManagerExecutor(task* tp) {
     taskwk* wk = tp->twp;
+
+    for (size_t i = 0; i < GuestMax; ++i) {
+        ChaoTranspiledMainCode(GuestInfoList[i].m_saveInfo);
+        OnChaoData(GuestInfoList[i].m_saveInfo.param);
+    }
 
     switch(wk->mode) {
         case 0: {
@@ -396,6 +408,10 @@ static void GuestManagerExecutor(task* tp) {
                     pParam->emotion.Timer = timer;
                     pParam->emotion.IllTimer = illTimer;
                     pParam->knowledge.KwTimer = kwTimer;
+                }
+
+                if (AL_EmotionGetValue(pChaoTask, EM_ST_SLEEP_DEPTH)) {
+                    AL_SetBehavior(pChaoTask, ALBHV_Sleep);
                 }
 
                 info.m_hasSpawnedEverYet = true;
@@ -683,6 +699,8 @@ void CWE_GuestInit() {
     GuestMin = NJM_MIN(GuestMin, GUEST_CHAO_MAX);
     GuestMax = NJM_MIN(GuestMax, GUEST_CHAO_MAX);
     RotateCount = NJM_MIN(RotateCount, GUEST_CHAO_MAX);
+
+    GuestMin = NJM_MIN(GuestMin, GuestMax);
 
     if(gConfigVal.GuestRollType == GUEST_ROLL_ROTATE_RANDOM) {
         ShuffleIndices();

@@ -282,22 +282,26 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 
 	if (pGene->MotherID.id[0] != 0) {
 		auto motherParam = AL_KW_FindChaoBasedOnId(pGene->MotherID);
-		auto dataID = GET_CWEPARAM(motherParam);
+		if (motherParam) {
+			auto dataID = GET_CWEPARAM(motherParam);
 
-		memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		AL_ShapeElementFromParam(&pParamCwe->motherData, motherParam);
+			memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
+			memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+			memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+			AL_ShapeElementFromParam(&pParamCwe->motherData, motherParam);
+		}
 	}
 
 	if (pGene->FatherID.id[0] != 0) {
 		auto fatherParam = AL_KW_FindChaoBasedOnId(pGene->FatherID);
-		auto dataID = GET_CWEPARAM(fatherParam);
+		if (fatherParam) {
+			auto dataID = GET_CWEPARAM(fatherParam);
 
-		memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
+			memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
+			memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+			memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+			AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
+		}
 	}
 }
 
