@@ -44,6 +44,7 @@ int ALBHV_Capture(task* tp);
 
 #define ALBHV_Move_p 0x562D20
 
+#define ALBHV_Sleep ((BHV_FUNC)uintptr_t(0x54EF10))
 #define ALBHV_Move ((BHV_FUNC)uintptr_t(ALBHV_Move_p))
 #define ALBHV_Think ((BHV_FUNC)uintptr_t(0x00565BE0))
 #define ALBHV_GoToAim ((BHV_FUNC)uintptr_t(ALBHV_GoToAim_p))
