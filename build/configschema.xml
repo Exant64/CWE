@@ -391,7 +391,7 @@
       </Property>
     </Group>
     <Group name="Cheat" display="99 - Cheat and Debug">
-      <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display="Black Market Global Price Percentage" minvalue="0" maxvalue="100">
+      <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display="Black Market Global Price Percentage" minvalue="0">
         <HelpText>All modded item prices are multiplied with the specified percentage.</HelpText>
       </Property>
       <Property name="ToyReset" type="bool" defaultvalue="False" display="Toy Reset Button">
