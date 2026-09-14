@@ -222,6 +222,17 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 
 	AL_GeneAnalyzeCommon(pGene, pParam);
 
+	// for being able to inherit shiny twotone-ness properly
+	if (!pGene->Multi[0] && pGene->Multi[1]) {
+		pParam->body.MultiNum = pGene->Multi[1];
+	}
+	else if (pGene->Multi[0] && !pGene->Multi[1]) {
+		pParam->body.MultiNum = pGene->Multi[0];
+	}
+	else if (pGene->Multi[0] && pGene->Multi[1]) {
+		pParam->body.MultiNum = pGene->Multi[size_t(njRandom() * 1.9999f)];
+	}
+
 	if(gConfigVal.ColorMixing) {
 		AL_GeneColorMixing(pGene, pParam);
 	}
