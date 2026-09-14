@@ -146,19 +146,6 @@ void ChaoWorldExtendedRequired()
 		}
 	}
 
-	//no clue
-	if (*(uint32_t*)0x01A529EC == 0x1860)
-	{
-		if (*(uint8_t*)0x01934be0 == 16)
-		{
-			*(uint8_t*)0x01934be0 = 14;
-		}
-		if (*(uint8_t*)0x01934be0 == 17)
-		{
-			*(uint8_t*)0x01934be0 = 14;
-		}
-	}
-
 	//transporter colors
 	if (gConfigVal.TransporterColor) {
 		if (*(uint32_t*)0x0134062c == 1)

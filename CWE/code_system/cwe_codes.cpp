@@ -23,6 +23,7 @@
 #include "codes/include/code_racefair.h"
 #include "codes/include/code_disablebreed.h"
 #include "codes/include/code_canthatecharacters.h"
+#include "codes/include/code_quickexit.h"
 
 #include "codes/include/bonus/code_mergeherodark.h"
 
@@ -133,6 +134,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<CantHateCharacters>("EasyChaocan'thateCharacters", false);
 	CodeManager::Instance().Add<MergeHeroDark>("BonusMergeHeroandDarkGardenChaoSlots", false);
 
+	CodeManager::Instance().Add<QuickExit>("Misc", "QuickExit", true);
 	CodeManager::Instance().Add<DCCocoon>("DCCocoon", false);
 	CodeManager::Instance().Add<DisableLevelupJingle>("DisableLevelupJingle", false);
 	CodeManager::Instance().Add<HDToyModels>("HDToyModels", false);

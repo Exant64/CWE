@@ -304,6 +304,7 @@ enum /* ssGameMode */
     MD_GAME_FADEOUT_CLEAR = 0x08,   /* screen fading out after clearing stage       */
     MD_GAME_FADEOUT_MISS,
     MD_GAME_FADEOUT_RESTART = 0x0D, /* screen fading out for restart                */
+    MD_GAME_FADEOUT_EXIT = 0x0E,    /* exit to stage select  (added by exant)       */
     MD_GAME_MAIN  = 0x10,           /* game playing as normal                       */
     MD_GAME_PAUSE = 0x11,           /* game paused                                  */
     NUM_GAMEMD = 0x32,
