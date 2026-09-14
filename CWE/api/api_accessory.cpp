@@ -293,6 +293,10 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		pAccessoryData->pDescription
 	);
 
+	if (RenderFix_IsEnabled()) {
+		CnkApplyScaling(pAccessoryData->pObject);
+	}
+	
 	ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY)->Add(pAccessoryData->pObject, pTexlist);
 
 	const size_t id = ModAPI_AccessoryDataList.size();

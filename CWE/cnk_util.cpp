@@ -1,10 +1,79 @@
 #include "stdafx.h"
+#include <cassert>
 #include <unordered_set>
 #include <optional>
 #include <unordered_map>
 #include <deque>
 #include <cnk_util.h>
 #include <algorithm>
+#include <ninja_functions.h>
+
+static bool CnkApplyScalingFlag = false;
+
+static void CnkMdlApplyScaling(NJS_CNK_MODEL* pModel) {
+	if(!pModel->vlist) return;
+
+	Sint32* vlist = pModel->vlist;
+
+	while (CNK_GET_OFFTYPE(vlist) != 0xFF) {
+		const auto vertexCount = Uint32(vlist[1]) >> 16;
+		const auto size = ((uint16_t*)vlist)[1];
+
+		// -1 because of header2 (vlist[1])
+		const auto chunkIntCount = (size - 1) / vertexCount;
+
+		assert (!((size - 1) % vertexCount));
+
+		for (size_t i = 0; i < vertexCount; ++i) {
+			NJS_POINT3* pPos = reinterpret_cast<NJS_POINT3*>(&vlist[2 + i * chunkIntCount]);
+
+			// I don't know if njCalcPoint will be able to handle src == dst properly so I copy it
+			NJS_POINT3 src = *pPos;
+
+			sub_426CC0(_nj_current_matrix_ptr_, pPos, &src, FALSE);
+		}
+
+		/** Next data chunk **/
+		vlist += size + 1;
+	}
+}
+
+static void CnkApplyScalingSub(NJS_CNK_OBJECT* pObject) {
+	njPushMatrixEx();
+
+	if(!(pObject->evalflags & NJD_EVAL_UNIT_SCL)) {
+		njScale(NULL, pObject->scl[0], pObject->scl[1], pObject->scl[2]);
+
+		pObject->evalflags |= NJD_EVAL_UNIT_SCL;
+		pObject->scl[0] = 1.f;
+		pObject->scl[1] = 1.f;
+		pObject->scl[2] = 1.f;
+
+		CnkApplyScalingFlag = true;
+	}
+
+	if (CnkApplyScalingFlag && pObject->model) {
+		CnkMdlApplyScaling(pObject->model);
+	}
+
+	if(pObject->child) {
+		CnkApplyScalingSub(pObject->child);
+	}
+
+	njPopMatrixEx();
+
+	if(pObject->sibling) {
+		CnkApplyScalingSub(pObject->sibling);
+	}
+}
+
+void CnkApplyScaling(NJS_CNK_OBJECT* pObject) {
+	CnkApplyScalingFlag = false;
+
+	njPushUnitMatrix();
+	CnkApplyScalingSub(pObject);
+	njPopMatrixEx();
+}
 
 // functions borrowed from Shaddatic's SAMT, thanks shad
 size_t mtCnkVListSize(const Sint32* pVList) {
