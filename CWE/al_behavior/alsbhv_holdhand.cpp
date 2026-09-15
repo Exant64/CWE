@@ -1,5 +1,4 @@
 #include "ChaoMain.h"
-#include "al_behavior/albhv_navigation.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
@@ -10,6 +9,10 @@
 #include <random>
 #include "albhv.h"
 #include <al_landmark.h>
+
+#ifdef PATHFINDING
+#include "al_behavior/albhv_navigation.h"
+#endif
 
 int ALBHV_HoldHands_Left(task* a1)
 {
@@ -144,9 +147,11 @@ int ALBHV_InitHoldHands(task* a1)
 		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_GoToLockOn_p>);
 	}
 	else {
+#ifdef PATHFINDING
 		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
 		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_CheckNavigate>);
 		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_Navigation>);
+#endif
 	}
 
 	AL_SetNextBehavior(a1, ALBHV_HoldHands_Left);

@@ -113,8 +113,10 @@
 #include "cwe_c_colli.h"
 #include "alo_coffin.h"
 
+#ifdef PATHFINDING
 #include "navigation/navsys.h"
 #include "navigation/navsys_log.h"
+#endif
 
 const char* PathToModFolder = "";
 
@@ -245,7 +247,10 @@ extern "C"
 				GrayscalifyCurrentLandtable();
 			}
 
+#ifdef PATHFINDING
 			NavSysCreate();
+#endif
+
 			AL_CreateDayNightCycle();
 		}
 
@@ -523,9 +528,15 @@ extern "C"
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
 
-		gConfigVal.PathfindingEnabled = config->getBool("Pathfinding", "Pathfinding", true);
-		gConfigVal.PathfindingVanilla = config->getBool("Pathfinding", "Vanilla", true);
-		gConfigVal.PathfindingLog = config->getBool("Pathfinding", "Log", true);
+#ifdef PATHFINDING
+		gConfigVal.PathfindingEnabled = config->getBool("Pathfinding", "Pathfinding", false);
+		gConfigVal.PathfindingVanilla = config->getBool("Pathfinding", "Vanilla", false);
+		gConfigVal.PathfindingLog = config->getBool("Pathfinding", "Log", false);
+#else
+		gConfigVal.PathfindingEnabled = false;
+		gConfigVal.PathfindingVanilla = true;
+		gConfigVal.PathfindingLog = false;
+#endif
 
 		// Hard
 		gConfigVal.ChaoAttention = config->getBool("Hard", "HardChaoAttention", false);
@@ -647,7 +658,9 @@ extern "C"
 			WriteData<7>((char*)0x00551630, (char)0x90);
 		}
 
+#ifdef PATHFINDING
 		NavSysInit(path);
+#endif
 
 		HDTexture_Init(path, config);
 

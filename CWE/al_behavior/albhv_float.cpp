@@ -8,10 +8,10 @@
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"
 
-#include "albhv_navigation.h"
-
-#include "albhv_navigation.h"
 #include "albhv_swim.h"
+#ifdef PATHFINDING
+#include "albhv_navigation.h"
+#endif
 
 signed int ALBHV_RideFloat(task* a1)
 {
@@ -124,13 +124,15 @@ signed int __cdecl ALBHV_GoToFloat(task* tp)
 	AL_SetBehavior(tp, ALBHV_PostureChangeStand);
 	AL_SetNextBehavior(tp, ALBHV_Notice);
 
-	if(!gConfigVal.PathfindingVanilla) {
+	if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 	}
 	else {
+#ifdef PATHFINDING
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 	}
 
 	AL_SetNextBehavior(tp, ALBHV_PickUpLockOn);

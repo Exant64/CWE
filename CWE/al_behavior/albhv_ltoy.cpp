@@ -6,9 +6,12 @@
 #include "../al_world.h"
 #include "al_intention.h"
 #include "albhv.h"
-#include "albhv_navigation.h"
 #include <al_landmark.h>
 #include <ChaoMain.h>
+
+#ifdef PATHFINDING
+#include "albhv_navigation.h"
+#endif
 
 DataPointer(task*, pRadicaseTask, 0x01AED2E0);
 DataPointer(task*, pTVTask, 0x1AED288);
@@ -54,13 +57,15 @@ int ALBHV_GoToTV(task* tp) {
         AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
         AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
-		if(!gConfigVal.PathfindingVanilla) {
+		if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
         	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 		}
 		else {
+#ifdef PATHFINDING
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 		}
 
         AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Touch_p>);
@@ -85,13 +90,15 @@ int ALBHV_GoToRadicase(task* tp) {
 		AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
-		if(!gConfigVal.PathfindingVanilla) {
+		if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
         	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 		}
 		else {
+#ifdef PATHFINDING
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 		}
 
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Touch_p>);
@@ -116,13 +123,15 @@ int ALBHV_GoToHorse(task* tp) {
         AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
         AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
-        if(!gConfigVal.PathfindingVanilla) {
+        if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
         	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
 		}
 		else {
+#ifdef PATHFINDING
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
 			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 		}
 
         AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToAim_p>);

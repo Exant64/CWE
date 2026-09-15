@@ -4,7 +4,6 @@
 #include <al_garden_info.h>
 #include <al_behavior/al_intention.h>
 #include <al_behavior/albhv.h>
-#include <al_behavior/albhv_navigation.h>
 #include <alo_accessory.h>
 #include <ChaoMain.h>
 #include <AL_ModAPI.h>
@@ -14,6 +13,10 @@
 #include <memory.h>
 #include <al_hold.h>
 #include <asmutil.h>
+
+#ifdef PATHFINDING
+#include <al_behavior/albhv_navigation.h>
+#endif
 
 extern void ALBHV_Life_Init();
 
