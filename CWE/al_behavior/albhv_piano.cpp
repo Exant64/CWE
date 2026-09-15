@@ -10,7 +10,10 @@
 #include <al_field.h>
 #include <util.h>
 #include <ChaoMain.h>
+
+#ifdef PATHFINDING
 #include <al_behavior/albhv_navigation.h>
+#endif
 
 static int GetPianoType (task* pToy) {
 	return pToy->twp->btimer;
@@ -135,13 +138,15 @@ int ALBHV_GoToPiano(task* tp) {
 	AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
 	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>); // Notice
 
-	if(!gConfigVal.PathfindingVanilla) {
+	if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
 	}
 	else {
+#ifdef PATHFINDING
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
 		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 	}
 
 	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);

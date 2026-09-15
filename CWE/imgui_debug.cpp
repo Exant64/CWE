@@ -27,9 +27,12 @@
 #include <commdlg.h>
 #include <cstddef>
 #include <cstdint>
+
+#ifdef PATHFINDING
 #include "navigation/navsys.h"
 #include "navigation/navsys_generator.h"
 #include "navigation/navsys_internal.h"
+#endif
 
 static bool ShowParamMenu = false;
 static int ParamIndex = 0;
@@ -1054,6 +1057,7 @@ static void SoundsMenu() {
     }
 }
 
+#ifdef PATHFINDING
 static void NavSysMenu() {
     if(ShowNavSysMenu && ImGui::Begin("NavSys", &ShowNavSysMenu)) {
         if(ImGui::BeginTabBar("NavSysTabs")) {
@@ -1074,6 +1078,7 @@ static void NavSysMenu() {
         ImGui::End();
     }
 }
+#endif
 
 static void GardenInfoMenu() {
     if(ShowGardenInfo && ImGui::Begin("Garden Info", &ShowGardenInfo)) {
@@ -1136,7 +1141,9 @@ static void ImGuiMenu() {
         MarketMenu();
         SoundsMenu();
         MoreFacesMenu();
+#ifdef PATHFINDING
         NavSysMenu();
+#endif
 
         ImGui::EndMainMenuBar();
     }
