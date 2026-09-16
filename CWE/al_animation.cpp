@@ -463,16 +463,6 @@ void Chao_ExtraAnimations(task* tp)
 			GET_CHAOWK(tp)->MotionCtrl.multi_spd = 0.75f;
 		}
 	}
-
-	//Anger Face
-	if (AL_EmotionGetValue(tp, EM_MD_ANGER) > 80 && AL_EmotionGetValue(tp, EM_PER_AGRESSIVE) > 30)
-	{
-		GET_CHAOWK(tp)->Face.EyeDefaultNum = ChaoEyes_Mean;
-	}
-	else
-	{
-		GET_CHAOWK(tp)->Face.EyeDefaultNum = GET_CHAOWK(tp)->pParamGC->body.DefaultEyeNum;
-	}
 }
 
 void Chao_ExtraSounds(task* tp)

@@ -1,11 +1,13 @@
 #include "stdafx.h"
+#include "ChaoMain.h"
+#include "chaoenum.h"
 
 #include "Chao.h"
 #include "asmutil.h"
 
-DataArray(__int16, word_8A7A70, 0x8A7A70, 3);
-DataArray(__int16, word_8A7AC0, 0x8A7AC0, 3);
-DataPointer(__int8, byte_0053A5BC, 0x0053A5BC);
+DataArray(__int16, AL_EyeTexIdList, 0x8A7A70, 3);
+DataArray(__int16, EyeColorTexIdList, 0x8A7AC0, 3);
+DataPointer(Uint8, byte_0053A5BC, 0x0053A5BC);
 
 ASM_FUNC void AL_MatChangeModelTexture(NJS_CNK_MODEL* pModel, uint16_t TexID) {
     // save regs
@@ -25,184 +27,182 @@ ASM_FUNC void AL_MatChangeModelTexture(NJS_CNK_MODEL* pModel, uint16_t TexID) {
     ASM_RET( 0 );
 }
 
+void AL_MatChangeObjectTexture(AL_OBJECT* pObject, Uint16 TexId) {
+    if (pObject) {
+        if (pObject->pModel) {
+            AL_MatChangeModelTexture((NJS_CNK_MODEL*)pObject->pModel, TexId);
+        }
+    }
+}
 
-// todo: refactor with decomp
-void __cdecl AL_FaceSetEyeCWE(task* a3, int a2, int a1)
-{
-	AL_FACE_CTRL* v3; // esi
-	chaowk* v4; // ecx
-	int v5; // eax
-	__int16 v6; // di
-	AL_OBJECT* v7; // eax
-	NJS_CNK_MODEL* v8; // eax
-	AL_OBJECT* v9; // esi
-	NJS_CNK_MODEL* v10; // ecx
+Sint16 AL_FaceGetEyeCurrNum(task* tp) {
+    AL_FACE_CTRL* pFace = &GET_CHAOWK(tp)->Face;
+    return pFace->EyeCurrNum;
+}
 
-	v3 = &GET_CHAOWK(a3)->Face;
-	v3->EyeTimer = a1;
-	v3->EyeCurrNum = a2;
-	if (!v3->EyeCurrNum)
-	{
-		if (v3->EyeDefaultNum == 10)
-		{
-			v3->EyeLidExpressionAimCloseAng = 0x3555;
-			v3->EyeLidExpressionAimSlopeAng = 0xE38;
-			goto LABEL_10;
+static void AL_FaceSetEyeCWE(task* tp, int EyeNum, int timer) {
+	AL_FACE_CTRL* pFace = &GET_CHAOWK(tp)->Face;
+    Uint16 texid;
+
+	pFace->EyeCurrNum = EyeNum;
+	pFace->EyeTimer = timer;
+
+	switch (AL_FaceGetEyeCurrNum(tp)) {
+        default:
+            pFace->EyeLidExpressionAimCloseAng = 0;
+            pFace->EyeLidExpressionAimSlopeAng = 0;
+            break;
+        case AL_EYE_NUM_TRON:
+            pFace->EyeLidExpressionAimCloseAng = NJM_DEG_ANG(90);
+            pFace->EyeLidExpressionAimSlopeAng = 0;
+            break;
+        case AL_EYE_NUM_NORMAL: {
+			auto defaultNum = pFace->EyeDefaultNum;
+			if(gConfigVal.MoreAnimation) {
+				if(AL_EmotionGetValue(tp, EM_MD_ANGER) > 80 && AL_EmotionGetValue(tp, EM_PER_AGRESSIVE) > 30) {
+					defaultNum = AL_EYE_NUM_ANGER;
+				}
+			}
+
+            if (pFace->EyeDefaultNum == AL_EYE_NUM_ANGER) {
+                pFace->EyeLidExpressionAimCloseAng = NJM_DEG_ANG(75);
+                pFace->EyeLidExpressionAimSlopeAng = NJM_DEG_ANG(20);
+            } else {
+                pFace->EyeLidExpressionAimCloseAng = 0;
+                pFace->EyeLidExpressionAimSlopeAng = 0;
+            }
+		} break;
+        case AL_EYE_NUM_ANGER:
+            pFace->EyeLidExpressionAimCloseAng = NJM_DEG_ANG(75);
+            pFace->EyeLidExpressionAimSlopeAng = NJM_DEG_ANG(20);
+            break;
+    }
+
+    switch (AL_FaceGetEyeCurrNum(tp)) {
+        case AL_EYE_NUM_NORMAL:
+        case AL_EYE_NUM_TRON:
+        case AL_EYE_NUM_ANGER:
+            texid = EyeColorTexIdList[pFace->EyeColorNum];
+            break;
+        default:
+            texid = AL_EyeTexIdList[EyeNum];
+            break;
+    }
+
+	// check for patch by ChaosEyes code
+	if (byte_0053A5BC != 0xFF) {
+		switch (GET_CHAOPARAM(tp)->type) {
+			case TYPE_N_CHAOS:
+			case TYPE_H_CHAOS:
+			case TYPE_D_CHAOS:
+				if (AL_FaceGetEyeCurrNum(tp) == AL_EYE_NUM_SUYASUYA) {
+					texid = AL_EyeTexIdList[EyeNum];
+				}
+				else {
+					texid = EyeColorTexIdList[pFace->EyeColorNum];
+				}
+
+				break;
 		}
-		goto LABEL_8;
 	}
-	if (GET_CHAOWK(a3)->Face.EyeCurrNum == 9)
-	{
-		v3->EyeLidExpressionAimCloseAng = 0x4000;
-	LABEL_9:
-		v3->EyeLidExpressionAimSlopeAng = 0;
-		goto LABEL_10;
-	}
-	if (GET_CHAOWK(a3)->Face.EyeCurrNum != 10)
-	{
-	LABEL_8:
-		v3->EyeLidExpressionAimCloseAng = 0;
-		goto LABEL_9;
-	}
-	v3->EyeLidExpressionAimCloseAng = 0x3555;
-	v3->EyeLidExpressionAimSlopeAng = 0xE38;
-LABEL_10:
-	v4 = GET_CHAOWK(a3);
-	v5 = v4->Face.EyeCurrNum;
-	if (v4->Face.EyeCurrNum && (v5 <= 8 || v5 > 10))
-	{
-		v6 = word_8A7A70[a2];
-	}
-	else
-	{
-		v6 = word_8A7AC0[v3->EyeColorNum];
-	}
-	if ((unsigned __int8)(v4->pParamGC->type - byte_0053A5BC) <= 2u)
-	{
-		if (v5 == 7)
-		{
-			v6 = word_8A7A70[a2];
-		}
-		else
-		{
-			v6 = word_8A7AC0[v3->EyeColorNum];
-		}
-	}
+
+	// TODO: refactor once we rewrite EyeColor for IDs
 	//alignment 
-	switch (GET_CWEPARAM(a3)->EyeAlignment)
-	{
-	case 1:
-		switch (v6)
-		{
-		case 8:
-		case 9:
-			v6 = 0;
+	switch (GET_CWEPARAM(tp)->EyeAlignment) {
+		case 1:
+			switch (texid) {
+				case 8:
+				case 9:
+					texid = 0;
+					break;
+				case 11:
+				case 12:
+					texid = 10;
+					break;
+			}
 			break;
-		case 11:
-		case 12:
-			v6 = 10;
+
+		case 2:
+			switch (texid) {
+				case 0:
+				case 8:
+					texid = 9;
+					break;
+				case 10:
+				case 12:
+					texid = 11;
+					break;
+			}
 			break;
-		}
-		break;
-	case 2:
-		switch (v6)
-		{
-		case 0:
-		case 8:
-			v6 = 9;
+
+		case 3:
+			switch (texid) {
+				case 0:
+				case 9:
+					texid = 8;
+					break;
+				case 10:
+				case 11:
+					texid = 12;
+					break;
+			}
 			break;
-		case 10:
-		case 12:
-			v6 = 11;
-			break;
-		}
-		break;
-	case 3:
-		switch (v6)
-		{
-		case 0:
-		case 9:
-			v6 = 8;
-			break;
-		case 10:
-		case 11:
-			v6 = 12;
-			break;
-		}
-		break;
 	}
 
-	if (v4->pParamGC->body.FormNum != 2) 
-	{
+	if (GET_CHAOPARAM(tp)->body.FormNum != AL_FORM_OMOCHAO)  {
 		//colors
-		if (GET_CWEPARAM(a3)->EyeColor)
-		{
-			v3->Flag = 1;
-			switch (v6)
-			{
-			case 0:
-				v6 = 0;
-				break;
-			case 5:
-				v6 = 1;
-				break;
-			case 8:
-				v6 = 2;
-				break;
-			case 9:
-				v6 = 3;
-				break;
-			case 10:
-				v6 = 4;
-				break;
-			case 11:
-				v6 = 5;
-				break;
-			case 12:
-				v6 = 6;
-				break;
-			default:
-				v3->Flag = 0;
-				break;
+		if (GET_CWEPARAM(tp)->EyeColor) {
+			pFace->Flag = 1;
+
+			switch (texid) {
+				case 0:
+					texid = 0;
+					break;
+				case 5:
+					texid = 1;
+					break;
+				case 8:
+					texid = 2;
+					break;
+				case 9:
+					texid = 3;
+					break;
+				case 10:
+					texid = 4;
+					break;
+				case 11:
+					texid = 5;
+					break;
+				case 12:
+					texid = 6;
+					break;
+				default:
+					pFace->Flag = 0;
+					break;
 			}
 		}
-		else
-			v3->Flag = 0;
-	}
-	else
-	{
-		switch (v6)
-		{
-		case 10:
-			v6 = 0;
-			break;
-		case 11:
-			v6 = 9;
-			break;
-		case 12:
-			v6 = 8;
-			break;
+		else {
+			pFace->Flag = 0;
 		}
 	}
-	v7 = v3->pEyeObject[0];
-	if (v7)
-	{
-		v8 = (NJS_CNK_MODEL*)v7->pModel;
-		if (v8)
-		{
-			AL_MatChangeModelTexture(v8, v6);
+	else {
+		switch (texid) {
+			case 10:
+				texid = 0;
+				break;
+			case 11:
+				texid = 9;
+				break;
+			case 12:
+				texid = 8;
+				break;
 		}
 	}
-	v9 = v3->pEyeObject[1];
-	if (v9)
-	{
-		v10 = (NJS_CNK_MODEL*)v9->pModel;
-		if (v10)
-		{
-			AL_MatChangeModelTexture(v10, v6);
-		}
-	}
+
+	AL_MatChangeObjectTexture(pFace->pEyeObject[0], texid);
+    AL_MatChangeObjectTexture(pFace->pEyeObject[1], texid);
 }
+
 static void ASM_FUNC AL_FaceSetEyeHook() {
 	ASM_PUSH(eax); // a1
 	ASM_PUSH(edx); // a2
