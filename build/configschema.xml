@@ -106,7 +106,21 @@
         <HelpText>Disabling this will prevent Chao from evolving into custom chao (such as Spartoi).</HelpText>
       </Property>
       <Property name="AdvancedChaosandCharactersChaoarelikeNormalChao" type="bool" defaultvalue="False" display="Rare Chao act like Normal Chao">
-        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allows Chaos Chao to have expressions!</HelpText>
+        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed.</HelpText>
+      </Property>
+      <Property name="ChaosEyes" type="ChaosFace" defaultvalue="0" display="Chaos Chao Eyes">
+        <HelpText>
+          Disables the forced Chaos Chao eyes. 
+          "Vanilla" leaves it untouched. "Actions" reenables eye changes during general Chao actions.
+          "Actions + Default" additionally restores the default eyes the Chao had.
+        </HelpText>
+      </Property>
+      <Property name="ChaosMouths" type="ChaosFace" defaultvalue="0" display="Chaos Chao Mouths">
+        <HelpText>
+          Reenables mouths on Chaos Chao. 
+          "Vanilla" leaves it untouched. "Actions" reenables mouths set during general Chao actions.
+          "Actions + Default" additionally restores the default mouth the Chao had.
+        </HelpText>
       </Property>
       <Property name="AdvancedMedalChaocanmakeJewelChao" type="bool" defaultvalue="False" display="Medals can breed Jewel Chao">
         <HelpText>When breeding, Chao with medals from races could produce a Jewel Chao corresponding with the medal they’re wearing.</HelpText>
@@ -425,6 +439,11 @@
       <EnumMember name="0" display="Off/Disabled"></EnumMember>
       <EnumMember name="1" display="Personality"></EnumMember>
       <EnumMember name="2" display="Random"></EnumMember>
+    </Enum>
+    <Enum name="ChaosFace">
+      <EnumMember name="0" display="Vanilla"></EnumMember>
+      <EnumMember name="1" display="Actions"></EnumMember>
+      <EnumMember name="2" display="Actions + Default"></EnumMember>
     </Enum>
     <Enum name="Camera">
       <EnumMember name="0" display="Off/Disabled"></EnumMember>

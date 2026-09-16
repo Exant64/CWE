@@ -46,6 +46,7 @@
 #include <code_system/codes/include/cheat/code_levellimit.h>
 #include <code_system/codes/include/bonus/code_babychaolevel.h>
 #include <code_system/codes/include/advanced/code_gc_shinyjewel.h>
+#include <code_system/codes/include/advanced/code_chaosface.h>
 
 #include <code_system/codes/include/easy/code_disable_reincarnation.h>
 
@@ -146,6 +147,8 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<PartyRace>("RaceJewelandBeginnerRacebecome8PPartyRace", false);
 	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
 	CodeManager::Instance().Add<SpoiledFruits>("AdvancedFruitscanSpoilt", false);
+	CodeManager::Instance().Add<ChaosEyes>("ChaosEyes", 0, 0);
+	CodeManager::Instance().Add<ChaosMouths>("ChaosMouths", 0, 0);
 	CodeManager::Instance().Add<BetterCameraControl>("CameraControl", 0, 0);
 
 	//lst ports
