@@ -152,6 +152,23 @@ static void ChaoParamMenu() {
 
         if (ImGui::BeginTabBar("param_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
+                if(ImGui::Button("Load .chao File")) {
+                    OPENFILENAMEA ofn {0 };
+                    char filename[MAX_PATH] {};
+
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = NULL;
+                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0\0";
+                    ofn.lpstrFile = filename;
+                    ofn.nMaxFile = sizeof(filename);
+                    ofn.Flags = OFN_READONLY | OFN_NOCHANGEDIR | OFN_EXPLORER | OFN_FILEMUSTEXIST;
+                    ofn.lpstrDefExt = "chao";
+
+                    if(GetOpenFileNameA(&ofn)) {
+                        *(CHAO_SAVE_INFO*)pParam = LoadChaoFile(filename);
+                    }
+                }
+
                 {
                     char namebuf[256];
 
@@ -350,23 +367,6 @@ static void ChaoInfoMenu() {
 
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
-                if(ImGui::Button("Load .chao File")) {
-                    OPENFILENAME ofn {};
-                    char filename[MAX_PATH] {};
-
-                    ofn.lStructSize = sizeof(ofn);
-                    ofn.hwndOwner = MainWindowHandle;
-                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0";
-                    ofn.lpstrFile = filename;
-                    ofn.nMaxFile = sizeof(filename);
-                    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
-                    ofn.lpstrDefExt = "txt";
-
-                    if(GetOpenFileName(&ofn)) {
-                        *(CHAO_SAVE_INFO*)work->pParamGC = LoadChaoFile(filename);
-                    }
-                }
-
                 ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
 
                 static bool ChaoDebugDistEnabled = false;
