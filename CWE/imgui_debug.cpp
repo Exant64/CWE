@@ -179,7 +179,8 @@ static void ChaoParamMenu() {
                     ImGui::Text("CWE Name: %s", namebuf);
                 }
 
-                ImGui::InputScalar("Type", ImGuiDataType_U8, &pParam->type);
+                Sint8 step = 1;
+                ImGui::InputScalar("Type", ImGuiDataType_U8, &pParam->type, &step);
                 ImGui::InputScalar("Place", ImGuiDataType_S8, &pParam->place);
 
                 {
@@ -188,6 +189,10 @@ static void ChaoParamMenu() {
                 }
 
                 ImGui::InputScalar("ClassNum", ImGuiDataType_S8, &pParam->ClassNum);
+                if(ImGui::Button("Remove from class")) {
+                    pParam->ClassNum = -1;
+                }
+                
                 ImGui::InputScalar("age", ImGuiDataType_S16, &pParam->age);
                 ImGui::InputScalar("old", ImGuiDataType_S16, &pParam->old);
                 ImGui::InputScalar("life", ImGuiDataType_S16, &pParam->life);
@@ -208,14 +213,16 @@ static void ChaoParamMenu() {
             }
 
             if (ImGui::BeginTabItem("BodyInfo")) {
+                Sint8 step = 1;
+
                 ImGui::SliderFloat("growth", &pParam->body.growth, 0, 1.2f);
                 ImGui::SliderFloat("HPos", &pParam->body.HPos, -1, 1);
                 ImGui::SliderFloat("VPos", &pParam->body.VPos, -1, 1);
                 ImGui::Separator();
-                ImGui::InputScalar("DefaultEyeNum", ImGuiDataType_U8, &pParam->body.DefaultEyeNum);
-                ImGui::InputScalar("DefaultMouthNum", ImGuiDataType_U8, &pParam->body.DefaultMouthNum);
+                ImGui::InputScalar("DefaultEyeNum", ImGuiDataType_U8, &pParam->body.DefaultEyeNum, &step);
+                ImGui::InputScalar("DefaultMouthNum", ImGuiDataType_U8, &pParam->body.DefaultMouthNum, &step);
                 ImGui::InputScalar("HonbuNum", ImGuiDataType_U8, &pParam->body.HonbuNum);
-                ImGui::InputScalar("ObakeHead", ImGuiDataType_U8, &pParam->body.ObakeHead);
+                ImGui::InputScalar("ObakeHead", ImGuiDataType_U8, &pParam->body.ObakeHead, &step);
                 ImGui::InputScalar("ObakeBody", ImGuiDataType_U8, &pParam->body.ObakeBody);
                 ImGui::InputScalar("MedalNum", ImGuiDataType_U8, &pParam->body.MedalNum);
                 ImGui::InputScalar("ColorNum", ImGuiDataType_U8, &pParam->body.ColorNum);
@@ -381,6 +388,16 @@ static void ChaoInfoMenu() {
 
                 ImGui::EndTabItem();
             }
+
+            if (ImGui::BeginTabItem("Face")) {
+                ImGui::Text("EyeDefaultNum: %d", work->Face.EyeDefaultNum);
+                ImGui::Text("EyeCurrNum: %d", work->Face.EyeCurrNum);
+                ImGui::Text("MouthDefaultNum: %d", work->Face.MouthDefaultNum);
+                ImGui::Text("MouthCurrNum: %d", work->Face.MouthCurrNum);
+
+                ImGui::EndTabItem();
+            }
+
 
             if (ImGui::BeginTabItem("World")) {
                 ImGui::Text("IsCommunication: %p", ALW_IsCommunication(pChao));
