@@ -64,7 +64,7 @@ static void AL_FaceSetEyeCWE(task* tp, int EyeNum, int timer) {
 				}
 			}
 
-            if (pFace->EyeDefaultNum == AL_EYE_NUM_ANGER) {
+            if (defaultNum == AL_EYE_NUM_ANGER) {
                 pFace->EyeLidExpressionAimCloseAng = NJM_DEG_ANG(75);
                 pFace->EyeLidExpressionAimSlopeAng = NJM_DEG_ANG(20);
             } else {
