@@ -337,6 +337,12 @@
       <Property name="DCCocoon" type="bool" defaultvalue="False" display="Dreamcast Cocoons">
         <HelpText>Cocoons behave as they do in the DC version (all cocoons are grey).</HelpText>
       </Property>
+      <Property name="ChaosSparkles" type="bool" defaultvalue="True" display="Chaos Chao Sparkles">
+        <HelpText>Chaos Chao now have the sparkles effect restored from SADX.</HelpText>
+      </Property>
+      <Property name="AnimalSparkles" type="bool" defaultvalue="True" display="Animal Sparkles">
+        <HelpText>Usable animals now have the sparkles effect restored from SADX.</HelpText>
+      </Property>
     </Group>
     <Group name="Input" display="08 - Input Codes">
       <Property name="CameraControl" type="Camera" defaultvalue="0" display="Better Camera Control">

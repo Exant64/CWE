@@ -43,6 +43,32 @@
 #include <api/api_metadata.h>
 #include "FunctionHook.h"
 #include "memory.h"
+#include "ef_kiran.h"
+
+static void ChaosKiran (task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
+
+	switch(GET_CHAOPARAM(tp)->type) {
+		case TYPE_N_CHAOS:
+		case TYPE_H_CHAOS:
+		case TYPE_D_CHAOS:
+			break;
+		default:
+			return;
+	}
+
+	if((work->Timer % 32) == 0) {
+		int ang = NJM_DEG_ANG(njRandom() * 360.f);
+		NJS_POINT3 pos = work->pos;
+		NJS_VECTOR velo = {};
+
+		pos.x += njCos(ang) * 3.f;
+		pos.y += njRandom() * 4.f + 0.2f;
+		pos.z += njSin(ang) * 3.f;
+
+		CreateKiran2(&pos, 0.22f, 0.4f);
+	}
+}
 
 ASM_FUNC void AL_IconSet(task* a4, char a2, int a3) {
     // arguments
@@ -359,6 +385,10 @@ static void Chao_Main_r(task* a1)
 	}
 
 	Chao_Main_hook.Original(a1);
+
+	if (gConfigVal.ChaosSparkles) {
+		ChaosKiran(a1);
+	}
 
 	// if disable jiggle was enabled or disabled rerun fittobaseobject
 	// to prevent the jiggled vertices to be frozen

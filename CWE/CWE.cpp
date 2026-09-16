@@ -567,6 +567,8 @@ extern "C"
 		gConfigVal.ClassroomTimerDisplay = config->getBool("Detail", "ClassroomTimerDisplay", true);
 		gConfigVal.HDHoodie = config->getBool("Detail", "HDHoodie", false);
 		gConfigVal.DoctorChaoInfo = config->getBool("Detail", "DetailDoctorChaogivemoreInformationEN", false);
+		gConfigVal.ChaosSparkles = config->getBool("Detail", "ChaosSparkles", true);
+		gConfigVal.AnimalSparkles = config->getBool("Detail", "AnimalSparkles", true);
 
 		//Misc
 		gConfigVal.LegacyBaldYOnly = config->getBool("Misc", "LegacyBald", true);

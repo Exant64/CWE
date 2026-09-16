@@ -13,6 +13,8 @@
 #include "al_motion.h"
 #include "AL_ModAPI.h"
 
+#include "ef_kiran.h"
+
 #include <renderfix.h>
 
 std::vector<int> ModAPI_MinimalInfluence;
@@ -157,115 +159,24 @@ int AnimalInfluence[] =
 	COLOR_RANDOM, COLOR_RANDOM, COLOR_RANDOM
 };
 
-
 FunctionPointer(void, sub_57BD40, (task*), 0x0057BD40);
-#pragma pack(push, 8)
-struct ALIGN(4) ParticleData
-{
-	int rotY;
-	float scale;
-	NJS_VECTOR position;
-	int color;
-	float frame;
-	int field_1C;
-	NJS_VECTOR velocity;
-	int rotYSpeed;
-	float filler3;
-	float filler4;
-	float filler5;
-};
-#pragma pack(pop)
-#pragma pack(push, 8)
-struct ALIGN(4) ParticleUserData
-{
-	int a1;
-	NJS_TEXLIST* texlist;
-	int a2;
-	int frames;
-	float speed;
-	float velocityLoss;
-	float gravity;
-	float scaleUp;
-	int functionPtr;
-	float a7;
-	int fill1;
-	int fill2;
-	int fill3;
-	int lastPointer;
-};
-#pragma pack(pop)
-ParticleUserData stru_B0964C_ =
-{
-  1,
-  (NJS_TEXLIST*)0xB09644,
-  0,
-  4,
-   0.07f,
-   0.98f,
-  0,
-   0.005f,
-  0x6C42D0,
-   40000,
-  0,
-  0,
-  0,
-  0
-};
 
-ASM_FUNC int AllocateParticle(ParticleUserData* a2) {
-    // save regs
-    ASM_PUSH( ebx );
-
-    // arguments
-    ASM_MOVE( ebx, ASM_ESP(1+0+1) ); // a2
-
-    // call
-    ASM_CALL_R( edx, 0x0492660 );
-
-    // restore regs
-    ASM_POP( ebx );
-
-    // return
-    ASM_RET( 0 );
-}
-
-void __cdecl sub_6EFF10_(NJS_VECTOR* a1, NJS_VECTOR* a2, float a3)
-{
-	ParticleData* v3; // esi
-	Float v4; // eax
-
-	v3 = (ParticleData*)AllocateParticle(&stru_B0964C_);
-	if (v3)
-	{
-		v3->position = *a1;
-		v3->velocity.x = a2->x;
-		v3->velocity.y = a2->y;
-		v4 = a2->z;
-		v3->scale = a3;
-		v3->velocity.z = v4;
-		v3->rotY = (signed int)((njRandom() * 20.0f - 10.0f) * 182.0444488525391f);
-		v3->rotYSpeed = (signed int)((njRandom() - 0.5f) * 182.0444488525391f);
-		v3->filler5 = 0.0;
-	}
-}
-void AL_Minimal_Timer(task* a1)
-{
+void AL_Minimal_Timer(task* a1) {
 	sub_57BD40(a1);
 
 	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)a1->twp;
 	int* timer = (int*)((char*)&v1->field_F4 + 4);
 	(*timer)++;
-	if (!v1->field_F4 && (*timer & 31) == 1)
-	{
-		NJS_VECTOR pos = v1->entity.pos;
-		NJS_VECTOR zeroVelo = { 0,0,0 };
-		int ang = (int)(njRandom() * 65536.f);
+
+	if (!v1->field_F4 && (*timer & 31) == 1) {
+		NJS_POINT3 pos = v1->entity.pos;
+		const int ang = NJM_DEG_ANG(njRandom() * 360.f);
 
 		pos.x += njCos(ang) * 2;
 		pos.y += njRandom() + njRandom() + 0.2f;
 		pos.z += njSin(ang) * 2;
 		
-		sub_6EFF10_(&pos, &zeroVelo, 0.6f);
+		CreateKiran2(&pos, 0.2f, 0.6f);
 	}
 }
 
@@ -356,11 +267,13 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 
 void al_minimal_Init()
 {
-	//patch minimal timer to be constant
+	// patch minimal timer to be constant
 	WriteData((int*)0x00548C7D, (int)0x9090C031);
 
-	//set the minimal behavior function array's first element to use our custom one
-	*(int*)0x1316B00 = (int)AL_Minimal_Timer;
+	if (gConfigVal.AnimalSparkles) {
+		// set the minimal behavior function array's first element to use our custom one
+		*(int*)0x1316B00 = (int)AL_Minimal_Timer;
+	}
 
 	WriteData((int*)0x00548D5F, (int)0xFC + 4);
 	WriteData((int*)0x00548D69, (int)0xF8 + 4);

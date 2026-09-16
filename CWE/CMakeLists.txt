@@ -1,4 +1,5 @@
 add_library(CWE SHARED
+    ef_kiran.cpp
     BrightFix/BrightFix.cpp
     al_animation.cpp
     alg_kinder_bl.cpp

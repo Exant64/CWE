@@ -97,6 +97,8 @@ struct ConfigValues {
 	bool DisableAllParts;
 	bool FixMonsterEvo;
 	bool AccUpdateDraw;
+	bool ChaosSparkles;
+	bool AnimalSparkles;
 
 	bool FixHeroSky;
 
