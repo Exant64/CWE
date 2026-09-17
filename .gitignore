@@ -3,6 +3,8 @@
 
 out
 
+cmake
+
 build/CWE.dll
 build/CWE.pdb
 build/CWE.exp

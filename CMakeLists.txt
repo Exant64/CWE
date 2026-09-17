@@ -30,6 +30,10 @@ target_link_options(CWE PRIVATE
     -static-libgcc -static-libstdc++ -static
 )
 
+target_link_options(CWE PRIVATE
+    -s
+)
+
 target_include_directories(CWE PRIVATE
     CWE
     CWE/navigation/external/Detour/Include

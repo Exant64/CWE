@@ -6,16 +6,35 @@
     "configurations": [
         {
             "name": "ImGuiDebug launch",
-            "type": "cppvsdbg",
+            "type": "gdbtarget",
             "request": "launch",
-            "program": "${env:SA2_PATH}\\sonic2app.exe",
-            "symbolSearchPath": "${workspaceFolder}\\build",
+            "program": "${env:SA2_PATH}/sonic2app.exe",
             "cwd": "${env:SA2_PATH}",
-            "args": ["-l","chaoworld"],
-            "logging": {
-                "moduleLoad": false,
-                "trace": true
+            "target": {
+                "type": "remote",
+
+                "host": "localhost",
+                "port": "12345",
+
+                "server": "/usr/bin/wine",
+                "cwd": "${env:SA2_PATH}",
+                "serverParameters": [
+                    "/usr/share/win32/gdbserver.exe",
+                    "localhost:12345",
+                    "${env:SA2_PATH}/sonic2app.exe",
+                    "-l",
+                    "chaoworld"
+                ],
+
+                "serverStartupDelay": 500,
+                "automaticallyKillServer": true
             },
+
+            "run": "all",
+            "verbose": true,
+            "initCommands": [
+                "set architecture i386"
+            ],
             "preLaunchTask": "CMake Build (debug)"
         },
         {
