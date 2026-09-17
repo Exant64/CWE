@@ -172,6 +172,7 @@ struct CWE_API_PARAM_ACCESSORY {
 
 	size_t (*GetAccessory)(task* tp, uint32_t slot);
 	void (*SetAccessory)(task* tp, uint32_t slot, uint32_t kind);
+	void (*ClearAccessory)(task* tp, uint32_t slot);
 };
 
 struct CWE_API {

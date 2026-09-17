@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "al_world.h"
 
 #include <vector>
 #include <unordered_map>
@@ -1289,6 +1290,10 @@ void ASM_FUNC FItemDescDispHook() {
 //garden object count
 signed int __cdecl AL_GetMaxItemNum(const int a1)
 {
+	if(a1 == ALW_CATEGORY_ACCESSORY) {
+		return AccessoryItemList.size();
+	}
+	
 	if (a1 == ALW_CATEGORY_FRUIT)
 	{
 		return 40;
@@ -1297,7 +1302,7 @@ signed int __cdecl AL_GetMaxItemNum(const int a1)
 	{
 		return 12;
 	}
-	if (a1 == ALW_CATEGORY_MASK || a1 == ALW_CATEGORY_ACCESSORY)
+	if (a1 == ALW_CATEGORY_MASK)
 	{
 		return 24;
 	}
@@ -1333,7 +1338,32 @@ ASM_FUNC int sub_52F4F0(int a1) {
 
 int __cdecl AL_GetExistItemNum(const int a1)
 {
-	return 0;
+	size_t c = 0;
+
+	if(a1 == ALW_CATEGORY_ACCESSORY) {
+		for(const auto& item : AccessoryItemList) {
+			if(item.IndexID != -1) {
+				c++;
+			}
+		}
+
+		for(size_t i = 0; i < cweSaveFile.purchasedItemCount; ++i) {
+			const auto& item = save::CWE_PurchasedItems[i];
+
+			if(item.mCategory != ALW_CATEGORY_ACCESSORY) {
+				continue;
+			}
+
+			if(item.mId != -1) {
+				c++;
+			}
+		}
+	}
+
+	// TODO: why did we have this return 0'd?
+
+	return c;
+
 	if (a1 == ALW_CATEGORY_SPECIAL)
 	{
 		int ret = 0;

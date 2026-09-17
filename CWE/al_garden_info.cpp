@@ -511,6 +511,8 @@ static void AL_PackageCustomItemSaveInfo(const Sint8 category) {
 			taskwk* work = tp->twp;
 			ItemSaveInfoBase* pSaveInfo = (ItemSaveInfoBase*)(((ALW_ENTRY_WORK*)tp->fwp)->pSaveInfo);
 			
+			if(!pSaveInfo) continue;
+
 			// not held (! & 0x8000) most likely
 			if (work->flag >= 0) {
 				pSaveInfo->Position = work->pos;
