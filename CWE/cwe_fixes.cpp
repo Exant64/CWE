@@ -166,7 +166,7 @@ void CWE_Fixes() {
 	ExpandTextureBuffer();
 
 	// fix BoxExecutor's CCL_Disable for nonexistant collision
-	WriteCall((void*)0x580252, nullsub_1);
+	WriteCall((void*)0x580252, (void*)nullsub_1);
 	// fix BoxExecutor sound ID for jack in the box
 	WriteData((uint8_t*)0x005802E9, uint8_t(0x29));
 
