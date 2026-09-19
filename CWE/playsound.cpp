@@ -3,6 +3,7 @@
 #include "asmutil.h"
 
 ASM_FUNC Sint8 SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer) {
+    ASM_PUSH(edi);
     // arguments
     ASM_PUSH(      ASM_ESP(5+0) ); // timer
     ASM_PUSH(      ASM_ESP(4+1) ); // volofs
@@ -15,9 +16,11 @@ ASM_FUNC Sint8 SE_Call_Timer(int tone, const void* id, int pri, int volofs, int 
 
     // end arguments
     ASM_ESP_ADD( 4 );
+    ASM_POP(edi);
 
     // return
     ASM_RET( 0 );
+
 }
 
 ASM_FUNC Sint8 SE_CallV2_Timer(int tone, const void* id, int pri, int volofs, int timer, const NJS_POINT3* pPos) {
