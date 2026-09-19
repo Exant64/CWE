@@ -48,13 +48,13 @@ static ASM_FUNC int AllocateParticle(ParticleUserData* a2) {
     ASM_RET( 0 );
 }
 
-static bool KiranExecutor(ParticleUserData *a1, ParticleData *a2) {
+static Bool KiranExecutor(ParticleUserData *a1, ParticleData *a2) {
 	const int frameTbl[] = { 0, 1, 2, 3, 2, 1, 0 };
 
+    a2->frame = float(frameTbl[NJM_MIN(_countof(frameTbl) - 1, size_t(a2->velocity.y))]);
     a2->velocity.y += a2->velocity.x / 2.f;
-    a2->frame = float(frameTbl[int(a2->velocity.y)]);
 
-    return (int)a2->velocity.y < a1->frames;
+    return Bool((int)a2->velocity.y < a1->frames);
 }
 
 static ParticleUserData KiranInfo = {
