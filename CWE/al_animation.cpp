@@ -1468,7 +1468,7 @@ static int ALBHV_Hima(task* tp) {
 					}
 				}
 
-				bhv->Timer = RAND_RANGE(90, 320);
+				bhv->Timer = RAND_RANGE(60, 120);
 			}
 			break;
 
@@ -1492,6 +1492,10 @@ static void AL_CalcIntentionScore_Hima_r(task* tp, float* pMaxScore) {
 	AL_CalcIntentionScore_Hima(tp, pMaxScore);
 
 	if(*pMaxScore != scoreBefore) {
+		return;
+	}
+
+	if (njRandom() < 0.75f) {
 		return;
 	}
 
