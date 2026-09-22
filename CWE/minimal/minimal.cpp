@@ -325,9 +325,12 @@ static void sub_48ACD0_r(int i, int a1, float a2, float a3, float a4) {
 }
 
 static void ASM_FUNC sub_48ACD0_hook() {
-    ASM_PUSH(ASM_ESP(3)); // a4
-    ASM_PUSH(ASM_ESP(3)); // a3
-    ASM_PUSH(ASM_ESP(3)); // a2
+    ASM_PUSH(esi); // a1
+    ASM_PUSH(edi);
+
+    ASM_PUSH(ASM_ESP(5)); // a4
+    ASM_PUSH(ASM_ESP(5)); // a3
+    ASM_PUSH(ASM_ESP(5)); // a2
     ASM_PUSH(esi); // a1
     ASM_PUSH(edi);
 
@@ -339,6 +342,10 @@ static void ASM_FUNC sub_48ACD0_hook() {
     ASM_ESP_ADD( 1 ); // a2
     ASM_ESP_ADD( 1 ); // a3
     ASM_ESP_ADD( 1 ); // a4
+
+    ASM_POP(edi);
+    ASM_POP(esi); // a1
+
     ASM_RET(0);
 }
 

@@ -25,7 +25,7 @@
 #include "codes/include/code_canthatecharacters.h"
 #include "codes/include/code_quickexit.h"
 
-#include "codes/include/bonus/code_mergeherodark.h"
+#include "codes/include/bonus/code_mergegardens.h"
 
 #include "codes/include/code_negativeemotions.h"
 
@@ -133,7 +133,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<AnimalReuse>("Easy","AnimalReuse", false);
 	CodeManager::Instance().Add<DisableReincarnation>("Easy", "DisableReincarnation", false);
 	CodeManager::Instance().Add<CantHateCharacters>("EasyChaocan'thateCharacters", false);
-	CodeManager::Instance().Add<MergeHeroDark>("BonusMergeHeroandDarkGardenChaoSlots", false);
+	CodeManager::Instance().Add<MergeGardens>("MergeGardenSlots", 0, 0);
 
 	CodeManager::Instance().Add<QuickExit>("Misc", "QuickExit", true);
 	CodeManager::Instance().Add<DCCocoon>("DCCocoon", false);

@@ -10,7 +10,9 @@
 #include "..//AL_ModAPI.h"
 #include "al_intention.h"
 #include <playsound.h>
-#include "../data/toy/al_toy_triangle.nja"
+#include "njdef.h"
+#include "../data/toy/alo_triangle1.nja"
+#include "../data/toy/alo_triangle2.nja"
 #include "../data/toy/alo_accordion.nja"
 #include "../data/toy/alo_guitar.nja"
 #include "../ChaoMain.h"
@@ -50,8 +52,8 @@ static int ALBHV_Triangle(task* tp) {
 			AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
 			AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
 			
-			AL_SetItem(tp, AL_PART_HAND_L, &Cylinder, &AL_TOY_TEXLIST);
-			AL_SetItem(tp, AL_PART_HAND_R, &Cylinder_001, &AL_TOY_TEXLIST);
+			AL_SetItem(tp, AL_PART_HAND_L, object_0034A7E0, &AL_TOY_TEXLIST);
+			AL_SetItem(tp, AL_PART_HAND_R, object_0034B340, &AL_TOY_TEXLIST);
 
 			bhv->Mode++;
 			bhv->Timer = 300 + int(njRandom() * 301.f);
