@@ -226,10 +226,10 @@ static void ChaoParamMenu() {
                 ImGui::InputScalar("HonbuNum", ImGuiDataType_U8, &pParam->body.HonbuNum);
                 ImGui::InputScalar("ObakeHead", ImGuiDataType_U8, &pParam->body.ObakeHead, &step);
                 ImGui::InputScalar("ObakeBody", ImGuiDataType_U8, &pParam->body.ObakeBody);
-                ImGui::InputScalar("MedalNum", ImGuiDataType_U8, &pParam->body.MedalNum);
-                ImGui::InputScalar("ColorNum", ImGuiDataType_U8, &pParam->body.ColorNum);
+                ImGui::InputScalar("MedalNum", ImGuiDataType_U8, &pParam->body.MedalNum, &step);
+                ImGui::InputScalar("ColorNum", ImGuiDataType_U8, &pParam->body.ColorNum, &step);
                 ImGui::Checkbox("NonTex", (bool*)&pParam->body.NonTex);
-                ImGui::InputScalar("JewelNum", ImGuiDataType_U8, &pParam->body.JewelNum);
+                ImGui::InputScalar("JewelNum", ImGuiDataType_U8, &pParam->body.JewelNum, &step);
 
                 {
                     uint8_t min = 0;
