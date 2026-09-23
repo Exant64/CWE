@@ -52,7 +52,7 @@ struct CHAO_PARAM_CWE {
 	char ShinyJewelMonotone;
 	char FreeSpace;
 	char GiftChaoValue; //unused for a while, we might pick this up again some time
-	char FreeSpace_;
+	Sint8 IsGuest;
 	char LobbyTextureValue; //same here
 	char FreeSpace__;
 	char EyeAlignment;
@@ -100,6 +100,9 @@ static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, MGroundMotherName
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Accessories) == 0x6B1);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, XGradeValue) == 0x59e);
 
+bool AL_ParameterIsGuest(const CHAO_PARAM_GC* pParam);
+bool AL_ParameterIsGuest(const task* tp);
+
 void AL_NameSet(char* lval, char* rval);
 bool AL_IsChild(task* tp);
 bool AL_IsHero(unsigned __int8 a1);
@@ -121,6 +124,8 @@ void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4
 
 void IncrementFlySwim(task* a1, float a2);
 void IncrementPowerRun(task* a1, float a2);
+
+void AL_CalcParameter(task* tp);
 
 void AL_ParameterInit();
 

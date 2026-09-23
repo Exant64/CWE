@@ -107,6 +107,7 @@
 #include <global_save.h>
 #include <minimal/minimal.h>
 #include <hd_texture.h>
+#include <al_guest.h>
 
 #include "land_grayscale.h"
 #include "api/api_main.h"
@@ -130,8 +131,14 @@ extern "C"
 		case CHAO_STG_NEUT:
 		case CHAO_STG_HERO:
 		case CHAO_STG_DARK:
-			if(gConfigVal.ChaoCounter)
+			if(gConfigVal.ChaoCounter) {
 				AL_ChaoCounterCreate();
+			}
+
+			if (gConfigVal.GuestChao) {
+				GuestManagerCreate();
+			}
+
 			break;
 		}
 
@@ -180,57 +187,12 @@ extern "C"
 		return retval;
 	}
 
-	static void GuestChao(CHAO_PARAM_GC& param) {
+	void OnChaoData(CHAO_PARAM_GC& info) {
+		AL_ChaoAccessoryConversion(GET_CWEPARAM(&info));
 
-		//to hopefully prevent chao getting capped when inside guest menu
-		if (AL_GetStageNumber() == CHAO_STG_ODEKAKE)
-			return;
-
-		if (param.GBAType != 1) return;
-
-		auto pParamCwe = GET_CWEPARAM(&param);
-		AL_GUEST& Guest = pParamCwe->Guest;
-
-		if (Guest.Type == 0) {
-			Guest.Type = param.type;
-			Guest.Alignment = param.body.APos;
-			Guest.Magnitude = param.body.growth;
-			Guest.FlySwim = param.body.VPos;
-			Guest.RunPower = param.body.HPos;
-
+		for (auto& c : CodeManager::Instance()) {
+			c->OnChaoData(info);
 		}
-		else {
-			param.type = Guest.Type;
-			param.body.APos = Guest.Alignment;
-			param.body.growth = Guest.Magnitude;
-			param.body.VPos = Guest.FlySwim;
-			param.body.HPos = Guest.RunPower;
-		}
-
-		param.life = 100;
-		param.LifeMax = 100;
-
-		*(Uint8*)(&param.GBARing) = 0; // ? sets byte at 0xC to 0
-
-		for (int i = 0; i < 5; i++) {
-			param.Exp[i] = 0;
-
-			if (param.Abl[i] > ChaoGrade_B) {
-				param.Abl[i] = ChaoGrade_B;
-			}
-
-			if (param.Skill[i] > 2000) {
-				param.Skill[i] = 2000;
-				param.Lev[i] = 109; //lock icon later
-			}
-
-			param.gene.Abl[i][1] = ChaoGrade_E;
-		}
-
-		param.Abl[6] = param.Abl[7] = 0;
-
-		pParamCwe->XGradeValue = 0;
-		pParamCwe->UpgradeCounter = 5;
 	}
 
 	void __cdecl ALW_Control_Main_Hook(task* a1);
@@ -258,49 +220,10 @@ extern "C"
 		original(a1);
 
 		for (size_t i = 0; i < ChaoInfo::Instance().Count(); i++) {
-			AL_ChaoAccessoryConversion(GET_CWEPARAM(&ChaoInfo::Instance()[i]));
+			OnChaoData(ChaoInfo::Instance()[i]);
 		}
 
 		for (auto& c : CodeManager::Instance()) {
-			for (size_t chaoIndex = 0; chaoIndex < ChaoInfo::Instance().Count(); chaoIndex++) {
-				c->OnChaoData(ChaoInfo::Instance()[chaoIndex]);
-
-				CHAO_PARAM_CWE* pParam = GET_CWEPARAM(&ChaoInfo::Instance()[chaoIndex]);
-
-				if (!(pParam->Flags & AL_PARAM_FLAG_ACCESSORIES_NEW)) {
-					for (size_t i = 0; i < _countof(pParam->Accessories_); ++i) {
-						memset(&pParam->Accessories[i], 0, sizeof(pParam->Accessories[i]));
-
-						char id[METADATA_ID_SIZE];
-						bool foundID = ItemMetadata::Get()->GetID(ALW_CATEGORY_ACCESSORY, pParam->Accessories_[i] - 1, id);
-						if (!foundID) {
-							// TODO: error
-							continue;
-						}
-
-						// hacky way to patch the old pink hoodie and force it to blue hoodie, then recolor it to resemble the pink one
-						if (!strcmp(id, "accdummhoodie")) {
-							strcpy_s(pParam->Accessories[i].ID, "acc96a6abf7");
-
-							pParam->Accessories[i].ColorFlags |= BIT_0;
-
-							// pink color
-							NJS_COLOR* colorSlot = (NJS_COLOR*)&pParam->Accessories[i].ColorSlots[0];
-							colorSlot->argb.a = 255;
-							colorSlot->argb.r = 255;
-							colorSlot->argb.g = 121;
-							colorSlot->argb.b = 213;
-
-							continue;
-						}
-
-						strcpy_s(pParam->Accessories[i].ID, id);
-					}
-
-					pParam->Flags |= AL_PARAM_FLAG_ACCESSORIES_NEW;
-				}
-			}
-
 			c->OnALControl(a1);
 		}
 
@@ -360,12 +283,6 @@ extern "C"
 			ITEM_SAVE_INFO* objData = AL_GetCurrGardenInfo()->fruit;
 			if (objData[i].kind >= 29 && objData[i].kind <= 32)
 				objData[i].nbVisit = 0;
-
-			//reset upgradecounter on egg chao, maybe move to reincarnation later
-			if (ChaoInfo::Instance()[i].type == 1)
-				GET_CWEPARAM(&ChaoInfo::Instance()[i])->UpgradeCounter = 0;
-
-			GuestChao(ChaoInfo::Instance()[i]);
 		}
 
 		if (gConfigVal.ToyReset && !AL_IsGarden() && ToyResetTimer <= 0) {
@@ -624,6 +541,29 @@ extern "C"
 		gConfigVal.HeroGrayscale = config->getBool("Misc", "HeroGrayscale", false);
 		gConfigVal.DarkGrayscale = config->getBool("Misc", "DarkGrayscale", false);
 
+		// Guest
+		gConfigVal.GuestChao = config->getBool("Guest", "Enabled", true);
+		gConfigVal.GuestSave = config->getBool("Guest", "Save", false);
+		gConfigVal.GuestVisitCounter = config->getInt("Guest", "VisitCounter", 3);
+		gConfigVal.GuestMin = config->getInt("Guest", "Min", 4);
+		gConfigVal.GuestMax = config->getInt("Guest", "Max", 8);
+		gConfigVal.GuestRollType = config->getInt("Guest", "RollType", GUEST_ROLL_ROTATE_RANDOM);
+		gConfigVal.GuestRotateCount = config->getInt("Guest", "RotateCount", 4);
+		gConfigVal.GuestRandomizeEmotions = config->getBool("Guest", "RandomEmotions", true);
+		gConfigVal.GuestBlockStatChanges = config->getBool("Guest", "BlockStats", true);
+		gConfigVal.GuestBlockNameChange = config->getBool("Guest", "BlockName", true);
+		gConfigVal.GuestBlockBodyChanges = config->getBool("Guest", "BlockBody", true);
+		gConfigVal.GuestBlockVisualChanges = config->getBool("Guest", "BlockVisual", true);
+		gConfigVal.GuestBlockMinimalPartChanges = config->getBool("Guest", "BlockMiniPart", true);
+		gConfigVal.GuestBlockWearableChanges = config->getBool("Guest", "BlockWearable", true);
+		gConfigVal.GuestBlockSocialRelations = config->getBool("Guest", "BlockSocial", true);
+		gConfigVal.GuestBlockPlayerRelations = config->getBool("Guest", "BlockPlayer", true);
+		gConfigVal.GuestBlockBreeding = config->getBool("Guest", "BlockBreed", true);
+		gConfigVal.GuestBlockLifeChanges = config->getBool("Guest", "BlockLife", true);
+		gConfigVal.GuestBlockMinimalFlagChanges = config->getBool("Guest", "BlockMiniFlag", true);
+		gConfigVal.GuestBlockOmoBuild = config->getBool("Guest", "BlockOmoBuild", true);
+		gConfigVal.GuestIndicator = config->getBool("Guest", "Indicator", true);
+
 		// the other half of this code is in al_parameter.cpp AL_CalcParameter_r
 		// we kinda need a better place for this to be written
 		if (gConfigVal.ChaoAttention) {
@@ -669,6 +609,10 @@ extern "C"
 		//axe reincarnation removing animal parts
 		if (gConfigVal.KeepAnimalParts) {
 			WriteData<7>((char*)0x00551630, (char)0x90);
+		}
+
+		if(gConfigVal.GuestChao) {
+			CWE_GuestInit();
 		}
 
 #ifdef PATHFINDING

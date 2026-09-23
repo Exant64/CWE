@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "al_save.h"
+#include "al_guest.h"
 #include <cstdio>
 #include "Chao.h"
 #include <random>
@@ -332,6 +333,10 @@ auto WriteSaveFile = GenerateUsercallWrapper<int(*)(char* path, void* a2, int co
 void SaveCWESaveFiles() {
 	char strBuffer[MAX_PATH];
 	save::SaveCWESave();
+
+	if (gConfigVal.GuestChao && gConfigVal.GuestSave) {
+		Guest_SaveAllChao();
+	}
 
 	for (size_t i = 0; i < ModAPI_SaveAPI.size(); i++)
 	{

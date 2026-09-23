@@ -293,22 +293,26 @@ void AL_GeneAnalyzeCommonAdd(AL_GENE* pGene, CHAO_PARAM_GC* pParam) {
 
 	if (pGene->MotherID.id[0] != 0) {
 		auto motherParam = AL_KW_FindChaoBasedOnId(pGene->MotherID);
-		auto dataID = GET_CWEPARAM(motherParam);
+		if (motherParam) {
+			auto dataID = GET_CWEPARAM(motherParam);
 
-		memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		AL_ShapeElementFromParam(&pParamCwe->motherData, motherParam);
+			memcpy(pParamCwe->MotherName, dataID->Name, sizeof(AL_NAME));
+			memcpy(pParamCwe->MGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+			memcpy(pParamCwe->MGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+			AL_ShapeElementFromParam(&pParamCwe->motherData, motherParam);
+		}
 	}
 
 	if (pGene->FatherID.id[0] != 0) {
 		auto fatherParam = AL_KW_FindChaoBasedOnId(pGene->FatherID);
-		auto dataID = GET_CWEPARAM(fatherParam);
+		if (fatherParam) {
+			auto dataID = GET_CWEPARAM(fatherParam);
 
-		memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
-		memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
-		memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
-		AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
+			memcpy(pParamCwe->FatherName, dataID->Name, sizeof(AL_NAME));
+			memcpy(pParamCwe->FGroundFatherName, dataID->FatherName, sizeof(AL_NAME));
+			memcpy(pParamCwe->FGroundMotherName, dataID->MotherName, sizeof(AL_NAME));
+			AL_ShapeElementFromParam(&pParamCwe->fatherData, fatherParam);
+		}
 	}
 }
 
@@ -348,7 +352,6 @@ ASM_FUNC void AL_BlendGene(AL_GENE* a1, AL_GENE* a2, AL_GENE* pDestGene) {
 
 static void AL_GetMedalGene(const CHAO_PARAM_GC* param, AL_GENE& gene) {
 	if (param->body.JewelNum != 0) return;
-	if (param->GBAType == 1) return;
 
 	switch (param->body.MedalNum) {
 	case ChaoMedal_Aquamarine:
@@ -506,10 +509,10 @@ void AL_CreateChildGene(task* pMotherTask, task* pFatherTask, AL_GENE* pChildGen
 	if (*(char*)0x0053FD6C == 1)
 	{
 		float Chance = 0.0f;
-		if (GET_CHAOPARAM(pMotherTask)->GBAType != 1 && GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
+		if (GET_CHAOPARAM(pMotherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
-		if (GET_CHAOPARAM(pFatherTask)->GBAType != 1 && GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
+		if (GET_CHAOPARAM(pFatherTask)->body.MedalNum == 7)
 			Chance += 0.38f;
 
 		if (Chance > 0)

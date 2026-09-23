@@ -54,9 +54,15 @@
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster);
 
+static bool OdekakeCustomizationCondition() {
+	CHAO_PARAM_GC* pInfo = GBAManager_GetChaoDataPointer();
+
+	return pInfo && !(AL_ParameterIsGuest(pInfo) && gConfigVal.GuestBlockWearableChanges);
+}
+
 CWE_API_ODEKAKE_ENTRY OdekakeCustomizationEntry = {
 	AL_OdekakeCustomization, 
-	nullptr, 
+	OdekakeCustomizationCondition, 
 	ODE_FLAGS_REQUIRE_CHAO, 
 	&stru_11BA528[32],
 	&stru_11BA528[8],

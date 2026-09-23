@@ -776,6 +776,7 @@
     <ClCompile Include="al_daynight.cpp" />
     <ClCompile Include="al_draw.cpp" />
     <ClCompile Include="al_gene.cpp" />
+    <ClCompile Include="al_guest.cpp" />
     <ClCompile Include="al_marketattr.cpp" />
     <ClCompile Include="al_minimal.cpp" />
     <ClCompile Include="al_misc.cpp" />

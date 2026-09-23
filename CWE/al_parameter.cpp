@@ -26,6 +26,14 @@ ASM_FUNC void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2) 
     ASM_RET( 0 );
 }
 
+bool AL_ParameterIsGuest(const CHAO_PARAM_GC* pParam) {
+	return GET_CWEPARAM(pParam)->IsGuest != 0;
+}
+
+bool AL_ParameterIsGuest(const task* tp) {
+	return AL_ParameterIsGuest(GET_CHAOPARAM(tp));
+}
+
 void AL_NameSet(char* lval, char* rval) {
 	memcpy(lval, rval, sizeof(AL_NAME));
 }
@@ -204,7 +212,7 @@ ASM_FUNC void sub_535E90(CHAO_PARAM_GC *a1, int a2) {
     ASM_RET( 0 );
 }
 
-static ASM_FUNC void AL_CalcParameter(task* tp) {
+ASM_FUNC void AL_CalcParameter(task* tp) {
     // save regs
     ASM_PUSH( esi );
 

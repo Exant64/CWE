@@ -27,6 +27,12 @@ enum {
 	CFG_MORE_FACE_RANDOM
 };
 
+enum {
+	GUEST_ROLL_RANDOM,
+	GUEST_ROLL_ROTATE,
+	GUEST_ROLL_ROTATE_RANDOM
+};
+
 struct ConfigValues {
 	bool BrightFixEnabled;
 	bool CharacterChaoEvo;
@@ -119,6 +125,28 @@ struct ConfigValues {
 	bool NeutGrayscale;
 	bool HeroGrayscale;
 	bool DarkGrayscale;
+
+	bool GuestChao;
+	bool GuestSave;
+	uint32_t GuestVisitCounter;
+	uint32_t GuestMin;
+	uint32_t GuestMax;
+	uint32_t GuestRollType;
+	uint32_t GuestRotateCount;
+	bool GuestRandomizeEmotions;
+	bool GuestBlockStatChanges;
+	bool GuestBlockNameChange;
+	bool GuestBlockBodyChanges;
+	bool GuestBlockVisualChanges;
+	bool GuestBlockWearableChanges;
+	bool GuestBlockPlayerRelations;
+	bool GuestBlockSocialRelations;
+	bool GuestBlockBreeding;
+	bool GuestBlockLifeChanges;
+	bool GuestBlockMinimalFlagChanges;
+	bool GuestBlockMinimalPartChanges;
+	bool GuestBlockOmoBuild;
+	bool GuestIndicator;
 };
 extern ConfigValues gConfigVal;
 
