@@ -310,26 +310,6 @@ void AL_SetRareMaterial(task* tp, NJS_CNK_MODEL* pModel)
 	);
 }
 
-static const int C_MTXConcatPtr = 0x00426E40;
-static ASM_FUNC void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3) {
-	// save regs
-    ASM_PUSH( ebx );
-
-    // arguments
-    ASM_MOVE( edx, ASM_ESP(2+0 +1) ); // md
-    ASM_MOVE( ecx, ASM_ESP(3+0 +1) ); // mpst
-    ASM_MOVE( eax, ASM_ESP(1+0 +1) ); // mpre
-
-    // call
-    ASM_CALL_R( ebx, 0x00426E40 );
-
-    // pull regs
-    ASM_POP( ebx );
-
-    // return
-    ASM_RET( 0 );
-}
-
 static NJS_MATRIX StartViewMatrix;
 static NJS_MATRIX DrawMatrices[40];
 static size_t DrawMatrixNodeCount = 0;

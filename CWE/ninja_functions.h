@@ -115,6 +115,7 @@ void chCnkDrawObject(NJS_CNK_OBJECT* a1);
 
 void njCnkDrawModel(NJS_CNK_MODEL* a1);
 
+ASM_FUNC void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3);
 void njRotateX(NJS_MATRIX* m, Angle x);
 void njRotateY(NJS_MATRIX* m, Angle y);
 void njRotateZ(NJS_MATRIX* m, Angle z);

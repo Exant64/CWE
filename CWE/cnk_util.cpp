@@ -1,3 +1,6 @@
+#include "MemAccess.h"
+#include "al_draw.h"
+#include "ninja.h"
 #include "stdafx.h"
 #include <cassert>
 #include <unordered_set>
@@ -7,10 +10,11 @@
 #include <cnk_util.h>
 #include <algorithm>
 #include <ninja_functions.h>
+#include <winnt.h>
 
 static bool CnkApplyScalingFlag = false;
 
-static void CnkMdlApplyScaling(NJS_CNK_MODEL* pModel) {
+static void CnkMdlApplyScaling(NJS_CNK_MODEL* pModel, NJS_MATRIX* pMatrix) {
 	if(!pModel->vlist) return;
 
 	Sint32* vlist = pModel->vlist;
@@ -30,7 +34,7 @@ static void CnkMdlApplyScaling(NJS_CNK_MODEL* pModel) {
 			// I don't know if njCalcPoint will be able to handle src == dst properly so I copy it
 			NJS_POINT3 src = *pPos;
 
-			sub_426CC0(_nj_current_matrix_ptr_, pPos, &src, FALSE);
+			sub_426CC0(pMatrix, pPos, &src, FALSE);
 		}
 
 		/** Next data chunk **/
@@ -38,41 +42,69 @@ static void CnkMdlApplyScaling(NJS_CNK_MODEL* pModel) {
 	}
 }
 
-static void CnkApplyScalingSub(NJS_CNK_OBJECT* pObject) {
+FastcallFunctionPointer(void, njInvertMatrix, (NJS_MATRIX* pMatrix), 0x07806F0);
+
+// correction = inverse(R) * inherited * R * S
+static void CnkApplyScalingSub(NJS_CNK_OBJECT* pObject, NJS_MATRIX& inherited) {
 	njPushMatrixEx();
 
-	if(!(pObject->evalflags & NJD_EVAL_UNIT_SCL)) {
-		njScale(NULL, pObject->scl[0], pObject->scl[1], pObject->scl[2]);
+	NJS_MATRIX rotation;
+	NJS_MATRIX invertedRotation;
+	NJS_MATRIX scale;
+	njUnitMatrix(&rotation);
+	njUnitMatrix(&invertedRotation);
+	njUnitMatrix(&scale);
 
-		pObject->evalflags |= NJD_EVAL_UNIT_SCL;
-		pObject->scl[0] = 1.f;
-		pObject->scl[1] = 1.f;
-		pObject->scl[2] = 1.f;
+	if(!(pObject->evalflags & NJD_EVAL_UNIT_ANG)) {
+		if (pObject->evalflags & NJD_EVAL_ZXY_ANG) {
+			if (pObject->ang[1]) njRotateY(&rotation, pObject->ang[1]);
+			if (pObject->ang[0]) njRotateX(&rotation, pObject->ang[0]);
+			if (pObject->ang[2]) njRotateZ(&rotation, pObject->ang[2]);
+		}
+		else {
+			if (pObject->ang[2]) njRotateZ(&rotation, pObject->ang[2]);
+			if (pObject->ang[1]) njRotateY(&rotation, pObject->ang[1]);
+			if (pObject->ang[0]) njRotateX(&rotation, pObject->ang[0]);
+		}
 
-		CnkApplyScalingFlag = true;
+		invertedRotation = rotation;
+		njInvertMatrix(&invertedRotation);
 	}
 
-	if (CnkApplyScalingFlag && pObject->model) {
-		CnkMdlApplyScaling(pObject->model);
+	if(!(pObject->evalflags & NJD_EVAL_UNIT_SCL)) {
+		njScale(&scale, pObject->scl[0], pObject->scl[1], pObject->scl[2]);
+	}
+
+	C_MTXConcat(&invertedRotation, &invertedRotation, &inherited);
+	C_MTXConcat(&invertedRotation, &invertedRotation, &rotation);
+	C_MTXConcat(&invertedRotation, &invertedRotation, &scale);
+
+	sub_426CC0(&inherited, (NJS_POINT3*)pObject->pos, (NJS_POINT3*)pObject->pos, FALSE);
+
+	pObject->evalflags |= NJD_EVAL_UNIT_SCL;
+	pObject->scl[0] = 1.f;
+	pObject->scl[1] = 1.f;
+	pObject->scl[2] = 1.f;
+
+	if (pObject->model) {
+		CnkMdlApplyScaling(pObject->model, &invertedRotation);
 	}
 
 	if(pObject->child) {
-		CnkApplyScalingSub(pObject->child);
+		CnkApplyScalingSub(pObject->child, invertedRotation);
 	}
 
 	njPopMatrixEx();
 
 	if(pObject->sibling) {
-		CnkApplyScalingSub(pObject->sibling);
+		CnkApplyScalingSub(pObject->sibling, inherited);
 	}
 }
 
 void CnkApplyScaling(NJS_CNK_OBJECT* pObject) {
-	CnkApplyScalingFlag = false;
-
-	njPushUnitMatrix();
-	CnkApplyScalingSub(pObject);
-	njPopMatrixEx();
+	NJS_MATRIX init;
+	njUnitMatrix(&init);
+	CnkApplyScalingSub(pObject, init);
 }
 
 // functions borrowed from Shaddatic's SAMT, thanks shad
