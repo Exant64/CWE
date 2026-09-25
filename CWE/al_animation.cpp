@@ -99,10 +99,16 @@ void Chao_ExtraAnimations(task* tp)
 						FlyIdle = 131;
 					}
 
-					const int Idle2Anim[] = { 0, 1, 238, 239, 215, 457, 510, HeroIdle, DarkIdle, FlyIdle };
+					const int Idle2Anim[] = { 0, 1, 238, 239, 215, 457, ALM_EHHEN_STAND, HeroIdle, DarkIdle, FlyIdle };
 					int Idle2RNG = rand() % std::size(Idle2Anim);
+					auto chosenAnim = Idle2Anim[Idle2RNG];
 
-					AL_SetMotionLink(tp, Idle2Anim[Idle2RNG]);
+					AL_SetMotionLink(tp, chosenAnim);
+
+					if (gConfigVal.MoreSound && chosenAnim == ALM_EHHEN_STAND) {
+						AL_SE_CallV2(TONE(6, 29), 0, 0, 110, &data->pos);
+					}
+
 					cwe_work->AnimRandomized++;
 				}
 				else
