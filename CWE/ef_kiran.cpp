@@ -1,52 +1,5 @@
 #include "stdafx.h"
-
-struct ParticleUserData {
-	int a1;
-	NJS_TEXLIST *texlist;
-	int a2;
-	int frames;
-	float speed;
-	float velocityLoss;
-	float gravity;
-	float scaleUp;
-	void *functionPtr;
-	float a7;
-	int fill1;
-	int fill2;
-	int active;
-	int next;
-};
-
-struct ParticleData {
-	int rotY;
-	float scale;
-	NJS_VECTOR position;
-	int color;
-	float frame;
-	int field_1C;
-	NJS_VECTOR velocity;
-	int rotYSpeed;
-	float filler3;
-	float filler4;
-	int filler5;
-};
-
-static ASM_FUNC int AllocateParticle(ParticleUserData* a2) {
-    // save regs
-    ASM_PUSH( ebx );
-
-    // arguments
-    ASM_MOVE( ebx, ASM_ESP(1+0+1) ); // a2
-
-    // call
-    ASM_CALL_R( edx, 0x0492660 );
-
-    // restore regs
-    ASM_POP( ebx );
-
-    // return
-    ASM_RET( 0 );
-}
+#include "particlecore.h"
 
 static Bool KiranExecutor(ParticleUserData *a1, ParticleData *a2) {
 	const int frameTbl[] = { 0, 1, 2, 3, 2, 1, 0 };

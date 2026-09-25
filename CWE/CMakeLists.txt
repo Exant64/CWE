@@ -1,5 +1,6 @@
 add_library(CWE SHARED
     ef_kiran.cpp
+    ParticleCore.cpp
     BrightFix/BrightFix.cpp
     al_animation.cpp
     al_guest.cpp
