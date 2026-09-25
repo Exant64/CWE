@@ -504,6 +504,11 @@ void Chao_ExtraSounds(task* tp)
 				AL_SE_CallV2(TONE(6, 152), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
+			else if (data->MotionCtrl.next_num == 241)
+			{
+				AL_SE_CallV2(TONE(6, 137), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
+			}
 		}
 
 		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
