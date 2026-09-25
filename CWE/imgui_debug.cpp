@@ -873,22 +873,57 @@ static void TaskListMenu() {
     }
 }
 
+static void ItemSaveInfoMenu(ITEM_SAVE_INFO& info) {
+    Sint16 step = 1;
+
+    ImGui::InputScalar("kind", ImGuiDataType_S16, &info.kind, &step);
+    ImGui::InputScalar("place", ImGuiDataType_S16, &info.place, &step);
+    ImGui::InputScalar("status", ImGuiDataType_S16, &info.status, &step);
+    ImGui::InputScalar("nbVisit", ImGuiDataType_S16, &info.nbVisit, &step);
+
+    ImGui::InputFloat3("Pos", &info.pos.x);
+}
+
 static void ItemsMenu() {
     if (ShowItemsMenu && ImGui::Begin("Items", &ShowItemsMenu)) {
-        for (size_t i = 0; i < AccessoryItemList.size(); ++i) {
-            ImGui::PushID(i);
-            if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
-                ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
-                ImGui::InputInt("Garden", &AccessoryItemList[i].Garden);
-                ImGui::InputText("ID", AccessoryItemList[i].ID, 20);
-                ImGui::InputFloat3("Position", &AccessoryItemList[i].Position.x);
-                ImGui::InputInt("Angle", &AccessoryItemList[i].Angle);
+        auto pGardenInfo = AL_GetCurrGardenInfo();
 
-                ImGui::TreePop();
+        if (ImGui::TreeNode("Fruits")) {
+            for (size_t i = 0; i < _countof(pGardenInfo->fruit); ++i) {
+                auto& info = pGardenInfo->fruit[i];
+
+                ImGui::PushID(i);
+                if (ImGui::TreeNode(&info, "%d", int(i))) {
+                    ItemSaveInfoMenu(info);
+
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
             }
-            ImGui::PopID();
-          
+
+            ImGui::TreePop();
         }
+
+        if (ImGui::TreeNode("Accessories")) {
+            for (size_t i = 0; i < AccessoryItemList.size(); ++i) {
+                ImGui::PushID(i);
+
+                if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
+                    ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
+                    ImGui::InputInt("Garden", &AccessoryItemList[i].Garden);
+                    ImGui::InputText("ID", AccessoryItemList[i].ID, 20);
+                    ImGui::InputFloat3("Position", &AccessoryItemList[i].Position.x);
+                    ImGui::InputInt("Angle", &AccessoryItemList[i].Angle);
+
+                    ImGui::TreePop();
+                }
+
+                ImGui::PopID();
+            }
+
+            ImGui::TreePop();
+        }
+
         ImGui::End();
     }
 }
