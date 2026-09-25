@@ -1543,6 +1543,34 @@ static int ALBHV_SwimSeoyogi_r(task* tp) {
 	return ALBHV_SwimSeoyogi_t.Original(tp);
 }
 
+static FunctionHook<int, task*> ALBHV_NoticePlayer_t(0x5634D0);
+static int ALBHV_NoticePlayer_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+	auto preMode = bhv->Mode;
+
+	auto retVal = ALBHV_NoticePlayer_t.Original(tp);
+
+	if(preMode == 1 && bhv->Mode == 2 && njRandom() < 0.5f) {
+		if(njRandom() < 0.5f) {
+			AL_SE_CallV2(TONE(6, 142), 0, 0, 110, &tp->twp->pos);
+		}
+		else {
+			AL_SE_CallV2(TONE(6, 143), 0, 0, 110, &tp->twp->pos);
+		}
+	}
+
+	return retVal;
+}
+
+static FunctionHook<int, task*> ALBHV_Book_t(0x55E210);
+static int ALBHV_Book_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 160), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Book_t.Original(tp);
+}
+
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
 	WriteData((int*)0x005615DA, (int)ALBHV_PickUpLockOn_MoreAnim);
@@ -1564,5 +1592,7 @@ void AL_MoreAnimSound_Init() {
 
 	if (gConfigVal.MoreSound) {
 		ALBHV_SwimSeoyogi_t.Hook(ALBHV_SwimSeoyogi_r);
+		ALBHV_NoticePlayer_t.Hook(ALBHV_NoticePlayer_r);
+		ALBHV_Book_t.Hook(ALBHV_Book_r);
 	}
 }
