@@ -116,6 +116,10 @@ int ALBHV_Capture(task* tp) {
 
 		AL_SE_CallV2(TONE(1, 4), 0, 0, 0, &GET_CHAOWK(tp)->pos);
 
+		if (gConfigVal.MoreSound && njRandom() < 0.5f) {
+			AL_SE_CallV2(TONE(6, 42), 0, 0, 0, &GET_CHAOWK(tp)->pos);
+		}
+
 		CreateChildTask(IM_TWK, (task_exec)0x566CF0, tp);
 		ParamFukidasiExecutor_Load(tp);
 	case 1:
