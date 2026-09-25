@@ -1534,6 +1534,14 @@ static void ASM_FUNC AL_CalcIntentionScore_Hima_t() {
 	ASM_RET(0);
 }
 
+static FunctionHook<int, task*> ALBHV_SwimSeoyogi_t(0x5620D0);
+static int ALBHV_SwimSeoyogi_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 38), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_SwimSeoyogi_t.Original(tp);
+}
 
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
@@ -1552,5 +1560,9 @@ void AL_MoreAnimSound_Init() {
 		WriteJump((void*)0x0059E2D0, (void*)ALBHV_Cymbal_r);
 		WriteJump((void*)0x0059E120, (void*)ALBHV_Rappa_r);
 		WriteJump((void*)0x0059DD10, (void*)ALBHV_Fue_r);
+	}
+
+	if (gConfigVal.MoreSound) {
+		ALBHV_SwimSeoyogi_t.Hook(ALBHV_SwimSeoyogi_r);
 	}
 }
