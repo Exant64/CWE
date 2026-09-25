@@ -1645,6 +1645,15 @@ static int ALBHV_Touch_r(task* tp) {
 	return ALBHV_Touch_t.Original(tp);
 }
 
+static FunctionHook<int, task*> ALBHV_Seed3_t(0x567830);
+static int ALBHV_Seed3_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 130), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Seed3_t.Original(tp);
+}
+
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
 	WriteData((int*)0x005615DA, (int)ALBHV_PickUpLockOn_MoreAnim);
@@ -1674,5 +1683,6 @@ void AL_MoreAnimSound_Init() {
 		ALBHV_ShiriDance_t.Hook(ALBHV_ShiriDance_r);
 		ALBHV_NeedFruit_t.Hook(ALBHV_NeedFruit_r);
 		ALBHV_Touch_t.Hook(ALBHV_Touch_r);
+		ALBHV_Seed3_t.Hook(ALBHV_Seed3_r);
 	}
 }
