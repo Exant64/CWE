@@ -18,21 +18,16 @@ target_compile_options(CWE PRIVATE -Wno-error=narrowing)
 
 target_compile_definitions(CWE PRIVATE CWEV9 _UNICODE)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-    # necessary to generate PDB
-    target_compile_options(CWE PRIVATE -gcodeview)
-    target_link_options(CWE PRIVATE -Wl,/DEBUG)
-endif()
 
 target_link_options(CWE PRIVATE
     -static-libgcc -static-libstdc++ -static
 )
 
-target_link_options(CWE PRIVATE
-    -s
-)
+if (STRIP)
+    target_link_options(CWE PRIVATE
+        -s
+    )
+endif()
 
 target_include_directories(CWE PRIVATE
     CWE

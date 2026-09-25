@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "ImGuiDebug launch",
+            "name": "ImGuiDebug launch (gdb)",
             "type": "gdbtarget",
             "request": "launch",
             "program": "${env:SA2_PATH}/sonic2app.exe",
@@ -35,7 +35,28 @@
             "initCommands": [
                 "set architecture i386"
             ],
-            "preLaunchTask": "CMake Build (debug)"
+            "preLaunchTask": "${defaultBuildTask}"
+        },
+        {
+            "name": "ImGuiDebug launch (lldb)",
+            "type": "lldb",
+            "request": "launch",
+
+            "program": "${env:SA2_PATH}/sonic2app.exe",
+            "args": ["-l", "chaoworld"],
+            "cwd": "${env:SA2_PATH}",
+            "sourceMap": {
+                "Z:\\": "/"
+            },
+            "initCommands": [
+                "script import subprocess, time",
+                "script subprocess.Popen(['/usr/bin/wine', '~/work/LLVM/bin/lldb-server.exe', 'platform', '--listen', 'localhost:12345'], cwd='${env:SA2_PATH}')",
+                "script time.sleep(2)",
+                "platform select remote-windows",
+                "platform connect connect://localhost:12345"
+            ],
+
+            "preLaunchTask": "${defaultBuildTask}"
         },
         {
             "name": "Release launch",

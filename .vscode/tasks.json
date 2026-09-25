@@ -7,19 +7,18 @@
     },
     "tasks": [
         {
+            "type": "cmake",
             "label": "CMake Build (debug)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "--preset",
-                "imguirelease"
+            "command": "build",
+            "targets": [
+                "all"
             ],
-            "problemMatcher": "$gcc",
+            "preset": "imguirelease",
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "ImGuiBuild",
