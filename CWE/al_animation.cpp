@@ -1594,6 +1594,14 @@ static int ALBHV_SuriSuri_r(task* tp) {
 	return ALBHV_SuriSuri_t.Original(tp);
 }
 
+static FunctionHook<int, task*> ALBHV_MesoMeso_t(0x59FA50);
+static int ALBHV_MesoMeso_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.33f) {
+		AL_SE_CallV2(TONE(6, 0), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_MesoMeso_t.Original(tp);
+}
 
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
@@ -1619,5 +1627,6 @@ void AL_MoreAnimSound_Init() {
 		ALBHV_NoticePlayer_t.Hook(ALBHV_NoticePlayer_r);
 		ALBHV_Book_t.Hook(ALBHV_Book_r);
 		ALBHV_SuriSuri_t.Hook(ALBHV_SuriSuri_r);
+		ALBHV_MesoMeso_t.Hook(ALBHV_MesoMeso_r);
 	}
 }
