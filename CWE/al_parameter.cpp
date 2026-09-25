@@ -93,6 +93,23 @@ Bool AL_IsEmotionTimerReset(task* tp) {
     return FALSE;
 }
 
+void AL_ParameterAddGrowth(task* tp, float add) {
+    CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
+    AL_SHAPE* pShape = &GET_CHAOWK(tp)->Shape;
+
+    pParam->body.growth += add;
+
+    if (pParam->body.growth > GET_GLOBAL()->GrowthLimit) {
+        pParam->body.growth = GET_GLOBAL()->GrowthLimit;
+    }
+
+    if (pParam->body.growth < 0) {
+        pParam->body.growth = 0;
+    }
+
+    pShape->Flag |= BIT_1; /* AL_SHAPE_FLAG_DEFORM */
+}
+
 void AL_ParameterAddAPos(task* a1, float a2)
 {
 	CHAO_PARAM_GC* v3; // ecx
