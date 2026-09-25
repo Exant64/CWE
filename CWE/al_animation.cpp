@@ -947,6 +947,15 @@ static int ALBHV_Greet_r(task* tp) {
 					else {
 						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_B, 20);   
 					}
+
+					if(gConfigVal.MoreSound) {
+						if (njRandom() < 0.5f) {
+							AL_SE_CallV2(TONE(6, 99), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+						}
+						else {
+							AL_SE_CallV2(TONE(6, 100), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+						}
+					}
 				}
 				else {
 					AL_SetMotionLinkStep(tp, ALM_HELLO, 20);    
