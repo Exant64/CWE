@@ -938,7 +938,10 @@ static int ALBHV_Greet_r(task* tp) {
 					}
 				}
 				else if (njRandom() < calmChance) {
-					if(njRandom() < 0.5f) {
+					if(AL_GetMotionPosture(tp) == AL_PST_SIT) {
+						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_SIT, 20);
+					}
+					else if(njRandom() < 0.5f) {
 						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_A, 20);    
 					}
 					else {
