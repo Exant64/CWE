@@ -29,9 +29,7 @@ static void ALO_CoffinExecutor(task* tp) {
         case 0: {
             task* touch = CCL_IsHitKind(tp, CI_KIND_AL_TOUCH);
             if (touch && touch->ptp) {
-                const Uint16 skill = AL_ParameterGetSkill(touch->ptp, SKILL_GUTS);
-                
-                if (50000 - (skill * 4) > njRandom() * 80000) {
+                if (njRandom() < 0.5f) {
                     work->scl.y = 0.01f;
                     work->scl.z = 0;
                     work->scl.x = 0;
