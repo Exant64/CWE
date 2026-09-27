@@ -49,6 +49,8 @@ static int ALBHV_PlayPiano(task* tp) {
 		AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
 		AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
 
+		AL_FixPosition(tp);
+
 		++bhv->Mode;
 
 		timer = (int)(1800 + (njRandom() * 800.f)) * 2;
@@ -86,7 +88,7 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 	SetPianoWaypoint(pToy, &pianoPos);
 	
-	const Angle targetAng = pToy->twp->ang.y + 0x8000;
+	const Uint16 targetAng = Uint16(pToy->twp->ang.y + 0x8000);
 	MOV_SetAimPos(tp, &pianoPos);
 
 	switch (bhv->Mode) {
@@ -110,7 +112,7 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 	case 2:
 		work->ang.y = AdjustAngle(work->ang.y, targetAng, ANGLE_SPD);
 
-		if (abs(work->ang.y - targetAng) <= ANGLE_SPD) {
+		if (abs(Sint16(Uint16(targetAng) - Uint16(work->ang.y))) <= ANGLE_SPD) {
 			return BHV_RET_FINISH;
 		}
 		break;
