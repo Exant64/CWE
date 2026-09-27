@@ -80,7 +80,7 @@ private:
         float m_radiusSquared;
     };
 
-    bool m_useCache = false;
+    bool m_useCache = true;
     NavGenConfig m_config;
 
     std::mutex m_toEraseMutex;

@@ -1,9 +1,12 @@
 #include "stdafx.h"
+#include "al_parameter.h"
 
 #include "alg_kinder_he.h"
 #include "al_odekake.h"
 #include "ninja_functions.h"
 #include <cstdio>
+
+#include "ChaoMain.h"
 
 #include "al_ode_menu.h"
 #include "al_texlist.h"
@@ -16,7 +19,13 @@ static CHS_BILL_INFO NameMenuSprites[] = {
 
 static void AL_OdekakeName(ODE_MENU_MASTER_WORK* pMaster);
 
-CWE_API_ODEKAKE_ENTRY OdekakeNameEntry = { AL_OdekakeName, nullptr, ODE_FLAGS_REQUIRE_CHAO, &NameMenuSprites[2], &NameMenuSprites[0], &NameMenuSprites[1], nullptr, nullptr };
+static bool OdekakeNameCondition() {
+	CHAO_PARAM_GC* pInfo = GBAManager_GetChaoDataPointer();
+
+	return pInfo && !(AL_ParameterIsGuest(pInfo) && gConfigVal.GuestBlockNameChange);
+}
+
+CWE_API_ODEKAKE_ENTRY OdekakeNameEntry = { AL_OdekakeName, OdekakeNameCondition, ODE_FLAGS_REQUIRE_CHAO, &NameMenuSprites[2], &NameMenuSprites[0], &NameMenuSprites[1], nullptr, nullptr };
 
 char NazukeyaBuff[0x60 + 4 + sizeof(AL_NAME)];
 task* nazukeyaObj = 0;

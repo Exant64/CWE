@@ -11,7 +11,6 @@
 #include <renderfix.h>
 #include <api/api_idhash.h>
 #include <al_msg_font.h>
-#include <ALifeSDK_Functions.h>
 #include <ChaoMain.h>
 #include "memory.h"
 
@@ -318,12 +317,14 @@ static void NavSysDisplayer(task* tp) {
 		AlMsgFontDelete(&messageBuffer);
     }
 
-    #ifdef IMGUIDEBUG
+#ifdef IMGUIDEBUG
+    if(RenderFix_IsEnabled()) {
         sys->DebugDrawNavMesh();
         sys->DebugDrawPathResult();
 
         gNavSysGenerator.DebugDrawMaxClimbLine();
-    #endif
+    }
+#endif
 }
 
 task* GetNavSysTask() {

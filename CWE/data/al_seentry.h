@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma pack(push, 8)
 struct SoundEffectEntry
 {
 	unsigned __int8 field_0;
@@ -10,7 +9,6 @@ struct SoundEffectEntry
 	__int16 field_4;
 	__int16 field_6;
 };
-#pragma pack(pop)
 
 SoundEffectEntry stru_8A68B0[] =
 {

@@ -23,10 +23,11 @@
 #include "codes/include/code_racefair.h"
 #include "codes/include/code_disablebreed.h"
 #include "codes/include/code_canthatecharacters.h"
+#include "codes/include/code_quickexit.h"
 
-#include "codes/include/bonus/code_mergeherodark.h"
+#include "codes/include/bonus/code_mergegardens.h"
 
-#include "codes/include/code_moreanger.h"
+#include "codes/include/code_negativeemotions.h"
 
 #include "codes/include/code_racecam_switch.h"
 #include "codes/include/code_multisave.h"
@@ -45,6 +46,7 @@
 #include <code_system/codes/include/cheat/code_levellimit.h>
 #include <code_system/codes/include/bonus/code_babychaolevel.h>
 #include <code_system/codes/include/advanced/code_gc_shinyjewel.h>
+#include <code_system/codes/include/advanced/code_chaosface.h>
 
 #include <code_system/codes/include/easy/code_disable_reincarnation.h>
 
@@ -122,7 +124,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<MonsterEvo>("EnableMonsterEvolution", 0, 0);
 	CodeManager::Instance().Add<ChaoSick>("ChaoSick", 0, 0);
 
-	CodeManager::Instance().Add<MoreAnger>("Hard", "MoreAnger", false);
+	CodeManager::Instance().Add<NegativeEmotions>("Hard", "MoreAnger", false);
 	CodeManager::Instance().Add<DisableBreed>("DisableBreed", false);
 	CodeManager::Instance().Add<ChaoHunger>("ChaoHunger", false);
 	CodeManager::Instance().Add<ChaoDrown>("ChaoDrown", false);
@@ -131,8 +133,9 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<AnimalReuse>("Easy","AnimalReuse", false);
 	CodeManager::Instance().Add<DisableReincarnation>("Easy", "DisableReincarnation", false);
 	CodeManager::Instance().Add<CantHateCharacters>("EasyChaocan'thateCharacters", false);
-	CodeManager::Instance().Add<MergeHeroDark>("BonusMergeHeroandDarkGardenChaoSlots", false);
+	CodeManager::Instance().Add<MergeGardens>("MergeGardenSlots", 0, 0);
 
+	CodeManager::Instance().Add<QuickExit>("Misc", "QuickExit", true);
 	CodeManager::Instance().Add<DCCocoon>("DCCocoon", false);
 	CodeManager::Instance().Add<DisableLevelupJingle>("DisableLevelupJingle", false);
 	CodeManager::Instance().Add<HDToyModels>("HDToyModels", false);
@@ -144,6 +147,8 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<PartyRace>("RaceJewelandBeginnerRacebecome8PPartyRace", false);
 	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
 	CodeManager::Instance().Add<SpoiledFruits>("AdvancedFruitscanSpoilt", false);
+	CodeManager::Instance().Add<ChaosEyes>("ChaosEyes", 0, 0);
+	CodeManager::Instance().Add<ChaosMouths>("ChaosMouths", 0, 0);
 	CodeManager::Instance().Add<BetterCameraControl>("CameraControl", 0, 0);
 
 	//lst ports

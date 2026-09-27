@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include <imgui/imgui_impl_win32.h>
 #include <imgui/imgui_impl_dx9.h>
-#include <exception>
+#include "imgui/imgui.h"
 #include <FunctionHook.h>
 #include <d3d9.h>
 #include <al_world.h>
 #include <Chao.h>
+#include "chaofile.h"
+#include "al_emotion.h"
 #include <al_behavior/albhv.h>
 #include <al_behavior/alsbhv.h>
 #include <al_daynight.h>
@@ -18,13 +20,29 @@
 #include <al_behavior/albhv_bully.h>
 #include <al_daynight_rain.h>
 #include <al_speechbubble.h>
+#include "al_chao_info.h"
+
 #include <data/more_faces.h>
+#include <libloaderapi.h>
+#include <windows.h>
+#include <commdlg.h>
+#include <cstddef>
+#include <cstdint>
+
+#ifdef PATHFINDING
 #include "navigation/navsys.h"
 #include "navigation/navsys_generator.h"
 #include "navigation/navsys_internal.h"
+#endif
+#include <al_guest.h>
+
+static bool ShowParamMenu = false;
+static int ParamIndex = 0;
+static CHAO_PARAM_GC* ParamPointer = NULL;
 
 static int SelectedChaoIndex;
 static int SelectedOtherChaoIndex;
+static bool ShowGardenInfo = false;
 static bool ShowChaoInfo = false;
 static bool ShowDNC = false;
 static bool ShowLight = false;
@@ -36,13 +54,23 @@ static bool ShowMarketMenu = false;
 static bool ShowSoundsMenu = false;
 static bool ShowMoreFacesMenu = false;
 static bool ShowNavSysMenu = false;
+static bool ShowGuestMenu = false;
+
+static void ConvertName(char* pName, char* pOut) {
+    FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
+
+    wchar_t namebuf[128];
+
+    sub_57A6F0(pName, (int)namebuf);
+    WcConvFromCStr((int)pOut, (int)namebuf, Language == 0);
+}
 
 static task* GetSelectedChao() {
-    return GetChaoObject(0, SelectedChaoIndex);
+    return ALW_GetTaskCount(0, SelectedChaoIndex);
 }
 
 static task* GetSelectedOtherChao() {
-    return GetChaoObject(0, SelectedOtherChaoIndex);
+    return ALW_GetTaskCount(0, SelectedOtherChaoIndex);
 }
 
 static int SetMusicBhv(task* tp) {
@@ -59,7 +87,7 @@ static int SetSToyBhv(task* tp) {
 
 static void MoreFacesMenu() {
     if(!ShowMoreFacesMenu) return;
-    if(!playerpwp[0]);
+    if(!playerpwp[0]) return;
 
     task* pHeld = playerpwp[0]->htp;
     if(!pHeld) return;
@@ -105,6 +133,217 @@ static void MoreFacesMenu() {
     }
 }
 
+static void ChaoParamMenu() {
+    if(!ShowParamMenu) return;
+
+    if(ImGui::Begin("ChaoParam", &ShowParamMenu)) {
+        ImGui::SliderInt("Index", &ParamIndex, 0, 23);
+
+        if(ParamPointer) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImColor(128,128,255,255).Value);
+
+            ImGui::Text("Selected param pointer: %p", ParamPointer);
+            ImGui::SameLine();
+            if(ImGui::Button("Deselect")) {
+                ParamPointer = nullptr;
+            }
+
+            ImGui::PopStyleColor();
+        }
+
+        CHAO_PARAM_GC* pParam = !ParamPointer ? &ChaoInfo::Instance()[ParamIndex] : ParamPointer;
+
+        if (ImGui::BeginTabBar("param_tab_bar")) {
+            if (ImGui::BeginTabItem("General")) {
+                if(ImGui::Button("Load .chao File")) {
+                    OPENFILENAMEA ofn {0 };
+                    char filename[MAX_PATH] {};
+
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = NULL;
+                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0\0";
+                    ofn.lpstrFile = filename;
+                    ofn.nMaxFile = sizeof(filename);
+                    ofn.Flags = OFN_READONLY | OFN_NOCHANGEDIR | OFN_EXPLORER | OFN_FILEMUSTEXIST;
+                    ofn.lpstrDefExt = "chao";
+
+                    if(GetOpenFileNameA(&ofn)) {
+                        *(CHAO_SAVE_INFO*)pParam = LoadChaoFile(filename);
+                    }
+                }
+
+                {
+                    char namebuf[256];
+
+                    ConvertName(pParam->name, namebuf);
+                    ImGui::Text("Vanilla Name: %s", namebuf);
+
+                    ConvertName(GET_CWEPARAM(pParam)->Name, namebuf);
+                    ImGui::Text("CWE Name: %s", namebuf);
+                }
+
+                Sint8 step = 1;
+                ImGui::InputScalar("Type", ImGuiDataType_U8, &pParam->type, &step);
+                ImGui::InputScalar("Place", ImGuiDataType_S8, &pParam->place);
+
+                {
+                    Sint16 min = -100, max = 100;
+                    ImGui::SliderScalar("Like", ImGuiDataType_S16, &pParam->like, &min, &max);
+                }
+
+                ImGui::InputScalar("ClassNum", ImGuiDataType_S8, &pParam->ClassNum);
+                if(ImGui::Button("Remove from class")) {
+                    pParam->ClassNum = -1;
+                }
+                
+                ImGui::InputScalar("age", ImGuiDataType_S16, &pParam->age);
+                ImGui::InputScalar("old", ImGuiDataType_S16, &pParam->old);
+                ImGui::InputScalar("life", ImGuiDataType_S16, &pParam->life);
+                ImGui::InputScalar("LifeMax", ImGuiDataType_S16, &pParam->LifeMax);
+
+                if(ImGui::TreeNode("ID")) {
+                    ImGui::Text("gid[2] = { %x, %x }", pParam->ChaoID.gid[0], pParam->ChaoID.gid[1]);
+                    ImGui::Text("id[2] = { %x, %x }", pParam->ChaoID.id[0], pParam->ChaoID.id[1]);
+
+                    ImGui::Text("num = %d", pParam->ChaoID.num);
+
+                    ImGui::TreePop();
+                }
+
+                ImGui::InputInt("LifeTimer", &pParam->LifeTimer);
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("BodyInfo")) {
+                Sint8 step = 1;
+
+                ImGui::SliderFloat("growth", &pParam->body.growth, 0, 1.2f);
+                ImGui::SliderFloat("HPos", &pParam->body.HPos, -1, 1);
+                ImGui::SliderFloat("VPos", &pParam->body.VPos, -1, 1);
+                ImGui::Separator();
+                ImGui::InputScalar("DefaultEyeNum", ImGuiDataType_U8, &pParam->body.DefaultEyeNum, &step);
+                ImGui::InputScalar("DefaultMouthNum", ImGuiDataType_U8, &pParam->body.DefaultMouthNum, &step);
+                ImGui::InputScalar("HonbuNum", ImGuiDataType_U8, &pParam->body.HonbuNum);
+                ImGui::InputScalar("ObakeHead", ImGuiDataType_U8, &pParam->body.ObakeHead, &step);
+                ImGui::InputScalar("ObakeBody", ImGuiDataType_U8, &pParam->body.ObakeBody);
+                ImGui::InputScalar("MedalNum", ImGuiDataType_U8, &pParam->body.MedalNum, &step);
+                ImGui::InputScalar("ColorNum", ImGuiDataType_U8, &pParam->body.ColorNum, &step);
+                ImGui::Checkbox("NonTex", (bool*)&pParam->body.NonTex);
+                ImGui::InputScalar("JewelNum", ImGuiDataType_U8, &pParam->body.JewelNum, &step);
+
+                {
+                    uint8_t min = 0;
+                    uint8_t max = 2;
+                    ImGui::SliderScalar("MultiNum", ImGuiDataType_U8, &pParam->body.MultiNum, &min, &max);
+                }
+
+                ImGui::InputScalar("EggColor", ImGuiDataType_S8, &pParam->body.EggColor);
+
+                ImGui::InputScalar("FormNum", ImGuiDataType_U8, &pParam->body.FormNum);
+                ImGui::InputScalar("FormSubNum", ImGuiDataType_U8, &pParam->body.FormSubNum);
+
+                static_assert(sizeof(bool) == sizeof(uint8_t));
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Emotion")) {
+                static const char* EmotionStrings[] = {
+                    "PLEASURE",
+                    "ANGER",
+                    "SORROW",
+                    "FEAR",
+                    "SURPRISE",
+                    "PAIN",
+                    "RELAX",
+                    "TOTAL",
+                    "SLEEPY",
+                    "SLPDPTH",
+                    "HUNGER",
+                    "BREED",
+                    "TEDIOUS",
+                    "LONELY",
+                    "TIRE",
+                    "STRESS",
+                    "NOURISH",
+                    "CONDITN",
+                    "THIRSTY",
+                    "CURIOSITY",
+                    "KINDNESS",
+                    "AGRESSIVE",
+                    "SLEEPY_HEAD",
+                    "SOLITUDE",
+                    "VITALITY",
+                    "GLUTTON",
+                    "REGAIN",
+                    "SKILLFUL",
+                    "CHARM",
+                    "CHATTY",
+                    "CALM",
+                    "FICKLE"
+                };
+
+                for(size_t i = 0; i < _countof(EmotionStrings); ++i) {
+                    if(i < EM_ST_SLEEPY) {
+                        static Uint8 sliderMin = 0;
+                        static Uint8 sliderMax = 200;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U8, &pParam->emotion.Mood[i], &sliderMin, &sliderMax);
+                    }
+                    else if (i < EM_PER_CURIOSITY) {
+                        static Uint16 sliderMin = 0;
+                        static Uint16 sliderMax = 10000;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_U16, &pParam->emotion.State[i - EM_ST_SLEEPY], &sliderMin, &sliderMax);
+                    }
+                    else {
+                        static Sint8 sliderMin = -100;
+                        static Sint8 sliderMax = 100;
+                        ImGui::SliderScalar(EmotionStrings[i], ImGuiDataType_S8, &pParam->emotion.Personality[i - EM_PER_CURIOSITY], &sliderMin, &sliderMax);
+                    }
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("CWE")) {
+                CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(pParam);
+
+                for (size_t i = 0; i < 4; ++i) {
+                    const char* paramFlagNames[] = {
+                        "NAME_NEW",
+                        "OLD_GUEST_CHECK",
+                        "PARTS_CONVERSION",
+                        "ACCESSORIES_NEW",
+                    };
+                    
+                    ImGui::CheckboxFlags(paramFlagNames[i], &pParamCwe->Flags, (1 << i));
+                }
+
+                ImGui::Checkbox("ShinyJewelMonotone", (bool*)&pParamCwe->ShinyJewelMonotone);
+                ImGui::InputScalar("LobbyTextureValue", ImGuiDataType_S8, &pParamCwe->LobbyTextureValue);
+                ImGui::InputScalar("EyeAlignment", ImGuiDataType_S8, &pParamCwe->EyeAlignment);
+                ImGui::InputScalar("EyeColor", ImGuiDataType_S8, &pParamCwe->EyeColor);
+                ImGui::InputScalar("UpgradeCounter", ImGuiDataType_S8, &pParamCwe->UpgradeCounter);
+                ImGui::InputScalar("XGradeValue", ImGuiDataType_S8, &pParamCwe->XGradeValue);
+                ImGui::Checkbox("DCWings", &pParamCwe->DCWings);
+                ImGui::Checkbox("Negative", &pParamCwe->Negative);
+                ImGui::InputScalar("Birthday", ImGuiDataType_S16, &pParamCwe->Birthday);
+                ImGui::Checkbox("ForceReincarnate", &pParamCwe->ForceReincarnate);
+
+                ImGui::InputText("TypeID", pParamCwe->TypeID, sizeof(pParamCwe->TypeID));
+
+                ImGui::InputScalar("MusicFlag_CWE", ImGuiDataType_U8, &pParamCwe->MusicFlag_CWE);
+                ImGui::InputScalar("DanceFlag_CWE", ImGuiDataType_U8, &pParamCwe->DanceFlag_CWE);
+
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
+
+        ImGui::End();
+    }
+}
+
 static void ChaoInfoMenu() {
     if (ShowChaoInfo && ImGui::Begin("Chao Info", &ShowChaoInfo)) {
         ImGui::SliderInt("ID", &SelectedChaoIndex, 0, ALW_CountEntry(0));
@@ -122,6 +361,20 @@ static void ChaoInfoMenu() {
         auto pParamCwe = GET_CWEPARAM(pChao);
         auto* move_work = GET_MOVE_WORK(pChao);
 
+        if (ImGui::Button("Show Param")) {
+            const CHAO_SAVE_INFO* pInfo = (CHAO_SAVE_INFO*)work->pParamGC;
+            const CHAO_SAVE_INFO* pInfoList = GardenInfoList[0].chao;
+            if(pInfo >= pInfoList && pInfo <= &pInfoList[23]) {
+                ParamPointer = NULL;
+                ParamIndex = int(pInfo - pInfoList);
+            }
+            else {
+                ParamPointer = work->pParamGC;
+            }
+
+            ShowParamMenu = true;
+        }
+
         if (ImGui::BeginTabBar("chao_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
                 ImGui::InputScalarN("Position", ImGuiDataType_Float, &work->pos, 3);
@@ -135,6 +388,25 @@ static void ChaoInfoMenu() {
                 else {
                     ChaoDebugDistSelected = NULL;
                 }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Face")) {
+                ImGui::Text("EyeDefaultNum: %d", work->Face.EyeDefaultNum);
+                ImGui::Text("EyeCurrNum: %d", work->Face.EyeCurrNum);
+                ImGui::Text("MouthDefaultNum: %d", work->Face.MouthDefaultNum);
+                ImGui::Text("MouthCurrNum: %d", work->Face.MouthCurrNum);
+
+                ImGui::EndTabItem();
+            }
+
+
+            if (ImGui::BeginTabItem("World")) {
+                ImGui::Text("IsCommunication: %p", ALW_IsCommunication(pChao));
+                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
+                ImGui::Text("command: %d", GET_ALW_ENTRY_WORK(pChao)->command);
+                ImGui::Text("command_value: %d", GET_ALW_ENTRY_WORK(pChao)->command_value);
 
                 ImGui::EndTabItem();
             }
@@ -199,21 +471,10 @@ static void ChaoInfoMenu() {
                 ImGui::EndTabItem();
             }
 
-            if (ImGui::BeginTabItem("ParamFlags")) {
-                const char* paramFlagNames[] = {
-                    "NAME_NEW",
-                    "OLD_GUEST_CHECK",
-                    "PARTS_CONVERSION",
-                    "ACCESSORIES_NEW",
-                };
-                for (size_t i = 0; i < 4; ++i) {
-                    ImGui::CheckboxFlags(paramFlagNames[i], &pParamCwe->Flags, (1 << i));
-                }
-
-                ImGui::EndTabItem();
-            }
-
             if (ImGui::BeginTabItem("Behavior")) {
+                AL_BEHAVIOR* bhv = &GET_CHAOWK(pChao)->Behavior;
+                ImGui::Text("Mode %d SubMode %d Timer %d SubTimer %d", bhv->Mode, bhv->SubMode, bhv->Timer, bhv->SubTimer);
+                
                 if (ImGui::TreeNode("Start behaviors")) {
                     if (ImGui::Button("TV")) {
                         int ALBHV_GoToTV(task* tp);
@@ -261,6 +522,18 @@ static void ChaoInfoMenu() {
                         }
                     }
                     ImGui::TreePop();
+                }
+
+                for(size_t b = 0; b < 16; ++b) {
+                    if(b == work->Behavior.CurrBhvFuncNum) {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImColor(100,255,100).Value);
+                    }
+
+                    ImGui::Text("%p", work->Behavior.BhvFuncList[b]);
+
+                    if(b == work->Behavior.CurrBhvFuncNum) {
+                        ImGui::PopStyleColor();
+                    }
                 }
                 ImGui::EndTabItem();
             }
@@ -314,7 +587,7 @@ static void ChaoInfoMenu() {
                                 if (!ImGui::TreeNode(buf, "Entry %d", int(j))) continue;
 
                                 auto* link = &perception->field_18[j];
-                                ImGui::Text("Info: %h %h %h %h", link->info[0], link->info[1], link->info[2], link->info[3]);
+                                ImGui::Text("Info: %d %d %d %d", int(link->info[0]), int(link->info[1]), int(link->info[2]), int(link->info[3]));
                                 ImGui::Text("dist: %f", link->dist);
                                 ImGui::Text("InSightFlag: %d", link->InSightFlag);
                                 ImGui::Text("HearFlag: %d", link->HearFlag);
@@ -553,12 +826,20 @@ static void ChaoSoundMenu() {
             SoundID += 0x10;
         }
         ImGui::SameLine();
+        if (ImGui::Button("+++")) {
+            SoundID += 0x1000;
+        }
+        ImGui::SameLine();
         if (ImGui::Button("-")) {
             SoundID--;
         }
         ImGui::SameLine();
         if (ImGui::Button("--")) {
             SoundID-= 0x10;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("---")) {
+            SoundID-= 0x1000;
         }
 
         if (ImGui::Button("Play")) {
@@ -583,7 +864,7 @@ static void TaskListMenu() {
                 auto* obj = btp[i];
                 if (obj) {
                     do {
-                        ImGui::Text(!obj->name ? "" : obj->name);
+                        ImGui::Text("%s", !obj->name ? "" : obj->name);
                         obj = obj->last;
                     } while (obj != btp[i]);
                 }
@@ -595,22 +876,57 @@ static void TaskListMenu() {
     }
 }
 
+static void ItemSaveInfoMenu(ITEM_SAVE_INFO& info) {
+    Sint16 step = 1;
+
+    ImGui::InputScalar("kind", ImGuiDataType_S16, &info.kind, &step);
+    ImGui::InputScalar("place", ImGuiDataType_S16, &info.place, &step);
+    ImGui::InputScalar("status", ImGuiDataType_S16, &info.status, &step);
+    ImGui::InputScalar("nbVisit", ImGuiDataType_S16, &info.nbVisit, &step);
+
+    ImGui::InputFloat3("Pos", &info.pos.x);
+}
+
 static void ItemsMenu() {
     if (ShowItemsMenu && ImGui::Begin("Items", &ShowItemsMenu)) {
-        for (size_t i = 0; i < AccessoryItemList.size(); ++i) {
-            ImGui::PushID(i);
-            if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
-                ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
-                ImGui::InputInt("Garden", &AccessoryItemList[i].Garden);
-                ImGui::InputText("ID", AccessoryItemList[i].ID, 20);
-                ImGui::InputFloat3("Position", &AccessoryItemList[i].Position.x);
-                ImGui::InputInt("Angle", &AccessoryItemList[i].Angle);
+        auto pGardenInfo = AL_GetCurrGardenInfo();
 
-                ImGui::TreePop();
+        if (ImGui::TreeNode("Fruits")) {
+            for (size_t i = 0; i < _countof(pGardenInfo->fruit); ++i) {
+                auto& info = pGardenInfo->fruit[i];
+
+                ImGui::PushID(i);
+                if (ImGui::TreeNode(&info, "%d", int(i))) {
+                    ItemSaveInfoMenu(info);
+
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
             }
-            ImGui::PopID();
-          
+
+            ImGui::TreePop();
         }
+
+        if (ImGui::TreeNode("Accessories")) {
+            for (size_t i = 0; i < AccessoryItemList.size(); ++i) {
+                ImGui::PushID(i);
+
+                if (ImGui::TreeNode(&AccessoryItemList[i], "%d", int(i))) {
+                    ImGui::InputInt("IndexID", &AccessoryItemList[i].IndexID);
+                    ImGui::InputInt("Garden", &AccessoryItemList[i].Garden);
+                    ImGui::InputText("ID", AccessoryItemList[i].ID, 20);
+                    ImGui::InputFloat3("Position", &AccessoryItemList[i].Position.x);
+                    ImGui::InputInt("Angle", &AccessoryItemList[i].Angle);
+
+                    ImGui::TreePop();
+                }
+
+                ImGui::PopID();
+            }
+
+            ImGui::TreePop();
+        }
+
         ImGui::End();
     }
 }
@@ -788,7 +1104,7 @@ static void SoundsMenu() {
                 ImGui::Text("%d", entry.sctimer);
                 ImGui::TableNextColumn();
 
-                ImGui::Text("%x", entry.idp);
+                ImGui::Text("%x", Uint32(entry.idp));
                 ImGui::TableNextColumn();
 
                 ImGui::Text("%d", entry.tone);
@@ -806,6 +1122,7 @@ static void SoundsMenu() {
     }
 }
 
+#ifdef PATHFINDING
 static void NavSysMenu() {
     if(ShowNavSysMenu && ImGui::Begin("NavSys", &ShowNavSysMenu)) {
         if(ImGui::BeginTabBar("NavSysTabs")) {
@@ -826,11 +1143,43 @@ static void NavSysMenu() {
         ImGui::End();
     }
 }
+#endif
+
+static void GardenInfoMenu() {
+    if(ShowGardenInfo && ImGui::Begin("Garden Info", &ShowGardenInfo)) {
+        if(ImGui::TreeNode("Toys")) {
+            static const char* ToyStrings[] = {
+                "AL_LTOY_TV",
+	            "AL_LTOY_RADICASE",
+	            "AL_LTOY_BOX",
+	            "AL_LTOY_BALL_N",
+	            "AL_LTOY_BALL_H",
+	            "AL_LTOY_BALL_D",
+	            "AL_LTOY_HORSE",
+	            "AL_LTOY_UKIWA",
+	            "AL_LTOY_DUCK",
+	            "AL_LTOY_KANOKE",
+	            "AL_LTOY_PIANO",
+	            "AL_LTOY_ORGAN",
+            };
+
+            for(size_t i = 0; i < _countof(ToyStrings); ++i) {
+                ImGui::CheckboxFlags(ToyStrings[i], &AL_GetCurrGardenInfo()->ToyGetFlag, int(1 << i));
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::End();
+    }
+}
 
 static void ImGuiMenu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Menus")) {
             ImGui::MenuItem("Chao", NULL, &ShowChaoInfo);
+            ImGui::MenuItem("ChaoParam", NULL, &ShowParamMenu);
+            ImGui::MenuItem("Garden", NULL, &ShowGardenInfo);
             ImGui::MenuItem("Light", NULL, &ShowLight);
             // ImGui::MenuItem("DayNight Cycle", NULL, &ShowDNC);
             ImGui::MenuItem("Sound", NULL, &ShowChaoSoundMenu);
@@ -841,12 +1190,15 @@ static void ImGuiMenu() {
             ImGui::MenuItem("Sound System", NULL, &ShowSoundsMenu);
             ImGui::MenuItem("More Chao Faces", NULL, &ShowMoreFacesMenu);
             ImGui::MenuItem("Navi System", NULL, &ShowNavSysMenu);
+            ImGui::MenuItem("Guest", NULL, &ShowGuestMenu);
             
             ImGui::EndMenu();
         }
 
+        GardenInfoMenu();
         ChaoSoundMenu();
         ChaoInfoMenu();
+        ChaoParamMenu();
         // DayNightMenu();
         LightMenu();
         ItemsMenu();
@@ -855,7 +1207,10 @@ static void ImGuiMenu() {
         MarketMenu();
         SoundsMenu();
         MoreFacesMenu();
+#ifdef PATHFINDING
         NavSysMenu();
+#endif
+        Guest_Debug(ShowGuestMenu);
 
         ImGui::EndMainMenuBar();
     }
@@ -870,9 +1225,9 @@ static void ImGuiMenu() {
         ImGui::SliderInt("chao id", &chaoID, 0, 24);
 
         if (ImGui::Button("create bubble")) {
-            task* pChao = GetChaoObject(0, 0);
+            task* pChao = ALW_GetTaskCount(0, 0);
             if (pChao) {
-                task* renderedChao = GetChaoObject(0, chaoID);
+                task* renderedChao = ALW_GetTaskCount(0, chaoID);
                 CHAO_SAVE_INFO* renderedData = NULL;
                 if (renderedChao) {
                     renderedData = (CHAO_SAVE_INFO*)GET_CHAOWK(renderedChao)->pParamGC;

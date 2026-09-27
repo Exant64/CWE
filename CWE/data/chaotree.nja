@@ -1,6 +1,12 @@
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
 
 NJS_CNK_OBJECT object_8D95CBF1FB66D4AAFF8 = { NJD_EVAL_UNIT_ANG | NJD_EVAL_HIDE | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, NULL, -0.6897055f, 14.53296f, -0.1246449f, 0, 0, 0, 3, 3, 3, NULL, NULL };
 
@@ -88,4 +94,8 @@ NJS_CNK_OBJECT tree = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SC
 
 NJS_CNK_OBJECT root = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE | NJD_EVAL_SHAPE_SKIP, NULL, 0, 0, 0, 0, 0, 0, 1, 1, 1, &tree, NULL };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

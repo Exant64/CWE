@@ -116,6 +116,7 @@ enum {
 typedef int     Int;
 
 typedef Sint32  Angle;
+typedef Sint16  Sangle;
 
 /****** Ninja Matrix ****************************************************************************/
 typedef union

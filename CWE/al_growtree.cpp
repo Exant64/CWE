@@ -4,7 +4,6 @@
 #include "alo_fruit.h"
 #include "AL_ModAPI.h"
 #include "al_sandhole.h"
-#include "ALifeSDK_Functions.h"
 #include <vector>
 #include "ChaoMain.h"
 #include "al_modelcontainer.h"
@@ -25,7 +24,7 @@ struct FRUIT_INFO
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
+struct ALIGN(4) ALO_GrowTreeExecutor_Data
 {
     taskwk entityData;
     char kind;
@@ -175,15 +174,11 @@ task* __cdecl AL_GrowTree_CreateFruit(int a1, NJS_VECTOR* position, Angle angle,
     return ALO_FruitCreate(lookup, position, angle, a4, a5);
 }
 
-__declspec(naked) void AL_GrowTree_CreateFruitHook()
-{
-    __asm
-    {
-        push ebx
-        call AL_GrowTree_CreateFruit
-        add esp,4
-        retn
-    }
+static ASM_FUNC void AL_GrowTree_CreateFruitHook() {
+    ASM_PUSH(ebx);
+    ASM_CALL (AL_GrowTree_CreateFruit);
+    ASM_ESP_ADD(1);
+    ASM_RET(0);
 }
 
 void __cdecl ALO_SeedExecutor_Display_(task* eax0)
@@ -244,26 +239,23 @@ void __cdecl FixTransition(ALO_GrowTreeExecutor_Data* v2)
     v2->growth = 0;
 }
 
-__declspec(naked) void FixTransitionHook()
-{
-    __asm
-    {
-        push ebx
-        call FixTransition
-        add esp, 4
-        retn
-    }
+ASM_FUNC void FixTransitionHook() {
+    ASM_PUSH(ebx);
+    ASM_CALL(FixTransition);
+    ASM_ESP_ADD( 1 );
+    ASM_RET(0);
 }
+
 void ALO_GrowTree_Init()
 {
-    //WriteCall((void*)0x0547F47, nullsub_1);
+    //WriteCall((void*)0x0547F47, (void*)nullsub_1);
     WriteData((int*)0x005482AB, (int)ALO_GrowTreeExecutor_Display_);
     
-    WriteCall((void*)0x00546CA1, FixTransitionHook);
+    WriteCall((void*)0x00546CA1, (void*)FixTransitionHook);
     WriteData<2>((char*)0x00546CA6, (char)0x90);
 
-    WriteJump((void*)0x5498E0, ALO_SeedExecutor_Display_);
-    WriteCall((Void*)0x05470CB, sub_546670Hook);
-    WriteCall((void*)0x005471D7, AL_GrowTree_CreateFruit);
-    WriteJump((void*)0x547440, sub_547440);
+    WriteJump((void*)0x5498E0, (void*)ALO_SeedExecutor_Display_);
+    WriteCall((Void*)0x05470CB, (void*)sub_546670Hook);
+    WriteCall((void*)0x005471D7, (void*)AL_GrowTree_CreateFruit);
+    WriteJump((void*)0x547440, (void*)sub_547440);
 }

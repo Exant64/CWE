@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include <share.h>
 #include <stdio.h>
 #include <cstdarg>
 #include <mutex>

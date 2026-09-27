@@ -4,7 +4,6 @@
 #include "Chao.h"
 #include "ChaoMain.h"
 #include "alo_special.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_modelcontainer.h"
 #include "al_behavior/al_intention.h"

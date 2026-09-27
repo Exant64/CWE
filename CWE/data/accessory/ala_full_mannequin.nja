@@ -1,6 +1,14 @@
 #pragma once
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#endif
+
 NJS_CNK_OBJECT object_8D900F862D59201377B = { NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, NULL, -0.2f, 0.47026f, -0.402768f, 0, 0x6AAA, 0, 1, 1, 1, NULL, NULL };
 
 NJS_CNK_OBJECT object_8D900F862D5920144DF = { NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, NULL, 0.2f, 0.47026f, -0.402769f, 0, 0x1555, 0, 1, 1, 1, NULL, &object_8D900F862D59201377B };
@@ -77,4 +85,8 @@ NJS_CNK_OBJECT object_8D900F862D592010623 = { NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_
 
 NJS_CNK_OBJECT object_ala_full_mannequin = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_HIDE | NJD_EVAL_SHAPE_SKIP, NULL, 0, 0, 0, 0, 0, 0, 0.98f, 0.98f, 0.98f, &object_8D900F862D592010623, NULL };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

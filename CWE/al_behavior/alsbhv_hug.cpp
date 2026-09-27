@@ -1,13 +1,17 @@
+#include "ChaoMain.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
 #include "albhv.h"
+
+#ifdef PATHFINDING
+#include "al_behavior/albhv_navigation.h"
+#endif
 
 int ALBHV_Hug1(task* a1)
 {
@@ -15,10 +19,10 @@ int ALBHV_Hug1(task* a1)
 		//PrintDebug("ALW_CMD_CHANGE");
 		return BHV_RET_BREAK;
 	}
-	task* otherChao;
-	chaowk* wk = GET_CHAOWK(a1);
 
-	otherChao = ALW_IsCommunicating(a1)->tp;
+	chaowk* wk = GET_CHAOWK(a1);
+	task* otherChao = ALW_GetLockOnTask(a1);
+	
 	switch (wk->Behavior.Mode)
 	{
 	case 0:
@@ -44,7 +48,6 @@ int ALBHV_Hug1(task* a1)
 	}
 	return 0;
 }
-//FunctionPointer(signed int, AL_GetRandomAttrPos_0, (task* a1), 0x0073AEE0);
 
 int ALBHV_Hug2(task* a1)
 {
@@ -135,8 +138,6 @@ int ALBHV_InitHug(task* a1)
 	ALW_LockOn(otherChao, a1);
 	ALW_CommunicationOn(a1, otherChao);
 
-	//AL_GetRandomAttrPos_0(a1);
-
 	MOV_SetAimPos(a1, &otherChao->twp->pos);
 
 	AL_SetBehavior(otherChao, ALBHV_WaitForSocialArrive); //wait for chao to arrive
@@ -144,7 +145,17 @@ int ALBHV_InitHug(task* a1)
 	//AL_SetNextBehavior(otherChao, ALBHV_HandShake);       //shake hands
 	//AL_SetNextBehavior(otherChao, ALBHV_LockUp);          //wait until other chao steps back and inits talking
 
-	AL_SetBehavior(a1, ALBHV_GoToHug);                 //go to selected chao and turn to it
+	if(!gConfigVal.PathfindingEnabled) {
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_GoToLockOn_p>);
+	}
+	else {
+#ifdef PATHFINDING
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_Navigation>);
+#endif
+	}
+
 	AL_SetNextBehavior(a1, ALBHV_Hug1);
 	//AL_SetNextBehavior(a1, ALBHV_HandShake);              //shake hands
 	//AL_SetNextBehavior(a1, ALBHV_StepBack);               //step back a bit so that theyre not super close to eachother when talking

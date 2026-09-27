@@ -1,8 +1,15 @@
 #pragma once
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
 #pragma warning( disable : 4309 )
 #pragma warning( disable : 4305 )
+#endif
 
 NJS_CNK_OBJECT object_00528FF8 = { NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE | NJD_EVAL_BREAK, NULL, 3.043363f, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
 
@@ -1920,4 +1927,8 @@ NJS_CNK_OBJECT object_00546D18 = { NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE, NULL, 0, -
 
 NJS_CNK_OBJECT object_00546D4C = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE, NULL, 0, 0, 0, 0, 0, 0, 1, 1, 1, &object_00546D18, NULL };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

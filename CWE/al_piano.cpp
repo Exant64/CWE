@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "al_piano.h"
-#include "ALifeSDK_Functions.h"
 #include "ChaoMain.h"
 #include "Chao.h"
 #include "al_toy_move.h"
@@ -149,14 +148,14 @@ static const CCL_INFO ALO_RadicaseExecutor_collision[] = {
 	{ 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  1.5,  0.0,  0.0, 0, 0, 0, 0 }
 };
 
-void ALO_Piano_Init(task *a1)
-{
-	a1->exec = Piano_Main;
-	a1->dest = (task_exec)0x0057B9B0;
-	AL_Toy_Move_Register(a1, ALW_KIND_PIANO);
+void ALO_Piano_Init(task *tp) {
+	tp->exec = Piano_Main;
+	tp->dest = (task_exec)0x0057B9B0;
+
+	AL_Toy_Move_Register(tp, (tp->twp->btimer == PIANOTYPE_PIANO) ? ALW_KIND_PIANO : ALW_KIND_ORGAN);
 }
 
-void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
+task* ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	task *piano;
 
 	piano = CreateElementalTask(IM_TWK, LEV_4, ALO_Piano_Init, "ALO_Piano");
@@ -167,5 +166,7 @@ void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	piano->twp->pos = *pPos;
 	piano->twp->ang.y = ang;
 
-	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision);
+	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision, 1);
+
+	return piano;
 }

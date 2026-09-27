@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
 #include "../ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include "../Chao.h"
 #include <random>
 #include "../al_piano.h"
@@ -11,7 +10,10 @@
 #include <al_field.h>
 #include <util.h>
 #include <ChaoMain.h>
+
+#ifdef PATHFINDING
 #include <al_behavior/albhv_navigation.h>
+#endif
 
 static int GetPianoType (task* pToy) {
 	return pToy->twp->btimer;
@@ -46,6 +48,8 @@ static int ALBHV_PlayPiano(task* tp) {
 
 		AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
 		AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
+
+		AL_FixPosition(tp);
 
 		++bhv->Mode;
 
@@ -84,7 +88,7 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 
 	SetPianoWaypoint(pToy, &pianoPos);
 	
-	const Angle targetAng = pToy->twp->ang.y + 0x8000;
+	const Uint16 targetAng = Uint16(pToy->twp->ang.y + 0x8000);
 	MOV_SetAimPos(tp, &pianoPos);
 
 	switch (bhv->Mode) {
@@ -108,7 +112,7 @@ static int ALBHV_InterpolateToPiano(task* tp) {
 	case 2:
 		work->ang.y = AdjustAngle(work->ang.y, targetAng, ANGLE_SPD);
 
-		if (abs(work->ang.y - targetAng) <= ANGLE_SPD) {
+		if (abs(Sint16(Uint16(targetAng) - Uint16(work->ang.y))) <= ANGLE_SPD) {
 			return BHV_RET_FINISH;
 		}
 		break;
@@ -133,28 +137,30 @@ int ALBHV_GoToPiano(task* tp) {
 
 	MOV_SetAimPos(tp, &toyPos);
 
-	AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>); // Notice
+	AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
+	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>); // Notice
 
-	if(!gConfigVal.PathfindingVanilla) {
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+	if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
 	}
 	else {
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#ifdef PATHFINDING
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 	}
 
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);
+	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_InterpolateToPiano>);
 	switch (GetPianoType(pToy)) {
 		case PIANOTYPE_PIANO:
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeSit>); // PostureChangeSit
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeSit>); // PostureChangeSit
 			break;	
 		case PIANOTYPE_ORGAN:
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>); // PostureChangeStand
 			break;
 	}
-	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PlayPiano>);
+	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PlayPiano>);
 
 	return BHV_RET_CONTINUE;
 

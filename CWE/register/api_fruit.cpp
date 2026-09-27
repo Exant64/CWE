@@ -1,3 +1,4 @@
+#include "al_parameter.h"
 #include "stdafx.h"
 #include <AL_ModAPI.h>
 #include <ChaoMain.h>
@@ -39,6 +40,10 @@ static const char* GBAFruitNames[] = {
 
 
 void CWEFruit_HyperFruit(CHAO_SAVE_INFO* chaoData, task* fruit, task* tp) {
+	if (AL_ParameterIsGuest(&chaoData->param) && gConfigVal.GuestBlockStatChanges) {
+		return;
+	}
+
 	const int hyperFruitID = fruit->twp->ang.x - HyperSwimFruitID;
 
 	if (chaoData->param.Abl[hyperFruitID] == 5 && GET_CWEPARAM(chaoData)->XGradeValue == 0) {
@@ -47,6 +52,10 @@ void CWEFruit_HyperFruit(CHAO_SAVE_INFO* chaoData, task* fruit, task* tp) {
 }
 
 void CWEFruit_Shiny(CHAO_SAVE_INFO* chaoData, task* fruit, task* tp) {
+	if (AL_ParameterIsGuest(&chaoData->param) && gConfigVal.GuestBlockVisualChanges) {
+		return;
+	}
+	
 	if (chaoData->param.body.MultiNum) {
 		chaoData->param.body.MultiNum = (chaoData->param.body.MultiNum % 2) + 1;
 	}

@@ -1,5 +1,13 @@
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
 
 Sint32 vertex_03273F38[] = { 0x790029, 0x140000, 0x3F0D27CC, 0xBFC803D9u, 0xBF02BA42u, 0x3EEA8486, 0xBF439C85u, 0xBEE892ADu, 0xBD1DB26Du, 0x3DB6DA92, 0x3D3B57AD, 0xBEBB8D4Eu, 0x3F6D86BD, 0x3D8FD8B7, 0x3F0DA6F6, 0xBF8FBEF8u, 0xBE8C3B7Fu, 0x3F76E631, 0x3E70C57C, 0x3DF70B7E, 0x3EB3142F, 0xBEC03311u, 0xBCACD5EBu, 0x3F6BC9D5, 0x3EC53CB8, 0xBD6A2B49u, 0x3E881AEF, 0xBFB4B497u, 0xBCB6B420u, 0x3EAE833F, 0xBF4E5671u, 0x3EF7C450, 0x3E353FB8, 0xBF9DB1D7u, 0x3E726361, 0x3F1B3B51, 0xBDE8F7B4u, 0x3F4978E9, 0x3D7F0A28, 0xBF977DB4u, 0xBF213698u, 0xBF04601Du, 0xBDCA66FDu, 0xBF59A70Eu, 0x3DF7BA93, 0xBEAFB313u, 0xBE721FA8u, 0xBD8B8C53u, 0x3EFBD664, 0xBF5E3522u, 0x3DF7AA80, 0xBFBAF483u, 0x3E6ACE1D, 0x3E2D9DF4, 0xBF592A6Au, 0x3F006AF7, 0xBE4FA1C3u, 0xBF7319B2u, 0xBCF60F07u, 0xBF7E000Fu, 0x3DE73FCF, 0xBD593947u, 0xBD9BA7BFu, 0xBECC9D0Fu, 0x3C0898F8, 0xBF7C8084u, 0x3E228A97, 0xBD34AB14u, 0x3E6A8FD2, 0xBECF1436u, 0x3E513A18, 0x3F11466D, 0x3E69D224, 0x3F4A84FC, 0xBDD8D71Bu, 0xBF9ECD30u, 0x3EA50A6E, 0xBF09E373u, 0xBE8E150Au, 0x3F4BA80A, 0x3D875C2D, 0xBEE19C78u, 0x3E7A8FDF, 0xBEA60CB4u, 0x3E4562BE, 0x3F6D14F5, 0x3F2505E6, 0xBFAE3D58u, 0xBEC17E57u, 0x3F7FAE48, 0xBCD27C71u, 0x3D2F5319, 0x3EC4BBB3, 0xBFC31016u, 0xBE08044Du, 0x3E6955FD, 0xBF447FE7u, 0x3F195DA0, 0x3E3D8256, 0xBFBBF518u, 0xBEB7B40Au, 0xBEF5CCD8u, 0xBF5A4F34u, 0xBE529F08u, 0x3E378CE8, 0xBDB6D129u, 0x3D08A5BB, 0x3F367F87, 0x3F32D97A, 0x3D798E0C, 0xBE0E7103u, 0xBFA53417u, 0xBD17C792u, 0xBF505DA7u, 0xBF129B71u, 0xBDC82996u, 0x3EDAAE30, 0xBF9FCCFBu, 0xBF20216Fu, 0x3ED215DE, 0x3DFFA9C1, 0xBF67424Du, 0xFF, 0x0 };
 
@@ -1364,5 +1372,8 @@ NJS_CNK_OBJECT* adultPartArray_14[13] = { &object_03291904,&object_032921A4,0,0,
 NJS_CNK_OBJECT** SADXChildAnimalParts[15] = { childPartArray_0,childPartArray_1,childPartArray_2,childPartArray_3,childPartArray_4,childPartArray_5,childPartArray_6,childPartArray_7,childPartArray_8,childPartArray_9,childPartArray_10,childPartArray_11,childPartArray_12,childPartArray_13,childPartArray_14 };
 NJS_CNK_OBJECT** SADXAdultAnimalParts[15] = { adultPartArray_0,adultPartArray_1,adultPartArray_2,adultPartArray_3,adultPartArray_4,adultPartArray_5,adultPartArray_6,adultPartArray_7,adultPartArray_8,adultPartArray_9,adultPartArray_10,adultPartArray_11,adultPartArray_12,adultPartArray_13,adultPartArray_14 };
 
-
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

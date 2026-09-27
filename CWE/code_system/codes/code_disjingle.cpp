@@ -3,5 +3,5 @@
 
 void DisableLevelupJingle::Init() {
 	//thanks buster for the original implementation of the code
-	WriteCall((void*)0x00565066, nullsub_1);
+	WriteCall((void*)0x00565066, (void*)nullsub_1);
 }

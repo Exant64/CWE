@@ -2,7 +2,6 @@
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include <random>
 #include "al_knowledge.h"
@@ -10,6 +9,7 @@
 #include "al_intention.h"
 #include "../ChaoMain.h"
 #include "../al_parameter.h"
+#include <al_parts.h>
 
 
 DataArray(BHV_FUNC, ALBHV_SToyFunc, 0x012FE978, 12);

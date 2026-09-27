@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <ninja_functions.h>
 #include "Chao.h"
+#include "asmutil.h"
 
 void __cdecl AL_ForwardAcc(task* a1, float a2)
 {
@@ -37,20 +38,21 @@ void __cdecl AL_Brake(task* a1, float a2)
 	}
 }
 
-const int Scaletask_XYZPtr = 0x0054AC70;
-Bool AL_IsOnScreen3(task *tp, float radius, float HalfHeight, float OffsetY) {
-	int retval;
-	__asm
-	{
-		push OffsetY
-		push HalfHeight
-		push radius
-		mov eax, tp
-		call Scaletask_XYZPtr
-		add esp, 12
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC Bool AL_IsOnScreen3(task *tp, float radius, float HalfHeight, float OffsetY) {
+	// arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // OffsetY
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // HalfHeight
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // radius
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // tp
+
+    // call
+    ASM_CALL_R( edx, 0x0054AC70 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 Bool AL_IsOnScreen2(task *tp, float radius, float OffsetY) {

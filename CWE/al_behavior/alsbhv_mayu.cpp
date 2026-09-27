@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
@@ -137,12 +136,12 @@ int ALBHV_MayuDance(task *tp) {
 	return BHV_RET_CONTINUE;
 }
 
-void AL_CalcIntentionScore_Mayu(task* tp, float* pMaxScore) {
+void AL_CalcIntentionScore_MayuReact(task* tp, float* pMaxScore) {
 	task* pField;
 
 	if (GET_CHAOWK(tp)->Behavior.IntervalTimer[0x10]) return;
 
-	if (pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_MAYU_GROW_FIELD)) {
+	if ((pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_MAYU_GROW_FIELD))) {
 		MOV_SetAimPos(tp, &pField->ptp->twp->pos);
 		AL_KW_MeetEachother(tp, pField->ptp, KW_MEET_EVOLVE);
 
@@ -152,7 +151,7 @@ void AL_CalcIntentionScore_Mayu(task* tp, float* pMaxScore) {
 
 		*pMaxScore = 1.0f;
 	}
-	else if (pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_MAYU_DEATH_FIELD)) {
+	else if ((pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_MAYU_DEATH_FIELD))) {
 		MOV_SetAimPos(tp, &pField->ptp->twp->pos);
 		AL_EmotionAdd(tp, EM_MD_SORROW, 50);
 
@@ -162,7 +161,7 @@ void AL_CalcIntentionScore_Mayu(task* tp, float* pMaxScore) {
 
 		*pMaxScore = 1.0f;
 	}
-	else if (pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_MAYU_SUCCEED_FIELD)) {
+	else if ((pField = AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_MAYU_SUCCEED_FIELD))) {
 		MOV_SetAimPos(tp, &pField->ptp->twp->pos); //set waypoint to chao position
 		AL_KW_MeetEachother(tp, pField->ptp, KW_MEET_REBIRTH); //meet chao
 

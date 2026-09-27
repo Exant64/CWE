@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "ninja_functions.h"
-#include "ALifeSDK_Functions.h"
+
 NJS_TEXNAME JOBJ_TEXNAMES[32];
 NJS_TEXLIST JOBJ_TEXLIST = {JOBJ_TEXNAMES, 32};
 

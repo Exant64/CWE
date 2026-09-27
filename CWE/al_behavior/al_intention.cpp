@@ -1,9 +1,10 @@
+#include "al_emotion.h"
+#include "al_parameter.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include "albhv.h"
@@ -12,6 +13,8 @@
 #include <util.h>
 #include "al_intention.h"
 #include <ChaoMain.h>
+#include <asmutil.h>
+#include <al_behavior/albhv_walk.h>
 
 void AL_ScoreRandomize(float* pScore)
 {
@@ -72,7 +75,7 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 	score = 0.0;
 	for (int i = 0; i < ALW_CountEntry(0); i++)
 	{
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		if (!pChao || pChao == a1) continue;
 		
 		BHV_FUNC func = AL_GetBehavior(pChao);
@@ -144,17 +147,6 @@ void __cdecl AL_CalcIntentionScore_Chat(task* a1, float* a2)
 	}
 }
 
-const int sub_562800Ptr = 0x562800;
-void sub_562800(float* a1, task* a2)
-{
-	__asm
-	{
-		mov esi, a2
-		mov edi, a1
-		call sub_562800Ptr
-	}
-}
-
 signed int __cdecl ALBHV_FartReaction(task* a1)
 {
 	chaowk* v2;
@@ -174,30 +166,37 @@ signed int __cdecl ALBHV_FartReaction(task* a1)
 	return 0;
 }
 
+static void ASM_FUNC AL_CalcIntentionScore_LToy_Hook() {
+	ASM_PUSH(edi); // a1
 
-static void __declspec(naked) AL_CalcIntentionScore_LToy_Hook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push edi // a1
+	ASM_PUSH(ASM_ESP(2)); // a2
+	ASM_PUSH(edi); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_LToy);
+	ASM_ESP_ADD( 2 ); // a2
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_LToy
-
-		pop edi // a1
-		add esp, 4 // a2
-		retn
-	}
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
-const int AL_CalcIntentionScore_MayuPtr = 0x00562800;
-void AL_CalcIntentionScore_Mayua(task* a2, float* a1) {
-	__asm {
-		mov esi, a2
-		mov edi, a1
-		call AL_CalcIntentionScore_MayuPtr
-	}
+static ASM_FUNC void AL_CalcIntentionScore_Mayu(task* a2, float* a1) {
+    // save regs
+    ASM_PUSH( esi );
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( edi, ASM_ESP(2+0+2) ); // a1
+    ASM_MOVE( esi, ASM_ESP(1+0+2) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x00562800 );
+
+    // restore regs
+    ASM_POP( edi );
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 {
@@ -215,74 +214,77 @@ void __cdecl AL_CalcIntentionScore_All(task* a1, float* a2)
 		AL_CalcIntentionScore_Bully(a1, a2);
 	}
 
-	AL_CalcIntentionScore_JoinSToy(a1, a2);
-	AL_CalcIntentionScore_Mayu(a1, a2);
-	AL_CalcIntentionScore_Chat(a1, a2);
-	AL_CalcIntentionScore_Tree(a1, a2);
-	AL_CalcIntentionScore_Mayua(a1, a2);
+	if(gConfigVal.BhvJoinableToys) {
+		AL_CalcIntentionScore_JoinSToy(a1, a2);
+	}
+	
+	if(gConfigVal.BhvCocoonReactions) { 
+		AL_CalcIntentionScore_MayuReact(a1, a2);
+	}
 
+	if (gConfigVal.BhvSocial) {
+		AL_CalcIntentionScore_Chat(a1, a2);
+	}
+
+	if (gConfigVal.BhvTreeShake) {
+		AL_CalcIntentionScore_Tree(a1, a2);
+	}
+
+	if (!AL_ParameterIsGuest(a1) || !gConfigVal.GuestBlockLifeChanges) {
+		AL_CalcIntentionScore_Mayu(a1, a2);
+	}
 }
 
-static void __declspec(naked) AL_CalcIntentionScore_Hook()
-{
-	__asm
-	{
-		push edi // a1
-		push esi // a2
+static void ASM_FUNC AL_CalcIntentionScore_Hook() {
+	ASM_PUSH(edi); // a1
+	ASM_PUSH(esi); // a2
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_All
+	ASM_PUSH(edi); // a1
+	ASM_PUSH(esi); // a2
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_All);
+	ASM_ESP_ADD(2); // a2
 
-		pop esi // a2
-		pop edi // a1
-		retn
-	}
+	ASM_POP(esi); // a2
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
 extern void __cdecl AL_CalcIntentionScore_JoinMusic(task* a1, float* a2);
-static void __declspec(naked) AL_CalcIntentionScore_JoinMusicH()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
+static void ASM_FUNC AL_CalcIntentionScore_JoinMusicH() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_JoinMusic
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_JoinMusic);
 
-		pop eax // a1
-		add esp, 4 // a2
-		retn
-	}
-}
-static void __declspec(naked) sub_55E7A0()
-{
-	__asm
-	{
-		push ebx // a1
-
-		// Call your __cdecl function here:
-		call AL_DecideBehaviorSToy
-
-		pop ebx // a1
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
-static void __declspec(naked) AL_CalcIntentionScore_JoinDanceHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
+static void ASM_FUNC sub_55E7A0() {
+	ASM_PUSH(ebx); // a1
+	
+	ASM_PUSH(ebx); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (AL_DecideBehaviorSToy);
+	ASM_ESP_ADD(1); // a1
 
-		// Call your __cdecl function here:
-		call AL_CalcIntentionScore_JoinDance
+	ASM_POP(ebx); // a1
+	ASM_RET(0);
+}
 
-		pop eax // a1
-		add esp, 4 // a2
-		retn
-	}
+static void ASM_FUNC AL_CalcIntentionScore_JoinDanceHook() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_CalcIntentionScore_JoinDance);
+
+	ASM_POP(eax); // a1
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer)
@@ -291,19 +293,68 @@ Uint32 AL_SetIntervalTimer(task* a1, Uint16 TimerKind, Uint32 timer)
 	return 0;
 }
 
+static ASM_FUNC void AL_DecideIntention(task *tp) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00562A80 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static void AL_DecideIntention_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+	const bool isGuest = AL_ParameterIsGuest(tp);
+
+	if (isGuest) {
+		if (gConfigVal.GuestBlockLifeChanges) {
+			const auto life = GET_CHAOPARAM(tp)->life;
+			GET_CHAOPARAM(tp)->life = NJM_MAX(1, life);
+		}
+
+		if(gConfigVal.GuestBlockBreeding) {
+			// this is restored on saving
+			AL_EmotionSetValue(tp, EM_ST_BREED, 0);
+		}
+	}
+
+	AL_DecideIntention(tp);
+
+	if(bhv->BhvFuncList[0] == ALBHV_Move) {
+		AL_SetBehavior(tp, ALBHV_Move_r);
+	}
+}
+
+static void ASM_FUNC AL_DecideIntention_t() {
+	ASM_PUSH(eax); // a1
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_DecideIntention_r);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
+}
+
 //possible API for this too?
-void AL_IntentionInit()
-{
+void AL_IntentionInit() {
+	// hooking the ALBHV_Move set indirectly
+	WriteCall((void*)0x0053DD10, (void*)AL_DecideIntention_t);
+
 	//small toy intention
-	WriteJump((void*)0x55E7A0, sub_55E7A0);
+	WriteJump((void*)0x55E7A0, (void*)sub_55E7A0);
 
-	//dance
-	WriteJump((void*)0x59C6D0, AL_DecideBehaviorDance);
-	WriteJump((void*)0x0059C3D0, AL_CalcIntentionScore_JoinDanceHook);
+	if (gConfigVal.BhvNewDance) {
+		WriteJump((void*)0x59C6D0, (void*)AL_DecideBehaviorDance);
+		WriteJump((void*)0x0059C3D0, (void*)AL_CalcIntentionScore_JoinDanceHook);
+	}
 
-	//new instruments
-	WriteJump((void*)0x59D410, AL_DecideBehaviorMusic);
-	WriteJump((void*)0x0059D0D0, AL_CalcIntentionScore_JoinMusicH);
-	WriteJump((void*)0x00599B60, AL_CalcIntentionScore_LToy_Hook);
-	WriteCall((void*)0x0562B65, AL_CalcIntentionScore_Hook);
+	if (gConfigVal.BhvNewInstruments) {
+		WriteJump((void*)0x59D410, (void*)AL_DecideBehaviorMusic_r);
+		WriteJump((void*)0x0059D0D0, (void*)AL_CalcIntentionScore_JoinMusicH);
+	}
+	
+	WriteJump((void*)0x00599B60, (void*)AL_CalcIntentionScore_LToy_Hook);
+	WriteCall((void*)0x0562B65, (void*)AL_CalcIntentionScore_Hook);
 }

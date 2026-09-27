@@ -1,3 +1,4 @@
+#include "asmutil.h"
 #include "stdafx.h"
 #include "data/parts/RaccoonArms.h"
 #include "data/parts/SADXParts.h"
@@ -7,6 +8,36 @@
 #include "Chao.h"
 #include <vector>
 #include <map>
+
+ASM_FUNC void AL_SetItemOffset(task *a1, int a2, int a3) {
+	ASM_PUSH(esi);
+
+	// arguments
+    ASM_MOVE( ecx, ASM_ESP(3+0+1) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+1) ); // a1
+
+	ASM_CALL_R(esi, 0x0566A20);
+
+	ASM_POP(esi);
+
+	ASM_RET(0);
+}
+
+ASM_FUNC void sub_5669B0(task *a1, int a2, int a3) {
+	ASM_PUSH(esi);
+
+	// arguments
+    ASM_MOVE( ecx, ASM_ESP(3+0+1) ); // a3
+    ASM_MOVE( edx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+1) ); // a1
+
+	ASM_CALL_R(esi, 0x5669B0);
+
+	ASM_POP(esi);
+
+	ASM_RET(0);
+}
 
 void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist)
 {
@@ -23,6 +54,14 @@ void __cdecl AL_SetItem(task* a1, int a2, NJS_CNK_OBJECT* model, NJS_TEXLIST* te
 	v4->Shape.CurrObjectList[a2]->pItemTexlist = texlist;
 	v4->Shape.CurrObjectList[a2]->ItemActiveFlag = 1;
 	v4->Shape.CurrObjectList[a2]->ItemOffsetFlag = 0;
+}
+
+void AL_SetItemParallelLeftHand(task* tp, NJS_CNK_OBJECT* pObject, NJS_TEXLIST* pTexlist) {
+    chaowk* work = GET_CHAOWK(tp);
+    work->Shape.pLeftHandItemObject = pObject;
+    work->Shape.pLeftHandItemTexlist = pTexlist;
+    work->Shape.LeftHandItemScale = 0;
+    work->Shape.LeftHandItemActiveFlag = 1;
 }
 
 void  AL_PartsMinimalFlagOn(task* tp, int MinimalType)
@@ -176,21 +215,20 @@ void sub_566B80(task* tp) {
 	for (int i = 0; i < NB_PARTS_KIND; i++) {
 		AL_SetMinimalParts(tp, i, wk->pParamGC->PartsBTL.MinimalParts[i]);
 	}
+
 	sub_566B30(wk->Shape.pObject);
 }
 
-static void __declspec(naked) sub_566B80Hook()
-{
-	__asm
-	{
-		push edi // a1
+static void ASM_FUNC sub_566B80Hook() {
+	ASM_PUSH(edi); // a1
 
-		// Call your __cdecl function here:
-		call sub_566B80
+	ASM_PUSH(edi); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (sub_566B80);
+	ASM_ESP_ADD(1);
 
-		pop edi // a1
-		retn
-	}
+	ASM_POP(edi); // a1
+	ASM_RET(0);
 }
 
 void AL_Parts_Init()
@@ -228,5 +266,5 @@ void AL_Parts_Init()
 		ModAPI_MiniParts.push_back({ sadxparts_child, sadxparts_adult });
 	}
 
-	WriteJump((void*)0x566B80, sub_566B80Hook);
+	WriteJump((void*)0x566B80, (void*)sub_566B80Hook);
 }

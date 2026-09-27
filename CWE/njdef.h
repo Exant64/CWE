@@ -265,7 +265,7 @@
 #define MKEYAX( _k, _a, _x, _y, _z)                                 \
     {((Uint32)(_k)), ((float)((_a))),                               \
      ((float)(_x)), ((float)(_y)), ((float)(_z))}
-#define MKEYQ( _k, _a, _x, _y, _z)                                  \
+#define MKEYQ( _k, _x, _y, _z, _a)                                  \
     {((Uint32)(_k)), ((float)((_a))),                               \
      ((float)(_x)), ((float)(_y)), ((float)(_z))}
 #define MKEYP(k,x)            {((Uint32)(k)),((void *)(x))}

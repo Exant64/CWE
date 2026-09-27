@@ -10,10 +10,7 @@
 
 #ifdef IMGUIDEBUG
     #include "imgui/imgui.h"
-    #pragma warning(push)
-    #pragma warning( disable: 4838 )
-        #include <data/debugsphere.h>
-    #pragma warning(pop)
+    #include <data/debugsphere.h>
 #endif
 
 #include "ninja_functions.h"

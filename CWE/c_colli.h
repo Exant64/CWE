@@ -18,6 +18,10 @@
 #define CI_ATTR_IGNORE_CHAO    0x400000 /* Do not interact with chao collisions */
 #define CI_ATTR_800000         0x800000 /* ? */
 
+#define CCL_CAPSULE(kind, push, damage, attr, cx, cy, cz, a, b) \
+    { kind, CI_FORM_CAPSULE, push, damage, attr, { cx, cy, cz }, a, b, 0, 0, 0, 0, 0 }
+#define CCL_RECTANGLE(kind, push, damage, attr, cx, cy, cz, a, b, c) \
+    { kind, CI_FORM_RECTANGLE, push, damage, attr, { cx, cy, cz }, a, b, c, 0, 0, 0, 0 }
 #define CCL_SPHERE(kind, push, damage, attr, cx, cy, cz, a, b, c) \
     { kind, CI_FORM_SPHERE, push, damage, attr, { cx, cy, cz }, a, b, c, 0, 0, 0, 0 }
 #define CCL_CYLINDER(kind, push, damage, attr, cx, cy, cz, a, b, c) \
@@ -25,15 +29,12 @@
 
 void CCL_Enable(task* a1, int a2);
 void CCL_Disable(task* a1, int a2);
+void CCL_ClearInfo(task* tp);
+void CCL_Entry(task* tp);
 
-static const void* const AddToCollisionListPtr = (void*)0x47E750;
-static inline void CCL_Entry(task* object)
-{
-	__asm
-	{
-		mov esi, [object]
-		call AddToCollisionListPtr
-	}
-}
+FunctionPointer(CCL_HIT_INFO*, CCL_IsHitKindEx,(task* a1, unsigned __int8 a2),0x00486760);
+FunctionPointer(void, CCL_CalcColli, (task *tp1, task *tp2), 0x485850);
+
+task* CCL_IsHitKind(task* tp, Uint8 kind);
 
 task* AL_IsHitKindWithNum(task *a1, int a2, Uint8 a3);

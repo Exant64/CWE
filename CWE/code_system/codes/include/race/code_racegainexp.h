@@ -1,11 +1,11 @@
 #pragma once
 
 #include <code_system/cwe_code.h>
+
 #include <FunctionHook.h>
 #include <al_race.h>
 #include <al_parameter.h>
 #include <Chao.h>
-#include <ALifeSDK_Functions.h>
 
 PATCH_CODE(RaceGainExp);
 

@@ -7,6 +7,7 @@
 #include <al_texlist.h>
 #include <al_omochao_build.h>
 #include "ChaoMain.h"
+#include <playsound.h>
 
 #pragma pack(push, 8)
 struct SA2CAMERADATA
@@ -26,45 +27,15 @@ struct SA2CAMERADATA
 
 #define GET_WORK(tp) ((RAIN_WORK*)tp->awp)
 
-static char
-SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
-{
-	static const void* const ___fptr = ((void*)0x004374D0);
-
-	char result;
-
-	__asm
-	{
-		push[timer]
-		push[volofs]
-		push[pri]
-		push[id]
-		mov edi, [tone]
-		call[___fptr]
-		add esp, 16
-		mov[result], al
-	}
-
-	return result;
-}
-
-enum CWE_SOUND {
-	CWE_SOUND_ACCORDION = 161,
-	CWE_SOUND_GUITAR = 162,
-	CWE_SOUND_TRIANGLE = 163,
-	CWE_SOUND_SAND = 164,
-	CWE_SOUND_RAIN = 165
-};
-
 static void AL_DayNightRainExecutor(task* tp) {
 	auto* work = GET_WORK(tp);
 
 	if(gConfigVal.DayNightRainSounds) {
-		SE_Call_Timer(0x6000 + CWE_SOUND_RAIN, tp, 0, 0, 2);
+		SE_Call_Timer(TONE(6, CWE_SOUND_RAIN), tp, 0, 0, 2);
 	}
 
 	// slightly change angle overtime
-	work->angle = lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
+	work->angle = std::lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
 
 	if (work->timer++ >= work->timerLimit) {
 		DestroyTask(tp);
@@ -211,9 +182,9 @@ static void AL_DayNightRainDisplayer(task* tp) {
 		const float sclVar = drop.scale / 100.f;
 		const Uint8 alpha = Uint8(0xFF * (0.85f + sclVar * 0.25f));
 
-		const float progressX = lerp(drop.startPos.x + angOffsetX * fallRadius, drop.startPos.x, drop.progress);
-		const float progressY = lerp(drop.startPos.y, drop.collisionY, drop.progress);
-		const float progressZ = lerp(drop.startPos.z + angOffsetZ * fallRadius, drop.startPos.z, drop.progress);
+		const float progressX = std::lerp(drop.startPos.x + angOffsetX * fallRadius, drop.startPos.x, drop.progress);
+		const float progressY = std::lerp(drop.startPos.y, drop.collisionY, drop.progress);
+		const float progressZ = std::lerp(drop.startPos.z + angOffsetZ * fallRadius, drop.startPos.z, drop.progress);
 
 		if (dropCount > 0) {
 			if ((dropCount % 2) == 1) {

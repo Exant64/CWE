@@ -101,15 +101,27 @@
         <HelpText>Lets you edit the current time by pressing X+Y (Note: It pauses passing time)</HelpText>
       </Property>
     </Group>
-    <Group name="Pathfinding" display="03 - Pathfinding System (experimental)">
-      <Property name="Pathfinding" type="bool" defaultvalue="True" display="Pathfinding System">
-        <HelpText>Enables generating pathfinding "NavMeshes", and the usage of them for CWE's custom behaviors.</HelpText>
+    <Group name="Behavior" display="03 - Chao Behaviors">
+      <Property name="SandCastle" type="bool" defaultvalue="True" display="Sand Castles">
+        <HelpText>Chao can play with the shovel by building sand castles.</HelpText>
       </Property>
-      <Property name="Vanilla" type="bool" defaultvalue="True" display="Vanilla Go to Object behaviors use pathfinding">
-        <HelpText>Makes the vanilla "go to object" type behaviors use our pathfinding system.</HelpText>
+      <Property name="NewDance" type="bool" defaultvalue="True" display="Unused Chao Dances">
+        <HelpText>Restores break-dancing and the "hero/dark" dances!</HelpText>
       </Property>
-      <Property name="Log" type="bool" defaultvalue="True" display="Logging">
-        <HelpText>Enables logging pathfinding system operations into a log file created in CWE's folder.</HelpText>
+      <Property name="NewInstruments" type="bool" defaultvalue="True" display="New Chao Instruments">
+        <HelpText>New Chao instruments can be learned from the classroom: guitar, triangle, accordion.</HelpText>
+      </Property>
+      <Property name="JoinableToys" type="bool" defaultvalue="True" display="Playing with toys in groups">
+        <HelpText>Chao can play together with toys similar to bands.</HelpText>
+      </Property>
+      <Property name="CocoonReactions" type="bool" defaultvalue="True" display="Cocoon Reactions">
+        <HelpText>Chao can react to cocoons.</HelpText>
+      </Property>
+      <Property name="Social" type="bool" defaultvalue="True" display="Social Chao Actions">
+        <HelpText>Adds several social Chao behaviors such as talking, hugging, etc.</HelpText>
+      </Property>
+      <Property name="TreeShake" type="bool" defaultvalue="True" display="Tree Shaking">
+        <HelpText>Chao can shake trees if they're hungry enough.</HelpText>
       </Property>
     </Group>
     <Group name="Advanced" display="04 - Advanced Features">
@@ -117,7 +129,21 @@
         <HelpText>Disabling this will prevent Chao from evolving into custom chao (such as Spartoi).</HelpText>
       </Property>
       <Property name="AdvancedChaosandCharactersChaoarelikeNormalChao" type="bool" defaultvalue="False" display="Rare Chao act like Normal Chao">
-        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed. Also allows Chaos Chao to have expressions!</HelpText>
+        <HelpText>Gives Chaos and Character Chao the ability to have animal parts and breed.</HelpText>
+      </Property>
+      <Property name="ChaosEyes" type="ChaosFace" defaultvalue="0" display="Chaos Chao Eyes">
+        <HelpText>
+          Disables the forced Chaos Chao eyes. 
+          "Vanilla" leaves it untouched. "Actions" reenables eye changes during general Chao actions.
+          "Actions + Default" additionally restores the default eyes the Chao had.
+        </HelpText>
+      </Property>
+      <Property name="ChaosMouths" type="ChaosFace" defaultvalue="0" display="Chaos Chao Mouths">
+        <HelpText>
+          Reenables mouths on Chaos Chao. 
+          "Vanilla" leaves it untouched. "Actions" reenables mouths set during general Chao actions.
+          "Actions + Default" additionally restores the default mouth the Chao had.
+        </HelpText>
       </Property>
       <Property name="AdvancedMedalChaocanmakeJewelChao" type="bool" defaultvalue="False" display="Medals can breed Jewel Chao">
         <HelpText>When breeding, Chao with medals from races could produce a Jewel Chao corresponding with the medal they’re wearing.</HelpText>
@@ -158,7 +184,7 @@
     </Group>
     <Group name="Hard" display="05 - Hard Mode">
       <Property name="HardBullyChaoRequiresMoreChaoAnimations" type="bool" defaultvalue="False" display="Bully Chao">
-        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Combine with "More Chao Anger" to amplify its likeliness.</HelpText>
+        <HelpText>If a Chao gets angry or upset it may choose a Chao to attack. Combine with "More Negative Emotions" to amplify its likeliness.</HelpText>
       </Property>
       <Property name="ChaoDrown" type="bool" defaultvalue="False" display="Chao Drown">
         <HelpText>If the Chao can't swim, they will slowly lose Happiness, and if it reaches -100, they Drown.</HelpText>
@@ -166,8 +192,8 @@
       <Property name="HardEnableSpinDashandSomersault" type="bool" defaultvalue="False" display="Enable SpinDash and Somersault">
         <HelpText>Enables Spindash and Somersault in the Chao Gardens. Be careful, you could hurt your Chao!</HelpText>
       </Property>
-      <Property name="MoreAnger" type="bool" defaultvalue="False" display="More Chao Anger">
-        <HelpText>Chao get angry more easily through negative animations, such as overfeeding, hunger, uncomfortable holding, or crying animations. Anger gain is amplified through Energetic personality.</HelpText>
+      <Property name="MoreAnger" type="bool" defaultvalue="False" display="More Negative Emotions">
+        <HelpText>Chao feel negative (anger, crying, etc) more easily through negative animations, such as overfeeding, hunger, uncomfortable holding, or crying animations. Anger gain is amplified by Energetic personality, Urge to cry by Crybaby, Surprise by Calm, and Dizzyness by Regain.</HelpText>
       </Property>
       <Property name="ChaoHunger" type="bool" defaultvalue="False" display="Chao Hunger">
         <HelpText>When Chao are starving, they will start to cry and lose happiness. This code also boosts Stamina gain by 25% for garden fruit.</HelpText>
@@ -218,6 +244,9 @@
       </Property>
     </Group>
     <Group name="Misc" display="07 - Miscellaneous Features">
+      <Property name="QuickExit" type="bool" defaultvalue="True" display="Exit without saving to Stage Select">
+        <HelpText>Pressing L+R+Y+Start lets you exit to Stage Select without saving.</HelpText>
+      </Property>
       <Property name="LegacyBald" type="bool" defaultvalue="True" display="Make Bald Y-only on Legacy Accessories">
         <HelpText>Make old pre-9.6 accessories's bald toggle only affect the Chao head vertically.</HelpText>
       </Property>
@@ -272,8 +301,8 @@
       <Property name="BonusStayBabyChaoUntilalllvl.10" type="bool" defaultvalue="False" display="Stay Baby Chao Until lvl.10">
         <HelpText>A Baby Chao will not evolve unless all the stats reach level 10, or Stamina reaches level 99.</HelpText>
       </Property>
-      <Property name="BonusMergeHeroandDarkGardenChaoSlots" type="bool" defaultvalue="False" display="Merge Hero and Dark Garden Chao Slots">
-        <HelpText>The same Chao will appear in both the Hero and Dark Gardens. Up to 16 Chao can be in the Hero and Dark Gardens.</HelpText>
+      <Property name="MergeGardenSlots" type="MergeGarden" defaultvalue="0" display="Merge Garden Chao Slots">
+        <HelpText>The same Chao will appear in the selected gardens. "Hero and Dark" merges Hero and Dark gardens. "All" merges all gardens.</HelpText>
       </Property>
       <Property name="GardenLimit" type="int" defaultvalue="8" display="Chao in Garden Limit">
         <HelpText>Increase the number of chao you want to be in the Garden, from 8 to 24. Reminder that it will NOT increase the number of chao you can get per save.</HelpText>
@@ -331,6 +360,12 @@
       <Property name="DCCocoon" type="bool" defaultvalue="False" display="Dreamcast Cocoons">
         <HelpText>Cocoons behave as they do in the DC version (all cocoons are grey).</HelpText>
       </Property>
+      <Property name="ChaosSparkles" type="bool" defaultvalue="True" display="Chaos Chao Sparkles">
+        <HelpText>Chaos Chao now have the sparkles effect restored from SADX.</HelpText>
+      </Property>
+      <Property name="AnimalSparkles" type="bool" defaultvalue="True" display="Animal Sparkles">
+        <HelpText>Usable animals now have the sparkles effect restored from SADX.</HelpText>
+      </Property>
     </Group>
     <Group name="Input" display="09 - Input Codes">
       <Property name="CameraControl" type="Camera" defaultvalue="0" display="Better Camera Control">
@@ -387,8 +422,82 @@
         <HelpText>HD Chao CWE lens textures (only the regular color lenses!) </HelpText>
       </Property>
     </Group>
+    <Group name="Guest" display="12 - Guest Chao">
+      <Property name="Enabled" type="bool" defaultvalue="True" display="Enabled">
+        <HelpText>Enables the Guest Chao feature. Chao are read from .chao files stored in the resource/gd_PC/SAVEDATA/Guest folder.</HelpText>
+      </Property>
+      <Property name="Save" type="bool" defaultvalue="False" display="Save Guest Chao">
+        <HelpText>Enables saving Guest Chao, recommended to be used with the blocking options disabled to make them behave more like regular Chao (note that you can't enter them in the classroom, and they can't enter race or karate).</HelpText>
+      </Property>
+      <Property name="VisitCounter" type="int" defaultvalue="3" display="Visit Counter">
+        <HelpText>The number of garden visits before the guests get rerolled (behaves similarly to how fruit ages).</HelpText>
+      </Property>
+      <Property name="Min" type="int" defaultvalue="4" display="Minimum Chao" minvalue="1" maxvalue="40">
+        <HelpText>The minimum number of Guest Chao that get spawned. The number of Chao that spawn gets randomly picked between the specified minimum and maximum.</HelpText>
+      </Property>
+      <Property name="Max" type="int" defaultvalue="8" display="Maximum Chao" minvalue="1" maxvalue="40">
+        <HelpText>The maximum number of Guest Chao that get spawned. The number of Chao that spawn gets randomly picked between the specified minimum and maximum.</HelpText>
+      </Property>
+      <Property name="RollType" type="GuestRotate" defaultvalue="2" display="Roll Type">
+        <HelpText>
+          The method used to pick Guest Chao when they get rerolled. 
+          "Random" randomly selects Chao files from the folder. 
+          "Rotate" cycles through the Chao files in alphabetical order, replacing a set number of Chao with the next ones in the list. 
+          "Random Rotate" is a combination of the two methods, it functions like "Rotate" but randomizes the file order each time the game is started.
+        </HelpText>
+      </Property>
+      <Property name="RotateCount" type="int" defaultvalue="8" display="Number of Chao to rotate" minvalue="1" maxvalue="39">
+        <HelpText>When using "Rotate" or "Random Rotate", this option specifies the number of Chao that get replaced on a reroll.</HelpText>
+      </Property>
+      <Property name="RandomEmotions" type="bool" defaultvalue="True" display="Randomize Emotions">
+        <HelpText>Simulates a random amount of emotion changes when a Guest Chao gets loaded to eliminate consistency in their behavior.</HelpText>
+      </Property>
+      <Property name="BlockStats" type="bool" defaultvalue="True" display="Block Stat Changes">
+        <HelpText>Blocks upgrade controls and any changes to stats (grades, levels, etc).</HelpText>
+      </Property>
+      <Property name="BlockName" type="bool" defaultvalue="True" display="Block Name Changes">
+        <HelpText>Blocks entry to Name Menu and Fortune Teller room when holding a Guest Chao.</HelpText>
+      </Property>
+      <Property name="BlockBody" type="bool" defaultvalue="True" display="Block Body Changes">
+        <HelpText>Blocks changes to magnitude ("Evolution Progress"), alignment, and stat sliders.</HelpText>
+      </Property>
+      <Property name="BlockVisual" type="bool" defaultvalue="True" display="Block General Visual Changes">
+        <HelpText>Blocks changes to general appearance (negativity, eye color, shininess, anything that can be changed by items).</HelpText>
+      </Property>
+      <Property name="BlockMiniPart" type="bool" defaultvalue="True" display="Block Animal Part Changes">
+        <HelpText>Blocks changes to animal parts.</HelpText>
+      </Property>
+      <Property name="BlockWearable" type="bool" defaultvalue="True" display="Block Wearable Changes">
+        <HelpText>
+          Blocks changes to wearable items (medals, hats, and accessories). 
+          Customization entry is blocked with Guest Chao. 
+          Damaging Chao does not remove their hats and accessories, and they cannot equip them either.
+        </HelpText>
+      </Property>
+      <Property name="BlockSocial" type="bool" defaultvalue="True" display="Block Chao Relationship Changes">
+        <HelpText>Blocks changes to Chao social relationships.</HelpText>
+      </Property>
+      <Property name="BlockPlayer" type="bool" defaultvalue="True" display="Block Player Relationship Changes">
+        <HelpText>Blocks changes to happiness (general player likeness), and character specific relations.</HelpText>
+      </Property>
+      <Property name="BlockBreed" type="bool" defaultvalue="True" display="Block Breeding">
+        <HelpText>Blocks breeding.</HelpText>
+      </Property>
+      <Property name="BlockLife" type="bool" defaultvalue="True" display="Block Life Cycle Changes">
+        <HelpText>Prevents evolution, reincarnation, and blocks changes to lifespan and age.</HelpText>
+      </Property>
+      <Property name="BlockMiniFlag" type="bool" defaultvalue="True" display="Block Animal Behavior Changes">
+        <HelpText>Blocks changes to unlocked animal behaviors.</HelpText>
+      </Property>
+      <Property name="BlockOmoBuild" type="bool" defaultvalue="True" display="Block Omochao Building">
+        <HelpText>Blocks building Omochao.</HelpText>
+      </Property>
+      <Property name="Indicator" type="bool" defaultvalue="True" display="Guest Chao Indicator">
+        <HelpText>Shows a globe icon on the stat panel to indicate if the Chao is a guest or not.</HelpText>
+      </Property>
+    </Group>
     <Group name="Cheat" display="99 - Cheat and Debug">
-      <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display="Black Market Global Price Percentage" minvalue="0" maxvalue="100">
+      <Property name="GlobalPricePercentage" type="int" defaultvalue="100" display="Black Market Global Price Percentage" minvalue="0">
         <HelpText>All modded item prices are multiplied with the specified percentage.</HelpText>
       </Property>
       <Property name="ToyReset" type="bool" defaultvalue="False" display="Toy Reset Button">
@@ -434,11 +543,26 @@
       <EnumMember name="1" display="Personality"></EnumMember>
       <EnumMember name="2" display="Random"></EnumMember>
     </Enum>
+    <Enum name="ChaosFace">
+      <EnumMember name="0" display="Vanilla"></EnumMember>
+      <EnumMember name="1" display="Actions"></EnumMember>
+      <EnumMember name="2" display="Actions + Default"></EnumMember>
+    </Enum>
+    <Enum name="MergeGarden">
+      <EnumMember name="0" display="Default (vanilla)"></EnumMember>
+      <EnumMember name="1" display="Hero and Dark"></EnumMember>
+      <EnumMember name="2" display="All"></EnumMember>
+    </Enum>
     <Enum name="Camera">
       <EnumMember name="0" display="Off/Disabled"></EnumMember>
       <EnumMember name="1" display="Keyboard (without Numpad)"></EnumMember>
       <EnumMember name="2" display="Keyboard (with Numpad)"></EnumMember>
       <EnumMember name="3" display="Controller"></EnumMember>
+    </Enum>
+    <Enum name="GuestRotate">
+      <EnumMember name="0" display="Random"></EnumMember>
+      <EnumMember name="1" display="Rotate"></EnumMember>
+      <EnumMember name="2" display="Random Rotate"></EnumMember>
     </Enum>
   </Enums>
 </ConfigSchema>

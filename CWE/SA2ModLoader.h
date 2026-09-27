@@ -5,7 +5,7 @@
 #error Mods must be built targeting 32-bit x86, change your settings.
 #endif
 
-#include <WTypes.h>
+#include <wtypes.h>
 #include <cstdint>
 
 #include "MemAccess.h"

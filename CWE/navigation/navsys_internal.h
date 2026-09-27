@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <mutex>
 #include <future>
+#include <atomic>
+#include <memory>
 
 #include "external/Detour/Include/DetourNavMeshBuilder.h"
 #include "external/Detour/Include/DetourNavMesh.h"
@@ -24,10 +26,10 @@ private:
 
     #ifdef IMGUIDEBUG
         uint32_t m_debugDisplayPath;
-        bool m_debugDisplayNavMesh;
+        bool m_debugDisplayNavMesh = false;
     #endif
     
-    bool m_isQueryReady;
+    bool m_isQueryReady = false;
     std::shared_future<std::shared_ptr<dtNavMesh>> m_loadingNavMeshResult;
     std::shared_ptr<dtNavMesh> m_navMesh;
 

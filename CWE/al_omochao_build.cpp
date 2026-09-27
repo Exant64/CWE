@@ -1,19 +1,19 @@
 #include "stdafx.h"
+
 #include "al_save.h"
+#include "asmutil.h"
 #include "ninja_functions.h"
 #include "ChaoMain.h"
 
 #include "data/omochao/omobuild_all.h"
 
 #include "al_draw.h"
-#include <brightfixapi.h>
-#include "ALifeSDK_Functions.h"
-#include "ALifeSDK_Functions.h"
+#include <BrightFix/brightfixapi.h>
 #include "Chao.h"
 #include "al_omochao_build.h"
 #include <array>
 #include "al_stage.h"
-#include "al_stage.h"
+#include "al_gene.h"
 
 NJS_POINT3 OmoPositions[] = {
 	{-33, 0, -153},
@@ -78,16 +78,19 @@ static void ALO_OmoBuildDisplayer(task* tp) {
 	EggEndHook();
 }
 
-const int sub_540FD0Ptr = 0x540FD0;
-void sub_540FD0(NJS_VECTOR* v, float f)
-{
-	__asm
-	{
-		mov eax, v
-		push f
-		call sub_540FD0Ptr
-		add esp, 4
-	}
+static ASM_FUNC void sub_540FD0(NJS_VECTOR* v, float f) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // f
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // v
+
+    // call
+    ASM_CALL_R( edx, 0x540FD0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static void ALO_OmoBuildExecutor(task* tp) {
@@ -138,10 +141,15 @@ static void ALO_OmoBuildExecutor(task* tp) {
 }
 
 static CCL_INFO omoColli = { 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  2.0,  0.0,  0.0, 0, 0, 0, 0 };
-void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
+
+task* ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang) {
 	task* obj = CreateElementalTask(IM_TWK, LEV_4, ALO_OmoBuildExecutor, "AL_OmoBuild");
+
 	CCL_Init(obj, &omoColli, 1, 5);
+
 	obj->twp->pos = *pPos;
 	obj->twp->ang.y = ang;
 	obj->disp = ALO_OmoBuildDisplayer;
+
+	return obj;
 }

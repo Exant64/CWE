@@ -14,7 +14,7 @@ void InstantGrowTrees::OnALControl(task* tp) {
     const size_t count = ALW_CountEntry(5);
 
     for(size_t i = 0; i < count; ++i) {
-        task* pTree = GetChaoObject(5, i);
+        task* pTree = ALW_GetTaskCount(5, i);
 
         if(!pTree) continue;
 

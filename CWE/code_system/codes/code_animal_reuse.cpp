@@ -16,6 +16,6 @@ signed int __fastcall MinimalHold(int a1, task* a2)
 void AnimalReuse::Init() {
 	WriteData((char*)0x548944, (char)0x00); //set used flag to 0 instead of 1
 	WriteData((char*)0x54894D, (char)0xEB); //jump over itemsave nulling code
-	WriteCall((void*)0x548931, MinimalHold); //hooking "held by chao" check function
+	WriteCall((void*)0x548931, (void*)MinimalHold); //hooking "held by chao" check function
 	WriteData<4>((char*)0x00548996, (char)0x90); //nop instruction that sets status (status related to being unpickupable?)
 }

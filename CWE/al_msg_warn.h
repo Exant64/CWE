@@ -4,7 +4,7 @@
 #include "memory.h"
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) AL_MSGWarnKinderCoMessageThing
+struct ALIGN(4) AL_MSGWarnKinderCoMessageThing
 {
 	char mActive;
 	char mOpen;
@@ -39,19 +39,36 @@ static void AlMsgWarnCreate(int winid, float px, float py, float sx, float sy)
 		AlMsgWinSetSize(warnWin.mWin, sx - 32, sy - 40);
 	}
 }
+
 static void AlMsgWarnOpen(int winid) {
 	AlMsgWinOpen(AL_MSGWarnKinderMessageArray[winid].mWin);
 	AL_MSGWarnKinderMessageArray[winid].mOpen = 1;
 }
-static void AlMsgWarnAddLineC(int winid, const char* str)
-{
+
+static void AlMsgWarnAddLineC(int winid, const char* str) {
 	//TextColor[0] = (NJS_BGRA)0xFF;
 	*(int*)0x1A267D0 = 0xFFFFFFFF;
+
 	AlMsgWinAddLineC(
 		AL_MSGWarnKinderMessageArray[winid].mWin,
 		str,
-		Language == 0);
+		Language == 0
+	);
 }
+
+static void AlMsgWarnAddLineC(int winid, int msgid) {
+	DataPointer(int*, PointerToAL_MSGWarn, 0x01A259E4);
+
+	//TextColor[0] = (NJS_BGRA)0xFF;
+	*(int*)0x1A267D0 = 0xFFFFFFFF;
+
+	AlMsgWinAddLineC(
+		AL_MSGWarnKinderMessageArray[winid].mWin,
+		(const char*)((char *)PointerToAL_MSGWarn + PointerToAL_MSGWarn[msgid]),
+		Language == 0
+	);
+}
+
 static void AlMsgWarnWaitClose(int winid)
 {
 	__int16 v0; // dx

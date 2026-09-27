@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include <sa2modloader.h>
+#include <SA2ModLoader.h>
 #include <vector>
 #include <memory.h>
 #include <cwe_api.h>
+#include <asmutil.h>
 
 std::vector<const char*> MsgAlItem;
 
@@ -53,33 +54,36 @@ CWE_API_REGISTER_MSG AL_ModAPI_Msg = {
 	.SetAlItemString = OverwriteAlItemString
 };
 
-const int sub_57A5D0Ptr = 0x57A5D0;
-int* sub_57A5D0(int a1, const char* a2)
-{
-	int* result;
-	__asm
-	{
-		mov ecx, a1
-		push[a2]
-		call sub_57A5D0Ptr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC int* sub_57A5D0(int a1, const char* a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x57A5D0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// char __usercall@<al>(_DWORD *a1@<esi>)
-static const void *const IsByteswappedPtr = (void*)0x429840;
-static inline char IsByteswapped(void *a1)
-{
-	char result;
-	__asm
-	{
-		mov esi, [a1]
-		call IsByteswappedPtr
-		mov result, al
-	}
-	return result;
+static ASM_FUNC char IsByteswapped(void *a1) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x429840 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void LoadMsgMemIntoVec(int* pFile, std::vector<const char*>& vec) {
@@ -154,11 +158,11 @@ void AL_ModAPI_Msg_Init() {
 	LoadMsgFileIntoVec("MsgAlKinderFoName", MsgFoName);
 
 	//load msgalitem custom
-	WriteCall((void*)0x0058B71C, GenerateMsgItemBuffer);
+	WriteCall((void*)0x0058B71C, (void*)GenerateMsgItemBuffer);
 	WriteData<2>((char*)0x0058B534, (char)0x90); //kill dealloc
 	WriteData<6>((char*)0x0058B525, (char)0x90);
 
-	WriteCall((void*)0x005835B6, GenerateMsgFoNameBuffer);
+	WriteCall((void*)0x005835B6, (void*)GenerateMsgFoNameBuffer);
 	WriteData<2>((char*)0x00583463, (char)0x90);
 	WriteData<6>((char*)0x00583459, (char)0x90);
 }

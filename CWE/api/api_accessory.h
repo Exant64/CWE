@@ -30,6 +30,7 @@ extern "C" __declspec(dllexport) int RegisterChaoAccessory(EAccessoryType type, 
 
 void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind);
 size_t CWE_ParamGetAccessory(task* tp, uint32_t slot);
+void CWE_ParamClearAccessory(task* tp, uint32_t slot);
 
 // helper RAII to store all accessories in range to belong to a mod index
 // bit hacky, but for now accessories are the only API that warrant this

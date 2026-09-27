@@ -17,4 +17,5 @@
 size_t mtCnkVListSize(const Sint32* pVList);
 size_t mtCnkPListSize(const Sint16* pPList);
 
+void CnkApplyScaling(NJS_CNK_OBJECT* pObject);
 std::optional<std::vector<Uint16>> GetNonAdjacentIndices(const NJS_CNK_MODEL* pModel, const size_t vertexIndex);

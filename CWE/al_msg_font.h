@@ -8,7 +8,7 @@ enum {
 };
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) MessageFontThing
+struct ALIGN(4) MessageFontThing
 {
 	signed __int16 signed0;
 	__int16 gap2;

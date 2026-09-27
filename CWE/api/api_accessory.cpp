@@ -240,7 +240,7 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		return -1;
 	}
 
-	if (!pAccessoryData->ID) {
+	if (!pAccessoryData->ID[0]) {
 		error.print("ID is NULL!");
 		return -1;
 	}
@@ -293,6 +293,10 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 		pAccessoryData->pDescription
 	);
 
+	if (RenderFix_IsEnabled()) {
+		CnkApplyScaling(pAccessoryData->pObject);
+	}
+	
 	ObjectRegistry::Get(ALW_CATEGORY_ACCESSORY)->Add(pAccessoryData->pObject, pTexlist);
 
 	const size_t id = ModAPI_AccessoryDataList.size();
@@ -363,4 +367,8 @@ void CWE_ParamSetAccessory(task* tp, uint32_t slot, uint32_t kind) {
 
 size_t CWE_ParamGetAccessory(task* tp, uint32_t slot) {
 	return GET_CHAOWK_CWE(tp)->AccessoryIndices[slot];
+}
+
+void CWE_ParamClearAccessory(task* tp, uint32_t slot) {
+	AL_ParameterClearAccessory(tp, slot);
 }

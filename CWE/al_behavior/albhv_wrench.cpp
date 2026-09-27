@@ -3,7 +3,6 @@
 #include "../Chao.h"
 #include "../al_world.h"
 #include "..//ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include <random>
 #include "../AL_ModAPI.h"
 #include "../ChaoMain.h"

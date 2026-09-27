@@ -1,9 +1,7 @@
-#pragma once
 #include "stdafx.h"
 
 #include <random>
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_world.h"
 #include "al_social.h"
 #include "al_behavior/al_behavior.h"
@@ -63,7 +61,7 @@ void Social_QueueBehavior(task* tp, size_t actorIndex, SBHV_FUNC func) {
 	Social_ErrorCheck(tp);
 
 	if (wk->nbBhvFuncEntry < _countof(wk->bhvFuncs)) {
-		wk->bhvFuncs[wk->nbBhvFuncEntry++] = { actorIndex, func, MAXSIZE_T };
+		wk->bhvFuncs[wk->nbBhvFuncEntry++] = { actorIndex, func, -1 };
 	}
 }
 
@@ -137,7 +135,7 @@ static void Social_Main(task* tp) {
 
 	//if function finishes
 	if (currFunc.func(&data) == 1 ||
-		(currFunc.syncindex != MAXSIZE_T && currFunc.func(&wk->actorData[currFunc.syncindex]) == 1))
+		(currFunc.syncindex != -1 && currFunc.func(&wk->actorData[currFunc.syncindex]) == 1))
 	{
 		// clear status data for everyone
 		for (size_t i = 0; i < SOCIAL_CHAOCOUNT; i++) {

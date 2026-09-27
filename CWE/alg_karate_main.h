@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #pragma pack(push, 8)
-struct __declspec(align(16)) KarateMainExecData
+struct ALIGN(16) KarateMainExecData
 {
 	char gap0;
 	char field_1;
@@ -34,7 +34,7 @@ struct __declspec(align(16)) KarateMainExecData
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(8)) KarateChaoExec_Data2
+struct ALIGN(8) KarateChaoExec_Data2
 {
 	__int16 char0;
 	short word2;

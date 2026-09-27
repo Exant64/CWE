@@ -3,9 +3,9 @@
 #include <ninja_functions.h>
 #include <al_texlist.h>
 #include <d3d9.h>
-#include "../BrightFix/BrightFix/structs.h"
+#include "BrightFix/structs.h"
+#include "BrightFix/brightfixapi.h"
 #include <usercall.h>
-#include <ALifeSDK_Functions.h>
 #include <d3d9.h>
 #include "ChaoMain.h"
 #include <al_modelcontainer.h>
@@ -15,7 +15,6 @@
 #include <al_draw.h>
 #include <ui/al_ortho.h>
 #include <al_parts.h>
-#include <brightfixapi.h>
 #include <rendertarget.h>
 #include "util.h"
 
@@ -133,28 +132,43 @@ static speech_bubble_entry entries[NB_SPEECH_ENTRY] = {
 
 FunctionPointer(void, AL_ShapeInit, (task* tp), 0x0056C9D0);
 
-const int sub_539F90Ptr = 0x539F90;
-static void AL_FaceInit(task* tp) {
-	__asm {
-		mov ebx, tp
-		call sub_539F90Ptr
-	}
+static ASM_FUNC void AL_FaceInit(task* tp) {
+	ASM_PUSH( ebx );
+	ASM_MOVE( ebx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x539F90 );
+
+	ASM_POP(ebx);
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int AL_MotionInitPtr = 0x0055C370;
-static void AL_MotionInit(task* tp) {
-	__asm {
-		mov eax, tp
-		call AL_MotionInitPtr
-	}
+static ASM_FUNC void AL_MotionInit(task* tp) {
+	ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0055C370 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int MotionControlPtr = 0x007938D0;
-static void MotionControl(MOTION_CTRL* motion) {
-	__asm {
-		mov esi, motion
-		call MotionControlPtr
-	}
+static ASM_FUNC void MotionControl(MOTION_CTRL* motion) {
+	ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a1
+
+	 // call
+    ASM_CALL_R( edx, 0x007938D0 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 static task* AL_SpeechBubble_CreateMockChao(CHAO_SAVE_INFO* chaoData) {
@@ -163,7 +177,7 @@ static task* AL_SpeechBubble_CreateMockChao(CHAO_SAVE_INFO* chaoData) {
 	pChao->dest = ChaoDestructor;
 
 	chaowk* work = (chaowk*)syMalloc(sizeof(chaowk) + sizeof(chaowk_cwe), __FILE__, __LINE__);
-	memset(work, 0, sizeof(chaowk));
+	memset(work, 0, sizeof(chaowk) + sizeof(chaowk_cwe));
 
 	pChao->twp = (taskwk*)work;
 
@@ -263,7 +277,6 @@ static void SetTextureRenderTargetHack() {
 }
 
 static NJS_POINT3 AL_SpeechBubble_GetPosition(task* pChao, eSpeechPos position) {
-	const size_t iconPositionOffset = 0x6EC + 0x2C;
 	NJS_POINT3 viewPosition;
 
 	switch (position) {
@@ -276,7 +289,7 @@ static NJS_POINT3 AL_SpeechBubble_GetPosition(task* pChao, eSpeechPos position) 
 			viewPosition.x += 3;
 			break;
 		case SPEECH_POS_TOP:
-			sub_426CC0(_nj_current_matrix_ptr_, &viewPosition, (NJS_VECTOR*)((char*)GET_CHAOWK(pChao) + iconPositionOffset), 0);
+			sub_426CC0(_nj_current_matrix_ptr_, &viewPosition, &GET_CHAOWK(pChao)->Icon.Pos, 0);
 			break;
 	}
 	
@@ -307,6 +320,7 @@ static void AL_SpeechBubbleDisplayRenderTarget(task *tp) {
 	}
 	StopRenderTarget();
 
+	SetMaterial(0, 0, 0, 0);
 	LightsGC[10] = backupLight;
 }
 
@@ -367,9 +381,7 @@ static void AL_SpeechBubbleExecutor(task* tp) {
 	switch (work->mode) {
 		case SPEECH_MD_TIMER:
 			if (--work->aliveTimer <= 0) {
-				CreateTween(tp, EASE_OUT, INTERP_EXPO, &work->scl, 0.0f, work->spawnTimer, [](task* pParent) {
-					DestroyTask(pParent);
-				});
+				CreateTween(tp, EASE_OUT, INTERP_EXPO, &work->scl, 0.0f, work->spawnTimer, DestroyTask);
 
 				work->mode = SPEECH_MD_DIE;
 			}

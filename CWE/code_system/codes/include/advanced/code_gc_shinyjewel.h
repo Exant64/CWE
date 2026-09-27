@@ -1,6 +1,8 @@
 #pragma once
 #include "../../../cwe_code.h"
 #include <unordered_map>
+#include "al_parameter.h"
+#include "ChaoMain.h"
 
 class GCShinyJewel : public Code {
 public:
@@ -25,6 +27,8 @@ const std::unordered_map<Uint8, Uint8> pcToGc = {
 };
 
 void GCShinyJewel::OnChaoData(CHAO_PARAM_GC& chao) {
+	if (AL_ParameterIsGuest(&chao) && gConfigVal.GuestBlockVisualChanges) return;
+	
 	if (chao.body.JewelNum < 1) return;
 	if (!chao.body.MultiNum) return;
 	if (chao.body.ColorNum >= 16) return; //already transformed probably

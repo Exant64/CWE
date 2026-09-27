@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "alsbhv.h"
 #include "../al_social.h"
 #include "../ninja_functions.h"
@@ -24,7 +23,7 @@ static CHAO_SAVE_INFO* GetGossipDoesntKnowSubject(task* pChao, task* pOtherChao)
 	for (size_t i = 0; i < chaoCount; i++) {
 		if (nbGossip >= maxGossip) break;
 
-		task* tp = GetChaoObject(0, i);
+		task* tp = ALW_GetTaskCount(0, i);
 		if (!tp || tp == pChao || tp == pOtherChao) continue;
 
 		pGossipList[nbGossip++] = (CHAO_SAVE_INFO*)GET_CHAOPARAM(tp);

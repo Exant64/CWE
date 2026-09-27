@@ -1,15 +1,17 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
 #include "../ninja_functions.h"
-#include "../ALifeSDK_Functions.h"
 #include "../Chao.h"
 #include <random>
 #include "../al_world.h"
 #include "al_intention.h"
 #include "albhv.h"
-#include "albhv_navigation.h"
 #include <al_landmark.h>
 #include <ChaoMain.h>
+
+#ifdef PATHFINDING
+#include "albhv_navigation.h"
+#endif
 
 DataPointer(task*, pRadicaseTask, 0x01AED2E0);
 DataPointer(task*, pTVTask, 0x1AED288);
@@ -52,22 +54,24 @@ int ALBHV_GoToTV(task* tp) {
         ALW_LockOn(tp, pToy);
         MOV_SetAimPos(tp, &pos);
 
-        AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
+        AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
-		if(!gConfigVal.PathfindingVanilla) {
-        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+		if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
+        	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 		}
 		else {
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#ifdef PATHFINDING
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 		}
 
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Touch>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_WatchTV>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Touch_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_WatchTV_p>);
 
         return BHV_RET_CONTINUE;
     }
@@ -83,22 +87,24 @@ int ALBHV_GoToRadicase(task* tp) {
 		ALW_LockOn(tp, pToy);
 		MOV_SetAimPos(tp, &pos);
 
-		AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
+		AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
-		if(!gConfigVal.PathfindingVanilla) {
-        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToLockOn>);
+		if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
+        	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToLockOn_p>);
 		}
 		else {
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#ifdef PATHFINDING
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 		}
 
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Touch>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn>);
-		AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_ListenRadicase>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Touch_p>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToLockOn_p>);
+		AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_ListenRadicase_p>);
 
 		return BHV_RET_CONTINUE;
 	}
@@ -114,20 +120,22 @@ int ALBHV_GoToHorse(task* tp) {
         MOV_SetAimPos(tp, &pToy->twp->pos);
         ALW_CommunicationOn(tp, pToy);
 
-        AL_SetBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Notice>);
+        AL_SetBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_PostureChangeStand>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Notice_p>);
 
-        if(!gConfigVal.PathfindingVanilla) {
-        	AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_GoToAim>);
+        if(!gConfigVal.PathfindingEnabled || gConfigVal.PathfindingVanilla) {
+        	AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_GoToAim_p>);
 		}
 		else {
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
-			AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#ifdef PATHFINDING
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::AIM>>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_CheckNavigate>);
+			AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_Navigation>);
+#endif
 		}
 
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_TurnToAim>);
-        AL_SetNextBehavior(tp, ALBHV_ToyMoveCheck<ALBHV_RideHorse>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_TurnToAim_p>);
+        AL_SetNextBehavior(tp, (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_RideHorse_p>);
 
         return BHV_RET_CONTINUE;
     }
@@ -165,10 +173,8 @@ void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
 						AL_SetBehavior(tp, (BHV_FUNC)0x40AD80);
 						break;
 					case ALW_KIND_PIANO:
-						AL_SetBehavior(tp, ALBHV_GoToPiano);
-						break;
 					case ALW_KIND_ORGAN:
-						AL_SetBehavior(tp, (BHV_FUNC)0x40AD80);
+						AL_SetBehavior(tp, ALBHV_GoToPiano);
 						break;
 					case ALW_KIND_HORSE: {
 						int landattr = AL_GetCurrLandAttr(&GET_CHAOWK(tp)->pos);
@@ -189,6 +195,9 @@ void AL_CalcIntentionScore_LToy(task* tp, float* pMaxScore) {
 						break;
 					case ALW_KIND_UKIWA:
 						AL_SetBehavior(tp, ALBHV_GoToFloat);
+						break;
+					case ALW_KIND_COFFIN:
+						AL_SetBehavior(tp, ALBHV_GoToCoffin);
 						break;
 					default:
 						break;

@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "al_parameter.h"
+#include "ChaoMain.h"
 #include "include/code_eggcolor.h"
 
 struct EGGCOLORS { 
@@ -93,6 +95,7 @@ struct EGGCOLORS {
 
 void EggColorCode::OnChaoData(CHAO_PARAM_GC& chao) {
 	if (chao.type <= 0) return;
+	if (AL_ParameterIsGuest(&chao) && gConfigVal.GuestBlockVisualChanges) return;
 
 	if (chao.body.JewelNum > 0 && chao.body.JewelNum <= 15) {
 		chao.body.EggColor = 53 + chao.body.JewelNum;

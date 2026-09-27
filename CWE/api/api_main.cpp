@@ -24,7 +24,8 @@ static CWE_API_PARAM_ACCESSORY CWE_API_ParamAccessory = {
     .Version = CWE_API_PARAM_ACCESSORY_VER,
 
     .GetAccessory = CWE_ParamGetAccessory,
-    .SetAccessory = CWE_ParamSetAccessory
+    .SetAccessory = CWE_ParamSetAccessory,
+    .ClearAccessory = CWE_ParamClearAccessory
 };
 
 CWE_API CWE_API_Main = {
@@ -39,7 +40,7 @@ CWE_API CWE_API_Main = {
 
 struct CWE_API_MOD_ENTRY {
     using InitPtr = void(*)();
-    using APILoadPtr = void(*)(const CWE_API const* pAPI);
+    using APILoadPtr = void(*)(const CWE_API* pAPI);
 
     // todo: i'm not sure honestly if we can just use the pointers from the Mod struct or not
     std::string m_id;
@@ -71,10 +72,10 @@ public:
 
         // todo: can this occur? rn this isn't read anyways so i'll safety check to be safe
         if(pMod->ID) {
-            entry.m_id = {pMod->ID};
+            entry.m_id = pMod->ID;
         }
 
-        entry.m_name = {pMod->Name};
+        entry.m_name = pMod->Name;
 
         return entry;
     }

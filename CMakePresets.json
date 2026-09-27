@@ -1,0 +1,51 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/cmake/${presetName}",
+            "toolchainFile": "${sourceDir}/toolchains/mingw32.cmake"
+        },
+        {
+            "name": "debug",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "IMGUIDEBUG": "ON",
+                "STRIP": "OFF"
+            }
+        },
+        {
+            "name": "release",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "STRIP": "ON"
+            }
+        },
+        {
+            "name": "imguirelease",
+            "inherits": "release",
+            "cacheVariables": {
+                "IMGUIDEBUG": "ON",
+                "STRIP": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "imguirelease",
+            "configurePreset": "imguirelease"
+        }
+    ]
+}

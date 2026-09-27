@@ -1,0 +1,40 @@
+MOTION_START
+
+ROTATION coffin_openAction_mkey_1_rot_00000014[]
+START
+         MKEYA( 0,    180.000427F,  435.993469F,  180.000427F ),
+         MKEYA( 1,    167.679230F,  435.658386F,  167.300201F ),
+         MKEYA( 2,    143.108261F,  432.389954F,  141.778900F ),
+         MKEYA( 3,    125.469666F,  425.353210F,  122.926323F ),
+         MKEYA( 4,    115.675323F,  416.058746F,  111.747704F ),
+         MKEYA( 5,    109.424095F,  403.314575F,  103.595833F ),
+         MKEYA( 6,    104.798836F,  378.749084F,  94.856186F ),
+         MKEYA( 7,    106.754410F,  327.041809F,  80.694771F ),
+         MKEYA( 8,    130.287186F,  291.967865F,  51.828129F ),
+         MKEYA( 9,    166.234528F,  284.420227F,  14.194370F ),
+         MKEYA( 10,    180.000427F,  283.997253F,  0.000000F ),
+END
+
+MDATA2 coffin_openAction_mdat_000000C4[]
+START
+    NULL, NULL, 0, 0,
+    NULL, coffin_openAction_mkey_1_rot_00000014, 0, 11,
+END
+
+MOTION motion_coffin_open[]
+START
+MdataArray     coffin_openAction_mdat_000000C4, 
+MFrameNum      11,
+MotionBitF     (FMK_POS0|FMK_ANG1),
+InterpolFctF   (FMT_L|FMD_2),
+END
+
+MOTION_END
+
+DEFAULT_START
+
+#ifndef DEFAULT_MOTION_NAME
+#define DEFAULT_MOTION_NAME coffin_openAction
+#endif
+
+DEFAULT_END

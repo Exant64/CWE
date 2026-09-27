@@ -26,7 +26,7 @@ void PartyRace::Init() {
     WriteData((uint8_t*)0x0055C11F, uint8_t(8));
 
     // kill cam change sound
-    WriteCall((void*)0x0059745C, nullsub_1);
+    WriteCall((void*)0x0059745C, (void*)nullsub_1);
 }
 
 void PartyRace::OnFrame() {

@@ -2,9 +2,9 @@
 
 #include "ninja_functions.h"
 #include "ChaoMain.h"
-#include "brightfixapi.h"
 #include <vector>
 #include "renderfix.h"
+#include <BrightFix/brightfixapi.h>
 
 extern std::vector<std::pair<NJS_CNK_OBJECT*, NJS_TEXLIST*>> MaskObjObjectList;
 

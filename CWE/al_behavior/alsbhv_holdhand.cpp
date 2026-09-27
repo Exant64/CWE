@@ -1,13 +1,18 @@
+#include "ChaoMain.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
 #include "albhv.h"
+#include <al_landmark.h>
+
+#ifdef PATHFINDING
+#include "al_behavior/albhv_navigation.h"
+#endif
 
 int ALBHV_HoldHands_Left(task* a1)
 {
@@ -23,7 +28,9 @@ int ALBHV_HoldHands_Left(task* a1)
 	testVectr.x = 3;
 	testVectr.y = 0;
 	testVectr.z = 0;
-	otherChao = ALW_IsCommunicating(a1)->tp;
+
+	otherChao = ALW_GetLockOnTask(a1);
+
 	switch (wk->Behavior.Mode)
 	{
 	case 0:
@@ -51,14 +58,14 @@ int ALBHV_HoldHands_Left(task* a1)
 		otherChao->twp->pos.y = (v8.y - otherChao->twp->pos.y) * 0.1f + otherChao->twp->pos.y;
 		otherChao->twp->pos.z = (v8.z - otherChao->twp->pos.z) * 0.1f + otherChao->twp->pos.z;
 
-		otherChao->twp->ang.y = AdjustAngle_(otherChao->twp->ang.y, a1->twp->ang.y, 1024);
+		otherChao->twp->ang.y = AdjustAngle(otherChao->twp->ang.y, a1->twp->ang.y, 1024);
 
 		v8.y = otherChao->twp->pos.y;
 		if(njDistanceP2P(&v8, &otherChao->twp->pos) <= 0.2)
 			wk->Behavior.Mode++;
 		break;
 	case 2:
-		otherChao = ALW_IsCommunicating(a1)->tp;
+		otherChao = ALW_GetLockOnTask(a1);
 
 		//FIX THIS
 		float backupY = otherChao->twp->pos.y;
@@ -127,7 +134,7 @@ int ALBHV_InitHoldHands(task* a1)
 	ALW_LockOn(otherChao, a1);
 	ALW_CommunicationOn(a1, otherChao);
 
-	AL_GetRandomAttrPos_0(a1);
+	AL_GetRandomAttrPos(LMA_GROUND1, &GET_MOVE_WORK(a1)->AimPos);
 
 	//MOV_SetAimPos(a1, );
 
@@ -136,7 +143,17 @@ int ALBHV_InitHoldHands(task* a1)
 	//AL_SetNextBehavior(otherChao, ALBHV_HandShake);       //shake hands
 	//AL_SetNextBehavior(otherChao, ALBHV_LockUp);          //wait until other chao steps back and inits talking
 
-	AL_SetBehavior(a1, ALBHV_GoToLockOn);                 //go to selected chao and turn to it
+	if(!gConfigVal.PathfindingEnabled) {
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_GoToLockOn_p>);
+	}
+	else {
+#ifdef PATHFINDING
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_Navigation>);
+#endif
+	}
+
 	AL_SetNextBehavior(a1, ALBHV_HoldHands_Left);
 	//AL_SetNextBehavior(a1, ALBHV_HandShake);              //shake hands
 	//AL_SetNextBehavior(a1, ALBHV_StepBack);               //step back a bit so that theyre not super close to eachother when talking

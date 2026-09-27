@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
@@ -12,6 +11,7 @@
 #include "al_intention.h"
 #include "../ChaoMain.h"
 #include "../data/cwe/object_common_cnk/CakeTest.h"
+#include <al_parts.h>
 #include "../data/accessory/ala_birthdayhat.nja"
 
 task* pBirthdayChao;

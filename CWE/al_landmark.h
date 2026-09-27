@@ -15,4 +15,17 @@ typedef enum eLANDMARK_ATTR {
     LMA_WATER = 0x9,
 } eLANDMARK_ATTR;
 
+struct POS_XZ
+{
+	int x;
+	int z;
+};
+struct LAND_ATTR_INDEX
+{
+	int nbIndex;
+	POS_XZ pos[512];
+};
+DataArray(LAND_ATTR_INDEX, stru_1A15938, 0x1A15938, 15);
+
+void AL_GetRandomAttrPos(eLANDMARK_ATTR attr, NJS_POINT3* pPos);
 int AL_GetCurrLandAttr(NJS_POINT3* pPos);

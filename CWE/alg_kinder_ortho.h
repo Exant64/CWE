@@ -2,7 +2,7 @@
 
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) CHS_BILL_INFO
+struct ALIGN(4) CHS_BILL_INFO
 {
 	int adjust;
 	float wd;

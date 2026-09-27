@@ -4,7 +4,7 @@
 #include <al_ode_guide.h>
 #include <ui/al_tween.h>
 #include <al_texlist.h>
-#include <ALifeSDK_Functions.h>
+#include "playsound.h"
 
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
 FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
@@ -109,12 +109,6 @@ static void ScrollingLogic(task* a1) {
 	}
 }
 
-static bool AL_OdekakeIsGuest() {
-	CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
-
-	return Odekake_EnabledButtons && pParam && pParam->GBAType == 1;
-}
-
 static void AL_OdeScrollArrowExecutor(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
 		return;
@@ -173,17 +167,22 @@ static void AL_CreateOdeScrollArrow(task* pParent) {
 
 static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) {
 	const int isThereChao = Odekake_EnabledButtons;
-	const bool guest = AL_OdekakeIsGuest();
 
 	for (size_t i = 0; i < odekakeMenuEntries.size(); i++) {
 		const auto& entry = odekakeMenuEntries[i];
 
-		if (entry.Flags & ODE_FLAGS_REQUIRE_CHAO)
-			Odekake_EnabledButtonsCWE[i] = (isThereChao && !guest) ? 1 : 0;
-		else if (entry.Flags & ODE_FLAGS_REQUIRE_NO_CHAO)
+		if (entry.pConditionFunc) {
+			Odekake_EnabledButtonsCWE[i] = int(entry.pConditionFunc());
+		}
+		else if (entry.Flags & ODE_FLAGS_REQUIRE_CHAO) {
+			Odekake_EnabledButtonsCWE[i] = isThereChao ? 1 : 0;
+		}
+		else if (entry.Flags & ODE_FLAGS_REQUIRE_NO_CHAO) {
 			Odekake_EnabledButtonsCWE[i] = isThereChao ? 0 : 1; //flipped
-		else
+		}
+		else {
 			Odekake_EnabledButtonsCWE[i] = 1;
+		}
 
 		// spawn buttons
 		sub_5AC390(
@@ -270,7 +269,7 @@ void AL_Odekake_MenuMaster_Selection() {
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY < 0) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 		}
-		SE_Call(0x8000, 0, 0, 0);
+		SE_Call(TONE(8, 0), 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);
@@ -282,7 +281,7 @@ void AL_Odekake_MenuMaster_Selection() {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = 0;
 		}
 
-		SE_Call(0x8000, 0, 0, 0);
+		SE_Call(TONE(8, 0), 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);
@@ -315,7 +314,7 @@ void AL_Odekake_MainMenuBar_Init() {
 	WriteData<5>((char*)0x005AC345, (char)0x90);
 
 	// hook button creation
-	WriteCall((void*)0x005A6CFA, AL_OdekakeButtons);
+	WriteCall((void*)0x005A6CFA, (void*)AL_OdekakeButtons);
 
 	// kills first button so i can fully create my own
 	WriteData<5>((char*)0x005A6CD3, (char)0x90);

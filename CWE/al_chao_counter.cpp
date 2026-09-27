@@ -3,7 +3,6 @@
 #include "ninja_functions.h"
 #include "al_texlist.h"
 #include "alg_kinder_ortho.h"
-#include "ALifeSDK_Functions.h"
 #include <ChaoMain.h>
 
 DataArray(CHS_BILL_INFO, StatText, 0x13128B0, 10);
@@ -50,8 +49,10 @@ static void AL_ChaoCounterDisplayer(task* tp) {
 	SetShaderType(shaderBackup);
 }
 
-void AL_ChaoCounterCreate() {
+task* AL_ChaoCounterCreate() {
 	task* tp = CreateElementalTask(0, LEV_4, [] (task*) {}, "AL_ChaoCounter");
 
 	tp->disp = AL_ChaoCounterDisplayer;
+
+	return tp;
 }

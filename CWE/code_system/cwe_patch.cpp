@@ -104,8 +104,6 @@ void CWE_Patch_Init(const IniFile* config)
 		___OutputDebugString("Patch AdvancedChaosandCharactersChaoarelikeNormalChao");
 		PatchData((unsigned char*)0x00535A43, (unsigned char)0xFF);
 		PatchData((unsigned char*)0x00540212, (unsigned char)0xFF);
-		PatchData((unsigned char*)0x0053A54B, (unsigned char)0xFF);
-		PatchData((unsigned char*)0x0053A5BC, (unsigned char)0xFF);
 
 		WriteNoOP(0x5628AC, 0x5628B8);
 		WriteNoOP(0x56297D, 0x562989);

@@ -1,6 +1,9 @@
 #pragma once
 #include "MemAccess.h"
+
+#include <memory>
 #include <cassert>
+
 #define USERCALLDEBUG 0
 
 enum registers
@@ -234,7 +237,7 @@ constexpr T const GenerateUsercallWrapper(int ret, intptr_t address, TArgs... ar
 		memsz += 8;
 		break;
 	}
-	++memsz; // retn
+	++memsz; // ASM_RET(0);
 	auto codeData = AllocateCode(memsz);
 	int cdoff = 0;
 	uint8_t stackoff = argc * 4;
@@ -589,7 +592,7 @@ constexpr void const GenerateUsercallHook(T func, int ret, intptr_t address, TAr
 	}
 	if (stackcnt > 0)
 		memsz += 3;
-	++memsz; // retn
+	++memsz; // ASM_RET(0);
 	auto codeData = AllocateCode(memsz);
 	int cdoff = 0;
 	uint8_t stackoff = stackcnt * 4;
@@ -644,7 +647,7 @@ constexpr void const GenerateUsercallHook(T func, int ret, intptr_t address, TAr
 			break;
 		}
 	}
-	WriteCall(&codeData[cdoff], func);
+	WriteCall((void*)&codeData[cdoff], (void*)func);
 	cdoff += 5;
 	switch (ret)
 	{
@@ -741,7 +744,7 @@ constexpr void const GenerateUsercallHook(T func, int ret, intptr_t address, TAr
 #endif
 	assert(cdoff == memsz);
 	if (*(uint8_t*)address == 0xE8)
-		WriteCall((void*)address, codeData);
+		WriteCall((void*)address, (void*)codeData);
 	else
 		WriteJump((void*)address, codeData);
 }
@@ -754,7 +757,7 @@ public: \
  \
 	RETURN_TYPE operator()ARGS \
 	{ \
-		return wrapper##ARGNAMES; \
+		return wrapper ARGNAMES; \
 	} \
  \
 	PointerType operator&() \
@@ -770,25 +773,25 @@ public: \
 	void Hook(PointerType hookfunc) \
 	{ \
 		if (ishooked) \
-			throw new std::exception("Attempted to hook already hooked function!"); \
-		memcpy(origdata, getptr(), 5); \
+			throw new std::exception(); \
+		memcpy(origdata, (void*)getptr(), 5); \
 		GenerateUsercallHook<PointerType>(hookfunc, RETURN_LOC, ADDRESS, __VA_ARGS__); \
 		ishooked = true; \
 	} \
  \
-	RETURN_TYPE Original##ARGS \
+	RETURN_TYPE Original ARGS \
 	{ \
 		if (ishooked) \
 		{ \
 			uint8_t hookdata[5]; \
-			memcpy(hookdata, getptr(), 5); \
-			memcpy(getptr(), origdata, 5); \
-			RETURN_TYPE retval = wrapper##ARGNAMES; \
-			memcpy(getptr(), hookdata, 5); \
+			memcpy(hookdata, (void*)getptr(), 5); \
+			memcpy((void*)getptr(), origdata, 5); \
+			RETURN_TYPE retval = wrapper ARGNAMES; \
+			memcpy((void*)getptr(), hookdata, 5); \
 			return retval; \
 		} \
 		else \
-			return wrapper##ARGNAMES; \
+			return wrapper ARGNAMES; \
 	} \
  \
 private: \
@@ -811,7 +814,7 @@ public: \
  \
 	void operator()ARGS \
 	{ \
-		wrapper##ARGNAMES; \
+		wrapper ARGNAMES; \
 	} \
  \
 	PointerType operator&() \
@@ -827,24 +830,24 @@ public: \
 	void Hook(PointerType hookfunc) \
 	{ \
 		if (ishooked) \
-			throw new std::exception("Attempted to hook already hooked function!"); \
-		memcpy(origdata, getptr(), 5); \
+			throw new std::exception(); \
+		memcpy(origdata, (void*)getptr(), 5); \
 		GenerateUsercallHook<PointerType>(hookfunc, noret, ADDRESS, __VA_ARGS__); \
 		ishooked = true; \
 	} \
  \
-	void Original##ARGS \
+	void Original ARGS \
 	{ \
 		if (ishooked) \
 		{ \
 			uint8_t hookdata[5]; \
-			memcpy(hookdata, getptr(), 5); \
-			memcpy(getptr(), origdata, 5); \
-			wrapper##ARGNAMES; \
-			memcpy(getptr(), hookdata, 5); \
+			memcpy(hookdata, (void*)getptr(), 5); \
+			memcpy((void*)getptr(), origdata, 5); \
+			wrapper ARGNAMES; \
+			memcpy((void*)getptr(), hookdata, 5); \
 		} \
 		else \
-			wrapper##ARGNAMES; \
+			wrapper ARGNAMES; \
 	} \
  \
 private: \
@@ -852,7 +855,7 @@ private: \
 	uint8_t origdata[5]{}; \
 	const PointerType wrapper = GenerateUsercallWrapper<PointerType>(noret, ADDRESS, __VA_ARGS__); \
  \
-	constexpr PointerType getptr() \
+	const PointerType getptr() \
 	{ \
 		return reinterpret_cast<PointerType>(ADDRESS); \
 	} \

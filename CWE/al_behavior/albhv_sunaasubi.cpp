@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "../SA2ModLoader.h"
 #include "../AL_ModAPI.h"
-#include "../ALifeSDK_Functions.h"
 #include "../Chao.h"
 #include "../ChaoMain.h"
 #include "../al_sandhole.h"
+#include <playsound.h>
+#include <al_parts.h>
 #include "../data/toy/alo_pail.nja"
 
 signed int __cdecl ALBHV_SandHole(task* a1)
@@ -15,7 +16,7 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		Chao_RegAnimation(a1, "alm_sunaasubi");
 
 		*(int*)0x12F5954 = (int)0x012FDE44;
-		DrawToyTransform(a1, 0x12F5954, 11);
+		AL_SetItemOffset(a1, 0x12F5954, 11);
 
 		AL_SetItem(a1, 0, &alo_bucket, texlist_cwe_object);
 		
@@ -54,9 +55,8 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		break;
 	}
 	GET_CHAOWK(a1)->Behavior.SubTimer++;
-	if ((GET_CHAOWK(a1)->Behavior.SubTimer % 180) == 0 && njRandom() < 0.5f && ChaoStageNumber == ChaoNextStageNumber)
-	{
-		SE_CallV2((24576 + 164), 0, 0, 56, &a1->twp->pos);
+	if ((GET_CHAOWK(a1)->Behavior.SubTimer % 180) == 0 && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, CWE_SOUND_SAND), 0, 0, 56, &a1->twp->pos);
 	}
 	return BHV_RET_CONTINUE;
 }

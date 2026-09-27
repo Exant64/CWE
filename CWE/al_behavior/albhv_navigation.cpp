@@ -7,7 +7,6 @@
 #include <al_motion.h>
 #include <Chao.h>
 #include <ninja_functions.h>
-#include <ALifeSDK_Functions.h>
 
 #include "albhv_navigation.h"
 
@@ -181,7 +180,7 @@ int ALBHV_Navigation(task* tp) {
                 AL_SetMotionLink(tp, ALM_CRAWL);
             }
 
-            SE_CallV2(0x1020, 0, 0, 0, &GET_CHAOWK(tp)->pos);
+            AL_SE_CallV2(TONE(1, 0x20), 0, 0, 0, &GET_CHAOWK(tp)->pos);
 
             bhv->Mode = MD_SWIM;
             break;
@@ -221,7 +220,7 @@ int ALBHV_Navigation(task* tp) {
                 move->Acc.z = njCos(work->ang.y) * spd - move->Velo.z * 0.05f;
             }
             
-            SE_CallV2_TIMER(tp, 0x101F, &GET_CHAOWK(tp)->pos, 1, -25, 90);
+            AL_SE_CallV2_TIMER(TONE(1, 0x1F), tp, 1, -25, 90, &GET_CHAOWK(tp)->pos);
 
             break;
         }
@@ -304,7 +303,7 @@ int ALBHV_Navigation(task* tp) {
 }
 
 void CreatePathAtPos(size_t chaoID, NJS_POINT3& endPos) {
-    auto task = GetChaoObject(0, chaoID);
+    auto task = ALW_GetTaskCount(0, chaoID);
     
     MOV_SetAimPos(task, &endPos);
 

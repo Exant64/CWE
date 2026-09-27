@@ -1,7 +1,7 @@
 #pragma once
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) CHAO_GLOBAL
+struct ALIGN(4) CHAO_GLOBAL
 {
 	int CalcBuyo;
 	int DispWorldEntry;

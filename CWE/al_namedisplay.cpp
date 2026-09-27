@@ -1,13 +1,11 @@
-#pragma once
 #include "stdafx.h"
 
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "ChaoMain.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include "al_daynight.h"
 #include "al_save.h"
 #include "al_draw.h"
@@ -415,7 +413,9 @@ void AL_NameDisplay_Main(task* tp)
 	}
 }
 
-void AL_NameDisplayCreate() {
+task* AL_NameDisplayCreate() {
 	task* p = CreateElementalTask(IM_TWK, LEV_2, AL_NameDisplay_Main, "AL_NameDisplay");
 	p->disp_last = AL_NameDisplayer;
+
+	return p;
 }

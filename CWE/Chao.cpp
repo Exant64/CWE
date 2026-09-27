@@ -2,7 +2,6 @@
 
 #include "ninja_functions.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_piano.h"
 #include "al_parts.h"
@@ -44,39 +43,47 @@
 #include <api/api_metadata.h>
 #include "FunctionHook.h"
 #include "memory.h"
+#include "ef_kiran.h"
 
-const int AL_IconSetPtr = 0x53D660;
-void AL_IconSet(task* a4, char a2, int a3)
-{
-	__asm 
-	{
-		mov ecx, a4
-		mov dl, a2
-		push a3
-		call AL_IconSetPtr
-		add esp, 4
+static void ChaosKiran (task* tp) {
+	chaowk* work = GET_CHAOWK(tp);
 
+	switch(GET_CHAOPARAM(tp)->type) {
+		case TYPE_N_CHAOS:
+		case TYPE_H_CHAOS:
+		case TYPE_D_CHAOS:
+			break;
+		default:
+			return;
+	}
+
+	if((work->Timer % 32) == 0) {
+		int ang = NJM_DEG_ANG(njRandom() * 360.f);
+		NJS_POINT3 pos = work->pos;
+		NJS_VECTOR velo = {};
+
+		pos.x += njCos(ang) * 3.f;
+		pos.y += njRandom() * 4.f + 0.2f;
+		pos.z += njSin(ang) * 3.f;
+
+		CreateKiran2(&pos, 0.22f, 0.4f);
 	}
 }
 
-const int sub_534F80Ptr = 0x534F80;
-void sub_534F80alt(int a1, NJS_VECTOR* a2, signed int a3)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edi, a2
-		push a3
-		call sub_534F80Ptr
-		add esp, 4
-	}
-}
-void AL_GetRandomAttrPos_0(task* a1)
-{
-	if (stru_1A15938[1].nbIndex > 0)
-	{
-		sub_534F80alt((int)&stru_1A15938[1], &GET_MOVE_WORK(a1)->AimPos, stru_1A15938[1].nbIndex);
-	}
+ASM_FUNC void AL_IconSet(task* a4, char a2, int a3) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // a3
+    ASM_MOVE( dl,  ASM_ESP(2+1+0) ); // dl0
+    ASM_MOVE( ecx, ASM_ESP(1+1+0) ); // a4
+
+    // call
+    ASM_CALL_R( eax, 0x53D660 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 task* KarateCreateChao(CHAO_PARAM_GC* chaoData, int a2, AL_SHAPE_ELEMENT* a3, NJS_VECTOR* position, Angle angle)
@@ -278,9 +285,6 @@ static void Chao_Main_r(task* a1)
 	//some timer
 	if (GET_CHAOWK(a1)->Timer <= 2u)
 	{
-		if (pParam->GBAType == 2)
-			pParam->GBAType = 0;
-
 		//upgrade to 9.4
 		if (pParamCwe->IsInitializedAccessory == 0)
 		{
@@ -319,15 +323,6 @@ static void Chao_Main_r(task* a1)
 	}
 
 	memcpy(pParam->name, pParamCwe->Name, sizeof(pParam->name));
-
-	if (!(pParamCwe->Flags & AL_PARAM_FLAG_OLD_GUEST_CHECK)) {
-		if ((Uint8)pParamCwe->Name[6] == 0xFB) {
-			pParam->GBAType = 1;
-			pParamCwe->Name[6] = 0;
-		}
-
-		pParamCwe->Flags |= AL_PARAM_FLAG_OLD_GUEST_CHECK;
-	}
 
 	//these are ported xml codes
 	//immortality
@@ -379,6 +374,10 @@ static void Chao_Main_r(task* a1)
 
 	Chao_Main_hook.Original(a1);
 
+	if (gConfigVal.ChaosSparkles) {
+		ChaosKiran(a1);
+	}
+
 	// if disable jiggle was enabled or disabled rerun fittobaseobject
 	// to prevent the jiggled vertices to be frozen
 	if(GET_CHAOWK_CWE(a1)->JiggleFlagChanged) {
@@ -407,7 +406,7 @@ static void AL_Deform_r(task* tp) {
 
 
 static void RaceChaoExecutor(task* tp);
-static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, RaceChaoExecutor);
+static Trampoline RaceChaoExecutor_t(0x0053FC10, 0x0053FC19, (void*)RaceChaoExecutor);
 static void RaceChaoExecutor(task* tp) {
 	AL_ChaoAccessoryConversion(GET_CWEPARAM(tp));
 
@@ -439,17 +438,26 @@ enum {
 	RAKUGAKI_CWE_AMIGO, // this is unused atm
 };
 
-const int ALO_RakugakiExecutor_LoadPtr = 0x05AB200;
-void ALO_RakugakiExecutor_Load_(int a1, int a2, int a3)
-{
-	__asm
-	{
-		mov ebx, a1
-		push a3
-		push a2
-		call ALO_RakugakiExecutor_LoadPtr
-		add esp, 8 
-	}
+ASM_FUNC void ALO_RakugakiExecutor_Load_(int a1, int a2, int a3) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+1+1) ); // a2
+    ASM_MOVE( ebx, ASM_ESP(1+2+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x05AB200 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl NewDrawings(int a1, int ID, int a3)
@@ -460,22 +468,18 @@ void __cdecl NewDrawings(int a1, int ID, int a3)
 	ALO_RakugakiExecutor_Load_(a1, ID, a3);
 }
 
-static void __declspec(naked) NewDrawingsHook()
-{
-	__asm
-	{
-		push[esp + 08h] // a3
-		push[esp + 08h] // a2
-		push ebx // a1
+static void ASM_FUNC NewDrawingsHook() {
+	ASM_PUSH(ebx); // a1
+	
+	ASM_PUSH(ASM_ESP(3)); // a3
+	ASM_PUSH(ASM_ESP(3)); // a2
+	ASM_PUSH(ebx); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (NewDrawings);
+	ASM_ESP_ADD( 3 ); // a2
 
-		// Call your __cdecl function here:
-		call NewDrawings
-
-		pop ebx // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		retn
-	}
+	ASM_POP(ebx); // a1
+	ASM_RET(0);
 }
 
 static void Chao_Delete_r(task* tp);
@@ -534,7 +538,7 @@ void Chao_Init()
 	// new drawings
 	// note: there's an extra texture at texture 0 because that's how it is in AL_OBJECT too
 	// i used an aiai texture which managed to mislead me earlier, hence this comment lol
-	WriteCall((void*)0x005AB3D2, NewDrawingsHook);
+	WriteCall((void*)0x005AB3D2, (void*)NewDrawingsHook);
 	WriteData((int*)0x5AB091, (int)&AL_DRAWING_TEXLIST);
 	WriteData((int*)0x5AB0D8, (int)&AL_DRAWING_TEXLIST);
 
@@ -545,7 +549,7 @@ void Chao_Init()
 	AL_Shape_Init();
 
 	//minda karate chao
-	WriteCall((void*)0x0057902D, KarateCreateChao);
+	WriteCall((void*)0x0057902D, (void*)KarateCreateChao);
 
 	AL_Parts_Init();
 }

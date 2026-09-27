@@ -3,7 +3,7 @@
 #include "al_msg_font.h"
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) MessageField0
+struct ALIGN(4) MessageField0
 {
 	MessageFontThing* dword0;
 	float float4;
@@ -24,7 +24,7 @@ struct MessageField0Array
 #pragma pack(pop)
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) Message380
+struct ALIGN(4) Message380
 {
 	int Mode;
 	int ButtonPress;
@@ -44,7 +44,7 @@ struct Message380Array
 
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) KinderCoMessageThing
+struct ALIGN(4) KinderCoMessageThing
 {
 	MessageField0Array* gap0;
 	Message380Array* pointerToSomething0x380;
@@ -71,4 +71,4 @@ void AlMsgWinAddLineC(KinderCoMessageThing* self, const char* cstr, int ja);
 void AlMsgWinSetPos(KinderCoMessageThing* self, float px, float py, float pz);
 void AlMsgWinSetSize(KinderCoMessageThing* self, float sx, float sy);
 
-void MsgDialog(KinderCoMessageThing* a1);
+void AlMsgWinExec(KinderCoMessageThing* a1);

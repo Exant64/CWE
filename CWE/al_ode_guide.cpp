@@ -1,17 +1,29 @@
 #include "stdafx.h"
 #include "al_odekake.h"
 #include "al_ode_guide.h"
+#include "asmutil.h"
 
-const int sub_669B90Ptr = 0x669B90;
-void sub_669B90(int a1, int a2, int a3, int a4) {
-	__asm {
-		mov esi, a1
-		push a4
-		push a3
-		push a2
-		call sub_669B90Ptr
-		add esp, 12
-	}
+static ASM_FUNC void sub_669B90(int a1, int a2, int a3, int a4) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+1) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+1) ); // a2
+    ASM_MOVE( esi, ASM_ESP(1+3+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x669B90 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void ButtonGuideDisp(task* tp) {

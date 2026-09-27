@@ -88,7 +88,7 @@ void Chao_RegAnimation(task* a1, const std::string& name) {
 }
 
 void Chao_RegAnimationTbl(MOTION_CTRL* a1, const std::string& name) {
-    Chao_Animation(a1, IDMotionMap[name]);
+    SetMotionLink(a1, IDMotionMap[name]);
 }
 
 size_t GetChaoMotionIndex(const std::string& name) {

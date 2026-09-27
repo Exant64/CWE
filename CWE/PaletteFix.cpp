@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include "ALifeSDK_Functions.h"
+#include "ninja_functions.h"
 
 struct TextureData
 {
@@ -71,7 +71,7 @@ void TexturePaletteInsertInCache(Uint32* pSurface, Uint32 bank) {
 
 	int index = TexPalMap.size();
 	if (index >= 3) {
-		throw std::exception("more than 3 palletized textures per chao??? report this");
+		throw std::exception();
 	}
 
 	TexPalMap.push_back(tex);
@@ -126,22 +126,17 @@ static void PaletteFix_SetPaletteShader(WeirdChunkTexIndexThing* a1, int bank)
 		SetShaderType(ShaderBackup);
 	}
 }
-static void __declspec(naked) PaletteFix_SetPaletteShaderHook()
-{
-	__asm
-	{
-		push edx // a2
-		push edi // a1
 
-		// Call your __cdecl function here:
-		call PaletteFix_SetPaletteShader
+static void ASM_FUNC PaletteFix_SetPaletteShaderHook() {
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(edi); // a1
 
-		add esp, 8
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (PaletteFix_SetPaletteShader);
+
+	ASM_ESP_ADD(2);
+	ASM_RET(0);
 }
-
-
 
 void __stdcall PaletteFix_SetPalette(int index) {
 	memcpy(PaletteBuffer[index], *(void**)0x01DBED80, sizeof(PaletteBuffer[index]));
@@ -157,6 +152,6 @@ void PaletteFix_Init(IDirect3DDevice9* device)
 		pDevice->CreateTexture(32, 32, 1, 0, D3DFMT_R5G6B5, D3DPOOL_MANAGED, &PaletteSource[i], 0);
 	}
 	
-	WriteJump((void*)0x41AB40, PaletteFix_SetPalette);
-	WriteJump((void*)0x004243F0, PaletteFix_SetPaletteShaderHook);
+	WriteJump((void*)0x41AB40, (void*)PaletteFix_SetPalette);
+	WriteJump((void*)0x004243F0, (void*)PaletteFix_SetPaletteShaderHook);
 }

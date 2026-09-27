@@ -12,7 +12,7 @@ DataArray(CHAO_SAVE_INFO*, ChaoSelectData, 0x01DBEE80, 48);
 DataPointer(char, ControlEnabled, 0x0174AFFE);
 DataPointer(unsigned int, ChaoSaveText, 0x0136606E);
 
-void AL_NameDisplayCreate();
+task* AL_NameDisplayCreate();
 task* AL_LargeTitleBar_Create();
 DataPointer(int, ChaoSaveTimer, 0x019F6474);
 VoidFunc(sub_583C60, 0x583C60);
@@ -25,6 +25,12 @@ enum {
 	CFG_MORE_FACE_NONE,
 	CFG_MORE_FACE_PERSONALITY,
 	CFG_MORE_FACE_RANDOM
+};
+
+enum {
+	GUEST_ROLL_RANDOM,
+	GUEST_ROLL_ROTATE,
+	GUEST_ROLL_ROTATE_RANDOM
 };
 
 struct ConfigValues {
@@ -55,6 +61,14 @@ struct ConfigValues {
 	bool EyeColorsForNewbornChao;
 
 	uint32_t MoreFaces;
+	
+	bool BhvSandCastle;
+	bool BhvNewDance;
+	bool BhvNewInstruments;
+	bool BhvJoinableToys;
+	bool BhvCocoonReactions;
+	bool BhvSocial;
+	bool BhvTreeShake;
 
 	bool DayNightCycle;
 	bool DayNightShinyTex;
@@ -97,6 +111,8 @@ struct ConfigValues {
 	bool DisableAllParts;
 	bool FixMonsterEvo;
 	bool AccUpdateDraw;
+	bool ChaosSparkles;
+	bool AnimalSparkles;
 
 	bool FixHeroSky;
 
@@ -109,6 +125,28 @@ struct ConfigValues {
 	bool NeutGrayscale;
 	bool HeroGrayscale;
 	bool DarkGrayscale;
+
+	bool GuestChao;
+	bool GuestSave;
+	uint32_t GuestVisitCounter;
+	uint32_t GuestMin;
+	uint32_t GuestMax;
+	uint32_t GuestRollType;
+	uint32_t GuestRotateCount;
+	bool GuestRandomizeEmotions;
+	bool GuestBlockStatChanges;
+	bool GuestBlockNameChange;
+	bool GuestBlockBodyChanges;
+	bool GuestBlockVisualChanges;
+	bool GuestBlockWearableChanges;
+	bool GuestBlockPlayerRelations;
+	bool GuestBlockSocialRelations;
+	bool GuestBlockBreeding;
+	bool GuestBlockLifeChanges;
+	bool GuestBlockMinimalFlagChanges;
+	bool GuestBlockMinimalPartChanges;
+	bool GuestBlockOmoBuild;
+	bool GuestIndicator;
 };
 extern ConfigValues gConfigVal;
 
@@ -117,7 +155,7 @@ ThiscallFunctionPointer(ITEM_SAVE_INFO*, AL_GetNewItemSaveInfo, (int a1), 0x52F9
 
 extern task* pBirthdayChao;
 
-void sub_46E5E0(int a1, int a2);
+void StopHoldingTaskP_inl(int pno, taskwk* ptwp);
 
 extern uint32_t CWE_ModIndex;
 

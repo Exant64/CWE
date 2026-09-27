@@ -4,7 +4,7 @@
 extern NJS_POINT3 OmoPositions[];
 extern uint32_t OmoRot[];
 
-void ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang);
+task* ALO_OmoBuildCreate(NJS_POINT3* pPos, Angle ang);
 
 OMOCHAO_INFO* GetOmoData();
 

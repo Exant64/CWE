@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "ALifeSDK_Functions.h"
 #include "ninja_functions.h"
 #include "ChaoMain.h"
 #include "al_sandhole.h"
@@ -60,5 +59,5 @@ void ALO_ObakeHeadDisplayer_r(task *tp) {
 }
 
 void ALO_ObakeHead_Init() {
-	WriteJump((void*)0x54A0F0, ALO_ObakeHeadDisplayer_r);
+	WriteJump((void*)0x54A0F0, (void*)ALO_ObakeHeadDisplayer_r);
 }

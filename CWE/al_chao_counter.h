@@ -1,2 +1,2 @@
 #pragma once
-void AL_ChaoCounterCreate();
+task* AL_ChaoCounterCreate();

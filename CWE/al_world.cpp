@@ -3,11 +3,35 @@
 #include <Chao.h>
 #include <unordered_map>
 #include <FunctionHook.h>
+#include "asmutil.h"
 
 enum {
 	CWE_ALW_CATEGORY_ACCESSORY,
 	NB_CWE_ALW_CATEGORY
 };
+
+ASM_FUNC int ALW_Entry2(Uint16 category, task* tp, Uint16 kind, void* pSaveInfo) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0 +1) ); // pSaveInfo
+    ASM_PUSH(      ASM_ESP(3+1 +1) ); // kind
+    ASM_MOVE( ebx, ASM_ESP(2+2 +1) ); // tp
+    ASM_MOVE( ecx, ASM_ESP(1+2 +1) ); // category
+
+    // call
+    ASM_CALL_R( edx, 0x00530750 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
+}
 
 ALW_ENTRY_WORK* __cdecl ALW_IsCommunication(task* a1)
 {
@@ -75,14 +99,15 @@ signed int __cdecl ALW_SendCommand(task* a1, __int16 a2)
 	return 1;
 }
 
-const int ALW_CommunicationOffPtr = 0x00530690;
-void ALW_CommunicationOff(task* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call ALW_CommunicationOffPtr
-	}
+ASM_FUNC Bool ALW_CommunicationOff(task* a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00530690 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void* __cdecl AL_GetItemSaveInfo(task* a1)
@@ -135,30 +160,31 @@ signed int __cdecl ALW_LockOn(task* a1, task* a2)
 	return 1;
 }
 
-const int ALW_TurnToLockOnPtr = 0x00530510;
-int ALW_TurnToLockOn(task* a1, int a2)
-{
-	int retur;
-	__asm
-	{
-		mov eax, a1
-		push a2
-		call ALW_TurnToLockOnPtr
-		add esp, 4
-		mov retur, eax
-	}
-	return retur;
+ASM_FUNC int ALW_TurnToLockOn(task* a1, int a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00530510 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int sub_530640Ptr = 0x530640;
-void ALW_CommunicationOn(task* a1, task* a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		call sub_530640Ptr
-	}
+ASM_FUNC Bool ALW_CommunicationOn(task* a1, task* a2) {
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x530640 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 Bool ALW_AttentionOn(task* tp1, task* tp2) {
@@ -313,18 +339,40 @@ task* __cdecl AL_GetFoundToyTask(task* a1)
 	return result;
 }
 
-const int GetChaoObjectPtr = 0x00530410;
-task* GetChaoObject(int a1, int a2)
-{
-	task* val;
-	__asm
-	{
-		mov eax, a1
-		mov edi, a2
-		call GetChaoObjectPtr
-		mov val, eax
-	}
-	return val;
+ASM_FUNC task* ALW_GetTaskCount(int a1, int a2) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( edi, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00530410 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
+}
+
+ASM_FUNC ALW_ENTRY_WORK* ALW_GetEntryCount(int a1, int a2) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( edx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( eax, 0x530470 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 #define NB_MAX_WORLD_ENTRY 64
