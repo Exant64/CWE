@@ -1,3 +1,4 @@
+#include "ninja_functions.h"
 #include "stdafx.h"
 #include "al_emotion.h"
 #include "al_parameter.h"
@@ -675,12 +676,31 @@ static void ParamFukidasiDisplayer_r(task* tp) {
     if(!work->pChaotask) return;
     if(!AL_ParameterIsGuest(work->pChaotask)) return;
 
-    chSetBillboardColor (work->alpha, 1, 1, 1);
+    static NJS_TEXTURE_VTX tex[4] = {
+        { -1, -1.0, 0, 0, 0, 0xFFFFFFFF },
+        { -1,  1.0, 0, 0,  1,   0xFFFFFFFF },
+        { 1, -1.0, 0, 1, 0, 0xFFFFFFFF },
+        { 1, 1.0, 0, 1, 1, 0xFFFFFFFF }
+    };
 
-    CHS_BILL_INFO info {1, 40, 40, 0, 0, 1.f, 1, &AL_ODE_GUEST_TEXLIST, 1};
-    chDrawBillboardSR(&info, work->posX + 65, work->posY - 148, -1.5, 1.0, 1.0, -1, -1);
+    NJS_POINT3 screenPos;
+    sub_426CC0(_nj_current_matrix_ptr_, &screenPos, &work->pChaotask->twp->pos, 0);
 
-    chSetBillboardColor (1, 1, 1, 1);
+    njPushUnitMatrix();
+
+    njTranslateEx(&screenPos);
+    njTranslate(NULL, 3, 2.5f, 0);
+    njScale(NULL, 1, -1, 1);
+    
+    njSetTexture(&AL_ODE_GUEST_TEXLIST);
+    njSetTextureNum(1);
+
+    for(size_t i = 0; i < _countof(tex); ++i) {
+        tex[i].col = Uint8(work->alpha * 255.f) << 24 | 0x00FFFFFF;
+    }
+
+    njDrawTexture3DExSetData(tex, 4);
+    njPopMatrixEx();
 }
 
 void CWE_GuestInit() {

@@ -493,7 +493,7 @@
         <HelpText>Blocks building Omochao.</HelpText>
       </Property>
       <Property name="Indicator" type="bool" defaultvalue="True" display="Guest Chao Indicator">
-        <HelpText>Shows a globe icon on the stat panel to indicate if the Chao is a guest or not.</HelpText>
+        <HelpText>Shows a globe icon next to the Chao when picked up to indicate if the Chao is a guest or not.</HelpText>
       </Property>
     </Group>
     <Group name="Cheat" display="99 - Cheat and Debug">
