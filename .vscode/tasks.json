@@ -13,6 +13,20 @@
             "targets": [
                 "all"
             ],
+            "preset": "debug",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "cmake",
+            "label": "CMake Build (imguirelease)",
+            "command": "build",
+            "targets": [
+                "all"
+            ],
             "preset": "imguirelease",
             "group": {
                 "kind": "build",
@@ -28,9 +42,7 @@
                     "executable": "cmd.exe",
                     "args": [
                         "/C",
-                        // The path to VsDevCmd.bat depends on the version of Visual Studio you have installed.
-                        "\"call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\Tools\\VsDevCmd.bat\" && ",
-                        //"&&"
+                        "\"call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\Tools\\VsDevCmd.bat\" && "
                     ]
                 }
             },
