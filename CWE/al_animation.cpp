@@ -99,10 +99,16 @@ void Chao_ExtraAnimations(task* tp)
 						FlyIdle = 131;
 					}
 
-					const int Idle2Anim[] = { 0, 1, 238, 239, 215, 457, 510, HeroIdle, DarkIdle, FlyIdle };
+					const int Idle2Anim[] = { 0, 1, 238, 239, 215, 457, ALM_EHHEN_STAND, HeroIdle, DarkIdle, FlyIdle };
 					int Idle2RNG = rand() % std::size(Idle2Anim);
+					auto chosenAnim = Idle2Anim[Idle2RNG];
 
-					AL_SetMotionLink(tp, Idle2Anim[Idle2RNG]);
+					AL_SetMotionLink(tp, chosenAnim);
+
+					if (gConfigVal.MoreSound && chosenAnim == ALM_EHHEN_STAND) {
+						AL_SE_CallV2(TONE(6, 29), 0, 0, 110, &data->pos);
+					}
+
 					cwe_work->AnimRandomized++;
 				}
 				else
@@ -496,6 +502,11 @@ void Chao_ExtraSounds(task* tp)
 			else if (data->MotionCtrl.next_num == 454)
 			{
 				AL_SE_CallV2(TONE(6, 152), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
+			}
+			else if (data->MotionCtrl.next_num == 241)
+			{
+				AL_SE_CallV2(TONE(6, 137), 0, 0, 110, &data->pos);
 				cwe_data->ExtraSound++;
 			}
 		}
@@ -946,6 +957,15 @@ static int ALBHV_Greet_r(task* tp) {
 					}
 					else {
 						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_B, 20);   
+					}
+
+					if(gConfigVal.MoreSound) {
+						if (njRandom() < 0.5f) {
+							AL_SE_CallV2(TONE(6, 99), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+						}
+						else {
+							AL_SE_CallV2(TONE(6, 100), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+						}
 					}
 				}
 				else {
@@ -1534,6 +1554,110 @@ static void ASM_FUNC AL_CalcIntentionScore_Hima_t() {
 	ASM_RET(0);
 }
 
+static FunctionHook<int, task*> ALBHV_SwimSeoyogi_t(0x5620D0);
+static int ALBHV_SwimSeoyogi_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 38), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_SwimSeoyogi_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_NoticePlayer_t(0x5634D0);
+static int ALBHV_NoticePlayer_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+	auto preMode = bhv->Mode;
+
+	auto retVal = ALBHV_NoticePlayer_t.Original(tp);
+
+	if(preMode == 1 && bhv->Mode == 2 && njRandom() < 0.5f) {
+		if(njRandom() < 0.5f) {
+			AL_SE_CallV2(TONE(6, 142), 0, 0, 110, &tp->twp->pos);
+		}
+		else {
+			AL_SE_CallV2(TONE(6, 143), 0, 0, 110, &tp->twp->pos);
+		}
+	}
+
+	return retVal;
+}
+
+static FunctionHook<int, task*> ALBHV_Book_t(0x55E210);
+static int ALBHV_Book_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 160), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Book_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_SuriSuri_t(0x5A0820);
+static int ALBHV_SuriSuri_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		if(njRandom() < 0.5f) {
+			AL_SE_CallV2(TONE(6, 69), 0, 0, 110, &tp->twp->pos);
+		}
+		else {
+			AL_SE_CallV2(TONE(6, 74), 0, 0, 110, &tp->twp->pos);
+		}
+	}
+
+	return ALBHV_SuriSuri_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_MesoMeso_t(0x59FA50);
+static int ALBHV_MesoMeso_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.33f) {
+		AL_SE_CallV2(TONE(6, 0), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_MesoMeso_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_Bakuten_t(0x5A1FC0);
+static int ALBHV_Bakuten_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 146), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Bakuten_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_ShiriDance_t(0x5A2530);
+static int ALBHV_ShiriDance_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 23), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_ShiriDance_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_NeedFruit_t(0x59EA00);
+static int ALBHV_NeedFruit_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 131), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_NeedFruit_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_Touch_t(ALBHV_Touch_p);
+static int ALBHV_Touch_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 54), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Touch_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_Seed3_t(0x567830);
+static int ALBHV_Seed3_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 130), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Seed3_t.Original(tp);
+}
 
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
@@ -1552,5 +1676,18 @@ void AL_MoreAnimSound_Init() {
 		WriteJump((void*)0x0059E2D0, (void*)ALBHV_Cymbal_r);
 		WriteJump((void*)0x0059E120, (void*)ALBHV_Rappa_r);
 		WriteJump((void*)0x0059DD10, (void*)ALBHV_Fue_r);
+	}
+
+	if (gConfigVal.MoreSound) {
+		ALBHV_SwimSeoyogi_t.Hook(ALBHV_SwimSeoyogi_r);
+		ALBHV_NoticePlayer_t.Hook(ALBHV_NoticePlayer_r);
+		ALBHV_Book_t.Hook(ALBHV_Book_r);
+		ALBHV_SuriSuri_t.Hook(ALBHV_SuriSuri_r);
+		ALBHV_MesoMeso_t.Hook(ALBHV_MesoMeso_r);
+		ALBHV_Bakuten_t.Hook(ALBHV_Bakuten_r);
+		ALBHV_ShiriDance_t.Hook(ALBHV_ShiriDance_r);
+		ALBHV_NeedFruit_t.Hook(ALBHV_NeedFruit_r);
+		ALBHV_Touch_t.Hook(ALBHV_Touch_r);
+		ALBHV_Seed3_t.Hook(ALBHV_Seed3_r);
 	}
 }
