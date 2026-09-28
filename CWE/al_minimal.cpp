@@ -2,6 +2,7 @@
 
 #include "asmutil.h"
 #include "al_minimal.h"
+#include "FunctionHook.h"
 #include "data/minimal/AnimalModels.h"
 #include "data/minimal/AnimalAnims.h"
 #include "al_behavior/al_intention.h"
@@ -159,18 +160,15 @@ int AnimalInfluence[] =
 	COLOR_RANDOM, COLOR_RANDOM, COLOR_RANDOM
 };
 
-FunctionPointer(void, sub_57BD40, (task*), 0x0057BD40);
-
-void AL_Minimal_Timer(task* a1) {
-	sub_57BD40(a1);
-
-	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)a1->twp;
-	int* timer = (int*)((char*)&v1->field_F4 + 4);
+static FunctionHook<void, task*> AL_MinimalExecutor_t(0x548C50);
+void AL_MinimalExecutor_r(task* tp) {
+	AL_MinimalExecutor_Data1* work = (AL_MinimalExecutor_Data1*)tp->twp;
+	int* timer = (int*)((char*)&work->field_F4 + 4);
 	(*timer)++;
 
-	if (!v1->field_F4 && (*timer & 31) == 1) {
-		NJS_POINT3 pos = v1->entity.pos;
-		const int ang = NJM_DEG_ANG(njRandom() * 360.f);
+	if (!work->field_F4 && (*timer & 31) == 1) {
+		NJS_POINT3 pos = work->entity.pos;
+		const Angle ang = NJM_DEG_ANG(njRandom() * 360.f);
 
 		pos.x += njCos(ang) * 2;
 		pos.y += njRandom() + njRandom() + 0.2f;
@@ -178,6 +176,8 @@ void AL_Minimal_Timer(task* a1) {
 		
 		CreateKiran2(&pos, 0.2f, 0.6f);
 	}
+
+	AL_MinimalExecutor_t.Original(tp);
 }
 
 ASM_FUNC void sub_793F90(NJS_CNK_OBJECT* a1, MOTION_CTRL* a2) {
@@ -271,8 +271,7 @@ void al_minimal_Init()
 	WriteData((int*)0x00548C7D, (int)0x9090C031);
 
 	if (gConfigVal.AnimalSparkles) {
-		// set the minimal behavior function array's first element to use our custom one
-		*(int*)0x1316B00 = (int)AL_Minimal_Timer;
+		AL_MinimalExecutor_t.Hook(AL_MinimalExecutor_r);
 	}
 
 	WriteData((int*)0x00548D5F, (int)0xFC + 4);
