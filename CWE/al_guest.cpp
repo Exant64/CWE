@@ -654,6 +654,11 @@ void GuestIndicatorDraw(task* tp) {
     njPopMatrixEx();
 }
 
+void Guest_ForceReroll() {
+    VisitCounter = 1;
+    RotationWindowIndex = 0;
+}
+
 void CWE_GuestInit() {
     CWE_ScanForGuestChao();
 
@@ -662,7 +667,7 @@ void CWE_GuestInit() {
         return;
     }
 
-    VisitCounter = 1;
+    Guest_ForceReroll();
     GuestMin = NJM_MIN(gConfigVal.GuestMin, GuestChaoFilePathIndices.size());
     GuestMax = NJM_MIN(gConfigVal.GuestMax, GuestChaoFilePathIndices.size());
     RotateCount = NJM_MIN(gConfigVal.GuestRotateCount, GuestChaoFilePathIndices.size());

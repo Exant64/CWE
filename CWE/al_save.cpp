@@ -334,8 +334,12 @@ void SaveCWESaveFiles() {
 	char strBuffer[MAX_PATH];
 	save::SaveCWESave();
 
-	if (gConfigVal.GuestChao && gConfigVal.GuestSave) {
-		Guest_SaveAllChao();
+	if (gConfigVal.GuestChao) {
+		if (gConfigVal.GuestSave) {
+			Guest_SaveAllChao();
+		}
+		
+		Guest_ForceReroll();
 	}
 
 	for (size_t i = 0; i < ModAPI_SaveAPI.size(); i++)
