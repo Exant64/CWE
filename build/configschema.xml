@@ -427,7 +427,7 @@
         <HelpText>Enables the Guest Chao feature. Chao are read from .chao files stored in the resource/gd_PC/SAVEDATA/Guest folder.</HelpText>
       </Property>
       <Property name="Save" type="bool" defaultvalue="False" display="Save Guest Chao">
-        <HelpText>Enables saving Guest Chao, recommended to be used with the blocking options disabled to make them behave more like regular Chao (note that you can't enter them in the classroom, and they can't enter race or karate).</HelpText>
+        <HelpText>Enables saving Guest Chao, recommended to be used with the restriction options disabled to make them behave more like regular Chao (note that you can't enter them in the classroom, and they can't enter race or karate).</HelpText>
       </Property>
       <Property name="VisitCounter" type="int" defaultvalue="3" display="Visit Counter">
         <HelpText>The number of garden visits before the guests get rerolled (behaves similarly to how fruit ages).</HelpText>
@@ -452,45 +452,45 @@
       <Property name="RandomEmotions" type="bool" defaultvalue="True" display="Randomize Emotions">
         <HelpText>Simulates a random amount of emotion changes when a Guest Chao gets loaded to eliminate consistency in their behavior.</HelpText>
       </Property>
-      <Property name="BlockStats" type="bool" defaultvalue="True" display="Block Stat Changes">
-        <HelpText>Blocks upgrade controls and any changes to stats (grades, levels, etc).</HelpText>
+      <Property name="BlockStats" type="bool" defaultvalue="True" display="Restrict Stat Changes">
+        <HelpText>Restricts upgrade controls and any changes to stats (grades, levels, etc).</HelpText>
       </Property>
-      <Property name="BlockName" type="bool" defaultvalue="True" display="Block Name Changes">
-        <HelpText>Blocks entry to Name Menu and Fortune Teller room when holding a Guest Chao.</HelpText>
+      <Property name="BlockName" type="bool" defaultvalue="True" display="Restrict Name Changes">
+        <HelpText>Restricts entry to Name Menu and Fortune Teller room when holding a Guest Chao.</HelpText>
       </Property>
-      <Property name="BlockBody" type="bool" defaultvalue="True" display="Block Body Changes">
-        <HelpText>Blocks changes to magnitude ("Evolution Progress"), alignment, and stat sliders.</HelpText>
+      <Property name="BlockBody" type="bool" defaultvalue="True" display="Restrict Body Changes">
+        <HelpText>Restricts changes to magnitude ("Evolution Progress"), alignment, and stat sliders.</HelpText>
       </Property>
-      <Property name="BlockVisual" type="bool" defaultvalue="True" display="Block General Visual Changes">
-        <HelpText>Blocks changes to general appearance (negativity, eye color, shininess, anything that can be changed by items).</HelpText>
+      <Property name="BlockVisual" type="bool" defaultvalue="True" display="Restrict General Visual Changes">
+        <HelpText>Restricts changes to general appearance (negativity, eye color, shininess, anything that can be changed by items).</HelpText>
       </Property>
-      <Property name="BlockMiniPart" type="bool" defaultvalue="True" display="Block Animal Part Changes">
-        <HelpText>Blocks changes to animal parts.</HelpText>
+      <Property name="BlockMiniPart" type="bool" defaultvalue="True" display="Restrict Animal Part Changes">
+        <HelpText>Restricts changes to animal parts.</HelpText>
       </Property>
-      <Property name="BlockWearable" type="bool" defaultvalue="True" display="Block Wearable Changes">
+      <Property name="BlockWearable" type="bool" defaultvalue="True" display="Restrict Wearable Changes">
         <HelpText>
-          Blocks changes to wearable items (medals, hats, and accessories). 
+          Restricts changes to wearable items (medals, hats, and accessories). 
           Customization entry is blocked with Guest Chao. 
           Damaging Chao does not remove their hats and accessories, and they cannot equip them either.
         </HelpText>
       </Property>
-      <Property name="BlockSocial" type="bool" defaultvalue="True" display="Block Chao Relationship Changes">
-        <HelpText>Blocks changes to Chao social relationships.</HelpText>
+      <Property name="BlockSocial" type="bool" defaultvalue="True" display="Restrict Chao Relationship Changes">
+        <HelpText>Restricts changes to Chao social relationships.</HelpText>
       </Property>
-      <Property name="BlockPlayer" type="bool" defaultvalue="True" display="Block Player Relationship Changes">
-        <HelpText>Blocks changes to happiness (general player likeness), and character specific relations.</HelpText>
+      <Property name="BlockPlayer" type="bool" defaultvalue="True" display="Restrict Player Relationship Changes">
+        <HelpText>Restricts changes to happiness (general player likeness), and character specific relations.</HelpText>
       </Property>
-      <Property name="BlockBreed" type="bool" defaultvalue="True" display="Block Breeding">
-        <HelpText>Blocks breeding.</HelpText>
+      <Property name="BlockBreed" type="bool" defaultvalue="True" display="Restrict Breeding">
+        <HelpText>Restricts breeding.</HelpText>
       </Property>
-      <Property name="BlockLife" type="bool" defaultvalue="True" display="Block Life Cycle Changes">
-        <HelpText>Prevents evolution, reincarnation, and blocks changes to lifespan and age.</HelpText>
+      <Property name="BlockLife" type="bool" defaultvalue="True" display="Restrict Life Cycle Changes">
+        <HelpText>Restricts evolution, reincarnation, and changes to lifespan and age.</HelpText>
       </Property>
-      <Property name="BlockMiniFlag" type="bool" defaultvalue="True" display="Block Animal Behavior Changes">
-        <HelpText>Blocks changes to unlocked animal behaviors.</HelpText>
+      <Property name="BlockMiniFlag" type="bool" defaultvalue="True" display="Restrict Animal Behavior Changes">
+        <HelpText>Restricts changes to unlocked animal behaviors.</HelpText>
       </Property>
-      <Property name="BlockOmoBuild" type="bool" defaultvalue="True" display="Block Omochao Building">
-        <HelpText>Blocks building Omochao.</HelpText>
+      <Property name="BlockOmoBuild" type="bool" defaultvalue="True" display="Restrict Omochao Building">
+        <HelpText>Restricts building Omochao.</HelpText>
       </Property>
       <Property name="Indicator" type="bool" defaultvalue="True" display="Guest Chao Indicator">
         <HelpText>Shows a globe icon next to the Chao when picked up to indicate if the Chao is a guest or not.</HelpText>
