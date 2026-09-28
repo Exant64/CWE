@@ -13,6 +13,7 @@
 #include <FunctionHook.h>
 #include <memory.h>
 #include <set>
+#include <al_guest.h>
 #include <asmutil.h>
 
 //default character chao, maybe change later to some "cwe_placehold" thing
@@ -83,6 +84,10 @@ void __cdecl AL_IconDraw_r(task* tp)
 {
 	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 	const auto original = reinterpret_cast<decltype(AL_IconDraw_r)*>(AL_IconDraw_t.Target());
+
+	if (gConfigVal.GuestChao && gConfigVal.GuestIndicator) {
+		GuestIndicatorDraw(tp);
+	}
 
 	//if not custom chao just draw the emotion ball
 	if (!AL_IsCustomChao(tp)) {

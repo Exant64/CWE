@@ -632,49 +632,9 @@ static void ASM_FUNC AL_CheckDamage_t() {
 	ASM_RET(0);
 }
 
-FunctionHook<void, task*> ParamFukidasiDisplayer_t(0x565200);
-static void ParamFukidasiDisplayer_r(task* tp) {
-    // thanks for the structs shad
-    typedef struct {
-        uint8_t mLev;
-        uint8_t mExpNum;
-        uint16_t mSkill;
-        int32_t mLevelUpCount;
-        int32_t mLevelUpLocation;
-        int16_t mSkillDiff;
-    } SEachWork;
-
-    typedef struct {
-        int8_t mode;
-        int8_t smode;
-        int32_t timer;
-        int32_t timer2;
-        int8_t countV;
-        uint8_t flag;
-        float posX;
-        float posY;
-        float aimX;
-        float aimY;
-        float alpha;
-        float size;
-        int32_t phase;
-        int32_t phase2;
-        int32_t location;
-        int32_t loc_timer;
-        task* pChaotask;
-        CHAO_PARAM_GC* pParamGC;
-        int32_t mExpUpdating;
-        int32_t mExpUpdateWait;
-        int32_t mLevelUpJingle;
-        SEachWork mEach[5];
-    } SParamFukidasiWork;
-
-    auto work = ((SParamFukidasiWork*)tp->awp);
-
-    ParamFukidasiDisplayer_t.Original(tp);
-
-    if(!work->pChaotask) return;
-    if(!AL_ParameterIsGuest(work->pChaotask)) return;
+void GuestIndicatorDraw(task* tp) {
+    if(!AL_ParameterIsGuest(tp)) return;
+    if(!playerpwp[0] || playerpwp[0]->htp != tp) return;
 
     static NJS_TEXTURE_VTX tex[4] = {
         { -1, -1.0, 0, 0, 0, 0xFFFFFFFF },
@@ -684,7 +644,7 @@ static void ParamFukidasiDisplayer_r(task* tp) {
     };
 
     NJS_POINT3 screenPos;
-    sub_426CC0(_nj_current_matrix_ptr_, &screenPos, &work->pChaotask->twp->pos, 0);
+    sub_426CC0(_nj_current_matrix_ptr_, &screenPos, &tp->twp->pos, 0);
 
     njPushUnitMatrix();
 
@@ -694,10 +654,6 @@ static void ParamFukidasiDisplayer_r(task* tp) {
     
     njSetTexture(&AL_ODE_GUEST_TEXLIST);
     njSetTextureNum(1);
-
-    for(size_t i = 0; i < _countof(tex); ++i) {
-        tex[i].col = Uint8(work->alpha * 255.f) << 24 | 0x00FFFFFF;
-    }
 
     njDrawTexture3DExSetData(tex, 4);
     njPopMatrixEx();
@@ -724,10 +680,6 @@ void CWE_GuestInit() {
 
     if(gConfigVal.GuestRollType == GUEST_ROLL_ROTATE_RANDOM) {
         ShuffleIndices();
-    }
-
-    if (gConfigVal.GuestIndicator) {
-        ParamFukidasiDisplayer_t.Hook(ParamFukidasiDisplayer_r);
     }
 
     AL_CreateHoldingChao_t.Hook(AL_CreateHoldingChao_r);
