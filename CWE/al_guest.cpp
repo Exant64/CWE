@@ -62,7 +62,6 @@ struct GuestInfo {
 static int GuestMin, GuestMax, RotateCount;
 
 static int RotationWindowIndex = 0;
-static bool RerollFlag = false;
 static CHAO_SAVE_INFO* pLastHoldingChaoSaveInfo = NULL;
 
 static int VisitCounter;
@@ -314,8 +313,6 @@ static void LoadFirstGuestChao() {
 }
 
 static void RerollGuestChao() {
-    RerollFlag = true;
-
     if (gConfigVal.GuestRollType == GUEST_ROLL_RANDOM) {
         if (gConfigVal.GuestSave) {
            Guest_SaveAllChao();
@@ -530,34 +527,32 @@ static task* AL_CreateHoldingChao_r() {
     if (AL_IsGarden() && !--VisitCounter) {
         VisitCounter = gConfigVal.GuestVisitCounter;
         RerollGuestChao();
-    }
 
-    if(RerollFlag && pHoldingChaoSaveInfo) {
-        RerollFlag = false;
-
-        switch(gConfigVal.GuestRollType) {
-            case GUEST_ROLL_RANDOM:
-                for(size_t i = 0; i < GuestMax; ++i) {
-                    if (pHoldingChaoSaveInfo == &GuestInfoList[i].m_saveInfo) {
-                        pHoldingChaoSaveInfo = NULL;
-                        break;
+        if(pHoldingChaoSaveInfo) {
+            switch(gConfigVal.GuestRollType) {
+                case GUEST_ROLL_RANDOM:
+                    for(size_t i = 0; i < GuestMax; ++i) {
+                        if (pHoldingChaoSaveInfo == &GuestInfoList[i].m_saveInfo) {
+                            pHoldingChaoSaveInfo = NULL;
+                            break;
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case GUEST_ROLL_ROTATE:
-            case GUEST_ROLL_ROTATE_RANDOM:
-                CHAO_SAVE_INFO* pInfo = NULL;
+                case GUEST_ROLL_ROTATE:
+                case GUEST_ROLL_ROTATE_RANDOM:
+                    CHAO_SAVE_INFO* pInfo = NULL;
 
-                for(size_t i = RotateCount; i < GuestMax; ++i) {
-                    if(pHoldingChaoSaveInfo == &GuestInfoList[i].m_saveInfo) {
-                        pInfo = &GuestInfoList[i - RotateCount].m_saveInfo;
-                        break;
+                    for(size_t i = RotateCount; i < GuestMax; ++i) {
+                        if(pHoldingChaoSaveInfo == &GuestInfoList[i].m_saveInfo) {
+                            pInfo = &GuestInfoList[i - RotateCount].m_saveInfo;
+                            break;
+                        }
                     }
-                }
 
-                pHoldingChaoSaveInfo = pInfo;
-                break;
+                    pHoldingChaoSaveInfo = pInfo;
+                    break;
+            }
         }
     }
 
