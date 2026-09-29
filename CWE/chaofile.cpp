@@ -1,10 +1,10 @@
 #include "chaofile.h"
 
-CHAO_SAVE_INFO LoadChaoFile(const char* path) {
+CHAO_SAVE_INFO LoadChaoFile(const wchar_t* path) {
     CHAO_SAVE_INFO chaoInfo;
     FILE* chaoFile;
 
-    fopen_s(&chaoFile, path, "rb");
+    _wfopen_s(&chaoFile, path, L"rb");
     fseek(chaoFile, 64, SEEK_SET);
     fread(&chaoInfo, 1, sizeof(chaoInfo), chaoFile);
     fclose(chaoFile);
@@ -12,7 +12,7 @@ CHAO_SAVE_INFO LoadChaoFile(const char* path) {
     return chaoInfo;
 }
 
-bool SaveChaoFile(const char* const path, const CHAO_SAVE_INFO* pInfo) {
+bool SaveChaoFile(const wchar_t* const path, const CHAO_SAVE_INFO* pInfo) {
     static const uint8_t header[64] = {
         0x14, 0x28, 0xB7, 0x52, 0xAD, 0x34, 0xF3, 0xC4, 0xC4, 0xFA, 0x25, 0x49, 0x04, 0xFF, 0x1B, 0x24, 
         0x13, 0x0C, 0x26, 0x4F, 0x6F, 0xB5, 0x29, 0xA5, 0x7C, 0x87, 0x78, 0x89, 0x08, 0xBC, 0x2E, 0xE6, 
@@ -22,7 +22,7 @@ bool SaveChaoFile(const char* const path, const CHAO_SAVE_INFO* pInfo) {
 
     FILE* chaoFile;
 
-    if (fopen_s(&chaoFile, path, "wb")) {
+    if (_wfopen_s(&chaoFile, path, L"wb")) {
         return false;
     }
 

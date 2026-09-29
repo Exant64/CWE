@@ -155,18 +155,18 @@ static void ChaoParamMenu() {
         if (ImGui::BeginTabBar("param_tab_bar")) {
             if (ImGui::BeginTabItem("General")) {
                 if(ImGui::Button("Load .chao File")) {
-                    OPENFILENAMEA ofn {0 };
-                    char filename[MAX_PATH] {};
+                    OPENFILENAMEW ofn {0 };
+                    wchar_t filename[MAX_PATH] {};
 
                     ofn.lStructSize = sizeof(ofn);
                     ofn.hwndOwner = NULL;
-                    ofn.lpstrFilter = "Chao Files (*.chao)\0*.chao\0\0";
+                    ofn.lpstrFilter = L"Chao Files (*.chao)\0*.chao\0\0";
                     ofn.lpstrFile = filename;
                     ofn.nMaxFile = sizeof(filename);
                     ofn.Flags = OFN_READONLY | OFN_NOCHANGEDIR | OFN_EXPLORER | OFN_FILEMUSTEXIST;
-                    ofn.lpstrDefExt = "chao";
+                    ofn.lpstrDefExt = L"chao";
 
-                    if(GetOpenFileNameA(&ofn)) {
+                    if(GetOpenFileNameW(&ofn)) {
                         *(CHAO_SAVE_INFO*)pParam = LoadChaoFile(filename);
                     }
                 }

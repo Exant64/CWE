@@ -67,7 +67,7 @@ static CHAO_SAVE_INFO* pLastHoldingChaoSaveInfo = NULL;
 static int VisitCounter;
 static GuestInfo GuestInfoList[GUEST_CHAO_MAX];
 static std::vector<size_t> GuestChaoFilePathIndices;
-static std::vector<std::string> GuestChaoFilePaths;
+static std::vector<std::wstring> GuestChaoFilePaths;
 
 #ifdef IMGUIDEBUG
 void Guest_Debug(bool& open) {
@@ -77,7 +77,7 @@ void Guest_Debug(bool& open) {
 
         if(ImGui::TreeNode("Paths")) {
             for(size_t i = 0; i < GuestChaoFilePaths.size(); ++i) {
-                ImGui::Text("%d: %s", int(i), GuestChaoFilePaths[i].c_str());
+                ImGui::Text("%d: %ls", int(i), GuestChaoFilePaths[i].c_str());
             }
 
             ImGui::TreePop();
@@ -139,11 +139,15 @@ static void ShuffleIndices() {
     }
 }
 
-static bool ValidateChaoFile(const char* path) {
+static bool ValidateChaoFile(const wchar_t* path) {
     const size_t headerSize = 64;
     FILE* chaoFile;
 
-    fopen_s(&chaoFile, path, "rb");
+    _wfopen_s(&chaoFile, path, L"rb");
+
+    if(!chaoFile) {
+        return false;
+    }
 
     fseek(chaoFile, 0, SEEK_END);
     const size_t fileSize = ftell(chaoFile);
@@ -230,11 +234,11 @@ static void SaveGuestChao(size_t infoIndex) {
     GET_CWEPARAM(&info.m_saveInfo)->IsGuest = FALSE;
 
     const auto path = GuestChaoFilePaths[info.m_pathIndex].c_str();
-    if(!SaveChaoFile(path, &info.m_saveInfo)) {
-        char* pMsgBuf = new char[strlen(path) + 21 + 1];
-        sprintf(pMsgBuf, "\"%s\" failed to save!", path);
+    if(!SaveChaoFile(path, &info.m_saveInfo) || true) {
+        wchar_t* pMsgBuf = new wchar_t[wcslen(path) + 21 + 1];
+        wsprintfW(pMsgBuf, L"\"%s\" failed to save!", path);
 
-        MessageBoxA(0, pMsgBuf, "Chao World Extended: Guest", MB_ICONERROR);
+        MessageBoxW(0, pMsgBuf, L"Chao World Extended: Guest", MB_ICONERROR);
 
         delete[] pMsgBuf;
     }
@@ -494,25 +498,25 @@ static void CWE_ScanForGuestChao() {
         return;
     }
     
-    const auto findSearchPath = (guestFolder / "*.chao").generic_string();
+    const auto findSearchPath = (guestFolder / "*.chao");
 
-    _WIN32_FIND_DATAA newdata;
-    HANDLE newhfind = FindFirstFileA(findSearchPath.c_str(), &newdata);
+    _WIN32_FIND_DATAW newdata;
+    HANDLE newhfind = FindFirstFileW(findSearchPath.c_str(), &newdata);
     if (newhfind != INVALID_HANDLE_VALUE) {
         do {
-            const auto& path = (guestFolder / newdata.cFileName).generic_string();
+            const auto& path = (guestFolder / newdata.cFileName);
 
             if(!ValidateChaoFile(path.c_str())) {
-                char msgBuf[sizeof(newdata.cFileName) + 128];
-                sprintf_s(msgBuf, "\"%s\" is not a valid .chao file, will be skipped.", newdata.cFileName);
+                wchar_t msgBuf[sizeof(newdata.cFileName) + 128];
+                swprintf_s(msgBuf, L"\"%s\" is not a valid .chao file, will be skipped.", newdata.cFileName);
 
-                MessageBoxA(0, msgBuf, "Chao World Extended: Guest", MB_ICONWARNING);
+                MessageBoxW(0, msgBuf, L"Chao World Extended: Guest", MB_ICONWARNING);
 
                 continue;
             }
 
             GuestChaoFilePaths.push_back(path);
-        } while (FindNextFileA(newhfind, &newdata) != 0);
+        } while (FindNextFileW(newhfind, &newdata) != 0);
         FindClose(newhfind);
     }
 
