@@ -167,6 +167,11 @@ void CWE_Fixes() {
 
 	ExpandTextureBuffer();
 
+	/* fix AL_ShadowDraw causing toy car to clip into ground when game is paused
+	   and the Chao is under shadow collision (trees) */
+	WriteData((char*)0x00540882, (char)0xEB);
+	WriteData((char*)0x0054091B, (char)0xEB);
+
 	// fix BoxExecutor's CCL_Disable for nonexistant collision
 	WriteCall((void*)0x580252, (void*)nullsub_1);
 	// fix BoxExecutor sound ID for jack in the box
