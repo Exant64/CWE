@@ -173,12 +173,12 @@ static bool ValidateChaoFile(const wchar_t* path) {
 
 static void SaveGuestChao(size_t infoIndex) {
     auto& info = GuestInfoList[infoIndex];
-    CHAO_PARAM_GC* pParam = &info.m_saveInfo.param;
+    CHAO_SAVE_INFO copyOfInfo = info.m_saveInfo;
+    CHAO_PARAM_GC* pParam = &copyOfInfo.param;
     CHAO_PARAM_CWE* pCweParam = GET_CWEPARAM(pParam);
 
     assert(info.m_occupied);
 
-    info.m_occupied = false;
     pParam->place = info.m_backup.place;
 
     if (gConfigVal.GuestBlockLifeChanges) {
@@ -231,10 +231,10 @@ static void SaveGuestChao(size_t infoIndex) {
         pCweParam->Negative = info.m_backup.Negative;
     }
 
-    GET_CWEPARAM(&info.m_saveInfo)->IsGuest = FALSE;
-
+    pCweParam->IsGuest = FALSE;
+    
     const auto path = GuestChaoFilePaths[info.m_pathIndex].c_str();
-    if(!SaveChaoFile(path, &info.m_saveInfo) || true) {
+    if(!SaveChaoFile(path, &info.m_saveInfo)) {
         wchar_t* pMsgBuf = new wchar_t[wcslen(path) + 21 + 1];
         wsprintfW(pMsgBuf, L"\"%s\" failed to save!", path);
 
@@ -322,6 +322,10 @@ static void RerollGuestChao() {
            Guest_SaveAllChao();
         }
 
+        for(size_t i = 0; i < GuestMax; ++i) {
+            GuestInfoList[i].m_occupied = false;
+        }
+
         ShuffleIndices();
         LoadFirstGuestChao();
 
@@ -330,14 +334,6 @@ static void RerollGuestChao() {
 
     // rotation modes start here
 
-    /* we load the first GuestMax number of chao if this is on first load */
-    if(!RotationWindowIndex) {
-        LoadFirstGuestChao();
-        RotationWindowIndex += GuestMax;
-
-        return;
-    }
-
     // rotate out stale chao
     for(size_t i = RotateCount; i < GuestMax; ++i) {
         GuestInfoList[i - RotateCount] = GuestInfoList[i];
@@ -345,6 +341,8 @@ static void RerollGuestChao() {
         if (gConfigVal.GuestSave) {
             SaveGuestChao(i);
         }
+
+        GuestInfoList[i].m_occupied = false;
     }
 
     // rotate in new chao
@@ -658,12 +656,32 @@ void GuestIndicatorDraw(task* tp) {
     njPopMatrixEx();
 }
 
-void Guest_ForceReroll() {
-    VisitCounter = 1;
-    RotationWindowIndex = 0;
+static void TexLoadError(int x) {
+    ___OutputDebugString("debug texload %x", x);
+}
+
+static void ASM_FUNC TexHook() {    
+    ASM_PUSH(eax);
+    ASM_PUSH(ecx);
+    ASM_PUSH(edx);
+
+    ASM_PUSH(eax);
+    ASM_CALL(TexLoadError);
+    ASM_ESP_ADD(1);
+
+    ASM_POP(edx);
+    ASM_POP(ecx);
+    ASM_POP(eax);
+
+    ASM_PUSH(ASM_ESP(2));
+    ASM_PUSH(ASM_ESP(2));
+    ASM_CALL_R(eax, 0x402250);
+
+    ASM_RET(8);
 }
 
 void CWE_GuestInit() {
+    WriteCall((void*)0x86680C, (void*)TexHook);
     CWE_ScanForGuestChao();
 
     if(GuestChaoFilePathIndices.empty()) {
@@ -671,7 +689,6 @@ void CWE_GuestInit() {
         return;
     }
 
-    Guest_ForceReroll();
     GuestMin = NJM_MIN(gConfigVal.GuestMin, GuestChaoFilePathIndices.size());
     GuestMax = NJM_MIN(gConfigVal.GuestMax, GuestChaoFilePathIndices.size());
     RotateCount = NJM_MIN(gConfigVal.GuestRotateCount, GuestChaoFilePathIndices.size());
@@ -682,9 +699,23 @@ void CWE_GuestInit() {
 
     GuestMin = NJM_MIN(GuestMin, GuestMax);
 
+    VisitCounter = gConfigVal.GuestVisitCounter;
+
     if(gConfigVal.GuestRollType == GUEST_ROLL_ROTATE_RANDOM) {
         ShuffleIndices();
     }
+
+    if(gConfigVal.GuestRollType != GUEST_ROLL_RANDOM) {
+        /* we load the first GuestMax number of chao if this is on first load 
+           and push the rotation window by that much */
+
+        RotationWindowIndex = GuestMax;
+    }
+    else {
+        ShuffleIndices();
+    }
+
+    LoadFirstGuestChao();
 
     AL_CreateHoldingChao_t.Hook(AL_CreateHoldingChao_r);
 
