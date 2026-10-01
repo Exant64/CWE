@@ -615,15 +615,6 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Flags")) {
-                {
-                    bool flagEnabled = (work->Shape.Flag & 2);
-                    if(ImGui::Checkbox("Shape Deform", &flagEnabled)) {
-                        if(flagEnabled) {
-                            work->Shape.Flag |= 2;
-                        }
-                    }
-                }
-                
                 const Uint32 bits[] = {
                     BIT_1,
                     BIT_2,
@@ -718,6 +709,29 @@ static void ChaoInfoMenu() {
                 ImGui::Text("Aim: %f %f %f", move_work->AimPos.x, move_work->AimPos.y, move_work->AimPos.z);
                 ImGui::Text("DistFromAim: %f", MOV_DistFromAim(pChao));
                 ImGui::Text("DistFromAimXZ: %f", MOV_DistFromAimXZ(pChao));
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Shape")) {
+                int flags = work->Shape.Flag;
+                ImGui::CheckboxFlags("Deform", &flags, 2);
+                ImGui::CheckboxFlags("Shadow", &flags, 8);
+                work->Shape.Flag = uint16_t(flags);
+
+                ImGui::Text("pLeftHandItemObject: %p", work->Shape.pLeftHandItemObject);
+                ImGui::Text("pLeftHandItemObject: %p", work->Shape.pLeftHandItemObject);
+                ImGui::Text("pLeftHandItemTexlist: %p", work->Shape.pLeftHandItemTexlist);
+                ImGui::Text("LeftHandItemScale: %f", work->Shape.LeftHandItemScale);
+                ImGui::Text("LeftHandItemActiveFlag: %f", work->Shape.LeftHandItemActiveFlag);
+
+                ImGui::Text("pRightHandItemObject: %p", work->Shape.pRightHandItemObject);
+                ImGui::Text("pRightHandItemTexlist: %p", work->Shape.pRightHandItemTexlist);
+                ImGui::Text("RightHandItemScale: %f", work->Shape.RightHandItemScale);
+                ImGui::Text("RightHandItemActiveFlag: %f", work->Shape.RightHandItemActiveFlag);
+
+                ImGui::InputFloat3("LeftHandPos", &work->Shape.LeftHandPos.x);
+                ImGui::InputFloat3("RightHandPos", &work->Shape.RightHandPos.x);
 
                 ImGui::EndTabItem();
             }
