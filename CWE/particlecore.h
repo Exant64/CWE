@@ -33,4 +33,4 @@ struct ParticleData {
 	int filler5;
 };
 
-ASM_FUNC int AllocateParticle(ParticleUserData* a2);
+int AllocateParticle(ParticleUserData* a2);
