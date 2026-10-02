@@ -167,7 +167,7 @@ static void ChaoParamMenu() {
                     ofn.lpstrDefExt = L"chao";
 
                     if(GetOpenFileNameW(&ofn)) {
-                        *(CHAO_SAVE_INFO*)pParam = LoadChaoFile(filename);
+                        LoadChaoFile(filename, *(CHAO_SAVE_INFO*)pParam);
                     }
                 }
 

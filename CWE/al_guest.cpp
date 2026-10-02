@@ -177,8 +177,6 @@ static void SaveGuestChao(size_t infoIndex) {
     CHAO_PARAM_GC* pParam = &copyOfInfo.param;
     CHAO_PARAM_CWE* pCweParam = GET_CWEPARAM(pParam);
 
-    assert(info.m_occupied);
-
     pParam->place = info.m_backup.place;
 
     if (gConfigVal.GuestBlockLifeChanges) {
@@ -234,9 +232,11 @@ static void SaveGuestChao(size_t infoIndex) {
     pCweParam->IsGuest = FALSE;
     
     const auto path = GuestChaoFilePaths[info.m_pathIndex].c_str();
-    if(!SaveChaoFile(path, &info.m_saveInfo)) {
-        wchar_t* pMsgBuf = new wchar_t[wcslen(path) + 21 + 1];
-        wsprintfW(pMsgBuf, L"\"%s\" failed to save!", path);
+
+    int result;
+    if ((result = SaveChaoFile(path, &info.m_saveInfo))) {
+        wchar_t* pMsgBuf = new wchar_t[wcslen(path) + 35 + 1];
+        wsprintfW(pMsgBuf, L"\"%s\" failed to save! (code:%d)", path, result);
 
         MessageBoxW(0, pMsgBuf, L"Chao World Extended: Guest", MB_ICONERROR);
 
@@ -247,10 +247,22 @@ static void SaveGuestChao(size_t infoIndex) {
 static void LoadGuestChao(size_t infoIndex, size_t pathIndex) {
     auto& info = GuestInfoList[infoIndex];
 
+    const wchar_t* path = GuestChaoFilePaths[pathIndex].c_str();
+    int result;
+    if ((result = LoadChaoFile(path, info.m_saveInfo))) {
+        wchar_t* pMsgBuf = new wchar_t[wcslen(path) + 35 + 1];
+        wsprintfW(pMsgBuf, L"\"%s\" failed to load! (code:%d)", path, result);
+
+        MessageBoxW(0, pMsgBuf, L"Chao World Extended: Guest", MB_ICONERROR);
+
+        delete[] pMsgBuf;
+
+        return;
+    }
+
     info.m_occupied = true;
     info.m_pathIndex = pathIndex;
 
-    info.m_saveInfo = LoadChaoFile(GuestChaoFilePaths[pathIndex].c_str());
     CHAO_PARAM_GC* pParam = &info.m_saveInfo.param;
     CHAO_PARAM_CWE* pCweParam = GET_CWEPARAM(pParam);
 
@@ -338,7 +350,7 @@ static void RerollGuestChao() {
     for(size_t i = RotateCount; i < GuestMax; ++i) {
         GuestInfoList[i - RotateCount] = GuestInfoList[i];
 
-        if (gConfigVal.GuestSave) {
+        if (gConfigVal.GuestSave && GuestInfoList[i].m_occupied) {
             SaveGuestChao(i);
         }
 
@@ -375,9 +387,11 @@ static void GuestManagerExecutor(task* tp) {
                 if(pLastHoldingChaoSaveInfo == &info.m_saveInfo) {
                     continue;
                 }
-                
-                assert(info.m_occupied);
 
+                if (!info.m_occupied) {
+                    continue;
+                }
+                
                 NJS_POINT3& pos = ProbablyChaoSpawnPoints[(AL_GetStageNumber() - 1) * 16 + (int)(njRandom() * 15.f)];
                 task* pChaoTask = CreateChaoExtra(&info.m_saveInfo.param, 0, NULL, &pos, Angle(njRandom() * 360.f));
 
@@ -424,6 +438,10 @@ static void GuestManagerExecutor(task* tp) {
                 auto& info = GuestInfoList[i];
                 CHAO_PARAM_GC* pParam = &info.m_saveInfo.param;
                 
+                if (!info.m_occupied) {
+                    continue;
+                }
+
                 if(gConfigVal.GuestBlockStatChanges) {
                     for(size_t s = 0; s < 8; ++s) {
                         pParam->Exp[s] = info.m_backup.Exp[s];
