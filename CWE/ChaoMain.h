@@ -47,6 +47,7 @@ struct ConfigValues {
 	bool MoreAnimation;
 	bool ClassroomTimerDisplay;
 	bool OldName;
+	bool Birthday;
 
 	bool AutoGenerateStats;
 	bool LuckyChao;

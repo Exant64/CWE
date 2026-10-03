@@ -116,8 +116,8 @@ static void AL_DayNightRainExecutor(task* tp) {
 static void DrawDrops(task* tp) {
 	auto* work = GET_WORK(tp);
 
-	njSetTexture(texlist_cwe_object);
-	njSetTextureNum(68);
+	njSetTexture(work->pTexlist);
+	njSetTextureNum(1);
 	
 	njColorBlendingMode(0, NJD_COLOR_BLENDING_ONE);
 	njColorBlendingMode(1, NJD_COLOR_BLENDING_ONE);
@@ -224,9 +224,16 @@ static void AL_DayNightRainDisplayer(task* tp) {
 
 	if (!dropCount) return;
 
-	njSetTexture(texlist_cwe_object);
-	njSetTextureNum(67);
+	njSetTexture(work->pTexlist);
+	njSetTextureNum(0);
 	njDrawTexture3DExSetData(drops, dropCount, 0);
+}
+
+static void AL_DayNightRainDestructor(task* tp) {
+	auto work = GET_WORK(tp);
+
+	njReleaseTexture(work->pTexlist);
+	FREE(work->pTexlist);
 }
 
 task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
@@ -250,6 +257,8 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 
 	work->color = color;
 	work->timerLimit = timer;
+
+	work->pTexlist = texCreateTexlist("CWE_RAIN");
 
 	return tp;
 }

@@ -1,6 +1,7 @@
-#include "al_parameter.h"
 #include "stdafx.h"
 
+#include "FunctionHook.h"
+#include "al_parameter.h"
 #include "ninja_functions.h"
 #include "asmutil.h"
 #include "ChaoMain.h"
@@ -19,6 +20,8 @@
 #include <api/api_tree.h>
 #include <al_garden_info.h>
 #include "playsound.h"
+
+static NJS_TEXLIST* texlist_cwe_health_center = NULL;
 
 DataPointer(CHAO_SAVE_INFO*, dword_19F6454, 0x19F6454);
 DataPointer(float, flt_B18F54, 0xB18F54);
@@ -195,8 +198,8 @@ void PurchaseGradesCode(task* tp) {
 	);
 
 	sub_583C60();
-	njSetTexture(&CWE_UI_TEXLIST);
-	njSetTextureNum(25, 0, 0, 0);
+	njSetTexture(texlist_cwe_health_center);
+	njSetTextureNum(1, 0, 0, 0);
 
 	if (SWDATA[0] & BTN_Y) {
 		for (int i = 0; i < 5; i++) {
@@ -758,8 +761,8 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 						int grade = GET_CHAOPARAM(TextLocation->field_8)->Abl[gradeIndex];
 						if (grade == 6 || grade == 7) //Grade_X
 						{
-							njSetTexture(&CWE_UI_TEXLIST);
-							njSetTextureNum(25, 0, 0, 0);
+							njSetTexture(texlist_cwe_health_center);
+							njSetTextureNum(1, 0, 0, 0);
 							gradeElem.u0 = 0;
 							gradeElem.u1 = (short)((39 / 76.0f) * 4096);
 							gradeElem.v0 = 0;
@@ -786,7 +789,7 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				AlgKinderOrthoQuadDraw((SAlgKinderOrthoQuad*)&bar2, -1);
 
 				DataArray(CHS_BILL_INFO, stru_13128B0, 0x13128B0, 10);
-				CHS_BILL_INFO lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, &CWE_UI_TEXLIST, 4 };
+				CHS_BILL_INFO lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, texlist_cwe_health_center, 0 };
 				//ChaoHudThing lifespan = { {0x132, (264 + 32 * 5.25f)}, {}, {0,0}, {4096, 4096} };
 				sub_536770(
 					(Uint32)((GET_CHAOPARAM(TextLocation->field_8)->life / 3900.0f) * 1000),
@@ -1162,7 +1165,33 @@ static void ASM_FUNC sub_58D9F0Hook() {
 	ASM_RET(0);
 }
 
+static FunctionHook<void, task*> HealthCenterExec_t(0x58F9B0);
+static void HealthCenterExec_r(task* tp) {
+	if (!tp->awp) {
+		texlist_cwe_health_center = texCreateTexlist("CWE_HEALTH_CENTER");
+	}
+
+	HealthCenterExec_t.Original(tp);
+}
+
+static FunctionHook<void, task*> HealthCenterFree_t(0x58F940);
+static void HealthCenterFree_r(task* tp) {
+	if (texlist_cwe_health_center) {
+		njReleaseTexture(texlist_cwe_health_center);
+		FREE(texlist_cwe_health_center);
+
+		texlist_cwe_health_center = NULL;
+	}
+
+	HealthCenterFree_t.Original(tp);
+}
+
+
 void alg_kinder_he_Init() {
+	// texture load and free hooks
+	HealthCenterExec_t.Hook(HealthCenterExec_r);
+	HealthCenterFree_t.Hook(HealthCenterFree_r);
+
 	//health center
 	WriteCall((void*)0x0058E01F, (void*)nullsub_1); //killing the grade draw call
 	WriteCall((void*)0x0058E8FC, (void*)nullsub_1); //killing the age call so that i can run my own 

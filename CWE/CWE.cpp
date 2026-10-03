@@ -447,6 +447,8 @@ extern "C"
 		gConfigVal.StageAnimalMinCount = config->getInt("Chao World Extended", "StageAnimalMinCount", 1);
 		gConfigVal.StageAnimalMaxCount = config->getInt("Chao World Extended", "StageAnimalMaxCount", 4);
 
+		gConfigVal.Birthday = config->getBool("Chao World Extended", "BirthdayEvent", true);
+
 #ifdef PATHFINDING
 		gConfigVal.PathfindingEnabled = config->getBool("Pathfinding", "Pathfinding", false);
 		gConfigVal.PathfindingVanilla = config->getBool("Pathfinding", "Vanilla", false);

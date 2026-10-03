@@ -51,6 +51,8 @@
 #include <bit>
 #include <util.h>
 
+static NJS_TEXLIST* texlist_cwe_customization;
+
 // the menu entry
 static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster);
 
@@ -230,9 +232,9 @@ private:
 
 	Uint32 m_timer = 0; // this is only used to track to only create tween once
 
-	CHS_BILL_INFO m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_gba = { 1, 51, 42, 0, 214 / 256.f, 51 / 256.f, 1, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_icon = { 1, 46, 46, 0, 62.f / 256.f, 46 / 256.f, (62.f + 46) / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_selectedIcon = { 1, 46, 46, 54 / 256.f, 62.f / 256.f, (54 + 46) / 256.f, (62.f + 46) / 256.f, texlist_cwe_customization, 0 };
 public:
 	enum LeftBarType : int {
 		HatAcc = 0,
@@ -302,8 +304,8 @@ public:
 			vertices[i].y += posY + pHud.ht / 2.f;
 		}
 
-		njSetTexture(&CWE_UI_TEXLIST);
-		njSetTextureNum(5);
+		njSetTexture(texlist_cwe_customization);
+		njSetTextureNum(0);
 		njDrawTextureEx(vertices, 4, 1);
 	}
 
@@ -380,24 +382,24 @@ public:
 	const CHS_BILL_INFO GetTextSprite() {
 		switch (m_buttonType) {
 			case LeftBarType::HatAcc:
-				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, &CWE_UI_TEXLIST, 5 };
+				return { 1, 68, 28, 10 / 256.f, 172 / 256.f, 77 / 256.f, 199 / 256.f, texlist_cwe_customization, 0 };
 			case LeftBarType::Medal:
-				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, &CWE_UI_TEXLIST, 5 };
+				return { 1, 91, 25, 9 / 256.f, 114 / 256.f, 99 / 256.f, 138 / 256.f, texlist_cwe_customization, 0 };
 			default:
 			case LeftBarType::Exit:
-				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, &CWE_UI_TEXLIST, 5 };
+				return { 1, 60, 25, 8 / 256.f, 142 / 256.f, 67 / 256.f, 166 / 256.f, texlist_cwe_customization, 0 };
 		}
 	}
 
 	const CHS_BILL_INFO GetIconSprite() {
 		switch (m_buttonType) {
 		case LeftBarType::HatAcc:
-			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
+			return { 1, 56 * .8f, 65 * .8f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, texlist_cwe_customization, 0 };
 		case LeftBarType::Medal:
-			return { 1, 44, 63, 213 / 256.f, 153 / 256.f, 1, 215 / 256.f, &CWE_UI_TEXLIST, 5 };
+			return { 1, 44, 63, 213 / 256.f, 153 / 256.f, 1, 215 / 256.f, texlist_cwe_customization, 0 };
 		default:
 		case LeftBarType::Exit:
-			return { 1, 29 * 1.25f, 31 * 1.25f, 133 / 256.f, 225 / 256.f, 161 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+			return { 1, 29 * 1.25f, 31 * 1.25f, 133 / 256.f, 225 / 256.f, 161 / 256.f, 1, texlist_cwe_customization, 0 };
 		}
 	}
 
@@ -485,8 +487,8 @@ public:
 
 class BaseCustomizeBox : public UISelectable {
 private:
-	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, texlist_cwe_customization, 0 };
 public:
 	float m_sclX = 1;
 	float m_sclY = 1;
@@ -597,12 +599,12 @@ private:
 	int m_uiSelectX = 0;
 	int m_uiSelectY = 0;
 
-	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (52.f) / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (52.f) / 256.f, texlist_cwe_customization, 0 };
 
-	CHS_BILL_INFO m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_scrollTop = { 1, 10, 4, 227 / 256.f, 0, 237 / 256.f, 3 / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_scrollMiddle = { 1, 10, 1, 227 / 256.f, 6.5f / 256.f, 237 / 256.f, 6.5f / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_scrollBottom = { 1, 10, 5, 227 / 256.f, 9.5f / 256.f, 237 / 256.f, 13 / 256.f, texlist_cwe_customization, 0 };
 
 	const size_t GetItemCount() const {
 		return HatList.size() + AccessoryList.size();
@@ -873,22 +875,20 @@ class ColorEditor : public UISelectable {
 private:
 	std::optional<EAccessoryType> m_accessoryType;
 
-	CHS_BILL_INFO m_colorPanel = { 1, 211, 213, 0, 0, 1, 1, &CWE_UI_TEXLIST, 37 };
+	CHS_BILL_INFO m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, texlist_cwe_customization, 0 };
 
-	CHS_BILL_INFO m_colorSlot = { 1, 37, 36, 132 / 256.f, 115 / 256.f, 169 / 256.f, 151 / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_editedColorSlot = { 1, 39, 38, 125 / 256.f, 156 / 256.f, 167 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_selectedColorSlot = { 1, 40, 39, 172 / 256.f, 155 / 256.f, 214 / 256.f, 196 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, texlist_cwe_customization, 0 };
 
-	CHS_BILL_INFO m_genericSliderLeft = { 1, 9, 17, 106 / 256.f, 91 / 256.f, 114 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_genericSliderMiddle = { 1, 1, 17, 117 / 256.f, 91 / 256.f, 117 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_genericSliderRight = { 1, 11, 17, 236 / 256.f, 91 / 256.f, 246 / 256.f, 108 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, texlist_cwe_customization, 0 };
+	CHS_BILL_INFO m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, texlist_cwe_customization, 0 };
 
-	CHS_BILL_INFO m_hueColors = { 1, 29, 13, 219 / 256.f, 114 / 256.f, 248 / 256.f, 126 / 256.f, &CWE_UI_TEXLIST, 5 };
-	CHS_BILL_INFO m_overlayColor = { 1, 29, 13, 219 / 256.f, 132 / 256.f, 248 / 256.f, 144 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, texlist_cwe_customization, 0 };
 
-	CHS_BILL_INFO m_sliderPicker = { 1, 8, 23, 228 / 256.f, 24 / 256.f, 236 / 256.f, 46 / 256.f, &CWE_UI_TEXLIST, 5 };
-
-	CHS_BILL_INFO m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, &CWE_UI_TEXLIST, 5 };
+	CHS_BILL_INFO m_colorsText = { 1, 91, 28, 129 / 256.f, 57 / 256.f, 219 / 256.f, 85 / 256.f, texlist_cwe_customization, 0 };
 
 	std::optional<int> m_colorSlotIndex = std::nullopt;
 	bool m_inSliderMenu = false;
@@ -1138,7 +1138,7 @@ private:
 
 	float GetPanelWidth() const {
 		const float slotPosX1 = 0;
-		const float slotPosX2 = m_colorPanel.wd + 10;
+		const float slotPosX2 = 211 + 10;
 		return NJM_MAX(GetSliderLength() + 30, 100 + GetColorSlotX(NJM_MIN(GetColorSlotCount() - 1, size_t(3))));
 	}
 
@@ -1171,17 +1171,17 @@ public:
 		if (!m_alpha) return;
 
 		// panel sprites
-		CHS_BILL_INFO lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lu = { 1, 20, 17, 0 / 256.f, 206 / 256.f, 19 / 256.f, 223 / 256.f, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO cu = { 1, 1, 17, 25 / 256.f, 206 / 256.f, 25 / 256.f, 223 / 256.f, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO ru = { 1, 20, 17, 24.5f / 256.f, 206 / 256.f, 43 / 256.f, 223 / 256.f, texlist_cwe_customization, 0 };
 
-		CHS_BILL_INFO lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lm = { 1, 20, 12, 0 / 256.f, 227 / 256.f, 18.5f / 256.f, 239.f / 256.f, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO cm = { 1, 1, 12, 25 / 256.f, 227 / 256.f, 25 / 256.f, 239.f / 256.f, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO rm = { 1, 20, 12, 24.5f / 256.f, 227 / 256.f, 43 / 256.f, 239.f / 256.f, texlist_cwe_customization, 0 };
 
-		CHS_BILL_INFO lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO lb = { 1, 20, 14, 0 / 256.f, 242 / 256.f, 19 / 256.f, 1, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO cb = { 1, 1, 14, 25 / 256.f, 242 / 256.f, 25 / 256.f, 1, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO rb = { 1, 20, 14, 24.5f / 256.f, 242 / 256.f, 43 / 256.f, 1, texlist_cwe_customization, 0 };
 
 		chSetBillboardColor(m_alpha, 1, 1, 1);
 
@@ -1273,8 +1273,8 @@ public:
 			vertices[2] = { vertices[0].x, vertices[0].y + m_genericSliderMiddle.ht, 0.99f, u0, v1, vertices[0].col };
 			vertices[3] = { vertices[1].x, vertices[2].y, 0.99f, u1, v1, vertices[1].col };
 
-			njSetTexture(&CWE_UI_TEXLIST);
-			njSetTextureNum(5);
+			njSetTexture(texlist_cwe_customization);
+			njSetTextureNum(0);
 			njDrawTextureEx(vertices, 4, 1);
 
 			for (size_t i = 0; i < 4; ++i) {
@@ -1422,9 +1422,9 @@ private:
 	}
 public:
 	void BeforeBoxDisp() override {
-		CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO m_sprite = { 1, 51 ,51, 94 / 256.f, 0, (94 + 51) / 256.f, (51.f) / 256.f, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO m_selectedSprite = { 1, 51 ,51, 154 / 256.f, 0, (154 + 51) / 256.f, (51.f) / 256.f, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO m_greySprite = { 1, 51 ,51, 0, 0, 51 / 256.f, (51.f) / 256.f, texlist_cwe_customization, 0 };
 		auto sprite = m_editSelected ? m_selectedSprite : m_sprite;
 
 		bool hasColorSlots = false;
@@ -1439,8 +1439,8 @@ public:
 		chDrawBillboardSR(&sprite, m_posX - sprite.wd / 2.5f * m_editAnim, m_posY + 2 + .45f * sprite.ht / 4.f, -.5f, .45f, .45f, -1, -1);
 
 		chSetBillboardColor(1, 1, 1, 1);
-		CHS_BILL_INFO greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
-		CHS_BILL_INFO nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, &CWE_UI_TEXLIST, 5 };
+		CHS_BILL_INFO greyNameIcon = { 1, 32, 32, 95 / 256.f, 225 / 256.f, 126 / 256.f, 1, texlist_cwe_customization, 0 };
+		CHS_BILL_INFO nameIcon = { 1, 32, 32, 54 / 256.f, 225 / 256.f, 85 / 256.f, 1, texlist_cwe_customization, 0 };
 		chDrawBillboardSR(hasColorSlots ? &nameIcon : &greyNameIcon, m_posX + 2.5f - sprite.wd / 2.5f * m_editAnim, m_posY + 4 + .45f * sprite.ht / 4.f, -.5f, .55f, .55f, -1, -1);
 	}
 
@@ -1448,19 +1448,19 @@ public:
 		CHS_BILL_INFO slotSprite;
 		switch (m_slot) {
 			case 0: // hat
-				slotSprite = { 1, 56 * .65f, 65 * .65f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, &CWE_UI_TEXLIST, 5 };
+				slotSprite = { 1, 56 * .65f, 65 * .65f, 84 / 256.f, 153 / 256.f, 137 / 256.f, 216 / 256.f, texlist_cwe_customization, 0 };
 				break;
 			case 1:
-				slotSprite = { 1, 60 * .65f, 39 * .65f, 139 / 256.f, 159 / 256.f, 198 / 256.f, 197 / 256.f, &CWE_UI_TEXLIST, 5 };
+				slotSprite = { 1, 60 * .65f, 39 * .65f, 139 / 256.f, 159 / 256.f, 198 / 256.f, 197 / 256.f, texlist_cwe_customization, 0 };
 				break;
 			case 2:
-				slotSprite = { 1, 67 * .65f, 28 * .65f, 177 / 256.f, 223 / 256.f, 243 / 256.f, 250 / 256.f, &CWE_UI_TEXLIST, 5 };
+				slotSprite = { 1, 67 * .65f, 28 * .65f, 177 / 256.f, 223 / 256.f, 243 / 256.f, 250 / 256.f, texlist_cwe_customization, 0 };
 				break;
 			case 3:
-				slotSprite = { 1, 28 * 1.25f, 28 * 1.25f, 58 / 256.f, 1 / 256.f, 85 / 256.f, 28 / 256.f, &CWE_UI_TEXLIST, 5 };
+				slotSprite = { 1, 28 * 1.25f, 28 * 1.25f, 58 / 256.f, 1 / 256.f, 85 / 256.f, 28 / 256.f, texlist_cwe_customization, 0 };
 				break;
 			case 4:
-				slotSprite = { 1, 28 * 1.25f, 25 * 1.25f, 58 / 256.f, 31 / 256.f, 85 / 256.f, 55 / 256.f, &CWE_UI_TEXLIST, 5 };
+				slotSprite = { 1, 28 * 1.25f, 25 * 1.25f, 58 / 256.f, 31 / 256.f, 85 / 256.f, 55 / 256.f, texlist_cwe_customization, 0 };
 				break;
 		}
 
@@ -1639,6 +1639,8 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {
 		GET_CHAOWK(pChao)->ChaoFlag &= ~0x10u;
 		GET_CHAOWK(pChao)->ChaoFlag &= ~BIT_5; // buyo
 
+		texlist_cwe_customization = texCreateTexlist("CWE_CUSTOMIZATION");
+
 		customizationController = new UIController();
 
 		customizationController->AddLayer(baseLayerName,
@@ -1766,6 +1768,9 @@ static void AL_OdekakeCustomization(ODE_MENU_MASTER_WORK* pMaster) {
 
 		delete customizationController;
 		customizationController = NULL;
+
+		njReleaseTexture(texlist_cwe_customization);
+		FREE(texlist_cwe_customization);
 
 		AL_OdeMenuSetNextStage(0);
 		AL_OdeMenuChangeStage();

@@ -1314,7 +1314,7 @@ static void AL_DayNightCycle_Init(task* tp) {
 
 	const auto& skyboxFilename = gDayNightManager.GetTextureFileName();
 	if (skyboxFilename) {
-		work.pTexlist = texCreateTexlist((char*)skyboxFilename->c_str());
+		work.pTexlist = texCreateTexlist(skyboxFilename->c_str());
 	}
 
 	// for phases that don't have light specified we fallback to the original index 0 light

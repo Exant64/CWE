@@ -598,8 +598,8 @@ static void AL_ChaoParamWindowExecutorDisplay_r(task* tp) {
 				.t0 = 0,
 				.s1 = 1,
 				.t1 = 1,
-				.pTexlist = &CWE_UI_TEXLIST,
-				.TexNum = 33
+				.pTexlist = texlist_cwe_ui_common,
+				.TexNum = 1
 			};
 
 			switch (pParam->type)

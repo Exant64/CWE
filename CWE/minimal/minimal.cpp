@@ -363,7 +363,7 @@ static void InitLevelThings_r() {
             texLoadTexturePvmFile((char*)load.first, load.second);
         }
 
-        texLoadTexturePvmFile((char*)"CWE_UI", &CWE_UI_TEXLIST);
+        texLoadTexturePvmFile((char*)"CWE_ANIMAL_INV", &texlist_animal_inv);
     }
 
     InitLevelThings_hook.Original();
@@ -377,7 +377,7 @@ static void LoadLevelDestroy_r() {
             njReleaseTexture(load.second);
         }
 
-        njReleaseTexture(&CWE_UI_TEXLIST);
+        njReleaseTexture(&texlist_animal_inv);
     }
 
     LoadLevelDestroy_hook.Original();

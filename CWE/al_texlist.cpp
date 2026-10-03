@@ -1,29 +1,18 @@
 #include "stdafx.h"
 #include "AL_ModAPI.h"
 #include "api/api_main.h"
+#include "ChaoMain.h"
 
 NJS_TEXNAME AL_DX_PARTS_TEX_TEXNAME[129];
 NJS_TEXLIST AL_DX_PARTS_TEX_TEXLIST = { arrayptrandlength(AL_DX_PARTS_TEX_TEXNAME) };
 
-NJS_TEXNAME AL_SANDHOLE_TEXNAME[2];
-NJS_TEXLIST AL_SANDHOLE_TEXLIST = { arrayptrandlength(AL_SANDHOLE_TEXNAME) };
-
-NJS_TEXNAME BIRTHDAYHAT_TEXNAME[10];
-NJS_TEXLIST BIRTHDAYHAT_TEXLIST = { arrayptrandlength(BIRTHDAYHAT_TEXNAME) };
-
 NJS_TEXNAME AL_ITEM_TEXNAME[NB_CWE_CATEGORY];
 NJS_TEXLIST AL_ITEM_TEXLIST = { AL_ITEM_TEXNAME, NB_CWE_CATEGORY };
-
-NJS_TEXNAME osamenu_tex[9];
-NJS_TEXLIST AL_OSAMENU = { osamenu_tex, 9 };
 
 NJS_TEXLIST* texlist_cwe_object = NULL;
 
 NJS_TEXNAME AL_DRAWING_TEXNAME[21];
 NJS_TEXLIST AL_DRAWING_TEXLIST = { AL_DRAWING_TEXNAME, 21 };
-
-NJS_TEXNAME CWE_UI_TEXNAME[38];
-NJS_TEXLIST CWE_UI_TEXLIST = { CWE_UI_TEXNAME, 38 };
 
 NJS_TEXNAME OMO_EYE_TEXNAME[11];
 NJS_TEXLIST OMO_EYE_TEXLIST = { OMO_EYE_TEXNAME, 11 };
@@ -36,6 +25,15 @@ NJS_TEXLIST AL_ODE_GUEST_TEXLIST = { AL_ODE_GUEST_TEXNAME, 3 };
 
 NJS_TEXNAME XL_BODY_TEXNAME[143];
 NJS_TEXLIST XL_BODY_TEXLIST = { XL_BODY_TEXNAME, 143 };
+
+NJS_TEXNAME texname_animal_inv[2];
+NJS_TEXLIST texlist_animal_inv = { texname_animal_inv, _countof(texname_animal_inv) };
+
+NJS_TEXLIST* texlist_birthday_hat;
+NJS_TEXLIST* texlist_birthday_cake;
+NJS_TEXLIST* texlist_cwe_name;
+NJS_TEXLIST* texlist_cwe_sandcastle;
+NJS_TEXLIST* texlist_cwe_ui_common;
 
 #define LENSTEX(name) NJS_TEXNAME name## _TEXNAME[7]; \
 					  NJS_TEXLIST name## _TEXLIST = { name## _TEXNAME, 7 };
@@ -60,16 +58,33 @@ NEWLENSTEX(CWE_LENS_JEWEL_RED)
 NEWLENSTEX(CWE_LENS_JEWEL_SILVER)
 
 void CWE_RegisterTexlists(const CWE_REGAPI* cwe_api) {
-	cwe_api->RegisterChaoTexlistLoad("al_minda", &AL_SANDHOLE_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("birthdayhat", &BIRTHDAYHAT_TEXLIST);
-	texlist_cwe_object = CWE_API_Main.pRegister->pTexture->AddAutoTextureLoad("CWE_OBJECT");
-	cwe_api->RegisterChaoTexlistLoad("AL_OSAMENU_TEX_E", &AL_OSAMENU);
-	cwe_api->RegisterChaoTexlistLoad("AL_ITEM", &AL_ITEM_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("NAME_ODE", &NAME_ODE_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("al_ode_guest", &AL_ODE_GUEST_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("CWE_UI", &CWE_UI_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("AL_DRAWING", &AL_DRAWING_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("OMO_EYE", &OMO_EYE_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("XL_BODY", &XL_BODY_TEXLIST);
-	cwe_api->RegisterChaoTexlistLoad("AL_DX_PARTS_TEX", &AL_DX_PARTS_TEX_TEXLIST);
+	const auto pApiTexture = CWE_API_Main.pRegister->pTexture;
+
+	if (gConfigVal.Birthday) {
+		texlist_birthday_hat = pApiTexture->AddAutoTextureLoad("birthdayhat");
+		texlist_birthday_cake = pApiTexture->AddAutoTextureLoad("CWE_BIRTHDAY_CAKE");
+	}
+
+	texlist_cwe_object = pApiTexture->AddAutoTextureLoad("CWE_OBJECT");
+	texlist_cwe_ui_common = pApiTexture->AddAutoTextureLoad("CWE_UI_COMMON");
+
+	if (gConfigVal.StageAnimals) {
+		pApiTexture->AddChaoTexlistLoad("CWE_ANIMAL_INV", &texlist_animal_inv);
+	}
+
+	if (!gConfigVal.OldName) {
+		texlist_cwe_name = pApiTexture->AddAutoTextureLoad("CWE_NAME");
+	}
+
+	if (gConfigVal.BhvSandCastle) { 
+		texlist_cwe_sandcastle = pApiTexture->AddAutoTextureLoad("CWE_SANDCASTLE");
+	}
+
+	pApiTexture->AddChaoTexlistLoad("AL_ITEM", &AL_ITEM_TEXLIST);
+	pApiTexture->AddChaoTexlistLoad("NAME_ODE", &NAME_ODE_TEXLIST);
+	pApiTexture->AddChaoTexlistLoad("al_ode_guest", &AL_ODE_GUEST_TEXLIST);	
+	pApiTexture->AddChaoTexlistLoad("AL_DRAWING", &AL_DRAWING_TEXLIST);
+	pApiTexture->AddChaoTexlistLoad("OMO_EYE", &OMO_EYE_TEXLIST);
+	pApiTexture->AddChaoTexlistLoad("XL_BODY", &XL_BODY_TEXLIST);
+	pApiTexture->AddChaoTexlistLoad("AL_DX_PARTS_TEX", &AL_DX_PARTS_TEX_TEXLIST);
 }

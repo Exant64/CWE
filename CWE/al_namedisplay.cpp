@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "memory.h"
 #include "ninja_functions.h"
 #include "al_world.h"
 #include "Chao.h"
@@ -12,6 +13,9 @@
 #include "usercall.h"
 #include "ui/al_ortho.h"
 #include "al_minimal.h"
+
+static NJS_TEXLIST* texlist_emotion_indicator = NULL;
+static NJS_TEXLIST* texlist_time_edit = NULL;
 
 NJS_TEXTURE_VTX stru_C5ACCB0[4] =
 {
@@ -221,20 +225,21 @@ NJS_TEXANIM texanim[] = {
 {128,20,64,10,0,128,256,192,3,0},
 {128,20,64,10,0,192,256,256,3,0}
 };
-NJS_SPRITE selectMenu = { {320,220,0}, 1,1, 0, &CWE_UI_TEXLIST, texanim };
+NJS_SPRITE selectMenu = { {320,220,0}, 1,1, 0, texlist_time_edit, texanim };
 
 NJS_TEXANIM cloudyTex[] = {
-	{128,128,64,64,0,0,256,256,9,0},
-	{128,128,64,64,0,0,256,256,10,0},
+	{128,128,64,64,0,0,256,256,4,0},
+	{128,128,64,64,0,0,256,256,5,0},
 };
-NJS_SPRITE cloudySpr = { {317,290,0}, 0.5f,0.5f, 0, &CWE_UI_TEXLIST, cloudyTex };
+NJS_SPRITE cloudySpr = { {317,290,0}, 0.5f,0.5f, 0, texlist_time_edit, cloudyTex };
 
 NJS_TEXANIM texanim2[] = {
 	{256,256,128,128,0,0,256,256,0,0},
 	{256,256,128,128,0,0,256,256,1,0},
 	{256,256,128,128,0,0,256,256,2,0}
 };
-NJS_SPRITE dayNightUI = { {320,220,0}, 0.5f,0.5f, 0, &CWE_UI_TEXLIST, texanim2 };
+NJS_SPRITE dayNightUI = { {320,220,0}, 0.5f,0.5f, 0, texlist_time_edit, texanim2 };
+
 DataArray(ALW_ENTRY_WORK, stru_1DC0FC0, 0x1DC0FC0, 32);
 NJS_TEXTURE_VTX emoIcon[4] =
 {
@@ -278,43 +283,50 @@ bool AL_EmoteIconRequirement(task* tp, int index)
 }
 
 void AL_NameDisplayer(task* tp) {
-	if (tp->twp->mode == 0 && gConfigVal.EmotionDisplay)
-	{
+	selectMenu.tlist = texlist_time_edit;
+	cloudySpr.tlist = texlist_time_edit;
+	dayNightUI.tlist = texlist_time_edit;
+
+	if (tp->twp->mode == 0 && gConfigVal.EmotionDisplay) {
 		for (int i = 0; i < 32; i++) {
 			task* chao = stru_1DC0FC0[i].tp;
 			if (chao &&
 				chao->mwp &&
 				chao->twp->pos.y + 2 >= ((MOVE_WORK*)chao->mwp)->WaterY)
 			{
-				NJS_VECTOR asd;
-				sub_426CC0(_nj_current_matrix_ptr_, &asd, &chao->twp->pos, 0);
+				NJS_POINT3 pos;
+				sub_426CC0(_nj_current_matrix_ptr_, &pos, &chao->twp->pos, 0);
 
 				njPushUnitMatrix();
 
-				njSetTexture((NJS_TEXLIST*)&CWE_UI_TEXLIST);
-				//njSetTexture((NJS_TEXLIST*)0x1366AB4);
-				njTranslateEx(&asd);
-				njTranslate(NULL, 3, 2.5f, 0);
-				njScale(NULL, 1, -1, 1);
-				for (int j = 0; j < EMOTION_ICON_COUNT; j++)
-				{
-					if (AL_EmoteIconRequirement(chao, j))
-					{
-						Uint32 color = *(Uint32*)(((int)chao->twp) + 0x6EC + 0x14);
-						emoIcon[0].col = color;
-						emoIcon[1].col = color;
-						emoIcon[2].col = color;
-						emoIcon[3].col = color;
-						njSetTextureNum(j + 21);
+				njSetTexture(texlist_emotion_indicator);
 
-						njDrawTexture3DExSetData(emoIcon, 4);
-						njTranslate(NULL, 0, -2.5f, 0);
+				njTranslateEx(&pos);
+				njTranslate(NULL, 3, 2.5f, 0);
+
+				njScale(NULL, 1, -1, 1);
+
+				for (int j = 0; j < EMOTION_ICON_COUNT; j++) {
+					if (!AL_EmoteIconRequirement(chao, j)) {
+						continue;
 					}
+
+					Uint32 color = *(Uint32*)(((int)chao->twp) + 0x6EC + 0x14);
+					emoIcon[0].col = color;
+					emoIcon[1].col = color;
+					emoIcon[2].col = color;
+					emoIcon[3].col = color;
+
+					njSetTextureNum(j);
+
+					njDrawTexture3DExSetData(emoIcon, 4);
+					njTranslate(NULL, 0, -2.5f, 0);
 				}
 				njPopMatrixEx();
 			}
 		}
 	}
+
 	if (tp->twp->mode == 1)
 	{
 		*(char*)0x25EFFCC = 0;
@@ -413,9 +425,34 @@ void AL_NameDisplay_Main(task* tp)
 	}
 }
 
+static void AL_NameDisplayDestructor (task* tp) {
+	if (texlist_emotion_indicator) {
+		njReleaseTexture(texlist_emotion_indicator);
+		FREE(texlist_emotion_indicator);
+
+		texlist_emotion_indicator = NULL;
+	}
+
+	if (texlist_time_edit) {
+		njReleaseTexture(texlist_time_edit);
+		FREE(texlist_time_edit);
+
+		texlist_time_edit = NULL;
+	}
+}
+
 task* AL_NameDisplayCreate() {
 	task* p = CreateElementalTask(IM_TWK, LEV_2, AL_NameDisplay_Main, "AL_NameDisplay");
 	p->disp_last = AL_NameDisplayer;
+	p->dest = AL_NameDisplayDestructor;
+
+	if (gConfigVal.EmotionDisplay) {
+		texlist_emotion_indicator = texCreateTexlist("CWE_EMOTION_INDICATOR");
+	}
+
+	if (gConfigVal.DayNightCheat) {
+		texlist_time_edit = texCreateTexlist("CWE_TIME_EDIT");
+	}
 
 	return p;
 }

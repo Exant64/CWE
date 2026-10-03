@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "al_sandhole.h"
 #include "ChaoMain.h"
-#include "data/toy/NeutralSandCastleModel.h"
-#include "data/toy/SandHoleModel.h"
+
+#include <njdef.h>
+#include <data/toy/alo_sandcastle_n.nja>
+#include <data/toy/alo_sand.nja>
 
 ASM_FUNC void DoLighting(int a1) {
 	// arguments
@@ -16,8 +18,8 @@ ASM_FUNC void DoLighting(int a1) {
 }
 
 static NJS_CNK_OBJECT* object_sandpit[] = {
-	&object_8D65212E6E079DB20DD,
-	& object_8D6521312A3FB5E8953
+	object_alo_sand,
+	object_alo_sandcastle_n
 };
 
 static void ALO_SandHoleDisplayer(task *tp) {
@@ -31,7 +33,7 @@ static void ALO_SandHoleDisplayer(task *tp) {
 	float scl = scale_sandpit[tp->twp->btimer];
 	njScale(NULL, scl, scl, scl);
 
-	njSetTexture(&AL_SANDHOLE_TEXLIST);
+	njSetTexture(texlist_cwe_sandcastle);
 	chCnkDrawObject(object_sandpit[tp->twp->btimer]);
 
 	njPopMatrixEx();

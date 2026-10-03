@@ -141,8 +141,8 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 		bbi.TexNum = 1;
 	}
 	else {
-		bbi.pTexlist = &CWE_UI_TEXLIST;
-		bbi.TexNum = 35;
+		bbi.pTexlist = texlist_cwe_name;
+		bbi.TexNum = 0;
 	}
 
 	bbi.adjust = 1;
