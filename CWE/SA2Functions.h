@@ -65,7 +65,7 @@ ObjectFunc(DrawLine3DExec, 0x44B680);
 FunctionPointer(int, Get_dword_1A559C8, (), 0x44BFE0);
 FunctionPointer(double, MaybeThisIsDeltaTimeOrSomething, (), 0x44C1A0);
 FastcallFunctionPointer(signed int, texLoadTexturePvmFile, (char *filename, NJS_TEXLIST *texlist), 0x44C350);
-ThiscallFunctionPointer(NJS_TEXLIST *, texCreateTexlist, (char *filename), 0x44C510);
+ThiscallFunctionPointer(NJS_TEXLIST *, texCreateTexlist, (const char* filename), 0x44C510);
 FunctionPointer(int, SetupGameplayVariables, (), 0x44C8F0);
 FunctionPointer(int, GetHandicapThingMaybe, (int id), 0x44CBA0);
 ObjectFunc(DispTechniqueScore_Main, 0x44D320);

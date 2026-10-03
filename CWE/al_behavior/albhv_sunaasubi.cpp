@@ -6,7 +6,10 @@
 #include "../al_sandhole.h"
 #include <playsound.h>
 #include <al_parts.h>
-#include "../data/toy/alo_pail.nja"
+
+#include "al_draw.h"
+#include <njdef.h>
+#include <data/toy/alo_pail.nja>
 
 signed int __cdecl ALBHV_SandHole(task* a1)
 {
@@ -18,7 +21,7 @@ signed int __cdecl ALBHV_SandHole(task* a1)
 		*(int*)0x12F5954 = (int)0x012FDE44;
 		AL_SetItemOffset(a1, 0x12F5954, 11);
 
-		AL_SetItem(a1, 0, &alo_bucket, texlist_cwe_object);
+		AL_SetItem(a1, AL_PART_ROOT, object_alo_pail, texlist_cwe_sandcastle);
 		
 		GET_CHAOWK(a1)->Behavior.Mode++;
 		GET_CHAOWK(a1)->Behavior.Timer = (int)(180 + (njRandom() * 121.f));

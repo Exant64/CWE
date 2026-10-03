@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FunctionHook.h"
 #include "al_world.h"
 
 #include <vector>
@@ -40,6 +41,8 @@
 #include <api/api_accessory.h>
 
 #include <renderfix.h>
+
+static NJS_TEXLIST* texlist_cwe_market = NULL;
 
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
@@ -1094,34 +1097,34 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 #pragma warning( disable: 4838 )
 #endif
 NJS_TEXANIM BuyListBasePanel[] = {
-	{42 / 2,34 / 2,  0,0, 0,0, 42,             34,		12, NJD_SPRITE_ALPHA},//top left
-	{20 / 2, 1,    0,0, 0,34,20,             34,		12, NJD_SPRITE_ALPHA},//middle left
-	{42 / 2,34 / 2,  0,0, 0,53,42,             53 + 37,	12, NJD_SPRITE_ALPHA},//bottom left
-	{46 / 2,37 / 2,  0,0, 70 + 1,55,70 + 46,       55 + 37, 12, NJD_SPRITE_ALPHA},//bottom right
-	{46 / 2,1,     0,0, 70 + 1,56,70 + (46 / 2),	   56,		12, NJD_SPRITE_ALPHA},//middle right
-	{22 / 2,1,     0,0, 70,17,70 + 22,       17,		12, NJD_SPRITE_ALPHA},//scroll space
-	{18 / 2,57 / 2,  0,0, 132,12,132 + 18,     12 + 57,	12, NJD_SPRITE_ALPHA},//scroll wheel
+	{42 / 2,34 / 2,  0,0, 0,0, 42,             34,		0, NJD_SPRITE_ALPHA},//top left
+	{20 / 2, 1,    0,0, 0,34,20,             34,		0, NJD_SPRITE_ALPHA},//middle left
+	{42 / 2,34 / 2,  0,0, 0,53,42,             53 + 37,	0, NJD_SPRITE_ALPHA},//bottom left
+	{46 / 2,37 / 2,  0,0, 70 + 1,55,70 + 46,       55 + 37, 0, NJD_SPRITE_ALPHA},//bottom right
+	{46 / 2,1,     0,0, 70 + 1,56,70 + (46 / 2),	   56,		0, NJD_SPRITE_ALPHA},//middle right
+	{22 / 2,1,     0,0, 70,17,70 + 22,       17,		0, NJD_SPRITE_ALPHA},//scroll space
+	{18 / 2,57 / 2,  0,0, 132,12,132 + 18,     12 + 57,	0, NJD_SPRITE_ALPHA},//scroll wheel
 
-	{1,20 / 2,   0,0, 41,0,41,			   20,		12, NJD_SPRITE_ALPHA},//middle top 
-	{1,18 / 2,   0,0, 41,0,41,			   20,		12, NJD_SPRITE_ALPHA},//middle bottom
+	{1,20 / 2,   0,0, 41,0,41,			   20,		0, NJD_SPRITE_ALPHA},//middle top 
+	{1,18 / 2,   0,0, 41,0,41,			   20,		0, NJD_SPRITE_ALPHA},//middle bottom
 
 	//tabs (9)
-	{49 / 1.5f,40 / 1.5f,   0,0, 148,212,198,			   255,		12, NJD_SPRITE_ALPHA},//L tab
-	{53 / 1.5f,40 / 1.5f,   0,0, 205,212,255,			255,		12, NJD_SPRITE_ALPHA},//R tab
-	{118 / 2.15f,49 / 2,   0,0, 0,154,118,			154 + 49,		12, NJD_SPRITE_ALPHA},//inactive tab
-	{118 / 2.15f,49 / 2,   0,0, 0,213,118,		213 + 43,		12, NJD_SPRITE_ALPHA},//active tab
+	{49 / 1.5f,40 / 1.5f,   0,0, 148,212,198,			   255,		0, NJD_SPRITE_ALPHA},//L tab
+	{53 / 1.5f,40 / 1.5f,   0,0, 205,212,255,			255,		0, NJD_SPRITE_ALPHA},//R tab
+	{118 / 2.15f,49 / 2,   0,0, 0,154,118,			154 + 49,		0, NJD_SPRITE_ALPHA},//inactive tab
+	{118 / 2.15f,49 / 2,   0,0, 0,213,118,		213 + 43,		0, NJD_SPRITE_ALPHA},//active tab
 
-	{17 / 2, 15 / 2,  0,0,	185,162, 201,176, 12, NJD_SPRITE_ALPHA},//top right corner sprite
-	{17 / 2, 15 / 2,  0,0,	185,178, 201,192, 12, NJD_SPRITE_ALPHA},//bottom right corner sprite
+	{17 / 2, 15 / 2,  0,0,	185,162, 201,176, 0, NJD_SPRITE_ALPHA},//top right corner sprite
+	{17 / 2, 15 / 2,  0,0,	185,178, 201,192, 0, NJD_SPRITE_ALPHA},//bottom right corner sprite
 
-	{118 / 2.15f,49 / 2,   0,0, 0,99,118,		99 + 46,		12, NJD_SPRITE_ALPHA},//not available tab
+	{118 / 2.15f,49 / 2,   0,0, 0,99,118,		99 + 46,		0, NJD_SPRITE_ALPHA},//not available tab
 
-	{118 / 2,49 / 2,   0,0, 0,0,256,			256,		12, NJD_SPRITE_ALPHA},//tab icon
+	{42 / 2,42 / 2,   0,0, 0,0,256,			256,		1, NJD_SPRITE_ALPHA},//tab icon
 
-	{22 / 2,2,     0,0, 70,10,70 + 22,       11,		12, NJD_SPRITE_ALPHA},//scroll space top
-	{22 / 2,2,     0,0, 70,29,70 + 22,       30,		12, NJD_SPRITE_ALPHA},//scroll space bottom
+	{22 / 2,2,     0,0, 70,10,70 + 22,       11,		0, NJD_SPRITE_ALPHA},//scroll space top
+	{22 / 2,2,     0,0, 70,29,70 + 22,       30,		0, NJD_SPRITE_ALPHA},//scroll space bottom
 };
-NJS_SPRITE BuyListPanel = { {},1,1,0,&CWE_UI_TEXLIST, (NJS_TEXANIM*)BuyListBasePanel };
+NJS_SPRITE BuyListPanel = { {},1,1,0, texlist_cwe_market, BuyListBasePanel };
 
 //ChaoHudThing kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (121 / 256.0f) * 4096.0f,(127 / 256.0f) * 4096.0f,(192 / 256.0f) * 4096.0f,	(192 / 256.0f) * 4096.0f };
 const SAlgKinderOrthoQuad kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (120 / 256.0f) * 4096.0f,(120 / 256.0f) * 4096.0f,(197 / 256.0f) * 4096.0f,	(197 / 256.0f) * 4096.0f };
@@ -1257,12 +1260,18 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 	BuyListPanel.p = { basePosX + BuyListBasePanel[9].sx + 4.5f, basePosY - BuyListBasePanel[9].sy + 4.5f };
 	BuyListPanel.sx = 1;
 	BuyListPanel.sy = 1;
-	//tabs
-	for (int i = 0; i < 4; i++)
-	{
-		BuyListPanel.p.x = basePosX + BuyListBasePanel[9].sx + 4.5f + (BuyListBasePanel[11].sx * i);
-		if (i + (a1->currentTab / 4) * 4 >= MarketTabCount)
+
+	// tabs
+	for (int i = 0; i < 4; i++) {
+		const int tabIndex = i + (a1->currentTab / 4) * 4;
+
+		if (tabIndex >= MarketTabCount) {
 			break;
+		}
+
+		const float py = BuyListPanel.p.y;
+
+		BuyListPanel.p.x = basePosX + BuyListBasePanel[9].sx + 4.5f + (BuyListBasePanel[11].sx * i);
 
 		if (cweSaveFile.marketInventoryCount[MarketTabIndices[i + (a1->currentTab / 4) * 4]] == 0) 
 			njDrawSprite2D(&BuyListPanel, 15, -1, NJD_SPRITE_ALPHA); //empty tab
@@ -1271,10 +1280,19 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 		else
 			njDrawSprite2D(&BuyListPanel, 11, -1, NJD_SPRITE_ALPHA); //not selected
 
-		BuyListBasePanel[16].texid = 13 + (i + (a1->currentTab / 4) * 4);
+		const float uvOffset = 256.f / float(MarketTabIndices.size());
+		BuyListBasePanel[16].u1 = 2 + Sint16(tabIndex * uvOffset);
+		BuyListBasePanel[16].u2 = BuyListBasePanel[16].u1 + Sint16(uvOffset) - 2;
+
+		BuyListPanel.p.x += BuyListBasePanel[11].sx / 2.f;
+		BuyListPanel.p.x -= BuyListBasePanel[16].sx / 2.f;
+		BuyListPanel.p.y += 3;
 		BuyListPanel.p.x -= 2;
 		njDrawSprite2D(&BuyListPanel, 16, -1, NJD_SPRITE_ALPHA);
+
+		BuyListPanel.p.y = py;
 	}
+
 	FBuyListDispText(a1);
 	FBuyListItemDisp(a1);
 }
@@ -1420,13 +1438,13 @@ void DrawTimer()
 {
 	sub_781CB0(1);
 	float uibuff[10];
-	njSetTexture((NJS_TEXLIST*)&CWE_UI_TEXLIST);
+	njSetTexture(texlist_cwe_market);
 	//sub_781CB0(1);
 	*(int*)0x1A54FF0 = 0xFFFFFFFF;
 
 	const float posX = 50;
 	const float posY = 115;
-	njSetTextureNum(20, 0, 0, 0);
+	njSetTextureNum(2, 0, 0, 0);
 	SomeUI* a2 = (SomeUI*)uibuff;
 	a2->left = posX;
 	a2->right = posX + 32;
@@ -1688,7 +1706,7 @@ void DrawPurchasedItem() {
 		}
 
 		const float size = 32;
-		const CHS_BILL_INFO hud = { 1,size,size,0,0,1,1,&CWE_UI_TEXLIST, 27 };
+		const CHS_BILL_INFO hud = { 1,size,size,0,0,1,1, texlist_cwe_ui_common, 0 };
 
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
 			SetShaderType(1);
@@ -2347,9 +2365,35 @@ static void SellHeldItem() {
 
 	AL_ClearHoldingItemInfo();
 }
+
+static FunctionHook<void, BlackMarketData*> BlackMarketExec_t(0x58B5E0);
+static void BlackMarketExec_r(BlackMarketData* a1) {
+	if(!a1->mMode) {
+		texlist_cwe_market = texCreateTexlist("CWE_MARKET");
+		BuyListPanel.tlist = texlist_cwe_market;
+	}
+
+	BlackMarketExec_t.Original(a1);
+}
+
+static FunctionHook<void, task*> BlackMarketFree_t(0x58BF60);
+static void BlackMarketFree_r(task* a1) {
+	if(texlist_cwe_market) {
+		njReleaseTexture(texlist_cwe_market);
+		FREE(texlist_cwe_market);
+
+		texlist_cwe_market = NULL;
+	}
+
+	BlackMarketFree_t.Original(a1);
+}
+
 float NewInvDisplayPosX = 230; //384 = original
-void alg_kinder_bl_Init()
-{
+void alg_kinder_bl_Init() {
+	// texture load and free hooks
+	BlackMarketExec_t.Hook(BlackMarketExec_r);
+	BlackMarketFree_t.Hook(BlackMarketFree_r);
+
 	RareFruitMarket.push_back({ ChaoFruit_Mushroom, 70 });
 
 	WriteData((float**)0x0058B67F, &NewInvDisplayPosX);

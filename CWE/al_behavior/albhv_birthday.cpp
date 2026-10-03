@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..//SA2ModLoader.h"
+#include "al_draw.h"
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
@@ -10,8 +10,9 @@
 #include "..//AL_ModAPI.h"
 #include "al_intention.h"
 #include "../ChaoMain.h"
-#include "../data/cwe/object_common_cnk/CakeTest.h"
 #include <al_parts.h>
+#include <njdef.h>
+#include <data/toy/alo_birthday_cake.nja>
 #include "../data/accessory/ala_birthdayhat.nja"
 
 task* pBirthdayChao;
@@ -26,11 +27,10 @@ int ALBHV_Birthday(task* a1)
 		AL_SetMotionLink(a1, 170);
 		AL_FaceChangeEye(a1, ChaoEyes_ClosedHappy);
 		AL_FaceChangeMouth(a1, ChaoMouth_ClosedSmile);
+		
+		AL_SetItem(a1, AL_PART_TONGUE_POS, object_alo_birthday_cake, texlist_birthday_cake);
+		AL_SetItem(a1, AL_PART_HEAD, &hat_main, texlist_birthday_hat);
 
-		sub_5669B0(a1, (int)&object_cake, 28);
-		GET_CHAOWK(a1)->Shape.CurrObjectList[28]->pItemTexlist = &AL_SANDHOLE_TEXLIST;
-		sub_5669B0(a1, (int)&hat_main, 16);
-		GET_CHAOWK(a1)->Shape.CurrObjectList[16]->pItemTexlist = &BIRTHDAYHAT_TEXLIST;
 		GET_CHAOWK(pBirthdayChao)->Behavior.FreeWork = 0;
 		wk->Behavior.Mode = 1;
 		break;

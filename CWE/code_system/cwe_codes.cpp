@@ -70,28 +70,6 @@ void CWE_Codes_OnFrame() {
 				g_HelperFunctions->SetDebugFontSize(12);
 			}
 		}
-
-		if (CWE_UI_TEXLIST.textures[0].texaddr) {
-			if (CWE_UI_TEXLIST.nbTexture < 33 || !CWE_UI_TEXLIST.textures[26].texaddr) {
-				g_HelperFunctions->SetDebugFontColor(0xFF00FF00); //ARGB
-				g_HelperFunctions->SetDebugFontSize(12);
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 3), "CWE_UI was replaced by another mod with outdated textures");
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 4), "This might cause crashes, beware");
-				g_HelperFunctions->SetDebugFontSize(12);
-			}
-		}
-		
-		/*
-		if (al_mini_parts_tex_texlist.textures[0].texaddr) {
-			if (!al_mini_parts_tex_texlist.textures[200].texaddr) {
-				g_HelperFunctions->SetDebugFontColor(0xFF00FF00); //ARGB
-				g_HelperFunctions->SetDebugFontSize(12);
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 3), "al_mini_parts_tex was replaced by another mod without the CWE textures");
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 4), "This might cause crashes, beware");
-				g_HelperFunctions->SetDebugFontSize(12);
-			}
-		}
-		*/
 	}
 	if (ToyResetTimer) {
 		ToyResetTimer--;

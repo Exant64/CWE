@@ -109,6 +109,8 @@ static void ScrollingLogic(task* a1) {
 	}
 }
 
+static NJS_TEXLIST* texlist_cwe_odekake = NULL;
+
 static void AL_OdeScrollArrowExecutor(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
 		return;
@@ -137,23 +139,33 @@ static void AL_OdeScrollArrowDisplayer(task* tp) {
 	SetShaderType(1);
 	chSetBillboardColor(tp->twp->scl.z, 1, 1, 1);
 
-	static CHS_BILL_INFO UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
-	static CHS_BILL_INFO GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, &CWE_UI_TEXLIST, 34 };
-	static CHS_BILL_INFO DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, &CWE_UI_TEXLIST, 34 };
-	static CHS_BILL_INFO GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
+	static CHS_BILL_INFO UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, texlist_cwe_odekake, 0 };
+	static CHS_BILL_INFO GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, texlist_cwe_odekake, 0 };
+	static CHS_BILL_INFO DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, texlist_cwe_odekake, 0 };
+	static CHS_BILL_INFO GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, texlist_cwe_odekake, 0 };
 
 	float scl = tp->twp->scl.x;
 	chDrawBillboardSR(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
 	chDrawBillboardSR(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
 }
 
+static void AL_OdeScrollArrowDestructor (task* tp) {
+	njReleaseTexture(texlist_cwe_odekake);
+	FREE(texlist_cwe_odekake);
+
+	texlist_cwe_odekake = NULL;
+}
+
 static void AL_CreateOdeScrollArrow(task* pParent) {
 	task* tp = CreateChildTask(IM_TWK, AL_OdeScrollArrowExecutor, pParent);
 	tp->disp_dely = AL_OdeScrollArrowDisplayer;
+	tp->dest = AL_OdeScrollArrowDestructor;
 
 	tp->twp->scl.x = 0.0f;
 	tp->twp->scl.z = 1.0f;
 	
+	texlist_cwe_odekake = texCreateTexlist("CWE_ODEKAKE");
+
 	CreateTween(
 		tp,
 		EASE_OUT,

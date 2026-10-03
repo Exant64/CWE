@@ -4,6 +4,7 @@
 #define DROP_COUNT 1600
 
 struct RAIN_WORK {
+	NJS_TEXLIST* pTexlist;
 	Uint32 color;
 	Uint32 timer;
 	Uint32 timerLimit;
