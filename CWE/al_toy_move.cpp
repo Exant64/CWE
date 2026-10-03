@@ -90,7 +90,7 @@ void AL_Toy_Move_Update(task *tp) {
 			if (++toyMove->timer > 30) {
 				toyMove->timer = 0;
 				toyMove->smode = 0;
-				toyMove->mode = MD_STATIC;
+				toyMove->mode = MD_DYNAMIC;
 			}
 			break;
 
@@ -132,6 +132,7 @@ void AL_Toy_Move_Update(task *tp) {
 				CCL_Enable(tp, 1);
 
 				toyMove->smode++;
+				toyMove->timer = 0;
 			}
 
 			//water handler
