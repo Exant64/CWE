@@ -28,6 +28,8 @@ EXTERNLENS(CWE_LENS_JEWEL_PURPLE)
 EXTERNLENS(CWE_LENS_JEWEL_RED)
 EXTERNLENS(CWE_LENS_JEWEL_SILVER)
 
+extern NJS_TEXLIST* texlist_guest_indicator;
+
 extern NJS_TEXLIST* texlist_birthday_hat;
 extern NJS_TEXLIST* texlist_birthday_cake;
 
@@ -36,7 +38,6 @@ extern NJS_TEXLIST* texlist_cwe_name;
 extern NJS_TEXLIST* texlist_cwe_sandcastle;
 extern NJS_TEXLIST* texlist_cwe_ui_common;
 
-extern NJS_TEXLIST AL_ODE_GUEST_TEXLIST;
 extern NJS_TEXLIST* texlist_cwe_object;
 extern NJS_TEXLIST XL_BODY_TEXLIST;
 extern NJS_TEXLIST NAME_ODE_TEXLIST;

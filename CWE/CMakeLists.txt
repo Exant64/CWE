@@ -87,7 +87,6 @@ add_library(CWE SHARED
     al_name.cpp
     al_namedisplay.cpp
     al_odekake.cpp
-    al_ode_guest.cpp
     al_ode_guide.cpp
     al_ode_hikkoshi.cpp
     al_ode_joycarry.cpp

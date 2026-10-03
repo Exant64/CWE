@@ -667,8 +667,8 @@ void GuestIndicatorDraw(task* tp) {
     njTranslate(NULL, 3, 2.5f, 0);
     njScale(NULL, 1, -1, 1);
     
-    njSetTexture(&AL_ODE_GUEST_TEXLIST);
-    njSetTextureNum(1);
+    njSetTexture(texlist_guest_indicator);
+    njSetTextureNum(0);
 
     njDrawTexture3DExSetData(tex, 4);
     njPopMatrixEx();

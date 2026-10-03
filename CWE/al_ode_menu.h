@@ -15,4 +15,3 @@ VoidFunc(AL_OdeMenuChangeStage, 0x57E680);
 extern CWE_API_ODEKAKE_ENTRY OdekakeCustomizationEntry;
 extern CWE_API_ODEKAKE_ENTRY OdakakeMoveEntry;
 extern CWE_API_ODEKAKE_ENTRY OdekakeNameEntry;
-extern CWE_API_ODEKAKE_ENTRY OdekakeGuestEntry;

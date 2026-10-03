@@ -20,17 +20,17 @@ NJS_TEXLIST OMO_EYE_TEXLIST = { OMO_EYE_TEXNAME, 11 };
 NJS_TEXNAME NAME_ODE_TEXNAME[2];
 NJS_TEXLIST NAME_ODE_TEXLIST = { NAME_ODE_TEXNAME, 2 };
 
-NJS_TEXNAME AL_ODE_GUEST_TEXNAME[3];
-NJS_TEXLIST AL_ODE_GUEST_TEXLIST = { AL_ODE_GUEST_TEXNAME, 3 };
-
 NJS_TEXNAME XL_BODY_TEXNAME[143];
 NJS_TEXLIST XL_BODY_TEXLIST = { XL_BODY_TEXNAME, 143 };
 
 NJS_TEXNAME texname_animal_inv[2];
 NJS_TEXLIST texlist_animal_inv = { texname_animal_inv, _countof(texname_animal_inv) };
 
+NJS_TEXLIST* texlist_guest_indicator;
+
 NJS_TEXLIST* texlist_birthday_hat;
 NJS_TEXLIST* texlist_birthday_cake;
+
 NJS_TEXLIST* texlist_cwe_name;
 NJS_TEXLIST* texlist_cwe_sandcastle;
 NJS_TEXLIST* texlist_cwe_ui_common;
@@ -80,9 +80,12 @@ void CWE_RegisterTexlists(const CWE_REGAPI* cwe_api) {
 		texlist_cwe_sandcastle = pApiTexture->AddAutoTextureLoad("CWE_SANDCASTLE");
 	}
 
+	if (gConfigVal.GuestIndicator) {
+		texlist_guest_indicator = pApiTexture->AddAutoTextureLoad("GUEST_INDICATOR");
+	}
+
 	pApiTexture->AddChaoTexlistLoad("AL_ITEM", &AL_ITEM_TEXLIST);
 	pApiTexture->AddChaoTexlistLoad("NAME_ODE", &NAME_ODE_TEXLIST);
-	pApiTexture->AddChaoTexlistLoad("al_ode_guest", &AL_ODE_GUEST_TEXLIST);	
 	pApiTexture->AddChaoTexlistLoad("AL_DRAWING", &AL_DRAWING_TEXLIST);
 	pApiTexture->AddChaoTexlistLoad("OMO_EYE", &OMO_EYE_TEXLIST);
 	pApiTexture->AddChaoTexlistLoad("XL_BODY", &XL_BODY_TEXLIST);
