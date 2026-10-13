@@ -23,10 +23,11 @@
 #include "codes/include/code_racefair.h"
 #include "codes/include/code_disablebreed.h"
 #include "codes/include/code_canthatecharacters.h"
+#include "codes/include/code_quickexit.h"
 
-#include "codes/include/bonus/code_mergeherodark.h"
+#include "codes/include/bonus/code_mergegardens.h"
 
-#include "codes/include/code_moreanger.h"
+#include "codes/include/code_negativeemotions.h"
 
 #include "codes/include/code_racecam_switch.h"
 #include "codes/include/code_multisave.h"
@@ -45,6 +46,7 @@
 #include <code_system/codes/include/cheat/code_levellimit.h>
 #include <code_system/codes/include/bonus/code_babychaolevel.h>
 #include <code_system/codes/include/advanced/code_gc_shinyjewel.h>
+#include <code_system/codes/include/advanced/code_chaosface.h>
 
 #include <code_system/codes/include/easy/code_disable_reincarnation.h>
 
@@ -57,7 +59,7 @@ void CWE_Codes_OnFrame() {
 		c->OnFrame();
 	}
 
-	if (CurrentLevel == 90) {
+	if (ssStageNumber == 90) {
 		//if the texlist is loaded at all
 		if (texlist_cwe_object && texlist_cwe_object->textures[0].texaddr) {
 			if (texlist_cwe_object->nbTexture < 67 || !texlist_cwe_object->textures[62].texaddr) {
@@ -68,28 +70,6 @@ void CWE_Codes_OnFrame() {
 				g_HelperFunctions->SetDebugFontSize(12);
 			}
 		}
-
-		if (CWE_UI_TEXLIST.textures[0].texaddr) {
-			if (CWE_UI_TEXLIST.nbTexture < 33 || !CWE_UI_TEXLIST.textures[26].texaddr) {
-				g_HelperFunctions->SetDebugFontColor(0xFF00FF00); //ARGB
-				g_HelperFunctions->SetDebugFontSize(12);
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 3), "CWE_UI was replaced by another mod with outdated textures");
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 4), "This might cause crashes, beware");
-				g_HelperFunctions->SetDebugFontSize(12);
-			}
-		}
-		
-		/*
-		if (al_mini_parts_tex_texlist.textures[0].texaddr) {
-			if (!al_mini_parts_tex_texlist.textures[200].texaddr) {
-				g_HelperFunctions->SetDebugFontColor(0xFF00FF00); //ARGB
-				g_HelperFunctions->SetDebugFontSize(12);
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 3), "al_mini_parts_tex was replaced by another mod without the CWE textures");
-				g_HelperFunctions->DisplayDebugString(NJM_LOCATION(0, 4), "This might cause crashes, beware");
-				g_HelperFunctions->SetDebugFontSize(12);
-			}
-		}
-		*/
 	}
 	if (ToyResetTimer) {
 		ToyResetTimer--;
@@ -114,7 +94,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	//i havent quite figured out yet how to handle this
 	CodeManager::Init(config);
 	
-	CodeManager::Instance().Add<EggColor>("EggColor", true);
+	CodeManager::Instance().Add<EggColorCode>("EggColor", true);
 	CodeManager::Instance().Add<PlayerSpeed>("PlayerSpeed", true);
 	CodeManager::Instance().Add<BirthdayParty>("BirthdayEvent", true);
 	CodeManager::Instance().Add<GardenLimit>("GardenLimit", 8, -1);
@@ -122,7 +102,7 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<MonsterEvo>("EnableMonsterEvolution", 0, 0);
 	CodeManager::Instance().Add<ChaoSick>("ChaoSick", 0, 0);
 
-	CodeManager::Instance().Add<MoreAnger>("Hard", "MoreAnger", false);
+	CodeManager::Instance().Add<NegativeEmotions>("Hard", "MoreAnger", false);
 	CodeManager::Instance().Add<DisableBreed>("DisableBreed", false);
 	CodeManager::Instance().Add<ChaoHunger>("ChaoHunger", false);
 	CodeManager::Instance().Add<ChaoDrown>("ChaoDrown", false);
@@ -131,8 +111,9 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<AnimalReuse>("Easy","AnimalReuse", false);
 	CodeManager::Instance().Add<DisableReincarnation>("Easy", "DisableReincarnation", false);
 	CodeManager::Instance().Add<CantHateCharacters>("EasyChaocan'thateCharacters", false);
-	CodeManager::Instance().Add<MergeHeroDark>("BonusMergeHeroandDarkGardenChaoSlots", false);
+	CodeManager::Instance().Add<MergeGardens>("MergeGardenSlots", 0, 0);
 
+	CodeManager::Instance().Add<QuickExit>("Misc", "QuickExit", true);
 	CodeManager::Instance().Add<DCCocoon>("DCCocoon", false);
 	CodeManager::Instance().Add<DisableLevelupJingle>("DisableLevelupJingle", false);
 	CodeManager::Instance().Add<HDToyModels>("HDToyModels", false);
@@ -144,6 +125,8 @@ void CWE_Codes_Init(const char* path, const IniFile* config) {
 	CodeManager::Instance().Add<PartyRace>("RaceJewelandBeginnerRacebecome8PPartyRace", false);
 	CodeManager::Instance().Add<InstantGrowTrees>("EasyInstantGrowTrees", false);
 	CodeManager::Instance().Add<SpoiledFruits>("AdvancedFruitscanSpoilt", false);
+	CodeManager::Instance().Add<ChaosEyes>("ChaosEyes", 0, 0);
+	CodeManager::Instance().Add<ChaosMouths>("ChaosMouths", 0, 0);
 	CodeManager::Instance().Add<BetterCameraControl>("CameraControl", 0, 0);
 
 	//lst ports

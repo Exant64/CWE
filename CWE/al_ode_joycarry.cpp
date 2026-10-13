@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "ninja_functions.h"
-#include "ALifeSDK_Functions.h"
+
 NJS_TEXNAME JOBJ_TEXNAMES[32];
 NJS_TEXLIST JOBJ_TEXLIST = {JOBJ_TEXNAMES, 32};
 
@@ -34,18 +34,18 @@ const char* JoyCarryFiles[] =
 	"Clock3"
 };
 
-NJS_OBJECT* JoyCarryModels[32];
+NJS_CNK_OBJECT* JoyCarryModels[32];
 
 void JoyCarry_Display(task* a1)
 {
-	SetShaders(1);
+	SetShaderType(1);
 	njPushMatrixEx();
 	njTranslate(NULL, 0, 7, 0);
 	njSetTexture(&JOBJ_TEXLIST);
 	for (int i = 0; i < 25; i++)
 		if (JoyCarryModels[i])
 			chCnkDrawObject(JoyCarryModels[i]);
-		else PrintDebug("%d \n", i);
+		else ___OutputDebugString("%d \n", i);
 	njPopMatrixEx();
 }
 void JoyCarry_Main(task *a1){}
@@ -58,6 +58,6 @@ void JoyCarry_Init()
 		//ModelInfo* info = new ModelInfo(str.c_str());
 		//JoyCarryModels[i] = info->getmodel();
 	}
-	LoadTextureList((char*)"JOYobj", &JOBJ_TEXLIST);
-	CreateElementalTask(5, "JoyCarryTest", JoyCarry_Main, LoadObj_Data1)->disp = JoyCarry_Display;
+	texLoadTexturePvmFile((char*)"JOYobj", &JOBJ_TEXLIST);
+	CreateElementalTask(IM_TWK, LEV_5, JoyCarry_Main, "JoyCarryTest")->disp = JoyCarry_Display;
 }

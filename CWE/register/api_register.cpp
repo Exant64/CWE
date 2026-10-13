@@ -3,12 +3,26 @@
 #include <ChaoMain.h>
 #include <data/al_fonames.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
+
 #include <data/chaotree.nja>
 #include <data/cwe/object_common_cnk/ali_chaoseed.nja>
 #include <data/al_model/al_spartoi.nja>
-#pragma warning(pop)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 const char* TwotoneEggs[] = {
 	"Yellow twotone egg",
@@ -61,6 +75,8 @@ const char* JewelEggs[] = {
 
 void ThemeUnlockFunc(int ID)
 {
+	DataPointer(char, SonicLightShoesGot, 0x1DEB300);
+
 	if (ID)
 	{
 		if (ID == 1)
@@ -118,13 +134,13 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.ID = "cwe_chaotree",
 		.Flags = 0,
 
-		.FruitIDs = {SA2BFruit_ChaoFruit,SA2BFruit_ChaoFruit,SA2BFruit_ChaoFruit}
+		.FruitIDs = {ChaoFruit_ChaoFruit,ChaoFruit_ChaoFruit,ChaoFruit_ChaoFruit}
 	};
 	cwe_api->AddChaoTree(chao_tree_data, &chao_seed_attrib, "Chao Seed", "Grows a Chao Fruit tree.");
 	
 	//set all seeds to be rebuyable as it is in vanilla
 	for (int i = 0; i < 7; i++)
-		cwe_api->SetRebuyFlag(ChaoItemCategory_Seed, i, true);
+		cwe_api->SetRebuyFlag(ALW_CATEGORY_SEED, i, true);
 
 	ALAPI_RegisterFruit(cwe_api);
 	ALAPI_RegisterAccessory(cwe_api);
@@ -158,7 +174,7 @@ void ALAPI_Register(CWE_REGAPI* cwe_api) {
 		.pEvolveFunc = [](task* tp) {
 			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(tp);
 		
-			return pParam->type == ChaoType_Dark_Power && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
+			return pParam->type == TYPE_D_POWER && GET_CWEPARAM(tp)->EyeColor == SpartoiLensID;
 		},
 
 		.Flags = 0,

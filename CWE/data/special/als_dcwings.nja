@@ -14,4 +14,4 @@ Sint16 cnk_dcwings_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0x7F7F, 0xFF, 0x340
 
 NJS_CNK_MODEL cnk_dcwings = { cnk_dcwings_vtx, cnk_dcwings_poly, { 0, 0.2417492f, 0 }, 1.264904f };
 
-NJS_OBJECT object_als_dcwings = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_dcwings, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT object_als_dcwings = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_dcwings, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };

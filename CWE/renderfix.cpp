@@ -32,7 +32,7 @@ RenderFixBackwardsCompatibilityGuard::~RenderFixBackwardsCompatibilityGuard() {
 	RestoreRenderFixBackwardsCompatibilityAttr();
 }
 
-void RenderFixBackwardsCompatibilityDrawMotion(NJS_OBJECT* pObject, NJS_MOTION* pMotion, float frame) {
+void RenderFixBackwardsCompatibilityDrawMotion(NJS_CNK_OBJECT* pObject, NJS_MOTION* pMotion, float frame) {
 	if (!RenderFix_IsEnabled()) {
 		njCnkMotion(pObject, pMotion, frame);
 		return;
@@ -46,7 +46,7 @@ void RenderFixBackwardsCompatibilityDrawMotion(NJS_OBJECT* pObject, NJS_MOTION* 
 // initially, and it introduced an undisableable inaccuracy (using ambient material) that I didn't consider previously
 // so I switched it to simple draw model to fix fruits (hopefully didn't break anything existing)
 
-void RenderFixBackwardsCompatibilityDrawObject(NJS_OBJECT* pObject) {
+void RenderFixBackwardsCompatibilityDrawObject(NJS_CNK_OBJECT* pObject) {
 	if (!RenderFix_IsEnabled()) {
 		njCnkDrawObject(pObject);
 		return;
@@ -66,7 +66,7 @@ void RenderFixBackwardsCompatibilityDrawModel(NJS_CNK_MODEL* pModel) {
 	rfapi_core->pChunk->CnkSimpleDrawModel(pModel);
 }
 
-void rfCnkNormalDrawObject(NJS_OBJECT* pObject) {
+void rfCnkNormalDrawObject(NJS_CNK_OBJECT* pObject) {
 	assert(RenderFix_IsEnabled());
 
 	rfapi_core->pChunk->CnkTransformObject(pObject, rfapi_core->pChunk->CnkNormalDrawModel);

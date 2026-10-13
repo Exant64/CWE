@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "../ninja_functions.h"
 #include "alsbhv.h"
 #include <random>
@@ -12,60 +11,10 @@
 #include "al_intention.h"
 #include "albhv.h"
 
-struct FRUIT_INFO
-{
-	float growth;
-	float AimGrowth;
-	int SwingCounter;
-	NJS_POINT3 pos;
-	int angx;
-	int angy;
-};
-
-#pragma pack(push, 8)
-struct __declspec(align(4)) ALO_GrowTreeExecutor_Data
-{
-	taskwk entityData;
-	char kind;
-	char state;
-	__int16 field_32;
-	float growth;
-	int life;
-	int water;
-	int pos_num;
-	FRUIT_INFO fruit[3];
-	float scale;
-	float ScaleSpd;
-	int ThirstyFlag;
-	int WaterFlag;
-	int LeafRotAng;
-	float LeafWidth;
-	int LeafDispNum;
-	int FruitRotAng;
-	float FruitWidth;
-	int FruitDispNum;
-	int SwingFlag;
-	int SwingCountFlag;
-	float SwingDist;
-	int RollAngle;
-	int TouchAngle;
-	int ChaoSwingPhase;
-	int RollPhase;
-	int garden;
-	void* pMySaveInfo;
-	NJS_TEXLIST* texlist;
-	NJS_OBJECT* pLocalObject;
-	NJS_OBJECT* pShadowObject;
-	NJS_OBJECT* pCopyObject;
-};
-#pragma pack(pop)
-
-
 //FunctionPointer(al_perception_link*, AL_GetFoundTree, (task* a1), 0x073E660);
 int ALBHV_TreeShake(task* a1)
 {
 	chaowk* wk = GET_CHAOWK(a1);
-	ALO_GrowTreeExecutor_Data* treedata = nullptr;
 
 	switch (wk->Behavior.Mode)
 	{
@@ -98,8 +47,9 @@ int ALBHV_TreeShake(task* a1)
 				return BHV_RET_FINISH;
 
 			//maps -1 to 1 to 0-1
-			tree->EntityData2->speed.x = njSin(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
-			tree->EntityData2->speed.z = njCos(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
+			MOVE_WORK* move = (MOVE_WORK*)tree->mwp;
+			move->Acc.x = njSin(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
+			move->Acc.z = njCos(a1->twp->ang.y) * ((njSin(wk->Behavior.SubTimer) + 1) / 2.0f);
 			wk->Behavior.SubTimer += 1024 + 512;
 		}
 		break;
@@ -119,7 +69,7 @@ int ALBHV_GoToAimTree(task* tp) {
 	AL_BEHAVIOR* bhv = &work->Behavior;
 	int v2 = bhv->Mode;
 
-	((UnknownData2*)tp->EntityData2)->Waypoint.y = tp->twp->pos.y; //DISGUSTING hack
+	((MOVE_WORK*)tp->mwp)->AimPos.y = tp->twp->pos.y; //DISGUSTING hack
 
 	if (v2)
 	{

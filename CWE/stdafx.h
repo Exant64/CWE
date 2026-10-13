@@ -14,5 +14,8 @@
 #include <windows.h>
 
 #include <SA2ModLoader.h>
+#include <chaoenum.h>
+#include <cmath>
+#include <math.h>
 
 // reference additional headers your program requires here

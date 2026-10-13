@@ -16,14 +16,14 @@ void Parse(NJS_VECTOR& a, Value& d) {
 	a.z = d[2].GetFloat();
 }
 
-void Parse(SAlItem& a, Value& d) {
+void Parse(SAlItemCwe& a, Value& d) {
 	if (!d.HasMember("mCategory") ||
 		!d.HasMember("mType")) {
-		PrintDebug("SAlItem doesnt have correct members");
+		___OutputDebugString("SAlItem doesnt have correct members");
 		return;
 	}
 	a.mCategory = d["mCategory"].GetInt();
-	a.mType = d["mType"].GetInt();
+	a.mId = d["mType"].GetInt();
 }
 
 void Parse(ITEM_SAVE_INFO& a, Value& d) {
@@ -34,16 +34,16 @@ void Parse(ITEM_SAVE_INFO& a, Value& d) {
 		!d.HasMember("Type") || 
 		!d.HasMember("position"))
 		return;
-	a.Age = d["Age"].GetInt();
-	a.Garden = d["Garden"].GetInt();
-	Parse(a.position, d["Position"]);
-	a.Size = d["Size"].GetInt();
-	a.Type = d["Type"].GetInt();
+	a.nbVisit = d["Age"].GetInt();
+	a.place = d["Garden"].GetInt();
+	Parse(a.pos, d["Position"]);
+	a.status = d["Size"].GetInt();
+	a.kind = d["Type"].GetInt();
 }
 
-void Write(PrettyWriter<FileWriteStream>& d, SAlItem& a) {
+void Write(PrettyWriter<FileWriteStream>& d, SAlItemCwe& a) {
 	d.Key("mCategory");
 	d.Int(a.mCategory);
 	d.Key("mType");
-	d.Int(a.mType);
+	d.Int(a.mId);
 }

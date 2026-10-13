@@ -1,160 +1,143 @@
 #include "stdafx.h"
-#include "..\SA2ModLoader.h"
+#include "../SA2ModLoader.h"
 #include <al_save.h>
 #include <ChaoMain.h>
 #define CHAO_BASE (0x019F6EC4)
 #define CHAO_SLOT(a) (CHAO_BASE + a * 0x800)
 int Regs[16];
 
+void ChaoTranspiledMainCode(CHAO_SAVE_INFO& info) {
+	//reset upgradecounter on egg chao, maybe move to reincarnation later
+	if (info.param.type == 1) {
+		GET_CWEPARAM(&info)->UpgradeCounter = 0;
+	}
+
+	//x rank
+	//todo clean this up
+	uint8_t* pBytes = (uint8_t*)&info;
+	if (*(uint8_t*)(pBytes + 0x59e) == 0)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 1)
+	{
+		*(uint8_t*)(pBytes + 0x28) = 7;
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 2)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		*(uint8_t*)(pBytes + 0x29) = 7;
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 3)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		*(uint8_t*)(pBytes + 0x2a) = 6;
+		if (*(uint8_t*)(pBytes + 0x2b) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x2b) = 5;
+		}
+	}
+	else if (*(uint8_t*)(pBytes + 0x59e) == 4)
+	{
+		if (*(uint8_t*)(pBytes + 0x28) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x28) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x29) == 7)
+		{
+			*(uint8_t*)(pBytes + 0x29) = 5;
+		}
+		if (*(uint8_t*)(pBytes + 0x2a) == 6)
+		{
+			*(uint8_t*)(pBytes + 0x2a) = 5;
+		}
+		*(uint8_t*)(pBytes + 0x2b) = 7;
+	}
+
+	//x rank reincarnation stat cap
+	if (info.param.type == 1) //if chao is egg
+	{
+		GET_CWEPARAM(&info)->XGradeValue = 0;
+
+		int cap;
+		switch (info.param.nbSucceed) {
+		case 0:
+			cap = 0;
+			break;
+		case 1:
+			cap = 297;
+			break;
+		case 2:
+			cap = 323;
+			break;
+		default: // >= 3
+			cap = 326;
+			break;
+		}
+
+		if (cap > 0) {
+			for (int j = 0; j < 4; j++) {
+				if (info.param.Skill[j] > cap)
+					info.param.Skill[j] = cap;
+			}
+		}
+	}
+}
+
 void ChaoWorldExtendedRequired()
 {
+	CHAO_SAVE_INFO* ChaoSlots = GardenInfoList[0].chao;
+	
 	//fix this later to not be 24 for future proofing (function from symbols that "return 24")
-	if (CurrentLevel == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
+	if (ssStageNumber == 90) { //this line was added by me, i dont see a reason for all these checks to run otherwise
 		for (int i = 0; i < 24; i++) {
 			//REMOVED: shiny fruit value for FCE hack (FCE is not very common anymore)
-
-			//x rank
-			//todo clean this up
-			if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 0)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 1)
-			{
-				*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 7;
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 2)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 7;
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 3)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 6;
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2b) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 5;
-				}
-			}
-			else if (*(uint8_t*)(CHAO_SLOT(i) + 0x59e) == 4)
-			{
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x28) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x28) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x29) == 7)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x29) = 5;
-				}
-				if (*(uint8_t*)(CHAO_SLOT(i) + 0x2a) == 6)
-				{
-					*(uint8_t*)(CHAO_SLOT(i) + 0x2a) = 5;
-				}
-				*(uint8_t*)(CHAO_SLOT(i) + 0x2b) = 7;
-			}
-
-			//x rank reincarnation stat cap
-			if (ChaoSlots[i].data.type == 1) //if chao is egg
-			{
-				GET_CWEPARAM(&ChaoSlots[i])->XGradeValue = 0;
-
-				int cap;
-				switch (ChaoSlots[i].data.nbSucceed) {
-				case 0:
-					cap = 0;
-					break;
-				case 1:
-					cap = 297;
-					break;
-				case 2:
-					cap = 323;
-					break;
-				default: // >= 3
-					cap = 326;
-					break;
-				}
-
-				if (cap > 0) {
-					for (int j = 0; j < 4; j++) {
-						if (ChaoSlots[i].data.Skill[j] > cap)
-							ChaoSlots[i].data.Skill[j] = cap;
-					}
-				}
-			}
-
-			//cap emotions (im guessing emotions that get edited by lst)
-			if (ChaoSlots[i].data.Emotion.Dizziness > 200)
-			{
-				ChaoSlots[i].data.Emotion.Dizziness = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.Surprise > 200)
-			{
-				ChaoSlots[i].data.Emotion.Surprise = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.UrgeToCry > 200)
-			{
-				ChaoSlots[i].data.Emotion.UrgeToCry = 200;
-			}
-			if (ChaoSlots[i].data.Emotion.Anger > 200)
-			{
-				ChaoSlots[i].data.Emotion.Anger = 200;
-			}
-
-			//swim points
-			if (gConfigVal.EnergyCap && ChaoSlots[i].data.Skill[0] <= 99)
-			{
-				//cap energy at 5000 if the chao cant swim yet
-				if (ChaoSlots[i].data.Emotion.Energy > 5000)
-				{
-					ChaoSlots[i].data.Emotion.Energy = 5000;
-				}
-			}
+			ChaoTranspiledMainCode(ChaoSlots[i]);
 		}
 	}
 
@@ -169,19 +152,6 @@ void ChaoWorldExtendedRequired()
 				*(float*)0x013663D8 = 12;
 				*(float*)0x013663DC = -128;
 			}
-		}
-	}
-
-	//no clue
-	if (*(uint32_t*)0x01A529EC == 0x1860)
-	{
-		if (*(uint8_t*)0x01934be0 == 16)
-		{
-			*(uint8_t*)0x01934be0 = 14;
-		}
-		if (*(uint8_t*)0x01934be0 == 17)
-		{
-			*(uint8_t*)0x01934be0 = 14;
 		}
 	}
 
@@ -218,7 +188,7 @@ void ChaoWorldExtendedRequired()
 	//more inventory safe guard crap
 	bool saveFull = true;
 	for (int i = 0; i < 24; i++) {
-		if (ChaoSlots[i].data.type == 0)
+		if (ChaoSlots[i].param.type == 0)
 			saveFull = false;
 	}
 	if (saveFull) {
@@ -1202,9 +1172,9 @@ void ChaoWorldExtendedRequired()
 	}
 
 	//invincibility on maincharobj if chao world 
-	if (CurrentLevel == 90 && MainCharObj2[0])
+	if (ssStageNumber == 90 && playerpwp[0])
 	{
-		MainCharObj2[0]->Powerups = 1;
+		playerpwp[0]->item = 1;
 	}
 
 	//REMOVED: that weird Y pos check thing

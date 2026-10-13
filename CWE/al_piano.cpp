@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "al_piano.h"
-#include "ALifeSDK_Functions.h"
 #include "ChaoMain.h"
 #include "Chao.h"
 #include "al_toy_move.h"
@@ -27,7 +26,7 @@ bool __cdecl SetPianoWaypoint(task* a2, NJS_VECTOR* a1)
 
 void Piano_Display(task * a1)
 {
-	if (Scaletask_XYZ(a1, 5.2f, 4.5f, 2.9f)) 
+	if (AL_IsOnScreen3(a1, 5.2f, 4.5f, 2.9f)) 
 	{
 		njPushMatrixEx();
 		njSetTexture(&AL_TOY_TEXLIST);
@@ -54,7 +53,7 @@ void Piano_Display(task * a1)
 
 		LoadControl3D();
 
-		if (RenderFix_IsEnabled() && a1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&a1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && a1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{
 			njTranslate(NULL, 0, 0.4f, 0);
 
@@ -94,7 +93,7 @@ const std::array<const char*, 4> OrganSongs = {
 
 void Piano_Main(task * a1)
 {
-	if (ALO_Field_Find_(a1,0, CI_KIND_AL_PIANO))
+	if (AL_IsHitKindWithNum(a1,0, CI_KIND_AL_PIANO))
 	{
 		a1->twp->flag &= ~0x240u;
 
@@ -115,7 +114,7 @@ void Piano_Main(task * a1)
 					index = 0;
 				}
 				
-				PlayJingle(PianoSongs[index]);
+				Jingle_Play(PianoSongs[index]);
 				break;
 
 			case PIANOTYPE_ORGAN:
@@ -126,7 +125,7 @@ void Piano_Main(task * a1)
 					index = 0;
 				}
 
-				PlayJingle(OrganSongs[index]);
+				Jingle_Play(OrganSongs[index]);
 				break;
 			}
 		}
@@ -136,36 +135,38 @@ void Piano_Main(task * a1)
 		a1->twp->flag |= 0x240u;
 
 		if (a1->twp->mode)
-			ResetMusic();
+			BGM_Replay();
 		a1->twp->mode = 0;
 	}
 
 	AL_Toy_Move_Update(a1);
 
-	AddToCollisionList(a1);
+	CCL_Entry(a1);
 }
 
-CollisionData ALO_RadicaseExecutor_collision[] = {
-	{ 0, 3191, 32768, {  0.0,  1.0,  0.0 },  1.5,  0.0,  0.0, 0, 0, 0, 0 }
+static const CCL_INFO ALO_RadicaseExecutor_collision[] = {
+	{ 0, 0, 0x77, 0xC, 32768, { 0.0,  1.0,  0.0 },  1.5,  0.0,  0.0, 0, 0, 0, 0 }
 };
-void ALO_Piano_Init(task *a1)
-{
-	a1->exec = Piano_Main;
-	a1->dest = (task_exec)0x0057B9B0;
-	AL_Toy_Move_Register(a1, ALW_KIND_PIANO);
+
+void ALO_Piano_Init(task *tp) {
+	tp->exec = Piano_Main;
+	tp->dest = (task_exec)0x0057B9B0;
+
+	AL_Toy_Move_Register(tp, (tp->twp->btimer == PIANOTYPE_PIANO) ? ALW_KIND_PIANO : ALW_KIND_ORGAN);
 }
 
-void ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
+task* ALO_PianoCreate(int index, NJS_POINT3* pPos, Angle ang) {
 	task *piano;
 
-	piano = CreateElementalTask(4, "ALO_Piano", ALO_Piano_Init, LoadObj_Data1);
-	piano->dest = ALO_Delete;
+	piano = CreateElementalTask(IM_TWK, LEV_4, ALO_Piano_Init, "ALO_Piano");
+	piano->dest = ALW_CancelEntry;
 	piano->disp = Piano_Display;
 
 	piano->twp->btimer = index;
 	piano->twp->pos = *pPos;
 	piano->twp->ang.y = ang;
 
-	//InitCollision(piano, (CollisionData*)&ALO_RadicaseExecutor_collision, 2, 4);
-	AL_Toy_Move_Init(piano, (CCL_INFO*)ALO_RadicaseExecutor_collision);
+	AL_Toy_Move_Init(piano, ALO_RadicaseExecutor_collision, 1);
+
+	return piano;
 }

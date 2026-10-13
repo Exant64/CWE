@@ -34,27 +34,27 @@ void BlackMarketDebug(BlackMarketData *a1)
 		MD_SETINV
 	};
 
-	const float displayRatioY = VerticalResolution / 480.0f;
+	const float displayRatioY = DisplayResolutionY / 480.0f;
 	g_HelperFunctions->SetDebugFontSize(floorf(12 * displayRatioY));
 	g_HelperFunctions->SetDebugFontColor(0xFFFFFFFF);
 	
 	switch (mode)
 	{
 	case MD_IDLE:
-		if (MenuButtons_Held[0] & Buttons_X && MenuButtons_Held[0] & Buttons_Y) 
+		if (SWDATA[0] & BTN_X && SWDATA[0] & BTN_Y) 
 		{
 			selection = 0;
 			mode = MD_CATEGORY;
 		}
 		break;
 	case MD_CATEGORY:
-		if (MenuButtons_Pressed[0] & Buttons_Up) {
+		if (SWDATAE[0] & BTN_UP) {
 			selection--;
 		}
 		if (selection < 0) {
 			selection = 0;
 		}
-		if (MenuButtons_Pressed[0] & Buttons_Down) {
+		if (SWDATAE[0] & BTN_DOWN) {
 			selection++;
 		}
 		if (selection >= LengthOfArray(BMDebug)) {
@@ -70,30 +70,30 @@ void BlackMarketDebug(BlackMarketData *a1)
 				g_HelperFunctions->DisplayDebugString(i + 5 | 0x00150000, BMDebug[i]);
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_A && selection != 2 && CategoryAttribs[selection].Count > 0 && CategoryAttribs[selection].attrib) {
+		if (SWDATAE[0] & BTN_A && selection != 2 && CategoryAttribs[selection].Count > 0 && CategoryAttribs[selection].attrib) {
 			category = selection;
 			selection = 0;
 			mode = MD_ITEM;
 		}
-		if (MenuButtons_Pressed[0] & Buttons_B) {
+		if (SWDATAE[0] & BTN_B) {
 			mode = MD_IDLE;
 		}
 
-		MenuButtons_Pressed[0] = 0;
-		ControllerPointers[0]->on = 0;
-		ControllerPointers[0]->press = 0;
+		SWDATAE[0] = 0;
+		per[0]->on = 0;
+		per[0]->press = 0;
 		break;
 	case MD_ITEM:
-		if (MenuButtons_Pressed[0] & Buttons_Up) 
+		if (SWDATAE[0] & BTN_UP) 
 			selection--;
 		if (selection < 0)
 			selection = CategoryAttribs[category].Count - 1;
-		if (MenuButtons_Pressed[0] & Buttons_Down) 
+		if (SWDATAE[0] & BTN_DOWN) 
 			selection++;
 		if (selection >= CategoryAttribs[category].Count) 
 			selection = 0;
 
-		if (MenuButtons_Pressed[0] & Buttons_A) {
+		if (SWDATAE[0] & BTN_A) {
 			mode = MD_SETINV;
 		}
 
@@ -117,12 +117,12 @@ void BlackMarketDebug(BlackMarketData *a1)
 				g_HelperFunctions->DisplayDebugString(i + 5 | 0x00150000, "-----");
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_B)
+		if (SWDATAE[0] & BTN_B)
 			mode = MD_CATEGORY;
 
-		MenuButtons_Pressed[0] = 0;
-		ControllerPointers[0]->on = 0;
-		ControllerPointers[0]->press = 0;
+		SWDATAE[0] = 0;
+		per[0]->on = 0;
+		per[0]->press = 0;
 		break;
 	case MD_SETINV:
 		if (category == 9 && selection == 0) {
@@ -133,7 +133,7 @@ void BlackMarketDebug(BlackMarketData *a1)
 		cweSaveFile.marketInventoryCount[category] = 32;
 		for (int i = 0; i < 32; i++) {
 			cweSaveFile.marketInventory[category][i].mCategory = category;
-			cweSaveFile.marketInventory[category][i].mType = selection;
+			cweSaveFile.marketInventory[category][i].mId = selection;
 		}
 
 		mode = MD_IDLE;

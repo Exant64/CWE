@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "al_parameter.h"
+
+#include "asmutil.h"
 
 #include "alg_kinder_he.h"
 #include "al_odekake.h"
@@ -15,11 +18,11 @@
 // todo: move this maybe somewhere more appropriate
 std::vector<CWE_API_ODEKAKE_ENTRY> odekakeMenuEntries;
 
-static void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* a1) {
-	sub_5A6F50(a1);
+static void AL_OdekakeGoodbye(ODE_MENU_MASTER_WORK* pMaster) {
+	sub_5A6F50(pMaster);
 }
 
-static void AL_OdekakeMenuMaster_(task* a1) {
+static void AL_OdekakeMenuMaster_(task* tp) {
 	ODE_MENU_MASTER_WORK* pOde = AL_OdekakeMenuMaster_Data_ptr;
 	int stage = pOde->CurrStage;
 
@@ -42,6 +45,18 @@ static void AL_OdekakeMenuMaster_(task* a1) {
 }
 
 CHAO_PARAM_GC* GBAManager_GetChaoDataPointer() {
+	struct AL_GBAManagerExecutor_Data {
+		int field_0;
+		int field_4;
+		int field_8;
+		task *ObjectPtr;
+		char field_10[4228];
+		char gap_1094[12691];
+		char field_4227;
+	};
+
+	DataPointer(AL_GBAManagerExecutor_Data *, AL_GBAManagerExecutor_ptr, 0x1A5CB54);
+
 	if (!AL_GBAManagerExecutor_ptr) {
 		return nullptr;
 	}
@@ -52,12 +67,12 @@ CHAO_PARAM_GC* GBAManager_GetChaoDataPointer() {
 
 void sub_558BA0(int a1, int a2, int a3, float a4, float a5, float a6)
 {
-	DrawChaoHudThingB((ChaoHudThingB*)a3, a4, a5, a6, 1, 1, a2, a1);
+	chDrawBillboardSR((CHS_BILL_INFO*)a3, a4, a5, a6, 1, 1, a2, a1);
 }
 
-void NewBarDraw(task *a1)
+void NewBarDraw(task *tp)
 {
-	taskwk* v1 = a1->twp;
+	taskwk* v1 = tp->twp;
 	float a2 = *(float*)& v1->ang.x;
 	float a3 = *(float*)& v1->ang.y;
 	float  v11 = v1->pos.x;
@@ -65,23 +80,23 @@ void NewBarDraw(task *a1)
 	
 	if (v1->id == 0)
 	{
-		SetChaoHUDThingBColor(1, 0, 0.5f, 0.7f);
+		chSetBillboardColor(1, 0, 0.5f, 0.7f);
 	}
 	else 
 	{
-		SetChaoHUDThingBColor(odekakeMenuEntries[v1->id - 1].BarColorA, odekakeMenuEntries[v1->id - 1].BarColorR, odekakeMenuEntries[v1->id - 1].BarColorG, odekakeMenuEntries[v1->id - 1].BarColorB);
+		chSetBillboardColor(odekakeMenuEntries[v1->id - 1].BarColorA, odekakeMenuEntries[v1->id - 1].BarColorR, odekakeMenuEntries[v1->id - 1].BarColorG, odekakeMenuEntries[v1->id - 1].BarColorB);
 	}
 	float v12 = a2 - v11 * 18;
-	DrawChaoHudThingB(&stru_11BA528[28], a2, a3, -99.5f, 2, 0.74375004f, -1, 0);
+	chDrawBillboardSR(&stru_11BA528[28], a2, a3, -99.5f, 2, 0.74375004f, -1, 0);
 	a2 = *(float*)& v1->ang.x;
 	v11 = v1->pos.x;
 	a5 = v11 * 0.2f + 0.8f;
 	float a6 = a5 * 0.85f;
 	v12 = a2 - v11 * 18;
 	a3 = *(float*)& v1->ang.y;
-	DrawChaoHudThingB(&stru_11BA528[26], v12, a3, -99.5f, a6, a6, 0, 0);
+	chDrawBillboardSR(&stru_11BA528[26], v12, a3, -99.5f, a6, a6, 0, 0);
 
-	SetChaoHUDThingBColor(*(float*)& v1->ang.z, 1, 1, 1);
+	chSetBillboardColor(*(float*)& v1->ang.z, 1, 1, 1);
 	int v5 = 2 * (unsigned __int8)v1->id + 16;
 	int v7;
 	if (v5 != 16)
@@ -95,7 +110,7 @@ void NewBarDraw(task *a1)
 		sub_558BA0(0, 0, (int)&stru_11BA528[v5], v6, a3, -99);
 	}
 	v7 = 2 * (unsigned __int8)v1->id + 17;
-	SetChaoHUDThingBColor(1, 1, 1, 1);
+	chSetBillboardColor(1, 1, 1, 1);
 	if (v7 == 19)
 	{
 		v7 = 25;
@@ -103,19 +118,25 @@ void NewBarDraw(task *a1)
 	float a4 = a3;
 	float v15 = a2 + 32;
 	if(v7 == 17)
-		DrawChaoHudThingB(&stru_11BA528[v7], v15, a4, -99, 1, 1, -1, 0);
+		chDrawBillboardSR(&stru_11BA528[v7], v15, a4, -99, 1, 1, -1, 0);
 	else
-		DrawChaoHudThingB(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
+		chDrawBillboardSR(odekakeMenuEntries[v1->id - 1].BarText, v15, a4, -99, 1, 1, -1, 0);
 }
-ObjectFunc(sub_5ABA70, 0x5ABA70);
-void BarDraw(task* a1)
+FunctionPointer(void, sub_5ABA70, (task*), 0x5ABA70);
+void BarDraw(task* tp)
 {
-	sub_5ABA70(a1);
-	NewBarDraw(a1);
+	sub_5ABA70(tp);
+	NewBarDraw(tp);
+}
+
+static bool OdekakeGoodbyeCondition() {
+	CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
+
+	return pParam && !AL_ParameterIsGuest(pParam);
 }
 
 // todo: maybe move these somewhere more findable?
-static CWE_API_ODEKAKE_ENTRY OdekakeGoodbyeEntry = { AL_OdekakeGoodbye, nullptr, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[33],&stru_11BA528[10],&stru_11BA528[11],&stru_11BA528[24],&stru_11BA528[25], 1.0, 0.0, 0.7265625, 0.74609375 };
+static CWE_API_ODEKAKE_ENTRY OdekakeGoodbyeEntry = { AL_OdekakeGoodbye, OdekakeGoodbyeCondition, ODE_FLAGS_REQUIRE_CHAO, &stru_11BA528[33],&stru_11BA528[10],&stru_11BA528[11],&stru_11BA528[24],&stru_11BA528[25], 1.0, 0.0, 0.7265625, 0.74609375 };
 
 // the quit entry is basically dummied out (except for the button sprites), because the menu is hardcoded to exit on the last button, so no functionality is needed for it
 static CWE_API_ODEKAKE_ENTRY OdekakeQuitEntry = { nullptr, nullptr, ODE_FLAGS_NONE, &stru_11BA528[34],&stru_11BA528[12],&stru_11BA528[13],nullptr,nullptr };
@@ -126,41 +147,15 @@ void GoodbyeBar()
 	LargeTitleBarExecutor_Load(AL_OdekakeMenuMaster_Data_ptr->CurrStage, 650.0, 66.0);
 }
 
-const int sub_582F60Ptr = 0x582F60;
-void sub_582F60(char* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call sub_582F60Ptr
-	}
-}
+ASM_FUNC void sub_582F60(char* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
 
-void __cdecl sub_582F60_CheckGuest(char* a1)
-{
-	task* chaoPtr = *(task**)(&a1[0x1c]);
-	if (chaoPtr && GET_CHAOPARAM(chaoPtr)->field_19 == 1 && a1[0x50])
-	{
-		if(*(void**)(&a1[0x44]))
-			AlMsgWinAddLineC(*(KinderCoMessageThing**)(&a1[0x44]), "This is a Guest Chao.", TextLanguage == 0);
-		a1[0x50] = 0;
-		a1[0x51] = 2;
-	}
-	
-	sub_582F60(a1);
-}
-static void __declspec(naked) sub_582F60Hook()
-{
-	__asm
-	{
-		push eax // a1
+    // call
+    ASM_CALL_R( edx, 0x582F60 );
 
-		// Call your __cdecl function here:
-		call sub_582F60_CheckGuest
-
-		pop eax // a1
-		retn
-	}
+    // return
+    ASM_RET( 0 );
 }
 
 void AddOdekakeMenu(const CWE_API_ODEKAKE_ENTRY& entry) {
@@ -186,30 +181,40 @@ void AL_Odekake_Update() {
 	WriteData((char*)0x005A6D9C, (char)LastMenuButton); //exit
 }
 
-void AL_Odekake_Init()
-{
-	//name guest check
-	//WriteCall((void*)0x00583B2F, sub_582F60Hook);
+static void __fastcall AlMsgWarnAddLineC_Odekake_t(int msg) {
+	VoidFunc(sub_543860, 0x543860);
+
+	assert(AL_OdekakeMenuMaster_Data_ptr->cursorY < odekakeMenuEntries.size());
+
+	if (odekakeMenuEntries[AL_OdekakeMenuMaster_Data_ptr->cursorY].pConditionFunc) {
+		return;
+	}
+
+	AlMsgWarnAddLineC(0, msg);
+	sub_543860();
+}
+
+void AL_Odekake_Init() {
+	/* this disables the extra line after "Unable to select." on custom condition
+	   the nullsub_1 is to also remove the controller wait call after it (sub_543860())
+	   so that we're in control of it */
+	WriteCall((void*)0x005A6E6C, (void*)AlMsgWarnAddLineC_Odekake_t);
+	WriteCall((void*)0x005A6E71, (void*)nullsub_1);
 
 	// this kills... something? in ChaoSelectMenuManager?? im assuming some weird patch related to the move menu
 	WriteData<2>((char*)0x0055426D, (char)0x90);
 
 	//disable "X" being a back button in chao select menu
 	//X is used for the multisave selection in move menu
-	WriteData((int*)0x005541EE, (int)Buttons_B); 
+	WriteData((int*)0x005541EE, (int)BTN_B); 
 
 	// fixes id on bar (goodbye bar needs to use "CurrStage" instead of baked in "1") 
-	WriteCall((void*)0x05A6F8E, GoodbyeBar);
+	WriteCall((void*)0x05A6F8E, (void*)GoodbyeBar);
 
 	odekakeMenuEntries.clear();
-	//if(cweSaveFile.transporterFlag & eTRANSPORTER::NAME)
-		odekakeMenuEntries.push_back(OdekakeNameEntry);
-	//if (cweSaveFile.transporterFlag & eTRANSPORTER::MOVE)
-		odekakeMenuEntries.push_back(OdakakeMoveEntry);
-	//if (cweSaveFile.transporterFlag & eTRANSPORTER::CUSTOMIZATION)
-		odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
-
-	odekakeMenuEntries.push_back(OdekakeGuestEntry);
+	odekakeMenuEntries.push_back(OdekakeNameEntry);
+	odekakeMenuEntries.push_back(OdakakeMoveEntry);
+	odekakeMenuEntries.push_back(OdekakeCustomizationEntry);
 
 	odekakeMenuEntries.push_back(OdekakeGoodbyeEntry);
 
@@ -230,8 +235,8 @@ void AL_Odekake_Init()
 	WriteData((char*)0x01314165, (char)0x45);
 
 	//obviously hook the menumaster
-	WriteJump((void*)AL_OdekakeMenuMaster, AL_OdekakeMenuMaster_);
+	WriteJump((void*)0x57E5F0, (void*)AL_OdekakeMenuMaster_);
 
 	//kill the "select/confirm/back" drawing for every background tile, ported to a separate object (al_ode_guide)
-	WriteCall((void*)0x005A7771, nullsub_1);
+	WriteCall((void*)0x005A7771, (void*)nullsub_1);
 }

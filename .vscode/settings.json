@@ -1,3 +1,4 @@
 {
-    "cmake.ignoreCMakeListsMissing": true,
+    "cmake.buildDirectory": "${workspaceFolder}/out",
+    "cmake.useCMakePresets": "always"
 }

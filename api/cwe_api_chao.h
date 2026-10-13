@@ -13,8 +13,8 @@
 #define CUSTOM_CHAO_FLAG_BALD_HIDE_PARTS_NON_ADJACENT BIT_1
 
 struct CWE_API_CHAO_DATA {
-	NJS_OBJECT* pObject; //chunk model format (sa2mdl)
-	NJS_OBJECT* pSecondEvoList[5];
+	NJS_CNK_OBJECT* pObject; //chunk model format (sa2mdl)
+	NJS_CNK_OBJECT* pSecondEvoList[5];
 
 	const char* TextureName; //we don't support texlists because we need to "inject" the loaded textures into al_body
 	int TextureCount;

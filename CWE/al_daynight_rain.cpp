@@ -7,6 +7,7 @@
 #include <al_texlist.h>
 #include <al_omochao_build.h>
 #include "ChaoMain.h"
+#include <playsound.h>
 
 #pragma pack(push, 8)
 struct SA2CAMERADATA
@@ -24,50 +25,20 @@ struct SA2CAMERADATA
 
 #define FALL_FRAMES 35
 
-#define GET_WORK(tp) ((RAIN_WORK*)tp->Data2.Undefined)
-
-static char
-SE_Call_Timer(int tone, const void* id, int pri, int volofs, int timer)
-{
-	static const void* const ___fptr = ((void*)0x004374D0);
-
-	char result;
-
-	__asm
-	{
-		push[timer]
-		push[volofs]
-		push[pri]
-		push[id]
-		mov edi, [tone]
-		call[___fptr]
-		add esp, 16
-		mov[result], al
-	}
-
-	return result;
-}
-
-enum CWE_SOUND {
-	CWE_SOUND_ACCORDION = 161,
-	CWE_SOUND_GUITAR = 162,
-	CWE_SOUND_TRIANGLE = 163,
-	CWE_SOUND_SAND = 164,
-	CWE_SOUND_RAIN = 165
-};
+#define GET_WORK(tp) ((RAIN_WORK*)tp->awp)
 
 static void AL_DayNightRainExecutor(task* tp) {
 	auto* work = GET_WORK(tp);
 
 	if(gConfigVal.DayNightRainSounds) {
-		SE_Call_Timer(0x6000 + CWE_SOUND_RAIN, tp, 0, 0, 2);
+		SE_Call_Timer(TONE(6, CWE_SOUND_RAIN), tp, 0, 0, 2);
 	}
 
 	// slightly change angle overtime
-	work->angle = lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
+	work->angle = std::lerp(work->startAngle, work->targetAngle, work->timer / float(work->timerLimit));
 
 	if (work->timer++ >= work->timerLimit) {
-		DeleteObject_(tp);
+		DestroyTask(tp);
 		return;
 	}
 
@@ -131,7 +102,7 @@ static void AL_DayNightRainExecutor(task* tp) {
 
 		{
 			Angle3 returnAng;
-			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, MainCharObj1[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
+			drop.collisionY = CalculateFalloffPosition_(drop.startPos.x, playertwp[0]->pos.y + 65.f, drop.startPos.z, &returnAng);
 
 			drop.ang[0] = returnAng.x;
 			drop.ang[1] = returnAng.y;
@@ -145,8 +116,8 @@ static void AL_DayNightRainExecutor(task* tp) {
 static void DrawDrops(task* tp) {
 	auto* work = GET_WORK(tp);
 
-	njSetTexture(texlist_cwe_object);
-	njSetTextureNum(68);
+	njSetTexture(work->pTexlist);
+	njSetTextureNum(1);
 	
 	njColorBlendingMode(0, NJD_COLOR_BLENDING_ONE);
 	njColorBlendingMode(1, NJD_COLOR_BLENDING_ONE);
@@ -211,9 +182,9 @@ static void AL_DayNightRainDisplayer(task* tp) {
 		const float sclVar = drop.scale / 100.f;
 		const Uint8 alpha = Uint8(0xFF * (0.85f + sclVar * 0.25f));
 
-		const float progressX = lerp(drop.startPos.x + angOffsetX * fallRadius, drop.startPos.x, drop.progress);
-		const float progressY = lerp(drop.startPos.y, drop.collisionY, drop.progress);
-		const float progressZ = lerp(drop.startPos.z + angOffsetZ * fallRadius, drop.startPos.z, drop.progress);
+		const float progressX = std::lerp(drop.startPos.x + angOffsetX * fallRadius, drop.startPos.x, drop.progress);
+		const float progressY = std::lerp(drop.startPos.y, drop.collisionY, drop.progress);
+		const float progressZ = std::lerp(drop.startPos.z + angOffsetZ * fallRadius, drop.startPos.z, drop.progress);
 
 		if (dropCount > 0) {
 			if ((dropCount % 2) == 1) {
@@ -253,9 +224,16 @@ static void AL_DayNightRainDisplayer(task* tp) {
 
 	if (!dropCount) return;
 
-	njSetTexture(texlist_cwe_object);
-	njSetTextureNum(67);
+	njSetTexture(work->pTexlist);
+	njSetTextureNum(0);
 	njDrawTexture3DExSetData(drops, dropCount, 0);
+}
+
+static void AL_DayNightRainDestructor(task* tp) {
+	auto work = GET_WORK(tp);
+
+	njReleaseTexture(work->pTexlist);
+	FREE(work->pTexlist);
 }
 
 task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
@@ -263,12 +241,12 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 		return NULL;
 	}
 	
-	task* tp = CreateElementalTask(4, "AL_DayNightRain", AL_DayNightRainExecutor, LoadObj(0));
+	task* tp = CreateElementalTask(0, LEV_4, AL_DayNightRainExecutor, "AL_DayNightRain");
 
 	tp->disp = AL_DayNightRainDisplayer;
 
 	RAIN_WORK* work = ALLOC(RAIN_WORK);
-	tp->Data2.Undefined = work;
+	tp->awp = (anywk*)work;
 
 	memset(work, 0, sizeof(RAIN_WORK));
 
@@ -279,6 +257,8 @@ task* AL_CreateDayNightRain(Uint32 timer, Uint32 color) {
 
 	work->color = color;
 	work->timerLimit = timer;
+
+	work->pTexlist = texCreateTexlist("CWE_RAIN");
 
 	return tp;
 }

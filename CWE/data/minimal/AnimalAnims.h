@@ -1,8 +1,15 @@
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
 #pragma warning( disable : 4309 )
 #pragma warning( disable : 4305 )
+#endif
+
 NJS_MKEY_F animation_03215928_1_pos[] = {
 	{ 0, 0, 0, 0 },
 	{ 1, 0, 0.096872f, 0 },
@@ -9251,4 +9258,8 @@ NJS_MDATA2 animation_005334E0_mdat[] = {
 
 NJS_MOTION animation_005334E0 = { animation_005334E0_mdat, 16, NJD_MTYPE_POS_0 | NJD_MTYPE_ANG_1, NJD_MTYPE_LINER | 2 };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif

@@ -30,7 +30,7 @@ public:
 	//these arent necessary to init, because they are only used for deciding what to select
 	float m_posX = 0, m_posY = 0;
 	float GetAspectRatio() {
-		return (HorizontalResolution / VerticalResolution);
+		return (DisplayResolutionX / DisplayResolutionY);
 	}
 	bool IsForcedHorizontal() {
 		return (m_flags & ForceHorizontal);

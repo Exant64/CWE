@@ -7,8 +7,8 @@ struct CWE_REG_TREE_ENTRY {
 	NJS_TEXLIST* pTexlist;
 };
 
-extern std::vector<NJS_OBJECT*> ModAPI_TreeModels;
-extern std::vector<NJS_OBJECT*> ModAPI_SeedModels;
+extern std::vector<NJS_CNK_OBJECT*> ModAPI_TreeModels;
+extern std::vector<NJS_CNK_OBJECT*> ModAPI_SeedModels;
 extern std::vector<NJS_TEXLIST*> ModAPI_SeedTexlists;
 
 extern std::vector<CWE_REG_TREE_ENTRY> ModAPI_TreeEntries;

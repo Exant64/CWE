@@ -3,89 +3,69 @@
 #include "al_parts.h"
 #include "api/api_customchao.h"
 #include "ChaoMain.h"
+#include "asmutil.h"
 
-void AL_ShapeExpandElementToParam(KarateOpponent* KarateOpponentData, CHAO_PARAM_GC* data)
-{
-	signed int v2; // ST00_4
-	__int16* v3; // eax
-	char* v4; // ecx
-
-	SADXBodyType storage = SADXBodyType_Normal;
-
-	if ((unsigned char)(KarateOpponentData->ChaoType) == 254)
-	{
-		data->type = ChaoType_Child;
-		storage = SADXBodyType_Omochao;
+void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pParam) {
+	if (pElement->type == 254) {
+		pParam->type = TYPE_CHILD;
+		pParam->body.FormNum = AL_FORM_OMOCHAO;
 	}
-	else if ((unsigned char)(KarateOpponentData->ChaoType) == 255)
-	{
-		data->type = ChaoType_Child;
-		storage = SADXBodyType_EggChao;
+	else if (pElement->type == 255) {
+		pParam->type = TYPE_CHILD;
+		pParam->body.FormNum = AL_FORM_EGG_FOOT;
 	}
-	else
-		data->type = KarateOpponentData->ChaoType;
-	data->BodyType = storage;
-
-	data->EyeType = KarateOpponentData->EyeType;
-	data->MouthType = KarateOpponentData->MouthType;
-	data->BallType = KarateOpponentData->BallType;
-	data->Headgear = KarateOpponentData->Headgear;
-	data->HideFeet = KarateOpponentData->HideFeet;
-	data->Medal = KarateOpponentData->Medal;
-	data->Color = KarateOpponentData->Color;
-	data->MonotoneHighlights = KarateOpponentData->Monotone;
-	data->Texture = KarateOpponentData->Texture;
-	data->Shiny = KarateOpponentData->Shiny;
-	*(int*)&data->PartsBTL.MinimalParts[0] = *(int*)&KarateOpponentData->SA2BArmType;
-	*(int*)&data->PartsBTL.MinimalParts[4] = *(int*)&KarateOpponentData->SA2BLegType;
-	v2 = KarateOpponentData->PowerRun;
-	v3 = KarateOpponentData->StatPoints;
-	v4 = (char*)data->Skill;
-	*((float*)v4 + 0x1C) = v2 * 0.00009999999747378752f;
-	*((float*)v4 + 0x1D) = *(v3 - 7) * 0.00009999999747378752f;
-	*((float*)v4 + 0x1E) = *(v3 - 6) * 0.00009999999747378752f;
-	*((float*)v4 + 0x22) = 0.00009999999747378752f * *(v3 - 5);
-	
-	memcpy(GET_CWEPARAM(data)->Name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
-	GET_CWEPARAM(data)->Name[7] = 0;
-
-	memcpy(data->name, KarateOpponentData->Name, sizeof(KarateOpponentData->Name));
-
-	*(int*)v4 = *(int*)v3;
-	*((int*)v4 + 1) = *((int*)v3 + 1);
-	*((int*)v4 + 2) = *((int*)v3 + 2);
-	*((short*)v4 + 6) = v3[6];
-
-
-}
-static void __declspec(naked) AL_ShapeExpandElementToParam_Hook()
-{
-	__asm
-	{
-		push ecx // data
-		push eax // KarateOpponentData
-
-		// Call your __cdecl function here:
-		call AL_ShapeExpandElementToParam
-
-		pop eax // KarateOpponentData
-		pop ecx // data
-		retn
+	else {
+		pParam->type = pElement->type;
+		pParam->body.FormNum = AL_FORM_NORMAL;
 	}
+
+	pParam->body.DefaultEyeNum = pElement->DefaultEyeNum;
+	pParam->body.DefaultMouthNum = pElement->DefaultMouthNum;
+	pParam->body.HonbuNum = pElement->HonbuNum;
+	pParam->body.ObakeHead = pElement->ObakeHead;
+	pParam->body.ObakeBody = pElement->ObakeBody;
+	pParam->body.MedalNum = pElement->MedalNum;
+	pParam->body.ColorNum = pElement->ColorNum;
+	pParam->body.NonTex = pElement->NonTex;
+	pParam->body.JewelNum = pElement->JewelNum;
+	pParam->body.MultiNum = pElement->MultiNum;
+
+	memcpy(pParam->PartsBTL.MinimalParts, pElement->MinimalParts, sizeof(pElement->MinimalParts));
+
+ 	pParam->body.HPos = pElement->HPos / 10000.f;
+    pParam->body.VPos = pElement->VPos / 10000.f;
+    pParam->body.APos = pElement->APos / 10000.f;
+    pParam->body.growth = pElement->Growth / 10000.f;
+
+	memcpy(GET_CWEPARAM(pParam)->Name, pElement->name, sizeof(pElement->name));
+	GET_CWEPARAM(pParam)->Name[7] = 0;
+	memcpy(pParam->name, pElement->name, sizeof(pParam->name));
+
+	memcpy(pParam->Skill, pElement->Skill, sizeof(pParam->Skill));
 }
 
-const int sub_56CF40Ptr = 0x56CF40;
-static int AL_ShapeChangeType(task* a1, int typevalue)
-{
-	int retval;
-	__asm
-	{
-		mov ecx, a1
-		mov eax, typevalue
-		call sub_56CF40Ptr
-		mov retval, eax
-	}
-	return retval;
+static void ASM_FUNC AL_ShapeExpandElementToParam_Hook() {
+	ASM_PUSH(ecx); // data
+	ASM_PUSH(eax); // KarateOpponentData
+
+	// Call your __cdecl function here:
+	ASM_CALL (AL_ShapeExpandElementToParam);
+
+	ASM_POP(eax); // KarateOpponentData
+	ASM_POP(ecx); // data
+	ASM_RET(0);
+}
+
+static ASM_FUNC int AL_ShapeChangeType(task* a1, int typevalue) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x56CF40 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
@@ -104,22 +84,22 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 		pParam->nbSucceed >= 2)
 	{
 		switch (type) {
-		case ChaoType_Neutral_Fly:
-		case ChaoType_Hero_Fly:
-		case ChaoType_Dark_Fly:
-			type = ChaoType_Tails;
+		case TYPE_N_FLY:
+		case TYPE_H_FLY:
+		case TYPE_D_FLY:
+			type = TYPE_TAILS;
 			break;
 
-		case ChaoType_Neutral_Power:
-		case ChaoType_Hero_Power:
-		case ChaoType_Dark_Power:
-			type = ChaoType_Knuckles;
+		case TYPE_N_POWER:
+		case TYPE_H_POWER:
+		case TYPE_D_POWER:
+			type = TYPE_KNUCKLES;
 			break;
 
-		case ChaoType_Neutral_Run:
-		case ChaoType_Hero_Run:
-		case ChaoType_Dark_Run:
-			type = ChaoType_Amy;
+		case TYPE_N_RUN:
+		case TYPE_H_RUN:
+		case TYPE_D_RUN:
+			type = TYPE_AMY;
 			break;
 		}
 	}
@@ -143,25 +123,21 @@ int __cdecl AL_ShapeChangeType_Hack(task* tp, int type) {
 	return AL_ShapeChangeType(tp, type);
 }
 
-static void __declspec(naked) AL_ShapeChangeType_Hook()
-{
-	__asm
-	{
-		push eax // int a2
-		push ecx // a1
+static void ASM_FUNC AL_ShapeChangeType_Hook() {
+	ASM_PUSH(eax); // int a2
+	ASM_PUSH(ecx); // a1
 
-		// Call your __cdecl function here:
-		call AL_ShapeChangeType_Hack
+	// Call your __cdecl function here:
+	ASM_CALL (AL_ShapeChangeType_Hack);
 
-		pop ecx // a1
-		add esp, 4 // int a2
-		retn
-	}
+	ASM_POP(ecx); // a1
+	ASM_ESP_ADD( 1 ); // int a2
+	ASM_RET(0);
 }
 
 
 void AL_Shape_Init() {
-	WriteJump((void*)0x536550, AL_ShapeExpandElementToParam_Hook);
+	WriteJump((void*)0x536550, (void*)AL_ShapeExpandElementToParam_Hook);
 	//Custom Character Chao
-	WriteCall((void*)0x00568E10, AL_ShapeChangeType_Hook);
+	WriteCall((void*)0x00568E10, (void*)AL_ShapeChangeType_Hook);
 }

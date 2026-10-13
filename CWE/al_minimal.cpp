@@ -1,17 +1,20 @@
 #include "stdafx.h"
+
+#include "asmutil.h"
 #include "al_minimal.h"
+#include "FunctionHook.h"
 #include "data/minimal/AnimalModels.h"
 #include "data/minimal/AnimalAnims.h"
 #include "al_behavior/al_intention.h"
 
 #include "ninja_functions.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_sandhole.h"
 #include "al_parts.h"
-#include "al_minimal.h"
 #include "al_motion.h"
 #include "AL_ModAPI.h"
+
+#include "ef_kiran.h"
 
 #include <renderfix.h>
 
@@ -19,7 +22,7 @@ std::vector<int> ModAPI_MinimalInfluence;
 std::vector<ChaoItemStats> ModAPI_MinimalStats;
 std::vector<const char*>  ModAPI_MinimalNames;
 std::vector<NJS_TEXLIST*>  ModAPI_MinimalTexlists;
-std::vector<NJS_OBJECT*>   ModAPI_MinimalModels;
+std::vector<NJS_CNK_OBJECT*>   ModAPI_MinimalModels;
 std::vector<NJS_MOTION*>   ModAPI_MinimalMotion0;
 std::vector<NJS_MOTION*>   ModAPI_MinimalMotion1;
 std::vector<NJS_MOTION*>   ModAPI_MinimalMotion2;
@@ -95,7 +98,7 @@ const char* AnimalPVMNames[] =
   "SUKA"
 };
 
-NJS_OBJECT* AnimalModels[] = {
+NJS_CNK_OBJECT* AnimalModels[] = {
 	&object_0052A2D0, &object_0052C40C,&object_00549104,&object_005308DC,&object_0052EA0C,&object_00532ADC,&object_00539B2C,&object_0053BFE4,&object_0053723C,&object_00544FD4,&object_00542F90,&object_0054043C,&object_0053E2B8,&object_00534AE0,&object_00546D4C,
 };
 
@@ -157,127 +160,36 @@ int AnimalInfluence[] =
 	COLOR_RANDOM, COLOR_RANDOM, COLOR_RANDOM
 };
 
-
-ObjectFunc(sub_57BD40, 0x0057BD40);
-#pragma pack(push, 8)
-struct __declspec(align(4)) ParticleData
-{
-	int rotY;
-	float scale;
-	NJS_VECTOR position;
-	int color;
-	float frame;
-	int field_1C;
-	NJS_VECTOR velocity;
-	int rotYSpeed;
-	float filler3;
-	float filler4;
-	float filler5;
-};
-#pragma pack(pop)
-#pragma pack(push, 8)
-struct __declspec(align(4)) ParticleUserData
-{
-	int a1;
-	NJS_TEXLIST* texlist;
-	int a2;
-	int frames;
-	float speed;
-	float velocityLoss;
-	float gravity;
-	float scaleUp;
-	int functionPtr;
-	float a7;
-	int fill1;
-	int fill2;
-	int fill3;
-	int lastPointer;
-};
-#pragma pack(pop)
-ParticleUserData stru_B0964C_ =
-{
-  1,
-  (NJS_TEXLIST*)0xB09644,
-  0,
-  4,
-   0.07f,
-   0.98f,
-  0,
-   0.005f,
-  0x6C42D0,
-   40000,
-  0,
-  0,
-  0,
-  0
-};
-const int AllocateParticlePtr = 0x0492660;
-int  AllocateParticle(ParticleUserData* a2)
-{
-	int te;
-	__asm
-	{
-		mov ebx, a2
-		call AllocateParticlePtr
-		mov te, eax
-	}
-	return te;
-}
-void __cdecl sub_6EFF10_(NJS_VECTOR* a1, NJS_VECTOR* a2, float a3)
-{
-	ParticleData* v3; // esi
-	Float v4; // eax
-
-	v3 = (ParticleData*)AllocateParticle(&stru_B0964C_);
-	if (v3)
-	{
-		v3->position = *a1;
-		v3->velocity.x = a2->x;
-		v3->velocity.y = a2->y;
-		v4 = a2->z;
-		v3->scale = a3;
-		v3->velocity.z = v4;
-		v3->rotY = (signed int)((njRandom() * 20.0f - 10.0f) * 182.0444488525391f);
-		v3->rotYSpeed = (signed int)((njRandom() - 0.5f) * 182.0444488525391f);
-		v3->filler5 = 0.0;
-	}
-}
-void AL_Minimal_Timer(task* a1)
-{
-	sub_57BD40(a1);
-
-	AL_MinimalExecutor_Data1* v1 = (AL_MinimalExecutor_Data1*)a1->twp;
-	int* timer = (int*)((char*)&v1->field_F4 + 4);
+static FunctionHook<void, task*> AL_MinimalExecutor_t(0x548C50);
+void AL_MinimalExecutor_r(task* tp) {
+	AL_MinimalExecutor_Data1* work = (AL_MinimalExecutor_Data1*)tp->twp;
+	int* timer = (int*)((char*)&work->field_F4 + 4);
 	(*timer)++;
-	if (!v1->field_F4 && (*timer & 31) == 1)
-	{
-		NJS_VECTOR pos = v1->entity.pos;
-		NJS_VECTOR zeroVelo = { 0,0,0 };
-		int ang = (int)(njRandom() * 65536.f);
+
+	if (!work->field_F4 && (*timer & 31) == 1) {
+		NJS_POINT3 pos = work->entity.pos;
+		const Angle ang = NJM_DEG_ANG(njRandom() * 360.f);
 
 		pos.x += njCos(ang) * 2;
 		pos.y += njRandom() + njRandom() + 0.2f;
 		pos.z += njSin(ang) * 2;
 		
-		sub_6EFF10_(&pos, &zeroVelo, 0.6f);
+		CreateKiran2(&pos, 0.2f, 0.6f);
 	}
+
+	AL_MinimalExecutor_t.Original(tp);
 }
 
+ASM_FUNC void sub_793F90(NJS_CNK_OBJECT* a1, MOTION_CTRL* a2) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // eax0
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
 
-void SetAnimalTexEntity(taskwk* data)
-{
-	njSetTexture(ModAPI_MinimalTexlists[data->btimer]);
-}
+    // call
+    ASM_CALL_R( edx, 0x793F90 );
 
-const int sub_793F90Ptr = 0x793F90;
-void sub_793F90(NJS_OBJECT* a1, MotionTableData* a2)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov eax, a2
-		call sub_793F90Ptr
-	}
+    // return
+    ASM_RET( 0 );
 }
 
 void __cdecl AL_MinimalExecutor_Display_(task* a1)
@@ -288,8 +200,7 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 
 	v1 = a1;
 	v2 = (AL_MinimalExecutor_Data1*)a1->twp;
-	if (Scaletask_XYZ(a1, 3, 3, 2))
-	{
+	if (AL_IsOnScreen2(a1, 3, 2)) {
 		v2->field_34 = 200;
 		if (v2->entity.flag >= 0)
 		{
@@ -300,16 +211,15 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 			v3 = -1.2f;
 		}
 		DoLighting(LightIndex);
-		SetAnimalTexEntity(a1->twp);
+		njSetTexture(ModAPI_MinimalTexlists[a1->twp->btimer]);
 		njPushMatrixEx();
 		njTranslateEx(&v2->entity.pos);
 		njTranslate(NULL, 0, v3, 0);
 		RotateY(v2->entity.ang.y);
 		njPushMatrixEx();
 
-		if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
-		{
-			njControl3D |= 0x2400u;
+		if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
+			_nj_control_3d_flag_ |= 0x2400u;
 		}
 
 		// mega jank, im in a rush rn
@@ -325,22 +235,20 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 			g_HelperFunctions->PopInterpolationFix();
 		}
 
-		njControl3D &= ~0x2400u;
+		_nj_control_3d_flag_ &= ~0x2400u;
 		njPopMatrixEx();
 
+		if (!v1->fwp) ___OutputDebugString("unknown_a == 0, problem incoming");
 
-		if (!v1->UnknownA_ptr) PrintDebug("unknown_a == 0, problem incoming");
-
-		if (RenderFix_IsEnabled() && v1->UnknownA_ptr && ChaoGlobal.CamDistShadowCutLev2 > *(float*)&v1->UnknownA_ptr->field_30)
+		if (RenderFix_IsEnabled() && v1->fwp && ChaoGlobal.CamDistShadowCutLev2 > GET_ALW_ENTRY_WORK(a1)->CamDist)
 		{
-			if (ALO_Field_Find_(v1, 1, CI_KIND_AL_SHADOW))
-			{
+			if (AL_IsHitKindWithNum(v1, 1, CI_KIND_AL_SHADOW)) {
 				njTranslate(NULL, 0, 0.01f, 0);
 			}
-			else
-			{
+			else {
 				njTranslate(NULL, 0, 0.5f, 0);
 			}
+
 			rfapi_core->pDraw->AL_ShadowDraw();
 		}
 		njPopMatrixEx();
@@ -357,21 +265,20 @@ void __cdecl AL_MinimalExecutor_Display_(task* a1)
 	}
 }
 
-
-
 void al_minimal_Init()
 {
-	//patch minimal timer to be constant
+	// patch minimal timer to be constant
 	WriteData((int*)0x00548C7D, (int)0x9090C031);
 
-	//set the minimal behavior function array's first element to use our custom one
-	*(int*)0x1316B00 = (int)AL_Minimal_Timer;
+	if (gConfigVal.AnimalSparkles) {
+		AL_MinimalExecutor_t.Hook(AL_MinimalExecutor_r);
+	}
 
 	WriteData((int*)0x00548D5F, (int)0xFC + 4);
 	WriteData((int*)0x00548D69, (int)0xF8 + 4);
 	
 	DataArray(ChaoItemStats, ChaoItemStatArray, 0x08A6240, 26);
-	DataArray(NJS_OBJECT*, BattleAnimalModels, 0x012966F0, 21);
+	DataArray(NJS_CNK_OBJECT*, BattleAnimalModels, 0x012966F0, 21);
 	DataArray(NJS_MOTION*, BattleAnimalAnims0, 0x1296870, 21);
 	DataArray(NJS_MOTION*, BattleAnimalAnims1, 0x12967F0, 21);
 	DataArray(NJS_MOTION*, BattleAnimalAnims2, 0x1296770, 21);
@@ -414,5 +321,5 @@ void al_minimal_Init()
 		CWE_API_Legacy.RegisterChaoTexlistLoad(AnimalPVMNames[i], AnimalTexLists[i]);
 	}
 
-	WriteJump(AL_MinimalExecutor_Display, AL_MinimalExecutor_Display_);
+	WriteJump((void*)0x5489D0, (void*)AL_MinimalExecutor_Display_);
 }

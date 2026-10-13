@@ -3,7 +3,6 @@
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
 #include "alsbhv.h"
 #include "../al_social.h"
 #include "../ninja_functions.h"
@@ -51,7 +50,7 @@ int ALS_GossipIdle(SOCIALDATA* data)
 	if (data->bhvStatus.Mode == 0)
 	{
 		data->bhvStatus.Mode++;
-		if (GET_CHAOWK(data->chaoPointer)->MotionTable.AnimID != data->parameter1 + 405)
+		if (GET_CHAOWK(data->chaoPointer)->MotionCtrl.curr_num != data->parameter1 + 405)
 			AL_SetMotionLink(data->chaoPointer, data->parameter1 + 405);
 	}
 	return 0;
@@ -88,12 +87,14 @@ int ALBHV_GossipTest(task* a1)
 
 int ALBHV_SnapToGossip(task* a1)
 {
-	task* otherChao = ALW_IsCommunicating(a1)->tp;
+	task* otherChao = ALW_GetLockOnTask(a1);
+	
 	NJS_VECTOR v8;
 	NJS_VECTOR testVectr = { 3.2f,0,0 };
+
 	if(GET_CHAOWK(a1)->Behavior.Mode == 0)
 	{
-		sub_54A690(a1);
+		AL_FixPosition(a1);
 
 		njPushUnitMatrix();
 		njTranslateEx(&otherChao->twp->pos);
@@ -105,10 +106,10 @@ int ALBHV_SnapToGossip(task* a1)
 		a1->twp->pos.y = (v8.y - a1->twp->pos.y) * 0.1f + a1->twp->pos.y;
 		a1->twp->pos.z = (v8.z - a1->twp->pos.z) * 0.1f + a1->twp->pos.z;
 
-		a1->twp->ang.y = AdjustAngle_(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
+		a1->twp->ang.y = AdjustAngle(a1->twp->ang.y, otherChao->twp->ang.y, 1024);
 
 		v8.y = a1->twp->pos.y;
-		if (CheckDistance(&a1->twp->pos, &v8) <= 0.2)
+		if (njDistanceP2P(&a1->twp->pos, &v8) <= 0.2)
 			return 1;
 	}
 	return 0;
@@ -131,7 +132,7 @@ void ALBHV_Gossip(task* a1, task* a2)
 	njPushUnitMatrix();
 	njTranslateEx(&otherChao->twp->pos);
 	RotateY(otherChao->twp->ang.y);
-	sub_426CC0(_nj_current_matrix_ptr_, &a1->EntityData2->Waypoint, &finalPos, 0);
+	sub_426CC0(_nj_current_matrix_ptr_, &GET_MOVE_WORK(a1)->AimPos, &finalPos, 0);
 	//njCalcVector(&test, &otherChao->twp->Position, _nj_current_matrix_ptr_);
 	//TESTcalcpoint(0, &otherChao->twp->Position, &otherChao->twp->Position);
 	njPopMatrixEx();
@@ -143,7 +144,7 @@ void ALBHV_Gossip(task* a1, task* a2)
 	AL_SetNextBehavior(a1, ALBHV_SnapToGossip);
 	AL_SetNextBehavior(a1, ALBHV_GossipTest);               //init talking
 
-	sub_54A690(a1);
+	AL_FixPosition(a1);
 	ALW_SendCommand(a1, ALW_CMD_GO);
 	ALW_SendCommand(otherChao, ALW_CMD_GO);
 }

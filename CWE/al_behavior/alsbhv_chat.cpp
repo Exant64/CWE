@@ -1,11 +1,17 @@
+#include "ChaoMain.h"
 #include "stdafx.h"
 #include "..//SA2ModLoader.h"
 #include "..//Chao.h"
 #include "../al_social.h"
 #include "../al_world.h"
-#include "../ALifeSDK_Functions.h"
+#include "albhv.h"
 #include "alsbhv.h"
+#include "playsound.h"
 #include <random>
+
+#ifdef PATHFINDING
+#include "al_behavior/albhv_navigation.h"
+#endif
 
 #define OTHERCHAO social, !flipped ? SOCIAL_CHAO2 : SOCIAL_CHAO1
 #define MAINCHAO  social, !flipped ? SOCIAL_CHAO1 : SOCIAL_CHAO2
@@ -133,8 +139,6 @@ FACE_ANIM faces[] = {
 	{15,2,0},
 };
 
-#define VOICEBANK5(a1) 24576 + a1
-
 int ALS_Laugh(SOCIALDATA* data)
 {
 	if (data->bhvStatus.Mode == 0)
@@ -147,7 +151,7 @@ int ALS_Laugh(SOCIALDATA* data)
 		AL_FaceChangeEye(data->chaoPointer, ChaoEyes_Painful);
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_ClosedSmile);
 		//PlaySoundXYZAlt(VOICEBANK5(47) /*0x48B*/ + (njRandom() * 4.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		PlaySound_XYZ(VOICEBANK5(47), &data->chaoPointer->twp->pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(6, 47), 0, 0, 110, &data->chaoPointer->twp->pos);
 		data->bhvStatus.Timer = 1 * 60;
 	}
 	else
@@ -173,7 +177,7 @@ int ALS_DoYouAgree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_Open);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(92), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		PlaySound_XYZ(VOICEBANK5(92), &data->chaoPointer->twp->pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(6, 92), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -198,7 +202,7 @@ int ALS_DoNotAgree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_ClosedFrown);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(89)/*0x4B5*/, data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		PlaySound_XYZ(VOICEBANK5(89), &data->chaoPointer->twp->pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(6, 89), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -223,7 +227,7 @@ int ALS_Agree(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_None);
 		data->bhvStatus.Timer = 1 * 60;
 		//PlaySoundXYZAlt(VOICEBANK5(94)/*0x4BA*/, data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
-		PlaySound_XYZ(VOICEBANK5(94), &data->chaoPointer->twp->pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(6, 94), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else
 	{
@@ -238,21 +242,7 @@ int ALS_Agree(SOCIALDATA* data)
 	}
 	return 0;
 }
-static const void* const SE_CallV2_TIMERPtr = (void*)0x437590;
-static inline void SE_CallV2_TIMER(task* obj, int a1, NJS_VECTOR* a2, char a4, char a5, __int16 a6)
-{
-	__asm
-	{
-		push dword ptr[a6]
-		push dword ptr[a5]
-		push dword ptr[a4]
-		mov esi, a2
-		mov edi, a1
-		mov ebx, obj
-		call SE_CallV2_TIMERPtr
-		add esp, 12
-	}
-}
+
 void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 {
 	data->bhvStatus.SubTimer--;
@@ -260,10 +250,9 @@ void __cdecl ALS_NegativeTalkFace(SOCIALDATA* data)
 	if (data->bhvStatus.SubTimer <= 0)
 		data->bhvStatus.SubTimer = 60 * multiplier;
 
-	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (CurrentChaoArea == NextChaoArea)
-			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
-	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
+	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
+		AL_SE_CallV2_TIMER(TONE(6, 75 + int(njRandom() * 20.0f)), data->chaoPointer, 0, 110, 100, &data->chaoPointer->twp->pos);
+	}
 
 	if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
 		AL_FaceSetMouth(data->chaoPointer, ChaoMouth_Open, 15 * multiplier);
@@ -296,9 +285,9 @@ void __cdecl ALS_TalkFace(SOCIALDATA* data)
 	//if (data->bhvStatus.SubTimer <= 0)
 		//data->bhvStatus.SubTimer = 60 * multiplier;
 
-	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0)
-		if (CurrentChaoArea == NextChaoArea)
-			SE_CallV2_TIMER(data->chaoPointer, VOICEBANK5(75) + (int)(njRandom() * 20.0f), &data->chaoPointer->twp->pos, 0, 110, 100);
+	if (data->bhvStatus.SubTimer % (60 * multiplier) == 0) {
+		AL_SE_CallV2_TIMER(TONE(6, 75 + int(njRandom() * 20.0f)), data->chaoPointer, 0, 110, 100, &data->chaoPointer->twp->pos);
+	}
 	//PlaySoundXYZAlt(/*0x4A7*/VOICEBANK5(75) + (njRandom() * 20.0f), data->chaoPointer->Data1, 1, 140, data->chaoPointer->Data1->Position.x, data->chaoPointer->Data1->Position.y, data->chaoPointer->Data1->Position.z);
 
 	//if (data->bhvStatus.SubTimer % (30 * multiplier) == 0)
@@ -317,7 +306,7 @@ int ALS_Talk(SOCIALDATA* data)
 	}
 	else
 	{
-		GET_CHAOWK(data->chaoPointer)->MotionTable.frameIncreaseSpeed_ = 0.75f + (((AL_EmotionGetValue(data->chaoPointer, EM_PER_AGRESSIVE) + 100) / 200.0f) * 0.45f);
+		GET_CHAOWK(data->chaoPointer)->MotionCtrl.multi_spd = 0.75f + (((AL_EmotionGetValue(data->chaoPointer, EM_PER_AGRESSIVE) + 100) / 200.0f) * 0.45f);
 		if (njRandom() < 0.005f)
 			AL_SetMotionLink(data->chaoPointer, data->parameter1 + 2);
 		data->bhvStatus.Timer--;
@@ -480,7 +469,7 @@ int ALS_SassyBye(SOCIALDATA* data)
 		AL_FaceChangeMouth(data->chaoPointer, ChaoMouth_None);
 		data->bhvStatus.Timer = 45;
 		if(data->actorIndex == 0)
-			PlaySound_XYZ(VOICEBANK5(55), &data->chaoPointer->twp->pos, 0, 0, 110);
+			AL_SE_CallV2(TONE(6, 55), 0, 0, 110, &data->chaoPointer->twp->pos);
 	}
 	else if (data->bhvStatus.Mode == 1)
 	{
@@ -555,27 +544,27 @@ float ALS_AngryChance(task* chao, task* otherChao)
 	if (AL_EmotionGetValue(chao, EM_PER_FICKLE) > 50)
 		chance += 0.015f;
 	bool foundDislikedFruit = false;
-	switch (data->Emotion.FavoriteFruit)
+	switch (data->emotion.Taste)
 	{
 	case TASTE_LS_DT:
 	case TASTE_LC_DT:
 		//dislike triangle
-		if (otherData->Emotion.FavoriteFruit == TASTE_LT_DS ||
-			otherData->Emotion.FavoriteFruit == TASTE_LT_DC)
+		if (otherData->emotion.Taste == TASTE_LT_DS ||
+			otherData->emotion.Taste == TASTE_LT_DC)
 			foundDislikedFruit = true;
 		break;
 	case TASTE_LT_DS:
 	case TASTE_LC_DS:
 		//dislike square
-		if (otherData->Emotion.FavoriteFruit == TASTE_LS_DT ||
-			otherData->Emotion.FavoriteFruit == TASTE_LS_DC)
+		if (otherData->emotion.Taste == TASTE_LS_DT ||
+			otherData->emotion.Taste == TASTE_LS_DC)
 			foundDislikedFruit = true;
 		break;
 	case TASTE_LS_DC:
 	case TASTE_LT_DC:
 		//dislike circle
-		if (otherData->Emotion.FavoriteFruit == TASTE_LC_DT ||
-			otherData->Emotion.FavoriteFruit == TASTE_LC_DS)
+		if (otherData->emotion.Taste == TASTE_LC_DT ||
+			otherData->emotion.Taste == TASTE_LC_DS)
 			foundDislikedFruit = true;
 		break;
 
@@ -691,6 +680,8 @@ int ALBHV_HandShake(task* a1)
 	}
 	else
 	{
+		ALW_TurnToLockOn(a1, 512);
+
 		wk->Behavior.Timer--;
 		if (!wk->Behavior.Timer)
 		{
@@ -745,7 +736,17 @@ int ALBHV_Talk(task* a1)
 	AL_SetNextBehavior(otherChao, ALBHV_HandShake);       //shake hands
 	AL_SetNextBehavior(otherChao, ALBHV_LockUp);          //wait until other chao steps back and inits talking
 
-	AL_SetBehavior(a1, ALBHV_GoToSocial);                 //go to selected chao and turn to it
+	if(!gConfigVal.PathfindingEnabled) {
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_GoToLockOn_p>);
+	}
+	else {
+#ifdef PATHFINDING
+		AL_SetBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_SetNaviTarget<NAVIGATION_TYPE::LOCKON>>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_CheckNavigate>);
+		AL_SetNextBehavior(a1, (BHV_FUNC)ALBHV_SocialCheck<ALBHV_Navigation>);
+#endif
+	}
+
 	AL_SetNextBehavior(a1, ALBHV_HandShake);              //shake hands
 	AL_SetNextBehavior(a1, ALBHV_StepBack);               //step back a bit so that theyre not super close to eachother when talking
 	AL_SetNextBehavior(a1, ALBHV_TalkTest);               //init talking

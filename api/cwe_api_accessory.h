@@ -40,7 +40,7 @@ struct CWE_API_ACCESSORY_COLOR_ENTRY {
 struct CWE_API_ACCESSORY_DATA {
 	char ID[METADATA_ID_SIZE];
 
-	NJS_OBJECT* pObject;
+	NJS_CNK_OBJECT* pObject;
 
 	const char* pTextureName;
 	NJS_TEXLIST* pTexlist;

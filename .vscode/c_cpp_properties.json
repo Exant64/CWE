@@ -12,11 +12,13 @@
                 "${workspaceFolder}/rapidjson/include/rapidjson"
             ],
             "defines": [
+                "IMGUIDEBUG",
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
                 "__i386__",
-                "_M_IX86"
+                "_M_IX86",
+                "CWEV9"
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",

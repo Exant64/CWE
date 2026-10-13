@@ -45,6 +45,8 @@ enum KW_MEET_TYPE : char
 	KW_MEET_EVOLVE,
 	KW_MEET_REBIRTH
 };
+
+Sint8 AL_KW_GetPlayerLike(task* pChaoTask);
 int AL_KW_AlreadyKnows(task* a1, task* a2);
 void AL_KW_AddLikeChao(task* a1, int index, int val);
 int AL_KW_GetFriendCount(task* a1);

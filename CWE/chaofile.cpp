@@ -1,0 +1,64 @@
+#include "chaofile.h"
+
+int LoadChaoFile(const wchar_t* path, CHAO_SAVE_INFO& outInfo) {
+    CHAO_SAVE_INFO chaoInfo;
+    FILE* chaoFile;
+
+    _wfopen_s(&chaoFile, path, L"rb");
+
+    if(!chaoFile) {
+        return -1;
+    }
+
+    if (fseek(chaoFile, 64, SEEK_SET)) {
+        fclose(chaoFile);
+        return -2;
+    }
+
+    if (fread(&chaoInfo, 1, sizeof(chaoInfo), chaoFile) != sizeof(chaoInfo)) {
+        fclose(chaoFile);
+        return -3;
+    }
+
+    fclose(chaoFile);
+
+    outInfo = chaoInfo;
+
+    return 0;
+}
+
+int SaveChaoFile(const wchar_t* const path, const CHAO_SAVE_INFO* pInfo) {
+    static const uint8_t header[64] = {
+        0x14, 0x28, 0xB7, 0x52, 0xAD, 0x34, 0xF3, 0xC4, 0xC4, 0xFA, 0x25, 0x49, 0x04, 0xFF, 0x1B, 0x24, 
+        0x13, 0x0C, 0x26, 0x4F, 0x6F, 0xB5, 0x29, 0xA5, 0x7C, 0x87, 0x78, 0x89, 0x08, 0xBC, 0x2E, 0xE6, 
+        0xAB, 0x3E, 0x55, 0x4F, 0xDD, 0x35, 0x68, 0x75, 0xF5, 0xF7, 0xA8, 0x2B, 0x27, 0x67, 0xCA, 0x74, 
+        0x4F, 0x28, 0xE1, 0x56, 0x1F, 0x69, 0xDB, 0xBE, 0xF3, 0x4D, 0xA6, 0xD3, 0xB1, 0xE7, 0x21, 0x00, 
+    };
+
+    FILE* chaoFile;
+
+    if (_wfopen_s(&chaoFile, path, L"wb")) {
+        return -1;
+    }
+
+    if (fseek(chaoFile, 0, SEEK_SET)) {
+        fclose(chaoFile);
+        return -2;
+    }
+
+    if (fwrite(header, sizeof(header), 1, chaoFile) != 1) {
+        fclose(chaoFile);
+        return -3;
+    }
+
+    if (fwrite(pInfo, sizeof(*pInfo), 1, chaoFile) != 1) {
+        fclose(chaoFile);
+        return -4;
+    }
+
+    if (fclose(chaoFile)) {
+        return -5;
+    }
+
+    return 0;
+}

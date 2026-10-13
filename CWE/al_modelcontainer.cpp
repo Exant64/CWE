@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "al_modelcontainer.h"
 
-extern NJS_OBJECT object_alo_missing;
+extern NJS_CNK_OBJECT object_alo_missing;
 
-std::array<ObjectRegistry*, ChaoItemCategory_Count> ObjectRegistry::m_instance;
+std::array<ObjectRegistry*, NB_CWE_CATEGORY> ObjectRegistry::m_instance;
 
 int ObjectRegistry::Size() const {
 	return m_objects.size();
 }
 
-NJS_OBJECT* ObjectRegistry::GetObj(int index)const {
+NJS_CNK_OBJECT* ObjectRegistry::GetObj(int index)const {
 	if (index < 0 || (size_t)index > m_objects.size())
 		return &object_alo_missing;
 
@@ -22,7 +22,7 @@ NJS_TEXLIST* ObjectRegistry::GetTex(int index) const {
 	return m_texlists[index];
 }
 
-void ObjectRegistry::Set(int index, NJS_OBJECT* obj) {
+void ObjectRegistry::Set(int index, NJS_CNK_OBJECT* obj) {
 	if (!obj) return;
 	
 	m_objects[index] = obj;
@@ -34,7 +34,7 @@ void ObjectRegistry::Set(int index, NJS_TEXLIST* tex) {
 	m_texlists[index] = tex;
 }
 
-void ObjectRegistry::Add(NJS_OBJECT* obj, NJS_TEXLIST* tex) {
+void ObjectRegistry::Add(NJS_CNK_OBJECT* obj, NJS_TEXLIST* tex) {
 	if (!obj || !tex) {
 		obj = &object_alo_missing;
 		tex = texlist_cwe_object;

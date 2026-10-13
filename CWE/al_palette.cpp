@@ -6,8 +6,10 @@
 
 #include "Trampoline.h"
 #include "PaletteFix.h"
-#include <brightfixapi.h>
+#include <BrightFix/brightfixapi.h>
 #include <al_draw.h>
+
+#include "ninja_functions.h"
 
 char gPaletteNegative[PVP_COUNT][192];
 char gPaletteRegular[PVP_COUNT][192];
@@ -131,51 +133,6 @@ const char* off_1365D78[39] =
 #endif
 };
 
-#if 0
-const int sub_534E10Ptr = 0x534E10;
-void alpalSetBank(task* a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		call sub_534E10Ptr
-	}
-}
-#endif
-
-#pragma pack(push, 8)
-struct __declspec(align(4)) NJS_TEXSURFACE_
-{
-	Uint32 Type;
-	Uint32 BitDepth;
-	Uint32 PixelFormat;
-	Uint32 nWidth;
-	Uint32 nHeight;
-	Uint32 TextureSize;
-	Uint32 fSurfaceFlags;
-	Uint32* pSurface;
-};
-#pragma pack(pop)
-
-
-struct NJS_TEXSYSTEM
-{
-	Uint32 globalIndex;
-	NJS_TEXSURFACE_ texsurface;
-	Int count;
-};
-
-struct NJS_TEXMANAGE
-{
-	Uint32 tspparam;
-	Uint32 texparam;
-	Uint32 bank;
-	NJS_TEXSYSTEM* texsys;
-	Int count;
-	Uint32 texflag;
-};
-
 int dword_1365D30[] = 
 { 
 	0, 1, 2, //child chao
@@ -222,17 +179,17 @@ void __cdecl alpalSetBank(task* a1, int a2)
 		break;
 #endif
 #ifdef DARKPALETTE
-	case ChaoType_Dark_Fly:
+	case TYPE_D_FLY:
 		v2 = 7;
 		break;
-	case ChaoType_Dark_Normal:
+	case TYPE_D_NORMAL:
 		v2 = 8;
 		break;
 #endif
 	default:
 		return;
 	}
-	currentTexlist = (NJS_TEXLIST*)(Has_texlist_batadvPlayerChara_in_it[8]);
+	currentTexlist = _nj_curr_ctx_->texlist;
 	for (int i = 0; i < 3; i++) {
 		int texIndex = dword_1365D30[v2 * 3 + i];
 		NJS_TEXMANAGE* pTexManage = (NJS_TEXMANAGE*)(currentTexlist->textures[texIndex].texaddr);
@@ -243,20 +200,16 @@ void __cdecl alpalSetBank(task* a1, int a2)
 	}
 }
 
-static void __declspec(naked) alpalSetBankHook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
+static void ASM_FUNC alpalSetBankHook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call alpalSetBank
+	// Call your __cdecl function here:
+	ASM_CALL (alpalSetBank);
 
-		pop eax // a1
-		pop ecx // a2
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
 //we removed the alpalSetBank calls from DrawChao, meaning now it only sets bank once before entering DrawChao
@@ -266,25 +219,20 @@ void __cdecl alpalAL_DrawHook(task* a1, int a2) {
 	alpalSetBank(a1, a2);
 }
 
-static void __declspec(naked) alpalSetBankDrawChaoHook()
-{
-	__asm
-	{
-		push ecx // a2
-		push eax // a1
+static void ASM_FUNC alpalSetBankDrawChaoHook() {
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		// Call your __cdecl function here:
-		call alpalAL_DrawHook
+	// Call your __cdecl function here:
+	ASM_CALL(alpalAL_DrawHook);
 
-		pop eax // a1
-		pop ecx // a2
-		retn
-	}
+	ASM_POP(eax); // a1
+	ASM_POP(ecx); // a2
+	ASM_RET(0);
 }
 
-
 void LoadPaletteHook();
-Trampoline LoadPalette_t(0x0534350, 0x053435A, LoadPaletteHook);
+Trampoline LoadPalette_t(0x0534350, 0x053435A, (void*)LoadPaletteHook);
 void LoadPaletteHook()
 {
 	VoidFunc(original, LoadPalette_t.Target());
@@ -305,22 +253,9 @@ __int16 sub_420F10(unsigned __int8 a1, unsigned __int8 a2, unsigned __int8 a3)
 }
 StdcallFunctionPointer(void, sub_41AB40, (signed int a1), 0x41AB40);
 
-const int UpdateChaoPalettePtr = 0x0534670;
-void __cdecl UpdateChaoPalette(CHAO_PARAM_GC* a1, task* a2, int a3)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		push a3
-		call UpdateChaoPalettePtr
-		add esp, 4
-	}
-}
-
 void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno, char gPalette[][48 * 4])
 {
-	ChaoType v3; // dl
+	Uint8 v3; // dl
 	signed int v4; // ecx
 	float flyswim; // st7
 	NJS_BGRA* AL_NC00; // edi
@@ -367,31 +302,31 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	int v86;
 
 	v34 = (int*)v45;
-	v3 = (ChaoType)chaoData->type;
+	v3 = chaoData->type;
 	if (AL_IsHero(v3) && GET_CWEPARAM(chaoData)->LobbyTextureValue > 0) 
-		v3 = (ChaoType)((GET_CWEPARAM(chaoData)->LobbyTextureValue + 1) * 3);
+		v3 = (GET_CWEPARAM(chaoData)->LobbyTextureValue + 1) * 3;
 	//lobbytextureval = 1 -> v3 = 6
 	//lobbytextureval = 2 -> v3 = 9
 	//formula ^ for chaotype override
 
-	switch ((unsigned __int8)v3)
+	switch (v3)
 	{
-	case ChaoType_Child:
+	case TYPE_CHILD:
 		v4 = PVP_NCZ;
 		break;
-	case ChaoType_Hero_Normal:
+	case TYPE_H_NORMAL:
 		v4 = PVP_HNZ;
 		break;
-	case ChaoType_Hero_Swim:
+	case TYPE_H_SWIM:
 		v4 = PVP_HSZ;
 		break;
-	case ChaoType_Hero_Fly:
+	case TYPE_H_FLY:
 		v4 = PVP_HFZ;
 		break;
-	case ChaoType_Hero_Run:
+	case TYPE_H_RUN:
 		v4 = PVP_HRZ;
 		break;
-	case ChaoType_Hero_Power:
+	case TYPE_H_POWER:
 		v4 = PVP_HPZ;
 		break;
 #ifdef NEUTPALETTE
@@ -400,10 +335,10 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		break;
 #endif
 #ifdef DARKPALETTE
-	case ChaoType_Dark_Fly:
+	case TYPE_D_FLY:
 		v4 = PVP_DFZ;
 		break;
-	case ChaoType_Dark_Normal:
+	case TYPE_D_NORMAL:
 		v4 = PVP_DNZ;
 		break;
 #endif
@@ -412,11 +347,11 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	}
 	
 
-	flyswim = chaoData->FlySwim;
-	if (v3 == ChaoType_Child)
+	flyswim = chaoData->body.VPos;
+	if (v3 == TYPE_CHILD)
 	{
-		evolution = chaoData->EvolutionProgress;
-		powerrun = chaoData->PowerRun;
+		evolution = chaoData->body.growth;
+		powerrun = chaoData->body.HPos;
 		AL_NC00 = (NJS_BGRA*)gPalette[PVP_NCZ];
 		AL_NC01 = (NJS_BGRA*)gPalette[PVP_NCN];
 		AL_HCZ = (NJS_BGRA*)gPalette[PVP_HCZ];
@@ -424,8 +359,8 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCP];
 		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
 		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
-		v28 = (unsigned short*)GET_CHAOWK(a1)->palette;
-		v33 = chaoData->Alignment;
+		v28 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
+		v33 = chaoData->body.APos;
 		if (evolution > 1)
 		{
 			evolution = 1;
@@ -594,12 +529,12 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 	{
 		v13 = v4;
 		AL_DCb = gPalette[v13 + 1];
-		Magnitude = chaoData->EvolutionProgress;
+		Magnitude = chaoData->body.growth;
 		v14 = gPalette[v13];
 		v15 = gPalette[v13 + 5];
 		v16 = gPalette[v13 + 3];
-		v37 = (unsigned short*)GET_CHAOWK(a1)->palette;
-		powerruna = chaoData->PowerRun;
+		v37 = (unsigned short*)GET_CHAOWK(a1)->Shape.palette;
+		powerruna = chaoData->body.HPos;
 		if (Magnitude > 1)
 		{
 			Magnitude = 1;
@@ -708,7 +643,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 			--AL_HCNb;
 		} while (AL_HCNb);
 	}
-	v85 = (int)GET_CHAOWK(a1)->palette;
+	v85 = (int)GET_CHAOWK(a1)->Shape.palette;
 	v86 = 0;
 	do
 	{
@@ -723,269 +658,7 @@ void __cdecl AL_PaletteSetColorRatio(CHAO_PARAM_GC* chaoData, task* a1, int cno,
 		v85 += 32;
 	} while (v86 < 3);
 }
-void __cdecl AL_PaletteSetColorRatio8bpp(CHAO_PARAM_GC* chaoData, task* a1, int cno, char gPalette[][256 * 3 * 4])
-{
-	ChaoType v3; // dl
-	signed int v4; // ecx
-	float flyswim; // st7
-	NJS_BGRA* AL_NC00; // edi
-	NJS_BGRA* AL_NC01; // ebp
-	NJS_BGRA* AL_HCP; // ebx
-	float v9; // st6
-	signed int v10; // esi
-	unsigned __int8 v11; // bl
-	signed int v12; // esi
-	unsigned __int8 v19; // [esp+7h] [ebp-101h]
-	float powerrun; // [esp+8h] [ebp-100h]
-	unsigned __int8 v22; // [esp+Eh] [ebp-FAh]
-	unsigned __int8 v23; // [esp+Fh] [ebp-F9h]
-	float v24; // [esp+10h] [ebp-F8h]
-	NJS_BGRA* AL_DC; // [esp+18h] [ebp-F0h]
-	int AL_DCa; // [esp+18h] [ebp-F0h]
-	unsigned __int16* v28; // [esp+1Ch] [ebp-ECh]
-	NJS_BGRA* AL_HCN; // [esp+20h] [ebp-E8h]
-	int AL_HCNa; // [esp+20h] [ebp-E8h]
-	float v33; // [esp+24h] [ebp-E4h]
-	int* v34; // [esp+28h] [ebp-E0h]
-	float evolution; // [esp+2Ch] [ebp-DCh]
-	float v36; // [esp+30h] [ebp-D8h]
-	NJS_BGRA* AL_HCF; // [esp+34h] [ebp-D4h]
-	NJS_BGRA* AL_HCZ; // [esp+38h] [ebp-D0h]
-	float v40; // [esp+3Ch] [ebp-CCh]
-	float v42; // [esp+40h] [ebp-C8h]
-	float v44; // [esp+44h] [ebp-C4h]
-	char v45[192]; // [esp+48h] [ebp-C0h]
-	int v85;
-	int v86;
 
-	CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(chaoData);
-	
-	v34 = (int*)v45;
-	v3 = (ChaoType)chaoData->type;
-	if (AL_IsHero(v3) && pParamCwe->LobbyTextureValue > 0)
-		v3 = (ChaoType)((pParamCwe->LobbyTextureValue + 1) * 3);
-	//lobbytextureval = 1 -> v3 = 6
-	//lobbytextureval = 2 -> v3 = 9
-	//formula ^ for chaotype override
-
-	switch ((unsigned __int8)v3)
-	{
-	case ChaoType_Child:
-		v4 = PVP_NCZ;
-		break;
-	case ChaoType_Hero_Normal:
-		v4 = PVP_HNZ;
-		break;
-	case ChaoType_Hero_Swim:
-		v4 = PVP_HSZ;
-		break;
-	case ChaoType_Hero_Fly:
-		v4 = PVP_HFZ;
-		break;
-	case ChaoType_Hero_Run:
-		v4 = PVP_HRZ;
-		break;
-	case ChaoType_Hero_Power:
-		v4 = PVP_HPZ;
-		break;
-	default:
-		return;
-	}
-
-	flyswim = chaoData->FlySwim;
-	if (v3 == ChaoType_Child)
-	{
-		evolution = chaoData->EvolutionProgress;
-		powerrun = chaoData->PowerRun;
-		AL_NC00 = (NJS_BGRA*)gPalette[PVP_NCZ];
-		AL_NC01 = (NJS_BGRA*)gPalette[PVP_NCN];
-		AL_HCZ = (NJS_BGRA*)gPalette[PVP_HCZ];
-		AL_HCN = (NJS_BGRA*)gPalette[PVP_HCN];
-		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCP];
-		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCF];
-		AL_DC = (NJS_BGRA*)gPalette[PVP_DCZ];
-		v28 = (unsigned short*)GET_CHAOWK(a1)->palette;
-		v33 = chaoData->Alignment;
-		if (evolution > 1.0)
-		{
-			evolution = 1.0;
-		}
-		if (powerrun == 0.0)
-		{
-			powerrun = 0.000001f;
-		}
-		if (flyswim == 0)
-		{
-			flyswim = 0.000001f;
-		}
-		if (powerrun > 1.0)
-		{
-			powerrun = 1.0;
-			goto LABEL_21;
-		}
-		if (powerrun >= -1.0)
-		{
-			if (powerrun >= 0.0)
-			{
-				goto LABEL_21;
-			}
-		}
-		else
-		{
-			powerrun = -1.0;
-		}
-		AL_HCP = (NJS_BGRA*)gPalette[PVP_HCR];
-		powerrun = -powerrun;
-	LABEL_21:
-		if (flyswim > 1.0)
-		{
-			flyswim = 1.0;
-			goto LABEL_27;
-		}
-		if (flyswim >= -1.0)
-		{
-			if (flyswim >= 0.0)
-			{
-				goto LABEL_27;
-			}
-		}
-		else
-		{
-			flyswim = -1.0;
-		}
-		AL_HCF = (NJS_BGRA*)gPalette[PVP_HCS];
-		flyswim = -flyswim;
-	LABEL_27:
-		v36 = 1 - evolution;
-		v19 = 0;
-		v9 = 1.0f / (powerrun + flyswim);
-		if (v33 < 0)
-		{
-			//dark alignment
-			if (v33 < -1)
-			{
-				v33 = -1;
-			}
-			v11 = v19;
-			AL_HCNa = 256 * 3;
-			do
-			{
-				v12 = 0;
-				do
-				{
-					if (v12)
-					{
-						if (v12 == 1)
-						{
-							v23 = (unsigned char)(((double)AL_NC01->b * evolution + (double)AL_NC00->b * v36)
-								* (1.0 - v33 * -1.0)
-								+ (double)AL_DC->b * (v33 * -1.0));
-						}
-						else if (v12 == 2)
-						{
-							v19 = (unsigned char)(((double)AL_NC01->b * evolution + (double)AL_NC00->b * v36)
-								* (1.0 - v33 * -1.0)
-								+ (double)AL_DC->b * (v33 * -1.0));
-						}
-					}
-					else
-					{
-						v11 = (unsigned char)(((double)AL_NC01->b * evolution + (double)AL_NC00->b * v36)
-							* (1.0 - v33 * -1.0)
-							+ (double)AL_DC->b * (v33 * -1.0));
-					}
-					AL_NC00 = (NJS_BGRA*)((char*)AL_NC00 + 1);
-					AL_NC01 = (NJS_BGRA*)((char*)AL_NC01 + 1);
-					++v12;
-					AL_DC = (NJS_BGRA*)((char*)AL_DC + 1);
-				} while (v12 < 4);
-				*v28 = (v11 >> 3) | 8 * (v23 & 0xFC | 32 * (v19 & 0xF8));
-				++v28;
-				*v34 = v11 | ((v23 | ((v19 | 0xFFFFFF00) << 8)) << 8);
-				++v34;
-				--AL_HCNa;
-			} while (AL_HCNa);
-		}
-		else
-		{
-			//hero alignment code
-			if (v33 > 1.0)
-			{
-				v33 = 1.0;
-			}
-			AL_DCa = 256 * 3;
-			do
-			{
-				v10 = 0;
-				do
-				{
-					v40 = 1 - powerrun;
-					v44 = 1 - flyswim;
-					v24 = powerrun * v9;
-					v42 = v9 * flyswim;
-					if (v10)
-					{
-						if (v10 == 1)
-						{
-							v23 = (unsigned char)(((((double)AL_HCF->b * flyswim + (double)AL_HCN->b * v44) * v42
-								+ ((double)AL_HCP->b * powerrun + (double)AL_HCN->b * v40) * v24)
-								* evolution
-								+ (double)AL_HCZ->b * v36)
-								* v33
-								+ ((double)AL_NC01->b * evolution + (double)AL_NC00->b * v36) * (1.0 - v33));
-						}
-						else if (v10 == 2)
-						{
-							v22 = (unsigned char)(((((double)AL_HCF->b * flyswim + (double)AL_HCN->b * v44) * v42
-								+ ((double)AL_HCP->b * powerrun + (double)AL_HCN->b * v40) * v24)
-								* evolution
-								+ (double)AL_HCZ->b * v36)
-								* v33
-								+ ((double)AL_NC01->b * evolution + (double)AL_NC00->b * v36) * (1.0 - v33));
-						}
-					}
-					else
-					{
-						v19 = (unsigned char)(((((double)AL_HCF->b * flyswim + (double)AL_HCN->b * v44) * v42
-							+ ((double)AL_HCP->b * powerrun + (double)AL_HCN->b * v40) * v24)
-							* evolution
-							+ (double)AL_HCZ->b * v36)
-							* v33
-							+ ((double)AL_NC01->b * evolution + (double)AL_NC00->b * v36) * (1.0 - v33));
-					}
-					AL_HCP = (NJS_BGRA*)((char*)AL_HCP + 1);
-					AL_HCZ = (NJS_BGRA*)((char*)AL_HCZ + 1);
-					AL_NC00 = (NJS_BGRA*)((char*)AL_NC00 + 1);
-					AL_NC01 = (NJS_BGRA*)((char*)AL_NC01 + 1);
-					++v10;
-					AL_HCN = (NJS_BGRA*)((char*)AL_HCN + 1);
-					AL_HCF = (NJS_BGRA*)((char*)AL_HCF + 1);
-				} while (v10 < 4);
-				*v28 = (v19 >> 3) | 8 * (v23 & 0xFC | 32 * (v22 & 0xF8));
-				++v28;
-				*v34 = v19 | ((v23 | ((v22 | 0xFFFFFF00) << 8)) << 8);
-				++v34;
-				--AL_DCa;
-			} while (AL_DCa);
-		}
-
-	}
-
-	v85 = (int)GET_CHAOWK(a1)->palette;
-	v86 = 0;
-	do
-	{
-		*(int*)0x01DBED80 = v85;
-		*(int*)0x1DBED84 = 1;
-		*(int*)0x01DBED88 = 256;
-		if (*(int*)0x1A55790)
-		{
-			sub_41AB40(cno + v86 + 2 * cno);
-		}
-		++v86;
-		v85 += 256 * 2;
-	} while (v86 < 3);
-}
 void __cdecl UpdateChaoPaletteNew(CHAO_PARAM_GC* chaoData, task* a1, int cno)
 {
 	if (AL_IsNegative(a1))
@@ -999,30 +672,28 @@ void __cdecl UpdateChaoPaletteNew(CHAO_PARAM_GC* chaoData, task* a1, int cno)
 		
 	}
 }
-static void __declspec(naked) UpdateChaoPaletteHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a3
-		push ecx // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call UpdateChaoPaletteNew
+static void ASM_FUNC UpdateChaoPaletteHook() {
+	ASM_PUSH(ASM_ESP(1)); // a3
+	ASM_PUSH(ecx); // a2
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		pop ecx // a2
-		add esp, 4 // a3
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (UpdateChaoPaletteNew);
+
+	ASM_POP(eax); // a1
+	ASM_POP(ecx); // a2
+	ASM_ESP_ADD( 1 ); // a3
+	ASM_RET(0);
 }
+
 void AL_Palette_Init()
 {
 	//explanation above function
-	WriteCall((void*)0x00540C81, alpalSetBankDrawChaoHook);
+	WriteCall((void*)0x00540C81, (void*)alpalSetBankDrawChaoHook);
 
 	//also afaik we are in control of all the calls now so this might be redundant but im keeping it for external mods ig
-	WriteJump((void*)0x534E10, alpalSetBankHook);
+	WriteJump((void*)0x534E10, (void*)alpalSetBankHook);
 
 	//argb8888 fix
 	WriteData((int*)0x05345A2, (int)48);
@@ -1031,8 +702,8 @@ void AL_Palette_Init()
 	WriteData((int*)0x00534381, (int)gPaletteFilename);
 	WriteData((int*)0x00534603, (int)&gPaletteFilename[39]);
 	WriteData((int*)0x0053437C, (int)gPaletteNegative);
-	WriteCall((void*)0x0054FFBE, UpdateChaoPaletteHook);
-	WriteCall((void*)0x005A4D18, UpdateChaoPaletteHook);
-	WriteCall((void*)0x005A4D56, UpdateChaoPaletteHook);
-	WriteCall((void*)0x052ACA0, LoadPaletteHook);
+	WriteCall((void*)0x0054FFBE, (void*)UpdateChaoPaletteHook);
+	WriteCall((void*)0x005A4D18, (void*)UpdateChaoPaletteHook);
+	WriteCall((void*)0x005A4D56, (void*)UpdateChaoPaletteHook);
+	WriteCall((void*)0x052ACA0, (void*)LoadPaletteHook);
 }

@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "al_save.h"
+#include "al_guest.h"
 #include <cstdio>
 #include "Chao.h"
 #include <random>
 #include "ChaoMain.h"
 #include <vector>
+#include "asmutil.h"
 //#include "usercall.h"
 #include "rapidjson.h"
 #include <document.h>
@@ -26,25 +28,25 @@ static struct {
 	int category;
 	const char* key;
 } CategoryKeyValuePairs[] = {
-	{ChaoItemCategory_Egg, "egg"},
-	{ChaoItemCategory_Fruit, "fruit"},
-	{ChaoItemCategory_Seed, "seed"},
-	{ChaoItemCategory_Hat, "hat"},
-	{ChaoItemCategory_Accessory, "accessory"},
-	{ChaoItemCategory_Special, "special"},
-	{ChaoItemCategory_MenuTheme, "menu_theme"}
+	{ALW_CATEGORY_EGG, "egg"},
+	{ALW_CATEGORY_FRUIT, "fruit"},
+	{ALW_CATEGORY_SEED, "seed"},
+	{ALW_CATEGORY_MASK, "hat"},
+	{ALW_CATEGORY_ACCESSORY, "accessory"},
+	{ALW_CATEGORY_SPECIAL, "special"},
+	{ALW_CATEGORY_THEME, "menu_theme"}
 };
 
 // also this is like the only place in the code that uses namespace for some reason
 // (i really hate this part of the code lol)
 namespace save {
 	// todo: refactor to be static and create helper function that returns span
-	std::array<SAlItem, 10> CWE_PurchasedItems;
+	std::array<SAlItemCwe, 10> CWE_PurchasedItems;
 
 	// yes, i know that we already have an SAlItem with that terrible awful "save_serializable" stuff
 	// for now i'll keep the new one here, i don't plan to support that system
 	// with how infrequently we add stuff here, its enough to just do it the ugly way
-	static bool ReadSAlItem(const rapidjson::Value& value, SAlItem& outItem) {
+	static bool ReadSAlItem(const rapidjson::Value& value, SAlItemCwe& outItem) {
 		const char* categoryStr = value["category"].GetString();
 		outItem.mCategory = -1;
 		for (size_t i = 0; i < _countof(CategoryKeyValuePairs); i++) {
@@ -63,20 +65,20 @@ namespace save {
 			char id[METADATA_ID_SIZE];
 			strncpy_s(id, value["id"].GetString(), sizeof(id));
 
-			outItem.mType = ItemMetadata::Get()->GetIndex(ChaoItemCategory(outItem.mCategory), id);
-			if (outItem.mType == -1) {
+			outItem.mId = ItemMetadata::Get()->GetIndex(outItem.mCategory, id);
+			if (outItem.mId == Uint16(-1)) {
 				return false;
 			}
 		}
 		else {
-			outItem.mType = Uint16(value["type"].GetInt());
+			outItem.mId = Uint16(value["type"].GetInt());
 		}
 
 		return true;
 	}
 
 	template <typename T>
-	static bool SaveSAlItem(rapidjson::PrettyWriter<T>& writer, const SAlItem& item) {
+	static bool SaveSAlItem(rapidjson::PrettyWriter<T>& writer, const SAlItemCwe& item) {
 		const char* categoryString = NULL;
 		for (size_t i = 0; i < _countof(CategoryKeyValuePairs); ++i) {
 			const auto& pair = CategoryKeyValuePairs[i];
@@ -96,7 +98,7 @@ namespace save {
 		writer.String(categoryString);
 
 		char id[METADATA_ID_SIZE];
-		bool foundID = ItemMetadata::Get()->GetID(ChaoItemCategory(item.mCategory), item.mType, id);
+		bool foundID = ItemMetadata::Get()->GetID(item.mCategory, item.mId, id);
 
 		if (foundID) {
 			writer.Key("id");
@@ -104,7 +106,7 @@ namespace save {
 		}
 		else {
 			writer.Key("type");
-			writer.Int(item.mType);
+			writer.Int(item.mId);
 		}
 
 		writer.EndObject();
@@ -127,7 +129,7 @@ namespace save {
 			size_t sz = ftell(fp);
 
 			// rapidjson expects a buffer with size of atleast 4
-			sz = max(sz, 4);
+			sz = NJM_MAX(sz, size_t(4));
 			std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 			fseek(fp, 0, SEEK_SET);
@@ -137,7 +139,7 @@ namespace save {
 			Document d;
 			d.ParseStream(is);
 
-			LoadMember<SAlItem, 10>(d, CWE_PurchasedItems, "PurchasedItems");
+			LoadMember<SAlItemCwe, 10>(d, CWE_PurchasedItems, "PurchasedItems");
 
 			if (d.HasMember("daynight")) {
 				const auto& daynightMember = d["daynight"];
@@ -208,7 +210,7 @@ namespace save {
 
 			writer.StartObject();
 
-			SaveMember<SAlItem, 10>(writer, CWE_PurchasedItems, "PurchasedItems");
+			SaveMember<SAlItemCwe, 10>(writer, CWE_PurchasedItems, "PurchasedItems");
 
 			writer.Key("daynight");
 			writer.StartObject();
@@ -257,7 +259,7 @@ namespace save {
 	}
 }
 
-SAlItem* GetMarketInventory(int category)
+SAlItemCwe* GetMarketInventory(int category)
 {
 	return cweSaveFile.marketInventory[category];
 }
@@ -280,7 +282,7 @@ void ReadCWESaveFiles() {
 		fopen_s(&f, strBuffer, "rb");
 		if (f)
 		{
-			fread_s(ModAPI_SaveAPI[i].pointer, ModAPI_SaveAPI[i].fileSize, ModAPI_SaveAPI[i].fileSize, 1, f);
+			fread(ModAPI_SaveAPI[i].pointer, ModAPI_SaveAPI[i].fileSize, 1, f);
 			fclose(f);
 		}
 		else
@@ -288,27 +290,40 @@ void ReadCWESaveFiles() {
 	}
 }
 
+static ASM_FUNC int ReadSaveFileThing(char *path, void *buffer, size_t _size) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+0) ); // size
+    ASM_MOVE( edx, ASM_ESP(2+1+0) ); // buffer
+    ASM_MOVE( ecx, ASM_ESP(1+1+0) ); // path
+
+    // call
+    ASM_CALL_R( eax, 0x426860 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
+}
+
 int __cdecl ReadCWESaveFile(char* path, void* buffer, size_t size) {
 	int ret = ReadSaveFileThing(path, buffer, size);
 	ReadCWESaveFiles();
 	return ret;
 }
-static void __declspec(naked) ReadCWESaveFileHook()
-{
-	__asm
-	{
-		push[esp + 04h] // size
-		push edx // buffer
-		push ecx // path
 
-		// Call your __cdecl function here:
-		call ReadCWESaveFile
+static void ASM_FUNC ReadCWESaveFileHook() {
+	ASM_PUSH(ASM_ESP(1)); // size
+	ASM_PUSH(edx); // buffer
+	ASM_PUSH(ecx); // path
 
-		pop ecx // path
-		pop edx // buffer
-		add esp, 4 // size
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (ReadCWESaveFile);
+
+	ASM_POP(ecx); // path
+	ASM_POP(edx); // buffer
+	ASM_ESP_ADD( 1 ); // size
+	ASM_RET(0);
 }
 
 #include "usercall.h"
@@ -318,6 +333,10 @@ auto WriteSaveFile = GenerateUsercallWrapper<int(*)(char* path, void* a2, int co
 void SaveCWESaveFiles() {
 	char strBuffer[MAX_PATH];
 	save::SaveCWESave();
+
+	if (gConfigVal.GuestChao && gConfigVal.GuestSave) {
+		Guest_SaveAllChao();
+	}
 
 	for (size_t i = 0; i < ModAPI_SaveAPI.size(); i++)
 	{
@@ -338,236 +357,45 @@ int __cdecl SaveCWESaveFile(char* path, void* a2, int count) {
 	return ret;	
 }
 
-static void __declspec(naked) SaveCWESaveFileHook()
-{
-	__asm
-	{
-		push[esp + 04h] // count
-		push edx // a2
-		push ecx // path
+static void ASM_FUNC SaveCWESaveFileHook() {
+	ASM_PUSH(ASM_ESP(1)); // size
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(ecx); // path
 
-		// Call your __cdecl function here:
-		call SaveCWESaveFile
+	// Call your __cdecl function here:
+	ASM_CALL (SaveCWESaveFile);
 
-		pop ecx // path
-		pop edx // a2
-		add esp, 4 // count
-		retn
-	}
+	ASM_POP(ecx); // path
+	ASM_POP(edx); // a2
+	ASM_ESP_ADD( 1 ); // count
+	ASM_RET(0);
 }
 
-CHAO_SAVE_INFO* GetFreeCWESlot()
-{
-	CHAO_SAVE_INFO* dataPtr = 0;
-	for (int i = 0; i < 24; i++)
-	{
-		if (cweSaveFile.chaoParam[i].data.type == 0)
-		{
-			dataPtr = &cweSaveFile.chaoParam[i];
-			break;
-		}
-	}
-	return dataPtr;
-}
-
-char* GetFreeChaoSlot()
-{
-	signed int v0; // esi
-	
-	v0 = 0;
-	CHAO_SAVE_INFO* dataPtr = 0;
-	for(int i = 0; i < 24; i++)
-	{
-		if (ChaoSlots[i].data.type == 0)
-		{
-			dataPtr = &ChaoSlots[i];
-			break;
-		}
-	}
-	dataPtr = GetFreeCWESlot();
-	if (dataPtr != 0)
-	{
-		memset(dataPtr, 0, sizeof(CHAO_SAVE_INFO));
-		return (char*)dataPtr;
-	}
-	else 
-		return 0;
-}
-int GetFreeChaoCWE(int a1)
-{
-	int count = 0;
-	for (int i = 0; i < 24; i++)
-	{
-		if (cweSaveFile.chaoParam[i].data.type && cweSaveFile.chaoParam[i].data.place == a1)
-			count++;
-	}
-	return count;
-}
-
-int GetFreeChaoCWE2()
-{
-	int count = 0;
-	for (int i = 0; i < 24; i++)
-	{
-		if (cweSaveFile.chaoParam[i].data.type)
-			count++;
-	}
-	return count;
-}
-
-int __cdecl sub_5319F0_(int a1)
-{
-	char* v1; // eax
-	int v2; // edx
-	int v3; // ecx
-
-	v1 = &ChaoSlots[0].data.place;
-	v2 = 0;
-	v3 = 24;
-	do
-	{
-		if (*(v1 - 1) && (unsigned __int8)* v1 == a1)
-		{
-			++v2;
-		}
-		v1 += 2048;
-		--v3;
-	}
-	while (v3);
-
-	return v2 + GetFreeChaoCWE(a1);
-}
-static void __declspec(naked) sub_5319F0()
-{
-	__asm
-	{
-		push esi // a1
-
-		// Call your __cdecl function here:
-		call sub_5319F0_
-
-		pop esi // a1
-		retn
-	}
-}
-DataArray(BlackMarketItem, PurchasedInventory, 0x01DBEDA0, 6);
-int sub_531A20()
-{
-	char* v0; // eax
-	int v1; // edx
-	int v2; // ecx
-	int i; // eax
-	
-	v0 = (char*)&ChaoSlots[0].data.type;
-	v1 = 0;
-	v2 = 24;
-	do
-	{
-		if (*v0)
-		{
-			++v1;
-		}
-		v0 += 2048;
-		--v2;
-	} while (v2);
-	v1 += GetFreeChaoCWE2();
-	for (i = 0; i < *(int*)0x01DBEDAC; ++i)
-	{
-		if (PurchasedInventory[i].Category == 1)
-		{
-			++v1;
-		}
-	}
-	if (!(ChaoGardensUnlocked & 0x10))
-	{
-		v1 += 7;
-	}
-	if (!(ChaoGardensUnlocked & 0x40))
-	{
-		v1 += 7;
-	}
-	return v1;
-}
-void SpawnCWEChao()
-{
-	SpawnAllChaoInGarden();
-	if (AL_IsGarden())
-	{
-		for (int i = 0; i < 24; i++)
-		{
-			CHAO_SAVE_INFO* chao = &cweSaveFile.chaoParam[i];
-			if (chao->data.place == AL_GetStageNumber()
-				&& chao != *(CHAO_SAVE_INFO**)0x01A5CA5C)
-				//&& chao != (ChaoData*)GBAManager_GetChaoDataPointer())
-			{
-				NJS_VECTOR* spawn = &ProbablyChaoSpawnPoints[16 * AL_GetStageNumber()
-					+ (int)(njRandom() * 15.9f) - 16];
-
-				if (chao->data.type)
-				{
-					if (chao->data.type == 1)
-					{
-						CreateChao(chao, 0, 0, spawn, NJM_DEG_ANG(njRandom() * 360.f));
-					}
-					else if (*(char*)&chao->data.InKindergarten == -1)
-					{
-						task* task = CreateChao(
-							chao,
-							0,
-							0,
-							spawn,
-							NJM_DEG_ANG(njRandom() * 360.f));
-						if (task)
-						{
-							if (AL_EmotionGetValue(task, EM_ST_SLEEP_DEPTH))
-							{
-								AL_SetBehavior(task, (BHV_FUNC)0x54EF10);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-void* AL_GetSpecialItemSave()
-{
-	for (int i = 0; i < 30; i++)
-	{
-		if (cweSaveFile.specialItems[i].Type == -1)
+ITEM_SAVE_INFO* AL_GetSpecialItemSave() {
+	for (int i = 0; i < _countof(cweSaveFile.specialItems); i++) {
+		if (cweSaveFile.specialItems[i].kind == -1) {
 			return &cweSaveFile.specialItems[i];
+		}
 	}
-	return 0;
-}
 
+	return NULL;
+}
 
 void AL_SaveInit()
 {
-#ifdef CHAO_48
-	WriteJump((void*)0x531AA0, GetFreeChaoSlot);
-	WriteCall((void*)0x0054C9C2, SpawnCWEChao);
-
-	//has enough space to create egg
-	WriteJump((void*)0x5319F0, sub_5319F0);
-
-	//black market limit
-	WriteJump((void*)0x531A20, sub_531A20);
-	WriteData((char*)0x0058AF4B, (char)48);
-#endif
 	// no mem leftover (just to be safe)
 	memset(&cweSaveFile, 0, sizeof(CWESaveFile));
 	for (int i = 0; i < 30; i++)
-		cweSaveFile.specialItems[i].Type = -1;
-	WriteCall((void*)0x0052DF4C, ReadCWESaveFileHook);
+		cweSaveFile.specialItems[i].kind = -1;
+	WriteCall((void*)0x0052DF4C, (void*)ReadCWESaveFileHook);
 
 	//i hook every single save file load, which also means the second memory card load for karate/transporter which fails on PC
 	//however it causes the cwe savefile to reload which can delete items obtained before saving
 	//hence this being commented out
 	//lot of explanation for something commented out
-	//WriteCall((void*)0x00532653, ReadCWESaveFileHook);
+	//WriteCall((void*)0x00532653, (void*)ReadCWESaveFileHook);
 
-	WriteCall((void*)0x52E2AC, SaveCWESaveFileHook);
-	WriteCall((void*)0x52FECB, SaveCWESaveFileHook);
-	WriteCall((void*)0x532483, SaveCWESaveFileHook);
+	WriteCall((void*)0x52E2AC, (void*)SaveCWESaveFileHook);
+	WriteCall((void*)0x52FECB, (void*)SaveCWESaveFileHook);
+	WriteCall((void*)0x532483, (void*)SaveCWESaveFileHook);
 }

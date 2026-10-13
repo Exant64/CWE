@@ -12,8 +12,6 @@
 
 #include <fstream>
 
-void someUIProjectionCode(const NJS_VECTOR* a1, NJS_VECTOR* a2);
-
 //split this into another file
 struct AL_ChaoSelect {
 	CHAO_SAVE_INFO* m_chaoData;
@@ -32,7 +30,7 @@ void AL_ChaoSelect_DeleteChao(AL_ChaoSelect* chaoSelect) {
 
 	for (size_t i = 0; i < vec.size(); i++) {
 		if (vec[i]) {
-			DeleteObject_(vec[i]);
+			DestroyTask(vec[i]);
 			vec[i] = 0;
 		}
 	}
@@ -53,7 +51,7 @@ void ChaoDisplayHookTest(task* tp) {
 
 	NJS_VECTOR backupPos = tp->twp->pos;
 	tp->twp->pos = { 0,0,0 };
-	Chao_Display(tp);
+	ChaoDisplayer(tp);
 	tp->twp->pos = backupPos;
 
 	OrthoDrawEnd();
@@ -75,23 +73,23 @@ void AL_ChaoSelect_UpdateList(AL_ChaoSelect* chaoSelect) {
 		posIn.x = chaoSelect->m_posX + (i % chaoSelect->m_nbX) * (float)chaoSizeX;
 		posIn.y = chaoSelect->m_posY + (i / chaoSelect->m_nbX) * (float)chaoSizeY;
 		posIn.z = (float)(-54 + chaoSelect->m_zoom * 10); //-31
-		someUIProjectionCode(&posIn, &posOut);
+		chCalcWorldPosFromScreenPos(&posIn, &posOut);
 
 		if (chaoSelect->m_chaoTasks->at(i)) {
-			PrintDebug("AL_ChaoSelect_UpdateList: the vector should be empty, returning");
+			___OutputDebugString("AL_ChaoSelect_UpdateList: the vector should be empty, returning");
 			return;
 		}
 
-		task* obj = CreateChao(&chaoSelect->m_chaoData[i], 0, 0, &posIn, 0);
+		task* obj = CreateChaoExtra(&chaoSelect->m_chaoData[i].param, 0, 0, &posIn, 0);
 		obj->disp = ChaoDisplayHookTest;
 		if (obj) {
-			GET_CHAOWK(obj)->field_B0 &= ~8u;
-			GET_CHAOWK(obj)->field_B0 &= ~2u;
-			GET_CHAOWK(obj)->field_B0 &= ~0x10u;
+			GET_CHAOWK(obj)->ChaoFlag &= ~8u;
+			GET_CHAOWK(obj)->ChaoFlag &= ~2u;
+			GET_CHAOWK(obj)->ChaoFlag &= ~0x10u;
 			chaoSelect->m_chaoTasks->at(i) = obj;
 		}
 		else {
-			PrintDebug("AL_ChaoSelect_UpdateList: couldn't create chao at slot %d in %x", i, chaoSelect->m_chaoData);
+			___OutputDebugString("AL_ChaoSelect_UpdateList: couldn't create chao at slot %d in %x", i, chaoSelect->m_chaoData);
 		}
 	}
 }
@@ -104,7 +102,7 @@ void AL_ChaoSelect_UpdateChaoData(AL_ChaoSelect* chaoSelect, CHAO_SAVE_INFO* pCh
 	//we delete before so the resize doesnt cut off any existing chao
 	AL_ChaoSelect_DeleteChao(chaoSelect);
 
-	int nbPerPage = min(maxChao, chaoSelect->m_nbX * chaoSelect->m_nbY);
+	int nbPerPage = NJM_MIN(maxChao, chaoSelect->m_nbX * chaoSelect->m_nbY);
 	chaoSelect->m_chaoTasks->resize(nbPerPage);
 
 	AL_ChaoSelect_UpdateList(chaoSelect);
@@ -168,20 +166,20 @@ void LoadChaoFiles() {
 	}
 }
 
-DataArray(ChaoHudThingB, MenuArray, 0x11BA528, 0x61);
-void BackButtonDisp(task* a1) {
+DataArray(CHS_BILL_INFO, MenuArray, 0x11BA528, 0x61);
+void BackButtonDisp(task* tp) {
 
 	float v14 = 320;
 	float a3 = 470;
 	float v9 = a3 - 5.0f;
-	float v7 = (njSin(a1->twp->ang.y) *  0.1f) + 1.0f;
+	float v7 = (njSin(tp->twp->ang.y) *  0.1f) + 1.0f;
 	float sizeX = 40.0f;
 
 	*(char*)0x25EFFCC = 1;
 }
 
 void CreateBackButton() {
-	CreateElementalTask(4, "back", [](task*) {}, LoadObj_Data1)->field_1C = BackButtonDisp;
+	CreateElementalTask(IM_TWK, LEV_4, [](task*) {}, "back")->disp_dely = BackButtonDisp;
 }
 
 void AL_OdekakeStorage(ODE_MENU_MASTER_WORK* a1)

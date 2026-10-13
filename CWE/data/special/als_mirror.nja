@@ -5,4 +5,4 @@ Sint16 cnk_Torus_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0xFF, 0x8, 0
 
 NJS_CNK_MODEL cnk_Torus = { cnk_Torus_vtx, cnk_Torus_poly, { -0.1998458f, 0.00000009685755f, 0 }, 1.411072f };
 
-NJS_OBJECT object_als_mirror = { NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Torus, 0, 1, 0, 0x4000, 0, 0xFFFFBFDF, 1, 1, 0.7689692f, NULL, NULL };
+NJS_CNK_OBJECT object_als_mirror = { NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Torus, 0, 1, 0, 0x4000, 0, 0xFFFFBFDF, 1, 1, 0.7689692f, NULL, NULL };

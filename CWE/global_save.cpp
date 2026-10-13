@@ -15,7 +15,7 @@ using namespace rapidjson;
 
 static const char* GlobalSavePath = "./resource/gd_PC/SAVEDATA/CWE_GLOBAL.json";
 // automated system todo
-static const char* CWE_Version = "9.6.1";
+static const char* CWE_Version = "9.6.2 (beta)";
 
 // stolen from modloader's CrashDump.cpp
 
@@ -88,7 +88,7 @@ static std::optional<Document> GlobalSave_Load() {
 	size_t sz = ftell(fp);
 
 	// rapidjson expects a buffer with size of atleast 4
-	sz = max(sz, 4);
+	sz = NJM_MAX(sz, size_t(4));
 	std::unique_ptr<char[]> readBuffer(new char[sz]);
 
 	fseek(fp, 0, SEEK_SET);

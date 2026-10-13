@@ -1,6 +1,6 @@
 #pragma once
 #include "../../cwe_code.h"
-class EggColor : public Code {
+class EggColorCode : public Code {
 public:
 
 	using Code::Code;

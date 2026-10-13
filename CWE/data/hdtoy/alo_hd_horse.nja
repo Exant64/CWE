@@ -4,6 +4,6 @@ Sint16 poly_8DED5F18062ED48454E[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0x
 
 NJS_CNK_MODEL cha_toy_horse_sway_Mesh_0000 = { vertex_8DED5F18062ED48454E, poly_8DED5F18062ED48454E, { 0 }, 0 };
 
-NJS_OBJECT cha_toy_horse_sway_Mesh_0000_1 = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK, &cha_toy_horse_sway_Mesh_0000, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT cha_toy_horse_sway_Mesh_0000_1 = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK, &cha_toy_horse_sway_Mesh_0000, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
 
-NJS_OBJECT cha_toy_horse = { NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE, NULL, -2.999999f, 0, 0, 0, 0, 0, 1, 1, 1, &cha_toy_horse_sway_Mesh_0000_1, NULL };
+NJS_CNK_OBJECT cha_toy_horse = { NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_HIDE, NULL, -2.999999f, 0, 0, 0, 0, 0, 1, 1, 1, &cha_toy_horse_sway_Mesh_0000_1, NULL };

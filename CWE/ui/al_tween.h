@@ -4,7 +4,6 @@
 #include "../memory.h"
 
 #include <math.h>
-#include <corecrt_math_defines.h>
 
 #include "al_tween_types.h"
 #include "al_tween_interp.h"
@@ -24,7 +23,7 @@ struct TweenData {
 	task* Parent;
 };
 
-#define GET_TWEEN_DATA(tp) ((TweenData<T>*)(tp->Data2.Undefined))
+#define GET_TWEEN_DATA(tp) ((TweenData<T>*)(tp->awp))
 
 // so the idea is to template specialize the interpolate functions 
 // for stuff like NJS_POINT2 and colors and such
@@ -35,18 +34,18 @@ static void TweenInterpolateValue(TweenData<T>* data, T* value, const T& origina
 }
 
 template <>
-static void TweenInterpolateValue(TweenData<float>* data, float* value, const float& original, const float& target, float time, float duration) {
+void TweenInterpolateValue(TweenData<float>* data, float* value, const float& original, const float& target, float time, float duration) {
 	*value = data->InterpolationMethod(time, original, target - original, duration);
 }
 
 template <>
-static void TweenInterpolateValue(TweenData<NJS_POINT2>* data, NJS_POINT2* value, const NJS_POINT2& original, const NJS_POINT2& target, float time, float duration) {
+void TweenInterpolateValue(TweenData<NJS_POINT2>* data, NJS_POINT2* value, const NJS_POINT2& original, const NJS_POINT2& target, float time, float duration) {
 	value->x = data->InterpolationMethod(time, original.x, target.x - original.x, duration);
 	value->y = data->InterpolationMethod(time, original.y, target.y - original.y, duration);
 }
 
 template <>
-static void TweenInterpolateValue(TweenData<NJS_POINT3>* data, NJS_POINT3* value, const NJS_POINT3& original, const NJS_POINT3& target, float time, float duration) {
+void TweenInterpolateValue(TweenData<NJS_POINT3>* data, NJS_POINT3* value, const NJS_POINT3& original, const NJS_POINT3& target, float time, float duration) {
 	value->x = data->InterpolationMethod(time, original.x, target.x - original.x, duration);
 	value->y = data->InterpolationMethod(time, original.y, target.y - original.y, duration);
 	value->z = data->InterpolationMethod(time, original.z, target.z - original.z, duration);
@@ -58,7 +57,7 @@ static void TweenExecutor(task* tp) {
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);
 
 	if (tween->Timer == tween->FrameCount + 1) {
-		tp->exec = DeleteObject_;
+		tp->exec = DestroyTask;
 
 		if (tween->TweenPointer) {
 			*tween->TweenPointer = NULL;
@@ -85,7 +84,7 @@ static void TweenExecutor(task* tp) {
 
 static void TweenDestructor(task* tp) {
 	// technically the callback call could go in here too, but I feel more comfortable with putting this logic in the mainsub
-	FREE(tp->Data2.Undefined);
+	FREE(tp->awp);
 }
 
 template <typename T>
@@ -99,13 +98,13 @@ task* CreateTween(task* parent, const EASE_TYPE easingMode, const INTERP_TYPE in
 	task* tp;
 
 	if (parent == nullptr) {
-		tp = CreateElementalTask(4, "AL_Tween", TweenExecutor<T>, (LoadObj)0);
+		tp = CreateElementalTask(0, LEV_4, TweenExecutor<T>, "AL_Tween");
 	}
 	else {
-		tp = CreateChildTask((LoadObj)0, TweenExecutor<T>, parent);
+		tp = CreateChildTask(0, TweenExecutor<T>, parent);
 	}
 
-	tp->Data2.Undefined = ALLOC(TweenData<T>);
+	tp->awp = (anywk*)ALLOC(TweenData<T>);
 	tp->dest = TweenDestructor;
 
 	TweenData<T>* tween = GET_TWEEN_DATA(tp);

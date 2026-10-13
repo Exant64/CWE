@@ -4,18 +4,18 @@
 
 void PlayerSpeed::OnALControl(task* tp) {
 	for (int i = 0; i < 2; i++) {
-		if (!MainCharObj2[i]) continue;
+		if (!playerpwp[i]) continue;
 
-		switch(MainCharObj2[i]->CharID2) {
-		case Characters_Tails:
-			MainCharObj2[i]->PhysData.BaseSpeed = 2;
+		switch(playerpwp[i]->character) {
+		case PLNO_MILES:
+			playerpwp[i]->p.max_x_spd = 2;
 			break;
 			
-		case Characters_MetalSonic:
-			MainCharObj2[i]->PhysData.GroundDecel = -0.06f;
-			MainCharObj2[i]->PhysData.BrakeSpeed = -0.18f;
-			MainCharObj2[i]->PhysData.AirBrakeSpeed = -0.17f;
-			MainCharObj2[i]->PhysData.AirDecel = -0.028f;
+		case PLNO_METAL_SONIC:
+			playerpwp[i]->p.slow_down = -0.06f;
+			playerpwp[i]->p.run_break = -0.18f;
+			playerpwp[i]->p.air_break = -0.17f;
+			playerpwp[i]->p.air_resist_air = -0.028f;
 			break;
 		}
 	}

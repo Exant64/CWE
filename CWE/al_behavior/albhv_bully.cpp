@@ -5,6 +5,8 @@
 
 #include <memory.h>
 #include "al_behavior.h"
+#include <playsound.h>
+#include <ninja_functions.h>
 
 enum {
     HIT_TYPE_PUNCH,
@@ -20,7 +22,7 @@ enum {
 // and if any of them signal ALW_CMD_CHANGE, send it to everyone and destroy itself
 
 static void BullyStopperScenario (task* tp) {
-	al_entry_work* pEntry = (al_entry_work*)tp->UnknownA_ptr;
+	ALW_ENTRY_WORK* pEntry = (ALW_ENTRY_WORK*)tp->fwp;
 
 	for(size_t i = 0; i < 3; i++) {
 		if(pEntry[i].command != ALW_CMD_CHANGE) {
@@ -38,25 +40,25 @@ static void BullyStopperScenario (task* tp) {
 			pEntry[j].pCommu->pCommu = nullptr;
 		}
 
-		DeleteObject_(tp);
+		DestroyTask(tp);
 		break;
 	}
 }
 
 static void CreateBullyStopperScenario(task* pBully, task* pVictim, task* pStopper) {
-	task* tp = CreateElementalTask(4, "BullyStopManager", BullyStopperScenario, (LoadObj)0);
+	task* tp = CreateElementalTask(0, LEV_4, BullyStopperScenario, "BullyStopManager");
 
 	// create 3 fake entries that each chao will communicate with
-	al_entry_work* pEntry = ALLOC_ARRAY(3, al_entry_work);
-	tp->UnknownA_ptr = (ObjUnknownA*)pEntry;
+	ALW_ENTRY_WORK* pEntry = ALLOC_ARRAY(3, ALW_ENTRY_WORK);
+	tp->fwp = (forcewk*)pEntry;
 
 	for(size_t i = 0; i < 3; i++) {
 		ALW_ResetEntry(&pEntry[i]);
 	}
 
-	pEntry[0].pCommu = (al_entry_work*)pBully->UnknownA_ptr;
-	pEntry[1].pCommu = (al_entry_work*)pVictim->UnknownA_ptr;
-	pEntry[2].pCommu = (al_entry_work*)pStopper->UnknownA_ptr;
+	pEntry[0].pCommu = (ALW_ENTRY_WORK*)pBully->fwp;
+	pEntry[1].pCommu = (ALW_ENTRY_WORK*)pVictim->fwp;
+	pEntry[2].pCommu = (ALW_ENTRY_WORK*)pStopper->fwp;
 
 	for(size_t i = 0; i < 3; i++) {
 		pEntry[i].pCommu->pCommu = &pEntry[i];
@@ -98,7 +100,7 @@ static int ALBHV_HitChao(task* tp) {
 			break;
 
 		case 2: {
-            const int dmgType = int(njRandom() * NB_HIT_TYPE);
+            const int dmgType = int(njRandom() * float(NB_HIT_TYPE));
 
             AL_FaceChangeEye(tp, ChaoEyes_Mean);
 
@@ -117,7 +119,7 @@ static int ALBHV_HitChao(task* tp) {
                     break;
             }
 
-			PlaySound_XYZ(0x601E, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+			AL_SE_CallV2(TONE(6, 0x1E), 0, 0, 110, &GET_CHAOWK(tp)->pos);
 
 			// this may feel hacky, but I decided it's the best way to sync up the sequence
 			// if you think about it, it's the same thing as a behaviorinterrupt
@@ -188,7 +190,7 @@ static int ALBHV_WaitForStopper(task* tp) {
 				AL_FaceChangeEye(tp, ChaoEyes_Painful);
 
 				if(njRandom() < 0.7f) {
-					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+					AL_SE_CallV2(TONE(6, 0x2D), 0, 0, 110, &GET_CHAOWK(tp)->pos);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -236,10 +238,10 @@ static int ALBHV_GetHit(task* tp) {
 
 			
             if(njRandom() < 0.5f) {
-				PlaySound_XYZ(24617, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+				AL_SE_CallV2(TONE(6, 0x29), 0, 0, 110, &GET_CHAOWK(tp)->pos);
             }
             else {
-				PlaySound_XYZ(24685, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+				AL_SE_CallV2(TONE(6, 0x6D), 0, 0, 110, &GET_CHAOWK(tp)->pos);
             }
 
             bhv->Mode++;
@@ -347,7 +349,7 @@ static int ALBHV_AfraidWait(task* tp) {
 		case AFRAIDWAIT_TURN: 
 			if (ALW_TurnToLockOn(tp, 384) < 384) {
 				if(njRandom() < 0.7f) {
-					PlaySound_XYZ(0x602D, &GET_CHAOWK(tp)->entity.pos, 0, 0, 110);
+					AL_SE_CallV2(TONE(6, 0x2D), 0, 0, 110, &GET_CHAOWK(tp)->pos);
 				}
 
 				if (njRandom() < 0.5f) {
@@ -461,27 +463,23 @@ int ALBHV_ConfidentWait(task* tp) {
 	return BHV_RET_CONTINUE;
 }
 
-static bool IsChaoAttackCapable(task* tp) {
-	
-}
-
 static task* FindChaoToBully(task* tp) {
     chaowk* work = GET_CHAOWK(tp);
     task* pSelectedChao = NULL;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		if (!pChao || pChao == tp) continue;
 		
 		BHV_FUNC func = AL_GetBehavior(pChao);
 
 		//not in water 
-		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < GET_MOVE_WORK(pChao)->WaterY) continue;
 
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				float dist = CheckDistance(&work->entity.pos, &pChao->twp->pos);
+				float dist = njDistanceP2P(&work->pos, &pChao->twp->pos);
 
 				if (dist < 100.f) {
 					pSelectedChao = pChao;
@@ -500,7 +498,7 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 	float distClosest = 100.f;
 
 	for (size_t i = 0; i < ALW_CountEntry(0) && !pSelectedChao; i++) {
-		task* pChao = GetChaoObject(0, i);
+		task* pChao = ALW_GetTaskCount(0, i);
 		chaowk* work = GET_CHAOWK(pChao);
 
 		if (!pChao || pChao == pBullyChao || pChao == pVictimChao) continue;
@@ -509,14 +507,14 @@ static task* FindStopperChao(task* pBullyChao, task* pVictimChao) {
 		if (!AL_IsHero2(pChao) && AL_EmotionGetValue(pChao, EM_PER_KINDNESS) < 10) continue;
 		
 		//not in water 
-		if (pChao->twp->pos.y + 2.0 < pChao->EntityData2->field_DC) continue;
+		if (pChao->twp->pos.y + 2.0 < GET_MOVE_WORK(pChao)->WaterY) continue;
 
 		const BHV_FUNC func = AL_GetBehavior(pChao);
 		
 		//go through allowed behaviors
 		for (size_t j = 0; j < LengthOfArray(ALBHV_BullyAllowed); j++) {
 			if (func == ALBHV_BullyAllowed[j]) {
-				const float dist = CheckDistance(&GET_CHAOWK(pBullyChao)->entity.pos, &work->entity.pos);
+				const float dist = njDistanceP2P(&GET_CHAOWK(pBullyChao)->pos, &work->pos);
 
 				if (dist < distClosest) {
 					pSelectedChao = pChao;
@@ -625,11 +623,11 @@ void AL_CalcIntentionScore_Bully(task* tp, float* pMaxScore) {
     ALW_LockOn(tp, pVictimChao);
     ALW_LockOn(pVictimChao, tp);
 
-	const int angerDecrease = max(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
+	const int angerDecrease = NJM_MAX(0, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE)) - 100;
 	AL_EmotionAdd(tp, EM_MD_ANGER, angerDecrease);
 
 	const bool canDefendThemselves = (GET_CHAOPARAM(pVictimChao)->Skill[3] - GET_CHAOPARAM(tp)->Skill[3]) > 500 || 
-		(GET_CHAOPARAM(pVictimChao)->KarateInfo - GET_CHAOPARAM(tp)->KarateInfo) >= 5;
+		(GET_CHAOPARAM(pVictimChao)->karate.rank - GET_CHAOPARAM(tp)->karate.rank) >= 5;
 
 	if (!canDefendThemselves && pStopperChao) {
 		// warning: not the prettiest, no existing systems were really appropriate for this

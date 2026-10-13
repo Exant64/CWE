@@ -191,13 +191,13 @@ void IniGroup::setIntRadix(const string& key, int radix, int val)
 	switch (radix)
 	{
 	case 8:
-		snprintf(buf, LengthOfArray(buf), "%o", val);
+		snprintf(buf, LengthOfArray<size_t>(buf), "%o", val);
 		break;
 	case 16:
-		snprintf(buf, LengthOfArray(buf), "%x", val);
+		snprintf(buf, LengthOfArray<size_t>(buf), "%x", val);
 		break;
 	default:
-		snprintf(buf, LengthOfArray(buf), "%d", val);
+		snprintf(buf, LengthOfArray<size_t>(buf), "%d", val);
 		break;
 	}
 #endif

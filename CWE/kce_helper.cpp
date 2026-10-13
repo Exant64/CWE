@@ -24,7 +24,7 @@ struct KCE_HELPER {
 
 	CWESaveFile* pCweSave;
 
-	SAlItem* pPurchasedItems;
+	SAlItemCwe* pPurchasedItems;
 
 	int* pLensSpecialMap;
 	size_t LensSpecialMapSize;
@@ -46,7 +46,7 @@ static KCE_HELPER kce_helper;
 static void KCE_UpdateAccessories() {
 	kce_helper.AccessoryInfoVersion = 1;
 
-	const auto& ids = ItemMetadata::Get()->GetIDs(ChaoItemCategory_Accessory);
+	const auto& ids = ItemMetadata::Get()->GetIDs(ALW_CATEGORY_ACCESSORY);
 	KCE_ACCESSORY_INFO* info = new KCE_ACCESSORY_INFO[ids.size()];
 	for (size_t i = 0; i < ids.size(); ++i) {
 		info[i].ColorCount = GetAccessoryColorCount(i);

@@ -1,9 +1,13 @@
 #include "stdafx.h"
+#include "FunctionHook.h"
+#include "al_world.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <array>
 
+#include "asmutil.h"
 #include "alg_kinder_bl.h"
 #include "al_minimal.h"
 #include "ninja_functions.h"
@@ -13,6 +17,7 @@
 #include "ChaoMain.h"
 #include "alo_fruit.h"
 #include "AL_ModAPI.h"
+#include "playsound.h"
 
 #include "data/cwe/object_common_cnk/alo_mannequin.nja"
 #include "data/accessory/ala_full_mannequin.nja"
@@ -27,7 +32,6 @@
 #include "al_marketattr.h"
 
 #include "ui/al_ortho.h"
-#include "ALifeSDK_Functions.h"
 #include "al_stage.h"
 #include "al_msg_font.h"
 #include "al_chao_info.h"
@@ -38,20 +42,22 @@
 
 #include <renderfix.h>
 
+static NJS_TEXLIST* texlist_cwe_market = NULL;
+
 const std::array<int, MarketTabCount> MarketTabIndices =
 {
-	ChaoItemCategory_Egg,
-	ChaoItemCategory_Fruit,
-	ChaoItemCategory_Seed,
-	ChaoItemCategory_Hat,
-	ChaoItemCategory_Accessory,
-	ChaoItemCategory_Special,
-	ChaoItemCategory_MenuTheme
+	ALW_CATEGORY_EGG,
+	ALW_CATEGORY_FRUIT,
+	ALW_CATEGORY_SEED,
+	ALW_CATEGORY_MASK,
+	ALW_CATEGORY_ACCESSORY,
+	ALW_CATEGORY_SPECIAL,
+	ALW_CATEGORY_THEME
 };
 #define TabCategory MarketTabIndices[a1->currentTab]
 
 #pragma pack(push, 8)
-struct __declspec(align(4)) ALK_WINDOW_TABLE
+struct ALIGN(4) ALK_WINDOW_TABLE
 {
 	float posX;
 	float posY;
@@ -81,17 +87,17 @@ struct ALK_SWINDOW_TABLE
 	char* checkID;
 };
 
-std::array<std::unordered_set<int>, ChaoItemCategory_Count> AlItemRebuyable;
-bool AlItemIsRebuyable(const SAlItem& pItem) {
+std::array<std::unordered_set<int>, NB_CWE_CATEGORY> AlItemRebuyable;
+bool AlItemIsRebuyable(const SAlItemCwe& pItem) {
 	const auto& rebuyflags = AlItemRebuyable[pItem.mCategory];
-	if (rebuyflags.contains(pItem.mType)) //check if dict has the item
+	if (rebuyflags.contains(pItem.mId)) //check if dict has the item
 		return true;
 
 	return false;
 }
 
 void BlackMarketAddInventory(int cat, int item);
-SAlItem* BM_GetInv(BlackMarketData* a1, int a2)
+SAlItemCwe* BM_GetInv(BlackMarketData* a1, int a2)
 {
 	if (a2 < 0)
 		a2 = a1->mBuyListCursor;
@@ -99,7 +105,7 @@ SAlItem* BM_GetInv(BlackMarketData* a1, int a2)
 	return &GetMarketInventory(TabCategory)[a2];
 }
 
-SAlItem* BM_GetSelectedItem(BlackMarketData* a1) {
+SAlItemCwe* BM_GetSelectedItem(BlackMarketData* a1) {
 	return &GetMarketInventory(TabCategory)[a1->mBuyListCursor];
 }
 int BM_GetInvSize(BlackMarketData* a1)
@@ -107,21 +113,21 @@ int BM_GetInvSize(BlackMarketData* a1)
 	return GetMarketInvSize(TabCategory);
 }
 
-const int ALO_Kinder_Window_LoadPtr = 0x05A92B0;
-task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color)
-{
-	task* retval;
-	__asm
-	{
-		mov eax, result
-		push color
-		push a3
-		push dword ptr[layer]
-		call ALO_Kinder_Window_LoadPtr
-		add esp, 12
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC task* ALO_Kinder_Window_Load(task* result, char layer, ALK_WINDOW_TABLE* a3, int color) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // color
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // layer
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x05A92B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 #define ITEMSINBUYLIST 5
@@ -138,13 +144,13 @@ void GeneralFruit()
 {
 	for (size_t i = 0; i < GeneralFruitMarket.size(); i++)
 	{
-		if (GetMarketInvSize(ChaoItemCategory_Fruit) >= BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_FRUIT) >= BlackMarketInventorySize)
 			break;
 
 		int v11 = (signed int)(njRandom() * 100.f);
 		if (v11 < GeneralFruitMarket[i].chance)
 		{
-			BlackMarketAddInventory(ChaoItemCategory_Fruit, GeneralFruitMarket[i].item);
+			BlackMarketAddInventory(ALW_CATEGORY_FRUIT, GeneralFruitMarket[i].item);
 		}
 	}
 
@@ -153,21 +159,21 @@ void RareFruit()
 {
 	for (size_t i = 0; i < RareFruitMarket.size(); i++)
 	{
-		if (GetMarketInvSize(ChaoItemCategory_Fruit) >= BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_FRUIT) >= BlackMarketInventorySize)
 			break;
 
 		int v11 = (signed int)(njRandom() * 100.0f);
 		int item = RareFruitMarket[i].item;
-		if (item == SA2BFruit_Mushroom)
+		if (item == ChaoFruit_Mushroom)
 		{
 			if (njRandom() < 0.3f)
-				item = SA2BFruit_MushroomAlt;
+				item = ChaoFruit_MushroomAlt;
 		}
-		if (EmblemCount >= CategoryAttribs[ChaoItemCategory_Fruit].attrib[item].RequiredEmblems)
+		if (SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_FRUIT].attrib[item].RequiredEmblems)
 		{
 			if (v11 < RareFruitMarket[i].chance)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_Fruit, item);
+				BlackMarketAddInventory(ALW_CATEGORY_FRUIT, item);
 			}
 		}
 	}
@@ -179,7 +185,7 @@ struct SSet100
 {
 	unsigned int flag[8];
 };
-struct __declspec(align(2)) SSellEgg
+struct ALIGN(2) SSellEgg
 {
 	__int16 emblem0;
 	__int16 emblem1;
@@ -195,12 +201,12 @@ void BlackMarketAddInventory(int cat, int item)
 	if (cweSaveFile.marketInventoryCount[cat] < BlackMarketInventorySize)
 	{
 		GetMarketInventory(cat)[cweSaveFile.marketInventoryCount[cat]].mCategory = cat;
-		GetMarketInventory(cat)[cweSaveFile.marketInventoryCount[cat]].mType = item;
+		GetMarketInventory(cat)[cweSaveFile.marketInventoryCount[cat]].mId = item;
 		cweSaveFile.marketInventoryCount[cat]++;
 	}
 }
 
-void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category) {
+void FBuyListAddSet100(std::vector<bool>& set, Sint8 category) {
 	for (size_t i = 0; i < set.size(); i++) {
 		if (set[i]) {
 			BlackMarketAddInventory(category, i);
@@ -209,14 +215,14 @@ void FBuyListAddSet100(std::vector<bool>& set, ChaoItemCategory category) {
 	}
 }
 
-static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const size_t minItems = 3, const size_t maxItems = BlackMarketInventorySize) {
+static void FBuyListUniformDistributionUpdate(Sint8 category, const size_t minItems = 3, const size_t maxItems = BlackMarketInventorySize) {
 	static std::random_device random_dev;
 	static std::mt19937 generator(random_dev());
 
 	const auto& itemAttribs = BlackMarketCategories[category];
 	size_t totalObtainableItem = 0;
 	for(size_t i = 0; i < itemAttribs.Count; ++i) {
-		if (EmblemCount < itemAttribs.attrib[i].RequiredEmblems) continue;
+		if (SaveData.emblemNum < itemAttribs.attrib[i].RequiredEmblems) continue;
 
 		totalObtainableItem++;
 	}
@@ -224,12 +230,12 @@ static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const s
 	std::uniform_int_distribution<int> distr(0, totalObtainableItem - 1);
 
 	const size_t randomItemCount = minItems + size_t(njRandom() * (maxItems - minItems - 0.1f));
-	const size_t itemCount = min(totalObtainableItem, randomItemCount);
+	const size_t itemCount = NJM_MIN(totalObtainableItem, randomItemCount);
 	std::set<size_t> items; 
 
 	while (items.size() < itemCount) {
 		const size_t id = distr(generator);
-		if (EmblemCount < itemAttribs.attrib[id].RequiredEmblems) continue;
+		if (SaveData.emblemNum < itemAttribs.attrib[id].RequiredEmblems) continue;
 
 		items.insert(id);
 	}
@@ -239,31 +245,28 @@ static void FBuyListUniformDistributionUpdate(ChaoItemCategory category, const s
 	}
 }
 
-SAlItem* __cdecl sub_58B120(SAlItem* result)
+SAlItemCwe* __cdecl sub_58B120(SAlItemCwe* result)
 {
 	result->mCategory = AL_GetHoldingItemCategory();
-	result->mType = AL_GetHoldingItemKind();
+	result->mId = AL_GetHoldingItemKind();
 
 	return result;
 }
-static void __declspec(naked) sub_58B120Hook()
-{
-	__asm
-	{
-		push eax // result
 
-		// Call your __cdecl function here:
-		call sub_58B120
-		
-		add esp, 4 // result<eax> is also used for return value
-		retn
-	}
+static void ASM_FUNC sub_58B120Hook() {
+	ASM_PUSH(eax); // result
+
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58B120);
+	
+	ASM_ESP_ADD( 1 ); // result<eax> is also used for return value
+	ASM_RET(0);
 }
 
-void FBuyListGenericUpdate(ChaoItemCategory cat, float change = 0.75f) {
+void FBuyListGenericUpdate(Sint8 cat, float change = 0.75f) {
 	for (int i = 0; i < BlackMarketCategories[cat].Count; i++)
 	{
-		if (EmblemCount >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
+		if (SaveData.emblemNum >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
 		{
 			BlackMarketAddInventory(cat, i);
 		}
@@ -271,12 +274,12 @@ void FBuyListGenericUpdate(ChaoItemCategory cat, float change = 0.75f) {
 }
 
 void FBuyListGenericUpdateSeed(float change = 0.75f) {
-	ChaoItemCategory cat = ChaoItemCategory_Seed;
+	Sint8 cat = ALW_CATEGORY_SEED;
 	//+ 1 because the ones after vanilla seeds
 	//theres a filler one starting at custom ones (to correspond with tree IDs), but its emblem count is 999 so it shouldnt ever be rolled
 	for (int i = ChaoSeed_SquareSeed + 1; i < BlackMarketCategories[cat].Count; i++)
 	{
-		if (EmblemCount >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
+		if (SaveData.emblemNum >= BlackMarketCategories[cat].attrib[i].RequiredEmblems && njRandom() >= change)
 		{
 			BlackMarketAddInventory(cat, i);
 		}
@@ -291,12 +294,12 @@ static void FBuyListUpdateAccessory() {
 	std::vector<size_t> allMods;
 	std::unordered_map<size_t, std::vector<size_t>> allAccessories;
 
-	for(size_t i = 0; i < attrib->Size(ChaoItemCategory_Accessory); ++i) {
-		if (EmblemCount < attrib->Attrib(ChaoItemCategory_Accessory, i)->RequiredEmblems) {
+	for(size_t i = 0; i < attrib->Size(ALW_CATEGORY_ACCESSORY); ++i) {
+		if (SaveData.emblemNum < attrib->Attrib(ALW_CATEGORY_ACCESSORY, i)->RequiredEmblems) {
 			continue;
 		}
 
-		const auto modIndex = attrib->GetModIndex(ChaoItemCategory_Accessory, i);
+		const auto modIndex = attrib->GetModIndex(ALW_CATEGORY_ACCESSORY, i);
 		
 		if(!setMods.contains(modIndex)) {
 			setMods.insert(modIndex);
@@ -309,13 +312,13 @@ static void FBuyListUpdateAccessory() {
 		allAccessories[modIndex].push_back(i);
 	}
 
-	const size_t totalCount = min(BlackMarketInventorySize, size_t(6.f + njRandom() * 26.999f));
+	const size_t totalCount = NJM_MIN(size_t(BlackMarketInventorySize), size_t(6.f + njRandom() * 26.999f));
 	for(size_t i = 0; i < totalCount; ++i) {
 		if(allMods.empty()) {
 			break;
 		}
 
-		if (cweSaveFile.marketInventoryCount[ChaoItemCategory_Accessory] >= BlackMarketInventorySize) {
+		if (cweSaveFile.marketInventoryCount[ALW_CATEGORY_ACCESSORY] >= BlackMarketInventorySize) {
 			break;
 		}
 
@@ -328,7 +331,7 @@ static void FBuyListUpdateAccessory() {
 		const auto entryIndex = size_t(njRandom() * (float(accessoryEntries.size()) - 0.0001f));
 		const auto selectedAcc = accessoryEntries[entryIndex];
 
-		BlackMarketAddInventory(ChaoItemCategory_Accessory, selectedAcc);
+		BlackMarketAddInventory(ALW_CATEGORY_ACCESSORY, selectedAcc);
 
 		accessoryEntries.erase(accessoryEntries.begin() + entryIndex);
 
@@ -355,17 +358,20 @@ void FBuyListUpdate()
 
 	static std::vector<bool> set(255);
 
+	// todo: this is probably in AL_GetCurrGardenInfo
+	DataPointer(int, BlackMarketItemCount, 0x1DBED90);
 	BlackMarketItemCount = 1;
+
 	memset(cweSaveFile.marketInventoryCount, 0, sizeof(cweSaveFile.marketInventoryCount));
 	memset(cweSaveFile.marketInventory, 0, sizeof(cweSaveFile.marketInventory));
 
 	v3 = 0;
-	for (int i = 0; i < kSellEggList_Length; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		if (EmblemCount >= kSellEggList[i].emblem0)
+		if (SaveData.emblemNum >= kSellEggList[i].emblem0)
 		{
 			int selectedEggID = kSellEggList[i].id[((*(int*)0x19F6464 + *(int*)0x19F6468) & 0x7FFFFFFF) % 3];
-			if (EmblemCount >= kSellEggList[i].emblem1) //shiny emblem
+			if (SaveData.emblemNum >= kSellEggList[i].emblem1) //shiny emblem
 			{
 				if (njRandom() < 0.3)
 				{
@@ -380,7 +386,7 @@ void FBuyListUpdate()
 	{
 		v22 = 0;
 
-		if (GetMarketInvSize(ChaoItemCategory_Egg) < BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_EGG) < BlackMarketInventorySize)
 		{
 			do
 			{
@@ -393,9 +399,9 @@ void FBuyListUpdate()
 				++v22;
 				set.at(*v23) = true;
 				*v23 = (char)v54[v3];
-			} while (v22 + GetMarketInvSize(ChaoItemCategory_Egg) < BlackMarketInventorySize);
+			} while (v22 + GetMarketInvSize(ALW_CATEGORY_EGG) < BlackMarketInventorySize);
 		}
-		FBuyListAddSet100(set, ChaoItemCategory_Egg);
+		FBuyListAddSet100(set, ALW_CATEGORY_EGG);
 	}
 	else
 	{
@@ -403,18 +409,18 @@ void FBuyListUpdate()
 		{
 			for (int i = 0; i < v3; i++)
 			{
-				if (GetMarketInvSize(ChaoItemCategory_Egg) >= BlackMarketInventorySize)
+				if (GetMarketInvSize(ALW_CATEGORY_EGG) >= BlackMarketInventorySize)
 				{
 					break;
 				}
-				BlackMarketAddInventory(ChaoItemCategory_Egg, v54[i]);
+				BlackMarketAddInventory(ALW_CATEGORY_EGG, v54[i]);
 			}
 		}
 	}
 
 	GeneralFruit();
 	v16 = 0;
-	if (GetMarketInvSize(ChaoItemCategory_Fruit) < BlackMarketInventorySize)
+	if (GetMarketInvSize(ALW_CATEGORY_FRUIT) < BlackMarketInventorySize)
 	{
 		do
 		{
@@ -428,23 +434,23 @@ void FBuyListUpdate()
 				set.at(id) = true;
 				++v16;
 			}
-		} while (v16 + GetMarketInvSize(ChaoItemCategory_Fruit) < BlackMarketInventorySize);
+		} while (v16 + GetMarketInvSize(ALW_CATEGORY_FRUIT) < BlackMarketInventorySize);
 	}
-	FBuyListAddSet100(set, ChaoItemCategory_Fruit);
+	FBuyListAddSet100(set, ALW_CATEGORY_FRUIT);
 
-	if (GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize)
+	if (GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize)
 	{
-		BlackMarketAddInventory(ChaoItemCategory_Seed, 0);
-		if (GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize)
+		BlackMarketAddInventory(ALW_CATEGORY_SEED, 0);
+		if (GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize)
 		{
 			if (njRandom() < 0.7f)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_Seed, byte_8A2EFC[(signed int)(njRandom() * 3.f)]);
+				BlackMarketAddInventory(ALW_CATEGORY_SEED, byte_8A2EFC[(signed int)(njRandom() * 3.f)]);
 			}
 		}
 	}
 	v26 = 0;
-	if (GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize)
+	if (GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize)
 	{
 		do
 		{
@@ -458,19 +464,19 @@ void FBuyListUpdate()
 				set.at(id) = true;
 				++v26;
 			}
-		} while (v26 + GetMarketInvSize(ChaoItemCategory_Seed) < BlackMarketInventorySize);
+		} while (v26 + GetMarketInvSize(ALW_CATEGORY_SEED) < BlackMarketInventorySize);
 	}
-	FBuyListAddSet100(set, ChaoItemCategory_Seed);
+	FBuyListAddSet100(set, ALW_CATEGORY_SEED);
 
-	v29 = CategoryAttribs[ChaoItemCategory_Hat].attrib;
+	v29 = CategoryAttribs[ALW_CATEGORY_MASK].attrib;
 	v30 = 0;
 	v31 = 0;
 	do
 	{
-		if (v31 != SA2BHat_BlueWoolBeanie
-			&& v31 != SA2BHat_BlackWoolBeanie
+		if (v31 != ChaoHat_BlueWoolBeanie
+			&& v31 != ChaoHat_BlackWoolBeanie
 			&& v29->PurchasePrice > 0
-			&& EmblemCount >= v29->RequiredEmblems)
+			&& SaveData.emblemNum >= v29->RequiredEmblems)
 			//&& (njRandom()) > 0.5
 			//&& v31 < 32)
 		{
@@ -478,12 +484,12 @@ void FBuyListUpdate()
 		}
 		++v31;
 		++v29;
-	} while (v31 < CategoryAttribs[ChaoItemCategory_Hat].Count);
+	} while (v31 < CategoryAttribs[ALW_CATEGORY_MASK].Count);
 	if (v30 > 5)
 	{
 		v35 = 0;
 
-		if (GetMarketInvSize(ChaoItemCategory_Hat) < BlackMarketInventorySize)
+		if (GetMarketInvSize(ALW_CATEGORY_MASK) < BlackMarketInventorySize)
 		{
 			do
 			{
@@ -492,23 +498,23 @@ void FBuyListUpdate()
 					break;
 				}
 				int id = v54[(signed int)(njRandom() * (float)v30)];
-				if (id == SA2BHat_RedWoolBeanie)
+				if (id == ChaoHat_RedWoolBeanie)
 				{
 					v38 = (signed int)(njRandom() * 31.f);
 					if (v38 >= 5)
 					{
 						if (v38 < 15
-							&& EmblemCount >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlueWoolBeanie].RequiredEmblems)
+							&& SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_MASK].attrib[ChaoHat_BlueWoolBeanie].RequiredEmblems)
 						{
-							id = SA2BHat_BlueWoolBeanie;
+							id = ChaoHat_BlueWoolBeanie;
 						}
 					}
-					else if (EmblemCount >= CategoryAttribs[ChaoItemCategory_Hat].attrib[SA2BHat_BlackWoolBeanie].RequiredEmblems)
+					else if (SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_MASK].attrib[ChaoHat_BlackWoolBeanie].RequiredEmblems)
 					{
-						id = SA2BHat_BlackWoolBeanie;
+						id = ChaoHat_BlackWoolBeanie;
 					}
 				}
-				if (EmblemCount >= CategoryAttribs[ChaoItemCategory_Hat].attrib[id].RequiredEmblems)
+				if (SaveData.emblemNum >= CategoryAttribs[ALW_CATEGORY_MASK].attrib[id].RequiredEmblems)
 				{
 					if (!set.at(id))
 					{
@@ -516,18 +522,18 @@ void FBuyListUpdate()
 						++v35;
 					}
 				}
-			} while (v35 + GetMarketInvSize(ChaoItemCategory_Hat) < BlackMarketInventorySize);
+			} while (v35 + GetMarketInvSize(ALW_CATEGORY_MASK) < BlackMarketInventorySize);
 		}
-		FBuyListAddSet100(set, ChaoItemCategory_Hat);
+		FBuyListAddSet100(set, ALW_CATEGORY_MASK);
 	}
 	else
 	{
 		if (v30 > 0)
 		{
 			for (int i = 0; i < v30; i++)
-				if (GetMarketInvSize(ChaoItemCategory_Hat) < BlackMarketInventorySize)
+				if (GetMarketInvSize(ALW_CATEGORY_MASK) < BlackMarketInventorySize)
 				{
-					BlackMarketAddInventory(ChaoItemCategory_Hat, v54[i]);
+					BlackMarketAddInventory(ALW_CATEGORY_MASK, v54[i]);
 				}
 		}
 	}
@@ -535,24 +541,25 @@ void FBuyListUpdate()
 	FBuyListGenericUpdateSeed();
 
 	FBuyListUpdateAccessory();
-	FBuyListGenericUpdate(ChaoItemCategory_Special);
+	FBuyListGenericUpdate(ALW_CATEGORY_SPECIAL);
 
 	RareFruit();
 
-	if (HaveBattleDLC && GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize)
+	DataPointer(int, HaveBattleDLC, 0x1A556F4);
+	if (HaveBattleDLC && GetMarketInvSize(ALW_CATEGORY_THEME) < BlackMarketInventorySize)
 	{
-		if (!*(unsigned char*)0x1DEB367 && EmblemCount >= CategoryAttribs[16].attrib->RequiredEmblems)
+		if (!*(unsigned char*)0x1DEB367 && SaveData.emblemNum >= CategoryAttribs[16].attrib->RequiredEmblems)
 		{
 			if (njRandom() < 0.1f)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 0);
+				BlackMarketAddInventory(ALW_CATEGORY_THEME, 0);
 			}
 		}
-		if (GetMarketInvSize(ChaoItemCategory_MenuTheme) < BlackMarketInventorySize && !*(unsigned char*)0x1DEB364 && EmblemCount >= CategoryAttribs[16].attrib[1].RequiredEmblems)
+		if (GetMarketInvSize(ALW_CATEGORY_THEME) < BlackMarketInventorySize && !*(unsigned char*)0x1DEB364 && SaveData.emblemNum >= CategoryAttribs[16].attrib[1].RequiredEmblems)
 		{
 			if (njRandom() < 0.1f)
 			{
-				BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 1);
+				BlackMarketAddInventory(ALW_CATEGORY_THEME, 1);
 			}
 		}
 	}
@@ -590,7 +597,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 	OrthoDrawBegin();
 	for (float v45 = SELECTION_ITEM_OY; v45 < SELECTION_ITEM_OY + (ITEMSINBUYLIST * DISTANCEBUYLIST); v45 += DISTANCEBUYLIST)
 	{
-		if (index < BM_GetInvSize(a1) && item->mType < BlackMarketCategories[item->mCategory].Count)
+		if (index < BM_GetInvSize(a1) && item->mId < BlackMarketCategories[item->mCategory].Count)
 		{
 			njUnitMatrix(0);
 
@@ -601,16 +608,16 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				OrthoScreenTranslate(SELECTION_ITEM_OX, (v45 + 2), 1.5f / 3.4189751f);
 				Rotate();
 				njSetTexture((NJS_TEXLIST*)0x013669FC);
-				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mType);
+				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mId);
 				break;
 			case ChaoItemCategory_Accessory:
 			case ChaoItemCategory_Special:
 			case ChaoItemCategory_Fruit:
 			{
-				auto object = ObjectRegistry::Get((ChaoItemCategory)item->mCategory)->GetObj(item->mType);
+				auto object = ObjectRegistry::Get((ChaoItemCategory)item->mCategory)->GetObj(item->mId);
 
-				if (item->mCategory != ChaoItemCategory_Accessory && object->chunkmodel) {
-					float radius = object->chunkmodel->r;
+				if (item->mCategory != ChaoItemCategory_Accessory && object->model) {
+					float radius = object->model->r;
 					OrthoScreenTranslate(SELECTION_ITEM_OX, (v45 - 13), 1.5f / radius);
 				}
 				else
@@ -619,15 +626,15 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (item->mCategory != ChaoItemCategory_Accessory) {
 					if (!(object->evalflags & NJD_EVAL_UNIT_POS))
 						njTranslate(NULL, 0, -object->pos[1], 0);
-					if (object->chunkmodel)
-						njTranslate(NULL, 0, -object->chunkmodel->center.y, 0);
-					else if (object->child && object->child->chunkmodel) {
-						float y = -object->child->chunkmodel->center.y;
+					if (object->model)
+						njTranslate(NULL, 0, -object->model->center.y, 0);
+					else if (object->child && object->child->model) {
+						float y = -object->child->model->center.y;
 						njTranslate(NULL, 0, y, 0);
 					}
 				}
 
-				ObjectRegistry::DrawObject<njCnkDrawObject>((ChaoItemCategory)item->mCategory, item->mType);
+				ObjectRegistry::DrawObject<njCnkDrawObject>((ChaoItemCategory)item->mCategory, item->mId);
 				break;
 			}
 			case ChaoItemCategory_Seed:
@@ -635,20 +642,20 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				Rotate();
 
-				njSetTexture(ModAPI_SeedTexlists[item->mType]);
+				njSetTexture(ModAPI_SeedTexlists[item->mId]);
 				sub_42D340();
-				if (ModAPI_SeedModels[item->mType]->chunkmodel)
-					sub_42D500(ModAPI_SeedModels[item->mType]->chunkmodel);
+				if (ModAPI_SeedModels[item->mId]->model)
+					sub_42D500(ModAPI_SeedModels[item->mId]->model);
 				break;
 			case ChaoItemCategory_Hat:
-				if (item->mType >= SA2BHat_NormalEggShell && item->mType < 85)
+				if (item->mId >= ChaoHat_NormalEggShell && item->mId < 85)
 					break;
 
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
-				switch (item->mType)
+				switch (item->mId)
 				{
 				case 4:
 				case 6:
@@ -663,7 +670,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 				
-				ALO_ObakeHeadDraw(item->mType);
+				ALO_ObakeHeadDraw(item->mId);
 				break;
 			case ChaoItemCategory_MenuTheme:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 14, -170 - EXTRAZ);
@@ -677,7 +684,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-				njCnkDrawObject(((NJS_OBJECT**)0x011D291C)[item->mType]);
+				njCnkDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mId]);
 				break;
 			default:
 				break;
@@ -698,53 +705,53 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 	njPushMatrixEx();
 
 	float v45 = SELECTION_ITEM_OY;
-	SAlItem* item = BM_GetInv(a1, a1->mBuyListScroll);
+	SAlItemCwe* item = BM_GetInv(a1, a1->mBuyListScroll);
 	int index = a1->mBuyListScroll;
 
 	for (float v45 = SELECTION_ITEM_OY; v45 < SELECTION_ITEM_OY + (ITEMSINBUYLIST * DISTANCEBUYLIST); v45 += DISTANCEBUYLIST)
 	{
-		if (index < BM_GetInvSize(a1) && item->mType < BlackMarketCategories[item->mCategory].Count)
+		if (index < BM_GetInvSize(a1) && item->mId < BlackMarketCategories[item->mCategory].Count)
 		{
 			njUnitMatrix(0);
 
 			switch (item->mCategory)
 			{
-			case ChaoItemCategory_Egg:
+			case ALW_CATEGORY_EGG:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45 + 2), -68.0 - EXTRAZ);
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njSetTexture((NJS_TEXLIST*)0x013669FC);
-				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mType);
+				ColorEggModel((NJS_CNK_MODEL*)0x125D31C, item->mId);
 				break;
-			case ChaoItemCategory_Accessory:
+			case ALW_CATEGORY_ACCESSORY:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 
-				AccessorySetupDraw(item->mType, NULL, 0);
+				AccessorySetupDraw(item->mId, NULL, 0);
 
-				if(!IsAccessoryRFSupported(item->mType)) {
-					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, item->mType);
+				if(!IsAccessoryRFSupported(item->mId)) {
+					ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, item->mId);
 				}
 				else {
 					Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, item->mType);
+					ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, item->mId);
 				}
 
 				break;
-			case ChaoItemCategory_Special:
+			case ALW_CATEGORY_SPECIAL:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 				njTranslate(NULL, 0.0f, -1.4f, 0.0f);
-				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Special, item->mType);
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, item->mId);
 				break;
-			case ChaoItemCategory_Fruit:
+			case ALW_CATEGORY_FRUIT:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45 - 13), -44.0 - EXTRAZ);
-				if (item->mType == 20 || item->mType == 21)
+				if (item->mId == 20 || item->mId == 21)
 				{
 					njScale(NULL, 1, 1, 1);
 				}
@@ -755,31 +762,31 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
 
-				ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ChaoItemCategory_Fruit, item->mType);
+				ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, item->mId);
 				break;
-			case ChaoItemCategory_Seed:
+			case ALW_CATEGORY_SEED:
 				ProjectToScreen(SELECTION_ITEM_OX, (v45), -22.0 - EXTRAZ);
 
 				njScale(NULL, 1, 1, 0.001f);
 
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
-				njSetTexture(ModAPI_SeedTexlists[item->mType]);
-				if (ModAPI_SeedModels[item->mType]->chunkmodel) {
-					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mType]->chunkmodel);
+				njSetTexture(ModAPI_SeedTexlists[item->mId]);
+				if (ModAPI_SeedModels[item->mId]->model) {
+					RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[item->mId]->model);
 				}
 				break;
-			case ChaoItemCategory_Hat:
-				if (item->mType >= SA2BHat_NormalEggShell && item->mType < 85)
+			case ALW_CATEGORY_MASK:
+				if (item->mId >= ChaoHat_NormalEggShell && item->mId < 85)
 					break;
 
-				if (item->mType == 15)
+				if (item->mId == 15)
 					ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, *(float*)0xC712FC - EXTRAZ);
 				else
 					ProjectToScreen(SELECTION_ITEM_OX, v45 - 15, -52 - EXTRAZ);
 				if (index == a1->mBuyListCursor)
 					RotateY(a1->mBuyListAngY);
-				switch (item->mType)
+				switch (item->mId)
 				{
 				case 4:
 				case 6:
@@ -792,14 +799,14 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 					break;
 				}
 
-				if (item->mType == 15)
+				if (item->mId == 15)
 					njTranslate(NULL, 0.0f, -0.13f, 0.0f);
 				else
 					njTranslate(NULL, 0.0f, -1.4f, 0.0f);
 
-				ALO_ObakeHeadDraw(item->mType);
+				ALO_ObakeHeadDraw(item->mId);
 				break;
-			case ChaoItemCategory_MenuTheme:
+			case ALW_CATEGORY_THEME:
 				ProjectToScreen(SELECTION_ITEM_OX, v45 - 14, -170 - EXTRAZ);
 				njScale(NULL, 1, 1, 0.001f);
 				if (index == a1->mBuyListCursor)
@@ -811,7 +818,7 @@ void __cdecl FBuyListItemDisp(BlackMarketData* a1)
 				}
 				njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-				RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x011D291C)[item->mType]);
+				RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[item->mId]);
 				break;
 			default:
 				break;
@@ -830,7 +837,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 	DoLighting(10);
 	njPushUnitMatrix();
 
-	int type = a1->mItemDescItem.mType;
+	int type = a1->mItemDescItem.mId;
 
 	//HACK: since animals dont have descriptions this check prevents the animals from rendering, so I added a check to ignore that
 	//if the category is animal
@@ -839,7 +846,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 
 	switch (a1->mItemDescItem.mCategory)
 	{
-	case ChaoItemCategory_Accessory:
+	case ALW_CATEGORY_ACCESSORY:
 		ProjectToScreen(390.0f, 212.0f, -26.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
@@ -864,23 +871,23 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		}
 
 		if(!IsAccessoryRFSupported(type)) {
-			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 		}
 		else {
 			Control3D ctrl(0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+			ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 		}
 		
 		break;
 
-	case ChaoItemCategory_Special:
+	case ALW_CATEGORY_SPECIAL:
 		ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -1.4f, 0);
-		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Special, type);
+		ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, type);
 		break;
-	case ChaoItemCategory_Egg:
+	case ALW_CATEGORY_EGG:
 		ProjectToScreen(390, 212, -34.0f / a1->mItemDescScl);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
@@ -897,7 +904,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		{
 			njScale(NULL, 1.2f, 1.2f, 1.2f);
 			njSetTexture((NJS_TEXLIST*)0x01717DAC);
-			RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x0171A294)[type - 21]);
+			RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x0171A294)[type - 21]);
 		}
 		else if (type >= 0 && type < ModAPI_MinimalModels.size()) //since the black market entry check isn't active for animals we have to safety check the animal here
 		{
@@ -907,24 +914,24 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 		}
 
 		break;
-	case ChaoItemCategory_Fruit:
+	case ALW_CATEGORY_FRUIT:
 		ProjectToScreen(390, 212, -22.0f / a1->mItemDescScl);
 		//njScale(1.0, 1.0, 1);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -0.4f, 0);
-		ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ChaoItemCategory_Fruit, type);
+		ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, type);
 		break;
-	case ChaoItemCategory_Seed:
+	case ALW_CATEGORY_SEED:
 		ProjectToScreen(390, 212, -11.0f / a1->mItemDescScl);
 		njScale(NULL, 1, 1, *(float*)0x173B43C);
 		RotateX(a1->mItemDescAngX);
 		RotateY(a1->mItemDescAngY);
 		njTranslate(NULL, 0, -0.8f, 0);
 		njSetTexture(ModAPI_SeedTexlists[type]);
-		RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->chunkmodel);
+		RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->model);
 		break;
-	case ChaoItemCategory_Hat:
+	case ALW_CATEGORY_MASK:
 		if (type >= 16 && type <= 84)
 		{
 			ProjectToScreen(390, 212, -26.0f / a1->mItemDescScl);
@@ -932,7 +939,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			RotateY(a1->mItemDescAngY);
 			njTranslate(NULL, 0, -1.4f, 0);
 			njSetTexture(&AL_BODY);
-			ColorEggModel((((NJS_OBJECT**)GetDllData("MaskObjObjectList"))[16]->chunkmodel), type - 16);
+			ColorEggModel((((NJS_CNK_OBJECT**)GetDataDllProcAddr("MaskObjObjectList"))[16]->model), type - 16);
 		}
 		else
 		{
@@ -964,12 +971,12 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 			ALO_ObakeHeadDraw<false, false>(type);
 		}
 		break;
-	case ChaoItemCategory_MenuTheme:
+	case ALW_CATEGORY_THEME:
 		ProjectToScreen(390, 212, -85.0f / a1->mItemDescScl);
 		njScale(NULL, 1, 1, *(float*)0x173B43C);
 		njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-		RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x011D291C)[type]);
+		RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[type]);
 		break;
 	default:
 		break;
@@ -980,7 +987,7 @@ void __cdecl FItemDescDisp(BlackMarketData* a1)
 	DoLighting(LightIndexBackupMaybe);
 }
 
-BlackMarketItemAttributes* __cdecl AlItemGetInfo(SAlItem* a1)
+BlackMarketItemAttributes* __cdecl AlItemGetInfo_r(SAlItemCwe* a1)
 {
 	BlackMarketItemAttributes* result; // eax
 	BlackMarketCategoryAttribute* v4; // edx
@@ -988,43 +995,52 @@ BlackMarketItemAttributes* __cdecl AlItemGetInfo(SAlItem* a1)
 	static BlackMarketItemAttributes dummyAttrib = { 0,0,999,0,0,0 };
 
 	result = &dummyAttrib;
-	if (a1->mCategory <= ChaoItemCategory_Count)
+	if (a1->mCategory <= NB_CWE_CATEGORY)
 	{
 		v4 = &CategoryAttribs[a1->mCategory];
 		if (v4)
 		{
-			if (a1->mType >= 0 && a1->mType < v4->Count)
+			if (a1->mId >= 0 && a1->mId < v4->Count)
 			{
-				result = &v4->attrib[a1->mType];
+				result = &v4->attrib[a1->mId];
 			}
 		}
 	}
 	return result;
 }
-static void __declspec(naked) AlItemGetInfoHook()
-{
-	__asm
-	{
-		push ecx // a1
 
-		// Call your __cdecl function here:
-		call AlItemGetInfo
+static void ASM_FUNC AlItemGetInfoHook() {
+	ASM_PUSH(ecx); // a1
 
-		pop ecx // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AlItemGetInfo_r);
+
+	ASM_POP(ecx); // a1
+	ASM_RET(0);
 }
-const int GXSetBlendModeAlphaPtr = 0x0420480;
-void GXSetBlendModeAlpha(int a1, int a2, int a3)
-{
-	__asm
-	{
-		push a3
-		mov esi, a2
-		mov edi, a1
-		call GXSetBlendModeAlphaPtr
-		add esp, 4
-	}
+
+ASM_FUNC void GXSetBlendModeAlpha(int a1, int a2, int a3) {
+    // save regs
+    ASM_PUSH( edi );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+2) ); // a3
+    ASM_MOVE( esi, ASM_ESP(2+1+2) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+1+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0420480 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 const char* BlackMarket_GetItemMsg(BlackMarketData const* data, int const msgID)
@@ -1040,17 +1056,16 @@ const char* BlackMarket_GetBlMsg(BlackMarketData const* data, int const msgID)
 	return (const char*)((char*)data->mMsgList + data->mMsgList[msgID]);
 }
 
-#pragma optimize("gty", off)
 void __cdecl FBuyListDispText(BlackMarketData const* a1)
 {
-	SetShaders(1);
+	SetShaderType(1);
 	MessageFontThing messageBuffer;
 	for (int i = 0; i < ITEMSINBUYLIST; i++)
 	{
 		int currItemIndex = a1->mBuyListScroll + i;
 		if (currItemIndex >= cweSaveFile.marketInventoryCount[TabCategory]) break;
 		
-		BlackMarketItemAttributes* attrib = AlItemGetInfo(&cweSaveFile.marketInventory[TabCategory][currItemIndex]);
+		BlackMarketItemAttributes* attrib = AlItemGetInfo_r(&cweSaveFile.marketInventory[TabCategory][currItemIndex]);
 		if (!attrib) continue;
 		if (!attrib->Name) continue;
 
@@ -1064,7 +1079,7 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 			*(Uint32*)0x01A267D0 = 0xFFFF6AFF;
 		}
 
-		AlMsgFontCreateCStr(TextLanguage == 0, (int)nameStr, (int)&messageBuffer, 999);
+		AlMsgFontCreateCStr(Language == 0, (int)nameStr, (int)&messageBuffer, 999);
 		if (((Uint16*)&messageBuffer)[1] >= 190)
 			AlMsgFontDrawRegionScale2(-1, &messageBuffer, SELECTION_TEXT_OX, SELECTION_TEXT_OY + DISTANCEBUYLIST * i, -1, 32, 0, (190.0f / ((Uint16*)&messageBuffer)[1]), 1);
 		else
@@ -1073,45 +1088,50 @@ void __cdecl FBuyListDispText(BlackMarketData const* a1)
 	}
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
-#pragma warning(disable: 4838)
-#pragma warning(disable: 4244)
+#pragma warning( disable: 4838 )
+#endif
 NJS_TEXANIM BuyListBasePanel[] = {
-	{42 / 2,34 / 2,  0,0, 0,0, 42,             34,		12, NJD_SPRITE_ALPHA},//top left
-	{20 / 2, 1,    0,0, 0,34,20,             34,		12, NJD_SPRITE_ALPHA},//middle left
-	{42 / 2,34 / 2,  0,0, 0,53,42,             53 + 37,	12, NJD_SPRITE_ALPHA},//bottom left
-	{46 / 2,37 / 2,  0,0, 70 + 1,55,70 + 46,       55 + 37, 12, NJD_SPRITE_ALPHA},//bottom right
-	{46 / 2,1,     0,0, 70 + 1,56,70 + (46 / 2),	   56,		12, NJD_SPRITE_ALPHA},//middle right
-	{22 / 2,1,     0,0, 70,17,70 + 22,       17,		12, NJD_SPRITE_ALPHA},//scroll space
-	{18 / 2,57 / 2,  0,0, 132,12,132 + 18,     12 + 57,	12, NJD_SPRITE_ALPHA},//scroll wheel
+	{42 / 2,34 / 2,  0,0, 0,0, 42,             34,		0, NJD_SPRITE_ALPHA},//top left
+	{20 / 2, 1,    0,0, 0,34,20,             34,		0, NJD_SPRITE_ALPHA},//middle left
+	{42 / 2,34 / 2,  0,0, 0,53,42,             53 + 37,	0, NJD_SPRITE_ALPHA},//bottom left
+	{46 / 2,37 / 2,  0,0, 70 + 1,55,70 + 46,       55 + 37, 0, NJD_SPRITE_ALPHA},//bottom right
+	{46 / 2,1,     0,0, 70 + 1,56,70 + (46 / 2),	   56,		0, NJD_SPRITE_ALPHA},//middle right
+	{22 / 2,1,     0,0, 70,17,70 + 22,       17,		0, NJD_SPRITE_ALPHA},//scroll space
+	{18 / 2,57 / 2,  0,0, 132,12,132 + 18,     12 + 57,	0, NJD_SPRITE_ALPHA},//scroll wheel
 
-	{1,20 / 2,   0,0, 41,0,41,			   20,		12, NJD_SPRITE_ALPHA},//middle top 
-	{1,18 / 2,   0,0, 41,0,41,			   20,		12, NJD_SPRITE_ALPHA},//middle bottom
+	{1,20 / 2,   0,0, 41,0,41,			   20,		0, NJD_SPRITE_ALPHA},//middle top 
+	{1,18 / 2,   0,0, 41,0,41,			   20,		0, NJD_SPRITE_ALPHA},//middle bottom
 
 	//tabs (9)
-	{49 / 1.5f,40 / 1.5f,   0,0, 148,212,198,			   255,		12, NJD_SPRITE_ALPHA},//L tab
-	{53 / 1.5f,40 / 1.5f,   0,0, 205,212,255,			255,		12, NJD_SPRITE_ALPHA},//R tab
-	{118 / 2.15f,49 / 2,   0,0, 0,154,118,			154 + 49,		12, NJD_SPRITE_ALPHA},//inactive tab
-	{118 / 2.15f,49 / 2,   0,0, 0,213,118,		213 + 43,		12, NJD_SPRITE_ALPHA},//active tab
+	{49 / 1.5f,40 / 1.5f,   0,0, 148,212,198,			   255,		0, NJD_SPRITE_ALPHA},//L tab
+	{53 / 1.5f,40 / 1.5f,   0,0, 205,212,255,			255,		0, NJD_SPRITE_ALPHA},//R tab
+	{118 / 2.15f,49 / 2,   0,0, 0,154,118,			154 + 49,		0, NJD_SPRITE_ALPHA},//inactive tab
+	{118 / 2.15f,49 / 2,   0,0, 0,213,118,		213 + 43,		0, NJD_SPRITE_ALPHA},//active tab
 
-	{17 / 2, 15 / 2,  0,0,	185,162, 201,176, 12, NJD_SPRITE_ALPHA},//top right corner sprite
-	{17 / 2, 15 / 2,  0,0,	185,178, 201,192, 12, NJD_SPRITE_ALPHA},//bottom right corner sprite
+	{17 / 2, 15 / 2,  0,0,	185,162, 201,176, 0, NJD_SPRITE_ALPHA},//top right corner sprite
+	{17 / 2, 15 / 2,  0,0,	185,178, 201,192, 0, NJD_SPRITE_ALPHA},//bottom right corner sprite
 
-	{118 / 2.15f,49 / 2,   0,0, 0,99,118,		99 + 46,		12, NJD_SPRITE_ALPHA},//not available tab
+	{118 / 2.15f,49 / 2,   0,0, 0,99,118,		99 + 46,		0, NJD_SPRITE_ALPHA},//not available tab
 
-	{118 / 2,49 / 2,   0,0, 0,0,256,			256,		12, NJD_SPRITE_ALPHA},//tab icon
+	{42 / 2,42 / 2,   0,0, 0,0,256,			256,		1, NJD_SPRITE_ALPHA},//tab icon
 
-	{22 / 2,2,     0,0, 70,10,70 + 22,       11,		12, NJD_SPRITE_ALPHA},//scroll space top
-	{22 / 2,2,     0,0, 70,29,70 + 22,       30,		12, NJD_SPRITE_ALPHA},//scroll space bottom
+	{22 / 2,2,     0,0, 70,10,70 + 22,       11,		0, NJD_SPRITE_ALPHA},//scroll space top
+	{22 / 2,2,     0,0, 70,29,70 + 22,       30,		0, NJD_SPRITE_ALPHA},//scroll space bottom
 };
-NJS_SPRITE BuyListPanel = { {},1,1,0,&CWE_UI_TEXLIST, (NJS_TEXANIM*)BuyListBasePanel };
+NJS_SPRITE BuyListPanel = { {},1,1,0, texlist_cwe_market, BuyListBasePanel };
 
 //ChaoHudThing kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (121 / 256.0f) * 4096.0f,(127 / 256.0f) * 4096.0f,(192 / 256.0f) * 4096.0f,	(192 / 256.0f) * 4096.0f };
-const ChaoHudThing kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (120 / 256.0f) * 4096.0f,(120 / 256.0f) * 4096.0f,(197 / 256.0f) * 4096.0f,	(197 / 256.0f) * 4096.0f };
-const ChaoHudThing kWinQuad_BuyListCursor_0_0 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2632, 2632 ,  1032, 1144 };
-const ChaoHudThing kWinQuad_BuyListCursor_0_1 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2760, 2760 ,  1032, 1144 };
+const SAlgKinderOrthoQuad kWinQuad_BuyListLines = { 0, SELECTION_BOX_SX, 3,11, (120 / 256.0f) * 4096.0f,(120 / 256.0f) * 4096.0f,(197 / 256.0f) * 4096.0f,	(197 / 256.0f) * 4096.0f };
+const SAlgKinderOrthoQuad kWinQuad_BuyListCursor_0_0 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2632, 2632 ,  1032, 1144 };
+const SAlgKinderOrthoQuad kWinQuad_BuyListCursor_0_1 = { 4, SELECTION_BOX_SX - 4 ,  3, 11 ,  2760, 2760 ,  1032, 1144 };
 
-const ChaoHudThing stru_8A33E8[6] =
+const SAlgKinderOrthoQuad stru_8A33E8[6] =
 {
   {  0,   16 ,								   0, SELECTION_BOX_SY / 2,					2568, 2808 ,  1160, 1512  }, //top half left
   {  16,  SELECTION_BOX_SX - 16,			   0, 4 ,									2824, 2824 ,  1160, 1208  }, //top half middle
@@ -1121,13 +1141,17 @@ const ChaoHudThing stru_8A33E8[6] =
   {  SELECTION_BOX_SX - 16, SELECTION_BOX_SX , SELECTION_BOX_SY / 2, SELECTION_BOX_SY , 2952, 3192 ,  1432, 1784  }  //bottom half right
 };
 
-#pragma warning(pop)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 void DrawTimer();
 VoidFunc(sub_42C170, 0x42C170);
 void __cdecl FBuyListDisp(BlackMarketData* a1)
 {
-	ChaoHudThing const* buyListCursor;
+	SAlgKinderOrthoQuad const* buyListCursor;
 
 	if (!a1->mBuyListShow) {
 		if (!a1->mSellListShow) {
@@ -1236,12 +1260,18 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 	BuyListPanel.p = { basePosX + BuyListBasePanel[9].sx + 4.5f, basePosY - BuyListBasePanel[9].sy + 4.5f };
 	BuyListPanel.sx = 1;
 	BuyListPanel.sy = 1;
-	//tabs
-	for (int i = 0; i < 4; i++)
-	{
-		BuyListPanel.p.x = basePosX + BuyListBasePanel[9].sx + 4.5f + (BuyListBasePanel[11].sx * i);
-		if (i + (a1->currentTab / 4) * 4 >= MarketTabCount)
+
+	// tabs
+	for (int i = 0; i < 4; i++) {
+		const int tabIndex = i + (a1->currentTab / 4) * 4;
+
+		if (tabIndex >= MarketTabCount) {
 			break;
+		}
+
+		const float py = BuyListPanel.p.y;
+
+		BuyListPanel.p.x = basePosX + BuyListBasePanel[9].sx + 4.5f + (BuyListBasePanel[11].sx * i);
 
 		if (cweSaveFile.marketInventoryCount[MarketTabIndices[i + (a1->currentTab / 4) * 4]] == 0) 
 			njDrawSprite2D(&BuyListPanel, 15, -1, NJD_SPRITE_ALPHA); //empty tab
@@ -1250,86 +1280,85 @@ void __cdecl FBuyListDisp(BlackMarketData* a1)
 		else
 			njDrawSprite2D(&BuyListPanel, 11, -1, NJD_SPRITE_ALPHA); //not selected
 
-		BuyListBasePanel[16].texid = 13 + (i + (a1->currentTab / 4) * 4);
+		const float uvOffset = 256.f / float(MarketTabIndices.size());
+		BuyListBasePanel[16].u1 = 2 + Sint16(tabIndex * uvOffset);
+		BuyListBasePanel[16].u2 = BuyListBasePanel[16].u1 + Sint16(uvOffset) - 2;
+
+		BuyListPanel.p.x += BuyListBasePanel[11].sx / 2.f;
+		BuyListPanel.p.x -= BuyListBasePanel[16].sx / 2.f;
+		BuyListPanel.p.y += 3;
 		BuyListPanel.p.x -= 2;
 		njDrawSprite2D(&BuyListPanel, 16, -1, NJD_SPRITE_ALPHA);
+
+		BuyListPanel.p.y = py;
 	}
+
 	FBuyListDispText(a1);
 	FBuyListItemDisp(a1);
 }
-#pragma optimize("gty", on)
-const int JumpBackHere_ = 0x005897C3;
-void __declspec(naked) FItemDescDispHook()
-{
-	_asm
-	{
-		push[esp + 0x2C]
-		call FItemDescDisp
-		add esp, 4
-		jmp JumpBackHere_
-	}
+
+const static void* jumpTo = (void*)0x005897C3;
+void ASM_FUNC FItemDescDispHook() {
+	ASM_PUSH(ASM_ESP(11));
+	ASM_CALL (FItemDescDisp);
+	ASM_ESP_ADD( 1 );
+	ASM_JUMP_PTR(jumpTo);
 }
 
 //garden object count
 signed int __cdecl AL_GetMaxItemNum(const int a1)
 {
-	if(a1 == ChaoItemCategory_Accessory) {
+	if(a1 == ALW_CATEGORY_ACCESSORY) {
 		return AccessoryItemList.size();
 	}
 	
-	if (a1 == ChaoItemCategory_Fruit)
+	if (a1 == ALW_CATEGORY_FRUIT)
 	{
 		return 40;
 	}
-	if (a1 == ChaoItemCategory_Seed)
+	if (a1 == ALW_CATEGORY_SEED)
 	{
 		return 12;
 	}
-	if (a1 == ChaoItemCategory_Hat)
+	if (a1 == ALW_CATEGORY_MASK)
 	{
 		return 24;
 	}
-	if (a1 == ChaoItemCategory_Special)
+	if (a1 == ALW_CATEGORY_SPECIAL)
 	{
 		return 30;
 	}
 	return 0;
 }
-int edxBackup;
-static void __declspec(naked) AL_GetMaxItemNum_hook()
-{
-	__asm
-	{
-		mov edxBackup, edx
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call AL_GetMaxItemNum
+static void ASM_FUNC AL_GetMaxItemNum_hook() {
+	ASM_PUSH(edx);
+	ASM_PUSH(eax); // a1
 
-		add esp, 4 // a1<eax> is also used for return value
-		mov edx, edxBackup
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (AL_GetMaxItemNum);
+
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_POP(edx);
+	ASM_RET(0);
 }
 
-const int sub_52F4F0Ptr = 0x52F4F0;
-int sub_52F4F0(int a1)
-{
-	int retval;
-	__asm
-	{
-		mov ecx, a1
-		call sub_52F4F0Ptr
-		mov retval, eax
-	}
-	return retval;
+ASM_FUNC int sub_52F4F0(int a1) {
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x52F4F0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 int __cdecl AL_GetExistItemNum(const int a1)
 {
 	size_t c = 0;
 
-	if(a1 == ChaoItemCategory_Accessory) {
+	if(a1 == ALW_CATEGORY_ACCESSORY) {
 		for(const auto& item : AccessoryItemList) {
 			if(item.IndexID != -1) {
 				c++;
@@ -1339,11 +1368,11 @@ int __cdecl AL_GetExistItemNum(const int a1)
 		for(size_t i = 0; i < cweSaveFile.purchasedItemCount; ++i) {
 			const auto& item = save::CWE_PurchasedItems[i];
 
-			if(item.mCategory != ChaoItemCategory_Accessory) {
+			if(item.mCategory != ALW_CATEGORY_ACCESSORY) {
 				continue;
 			}
 
-			if(item.mType != -1) {
+			if(item.mId != -1) {
 				c++;
 			}
 		}
@@ -1353,40 +1382,46 @@ int __cdecl AL_GetExistItemNum(const int a1)
 
 	return c;
 
-	if (a1 == ChaoItemCategory_Special)
+	if (a1 == ALW_CATEGORY_SPECIAL)
 	{
 		int ret = 0;
 		for (int i = 0; i < 30; i++)
-			if (cweSaveFile.specialItems[i].Type != -1) ret++;
+			if (cweSaveFile.specialItems[i].kind != -1) ret++;
 		return ret;
 	}
 	else
 		return sub_52F4F0(a1);
 }
 
-const int sub_5A64B0Ptr = 0x5A64B0;
-void sub_5A64B0(signed int a1, int a2)
-{
-	__asm
-	{
-		mov eax, a1
-		mov edx, a2
-		call sub_5A64B0Ptr
-	}
+ASM_FUNC void sub_5A64B0(signed int a1, int a2) {
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( ecx, 0x5A64B0 );
+
+    // return
+    ASM_RET( 0 );
 }
-const int sub_5A6450Ptr = 0x5A6450;
-void sub_5A6450(int a1, float a2)
-{
-	__asm
-	{
-		push a2
-		mov eax, a1
-		call sub_5A6450Ptr
-		add esp, 4
-	}
+
+ASM_FUNC void sub_5A6450(int a1, float a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5A6450 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
+
 #pragma pack(push, 8)
-struct __declspec(align(4)) SomeUI
+struct ALIGN(4) SomeUI
 {
 	float left;
 	float top;
@@ -1403,13 +1438,13 @@ void DrawTimer()
 {
 	sub_781CB0(1);
 	float uibuff[10];
-	njSetTexture((NJS_TEXLIST*)&CWE_UI_TEXLIST);
+	njSetTexture(texlist_cwe_market);
 	//sub_781CB0(1);
 	*(int*)0x1A54FF0 = 0xFFFFFFFF;
 
 	const float posX = 50;
 	const float posY = 115;
-	njSetTextureNum(20, 0, 0, 0);
+	njSetTextureNum(2, 0, 0, 0);
 	SomeUI* a2 = (SomeUI*)uibuff;
 	a2->left = posX;
 	a2->right = posX + 32;
@@ -1468,9 +1503,8 @@ void DrawTimer()
 Light BM_MenuLight = { {  0.1f, -0.7f, -0.7f }, 1, 0.5f, {  1,  1,  1 } };
 #define Translate(x,y,z) OrthoScreenTranslate(x, y, (-26.0f) / z * scl)
 
-extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Angle3& rot, const SAlItem& mItemDescItem) {
-	njPushMatrixEx();
-	njUnitMatrix(0);
+extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, const float scl, const Angle3& rot, const SAlItemCwe& mItemDescItem) {
+	njPushUnitMatrix();
 
 	const size_t index = 11;
 	const Light backupLight = Lights[index];
@@ -1485,11 +1519,11 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 	DoLighting(index);
 	
 	OrthoDrawBegin();
-	int type = mItemDescItem.mType;
+	int type = mItemDescItem.mId;
 	if (true || type < BlackMarketCategories[mItemDescItem.mCategory].Count) {
 		switch (mItemDescItem.mCategory)
 		{
-		case ChaoItemCategory_Accessory:
+		case ALW_CATEGORY_ACCESSORY:
 			Translate(x, y, -26.0f);
 			RotateX(rot.x);
 			RotateY(rot.y);
@@ -1506,22 +1540,22 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			}
 
 			if(!IsAccessoryRFSupported(type)) {
-				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Accessory, type);
+				ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 			}
 			else {
 				Control3D ctrl (0, NJD_CONTROL_3D_CONSTANT_TEXTURE_MATERIAL);
-				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ChaoItemCategory_Accessory, type);
+				ObjectRegistry::DrawObject<rfCnkNormalDrawObject>(ALW_CATEGORY_ACCESSORY, type);
 			}
 
 			break;
-		case ChaoItemCategory_Special:
+		case ALW_CATEGORY_SPECIAL:
 			Translate(x, y, -26.0f);
 			RotateX(rot.x);
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -1.4f, 0);
-			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ChaoItemCategory_Special, type);
+			ObjectRegistry::DrawObject<RenderFixBackwardsCompatibilityDrawObject>(ALW_CATEGORY_SPECIAL, type);
 			break;
-		case ChaoItemCategory_Egg:
+		case ALW_CATEGORY_EGG:
 			Translate(x, y, -34.0f);
 			RotateX(rot.x);
 			RotateY(rot.y);
@@ -1538,7 +1572,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			{
 				njScale(NULL, 1.2f, 1.2f, 1.2f);
 				njSetTexture((NJS_TEXLIST*)0x01717DAC);
-				RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x0171A294)[type - 21]);
+				RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x0171A294)[type - 21]);
 			}
 			else
 			{
@@ -1549,7 +1583,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 					if ((size_t)type < ModAPI_MinimalTexlists.size())
 						njSetTexture(ModAPI_MinimalTexlists[type]);
 
-					NJS_OBJECT* obj = ModAPI_MinimalModels[type];
+					NJS_CNK_OBJECT* obj = ModAPI_MinimalModels[type];
 					NJS_MOTION* mot = ModAPI_MinimalMotion0[type];
 					if ((size_t)type < ModAPI_MinimalModels.size() && obj && mot)
 						njCnkMotion(obj, mot, 0);
@@ -1557,24 +1591,24 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 			}
 
 			break;
-		case ChaoItemCategory_Fruit:
+		case ALW_CATEGORY_FRUIT:
 			Translate(x, y, -22.0f);
 			//njScale(1.0, 1.0, 1);
 			RotateX(rot.x);
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -0.4f, 0);
-			ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ChaoItemCategory_Fruit, type);
+			ObjectRegistry::DrawModel<RenderFixBackwardsCompatibilityDrawModel>(ALW_CATEGORY_FRUIT, type);
 			break;
-		case ChaoItemCategory_Seed:
+		case ALW_CATEGORY_SEED:
 			Translate(x, y, -11.0f);
 			njScale(NULL, 1, 1, *(float*)0x173B43C);
 			RotateX(rot.x);
 			RotateY(rot.y);
 			njTranslate(NULL, 0, -0.8f, 0);
 			njSetTexture(ModAPI_SeedTexlists[type]);
-			RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->chunkmodel);
+			RenderFixBackwardsCompatibilityDrawModel(ModAPI_SeedModels[type]->model);
 			break;
-		case ChaoItemCategory_Hat:
+		case ALW_CATEGORY_MASK:
 			if (type >= 16 && type <= 84)
 			{
 				Translate(x, y, -26.0f);
@@ -1582,7 +1616,7 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 				RotateY(rot.y);
 				njTranslate(NULL, 0, -1.4f, 0);
 				njSetTexture(&AL_BODY);
-				ColorEggModel((((NJS_OBJECT**)GetDllData("MaskObjObjectList"))[16]->chunkmodel), type - 16);
+				ColorEggModel((((NJS_CNK_OBJECT**)GetDataDllProcAddr("MaskObjObjectList"))[16]->model), type - 16);
 			}
 			else
 			{
@@ -1614,12 +1648,12 @@ extern "C" __declspec(dllexport) void DrawItem(const float x, const float y, con
 				ALO_ObakeHeadDraw<false, false>(type);
 			}
 			break;
-		case ChaoItemCategory_MenuTheme:
+		case ALW_CATEGORY_THEME:
 			Translate(x, y, -85.0f);
 			njScale(NULL, 1, 1, *(float*)0x173B43C);
 			njSetTexture((NJS_TEXLIST*)0x11E13A8);
 
-			RenderFixBackwardsCompatibilityDrawObject(((NJS_OBJECT**)0x011D291C)[type]);
+			RenderFixBackwardsCompatibilityDrawObject(((NJS_CNK_OBJECT**)0x011D291C)[type]);
 			break;
 		default:
 			break;
@@ -1672,10 +1706,10 @@ void DrawPurchasedItem() {
 		}
 
 		const float size = 32;
-		const ChaoHudThingB hud = { 1,size,size,0,0,1,1,&CWE_UI_TEXLIST, 27 };
+		const CHS_BILL_INFO hud = { 1,size,size,0,0,1,1, texlist_cwe_ui_common, 0 };
 
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++) {
-			SetShaders(1);
+			SetShaderType(1);
 			DoLighting(0);
 			Angle3 rot = { 0,0,0 };
 			DrawItem(
@@ -1691,16 +1725,16 @@ void DrawPurchasedItem() {
 		for (int i = 0; i < cweSaveFile.purchasedItemCount; i++)
 		{
 			float opacity = 0.5f;
-			SetChaoHUDThingBColor(opacity, 1, 1, 1);
-			DrawChaoHudThingB(
-				(ChaoHudThingB*) & hud,
+			chSetBillboardColor(opacity, 1, 1, 1);
+			chDrawBillboardSR(
+				(CHS_BILL_INFO*) & hud,
 				i * *(float*)0x1A13BE0 + *(float*)0x1A13BE8,
 				i * *(float*)0x1A13BF0 + *(float*)0x1A13BF4,
 				-1,
 				2, 2,
 				0, 0
 			);
-			SetChaoHUDThingBColor(1, 1, 1, 1);
+			chSetBillboardColor(1, 1, 1, 1);
 		}				
 		break;
 	}
@@ -1719,24 +1753,20 @@ void __cdecl FixFontScale(__int16* a1, float a2, float a3, float a4)
 		DrawFontThing(a1, a2, a3, a4);
 	}
 }
-static void __declspec(naked) FixFontScaleHook()
-{
-	__asm
-	{
-		push[esp + 0Ch] // a4
-		push[esp + 0Ch] // a3
-		push[esp + 0Ch] // a2
-		push ebx // a1
 
-		// Call your __cdecl function here:
-		call FixFontScale
+static void ASM_FUNC FixFontScaleHook() {
+	ASM_PUSH(ebx); // a1
 
-		pop ebx // a1
-		add esp, 4 // a2
-		add esp, 4 // a3
-		add esp, 4 // a4
-		retn
-	}
+	ASM_PUSH(ASM_ESP(4)); // a4
+	ASM_PUSH(ASM_ESP(4)); // a3
+	ASM_PUSH(ASM_ESP(4)); // a2
+	ASM_PUSH(ebx); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (FixFontScale);
+	ASM_ESP_ADD( 4 ); // a1
+
+	ASM_POP(ebx); // a1
+	ASM_RET(0);
 }
 
 const char* BlackMarketGetNameMsg(BlackMarketData const* a1, BlackMarketItemAttributes const* a2) {
@@ -1748,14 +1778,14 @@ const char* BlackMarketGetNameMsg(BlackMarketData const* a1, BlackMarketItemAttr
 
 const char* BlackMarketGetDescMsg(BlackMarketData const* a1, BlackMarketItemAttributes const* a2) {
 	if (!a2) return "GetDescMsg ITEM NULL";
-	if (a2->Descriptions < 0) "GetDescMsg Desc invalid";
+	if (a2->Descriptions < 0) return "GetDescMsg Desc invalid";
 
 	return BlackMarket_GetItemMsg(a1, a2->Descriptions);
 }
 
-void __cdecl FItemDescSet(SAlItem* a1, BlackMarketData* a2) {	
-	a2->mItemDescItem = *a1;
-	a2->mItemDescInfo = AlItemGetInfo(a1);
+void __cdecl FItemDescSet(SAlItemCwe* pItem, BlackMarketData* a2) {	
+	a2->mItemDescItem = *pItem;
+	a2->mItemDescInfo = AlItemGetInfo_r(pItem);
 	a2->mItemDescScl = 1;
 	a2->mItemDescAngX = 0;
 	a2->mItemDescAngY = 0;
@@ -1773,29 +1803,28 @@ void __cdecl FItemDescSet(SAlItem* a1, BlackMarketData* a2) {
 		AlMsgWinSetSize(&msg, 240, 50);
 		AlMsgWinOpen(&msg);
 		*(Uint32*)0x01A267D0 = 255;
-		AlMsgWinAddLineC(&msg, BlackMarketGetDescMsg(a2, a2->mItemDescInfo), TextLanguage == 0);
+		AlMsgWinAddLineC(&msg, BlackMarketGetDescMsg(a2, a2->mItemDescInfo), Language == 0);
 		a2->mItemDescWinExplOn = 1;
 	}
 }
-static void __declspec(naked) FItemDescSetHook()
-{
-	__asm
-	{
-		push edi // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call FItemDescSet
+static void ASM_FUNC FItemDescSetHook() {
+	ASM_PUSH(edi); // a2
 
-		pop eax // a1
-		pop edi // a2
-		retn
-	}
+	ASM_PUSH(edi); // a2
+	ASM_PUSH(eax); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (FItemDescSet);
+	ASM_POP(eax); // a1
+	ASM_ESP_ADD(1); // a2
+
+	ASM_POP(edi); // a2
+	ASM_RET(0);
 }
 
 void __cdecl FSellListStart(BlackMarketData* a1)
 {
-	SAlItem item; // [esp+10h] [ebp-C4h] BYREF
+	SAlItemCwe item; // [esp+10h] [ebp-C4h] BYREF
 	ALK_SWINDOW_TABLE swindow; // [esp+14h] [ebp-C0h] BYREF
 	AL_KinderPMessage v19; // [esp+1Ch] [ebp-B8h] BYREF
 	int v20[33]; // [esp+48h] [ebp-8Ch] BYREF
@@ -1835,25 +1864,21 @@ void __cdecl FSellListStart(BlackMarketData* a1)
 	a1->SellKinder[3] = AL_KinderPMessageExec_Load(a1->mTask, &v19);
 
 	*(Uint32*)0x01A267D0 = -1;
-	AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 26), TextLanguage == 0);
+	AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 26), Language == 0);
 
 	sprintf((char*)v20, BlackMarket_GetBlMsg(a1, 24), a1->mItemDescInfo->SalePrice);
 	*(Uint32*)0x01A267D0 = -1;
-	AlMsgWinAddLineC(a1->mMainWin, (const char*)v20, TextLanguage == 0);
+	AlMsgWinAddLineC(a1->mMainWin, (const char*)v20, Language == 0);
 }
-int _ebxBackup;
-static void __declspec(naked) FSellListStartHook()
-{
-	__asm
-	{
-		push ecx // a1
 
-		// Call your __cdecl function here:
-		call FSellListStart
+static void ASM_FUNC FSellListStartHook() {
+	ASM_PUSH(ecx); // a1
 
-		pop ecx // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (FSellListStart);
+
+	ASM_POP(ecx); // a1
+	ASM_RET(0);
 }
 
 void FBuyListSetItemDesc(BlackMarketData* a1)
@@ -1861,14 +1886,15 @@ void FBuyListSetItemDesc(BlackMarketData* a1)
 	FItemDescSet(BM_GetSelectedItem(a1), a1);
 }
 
-const int ALO_RingWinAdd_Ptr = 0x005A6B30;
-void ALO_RingWinAdd_(int a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call ALO_RingWinAdd_Ptr
-	}
+ASM_FUNC void ALO_RingWinAdd_(int a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x005A6B30 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 DataPointer(int, RingDisplayFieldC, 0x01A2787C);
@@ -1877,25 +1903,33 @@ void ALO_RingWinAdd(int num) {
 	ALO_RingWinAdd_(RingDisplayFieldC + num);
 }
 
-const int FMainWinWaitClosePtr = 0x588C00;
-void FMainWinWaitClose(BlackMarketData* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call FMainWinWaitClosePtr
-	}
+ASM_FUNC void FMainWinWaitClose(BlackMarketData* a1) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x588C00 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int FMainWinAddLineStrPtr = 0x588BA0;
-void FMainWinAddLineStr(BlackMarketData* a1, char* a2)
-{
-	__asm
-	{
-		mov ecx, a1
-		mov ebx, a2
-		call FMainWinAddLineStrPtr
-	}
+ASM_FUNC void FMainWinAddLineStr(BlackMarketData* a1, char* a2) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( ecx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x588BA0 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
 FastcallFunctionPointer(void, FMainWinAddLineId, (BlackMarketData* a1, int a2), 0x588BD0);
@@ -1907,7 +1941,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 	
 	a1->mBuyListAngY += 256;
 
-	if (ControllerPointers[0]->on & Buttons_Y) {
+	if (per[0]->on & BTN_Y) {
 		return;
 	}
 		
@@ -1917,7 +1951,7 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	auto SetTabIfItHasItem = [&](int i) {
 		if (IsTabNotEmpty(i)) {
-			PlaySoundProbably(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 			a1->currentTab = i;
 			a1->mBuyListCursor = 0;
 			a1->mBuyListScroll = 0;
@@ -1930,21 +1964,21 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 	switch (a1->mBuyListMode) {
 	case 0:
-		if (MenuButtons_Pressed[0] & Buttons_L) {
+		if (SWDATAE[0] & BTN_L) {
 			for (int i = a1->currentTab - 1; i >= 0; i--) {
 				if (SetTabIfItHasItem(i))
 					break;
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_R) {
+		if (SWDATAE[0] & BTN_R) {
 			for (int i = a1->currentTab + 1; i < MarketTabCount; i++) {
 				if (SetTabIfItHasItem(i))
 					break;
 			}
 		}
 
-		if (MenuButtons_Pressed[0] & Buttons_Up)
+		if (SWDATAE[0] & BTN_UP)
 		{
 			if (a1->mBuyListCursor > 0)
 			{
@@ -1955,10 +1989,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = a1->mBuyListCursor;
 				}
 				FBuyListSetItemDesc(a1);
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 		}
-		if (MenuButtons_Pressed[0] & Buttons_Down)
+		if (SWDATAE[0] & BTN_DOWN)
 		{
 			if (a1->mBuyListCursor < cweSaveFile.marketInventoryCount[TabCategory] - 1) {
 				a1->mBuyListCursor++;
@@ -1968,13 +2002,13 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 					a1->mBuyListScroll = v6;
 				}
 				FBuyListSetItemDesc(a1);
-				PlaySoundProbably(0x8000, 0, 0, 0);
+				SE_Call(TONE(8, 0), 0, 0, 0);
 			}
 		}
 
-		if (ControllerPointers[0]->press & Buttons_A)
+		if (per[0]->press & BTN_A)
 		{
-			if (TotalRings >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mType < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
+			if (gu32TotalRing >= a1->mItemDescInfo->PurchasePrice && a1->mItemDescItem.mId < BlackMarketCategories[a1->mItemDescItem.mCategory].Count)
 			{
 				ALK_SWINDOW_TABLE select;
 				AL_KinderPMessage a2;
@@ -2019,14 +2053,14 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				FMainWinWaitClose(a1);
 				//once the text is done mode 3 goes back to mode 0
 				a1->mBuyListMode = 3;
-				PlaySoundProbably(32777, 0, 0, 0);
+				SE_Call(TONE(8, 9), 0, 0, 0);
 			}
 		}
-		else if (ControllerPointers[0]->press & Buttons_B)
+		else if (per[0]->press & BTN_B)
 		{
 			a1->currentTab = 0;
 			a1->mMode = 9;
-			PlaySoundProbably(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		break;
 	case 1:
@@ -2034,24 +2068,24 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 		{
 			a1->mBuyListSelect = 0;
 		}
-		if ((MenuButtons_Pressed[0] & 0x10) && a1->mBuyListSelect == 1)
+		if ((SWDATAE[0] & 0x10) && a1->mBuyListSelect == 1)
 		{
 			a1->mBuyListSelect = 0;
-			PlaySoundProbably(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 		}
-		if ((MenuButtons_Pressed[0] & 0x20) && !a1->mBuyListSelect)
+		if ((SWDATAE[0] & 0x20) && !a1->mBuyListSelect)
 		{
 			a1->mBuyListSelect = 1;
-			PlaySoundProbably(0x8000, 0, 0, 0);
+			SE_Call(TONE(8, 0), 0, 0, 0);
 		}
 			
-		if ((ControllerPointers[0]->press & 0x406) == 0) {
+		if ((per[0]->press & 0x406) == 0) {
 			return;
 		}
 
-		if ((ControllerPointers[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
+		if ((per[0]->press & 0x402) != 0 && a1->mBuyListSelect != 1) {
 			a1->mBuyListSelect = 1;
-			PlaySoundProbably(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		else {
 			if (a1->mBuyListSelect)
@@ -2060,20 +2094,20 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				{
 					goto LABEL_57;
 				}
-				a1->BuylistKinder[0]->exec = DeleteObject_;
-				a1->BuylistKinder[1]->exec = DeleteObject_;
-				a1->BuylistKinder[2]->exec = DeleteObject_;
-				a1->BuylistKinder[3]->exec = DeleteObject_;
+				a1->BuylistKinder[0]->exec = DestroyTask;
+				a1->BuylistKinder[1]->exec = DestroyTask;
+				a1->BuylistKinder[2]->exec = DestroyTask;
+				a1->BuylistKinder[3]->exec = DestroyTask;
 				goto LABEL_56;
 			}
 			if (a1->mItemDescItem.mCategory == 16)
 			{
-				((OtherItemPtr)OtherItemFuncs[a1->mItemDescItem.mType])(a1->mItemDescItem.mType);
+				((OtherItemPtr)OtherItemFuncs[a1->mItemDescItem.mId])(a1->mItemDescItem.mId);
 			}
 			else
 			{
 				bool saveFull;
-				if (a1->mItemDescItem.mCategory == ChaoItemCategory_Egg)
+				if (a1->mItemDescItem.mCategory == ALW_CATEGORY_EGG)
 				{
 					saveFull = AL_GetAllChaoCount() >= AL_GetMaxChao();
 				}
@@ -2087,10 +2121,10 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 				{
 					FMainWinAddLineId(a1, 21);
 					FMainWinWaitClose(a1);
-					a1->BuylistKinder[0]->exec = DeleteObject_;
-					a1->BuylistKinder[1]->exec = DeleteObject_;
-					a1->BuylistKinder[2]->exec = DeleteObject_;
-					a1->BuylistKinder[3]->exec = DeleteObject_;
+					a1->BuylistKinder[0]->exec = DestroyTask;
+					a1->BuylistKinder[1]->exec = DestroyTask;
+					a1->BuylistKinder[2]->exec = DestroyTask;
+					a1->BuylistKinder[3]->exec = DestroyTask;
 
 					goto LABEL_56;
 				}
@@ -2102,32 +2136,25 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 						save::CWE_PurchasedItems.size());
 					FMainWinAddLineStr(a1, buff);
 					FMainWinWaitClose(a1);
-					a1->BuylistKinder[0]->exec = DeleteObject_;
-					a1->BuylistKinder[1]->exec = DeleteObject_;
-					a1->BuylistKinder[2]->exec = DeleteObject_;
-					a1->BuylistKinder[3]->exec = DeleteObject_;
+					a1->BuylistKinder[0]->exec = DestroyTask;
+					a1->BuylistKinder[1]->exec = DestroyTask;
+					a1->BuylistKinder[2]->exec = DestroyTask;
+					a1->BuylistKinder[3]->exec = DestroyTask;
 
 					goto LABEL_56;
 				}
 
-				if (BM_GetSelectedItem(a1)->mCategory == ChaoItemCategory_TransporterUnlock)
-				{
-					cweSaveFile.transporterFlag |= (1 << BM_GetSelectedItem(a1)->mType);
-				}
-				else
-				{
-					save::CWE_PurchasedItems[cweSaveFile.purchasedItemCount] = *BM_GetSelectedItem(a1);
-					cweSaveFile.purchasedItemCount++;
-				}
+				save::CWE_PurchasedItems[cweSaveFile.purchasedItemCount] = *BM_GetSelectedItem(a1);
+				cweSaveFile.purchasedItemCount++;
 			}
 			FMainWinAddLineId(a1, 18);
 			FMainWinWaitClose(a1);
 			ALO_RingWinAdd(-a1->mItemDescInfo->PurchasePrice);
 
-			a1->BuylistKinder[0]->exec = DeleteObject_;
-			a1->BuylistKinder[1]->exec = DeleteObject_;
-			a1->BuylistKinder[2]->exec = DeleteObject_;
-			a1->BuylistKinder[3]->exec = DeleteObject_;
+			a1->BuylistKinder[0]->exec = DestroyTask;
+			a1->BuylistKinder[1]->exec = DestroyTask;
+			a1->BuylistKinder[2]->exec = DestroyTask;
+			a1->BuylistKinder[3]->exec = DestroyTask;
 
 			if (!AlItemIsRebuyable(a1->mItemDescItem))
 			{
@@ -2141,13 +2168,13 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 			}
 		}
 	LABEL_57:
-		if ((ControllerPointers[0]->press & 0x402) != 0)
+		if ((per[0]->press & 0x402) != 0)
 		{
-			PlaySoundProbably(4106, 0, 0, 0);
+			SE_Call(TONE(1, 10), 0, 0, 0);
 		}
 		else
 		{
-			PlaySoundProbably(4103, 0, 0, 0);
+			SE_Call(TONE(1, 7), 0, 0, 0);
 		}
 		break;
 	case 2:
@@ -2159,8 +2186,8 @@ void __cdecl FBuyListExec(BlackMarketData* a1)
 
 			if (v29 < cweSaveFile.marketInventoryCount[TabCategory])
 			{
-				SAlItem* v31 = &cweSaveFile.marketInventory[TabCategory][v29];
-				SAlItem* v32 = &cweSaveFile.marketInventory[TabCategory][v29 + 1];
+				SAlItemCwe* v31 = &cweSaveFile.marketInventory[TabCategory][v29];
+				SAlItemCwe* v32 = &cweSaveFile.marketInventory[TabCategory][v29 + 1];
 				for (int i = v30 - v29; i; --i)
 				{
 					*v31++ = *v32++;
@@ -2233,20 +2260,17 @@ void __cdecl sub_58A170(BlackMarketData* a1)
 
 	*(Uint32*)0x01A267D0 = 0xFFFFFFFF;
 	if (!NoText)
-		AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 15), TextLanguage == 0);
+		AlMsgWinAddLineC(a1->mMainWin, BlackMarket_GetBlMsg(a1, 15), Language == 0);
 }
-static void __declspec(naked) sub_58A170Hook()
-{
-	__asm
-	{
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call sub_58A170
+static void ASM_FUNC sub_58A170Hook() {
+	ASM_PUSH(eax); // a1
 
-		pop eax // a1
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_58A170);
+
+	ASM_POP(eax); // a1
+	ASM_RET(0);
 }
 
 float ringDisplayY = 80.0f;
@@ -2257,7 +2281,7 @@ void LoadRingDisplayHook()
 	
 	bool empty = true;
 	//todo: std::all_of
-	for (int i = 0; i < ChaoItemCategory_Count; i++)
+	for (int i = 0; i < NB_CWE_CATEGORY; i++)
 		if (cweSaveFile.marketInventoryCount[i])
 			empty = false;
 
@@ -2267,7 +2291,7 @@ void LoadRingDisplayHook()
 
 void CreateMenuThemeItem()
 {
-	BlackMarketAddInventory(ChaoItemCategory_MenuTheme, 2);
+	BlackMarketAddInventory(ALW_CATEGORY_THEME, 2);
 }
 
 void __cdecl sub_589850(BlackMarketData* data)
@@ -2276,11 +2300,11 @@ void __cdecl sub_589850(BlackMarketData* data)
 		return;
 	}
 	
-	if ((ControllerPointers[0]->on & 0x200) != 0) {
-		data->mItemDescAngX += ControllerPointers[0]->y1;
-		data->mItemDescAngY += ControllerPointers[0]->x1;
+	if ((per[0]->on & 0x200) != 0) {
+		data->mItemDescAngX += per[0]->y1;
+		data->mItemDescAngY += per[0]->x1;
 
-		data->mItemDescScl = (ControllerPointers[0]->l - ControllerPointers[0]->r) * 0.00013f + data->mItemDescScl;;
+		data->mItemDescScl = (per[0]->l - per[0]->r) * 0.00013f + data->mItemDescScl;;
 
 		if (data->mItemDescScl < 1) {
 			data->mItemDescScl = 1;
@@ -2292,7 +2316,7 @@ void __cdecl sub_589850(BlackMarketData* data)
 	}
 
 	if (data->mItemDescItem.mCategory == 2) {
-		auto type = data->mItemDescItem.mType;
+		auto type = data->mItemDescItem.mId;
 
 		if (type >= 0 && type < ModAPI_MinimalMotion0.size() && ModAPI_MinimalMotion0[type]) {
 			data->mItemDescFrame += 0.07f;
@@ -2304,56 +2328,79 @@ void __cdecl sub_589850(BlackMarketData* data)
 	}
 
 	if (data->mItemDescWinExplOn) {
-		MsgDialog(&data->mItemDescWinExpl);
+		AlMsgWinExec(&data->mItemDescWinExpl);
 	}
 }
-static void __declspec(naked) sub_589850Hook()
-{
-	__asm
-	{
-		push ecx // data
 
-		// Call your __cdecl function here:
-		call sub_589850
+static void ASM_FUNC sub_589850Hook() {
+	ASM_PUSH(ecx); // data
 
-		pop ecx // data
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (sub_589850);
+
+	ASM_POP(ecx); // data
+	ASM_RET(0);
 }
 
 static void SellHeldItem() {
-	task* pHeld = MainCharObj2[0]->HeldObject;
+	task* pHeld = playerpwp[0]->htp;
 	if (pHeld)
 	{
-		pHeld->exec = DeleteObject_;
-		if (MainCharObj1[0]) {
-			sub_46E5E0(0, (int)MainCharObj1[0]);
+		pHeld->exec = DestroyTask;
+		if (playertwp[0]) {
+			StopHoldingTaskP_inl(0, playertwp[0]);
 		}
-		MainCharObj2[0]->HeldObject = 0;
+		playerpwp[0]->htp = 0;
 	}
 
-	void* pSave = AL_GetHoldingItemSaveInfo();
+	ITEM_SAVE_INFO* pSave = AL_GetHoldingItemSaveInfo();
 	if (pSave) {
 		if (CWE_IsCustomItemSaveInfoCategory(AL_GetHoldingItemCategory())) {
 			AL_ClearItemSaveInfo((ItemSaveInfoBase*)pSave);
 		}
 		else {
-			AL_ClearItemSaveInfo((ITEM_SAVE_INFO*)pSave);
+			AL_ClearItemSaveInfo(pSave);
 		}
 	}
 
 	AL_ClearHoldingItemInfo();
 }
+
+static FunctionHook<void, BlackMarketData*> BlackMarketExec_t(0x58B5E0);
+static void BlackMarketExec_r(BlackMarketData* a1) {
+	if(!a1->mMode) {
+		texlist_cwe_market = texCreateTexlist("CWE_MARKET");
+		BuyListPanel.tlist = texlist_cwe_market;
+	}
+
+	BlackMarketExec_t.Original(a1);
+}
+
+static FunctionHook<void, task*> BlackMarketFree_t(0x58BF60);
+static void BlackMarketFree_r(task* a1) {
+	if(texlist_cwe_market) {
+		njReleaseTexture(texlist_cwe_market);
+		FREE(texlist_cwe_market);
+
+		texlist_cwe_market = NULL;
+	}
+
+	BlackMarketFree_t.Original(a1);
+}
+
 float NewInvDisplayPosX = 230; //384 = original
-void alg_kinder_bl_Init()
-{
-	RareFruitMarket.push_back({ SA2BFruit_Mushroom, 70 });
+void alg_kinder_bl_Init() {
+	// texture load and free hooks
+	BlackMarketExec_t.Hook(BlackMarketExec_r);
+	BlackMarketFree_t.Hook(BlackMarketFree_r);
+
+	RareFruitMarket.push_back({ ChaoFruit_Mushroom, 70 });
 
 	WriteData((float**)0x0058B67F, &NewInvDisplayPosX);
 
 	//fix grey button check
-	WriteData((int*)0x58BACD, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_Fruit]);
-	WriteData((int*)0x58BD8B, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_Fruit]);
+	WriteData((int*)0x58BACD, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_FRUIT]);
+	WriteData((int*)0x58BD8B, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_FRUIT]);
 
 	//chaos drive crash fix i think
 	WriteData((short*)0x0058936C, (short)0x9090);
@@ -2362,45 +2409,45 @@ void alg_kinder_bl_Init()
 	WriteData<4>((char*)0x005890AB, (char)0x90);
 
 	//draw inventory
-	WriteJump((void*)0x005341D0, DrawPurchasedItem);
-	WriteData((char*)0x0052AE5B, (char)0x1C); //set purchased item displayer from DisplaySub to field_1C
+	WriteJump((void*)0x005341D0, (void*)DrawPurchasedItem);
+	WriteData((char*)0x0052AE5B, (char)0x1C); //set purchased item displayer from DisplaySub to disp_dely
 	//if cwe inventory is empty, force a black market reload
 	//also move ring display position
-	WriteCall((void*)0x0058B810, LoadRingDisplayHook);
+	WriteCall((void*)0x0058B810, (void*)LoadRingDisplayHook);
 	WriteData((float**)0x00588CAA, &ringDisplayY);
 
-	WriteJump((void*)0x00589A00, FBuyListUpdate);
-	WriteJump((void*)0x0058A210, FBuyListDisp);
-	WriteJump((void*)0x58AB40, FBuyListExec);
-	WriteJump((void*)0x58A170, sub_58A170Hook); //buylist "init", fixes starting on the correct tab and showing the correct item
+	WriteJump((void*)0x00589A00, (void*)FBuyListUpdate);
+	WriteJump((void*)0x0058A210, (void*)FBuyListDisp);
+	WriteJump((void*)0x58AB40, (void*)FBuyListExec);
+	WriteJump((void*)0x58A170, (void*)sub_58A170Hook); //buylist "init", fixes starting on the correct tab and showing the correct item
 
 	//item desc
-	WriteJump((void*)0x005891E8, FItemDescDispHook);
-	WriteJump((void*)0x52F650, AL_GetMaxItemNum_hook);
+	WriteJump((void*)0x005891E8, (void*)FItemDescDispHook);
+	WriteJump((void*)0x52F650, (void*)AL_GetMaxItemNum_hook);
 
 	//selling code
-	WriteJump((void*)0x52F470, SellHeldItem);
-	WriteCall((void*)0x0058BDF1, AlItemGetInfoHook);
-	WriteCall((void*)0x0058BE2D, FItemDescSetHook);
-	WriteCall((void*)0x0058BDEA, sub_58B120Hook);
-	WriteJump((void*)0x58B140, FSellListStartHook);
+	WriteJump((void*)0x52F470, (void*)SellHeldItem);
+	WriteCall((void*)0x0058BDF1, (void*)AlItemGetInfoHook);
+	WriteCall((void*)0x0058BE2D, (void*)FItemDescSetHook);
+	WriteCall((void*)0x0058BDEA, (void*)sub_58B120Hook);
+	WriteJump((void*)0x58B140, (void*)FSellListStartHook);
 
-	WriteCall((void*)0x005891C4, FixFontScaleHook);
+	WriteCall((void*)0x005891C4, (void*)FixFontScaleHook);
 
 	//fixing animal motion thing
-	WriteJump((void*)0x589850, sub_589850Hook);
+	WriteJump((void*)0x589850, (void*)sub_589850Hook);
 
 	//memory size for bm exec
 	WriteData((int*)0x0058BFDF, (int)(sizeof(BlackMarketData) + 4));
 	WriteData((int*)0x0058BFE6, (int)sizeof(BlackMarketData));
 
 	//menu theme bs
-	WriteData((int*)0x0058B924, (int)&(cweSaveFile.marketInventory[ChaoItemCategory_MenuTheme]->mCategory));
-	WriteData((int*)0x0058B92E, (int)&(cweSaveFile.marketInventory[ChaoItemCategory_MenuTheme]->mType));
-	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_MenuTheme]);
-	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ChaoItemCategory_MenuTheme]);
+	WriteData((int*)0x0058B924, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mCategory));
+	WriteData((int*)0x0058B92E, (int)&(cweSaveFile.marketInventory[ALW_CATEGORY_THEME]->mId));
+	WriteData((int*)0x0058B919, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
+	WriteData((int*)0x0058B937, (int)&cweSaveFile.marketInventoryCount[ALW_CATEGORY_THEME]);
 	WriteData<0x1B>((char*)0x0058B97B, (char)0x90);
-	WriteCall((void*)0x0058B97B, CreateMenuThemeItem);
+	WriteCall((void*)0x0058B97B, (void*)CreateMenuThemeItem);
 
 	if (gConfigVal.BlackMarketShort)
 	{
@@ -2408,27 +2455,27 @@ void alg_kinder_bl_Init()
 
 		//exit text
 		WriteJump((void*)0x0058BCD4, (void*)0x0058BD21); //text about "getting more emblems"
-		WriteCall((void*)0x0058BD23, nullsub_1);
+		WriteCall((void*)0x0058BD23, (void*)nullsub_1);
 
 		WriteData<2>((char*)0x0058BE88, (char)0x90);//kills the message box check in case 14 (exit text)
 		WriteData<6>((char*)0x0058BA06, (char)0x90); //kills the message box check in case 3 (entry text)
 
 		//i think this might be the "you cant sell this item" no reason to shorten
 		//WriteData<2>((char*)0x0058BE6E, (char)0x90);//kills the message box check in case 13 (sell text)
-		//WriteCall((void*)0x58BE39, nullsub_1);
-		//WriteCall((void*)0x58BE40, nullsub_1);
+		//WriteCall((void*)0x58BE39, (void*)nullsub_1);
+		//WriteCall((void*)0x58BE40, (void*)nullsub_1);
 
 		//"you dont have anything to sell"
-		WriteCall((void*)0x0058BD44, nullsub_1);
-		WriteCall((void*)0x0058BD57, nullsub_1);
-		WriteCall((void*)0x0058BD63, nullsub_1);
-		WriteCall((void*)0x0058BD6A, nullsub_1);
+		WriteCall((void*)0x0058BD44, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD57, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD63, (void*)nullsub_1);
+		WriteCall((void*)0x0058BD6A, (void*)nullsub_1);
 
 		//kills the msg calls in case 0
-		WriteCall((void*)0x0058B82E, nullsub_1);
-		WriteCall((void*)0x0058B835, nullsub_1);
-		WriteCall((void*)0x0058B848, nullsub_1);
-		WriteCall((void*)0x0058B841, nullsub_1);
-		WriteCall((void*)0x0058B854, nullsub_1);
+		WriteCall((void*)0x0058B82E, (void*)nullsub_1);
+		WriteCall((void*)0x0058B835, (void*)nullsub_1);
+		WriteCall((void*)0x0058B848, (void*)nullsub_1);
+		WriteCall((void*)0x0058B841, (void*)nullsub_1);
+		WriteCall((void*)0x0058B854, (void*)nullsub_1);
 	}
 }

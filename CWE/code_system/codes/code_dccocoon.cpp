@@ -2,7 +2,7 @@
 #include "include/code_dccocoon.h"
 
 void DCCocoon::Init() {
-	NJS_OBJECT** mayu = (NJS_OBJECT * *)GetDllData("MayuObjectList");
+	NJS_CNK_OBJECT** mayu = (NJS_CNK_OBJECT * *)GetDataDllProcAddr("MayuObjectList");
 	mayu[0] = mayu[2];
 	mayu[1] = mayu[2];
 }

@@ -18,7 +18,7 @@ void BirthdayParty::OnALControl(task* tp) {
 		//should only run for one frame, around second frame of chao world
 		for (int i = 0; i < ALW_CountEntry(0); i++)
 		{
-			task* pChao = GetChaoObject(0, i);
+			task* pChao = ALW_GetTaskCount(0, i);
 			if (!pChao) continue;
 
 			CHAO_PARAM_GC* param = GET_CHAOPARAM(pChao);
@@ -39,7 +39,7 @@ void BirthdayParty::OnALControl(task* tp) {
 		if (pBirthdayChao && njRandom() < 0.50f) //50% chance
 		{
 			//is underwater
-			if (pBirthdayChao->twp->pos.y + 2.0 < pBirthdayChao->EntityData2->field_DC) return;
+			if (pBirthdayChao->twp->pos.y + 2.0 < ((MOVE_WORK*)pBirthdayChao->mwp)->WaterY) return;
 
 			AL_SetBehavior(pBirthdayChao, ALBHV_Birthday);
 			for (task* chao : otherChao)

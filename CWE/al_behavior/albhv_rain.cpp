@@ -4,10 +4,28 @@
 #include "al_texlist.h"
 #include "albhv.h"
 #include <njdef.h>
-#include <data/toy/al_toy_umbrella.nja>
 #include <al_daynight.h>
 #include <util.h>
 #include "al_knowledge.h"
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
+#pragma warning(push)
+#pragma warning( disable: 4838 )
+#pragma warning( disable : 4309 )
+#pragma warning( disable : 4305 )
+#endif
+
+#include <data/toy/al_toy_umbrella.nja>
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
 
 int ALBHV_Umbrella(task* tp) {
 	chaowk* work = GET_CHAOWK(tp);
@@ -69,7 +87,7 @@ void AL_CalcIntentionScore_Rain(task* tp, float* pMaxScore) {
 
 	const auto emotion = 3000 + njRandom() * 7000.f;
 	const float calmValue = (AL_EmotionGetValue(tp, EM_PER_CALM) + 100) / 200.f;
-	float score = 0.99f * AL_CalcScoreTypeA(emotion, lerp(2500, 6000, calmValue));
+	float score = 0.99f * AL_CalcScoreTypeA(emotion, std::lerp(2500, 6000, calmValue));
 	//AL_ScoreRandomize(&score);
 
 	if (true || score > *pMaxScore) {

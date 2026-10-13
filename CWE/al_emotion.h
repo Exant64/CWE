@@ -38,6 +38,6 @@ enum
 	NB_EMOTION = 0x20,
 };
 
-void AL_EmotionSet(task* a1, int a2, int a3);
-void AL_EmotionAdd(task* a1, int a2, int a3);
-extern int(*AL_EmotionGetValue)(task* tp, int emotion);
+void AL_EmotionAdd(task* tp, Uint32 EmotionNum, int add);
+void AL_EmotionSetValue(task* tp, Uint32 EmotionNum, int value);
+int AL_EmotionGetValue(task* tp, Uint32 EmotionNum);

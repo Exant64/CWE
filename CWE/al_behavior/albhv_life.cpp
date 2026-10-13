@@ -2,12 +2,12 @@
 #include <Chao.h>
 #include <random>
 #include <AL_ModAPI.h>
-#include <ALifeSDK_Functions.h>
 #include "albhv.h"
+#include "asmutil.h"
 
 int __cdecl ALBHV_EggChao(task* a1)
 {
-	ChaoData1* wk = GET_CHAOWK(a1);
+	chaowk* wk = GET_CHAOWK(a1);
 	AL_BEHAVIOR* bhv = &wk->Behavior;
 
 	switch (bhv->Mode)
@@ -30,128 +30,127 @@ int __cdecl ALBHV_EggChao(task* a1)
 	return BHV_RET_CONTINUE;
 }
 
-void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_VECTOR* position, int a5)
+void __cdecl EggChaoSpawnEgg(AL_GENE* a1, CHAO_PARAM_GC* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
 	if (njRandom() <= 0.01f)
 	{
 		if (a1)
 		{
-			chaoData->data.Gene = *a1;
+			chaoData->gene = *a1;
 		}
-		chaoData->data.type = ChaoType_Child;
-		chaoData->data.InKindergarten = -1;
-		task* chao = CreateChao(chaoData, 0, 0, position, a5);
-		chaoData->data.BodyType = SADXBodyType_EggChao;
+		chaoData->type = TYPE_CHILD;
+		chaoData->ClassNum = -1;
+		task* chao = CreateChaoExtra(chaoData, 0, 0, position, a5);
+		chaoData->body.FormNum = AL_FORM_EGG_FOOT;
 		AL_SetBehavior(chao, ALBHV_EggChao);
 	}
-	else
-		CreateChaoEgg(a1, chaoData, a3, position, a5);
+	else {
+		CreateEgg(a1, chaoData, a3, position, a5);
+	}
 }
 
 void __cdecl sub_550620(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType != 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
 	{
 		memset(GET_CHAOPARAM(a1), 0, sizeof(CHAO_PARAM_GC));
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 	}
 }
-static void __declspec(naked) sub_550620Hook()
-{
-	__asm
-	{
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call sub_550620
+static void ASM_FUNC sub_550620Hook() {
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		retn
-	}
+	ASM_PUSH(esi); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (sub_550620);
+	ASM_ESP_ADD(1); // a1
+
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
 
 void __cdecl EggChao_ALO_Delete(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType != 1)
-		ALO_Delete(a1);
+	if (GET_CHAOPARAM(a1)->body.FormNum != 1)
+		ALW_CancelEntry(a1);
 }
-static void __declspec(naked) EggChao_ALO_Delete_Hook()
-{
-	__asm
-	{
-		push esi // a1
 
-		// Call your __cdecl function here:
-		call EggChao_ALO_Delete
+static void ASM_FUNC EggChao_ALO_Delete_Hook() {
+	ASM_PUSH(esi); // a1
 
-		pop esi // a1
-		retn
-	}
+	ASM_PUSH(esi); // a1
+	// Call your __cdecl function here:
+	ASM_CALL (EggChao_ALO_Delete);
+	ASM_ESP_ADD(1); // a1
+
+	ASM_POP(esi); // a1
+	ASM_RET(0);
 }
-void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_SAVE_INFO* chaoData, int a3, NJS_VECTOR* position, int a5)
+
+void __cdecl EggChaoReincarnationEgg(AL_GENE* a1, CHAO_PARAM_GC* chaoData, int a3, NJS_VECTOR* position, int a5)
 {
 	GET_CWEPARAM(chaoData)->ForceReincarnate = false;
 	
-	if (chaoData->data.BodyType == 1)
+	if (chaoData->body.FormNum == 1)
 	{
 		if (a1)
 		{
-			chaoData->data.Gene = *a1;
+			chaoData->gene = *a1;
 		}
-		chaoData->data.type = ChaoType_Child;
-		chaoData->data.InKindergarten = -1;
-		chaoData->data.BodyType = SADXBodyType_EggChao;
+		chaoData->type = TYPE_CHILD;
+		chaoData->ClassNum = -1;
+		chaoData->body.FormNum = AL_FORM_EGG_FOOT;
 	}
 	else
-		CreateChaoEgg(a1, chaoData, a3, position, a5);
+		CreateEgg(a1, chaoData, a3, position, a5);
 }
 
-void __cdecl EggChaoCrawl(MotionTableData* a1, int a2)
+void __cdecl EggChaoCrawl(MOTION_CTRL* a1, int a2)
 {
-	ChaoData1* data1 = (ChaoData1*)((int)a1 - 0xAC);
-	if (data1->pParamGC->BodyType == 1)
+	chaowk* data1 = (chaowk*)((int)a1 - 0xAC);
+	if (data1->pParamGC->body.FormNum == 1)
 		Chao_RegAnimationTbl(a1, "alm_egg_crawl_start");
 	else
-		Chao_Animation(a1, a2);
+		SetMotionLink(a1, a2);
 }
-static void __declspec(naked) EggChaoCrawlHook()
-{
-	__asm
-	{
-		push edx // a2
-		push eax // result
 
-		// Call your __cdecl function here:
-		call EggChaoCrawl
+static void ASM_FUNC EggChaoCrawlHook() {
+	ASM_PUSH(edx); // a2
+	ASM_PUSH(eax); // result
 
-		pop eax // result
-		pop edx // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (EggChaoCrawl);
+
+	ASM_POP(eax); // result
+	ASM_POP(edx); // a2
+	ASM_RET(0);
 }
 
 void __cdecl EggChao_KeepOrDie(task* a1)
 {
-	if (GET_CHAOPARAM(a1)->BodyType == 1)
+	if (GET_CHAOPARAM(a1)->body.FormNum == 1)
 	{
-		a1->exec = Chao_Main;
+		a1->exec = ChaoExecutor;
 		AL_SetBehavior(a1, ALBHV_Think);
 	}
 	else
-		a1->exec = DeleteObject_;
+		a1->exec = DestroyTask;
 }
 
+ASM_FUNC void LoadCocoon(task* a1, char a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
 
-const int LoadCocoonPtr = 0x00568CD0;
-void LoadCocoon(task* a1, char a2)
-{
-	__asm
-	{
-		mov eax, a1
-		push dword ptr[a2]
-		call LoadCocoonPtr
-		add esp, 4
-	}
+    // call
+    ASM_CALL_R( edx, 0x00568CD0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 enum MayuKind
@@ -169,46 +168,43 @@ void CreateMayuField(task* a1, char a2)
 	switch (a2)
 	{
 	case MayuKind_Grow:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_GROW_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_GROW_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	case MayuKind_Death:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_DEATH_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_DEATH_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	case MayuKind_Succeed:
-		ALOField_Load(a1, CI_KIND_AL_MAYU_SUCCEED_FIELD, pos, 50.0f, MayuFieldTimer);
+		AL_ChildFieldCreateT(a1, CI_KIND_AL_MAYU_SUCCEED_FIELD, pos, 50.0f, MayuFieldTimer);
 		break;
 	}
 }
-static void __declspec(naked) CreateMayuHook()
-{
-	__asm
-	{
-		push[esp + 04h] // a2
-		push eax // a1
 
-		// Call your __cdecl function here:
-		call CreateMayuField
+static void ASM_FUNC CreateMayuHook() {
+	ASM_PUSH(ASM_ESP(1)); // a2
+	ASM_PUSH(eax); // a1
 
-		add esp, 4 // a1<eax> is also used for return value
-		add esp, 4 // a2
-		retn
-	}
+	// Call your __cdecl function here:
+	ASM_CALL (CreateMayuField);
+
+	ASM_ESP_ADD( 1 ); // a1<eax> is also used for return value
+	ASM_ESP_ADD( 1 ); // a2
+	ASM_RET(0);
 }
 
 void ALBHV_Life_Init() {
 	//egg chao code
-	WriteCall((void*)0x0059C2D7, EggChaoSpawnEgg);
+	WriteCall((void*)0x0059C2D7, (void*)EggChaoSpawnEgg);
 
-	WriteCall((void*)0x005685A4, EggChaoReincarnationEgg);
-	WriteCall((void*)0x00568591, EggChao_ALO_Delete_Hook);
-	WriteJump((void*)0x00550620, sub_550620Hook);
+	WriteCall((void*)0x005685A4, (void*)EggChaoReincarnationEgg);
+	WriteCall((void*)0x00568591, (void*)EggChao_ALO_Delete_Hook);
+	WriteJump((void*)0x00550620, (void*)sub_550620Hook);
 	WriteData((int*)0x00569173, (int)EggChao_KeepOrDie);
 
-	WriteCall((void*)0x005A32A8, EggChaoCrawlHook);
-	WriteJump((void*)0x0054B151, EggChaoCrawlHook);
+	WriteCall((void*)0x005A32A8, (void*)EggChaoCrawlHook);
+	WriteJump((void*)0x0054B151, (void*)EggChaoCrawlHook);
 
 	//cocoon reactions
-	WriteCall((void*)0x00568DE4, CreateMayuHook);
-	WriteCall((void*)0x00569048, CreateMayuHook);
-	WriteCall((void*)0x0569059, CreateMayuHook);
+	WriteCall((void*)0x00568DE4, (void*)CreateMayuHook);
+	WriteCall((void*)0x00569048, (void*)CreateMayuHook);
+	WriteCall((void*)0x0569059, (void*)CreateMayuHook);
 }

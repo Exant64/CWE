@@ -2,6 +2,8 @@
 #include "ModelInfo.h"
 #include <fstream>
 #include <iostream>
+#include <string>
+
 using std::default_delete;
 using std::ifstream;
 using std::ios;
@@ -35,18 +37,11 @@ ModelInfo::ModelInfo(const string& filename)
 	str.close();
 }
 
-ModelInfo::ModelInfo(const wstring& filename)
-{
-	ifstream str(filename, ios::binary);
-	init(str);
-	str.close();
-}
-
 ModelInfo::ModelInfo(istream& stream) { init(stream); }
 
 ModelFormat ModelInfo::getformat() { return format; }
 
-NJS_OBJECT* ModelInfo::getmodel() { return model; }
+NJS_CNK_OBJECT* ModelInfo::getmodel() { return model; }
 
 const string& ModelInfo::getauthor() { return author; }
 
@@ -187,7 +182,7 @@ void ModelInfo::fixsa2bmodelpointers(SA2B_Model* model, intptr_t base)
 	}
 }
 
-void ModelInfo::fixobjectpointers(NJS_OBJECT* object, intptr_t base)
+void ModelInfo::fixobjectpointers(NJS_CNK_OBJECT* object, intptr_t base)
 {
 	if (object->model != nullptr)
 	{
@@ -196,11 +191,11 @@ void ModelInfo::fixobjectpointers(NJS_OBJECT* object, intptr_t base)
 		{
 			fixedpointers.insert(object->model);
 			if (format == ModelFormat_Basic)
-				fixbasicmodelpointers(object->basicmodel, base);
+				fixbasicmodelpointers(((NJS_OBJECT*)object)->model, base);
 			else if (format == ModelFormat_Chunk)
-				fixchunkmodelpointers(object->chunkmodel, base);
+				fixchunkmodelpointers(object->model, base);
 			else if (format == ModelFormat_SA2B)
-				fixsa2bmodelpointers(object->sa2bmodel, base);
+				fixsa2bmodelpointers((SA2B_Model*)(object->model), base);
 		}
 	}
 	if (object->child != nullptr)
@@ -260,7 +255,7 @@ void ModelInfo::init(istream& stream)
 	uint8_t* modelbuf = new uint8_t[mdlsize];
 	allocatedmem.push_back(shared_ptr<uint8_t>(modelbuf, default_delete<uint8_t[]>()));
 	stream.read((char*)modelbuf, mdlsize);
-	model = (NJS_OBJECT*)(modelbuf + modeloff);
+	model = (NJS_CNK_OBJECT*)(modelbuf + modeloff);
 	intptr_t modelbase = (intptr_t)modelbuf - headersize;
 	fixobjectpointers(model, modelbase);
 	fixedpointers.clear();

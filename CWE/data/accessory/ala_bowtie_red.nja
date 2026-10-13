@@ -13,4 +13,4 @@ Sint16 cnk_Cube_003_poly[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0xFF, 0x8
 
 NJS_CNK_MODEL cnk_Cube_003 = { cnk_Cube_003_vtx, cnk_Cube_003_poly, { -0.2430786f, 2.404672f, 0.653092f }, 0.5282718f };
 
-NJS_OBJECT object_ala_bowtie_red = { NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Cube_003, -0.2438587f, 2.404771f, 0.3907236f, 0xD086, 0xE60B, 0x46EF, 0.9999999f, 0.9999999f, 1, NULL, NULL };
+NJS_CNK_OBJECT object_ala_bowtie_red = { NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Cube_003, -0.2438587f, 2.404771f, 0.3907236f, 0xD086, 0xE60B, 0x46EF, 0.9999999f, 0.9999999f, 1, NULL, NULL };

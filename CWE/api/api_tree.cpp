@@ -5,8 +5,8 @@
 #include "api_tree.h"
 
 std::vector<NJS_TEXLIST*> ModAPI_SeedTexlists;
-std::vector<NJS_OBJECT*> ModAPI_TreeModels;
-std::vector<NJS_OBJECT*> ModAPI_SeedModels;
+std::vector<NJS_CNK_OBJECT*> ModAPI_TreeModels;
+std::vector<NJS_CNK_OBJECT*> ModAPI_SeedModels;
 
 std::vector<CWE_REG_TREE_ENTRY> ModAPI_TreeEntries;
 
@@ -26,11 +26,11 @@ static inline bool NoneNullOrAll(void* p1, void* p2, void* p3) {
 	return p1 && p2 && p3;
 }
 
-static int CheckTreeVertexCount(NJS_OBJECT* pSaplingObj, NJS_OBJECT* pAdultObj, NJS_OBJECT* pDeadObj) {
+static int CheckTreeVertexCount(NJS_CNK_OBJECT* pSaplingObj, NJS_CNK_OBJECT* pAdultObj, NJS_CNK_OBJECT* pDeadObj) {
 	//if only one of them is null then that means it has an extra child/sibling
 	bool null_check = NoneNullOrAll(pSaplingObj, pAdultObj, pDeadObj);
 	if (!null_check) {
-		PrintDebug("AddChaoTree: hierarchy of all 3 tree types doesn't match!");
+		___OutputDebugString("AddChaoTree: hierarchy of all 3 tree types doesn't match!");
 		return 1;
 	}
 
@@ -41,18 +41,18 @@ static int CheckTreeVertexCount(NJS_OBJECT* pSaplingObj, NJS_OBJECT* pAdultObj, 
 	
 	bool model_null_check = NoneNullOrAll(pSaplingObj->model, pAdultObj->model, pDeadObj->model);
 	if (!model_null_check) {
-		PrintDebug("AddChaoTree: one of the tree models has an extra chunkmodel on a node!");
+		___OutputDebugString("AddChaoTree: one of the tree models has an extra chunkmodel on a node!");
 		return 1;
 	}
 
 	//same thing here
 	if (pSaplingObj->model) {
-		Sint16 sapling_vtx_count = GetVertexCount(pSaplingObj->chunkmodel);
-		Sint16 adult_vtx_count = GetVertexCount(pAdultObj->chunkmodel);
-		Sint16 dead_vtx_count = GetVertexCount(pDeadObj->chunkmodel);
+		Sint16 sapling_vtx_count = GetVertexCount(pSaplingObj->model);
+		Sint16 adult_vtx_count = GetVertexCount(pAdultObj->model);
+		Sint16 dead_vtx_count = GetVertexCount(pDeadObj->model);
 
 		if (sapling_vtx_count != adult_vtx_count || adult_vtx_count != dead_vtx_count || sapling_vtx_count != dead_vtx_count) {
-			PrintDebug("AddChaoTree: one or more tree types don't have matching vertex counts!");
+			___OutputDebugString("AddChaoTree: one or more tree types don't have matching vertex counts!");
 			return 1;
 		}
 	}
@@ -71,12 +71,12 @@ size_t AddChaoTree(const CWE_API_TREE_DATA& tree_data, BlackMarketItemAttributes
 	FruitLeafCounter = 0;
 
 	if (CheckTreeVertexCount(tree_data.pSaplingObj, tree_data.pAdultObj, tree_data.pDeadObj)) {
-		PrintDebug("AddChaoTree: CheckTreeVertexCount failed");
+		___OutputDebugString("AddChaoTree: CheckTreeVertexCount failed");
 		return -1;
 	}
 
 	if (FruitLeafCounter != 3) {
-		PrintDebug("AddChaoTree: Tree has more or less than 3 fruit nodes (%d)", FruitLeafCounter);
+		___OutputDebugString("AddChaoTree: Tree has more or less than 3 fruit nodes (%d)", FruitLeafCounter);
 		return -1;
 	}
 
@@ -99,7 +99,7 @@ size_t AddChaoTree(const CWE_API_TREE_DATA& tree_data, BlackMarketItemAttributes
 
 	ModAPI_TreeEntries.push_back(entry);
 
-	BlackMarketAttributes::Get()->Add(ChaoItemCategory_Seed, attrib, name, description);
+	BlackMarketAttributes::Get()->Add(ALW_CATEGORY_SEED, attrib, name, description);
 
 	return ModAPI_SeedModels.size();
 }
@@ -130,11 +130,11 @@ void AL_ModAPI_Tree_Update() {
 }
 
 void AL_ModAPI_Tree_Init() {
-	DataArray(NJS_OBJECT*, Seeds, 0x012E537C, 7);
-	DataArray(NJS_OBJECT*, TreeModels, 0x132913C, 24);
+	DataArray(NJS_CNK_OBJECT*, Seeds, 0x012E537C, 7);
+	DataArray(NJS_CNK_OBJECT*, TreeModels, 0x132913C, 24);
 
 	//seed
-	for (int i = 0; i < BlackMarketCategories[ChaoItemCategory_Seed].Count; i++) {
+	for (int i = 0; i < BlackMarketCategories[ALW_CATEGORY_SEED].Count; i++) {
 		ModAPI_SeedTexlists.push_back(&AL_OBJECT_TEXLIST);
 		ModAPI_SeedModels.push_back(Seeds[i]);
 	}
@@ -142,7 +142,7 @@ void AL_ModAPI_Tree_Init() {
 	//"local" tree's seed slot
 	ModAPI_SeedTexlists.push_back(nullptr);
 	ModAPI_SeedModels.push_back(nullptr);
-	BlackMarketAttributes::Get()->Add(ChaoItemCategory_Seed, 0, 0, 0);
+	BlackMarketAttributes::Get()->Add(ALW_CATEGORY_SEED, 0, 0, 0);
 
 	//the TreeModels array only has 8 actual entries, the 9th entry would be the "local tree"/garden tree, lucky for us its 3 nullptrs which is perfect
 	for (int i = 0; i < 9; i++) {

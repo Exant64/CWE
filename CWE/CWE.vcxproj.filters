@@ -5,7 +5,6 @@
     <ClCompile Include="alg_kinder_cl.cpp" />
     <ClCompile Include="alg_kinder_he.cpp" />
     <ClCompile Include="alg_kinder_ortho.cpp" />
-    <ClCompile Include="ALifeSDK_Functions.cpp" />
     <ClCompile Include="alo_accessory.cpp" />
     <ClCompile Include="alo_boat.cpp" />
     <ClCompile Include="alo_coffin.cpp" />
@@ -16,7 +15,6 @@
     <ClCompile Include="al_behavior\albhv_boat.cpp" />
     <ClCompile Include="al_behavior\albhv_capture.cpp" />
     <ClCompile Include="al_behavior\albhv_coffin.cpp" />
-    <ClCompile Include="al_behavior\albhv_console.cpp" />
     <ClCompile Include="al_behavior\albhv_dance.cpp" />
     <ClCompile Include="al_behavior\albhv_float.cpp" />
     <ClCompile Include="al_behavior\albhv_glide.cpp" />
@@ -44,12 +42,10 @@
     <ClCompile Include="al_behavior\al_intention.cpp" />
     <ClCompile Include="al_behavior\al_knowledge.cpp" />
     <ClCompile Include="al_butterfly.cpp" />
-    <ClCompile Include="al_console.cpp" />
     <ClCompile Include="al_customization.cpp" />
     <ClCompile Include="al_daynight.cpp" />
     <ClCompile Include="al_draw.cpp" />
     <ClCompile Include="al_gene.cpp" />
-    <ClCompile Include="al_look.cpp" />
     <ClCompile Include="al_marketattr.cpp" />
     <ClCompile Include="al_minimal.cpp" />
     <ClCompile Include="al_misc.cpp" />
@@ -73,7 +69,6 @@
     <ClCompile Include="al_piano.cpp" />
     <ClCompile Include="al_sandhole.cpp" />
     <ClCompile Include="al_save.cpp" />
-    <ClCompile Include="al_script.cpp" />
     <ClCompile Include="al_shape.cpp" />
     <ClCompile Include="al_social.cpp" />
     <ClCompile Include="al_stage.cpp" />
@@ -111,7 +106,6 @@
     <ClCompile Include="cwe_fixes.cpp" />
     <ClCompile Include="cwe_func.cpp" />
     <ClCompile Include="c_colli.cpp" />
-    <ClCompile Include="experimental_rendertarget.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="kce_helper.cpp" />
     <ClCompile Include="memory.cpp" />
@@ -160,13 +154,13 @@
     <ClCompile Include="code_system\codes\code_karatemedal.cpp" />
     <ClCompile Include="land_grayscale.cpp" />
     <ClCompile Include="cwe_c_colli.cpp" />
+    <ClCompile Include="al_field.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alg_kinder_bl.h" />
     <ClInclude Include="alg_kinder_cl.h" />
     <ClInclude Include="alg_kinder_he.h" />
     <ClInclude Include="alg_kinder_ortho.h" />
-    <ClInclude Include="ALifeSDK_Functions.h" />
     <ClInclude Include="alo_accessory.h" />
     <ClInclude Include="alo_fruit.h" />
     <ClInclude Include="alo_obakehead.h" />
@@ -185,11 +179,9 @@
     <ClInclude Include="al_behavior\al_intention.h" />
     <ClInclude Include="al_behavior\al_knowledge.h" />
     <ClInclude Include="al_butterfly.h" />
-    <ClInclude Include="al_console.h" />
     <ClInclude Include="al_daynight.h" />
     <ClInclude Include="al_draw.h" />
     <ClInclude Include="al_gene.h" />
-    <ClInclude Include="al_look.h" />
     <ClInclude Include="al_marketattr.h" />
     <ClInclude Include="al_minimal.h" />
     <ClInclude Include="al_msg_font.h" />

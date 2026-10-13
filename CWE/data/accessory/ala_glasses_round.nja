@@ -13,4 +13,4 @@ Sint16 cnk_attach_000A587C_poly[] = { 0x2513, 0x4, 0xD0D, 0xFF0Du, 0xFFFFu, 0xFF
 
 NJS_CNK_MODEL cnk_attach_000A587C = { cnk_attach_000A587C_vtx, cnk_attach_000A587C_poly, { 0, 0.7610633f, 0.7695763f }, 1.553792f };
 
-NJS_OBJECT object_ala_glasses_round = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_attach_000A587C, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT object_ala_glasses_round = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_attach_000A587C, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };

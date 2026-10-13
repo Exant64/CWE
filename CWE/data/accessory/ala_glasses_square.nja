@@ -13,4 +13,4 @@ Sint16 cnk_Sphere_001_poly[] = { 0x2513, 0x4, 0xD0D, 0xFF0Du, 0xFFFFu, 0xFF, 0x8
 
 NJS_CNK_MODEL cnk_Sphere_001 = { cnk_Sphere_001_vtx, cnk_Sphere_001_poly, { 0, 0.689352f, 0.7620609f }, 1.557027f };
 
-NJS_OBJECT object_ala_glasses_square = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Sphere_001, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };
+NJS_CNK_OBJECT object_ala_glasses_square = { NJD_EVAL_UNIT_POS | NJD_EVAL_UNIT_ANG | NJD_EVAL_UNIT_SCL | NJD_EVAL_BREAK | NJD_EVAL_SHAPE_SKIP, &cnk_Sphere_001, 0, 0, 0, 0, 0, 0, 1, 1, 1, NULL, NULL };

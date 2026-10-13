@@ -4,12 +4,12 @@
 #include <al_ode_guide.h>
 #include <ui/al_tween.h>
 #include <al_texlist.h>
-#include <ALifeSDK_Functions.h>
+#include "playsound.h"
 
 DataPointer(int, Odekake_EnabledButtons, 0x01DB1020);
 FunctionPointer(void, sub_5AC390, (char a1, float a2, float a3, __int16 a4, int* a5), 0x5AC390);
 
-ObjectFunc(sub_5AC010, 0x5AC010);
+FunctionPointer(void, sub_5AC010, (task*), 0x5AC010);
 
 // the number of buttons that can be visible on screen, this is used in many calculations
 #define NB_BUTTONS_VISIBLE 6
@@ -109,11 +109,7 @@ static void ScrollingLogic(task* a1) {
 	}
 }
 
-static bool AL_OdekakeIsGuest() {
-	CHAO_PARAM_GC* pParam = GBAManager_GetChaoDataPointer();
-
-	return Odekake_EnabledButtons && pParam && pParam->field_19 == 1;
-}
+static NJS_TEXLIST* texlist_cwe_odekake = NULL;
 
 static void AL_OdeScrollArrowExecutor(task* tp) {
 	if (!AL_OdekakeMenuMaster_Data_ptr->EndFlag) {
@@ -132,7 +128,7 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 		0.0f,
 		30,
 		[](task* pParent) {
-			DeleteObject_(pParent);
+			DestroyTask(pParent);
 		}
 	);
 
@@ -140,26 +136,36 @@ static void AL_OdeScrollArrowExecutor(task* tp) {
 }
 
 static void AL_OdeScrollArrowDisplayer(task* tp) {
-	SetShaders(1);
-	SetChaoHUDThingBColor(tp->twp->scl.z, 1, 1, 1);
+	SetShaderType(1);
+	chSetBillboardColor(tp->twp->scl.z, 1, 1, 1);
 
-	static ChaoHudThingB UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
-	static ChaoHudThingB GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, &CWE_UI_TEXLIST, 34 };
-	static ChaoHudThingB DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, &CWE_UI_TEXLIST, 34 };
-	static ChaoHudThingB GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, &CWE_UI_TEXLIST, 34 };
+	static CHS_BILL_INFO UpArrow = { 1, 50, 25, 0, 0, 1, 0.5f, texlist_cwe_odekake, 0 };
+	static CHS_BILL_INFO GreyUpArrow = { 1, 50, 25, 0, 0.5f, 1, 1, texlist_cwe_odekake, 0 };
+	static CHS_BILL_INFO DownArrow = { 1, 50, 25, 0, 0.5f, 1, 0, texlist_cwe_odekake, 0 };
+	static CHS_BILL_INFO GreyDownArrow = { 1, 50, 25, 0, 1, 1, 0.5f, texlist_cwe_odekake, 0 };
 
 	float scl = tp->twp->scl.x;
-	DrawChaoHudThingB(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
-	DrawChaoHudThingB(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
+	chDrawBillboardSR(IsCursorOnTopOfScreen() ? &GreyUpArrow : &UpArrow, 320 + 140, GetButtonPosition(2) - 25 / 1.5f, -100, scl, scl, 0, 0);
+	chDrawBillboardSR(IsCursorOnBottomOfScreen() ? &GreyDownArrow : &DownArrow, 320 + 140, GetButtonPosition(2) + 25 / 1.5f, -100, scl, scl, 0, 0);
+}
+
+static void AL_OdeScrollArrowDestructor (task* tp) {
+	njReleaseTexture(texlist_cwe_odekake);
+	FREE(texlist_cwe_odekake);
+
+	texlist_cwe_odekake = NULL;
 }
 
 static void AL_CreateOdeScrollArrow(task* pParent) {
-	task* tp = CreateChildTask(LoadObj_Data1, AL_OdeScrollArrowExecutor, pParent);
-	tp->field_1C = AL_OdeScrollArrowDisplayer;
+	task* tp = CreateChildTask(IM_TWK, AL_OdeScrollArrowExecutor, pParent);
+	tp->disp_dely = AL_OdeScrollArrowDisplayer;
+	tp->dest = AL_OdeScrollArrowDestructor;
 
 	tp->twp->scl.x = 0.0f;
 	tp->twp->scl.z = 1.0f;
 	
+	texlist_cwe_odekake = texCreateTexlist("CWE_ODEKAKE");
+
 	CreateTween(
 		tp,
 		EASE_OUT,
@@ -173,17 +179,22 @@ static void AL_CreateOdeScrollArrow(task* pParent) {
 
 static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) {
 	const int isThereChao = Odekake_EnabledButtons;
-	const bool guest = AL_OdekakeIsGuest();
 
 	for (size_t i = 0; i < odekakeMenuEntries.size(); i++) {
 		const auto& entry = odekakeMenuEntries[i];
 
-		if (entry.Flags & ODE_FLAGS_REQUIRE_CHAO)
-			Odekake_EnabledButtonsCWE[i] = (isThereChao && !guest) ? 1 : 0;
-		else if (entry.Flags & ODE_FLAGS_REQUIRE_NO_CHAO)
+		if (entry.pConditionFunc) {
+			Odekake_EnabledButtonsCWE[i] = int(entry.pConditionFunc());
+		}
+		else if (entry.Flags & ODE_FLAGS_REQUIRE_CHAO) {
+			Odekake_EnabledButtonsCWE[i] = isThereChao ? 1 : 0;
+		}
+		else if (entry.Flags & ODE_FLAGS_REQUIRE_NO_CHAO) {
 			Odekake_EnabledButtonsCWE[i] = isThereChao ? 0 : 1; //flipped
-		else
+		}
+		else {
 			Odekake_EnabledButtonsCWE[i] = 1;
+		}
 
 		// spawn buttons
 		sub_5AC390(
@@ -195,7 +206,7 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 		);
 
 		// hack to get the last spawned object (button is in objectlist 3)
-		pOdeButtons[i] = ObjectLists[3]->NextObject;
+		pOdeButtons[i] = btp[3]->last;
 		// default alpha with 1 if supposed to be on screen when spawned, 0 if not
 		pOdeButtons[i]->twp->scl.z = i > 5 ? 0.0f : 1.0f;
 	}
@@ -210,19 +221,19 @@ static void AL_OdekakeButtons(char a1, float a2, float a3, __int16 a4, int* a5) 
 
 static void NewButtonDraw(task* a1) {
 	taskwk* v1 = a1->twp;
-	SetChaoHUDThingBColor(*(float*)&v1->ang.z, 1, 1, 1);
+	chSetBillboardColor(*(float*)&v1->ang.z, 1, 1, 1);
 
 	float v15, v23, v13, a1a, v22;
 	a1a = *(float*)&v1->ang.x;
 	v22 = *(float*)&v1->ang.y;
-	ChaoHudThingB* v12 = odekakeMenuEntries[v1->id].ButtonText;
+	CHS_BILL_INFO* v12 = odekakeMenuEntries[v1->id].ButtonText;
 	if (!*(int*)(*(int*)(&v1->scl.y)))
 	{
 		v12 = odekakeMenuEntries[v1->id].GreyButtonText;
 	}
 	v23 = v22 - 5;
 	v13 = a1a - 44;
-	DrawChaoHudThingB(v12, v13, v23, -100, 1, 1, -1, 1);
+	chDrawBillboardSR(v12, v13, v23, -100, 1, 1, -1, 1);
 
 	if (!*(int*)(*(int*)(&v1->scl.y)))
 	{
@@ -238,8 +249,8 @@ static void NewButtonDraw(task* a1) {
 	float v19 = 2 - v17;
 	float a4 = v18;
 	float a1b = a1a - 72;
-	DrawChaoHudThingB(odekakeMenuEntries[v1->id].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
-	SetChaoHUDThingBColor(1, 1, 1, 1);
+	chDrawBillboardSR(odekakeMenuEntries[v1->id].ButtonIcon, a1b, v23, -100, a4, v19, 0, 1);
+	chSetBillboardColor(1, 1, 1, 1);
 }
 
 static void ButtonDraw(task* tp) {
@@ -254,7 +265,7 @@ static void ButtonDraw(task* tp) {
 	*rotZAlphaThing *= tp->twp->scl.z;
 
 	// set our one alpha
-	SetChaoHUDThingBColor(tp->twp->scl.z, 1, 1, 1);
+	chSetBillboardColor(tp->twp->scl.z, 1, 1, 1);
 	sub_5AC010(tp);
 	NewButtonDraw(tp);
 
@@ -265,30 +276,30 @@ static void ButtonDraw(task* tp) {
 void AL_Odekake_MenuMaster_Selection() {
 	task* tp = AL_OdekakeMenuMaster_Data_ptr->tp;
 
-	if (MenuButtons_Pressed[0] & Buttons_Up) {
+	if (SWDATAE[0] & BTN_UP) {
 		--AL_OdekakeMenuMaster_Data_ptr->cursorY;
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY < 0) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 		}
-		PlaySoundProbably(0x8000, 0, 0, 0);
+		SE_Call(TONE(8, 0), 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);
 	}
 
-	if (MenuButtons_Pressed[0] & Buttons_Down) {
+	if (SWDATAE[0] & BTN_DOWN) {
 		++AL_OdekakeMenuMaster_Data_ptr->cursorY;
 		if (AL_OdekakeMenuMaster_Data_ptr->cursorY > odekakeMenuEntries.size() - 1) {
 			AL_OdekakeMenuMaster_Data_ptr->cursorY = 0;
 		}
 
-		PlaySoundProbably(0x8000, 0, 0, 0);
+		SE_Call(TONE(8, 0), 0, 0, 0);
 
 		// trigger scrolling
 		ScrollingLogic(tp);
 	}
 
-	if (MenuButtons_Pressed[0] & Buttons_B) {
+	if (SWDATAE[0] & BTN_B) {
 		AL_OdekakeMenuMaster_Data_ptr->cursorY = odekakeMenuEntries.size() - 1;
 
 		// trigger scrolling when jumping to exit button
@@ -315,7 +326,7 @@ void AL_Odekake_MainMenuBar_Init() {
 	WriteData<5>((char*)0x005AC345, (char)0x90);
 
 	// hook button creation
-	WriteCall((void*)0x005A6CFA, AL_OdekakeButtons);
+	WriteCall((void*)0x005A6CFA, (void*)AL_OdekakeButtons);
 
 	// kills first button so i can fully create my own
 	WriteData<5>((char*)0x005A6CD3, (char)0x90);

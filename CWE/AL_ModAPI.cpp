@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "AL_ModAPI.h"
-#include "ALifeSDK_Functions.h"
 #include "alo_fruit.h"
 #include "ChaoMain.h"
 #include "alo_obakehead.h"
@@ -31,12 +30,24 @@
 #include <al_draw.h>
 #include "api/api_main.h"
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+#pragma clang diagnostic ignored "-Wconstant-conversion"
+#else
 #pragma warning(push)
 #pragma warning( disable: 4838 )
-#include "data/alo_missing_tree.nja"
-#pragma warning(pop)
+#endif
 
-extern NJS_OBJECT object_alo_missing;
+#include "data/alo_missing_tree.nja"
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#else
+#pragma warning (pop)
+#endif
+
+extern NJS_CNK_OBJECT object_alo_missing;
 
 std::vector<LastBiteFruitFuncPtr> lastBiteFruit;
 std::vector<std::pair<SpecialItemFuncPtr, SpecialConditionFuncPtr>> specialItemFuncs;
@@ -47,14 +58,14 @@ std::unordered_set<int> ModAPI_SpecialAction;
 
 std::vector<NJS_TEXLIST*> ModAPI_EyeColors;
 
-size_t AddChaoHat(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
+size_t AddChaoHat(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description) {
 	size_t ret = MaskObjObjectList.size();
 	if (model == nullptr)
 		MaskObjObjectList.push_back(std::make_pair(&object_alo_missing, texlist_cwe_object));
 	else
 		MaskObjObjectList.push_back(std::make_pair(model, texlist));
 
-	BlackMarketAttributes::Get()->Add(ChaoItemCategory_Hat, attrib, name, description);
+	BlackMarketAttributes::Get()->Add(ALW_CATEGORY_MASK, attrib, name, description);
 	return ret;
 }
 
@@ -79,7 +90,7 @@ size_t AddChaoMinimal(CWE_MINIMAL* pMinimal) {
 extern "C"
 {
 	//COMPATBILITY LAYER
-	__declspec(dllexport) int RegisterChaoHat(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description, bool hideHead) {
+	__declspec(dllexport) int RegisterChaoHat(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description, bool hideHead) {
 		if (!hideHead) {
 			return CWE_API_Legacy.RegisterChaoAccessory(EAccessoryType::Head, model, texlist, attrib, name, description);
 		}
@@ -122,16 +133,16 @@ extern "C"
 	}
 	__declspec(dllexport) void SetFruitTexlist(int ID, NJS_TEXLIST* texlist)
 	{
-		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Set(ID, texlist);
+		ObjectRegistry::Get(ALW_CATEGORY_FRUIT)->Set(ID, texlist);
 	}
 
-	__declspec(dllexport) int RegisterChaoFruit(NJS_OBJECT* model, NJS_TEXLIST* texlist, ChaoItemStats* stats, BlackMarketItemAttributes* attrib, LastBiteFruitFuncPtr funcPtr, const char* name, const char* description)
+	__declspec(dllexport) int RegisterChaoFruit(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, ChaoItemStats* stats, BlackMarketItemAttributes* attrib, LastBiteFruitFuncPtr funcPtr, const char* name, const char* description)
 	{
-		int ret = ObjectRegistry::Get(ChaoItemCategory_Fruit)->Size();
+		int ret = ObjectRegistry::Get(ALW_CATEGORY_FRUIT)->Size();
 
-		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Add(model, texlist);
+		ObjectRegistry::Get(ALW_CATEGORY_FRUIT)->Add(model, texlist);
 		ModAPI_FruitStats.push_back(*stats);
-		BlackMarketAttributes::Get()->Add(ChaoItemCategory_Fruit, attrib, name, description);
+		BlackMarketAttributes::Get()->Add(ALW_CATEGORY_FRUIT, attrib, name, description);
 		lastBiteFruit.push_back(funcPtr);
 
 		return ret;
@@ -153,17 +164,17 @@ extern "C"
 	{
 		OtherItemFuncs.insert(std::make_pair(ID, (int)func));
 	}
-	__declspec(dllexport) int RegisterChaoSpecial(NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, SpecialItemFuncPtr func, SpecialConditionFuncPtr cond, const char* name, const char* description, bool isAction)
+	__declspec(dllexport) int RegisterChaoSpecial(NJS_CNK_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, SpecialItemFuncPtr func, SpecialConditionFuncPtr cond, const char* name, const char* description, bool isAction)
 	{
-		int ret = ObjectRegistry::Get(ChaoItemCategory_Special)->Size();
+		int ret = ObjectRegistry::Get(ALW_CATEGORY_SPECIAL)->Size();
 
 		if (isAction) {
 			ModAPI_SpecialAction.insert(ret);
 		}
 
 		specialItemFuncs.push_back(std::make_pair(func, (cond == nullptr) ? ALS_Default : cond));
-		ObjectRegistry::Get(ChaoItemCategory_Special)->Add(model, texlist);
-		BlackMarketAttributes::Get()->Add(ChaoItemCategory_Special, attrib, name, description);
+		ObjectRegistry::Get(ALW_CATEGORY_SPECIAL)->Add(model, texlist);
+		BlackMarketAttributes::Get()->Add(ALW_CATEGORY_SPECIAL, attrib, name, description);
 
 		return ret;
 	}
@@ -187,7 +198,7 @@ extern "C"
 	}
 
 	void FruitErrorMsg(ItemChance_old* oldChance) {
-		auto* attrib = BlackMarketAttributes::Get()->Attrib(ChaoItemCategory_Fruit, oldChance->item);
+		auto* attrib = BlackMarketAttributes::Get()->Attrib(ALW_CATEGORY_FRUIT, oldChance->item);
 		bool validNameID = attrib && attrib->Name >= 0 && (size_t)attrib->Name < MsgAlItem.size();
 
 		APIErrorUtil error("RegisterBlackMarketFruit error registering %s:", validNameID ? MsgAlItem[attrib->Name] : "Unknown Fruit");
@@ -215,7 +226,7 @@ extern "C"
 	}
 }
 
-BlackMarketItemAttributes* GetItemAttr(ChaoItemCategory cat, int index) {
+BlackMarketItemAttributes* GetItemAttr(Sint8 cat, int index) {
 	return BlackMarketAttributes::Get()->Attrib(cat, index);
 }
 
@@ -312,11 +323,11 @@ static void CallRegisteredHooks() {
 }
 
 const static uint32_t priceAdjustedCategories[] = {
-	ChaoItemCategory_Accessory,
-	ChaoItemCategory_Hat,
-	ChaoItemCategory_Fruit,
-	ChaoItemCategory_Seed,
-	ChaoItemCategory_Special
+	ALW_CATEGORY_ACCESSORY,
+	ALW_CATEGORY_MASK,
+	ALW_CATEGORY_FRUIT,
+	ALW_CATEGORY_SEED,
+	ALW_CATEGORY_SPECIAL
 };
 
 static void InitPriceAdjustStartIndices(size_t priceAdjustStartIndices[]) {
@@ -343,9 +354,9 @@ static void AL_ModAPI_InitSubsystems() {
 	AL_ModAPI_Msg_Init();
 
 	//Fruit
-	for (int i = SA2BFruit_ChaoGardenFruit; i < 24; i++)
+	for (int i = ChaoFruit_ChaoGardenFruit; i < 24; i++)
 	{
-		ObjectRegistry::Get(ChaoItemCategory_Fruit)->Add(FruitModels[i], &AL_OBJECT_TEXLIST);
+		ObjectRegistry::Get(ALW_CATEGORY_FRUIT)->Add(FruitModels[i], &AL_OBJECT_TEXLIST);
 		ModAPI_FruitStats.push_back(ChaoFruitStatArray[i]);
 		lastBiteFruit.push_back(nullptr);
 	}

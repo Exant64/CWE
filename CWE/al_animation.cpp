@@ -1,59 +1,67 @@
 #include "stdafx.h"
+#include "al_emotion.h"
+#include "al_motion.h"
+#include "asmutil.h"
+#include "ninja.h"
 
 #include "Chao.h"
 #include "ChaoMain.h"
-#include "ALifeSDK_Functions.h"
 #include "al_parameter.h"
 #include "al_behavior/albhv.h"
-#include "iostream"
 #include "al_behavior/al_behavior.h"
 #include <al_face.h>
+#include "playsound.h"
+#include "al_hold.h"
+#include "al_landmark.h"
+#include "al_draw.h"
+#include "ninja_functions.h"
+#include "FunctionHook.h"
+#include "al_parts.h"
+#include "al_behavior/al_knowledge.h"
 
 #define RandomChance (njRandom() < 0.5f)
 
-#define SOUNDBANK1(a1) 0x1000 + a1
-#define SOUNDBANK6(a1) 0x6000 + a1
-
-void Chao_ExtraAnimations(task* a1)
+void Chao_ExtraAnimations(task* tp)
 {
-	ChaoData1* data = GET_CHAOWK(a1);
+	chaowk* data = GET_CHAOWK(tp);
+	auto cwe_work = GET_CHAOWK_CWE(tp);
 
 	//Reset to 0 each Behavior
-	if (data->Behavior.Mode == 0) data->AnimRandomized = 0;
+	if (data->Behavior.Mode == 0) cwe_work->AnimRandomized = 0;
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_THINK)
 	{
-		if (data->AnimRandomized == 0)
+		if (cwe_work->AnimRandomized == 0)
 		{
-			if (data->MotionTable.TransitionToID == 0 || data->MotionTable.TransitionToID == 1 || data->MotionTable.TransitionToID == 238 || data->MotionTable.TransitionToID == 239)
+			if (data->MotionCtrl.next_num == 0 || data->MotionCtrl.next_num == 1 || data->MotionCtrl.next_num == 238 || data->MotionCtrl.next_num == 239)
 			{
-				if (data->MotionTable.AnimID == 534)
+				if (data->MotionCtrl.curr_num == 534)
 				{
-					AL_SetMotionLink(a1, 538);
+					AL_SetMotionLink(tp, 538);
 					data->Behavior.Timer += (rand() % 30 + 30);
-					AL_FaceChangeEye(a1, ChaoEyes_ClosedHappy);
+					AL_FaceChangeEye(tp, ChaoEyes_ClosedHappy);
 				}
-				else if (data->MotionTable.AnimID == 536)
+				else if (data->MotionCtrl.curr_num == 536)
 				{
-					AL_SetMotionLink(a1, 541);
+					AL_SetMotionLink(tp, 541);
 				}
-				else if (data->MotionTable.AnimID == 128)
+				else if (data->MotionCtrl.curr_num == 128)
 				{
-					AL_SetMotionLink(a1, 279);
+					AL_SetMotionLink(tp, 279);
 					data->Behavior.Timer += (rand() % 30 + 30);
-					AL_FaceChangeEye(a1, ChaoEyes_Painful);
+					AL_FaceChangeEye(tp, ChaoEyes_Painful);
 				}
-				else if (data->MotionTable.AnimID == 398)
+				else if (data->MotionCtrl.curr_num == 398)
 				{
-					AL_SetMotionLink(a1, 399);
+					AL_SetMotionLink(tp, 399);
 				}
-				else if (data->MotionTable.AnimID == 220)
+				else if (data->MotionCtrl.curr_num == 220)
 				{
-					AL_SetMotionLink(a1, 454);
+					AL_SetMotionLink(tp, 454);
 					data->Behavior.Timer += (rand() % 30 + 30);
-					AL_FaceChangeEye(a1, ChaoEyes_ClosedUp);
+					AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
 				}
-				else if (data->MotionTable.AnimID == 201 || data->MotionTable.AnimID == 192)
+				else if (data->MotionCtrl.curr_num == 201 || data->MotionCtrl.curr_num == 192)
 				{
 					int HeroIdle = 483;
 					if (AL_IsHero(data->pParamGC->type))
@@ -64,12 +72,12 @@ void Chao_ExtraAnimations(task* a1)
 					const int NoAnim[] = { 513, HeroIdle };
 					int NoRNG = rand() % std::size(NoAnim);
 
-					AL_SetMotionLink(a1, NoAnim[NoRNG]);
-					data->AnimRandomized++;
+					AL_SetMotionLink(tp, NoAnim[NoRNG]);
+					cwe_work->AnimRandomized++;
 
-					AL_FaceChangeEye(a1, ChaoEyes_ClosedStraight);
+					AL_FaceChangeEye(tp, ChaoEyes_ClosedStraight);
 				}
-				else if (data->MotionTable.AnimID >= 100 && data->MotionTable.AnimID <= 102)
+				else if (data->MotionCtrl.curr_num >= 100 && data->MotionCtrl.curr_num <= 102)
 				{
 					int HeroIdle = 0;
 					int DarkIdle = 1;
@@ -91,15 +99,21 @@ void Chao_ExtraAnimations(task* a1)
 						FlyIdle = 131;
 					}
 
-					const int Idle2Anim[] = { 0, 1, 238, 239, 215, 457, 510, HeroIdle, DarkIdle, FlyIdle };
+					const int Idle2Anim[] = { 0, 1, 238, 239, 215, 457, ALM_EHHEN_STAND, HeroIdle, DarkIdle, FlyIdle };
 					int Idle2RNG = rand() % std::size(Idle2Anim);
+					auto chosenAnim = Idle2Anim[Idle2RNG];
 
-					AL_SetMotionLink(a1, Idle2Anim[Idle2RNG]);
-					data->AnimRandomized++;
+					AL_SetMotionLink(tp, chosenAnim);
+
+					if (gConfigVal.MoreSound && chosenAnim == ALM_EHHEN_STAND) {
+						AL_SE_CallV2(TONE(6, 29), 0, 0, 110, &data->pos);
+					}
+
+					cwe_work->AnimRandomized++;
 				}
 				else
 				{
-					int vitality = AL_EmotionGetValue(a1, EM_PER_VITALITY);
+					int vitality = AL_EmotionGetValue(tp, EM_PER_VITALITY);
 					int ExtraIdle = 0;
 
 					if (vitality < -30)
@@ -114,91 +128,91 @@ void Chao_ExtraAnimations(task* a1)
 					const int IdleAnim[] = { 0, 1, 238, 239, 215, 419, 421, ExtraIdle };
 					int IdleRNG = rand() % std::size(IdleAnim);
 
-					AL_SetMotionLink(a1, IdleAnim[IdleRNG]);
-					data->AnimRandomized++;
+					AL_SetMotionLink(tp, IdleAnim[IdleRNG]);
+					cwe_work->AnimRandomized++;
 				}
 			}
 		}
-		else if (data->AnimRandomized == 1)
+		else if (cwe_work->AnimRandomized == 1)
 		{
-			if (data->MotionTable.AnimID == 216)
+			if (data->MotionCtrl.curr_num == 216)
 			{
 				const int LookUpAnim[] = { 216, 217, 218 };
 				int LookUpRNG = rand() % std::size(LookUpAnim);
 
-				AL_SetMotionLinkStep(a1, LookUpAnim[LookUpRNG], 0x23u);
+				AL_SetMotionLinkStep(tp, LookUpAnim[LookUpRNG], 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
-			else if (data->MotionTable.AnimID == 477)
+			else if (data->MotionCtrl.curr_num == 477)
 			{
 				const int ShyAnim[] = { 477, 478 };
 				int ShyRNG = rand() % std::size(ShyAnim);
 
-				AL_SetMotionLinkStep(a1, ShyAnim[ShyRNG], 0x23u);
+				AL_SetMotionLinkStep(tp, ShyAnim[ShyRNG], 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
-			else if (data->MotionTable.AnimID == 555)
+			else if (data->MotionCtrl.curr_num == 555)
 			{
 				const int HeroAnim[] = { 555, 556, 559 };
 				int HeroRNG = rand() % std::size(HeroAnim);
 
-				AL_SetMotionLinkStep(a1, HeroAnim[HeroRNG], 0x23u);
+				AL_SetMotionLinkStep(tp, HeroAnim[HeroRNG], 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
-				data->AnimRandomized++;
+				cwe_work->AnimRandomized++;
 			}
 		}
 
 
-		if (AL_EmotionGetValue(a1, EM_ST_HUNGER) < 5500 && data->MotionTable.TransitionToID == 62)
+		if (AL_EmotionGetValue(tp, EM_ST_HUNGER) < 5500 && data->MotionCtrl.next_num == 62)
 		{
-			if (data->MotionTable.AnimID == 175 || data->MotionTable.AnimID == 179)
+			if (data->MotionCtrl.curr_num == 175 || data->MotionCtrl.curr_num == 179)
 			{
-				AL_SetMotionLinkStep(a1, 166, 0x23u);
+				AL_SetMotionLinkStep(tp, 166, 0x23u);
 				data->Behavior.Timer += (rand() % 30 + 30);
 
-				AL_FaceChangeEye(a1, ChaoEyes_ClosedUp);
-				AL_FaceChangeMouth(a1, ChaoMouth_OpenSmile);
+				AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+				AL_FaceChangeMouth(tp, ChaoMouth_OpenSmile);
 			}
 		}
 
-		if (data->MotionTable.TransitionToID == 130)
+		if (data->MotionCtrl.next_num == 130)
 		{
-			AL_SetBehavior(a1, (BHV_FUNC)ChaoBehaviour_FLY);
-			AL_GetRandomAttrPos_0(a1);
+			AL_SetBehavior(tp, (BHV_FUNC)ChaoBehaviour_FLY);
+			AL_GetRandomAttrPos(LMA_GROUND1, &GET_MOVE_WORK(tp)->AimPos);
 		}
-		else if (data->MotionTable.TransitionToID == 539)
+		else if (data->MotionCtrl.next_num == 539)
 		{
-			AL_SetMotionLink(a1, 540);
+			AL_SetMotionLink(tp, 540);
 		}
 
 		//Reset Behaviour if it play those unique animations (i should probably learn how to make my own behaviour)
 		if (data->Behavior.Timer == 1)
 		{
-			if (data->MotionTable.AnimID == 166 || data->MotionTable.AnimID == 455 || data->MotionTable.AnimID == 279 || data->MotionTable.AnimID == 540)
+			if (data->MotionCtrl.curr_num == 166 || data->MotionCtrl.curr_num == 455 || data->MotionCtrl.curr_num == 279 || data->MotionCtrl.curr_num == 540)
 			{
 				data->Behavior.Mode = 0;
 			}
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SITTHINK)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_SITTHINK)
 	{
-		if (data->MotionTable.TransitionToID == 62 && data->MotionTable.AnimID == 62 && data->Behavior.Timer > 300)
+		if (data->MotionCtrl.next_num == 62 && data->MotionCtrl.curr_num == 62 && data->Behavior.Timer > 300)
 		{
-			data->MotionTable.TransitionToID = 493; //For some reason it broke with AL_SetMotionLink
+			data->MotionCtrl.next_num = 493; //For some reason it broke with AL_SetMotionLink
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGTV || AL_GetBehavior(a1) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGTV> || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGRADIO || AL_GetBehavior(a1) == ALBHV_ToyMoveCheck<(BHV_FUNC)ChaoBehaviour_WATCHINGRADIO> || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGSING || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGDANCE || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WATCHINGMUSIC)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGTV || AL_GetBehavior(tp) == (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_WatchTV_p> || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGRADIO || AL_GetBehavior(tp) == (BHV_FUNC)ALBHV_ToyMoveCheck<ALBHV_ListenRadicase_p> || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGSING || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGDANCE || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WATCHINGMUSIC)
 	{
-		if (data->AnimRandomized == 0)
+		if (cwe_work->AnimRandomized == 0)
 		{
-			if (data->MotionTable.TransitionToID == 573)
+			if (data->MotionCtrl.next_num == 573)
 			{
 				int ToothyClap = 573;
-				if (data->pParamGC->MouthType == ChaoMouth_ToothySmile || data->pParamGC->MouthType == ChaoMouth_ToothyFrown)
+				if (data->pParamGC->body.DefaultMouthNum == ChaoMouth_ToothySmile || data->pParamGC->body.DefaultMouthNum == ChaoMouth_ToothyFrown)
 				{
 					const int ToothyAnim[] = { 465, 466, 467 };
 					int ToothyRNG = rand() % std::size(ToothyAnim);
@@ -209,217 +223,181 @@ void Chao_ExtraAnimations(task* a1)
 				const int GiggleAnim[] = { ToothyClap, 472 };
 				int GiggleRNG = rand() % std::size(GiggleAnim);
 
-				AL_SetMotionLink(a1, GiggleAnim[GiggleRNG]);
-				data->AnimRandomized++;
+				AL_SetMotionLink(tp, GiggleAnim[GiggleRNG]);
+				cwe_work->AnimRandomized++;
 			}
-			else if (data->MotionTable.TransitionToID == 574)
+			else if (data->MotionCtrl.next_num == 574)
 			{
 				const int Giggle2Anim[] = { 574, 474, 475 };
 				int Giggle2RNG = rand() % std::size(Giggle2Anim);
 
-				AL_SetMotionLink(a1, Giggle2Anim[Giggle2RNG]);
-				data->AnimRandomized++;
+				AL_SetMotionLink(tp, Giggle2Anim[Giggle2RNG]);
+				cwe_work->AnimRandomized++;
 			}
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SLEEP && data->Behavior.Timer == (rand() % 500 + 250))
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_SLEEP && data->Behavior.Timer == (rand() % 500 + 250))
 	{
-		if (data->MotionTable.TransitionToID != 30) //Frame Perfect why are you like this
+		if (data->MotionCtrl.next_num != 30) //Frame Perfect why are you like this
 		{
-			if (data->MotionTable.AnimID == 19)
+			if (data->MotionCtrl.curr_num == 19)
 			{
 				const int MidSleepAnim[] = { 73, 74, 75, 76, 85, 87 };
 				int MidSleepRNG = rand() % std::size(MidSleepAnim);
 
-				AL_SetMotionLinkStep(a1, MidSleepAnim[MidSleepRNG], 0x28u);
+				AL_SetMotionLinkStep(tp, MidSleepAnim[MidSleepRNG], 0x28u);
 			}
-			else if (data->MotionTable.AnimID == 25)
+			else if (data->MotionCtrl.curr_num == 25)
 			{
-				AL_SetMotionLink(a1, 77);
+				AL_SetMotionLink(tp, 77);
 			}
-			else if (data->MotionTable.AnimID == 53)
+			else if (data->MotionCtrl.curr_num == 53)
 			{
 				const int MidSleep2Anim[] = { 90, 91, 92, 93 };
 				int MidSleep2RNG = rand() % std::size(MidSleep2Anim);
 
-				AL_SetMotionLinkStep(a1, MidSleep2Anim[MidSleep2RNG], 0x28u);
+				AL_SetMotionLinkStep(tp, MidSleep2Anim[MidSleep2RNG], 0x28u);
 			}
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WALK)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTOPLAYER || AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 	{
-		if (data->MotionTable.TransitionToID == 100)
+		if (cwe_work->AnimRandomized == 0)
 		{
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_ANGER)
-			{
-				AL_SetMotionLink(a1, 126);
-			}
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_URGETOCRY)
-			{
-				AL_SetMotionLink(a1, 105);
-			}
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_URGETOCRY2)
-			{
-				const int CryWalkAnim[] = { 534, 536 };
-				int CryWalkRNG = rand() % std::size(CryWalkAnim);
-
-				AL_SetMotionLink(a1, CryWalkAnim[CryWalkRNG]);
-			}
-			if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_DIZZY)
-			{
-				AL_SetMotionLink(a1, 127);
-			}
-		}
-
-	}
-
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_ANGER || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY2 || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_DIZZY)
-	{
-		if (data->Behavior.nbBhvFuncEntry == 1 && data->Behavior.Timer == 1 && RandomChance)
-		{
-			Chao_BehaviourQueue(a1, ChaoBehaviour_WALK);
-			AL_GetRandomAttrPos_0(a1);
-		}
-	}
-
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOPLAYER || AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
-	{
-		if (data->AnimRandomized == 0)
-		{
-			if (data->MotionTable.TransitionToID == 119 && data->pParamGC->Skill[2] >= 1333)
+			if (data->MotionCtrl.next_num == 119 && data->pParamGC->Skill[2] >= 1333)
 			{
 				const int GotoTarget2Anim[] = { 119, 129 };
 				int GotoTarget2RNG = rand() % std::size(GotoTarget2Anim);
 
-				AL_SetMotionLink(a1, GotoTarget2Anim[GotoTarget2RNG]);
-				data->AnimRandomized++;
+				AL_SetMotionLink(tp, GotoTarget2Anim[GotoTarget2RNG]);
+				cwe_work->AnimRandomized++;
 			}
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_NOTICEITEM)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_NOTICEITEM)
 	{
-		if (data->Behavior.Timer == 0 && AL_EmotionGetValue(a1, EM_PER_SOLITUDE) > 30 && RandomChance)
+		if (data->Behavior.Timer == 0 && AL_EmotionGetValue(tp, EM_PER_SOLITUDE) > 30 && RandomChance)
 		{
-			AL_SetMotionLink(a1, 302);
+			AL_SetMotionLink(tp, 302);
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOITEM)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTOITEM)
 	{
-		if (data->MotionTable.AnimID == 302 && data->MotionTable.TransitionToID == 100)
+		if (data->MotionCtrl.curr_num == 302 && data->MotionCtrl.next_num == 100)
 		{
-			AL_SetMotionLink(a1, 104);
+			AL_SetMotionLink(tp, 104);
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SWIM)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_SWIM)
 	{
-		if (data->Face.EyeCurrNum == ChaoEyes_Painful && data->MotionTable.TransitionToID == 148)
+		if (data->Face.EyeCurrNum == ChaoEyes_Painful && data->MotionCtrl.next_num == 148)
 		{
-			AL_SetMotionLink(a1, 149);
+			AL_SetMotionLink(tp, 149);
 		}
 	}
-	else if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_SUPERSWIM)
+	else if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_SUPERSWIM)
 	{
-		if (data->Face.EyeCurrNum == ChaoEyes_Painful && data->MotionTable.TransitionToID == 145)
+		if (data->Face.EyeCurrNum == ChaoEyes_Painful && data->MotionCtrl.next_num == 145)
 		{
-			AL_SetMotionLink(a1, 144);
-		}
-	}
-
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_CLIMB && data->Behavior.SubTimer == 120)
-	{
-		AL_SetMotionLink(a1, 157);
-		AL_FaceChangeEye(a1, ChaoEyes_Painful);
-	}
-
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_EATING && data->MotionTable.TransitionToID == 186)
-	{
-		AL_FaceChangeEye(a1, ChaoEyes_Painful);
-	}
-
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_COMEOUTEGG)
-	{
-		if (data->pParamGC->nbSucceed > 1 && (data->MotionTable.TransitionToID == 205 || data->MotionTable.TransitionToID == 206) && RandomChance)
-		{
-			AL_SetMotionLinkStep(a1, 207, 15);
+			AL_SetMotionLink(tp, 144);
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TIRED)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_CLIMB && data->Behavior.SubTimer == 120)
 	{
-		if (data->MotionTable.TransitionToID == 0)
+		AL_SetMotionLink(tp, 157);
+		AL_FaceChangeEye(tp, ChaoEyes_Painful);
+	}
+
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_EATING && data->MotionCtrl.next_num == 186)
+	{
+		AL_FaceChangeEye(tp, ChaoEyes_Painful);
+	}
+
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_COMEOUTEGG)
+	{
+		if (data->pParamGC->nbSucceed > 1 && (data->MotionCtrl.next_num == 205 || data->MotionCtrl.next_num == 206) && RandomChance)
+		{
+			AL_SetMotionLinkStep(tp, 207, 15);
+		}
+	}
+
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_TIRED)
+	{
+		if (data->MotionCtrl.next_num == 0)
 		{
 			const int TiredAnim[] = { 276, 488 };
 			int TiredRNG = rand() % std::size(TiredAnim);
 
-			AL_SetMotionLink(a1, TiredAnim[TiredRNG]);
+			AL_SetMotionLink(tp, TiredAnim[TiredRNG]);
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GETPET)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GETPET)
 	{
-		if (data->MotionTable.TransitionToID == 0)
+		if (data->MotionCtrl.next_num == 0)
 		{
 			if (data->Behavior.PrevFunc != (BHV_FUNC)ChaoBehaviour_THINK && RandomChance)
 			{
-				int naive = AL_EmotionGetValue(a1, EM_PER_SLEEPY_HEAD);
+				int naive = AL_EmotionGetValue(tp, EM_PER_SLEEPY_HEAD);
 				if (naive < -70 && RandomChance)
 				{
-					AL_SetMotionLinkStep(a1, 519, 0x14u);
-					AL_FaceChangeEye(a1, ChaoEyes_Tiny);
+					AL_SetMotionLinkStep(tp, 519, 0x14u);
+					AL_FaceChangeEye(tp, ChaoEyes_Tiny);
 				}
 				else if (naive < -30)
 				{
-					AL_SetMotionLinkStep(a1, 518, 0x14u);
-					AL_FaceChangeEye(a1, ChaoEyes_Normal);
+					AL_SetMotionLinkStep(tp, 518, 0x14u);
+					AL_FaceChangeEye(tp, ChaoEyes_Normal);
 				}
 			}
 			else if (data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_THINKSEED || data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_WALKWITHSEED || data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_FOUNDSEEDSPOT || data->Behavior.PrevFunc == (BHV_FUNC)ChaoBehaviour_HOLDINGITEM)
 			{
-				AL_SetMotionLinkStep(a1, 194, 0x14u);
-				AL_FaceChangeEye(a1, ChaoEyes_Normal);
+				AL_SetMotionLinkStep(tp, 194, 0x14u);
+				AL_FaceChangeEye(tp, ChaoEyes_Normal);
 			}
 		}
-		else if (data->MotionTable.TransitionToID == 42)
+		else if (data->MotionCtrl.next_num == 42)
 		{
-			AL_FaceChangeEye(a1, ChaoEyes_Tiny);
+			AL_FaceChangeEye(tp, ChaoEyes_Tiny);
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WARTHOG && data->Behavior.Timer == 60)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WARTHOG && data->Behavior.Timer == 60)
 	{
-		AL_SetMotionLink(a1, 122);
-		AL_FaceChangeEye(a1, ChaoEyes_Painful);
+		AL_SetMotionLink(tp, 122);
+		AL_FaceChangeEye(tp, ChaoEyes_Painful);
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_FOUNDSEEDSPOT && data->MotionTable.TransitionToID == 0)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_FOUNDSEEDSPOT && data->MotionCtrl.next_num == 0)
 	{
-		AL_SetMotionLinkStep(a1, 83, 15);
+		AL_SetMotionLinkStep(tp, 83, 15);
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
 	{
-		if (data->MotionTable.TransitionToID == 120)
+		if (data->MotionCtrl.next_num == 120)
 		{
-			int charm = AL_EmotionGetValue(a1, EM_PER_CHARM);
+			int charm = AL_EmotionGetValue(tp, EM_PER_CHARM);
 			if (charm > 30)
 			{
-				AL_SetMotionLinkStep(a1, 121, 15);
+				AL_SetMotionLinkStep(tp, 121, 15);
 			}
 			else if (charm < -70)
 			{
-				AL_SetMotionLinkStep(a1, 100, 15);
+				AL_SetMotionLinkStep(tp, 100, 15);
 			}
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_RACEWAIT)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_RACEWAIT)
 	{
-		if (data->MotionTable.TransitionToID == 6)
+		if (data->MotionCtrl.next_num == 6)
 		{
 			int HeroIdle = 11;
 			if (AL_IsHero(data->pParamGC->type))
@@ -430,7 +408,7 @@ void Chao_ExtraAnimations(task* a1)
 			const int RaceWaitAnim[] = { 7, HeroIdle };
 			int RaceWaitRNG = rand() % std::size(RaceWaitAnim);
 
-			AL_SetMotionLink(a1, RaceWaitAnim[RaceWaitRNG]);
+			AL_SetMotionLink(tp, RaceWaitAnim[RaceWaitRNG]);
 		}
 	}
 
@@ -471,217 +449,213 @@ void Chao_ExtraAnimations(task* a1)
 	*/
 
 	//skillful animation speed
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTANIMAL)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTANIMAL)
 	{
-		int skillful = AL_EmotionGetValue(a1, EM_PER_SKILLFUL);
+		int skillful = AL_EmotionGetValue(tp, EM_PER_SKILLFUL);
 		if (skillful > 70)
 		{
-			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 1.25f;
+			GET_CHAOWK(tp)->MotionCtrl.multi_spd = 1.25f;
 		}
 		else if (skillful > 30)
 		{
-			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 1.125f;
+			GET_CHAOWK(tp)->MotionCtrl.multi_spd = 1.125f;
 		}
 		else if (skillful < -30)
 		{
-			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 0.875f;
+			GET_CHAOWK(tp)->MotionCtrl.multi_spd = 0.875f;
 		}
 		else if (skillful < -70)
 		{
-			GET_CHAOWK(a1)->MotionTable.frameIncreaseSpeed_ = 0.75f;
+			GET_CHAOWK(tp)->MotionCtrl.multi_spd = 0.75f;
 		}
-	}
-
-	//Anger Face
-	if (AL_EmotionGetValue(a1, EM_MD_ANGER) > 80 && AL_EmotionGetValue(a1, EM_PER_AGRESSIVE) > 30)
-	{
-		GET_CHAOWK(a1)->Face.EyeDefaultNum = ChaoEyes_Mean;
-	}
-	else
-	{
-		GET_CHAOWK(a1)->Face.EyeDefaultNum = GET_CHAOWK(a1)->pParamGC->EyeType;
 	}
 }
 
-void Chao_ExtraSounds(task* a1)
+void Chao_ExtraSounds(task* tp)
 {
-	ChaoData1* data = GET_CHAOWK(a1);
+	chaowk* data = GET_CHAOWK(tp);
+	auto cwe_data = GET_CHAOWK_CWE(tp);
 
 	//Reset to 0 each Behavior
-	if (data->Behavior.Mode == 0) data->ExtraSound = 0;
+	if (data->Behavior.Mode == 0) cwe_data->ExtraSound = 0;
 
-	if (data->ExtraSound == 0)
+	if (cwe_data->ExtraSound == 0)
 	{
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_THINK)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_THINK)
 		{
-			if (data->MotionTable.TransitionToID == 399)
+			if (data->MotionCtrl.next_num == 399)
 			{
 				const int BegSound[] = { 137, 138 };
 				int BegRNG = rand() % std::size(BegSound);
 
-				PlaySound_XYZ(SOUNDBANK6(BegSound[BegRNG]), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, BegSound[BegRNG]), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
-			else if (data->MotionTable.TransitionToID == 199)
+			else if (data->MotionCtrl.next_num == 199)
 			{
 				const int HatSuccesSound[] = { 149, 150, 151 };
 				int HatSuccesRNG = rand() % std::size(HatSuccesSound);
 
-				PlaySound_XYZ(SOUNDBANK6(HatSuccesSound[HatSuccesRNG]), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, HatSuccesSound[HatSuccesRNG]), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
-			else if (data->MotionTable.TransitionToID == 454)
+			else if (data->MotionCtrl.next_num == 454)
 			{
-				PlaySound_XYZ(SOUNDBANK6(152), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, 152), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
+			}
+			else if (data->MotionCtrl.next_num == 241)
+			{
+				AL_SE_CallV2(TONE(6, 137), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_HUNGRY)
 		{
-			PlaySound_XYZ(SOUNDBANK1(18), &data->entity.pos, 0, 0, 0);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(1, 18), 0, 0, 0, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GETTINGTIRED)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GETTINGTIRED)
 		{
-			if (data->MotionTable.TransitionToID == 21)
+			if (data->MotionCtrl.next_num == 21)
 			{
-				PlaySound_XYZ(SOUNDBANK6(7), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, 7), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GETPET)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GETPET)
 		{
-			if (data->MotionTable.TransitionToID == 194)
+			if (data->MotionCtrl.next_num == 194)
 			{
-				PlaySound_XYZ(SOUNDBANK6(27), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, 27), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
-			else if (data->MotionTable.TransitionToID == 519)
+			else if (data->MotionCtrl.next_num == 519)
 			{
-				PlaySound_XYZ(SOUNDBANK6(32), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, 32), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_JUMP)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_JUMP)
 		{
 			const int JumpSound[] = { 30, 52, 139 };
 			int JumpRNG = rand() % std::size(JumpSound);
 
-			PlaySound_XYZ(SOUNDBANK6(JumpSound[JumpRNG]), &data->entity.pos, 0, 0, 55);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(6, JumpSound[JumpRNG]), 0, 0, 55, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_EATING && data->gap6EC[0] == ChaoIcon_Heart)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_EATING && data->Icon.CurrType == ChaoIcon_Heart)
 		{
 			const int GotFoodSound[] = { 42, 65 };
 			int GotFoodRNG = rand() % std::size(GotFoodSound);
 
-			PlaySound_XYZ(SOUNDBANK6(GotFoodSound[GotFoodRNG]), &data->entity.pos, 0, 0, 110);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(6, GotFoodSound[GotFoodRNG]), 0, 0, 110, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_WALK)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_WALK)
 		{
-			if (data->MotionTable.TransitionToID == 126)
+			if (data->MotionCtrl.next_num == 126)
 			{
-				PlaySound_XYZ(SOUNDBANK6(68), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, 68), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTDAMAGE)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTDAMAGE)
 		{
 			const int DamageSound[] = { 109, 41 };
 			int DamageRNG = rand() % std::size(DamageSound);
 
-			PlaySound_XYZ(SOUNDBANK6(DamageSound[DamageRNG]), &data->entity.pos, 0, 0, 110);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(6, DamageSound[DamageRNG]), 0, 0, 110, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTTHROWND)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTTHROWND)
 		{
-			PlaySound_XYZ(SOUNDBANK6(141), &data->entity.pos, 0, 0, 110);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(6, 141), 0, 0, 110, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_PUTHAT)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_PUTHAT)
 		{
-			PlaySound_XYZ(SOUNDBANK6(143), &data->entity.pos, 0, 0, 110);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(6, 143), 0, 0, 110, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_DRAWING)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_DRAWING)
 		{
-			if (data->MotionTable.TransitionToID == 325)
+			if (data->MotionCtrl.next_num == 325)
 			{
-				PlaySound_XYZ(SOUNDBANK6(154), &data->entity.pos, 0, 0, 110);
-				data->ExtraSound++;
+				AL_SE_CallV2(TONE(6, 154), 0, 0, 110, &data->pos);
+				cwe_data->ExtraSound++;
 			}
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_MATEWALK)
 		{
-			PlaySound_XYZ(SOUNDBANK6(156), &data->entity.pos, 0, 0, 110);
-			data->ExtraSound++;
+			AL_SE_CallV2(TONE(6, 156), 0, 0, 110, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 
-		if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
+		if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GOTOBALL)
 		{
-			PlaySound_XYZ(SOUNDBANK6(159), &data->entity.pos, 0, 0, 110);
-			data->ExtraSound++;
-		}
-	}
-
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_BUNNY)
-	{
-		if (data->MotionTable.frame == 1.0f)
-		{
-			PlaySound_XYZ(SOUNDBANK1(2), &data->entity.pos, 0, 0, 0);
-		}
-		else if (data->MotionTable.frame == 7.0f)
-		{
-			PlaySound_XYZ(SOUNDBANK1(3), &data->entity.pos, 0, 0, 0);
+			AL_SE_CallV2(TONE(6, 159), 0, 0, 110, &data->pos);
+			cwe_data->ExtraSound++;
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_GORILLA && data->Behavior.Timer % 16 == 0)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_BUNNY)
 	{
-		if (data->MotionTable.AnimID == 283)
+		if (data->MotionCtrl.minfo[0].frame == 1.0f)
 		{
-			PlaySound_XYZ(SOUNDBANK1(36), &data->entity.pos, 0, 0, 0);
+			AL_SE_CallV2(TONE(1, 2), 0, 0, 0, &data->pos);
+		}
+		else if (data->MotionCtrl.minfo[0].frame == 7.0f)
+		{
+			AL_SE_CallV2(TONE(1, 3), 0, 0, 0, &data->pos);
 		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_BROOMSTICK && data->Behavior.Timer % 34 == 0)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_GORILLA && data->Behavior.Timer % 16 == 0)
 	{
-		PlaySound_XYZ(SOUNDBANK1(37), &data->entity.pos, 0, 0, 0);
+		if (data->MotionCtrl.curr_num == 283)
+		{
+			AL_SE_CallV2(TONE(1, 36), 0, 0, 0, &data->pos);
+		}
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_POGOSTICK && data->MotionTable.frame == 5.0f)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_BROOMSTICK && data->Behavior.Timer % 34 == 0)
 	{
-		PlaySound_XYZ(SOUNDBANK1(41), &data->entity.pos, 0, 0, 0);
+		AL_SE_CallV2(TONE(1, 37), 0, 0, 0, &data->pos);
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_URGETOCRY && data->Behavior.Timer == 100 && RandomChance)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_POGOSTICK && data->MotionCtrl.minfo[0].frame == 5.0f)
 	{
-		PlaySound_XYZ(SOUNDBANK6(0), &data->entity.pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(1, 41), 0, 0, 0, &data->pos);
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TIRED && data->Behavior.Timer == 0)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_URGETOCRY && data->Behavior.Timer == 100 && RandomChance)
+	{
+		AL_SE_CallV2(TONE(6, 0), 0, 0, 110, &data->pos);
+	}
+
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_TIRED && data->Behavior.Timer == 0)
 	{
 		const int TiredSound[] = { 4, 158 };
 		int TiredRNG = rand() % std::size(TiredSound);
 
-		PlaySound_XYZ(SOUNDBANK6(TiredSound[TiredRNG]), &data->entity.pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(6, TiredSound[TiredRNG]), 0, 0, 110, &data->pos);
 	}
 
-	if (AL_GetBehavior(a1) == (BHV_FUNC)ChaoBehaviour_TRIP && data->Behavior.Timer == 40 && RandomChance)
+	if (AL_GetBehavior(tp) == (BHV_FUNC)ChaoBehaviour_TRIP && data->Behavior.Timer == 40 && RandomChance)
 	{
-		PlaySound_XYZ(SOUNDBANK6(24), &data->entity.pos, 0, 0, 110);
+		AL_SE_CallV2(TONE(6, 24), 0, 0, 110, &data->pos);
 	}
 }
 
@@ -764,67 +738,67 @@ static void AL_MoreSoundData() {
 	const int SleepSound[] = { 15, 12, 13, 16 };
 	int SleepRNG = rand() % std::size(SleepSound);
 
-	WriteData((unsigned int*)0x0054F495, (unsigned int)SOUNDBANK6(SleepSound[SleepRNG]));
+	WriteData((unsigned int*)0x0054F495, (unsigned int)TONE(6, SleepSound[SleepRNG]));
 
 	const int Sleep2Sound[] = { 17, 18, 19 };
 	int Sleep2RNG = rand() % std::size(Sleep2Sound);
 
-	WriteData((unsigned int*)0x0054F4A9, (unsigned int)SOUNDBANK6(Sleep2Sound[Sleep2RNG]));
+	WriteData((unsigned int*)0x0054F4A9, (unsigned int)TONE(6, Sleep2Sound[Sleep2RNG]));
 
 	const int CrawlSound[] = { 21, 22 };
 	int CrawlRNG = rand() % std::size(CrawlSound);
 
-	WriteData((unsigned int*)0x005A3327, (unsigned int)SOUNDBANK6(CrawlSound[CrawlRNG]));
+	WriteData((unsigned int*)0x005A3327, (unsigned int)TONE(6, CrawlSound[CrawlRNG]));
 
 	const int ThinkSound[] = { 28, 29 };
 	int ThinkRNG = rand() % std::size(ThinkSound);
 
-	WriteData((unsigned int*)0x00565CCB, (unsigned int)SOUNDBANK6(ThinkSound[ThinkRNG]));
+	WriteData((unsigned int*)0x00565CCB, (unsigned int)TONE(6, ThinkSound[ThinkRNG]));
 
 	const int SwimIdleSound[] = { 37, 39 };
 	int SwimIdleRNG = rand() % std::size(SwimIdleSound);
 
-	WriteData((unsigned int*)0x005621F7, (unsigned int)SOUNDBANK6(SwimIdleSound[SwimIdleRNG]));
+	WriteData((unsigned int*)0x005621F7, (unsigned int)TONE(6, SwimIdleSound[SwimIdleRNG]));
 
 	const int RashSound[] = { 44, 43 };
 	int RashRNG = rand() % std::size(RashSound);
 
-	WriteData((unsigned int*)0x0059A1EF, (unsigned int)SOUNDBANK6(RashSound[RashRNG]));
+	WriteData((unsigned int*)0x0059A1EF, (unsigned int)TONE(6, RashSound[RashRNG]));
 
 	const int HandingSound[] = { 55, 70 };
 	int HandingRNG = rand() % std::size(HandingSound);
 
-	WriteData((unsigned int*)0x005607AA, (unsigned int)SOUNDBANK6(HandingSound[HandingRNG]));
+	WriteData((unsigned int*)0x005607AA, (unsigned int)TONE(6, HandingSound[HandingRNG]));
 
 	const int HateFruitSound[] = { 58, 62 };
 	int HateFruitRNG = rand() % std::size(HateFruitSound);
 
-	WriteData((unsigned int*)0x005609F8, (unsigned int)SOUNDBANK6(HateFruitSound[HateFruitRNG]));
+	WriteData((unsigned int*)0x005609F8, (unsigned int)TONE(6, HateFruitSound[HateFruitRNG]));
 
 	const int EatTooFastSound[] = { 61, 63, 64 };
 	int EatTooFastRNG = rand() % std::size(EatTooFastSound);
 
-	WriteData((unsigned int*)0x00560D66, (unsigned int)SOUNDBANK6(EatTooFastSound[EatTooFastRNG]));
+	WriteData((unsigned int*)0x00560D66, (unsigned int)TONE(6, EatTooFastSound[EatTooFastRNG]));
 
 	const int FinishEatSound[] = { 66, 40 };
 	int FinishEatRNG = rand() % std::size(FinishEatSound);
 
-	WriteData((unsigned int*)0x00560C97, (unsigned int)SOUNDBANK6(FinishEatSound[FinishEatRNG]));
+	WriteData((unsigned int*)0x00560C97, (unsigned int)TONE(6, FinishEatSound[FinishEatRNG]));
 
 	const int AngrySound[] = { 102, 103 };
 	int AngryRNG = rand() % std::size(AngrySound);
 
-	WriteData((unsigned int*)0x005A15B5, (unsigned int)SOUNDBANK6(AngrySound[AngryRNG]));
+	WriteData((unsigned int*)0x005A15B5, (unsigned int)TONE(6, AngrySound[AngryRNG]));
 
 	const int HeroHiSound[] = { 145, 134 };
 	int HeroHiRNG = rand() % std::size(HeroHiSound);
 
-	WriteData((unsigned int*)0x005A041B, (unsigned int)SOUNDBANK6(HeroHiSound[HeroHiRNG]));
+	WriteData((unsigned int*)0x005A041B, (unsigned int)TONE(6, HeroHiSound[HeroHiRNG]));
 
 	const int GorillaSound[] = { 135, 136 };
 	int GorillaRNG = rand() % std::size(GorillaSound);
 
-	WriteData((unsigned int*)0x005A21AA, (unsigned int)SOUNDBANK6(GorillaSound[GorillaRNG]));
+	WriteData((unsigned int*)0x005A21AA, (unsigned int)TONE(6, GorillaSound[GorillaRNG]));
 }
 
 static int ShuffleTimer = 0;
@@ -851,29 +825,23 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 			AL_SetMotionLink(tp, 187);
 
 			if (gConfigVal.MoreSound) {
-				if (CurrentChaoArea == NextChaoArea) {
-					PlaySound_XYZ(SOUNDBANK6(129), &work->entity.pos, 0, 0, 110);
-				}
+				AL_SE_CallV2(TONE(6, 129), 0, 0, 110, &work->pos);
 			}
 		}
 		else {
 			AL_SetMotionLink(tp, 188);
 
 			if (gConfigVal.MoreSound) {
-				if (CurrentChaoArea == NextChaoArea) {
-					if (njRandom() < 0.5f) {
-						PlaySound_XYZ(SOUNDBANK6(147), &work->entity.pos, 0, 0, 110);
-					}
-					else {
-						PlaySound_XYZ(SOUNDBANK6(148), &work->entity.pos, 0, 0, 110);
-					}
+				if (njRandom() < 0.5f) {
+					AL_SE_CallV2(TONE(6, 147), 0, 0, 110, &work->pos);
+				}
+				else {
+					AL_SE_CallV2(TONE(6, 148), 0, 0, 110, &work->pos);
 				}
 			}
 		}
 
-		if (CurrentChaoArea == NextChaoArea) {
-			PlaySound_XYZ(4097, &work->entity.pos, 0, 0, 0);
-		}
+		AL_SE_CallV2(TONE(1, 1), 0, 0, 0, &work->pos);
 
 		bhv->Mode++;
 		bhv->LimitTimer = 1800;
@@ -902,7 +870,824 @@ int ALBHV_PickUpLockOn_MoreAnim(task* tp) {
 	return --bhv->LimitTimer > 0 ? BHV_RET_CONTINUE : BHV_RET_BREAK;
 }
 
+static int ALBHV_Brake(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	switch(bhv->Mode) {
+		case 0:
+			AL_SetMotionLinkStep(tp, ALM_BRAKE, 15);
+			bhv->Mode++;
+			[[fallthrough]];
+		case 1:
+			if(AL_IsMotionEnd(tp) && njScalor(&GET_MOVE_WORK(tp)->Velo) < 0.1f) {
+				return BHV_RET_FINISH;
+			}
+			break;
+	}
+
+	AL_Brake(tp, 0.8f);
+
+	return BHV_RET_CONTINUE;
+}
+
+static FunctionHook<int, task*> ALBHV_Run2_t(0x5A3580);
+static int ALBHV_Run2_r(task* tp) {
+	int prevBhvMode = GET_CHAOWK(tp)->Behavior.Mode;
+
+	int ret = ALBHV_Run2_t.Original(tp);
+
+	if(prevBhvMode == 0) {
+		if(GET_CHAOPARAM(tp)->Lev[SKILL_RUN] == 99 && njRandom() < 0.5f) {
+			AL_SetMotionLink(tp, ALM_DASH);
+		}
+	}
+
+	if(ret == BHV_RET_FINISH) {
+		if(njRandom() < 0.5f && AL_GetMotionNum(tp) == ALM_DASH) {
+			AL_SetBehavior(tp, ALBHV_Brake);
+			return BHV_RET_CONTINUE;
+		}
+	}
+
+	return ret;
+}
+
+static int ALBHV_Greet_r(task* tp) {
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+    switch(bhv->Mode) {
+        case 0:
+            if(GET_CHAOPARAM(tp)->body.APos > 0.5f) {
+				const float jumpChance = float(NJM_MAX(10, AL_EmotionGetValue(tp, EM_PER_AGRESSIVE))) / 100.f;
+				if(njRandom() < jumpChance) {
+					AL_SetMotionLinkStep(tp, ALM_ESAJUMP, 20);
+				}
+				else {
+					AL_SetMotionLinkStep(tp, ALM_OJIGI, 20);
+				}
+
+                AL_SE_CallV2(TONE(6, 145), 0, 0, 0, &tp->twp->pos);
+            }
+            else {
+				const auto calm = AL_EmotionGetValue(tp, EM_PER_CALM);
+				const float calmChance = float(NJM_MAX(0, calm)) / 100.f;
+
+				if(njRandom() < 0.33f) {
+					const float randVal = njRandom();
+
+					if(randVal < 0.25f) {
+						AL_SetMotionLinkStep(tp, ALM_NEE_L, 20);
+					}
+					else if (randVal < 0.5f) {
+						AL_SetMotionLinkStep(tp, ALM_NEE_R, 20);
+					}
+					else if (randVal < 0.75f) {
+						AL_SetMotionLinkStep(tp, ALM_NEE_P_L, 20);
+					}
+					else {
+						AL_SetMotionLinkStep(tp, ALM_NEE_P_R, 20);
+					}
+				}
+				else if (njRandom() < calmChance) {
+					if(AL_GetMotionPosture(tp) == AL_PST_SIT) {
+						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_SIT, 20);
+					}
+					else if(njRandom() < 0.5f) {
+						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_A, 20);    
+					}
+					else {
+						AL_SetMotionLinkStep(tp, ALM_KUSUKUSU_STAND_B, 20);   
+					}
+
+					if(gConfigVal.MoreSound) {
+						if (njRandom() < 0.5f) {
+							AL_SE_CallV2(TONE(6, 99), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+						}
+						else {
+							AL_SE_CallV2(TONE(6, 100), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+						}
+					}
+				}
+				else {
+					AL_SetMotionLinkStep(tp, ALM_HELLO, 20);    
+				}
+            }
+
+            AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+            AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
+
+            bhv->Timer = 200;
+            bhv->Mode++;
+        case 1:
+            if(bhv->Timer-- <= 0) {
+                return BHV_RET_FINISH;
+            }
+            
+            break;
+    }
+
+    return BHV_RET_CONTINUE;
+}
+
+static int ALBHV_Tameiki_r(task* tp) {
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+    switch(bhv->Mode) {
+        case 0: {
+            int posture = AL_GetMotionPosture(tp);
+            switch(posture) {
+                case 1:
+                case 2:
+                case 3:
+                    AL_SetMotionLinkStep(tp, ALM_TAMEIKI_SIT, 35);
+                    break;
+                case 0:
+                default:
+					if(njRandom() < 0.5f) {
+						AL_SetMotionLinkStep(tp, ALM_TAMEIKI_STAND, 30);
+					}
+					else {
+						AL_SetMotionLinkStep(tp, ALM_GUTTARI_STAND, 30);
+					}
+                    break;
+            }
+
+            AL_FaceChangeEye(tp, ChaoEyes_ClosedHappy);
+            AL_FaceChangeMouth(tp, ChaoMouth_ClosedFrown); 
+
+            bhv->Timer = (Uint16)(180 + (int)(njRandom() * ((300 - 180) + 1.0f)));
+            bhv->Mode++;
+        }
+        case 1:
+            if(bhv->Timer-- <= 0) {
+                return BHV_RET_FINISH;
+            }
+            break;
+    }
+
+    return BHV_RET_CONTINUE;
+}
+
+static int ALBHV_Cymbal_r(task* tp) {
+	DataArray(NJS_CNK_OBJECT, object_alo_sinbal_pos_l_sinbal2, 0x11C8964, 1);
+	DataArray(NJS_CNK_OBJECT, object_alo_sinbal_pos_r_sinbal1, 0x11C8FFC, 1);
+
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    int mot_num;
+
+    switch (bhv->Mode) {
+        case 0:
+            AL_SetMotionLink(tp, ALM_CYMBAL_WAIT);
+            AL_FaceSetEye(tp, 4, -1);
+            AL_FaceSetMouth(tp, 3, -1);
+
+            AL_SetItem(tp, AL_PART_HAND_L, object_alo_sinbal_pos_l_sinbal2, &AL_TOY_TEXLIST);
+            AL_SetItem(tp, AL_PART_HAND_R, object_alo_sinbal_pos_r_sinbal1, &AL_TOY_TEXLIST);
+
+            bhv->Timer = RAND_RANGE(300, 600);
+            ++bhv->Mode;
+        case 1:
+            if (bhv->Timer-- <= 0) {
+                mot_num = AL_GetMotionNum(tp);
+                switch (mot_num) {
+                    case ALM_CYMBAL_WAIT: {
+						const float randVal = njRandom();
+						if(randVal < 0.5f) {
+                        	AL_SetMotionLinkStep(tp, ALM_CYMBAL_PAN, 10);
+						}
+						else if (randVal < 0.75f) {
+							AL_SetMotionLinkStep(tp, ALM_CYMBAL_PANPAN, 10);
+						}
+						else {
+							AL_SetMotionLinkStep(tp, ALM_CYMBAL_PAPAPAN, 10);
+						}
+
+                        bhv->Timer = RAND_RANGE(60, 240);
+                        bhv->SubTimer = 0;
+					} break;
+                    default:
+                        AL_SetMotionLinkStep(tp, ALM_CYMBAL_WAIT, 10);
+
+                        bhv->Timer = RAND_RANGE(60, 240);
+                        break;
+                }
+            }
+
+            mot_num = AL_GetMotionNum(tp);
+            bhv->SubTimer++;
+            switch (mot_num) {
+                case ALM_CYMBAL_WAIT:
+                    break;
+                case ALM_CYMBAL_PAN:
+                    if (bhv->SubTimer == 30) {
+                        AL_SE_CallV2(TONE(4, 7), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+                    }
+                    break;
+				case ALM_CYMBAL_PANPAN:
+                    switch (bhv->SubTimer) {
+						case 30:
+						case 60:
+                        	AL_SE_CallV2(TONE(4, 7), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+							break;
+                    }
+					
+                    break;
+				case ALM_CYMBAL_PAPAPAN:
+                    switch (bhv->SubTimer) {
+						case 30:
+						case 45:
+						case 60:
+                        	AL_SE_CallV2(TONE(4, 7), 0, 0, 100, &GET_CHAOWK(tp)->pos);
+							break;
+                    }
+                    break;
+            }
+            break;
+    }
+
+    return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+}
+
+static int ALBHV_Rappa_r(task* tp) {
+	DataArray(NJS_CNK_OBJECT, object_alo_rappa_pos_pos, 0x11C830C, 1);
+	
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    int mot_num;
+
+    switch (bhv->Mode) {
+        case 0: {
+            const float randval = njRandom();
+            if (randval < 0.33f) {
+                AL_SetMotionLink(tp, ALM_RAPPA_UP);
+            } 
+			else if (randval < 0.66f) {
+                AL_SetMotionLink(tp, ALM_RAPPA_DOWN);
+            }
+			else {
+                AL_SetMotionLink(tp, ALM_RAPPA_FB);
+            }
+
+            AL_FaceSetEye(tp, 4, -1);
+            AL_FaceSetMouth(tp, 3, -1);
+
+            AL_SetItemParallelLeftHand(tp, object_alo_rappa_pos_pos, &AL_TOY_TEXLIST);
+
+            bhv->Timer = RAND_RANGE(300, 600);
+            ++bhv->Mode;
+		
+		}
+        case 1:
+            if (bhv->Timer-- <= 0) {
+				const float randval = njRandom();
+				int mot_num;
+
+				if (randval < 0.33f) {
+					mot_num = ALM_RAPPA_UP;
+				} 
+				else if (randval < 0.66f) {
+					mot_num = ALM_RAPPA_DOWN;
+				}
+				else {
+					mot_num = ALM_RAPPA_FB;
+				}
+
+				if(AL_GetMotionNum(tp) != mot_num) {
+					AL_SetMotionLink(tp, mot_num);
+				}
+
+				bhv->Timer = RAND_RANGE(60, 240);
+            }
+
+            if ((bhv->SubTimer++ % 180) == 0 && njRandom() < 0.5f) {
+                AL_SE_CallV2(TONE(4, 16), 0, 0, -200, &GET_CHAOWK(tp)->pos);
+            }
+            break;
+    }
+
+    return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+}
+
+static int ALBHV_Fue_r(task* tp) {
+	DataPointer(AL_ITEM_INFO, FueItemInfo, 0x11C9B74);
+	
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    int mot_num;
+
+    switch (bhv->Mode) {
+        case 0: {
+        	if (njRandom() < 0.5f) {
+                AL_SetMotionLink(tp, ALM_FUE_LR);
+            } 
+			else {
+                AL_SetMotionLink(tp, ALM_FUE_UD);
+            }
+
+            AL_FaceChangeEye(tp, ChaoEyes_ClosedUp);
+            AL_FaceChangeMouth(tp, ChaoMouth_ClosedSmile);
+
+            AL_SetItemOffset(tp, (int)&FueItemInfo, AL_PART_HAND_R);
+
+            bhv->Timer = RAND_RANGE(300, 600);
+            ++bhv->Mode;
+		}
+        case 1:
+            if (bhv->Timer-- <= 0) {
+				int mot_num;
+
+				if (njRandom() < 0.5f) {
+					mot_num = ALM_FUE_LR;
+				} 
+				else {
+					mot_num = ALM_FUE_UD;
+				}
+
+				if(AL_GetMotionNum(tp) != mot_num) {
+					AL_SetMotionLink(tp, mot_num);
+				}
+
+				bhv->Timer = RAND_RANGE(60, 240);
+            }
+
+            if ((bhv->SubTimer++ % 180) == 0 && njRandom() < 0.5f) {
+                AL_SE_CallV2(TONE(4, 10), 0, 0, -40, &GET_CHAOWK(tp)->pos);
+            }
+            break;
+    }
+
+    return AL_IsHitKindWithNum(tp, 1, CI_KIND_AL_RANDOM_MUSIC) == NULL;
+}
+
+void AL_DisableTouch(task* tp) {
+    tp->twp->flag &= ~0x240u;
+    CCL_Disable(tp, 0);
+    CCL_Disable(tp, 2);
+}
+
+static FunctionHook<int, task*> ALBHV_Nade_t(0x05648A0);
+static int ALBHV_Nade_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	// case 0-4 are used by the vanilla func
+	// rest are free game
+
+	if(bhv->Mode == 1) {
+		switch(AL_GetMotionPosture(tp)) {
+			case AL_PST_SIT:
+			case AL_PST_LIE:
+				break;
+
+			case AL_PST_STAND:
+			default:
+				if(AL_KW_GetPlayerLike(tp) < 0) {
+					AL_SetMotionLink(tp, ALM_NADE_TERE);
+
+					AL_FaceChangeEye(tp, ChaoEyes_Painful);
+					AL_FaceChangeMouth(tp, ChaoMouth_ClosedFrown);
+
+					bhv->Mode = 5;
+					bhv->Timer = RAND_RANGE(2, 5);
+				}
+				break;
+		}
+	}
+
+	switch (bhv->Mode) {
+		case 5:
+			if (AL_IsMotionEnd(tp)) {
+				if(--bhv->Timer <= 0) {
+					AL_SetMotionLink(tp, ALM_NADE_IYA);
+
+					bhv->Mode = 6;
+				}
+			}
+			break;
+		case 6:
+			if(AL_IsMotionEnd(tp)) {
+				AL_DisableTouch(tp);
+				bhv->Mode = 7;
+				bhv->Timer = RAND_RANGE(60, 90);
+			}
+			break;
+		case 7:
+			if(!--bhv->Timer) {
+				AL_SetMotionLink(tp, ALM_NADE_IYA_END);
+
+				bhv->Mode = 8;
+			}
+			break;
+		case 8:
+			if(AL_IsMotionEnd(tp)) {
+				return BHV_RET_FINISH;
+			}
+			break;
+	}
+
+	if(bhv->Mode >= 5) {
+		if (!CCL_IsHitKindEx(tp, 2)) {
+			bhv->Mode = 4;
+			AL_SetMotionLink(tp, ALM_NADE_IYA_END);
+		}
+	}
+
+	return ALBHV_Nade_t.Original(tp);
+}
+
+static ASM_FUNC void SpawnCryingParticle (NJS_POINT3* a3, NJS_POINT3* a2, float a4) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(3+0+1) ); // a4
+    ASM_PUSH(      ASM_ESP(1+1+1) ); // a3
+    ASM_MOVE( edi, ASM_ESP(2+2+1) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x006ED270 );
+
+    // end arguments
+    ASM_ESP_ADD( 2 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static int ALBHV_CryWalkToPlayer(task* tp) {
+	taskwk* twk = tp->twp;
+    AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+    MOVE_WORK* move = GET_MOVE_WORK(tp);
+
+    switch(bhv->Mode) {
+        case 0: {
+			if(njRandom() < 0.5f) {
+				AL_SetMotionLink(tp, ALM_CRY_WALK_A);
+			}
+			else {
+				AL_SetMotionLink(tp, ALM_CRY_WALK_B);
+			}			
+
+			AL_FaceChangeEye(tp, ChaoEyes_ClosedHappy);
+			AL_FaceChangeMouth(tp, ChaoMouth_ClosedFrown); 
+
+			bhv->Mode = 1;
+			bhv->Timer = RAND_RANGE(200, 360);
+        } break;
+
+        case 1:
+            if(!--bhv->Timer) {
+                if (njRandom() < 0.75f) {
+                    switch(AL_GetMotionNum(tp)) {
+                        case ALM_CRY_WALK_A:
+                            AL_SetMotionLink(tp, ALM_CRY_WALK_A2B);
+
+                            if(njRandom() < 0.3f) {
+                                AL_SE_CallV2(TONE(6, 1), 0, 0, 110, &tp->twp->pos);
+                            }
+                            break;
+                        case ALM_CRY_WALK_B:
+                            AL_SetMotionLink(tp, ALM_CRY_WALK_B2A);
+                            break;
+                    }            
+                }
+
+                bhv->Timer = RAND_RANGE(200, 360);
+            }
+
+			MOV_TurnToPlayer2(tp, 288, 0);
+
+			if (move->Flag & 0x400) {
+				move->Acc.x = njSin(twk->ang.y) * GET_GLOBAL()->WalkAcc;
+				move->Acc.z = njCos(twk->ang.y) * GET_GLOBAL()->WalkAcc;
+			}
+
+			if (MOV_Dist2FromPlayer(tp, 0) < 25) {
+			    AL_EmotionAdd(tp, EM_MD_SORROW, -10);
+
+				AL_SetMotionLink(tp, ALM_NAKU_START);
+				bhv->Mode = 2;
+				bhv->Timer = RAND_RANGE(200, 360);
+			}
+            break;
+		
+		case 2:
+			if (!--bhv->Timer) {
+				AL_EmotionAdd(tp, EM_MD_SORROW, -10);
+
+                if(AL_EmotionGetValue(tp, EM_MD_SORROW) < 10) {
+                    return BHV_RET_FINISH;
+                }
+
+				if(AL_IsMotionEnd(tp) && njRandom() < 0.5f) {
+					switch(AL_GetMotionNum(tp)) {
+						case ALM_NAKU_UD:
+							if(njRandom() < 0.5f) {
+								AL_SetMotionLink(tp, ALM_NAKU_LR);
+							}
+							else {
+								AL_SetMotionLink(tp, ALM_NAKU_LOOKUP);
+							}
+
+							break;
+
+						case ALM_NAKU_LR:
+							if(njRandom() < 0.5f) {
+								AL_SetMotionLink(tp, ALM_NAKU_UD);
+							}
+							else {
+								AL_SetMotionLink(tp, ALM_NAKU_LOOKUP);
+							}
+							break;
+
+						case ALM_NAKU_LOOKUP:
+							if(njRandom() < 0.5f) {
+								AL_SetMotionLink(tp, ALM_NAKU_LR);
+							}
+							else {
+								AL_SetMotionLink(tp, ALM_NAKU_UD);
+							}
+							break;
+					}
+				}
+
+				bhv->Timer = RAND_RANGE(100, 200);
+			}
+			break;
+    }
+
+ 	if((bhv->SubTimer++ % 8) < 4) {
+        NJS_POINT3 pos;
+        NJS_VECTOR vec;
+        
+        AL_SHAPE* pShape = &GET_CHAOWK(tp)->Shape;
+
+        pos = pShape->LeftEyePos;
+        pos.y -= 0.2f;
+        vec.x = pShape->LeftEyeVec.x * 0.1f;
+        vec.y = 0.1f + pShape->LeftEyeVec.y * 0.1f;
+        vec.z = pShape->LeftEyeVec.z * 0.1f;
+        
+        SpawnCryingParticle(&pos, &vec, 0.1f);
+
+        pos = pShape->RightEyePos;
+        pos.y -= 0.2f;
+
+        vec.x = pShape->RightEyeVec.x * 0.1f;
+        vec.y = 0.1f + pShape->RightEyeVec.y * 0.1f;
+        vec.z = pShape->RightEyeVec.z * 0.1f;
+        
+        SpawnCryingParticle(&pos, &vec, 0.1f);
+    }
+    
+    return BHV_RET_CONTINUE;
+}
+
+static FunctionHook<int, task*> ALBHV_Cry_t(0x59FCA0);
+static int ALBHV_Cry_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f && AL_KW_GetPlayerLike(tp) >= 10) {
+		AL_SetBehavior(tp, ALBHV_CryWalkToPlayer);
+		return BHV_RET_CONTINUE;
+	}
+
+	return ALBHV_Cry_t.Original(tp);
+}
+
+static ASM_FUNC void AL_CalcIntentionScore_Hima(task* tp, float* pMaxScore) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5A10B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+static int ALBHV_Hima(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+
+	switch (bhv->Mode) {
+		case 0:
+			AL_SetMotionLink(tp, ALM_HIMATATI_PATA);
+			
+			bhv->Timer = RAND_RANGE(90, 320);
+			bhv->SubTimer = RAND_RANGE(3, 6);
+			bhv->Mode++;
+			[[fallthrough]];
+		case 1:
+			if(!--bhv->Timer) {
+				if(!--bhv->SubTimer) {
+					bhv->Mode++;
+				}
+
+				if(AL_GetMotionNum(tp) == ALM_HIMATATI_PATA_LOOP) {
+					if(njRandom() < 0.5f) {
+						AL_SetMotionLink(tp, ALM_HIMATATI_PATA2MOJI);
+					}
+				}
+
+				bhv->Timer = RAND_RANGE(60, 120);
+			}
+			break;
+
+		case 2:
+			AL_SetMotionLink(tp, ALM_HIMATATI_END);
+			bhv->Mode++;
+			[[fallthrough]];
+		case 3:
+			if (AL_IsMotionEnd(tp)) {
+				return BHV_RET_FINISH;
+			}
+			break;
+	}
+
+	return BHV_RET_CONTINUE;
+}
+
+static void AL_CalcIntentionScore_Hima_r(task* tp, float* pMaxScore) {
+	float scoreBefore = *pMaxScore;
+
+	AL_CalcIntentionScore_Hima(tp, pMaxScore);
+
+	if(*pMaxScore != scoreBefore) {
+		return;
+	}
+
+	if (njRandom() < 0.75f) {
+		return;
+	}
+
+	float score = 0.f;
+    CHAO_GLOBAL* Global = GET_GLOBAL();
+
+    Uint32 himatrigger = GET_GLOBAL()->IntentionHimaTrigger;
+    Uint32 value = AL_EmotionGetValue(tp, EM_ST_TEDIOUS);
+
+    if (*pMaxScore < 1) {
+        if (value > himatrigger) {
+            score = AL_CalcScoreTypeA(value, himatrigger);
+            score *= GET_GLOBAL()->IntentionHimaMaxScore;
+            AL_ScoreRandomize(&score);
+        }
+
+	    if (score > *pMaxScore) {
+			*pMaxScore = score;
+			AL_SetBehavior(tp, ALBHV_Hima);
+		}
+	}
+}
+
+static void ASM_FUNC AL_CalcIntentionScore_Hima_t() {
+    ASM_PUSH(ASM_ESP(1));
+    ASM_PUSH(eax);
+
+	// Call your __cdecl function here:
+	ASM_CALL(AL_CalcIntentionScore_Hima_r);
+
+	ASM_POP(eax);
+	ASM_ESP_ADD(1);
+	ASM_RET(0);
+}
+
+static FunctionHook<int, task*> ALBHV_SwimSeoyogi_t(0x5620D0);
+static int ALBHV_SwimSeoyogi_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 38), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_SwimSeoyogi_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_NoticePlayer_t(0x5634D0);
+static int ALBHV_NoticePlayer_r(task* tp) {
+	AL_BEHAVIOR* bhv = &GET_CHAOWK(tp)->Behavior;
+	auto preMode = bhv->Mode;
+
+	auto retVal = ALBHV_NoticePlayer_t.Original(tp);
+
+	if(preMode == 1 && bhv->Mode == 2 && njRandom() < 0.5f) {
+		if(njRandom() < 0.5f) {
+			AL_SE_CallV2(TONE(6, 142), 0, 0, 110, &tp->twp->pos);
+		}
+		else {
+			AL_SE_CallV2(TONE(6, 143), 0, 0, 110, &tp->twp->pos);
+		}
+	}
+
+	return retVal;
+}
+
+static FunctionHook<int, task*> ALBHV_Book_t(0x55E210);
+static int ALBHV_Book_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 160), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Book_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_SuriSuri_t(0x5A0820);
+static int ALBHV_SuriSuri_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		if(njRandom() < 0.5f) {
+			AL_SE_CallV2(TONE(6, 69), 0, 0, 110, &tp->twp->pos);
+		}
+		else {
+			AL_SE_CallV2(TONE(6, 74), 0, 0, 110, &tp->twp->pos);
+		}
+	}
+
+	return ALBHV_SuriSuri_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_MesoMeso_t(0x59FA50);
+static int ALBHV_MesoMeso_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.33f) {
+		AL_SE_CallV2(TONE(6, 0), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_MesoMeso_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_Bakuten_t(0x5A1FC0);
+static int ALBHV_Bakuten_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 146), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Bakuten_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_ShiriDance_t(0x5A2530);
+static int ALBHV_ShiriDance_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 23), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_ShiriDance_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_NeedFruit_t(0x59EA00);
+static int ALBHV_NeedFruit_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 131), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_NeedFruit_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_Touch_t(ALBHV_Touch_p);
+static int ALBHV_Touch_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 54), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Touch_t.Original(tp);
+}
+
+static FunctionHook<int, task*> ALBHV_Seed3_t(0x567830);
+static int ALBHV_Seed3_r(task* tp) {
+	if(!GET_CHAOWK(tp)->Behavior.Mode && njRandom() < 0.5f) {
+		AL_SE_CallV2(TONE(6, 130), 0, 0, 110, &tp->twp->pos);
+	}
+
+	return ALBHV_Seed3_t.Original(tp);
+}
+
 //this should be moved to config folder type code
 void AL_MoreAnimSound_Init() {
 	WriteData((int*)0x005615DA, (int)ALBHV_PickUpLockOn_MoreAnim);
+
+	if(gConfigVal.MoreAnimation) {
+		WriteCall((void*)0x00562B3E, (void*)AL_CalcIntentionScore_Hima_t);
+
+		ALBHV_Run2_t.Hook(ALBHV_Run2_r);
+		WriteJump((void*)0x005A03B0, (void*)ALBHV_Greet_r);
+		WriteJump((void*)0x0059F970, (void*)ALBHV_Tameiki_r);
+
+		ALBHV_Cry_t.Hook(ALBHV_Cry_r);
+		ALBHV_Nade_t.Hook(ALBHV_Nade_r);
+
+		WriteJump((void*)0x0059E2D0, (void*)ALBHV_Cymbal_r);
+		WriteJump((void*)0x0059E120, (void*)ALBHV_Rappa_r);
+		WriteJump((void*)0x0059DD10, (void*)ALBHV_Fue_r);
+	}
+
+	if (gConfigVal.MoreSound) {
+		ALBHV_SwimSeoyogi_t.Hook(ALBHV_SwimSeoyogi_r);
+		ALBHV_NoticePlayer_t.Hook(ALBHV_NoticePlayer_r);
+		ALBHV_Book_t.Hook(ALBHV_Book_r);
+		ALBHV_SuriSuri_t.Hook(ALBHV_SuriSuri_r);
+		ALBHV_MesoMeso_t.Hook(ALBHV_MesoMeso_r);
+		ALBHV_Bakuten_t.Hook(ALBHV_Bakuten_r);
+		ALBHV_ShiriDance_t.Hook(ALBHV_ShiriDance_r);
+		ALBHV_NeedFruit_t.Hook(ALBHV_NeedFruit_r);
+		ALBHV_Touch_t.Hook(ALBHV_Touch_r);
+		ALBHV_Seed3_t.Hook(ALBHV_Seed3_r);
+	}
 }

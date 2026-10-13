@@ -161,18 +161,18 @@ bool BetterCameraControl::ResetPressed() const {
 
 void BetterCameraControl::OnFrame() {
     if(!pCamTask) return;
-    if(GameState != GameStates_Ingame) return;
+    if(ssGameMode != MD_GAME_MAIN) return;
 
     AL_NormalCameraExecutor_Data1* work = (AL_NormalCameraExecutor_Data1*)pCamTask->twp;
 
     // shad has the struct for these but i just cannot care to look it up atm
     DataPointer(int, CameraModeThing, 0x01DD0194);
 
-    if(CurrentChaoArea <= 3 || CurrentChaoArea == 7) {
+    if(ChaoStageNumber <= 3 || ChaoStageNumber == 7) {
         if(UpPressed()) {
             CameraModeThing = 1;
 
-            if(CurrentChaoArea != 7) {
+            if(ChaoStageNumber != 7) {
                 work->PosOffsetY += 1;
             }
         }
@@ -180,7 +180,7 @@ void BetterCameraControl::OnFrame() {
         if(DownPressed()) {
             CameraModeThing = 1;
 
-            if(CurrentChaoArea != 7) {
+            if(ChaoStageNumber != 7) {
                 work->PosOffsetY -= 1;
             }
         }

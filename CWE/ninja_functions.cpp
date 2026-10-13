@@ -2,36 +2,40 @@
 #include "ninja_functions.h"
 #include <math.h>
 #include <usercall.h>
+#include <asmutil.h>
 
-static const void* const OnControl3DPtr = (void*)0x446D20;
-void OnControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OnControl3DPtr
-	}
+ASM_FUNC void OnControl3D(int flag) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x446D20 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-static const void* const OffControl3DPtr = (void*)0x00446D30;
-void OffControl3D(int flag)
-{
-	__asm
-	{
-		mov eax, [flag]
-		call OffControl3DPtr
-	}
+ASM_FUNC void OffControl3D(int flag) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x00446D30 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-static const void* const OnConstantAttrPtr = (void*)0x446CF0;
-void OnConstantAttr(int soc_and, int soc_or)
-{
-	__asm
-	{
-		mov eax, [soc_and]
-		mov ecx, [soc_or]
-		call OnConstantAttrPtr
-	}
+ASM_FUNC void OnConstantAttr(int soc_and, int soc_or) {
+    // arguments
+    ASM_MOVE( ecx, ASM_ESP(2+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x446CF0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void OffConstantAttr(int soc_and, int soc_or) {
@@ -39,66 +43,73 @@ void OffConstantAttr(int soc_and, int soc_or) {
 	*(int*)0x025F0268 &= ~soc_or;
 }
 
-const int njColorBlendingModePtr = 0x00426420;
-void njColorBlendingMode(int a1, int a2) {
-	__asm {
-		mov eax, a2
-		push a1
-		call njColorBlendingModePtr
-		add esp, 4
-	}
+ASM_FUNC void njColorBlendingMode(int a1, int a2) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(1+0+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(2+1+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00426420 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // return
+    ASM_RET( 0 );
 }
-void  njCalcVector(NJS_VECTOR* a1, NJS_VECTOR* a2, NJS_MATRIX_PTR a3)
+
+void  njCalcVector(NJS_VECTOR* a1, NJS_VECTOR* a2, NJS_MATRIX* a3)
 {
 	Float v3; // ST00_4
 	Float v4; // ST04_4
 
-	v3 = a3[M10] * a1->x + a3[M11] * a1->y + a3[M12] * a1->z;
-	v4 = a3[M20] * a1->x + a3[M21] * a1->y + a3[M22] * a1->z;
-	a2->x = a3[M01] * a1->y + *a3 * a1->x + a3[M02] * a1->z;
+	v3 = a3->f[M10] * a1->x + a3->f[M11] * a1->y + a3->f[M12] * a1->z;
+	v4 = a3->f[M20] * a1->x + a3->f[M21] * a1->y + a3->f[M22] * a1->z;
+	a2->x = a3->f[M01] * a1->y + a3->f[0] * a1->x + a3->f[M02] * a1->z;
 	a2->y = v3;
 	a2->z = v4;
 }
-void sub_426CC0(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
+void sub_426CC0(NJS_MATRIX* result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
 {
 	NJS_VECTOR v4; // [esp+0h] [ebp-Ch]
 
-	v4.x = result[1] * a3->y + *result * a3->x + result[2] * a3->z;
-	v4.y = result[4] * a3->x + result[5] * a3->y + result[6] * a3->z;
-	v4.z = result[8] * a3->x + result[9] * a3->y + result[10] * a3->z;
+	v4.x = result->f[1] * a3->y + result->f[0] * a3->x + result->f[2] * a3->z;
+	v4.y = result->f[4] * a3->x + result->f[5] * a3->y + result->f[6] * a3->z;
+	v4.z = result->f[8] * a3->x + result->f[9] * a3->y + result->f[10] * a3->z;
 	if (!a4)
 	{
-		v4.x = result[3] + v4.x;
-		v4.y = result[7] + v4.y;
-		v4.z = result[11] + v4.z;
+		v4.x = result->f[3] + v4.x;
+		v4.y = result->f[7] + v4.y;
+		v4.z = result->f[11] + v4.z;
 	}
 	a2->x = v4.x;
 	a2->y = v4.y;
 	a2->z = v4.z;
 }
 
-static const void* const SetShadersPtr = (void*)0x41B1F0;
-void SetShaders(int id)
-{
-	__asm
-	{
-		mov eax, id
-		call SetShadersPtr
-	}
+ASM_FUNC void SetShaderType(int id) {
+	// arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x41B1F0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void njSetTexture(NJS_TEXLIST* texlist) {
 	_nj_curr_ctx_->texlist = texlist;
 }
 
-void njUnitMatrix(NJS_MATRIX_PTR matrix) {
+void njUnitMatrix(NJS_MATRIX* matrix) {
 	if (!matrix) matrix = _nj_current_matrix_ptr_;
 	if (matrix)
 	{
 		memset(matrix, 0, 0x30u);
-		*matrix = 1.0;
-		matrix[5] = 1.0;
-		matrix[10] = 1.0;
+		matrix->f[0] = 1.0;
+		matrix->f[5] = 1.0;
+		matrix->f[10] = 1.0;
 	}
 }
 float njUnitVector(NJS_VECTOR* a1)
@@ -125,132 +136,176 @@ float njUnitVector(NJS_VECTOR* a1)
 	return result;
 }
 
-const void* const njRotateXPtr = (void*)0x42ADB0;
-void njRotateX(NJS_MATRIX_PTR m, Angle x)
-{
-	__asm
-	{
-		mov ecx, [m]
-		mov eax, [x]
-		call njRotateXPtr
-	}
+ASM_FUNC void C_MTXConcat(NJS_MATRIX* a1, NJS_MATRIX* a2, NJS_MATRIX* a3) {
+	// save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( edx, ASM_ESP(2+0 +1) ); // md
+    ASM_MOVE( ecx, ASM_ESP(3+0 +1) ); // mpst
+    ASM_MOVE( eax, ASM_ESP(1+0 +1) ); // mpre
+
+    // call
+    ASM_CALL_R( ebx, 0x00426E40 );
+
+    // pull regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const void* const njRotateYPtr = (void*)0x42ADD0;
-void njRotateY(NJS_MATRIX_PTR m, Angle y)
-{
-	__asm
-	{
-		mov ecx, [m]
-		mov eax, [y]
-		call njRotateYPtr
-	}
+ASM_FUNC void njRotateX(NJS_MATRIX* m, Angle x) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x42ADB0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const void* const njRotateZPtr = (void*)0x42ADF0;
-void njRotateZ(NJS_MATRIX_PTR m, Angle z)
-{
-	__asm
-	{
-		mov ecx, [m]
-		mov eax, [z]
-		call njRotateZPtr
-	}
+ASM_FUNC void njRotateY(NJS_MATRIX* m, Angle y) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x42ADD0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int njTranslatePtr = 0x0077FD90;
-void  njTranslate(float* a1, float a2, float a3, float a4)
-{
-	__asm
-	{
-		push a4
-		push a3
-		push a2
-		mov eax, a1
-		call njTranslatePtr
-		add esp, 12
-	}
+ASM_FUNC void njRotateZ(NJS_MATRIX* m, Angle z) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(2+0+0) ); // a1
+    ASM_MOVE( ecx, ASM_ESP(1+0+0) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x42ADF0 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int njTranslateVPtr = 0x00428A30;
-void  njTranslateEx(NJS_VECTOR* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call njTranslateVPtr
-	}
+ASM_FUNC void njTranslate(float* a1, float a2, float a3, float a4) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0077FD90 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-void chCnkDrawObject(NJS_OBJECT* a1)
-{
-	__asm
-	{
-		mov esi, a1
-		call njCnkDrawObjectPtr
-	}
+ASM_FUNC void njTranslateEx(NJS_VECTOR* a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x00428A30 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int DrawCnkModelPtr = 0x42D690;
-void njCnkDrawModel(NJS_CNK_MODEL* a1)
-{
-	__asm
-	{
-		mov eax, a1
-		call DrawCnkModelPtr
-	}
-}
-const int njSetTextureNumPtr = 0x0042D6D0;
-void njSetTextureNum(int a1, int a2, int a3, int a4)
-{
-	__asm
-	{
-		mov eax, a1
-		mov ecx, a2
-		mov ebx, a3
-		push a4
-		call njSetTextureNumPtr
-		add esp, 4
-	}
+ASM_FUNC void chCnkDrawObject(NJS_CNK_OBJECT* a1) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(1+0+1) ); // a2
+
+    // call
+    ASM_CALL_R( edx, 0x0056E210 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
-const int njScalePtr = 0x007802B0;
-void njScale(NJS_MATRIX_PTR a1, float a2, float a3, float a4)
-{
-	__asm
-	{
-		push a4
-		push a3
-		push a2
-		mov eax, a1
-		call njScalePtr
-		add esp, 12
-	}
+ASM_FUNC void njCnkDrawModel(NJS_CNK_MODEL* a1) {
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
+
+    // call
+    ASM_CALL_R( edx, 0x42D690 );
+
+    // return
+    ASM_RET( 0 );
 }
-const int sub_426CC0Ptr = 0x426CC0;
-__declspec(naked) void njCalcPoint(NJS_MATRIX_PTR result, NJS_VECTOR* a2, NJS_VECTOR* a3, char a4)
-{
-	__asm
-	{
-		mov eax, result
-		mov edx, a2
-		mov ecx, a3
-		push dword ptr[a4]
-		call sub_426CC0Ptr
-		add esp, 4
-		retn
-	}
+
+ASM_FUNC void njSetTextureNum(int a1, int a2, int a3, int a4) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+1) ); // a4
+    ASM_MOVE( ebx, ASM_ESP(3+1+1) ); // a3
+    ASM_MOVE( ecx, ASM_ESP(2+1+1) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0042D6D0 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
-const int DrawQuadTexturePtr = 0x00782000;
-void DrawQuadTexture(int a1, float a2)
-{
-	__asm
-	{
-		mov esi, a1
-		push a2
-		call DrawQuadTexturePtr
-		add esp, 4
-	}
+
+ASM_FUNC void njScale(NJS_MATRIX* a1, float a2, float a3, float a4) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x007802B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+ASM_FUNC void DrawQuadTexture(int a1, float a2) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(2+0+1) ); // a2
+    ASM_MOVE( esi, ASM_ESP(1+1+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00782000 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
 void njSetTextureNum(int texid) {
@@ -263,7 +318,7 @@ void njSetTextureNum(int texid) {
 }
 
 auto DrawFVF_H_ = GenerateUsercallWrapper<void(*)(const NJS_TEXTURE_VTX * a1, signed int vertexCount)>(noret, 0x781370, rEAX, rECX);
-auto sub_41FDE0_ = GenerateUsercallWrapper<void(*)(float* a1, int a2)>(noret, 0x41FDE0, rECX, stack4);
+auto sub_41FDE0_ = GenerateUsercallWrapper<void(*)(NJS_MATRIX* a1, int a2)>(noret, 0x41FDE0, rECX, stack4);
 
 VoidFunc(sub_4293B0, 0x4293B0);
 VoidFunc(sub_4292E0, 0x4292E0);
@@ -280,7 +335,7 @@ static void SetSamplerState(int a1) {
 
 void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool pointFiltered) {
 	sub_41FDE0_(_nj_current_matrix_ptr_, 0);
-	SetShaders(1);
+	SetShaderType(1);
 	sub_4293B0();
 	sub_4292E0();
 
@@ -295,4 +350,24 @@ void njDrawTexture3DExSetData(const NJS_TEXTURE_VTX* a1, int vertexCount, bool p
 
 Float njInnerProduct(const NJS_VECTOR* const v1, const NJS_VECTOR* const v2) {
 	return (v1->x * v2->x) + (v1->y * v2->y) + (v1->z * v2->z);
+}
+
+ASM_FUNC void chCalcWorldPosFromScreenPos(const NJS_POINT3* a1, NJS_POINT3* a2) {
+    // save regs
+    ASM_PUSH( edi );
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(2+0+2) ); // a2
+    ASM_MOVE( edi, ASM_ESP(1+0+2) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x0055A060 );
+
+    // restore regs
+    ASM_POP( esi );
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }

@@ -1,10 +1,36 @@
 #pragma once
-#include "SA2ModLoader.h"
+
+#include "stdafx.h"
+
+enum {
+    SKILL_SWIM,
+    SKILL_FLY,
+    SKILL_RUN,
+    SKILL_POWER,
+    SKILL_STAMINA,
+    SKILL_GUTS,
+    SKILL_INTELLECT,
+    SKILL_EMPTY,
+    NB_SKILL,
+};
+
+struct ChaoItemStats {
+	__int16 Mood;
+	__int16 Belly;
+	__int16 Swim;
+	__int16 Fly;
+	__int16 Run;
+	__int16 Power;
+	__int16 Stamina;
+	__int16 Luck;
+	__int16 Intelligence;
+	__int16 anonymous_7;
+};
 
 #pragma pack(push, 1)
 typedef char AL_NAME[13];
 struct AL_GUEST {
-	ChaoType Type;
+	Uint8 Type;
 	float Magnitude;
 	float FlySwim;
 	float RunPower;
@@ -14,7 +40,7 @@ struct AL_GUEST {
 };
 
 struct AL_PARAM_ACCESSORY_INFO {
-	char ID[sizeof(ChaoData1::AccessoryCalculatedID[0])];
+	char ID[21];
 	Uint32 Flags;
 	Uint32 ColorFlags;
 	Uint32 ColorSlots[8];
@@ -26,7 +52,7 @@ struct CHAO_PARAM_CWE {
 	char ShinyJewelMonotone;
 	char FreeSpace;
 	char GiftChaoValue; //unused for a while, we might pick this up again some time
-	char FreeSpace_;
+	Sint8 IsGuest;
 	char LobbyTextureValue; //same here
 	char FreeSpace__;
 	char EyeAlignment;
@@ -35,8 +61,9 @@ struct CHAO_PARAM_CWE {
 	char UpgradeCounter;
 	char freeSpace3;
 	char XGradeValue;
-	KarateOpponent motherData;
-	KarateOpponent fatherData;
+	char _pad[1];
+	AL_SHAPE_ELEMENT motherData;
+	AL_SHAPE_ELEMENT fatherData;
 	unsigned char IsInitializedAccessory;
 	unsigned char Accessories_old[4];
 	bool DCWings;
@@ -63,6 +90,7 @@ struct CHAO_PARAM_CWE {
 };
 #pragma pack(pop)
 
+static_assert(sizeof(bool) == 1);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Padding1) == 0x520);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, LobbyTextureValue) == 0x597);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, fatherData) == 0x5D4);
@@ -72,6 +100,9 @@ static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, MGroundMotherName
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Accessories) == 0x6B1);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, XGradeValue) == 0x59e);
 
+bool AL_ParameterIsGuest(const CHAO_PARAM_GC* pParam);
+bool AL_ParameterIsGuest(const task* tp);
+
 void AL_NameSet(char* lval, char* rval);
 bool AL_IsChild(task* tp);
 bool AL_IsHero(unsigned __int8 a1);
@@ -80,9 +111,12 @@ bool AL_IsDark(unsigned __int8 a1);
 bool AL_IsNegative(task* tp);
 bool AL_IsCustomChao(task* tp);
 
+void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2);
 void AL_ParameterClearAccessory(task* tp, int slot);
 
+Bool AL_IsEmotionTimerReset(task* tp);
 void AL_ParameterAddAPos(task* a1, float a2);
+void AL_ParameterAddGrowth(task* tp, float add);
 
 void sub_535E90(CHAO_PARAM_GC *a1, int a2);
 
@@ -92,4 +126,8 @@ void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a3, int a4
 void IncrementFlySwim(task* a1, float a2);
 void IncrementPowerRun(task* a1, float a2);
 
+void AL_CalcParameter(task* tp);
+
 void AL_ParameterInit();
+
+int AL_ParameterGetSkill(task* tp, Uint16 SkillKind);

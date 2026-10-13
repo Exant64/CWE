@@ -4,4 +4,4 @@ Sint16 poly_8DED5B36FBF297397C4[] = { 0x2513, 0x4, 0xFFFFu, 0xFFFFu, 0xFFFFu, 0x
 
 NJS_CNK_MODEL cha_toy_trumpet_Mesh_0001 = { vertex_8DED5B36FBF297397C4, poly_8DED5B36FBF297397C4, { 0 }, 0 };
 
-NJS_OBJECT cha_toy_trumpet = { NJD_EVAL_UNIT_POS | NJD_EVAL_BREAK, &cha_toy_trumpet_Mesh_0001, 0, 0, 0, 0x4000, 0, 0, 1, 0.99999994f, 0.99999994f, NULL, NULL };
+NJS_CNK_OBJECT cha_toy_trumpet = { NJD_EVAL_UNIT_POS | NJD_EVAL_BREAK, &cha_toy_trumpet_Mesh_0001, 0, 0, 0, 0x4000, 0, 0, 1, 0.99999994f, 0.99999994f, NULL, NULL };

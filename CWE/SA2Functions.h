@@ -5,6 +5,8 @@
 #include "SA2Structs.h"
 #include "SA2Enums.h"
 
+#include "asmutil.h"
+
 #define ObjectFunc(NAME, ADDRESS) FunctionPointer(void,NAME,(task *obj),ADDRESS)
 // SA2 Functions
 StdcallFunctionPointer(LRESULT, WndProc, (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam), 0x401810);
@@ -21,9 +23,9 @@ StdcallFunctionPointer(int, nullsub_5, (int), 0x411600);
 FunctionPointer(int, GetCrappyReplacementDepartureMachine, (), 0x41DFB0);
 FunctionPointer(int, controller_useless, (), 0x425700);
 FunctionPointer(void, MemoryManager__Deallocate, (AllocatedMem *data, char *a2, int a3), 0x425B50);
-FunctionPointer(int, PrintDebug, (const char*, ...), 0x426740);
+FunctionPointer(int, ___OutputDebugString, (const char*, ...), 0x426740);
 FunctionPointer(int, ProcessChunkModel, (NJS_CNK_MODEL *a1), 0x42D650);
-FunctionPointer(void, ProcessChunkModelsWithCallback, (NJS_OBJECT *object, int(__cdecl *callback)(NJS_CNK_MODEL *)), 0x42EB30);
+FunctionPointer(void, njCnkTransformObject, (NJS_CNK_OBJECT *object, int(__cdecl *callback)(NJS_CNK_MODEL *)), 0x42EB30);
 FunctionPointer(void, LoadTextureList_NoName, (NJS_TEXLIST *), 0x42FD10);
 VoidFunc(main_gc_free, 0x433E60);
 FunctionPointer(int, GameLoop, (), 0x433EE0);
@@ -42,7 +44,7 @@ VoidFunc(InitCurrentLevelAndScreenCount, 0x43CB10);
 VoidFunc(CallControlAndDoOtherThings, 0x43D240);
 FunctionPointer(int, PauseMenu_Main, (), 0x43D310);
 FunctionPointer(int, LoadCharacters, (), 0x43D630);
-FunctionPointer(void, SetCurrentCharacter1P, (Characters a1), 0x43D850);
+FunctionPointer(void, SetCurrentCharacter1P, (int a1), 0x43D850);
 FastcallFunctionPointer(void, UpdateMenuInput, (int a1), 0x441AB0);
 VoidFunc(Control, 0x441BA0);
 VoidFunc(Control_B, 0x441D50);
@@ -51,8 +53,8 @@ FunctionPointer(int, UpdateStaticControllers, (), 0x4421B0);
 VoidFunc(UpdateUselessButtonPressBooleans, 0x442390);
 ObjectFunc(ADX_TaskLoop_Delete, 0x442850);
 ObjectFunc(ADX_TaskLoop, 0x442AD0);
-VoidFunc(ResetMusic, 0x442D90);
-VoidFunc(StopMusic, 0x442F50);
+VoidFunc(BGM_Replay, 0x442D90);
+VoidFunc(BGM_Stop, 0x442F50);
 ObjectFunc(JingleTask_Delete, 0x443320);
 ObjectFunc(JingleTask, 0x4433D0);
 FunctionPointer(int, ProbablySavesSaveFile, (), 0x4436A0);
@@ -62,8 +64,8 @@ FunctionPointer(int, SetWorkingSaveD, (), 0x445330);
 ObjectFunc(DrawLine3DExec, 0x44B680);
 FunctionPointer(int, Get_dword_1A559C8, (), 0x44BFE0);
 FunctionPointer(double, MaybeThisIsDeltaTimeOrSomething, (), 0x44C1A0);
-FastcallFunctionPointer(signed int, LoadTextureList, (char *filename, NJS_TEXLIST *texlist), 0x44C350);
-ThiscallFunctionPointer(NJS_TEXLIST *, LoadCharTextures, (char *filename), 0x44C510);
+FastcallFunctionPointer(signed int, texLoadTexturePvmFile, (char *filename, NJS_TEXLIST *texlist), 0x44C350);
+ThiscallFunctionPointer(NJS_TEXLIST *, texCreateTexlist, (const char* filename), 0x44C510);
 FunctionPointer(int, SetupGameplayVariables, (), 0x44C8F0);
 FunctionPointer(int, GetHandicapThingMaybe, (int id), 0x44CBA0);
 ObjectFunc(DispTechniqueScore_Main, 0x44D320);
@@ -104,24 +106,23 @@ ObjectFunc(PlayerSpeedUp_Main, 0x46DF80);
 ObjectFunc(PlayerSpeedUp_Delete, 0x46DFC0);
 ObjectFunc(PlayerSpeedUp, 0x46E000);
 FunctionPointer(Bool, CheckBreakObject, (task *_this, task *other), 0x46EC00);
-ObjectFunc(DeleteObject_, 0x46F720);
+ObjectFunc(DestroyTask, 0x46F720);
 FunctionPointer(void, RunObjectIndex, (int index), 0x46F8C0);
 FunctionPointer(int, RunMostObjects, (), 0x46FBA0);
 VoidFunc(UpdateObjects, 0x470010);
 FunctionPointer(taskwk *, AllocateEntityData1, (), 0x470B40);
 FunctionPointer(EntityData2 *, AllocateEntityData2, (), 0x470B70);
-FunctionPointer(ObjUnknownA *, AllocateObjUnknownA, (), 0x470BA0);
 FunctionPointer(ObjUnknownB *, AllocateObjUnknownB, (), 0x470BD0);
-FunctionPointer(task *, CreateChildTask, (LoadObj a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
+FunctionPointer(task *, CreateChildTask, (__int8 a3, void(__cdecl *a4)(task *), task *parent), 0x470C00);
 ObjectFunc(DeleteChildObjects, 0x470C80);
 ObjectFunc(StageNameDisplayExecutor_Main, 0x4724C0);
-FunctionPointer(int, DamagePlayer, (taskwk *data1, CharObj2Base *data2), 0x473800);
+FunctionPointer(int, DamagePlayer, (taskwk *data1, playerwk *data2), 0x473800);
 ObjectFunc(ExecutePlayerDrawMotionWithAlphaReducing, 0x476BD0);
 ObjectFunc(PSubCallSEWithWait, 0x476EA0);
 ObjectFunc(LoopSECallForTheMode, 0x476F20);
 FunctionPointer(signed int, ScreenFadeIn, (), 0x478690);
 FunctionPointer(signed int, ScreenFadeOut, (), 0x4786E0);
-FunctionPointer(signed int, LoadLandManager, (LandTable *a1), 0x47BD30);
+FunctionPointer(signed int, LoadLandManager, (OBJ_LANDTABLE *a1), 0x47BD30);
 ObjectFunc(LandManager_Main, 0x47C180);
 FunctionPointer(signed int, LoadSetObject, (ObjectListHead *list, void *setfile), 0x487E40);
 FunctionPointer(int, DeleteSetObject, (), 0x487F00);
@@ -175,14 +176,14 @@ ObjectFunc(AL_RaceMaster, 0x52D1C0);
 FunctionPointer(int, LoadChaoKarateModule, (), 0x52D6E0);
 ObjectFunc(AL_KarateMaster, 0x52D990);
 ObjectFunc(FExec_1, 0x52DD90);
-FunctionPointer(char *, GetChaoSavePointer, (), 0x52E440);
-FunctionPointer(int, GetChaoSavePointer_, (), 0x52E460);
+FunctionPointer(CHAO_GARDEN_INFO *, AL_GetCurrGardenInfo, (), 0x52E440);
+FunctionPointer(CHAO_GARDEN_INFO*, AL_GetAnotherGardenInfo, (), 0x52E460);
 ThiscallFunctionPointer(bool, CheckChaoChecksum, (char *data), 0x52F030);
 ObjectFunc(FExec_2, 0x52FC60);
 ObjectFunc(ALW_Control_Main, 0x530850);
 ObjectFunc(ALW_Control_Display, 0x530B00);
 ObjectFunc(ALW_Control_Delete, 0x530B70);
-FunctionPointer(int, SpawnAllChaoInGarden, (), 0x531B10);
+FunctionPointer(int, AL_SetChaoOnTheGarden, (), 0x531B10);
 FunctionPointer(int, AL_GBAManagerExecutor_Load, (), 0x532710);
 ObjectFunc(AL_GBAManagerExecutor, 0x532A60);
 ObjectFunc(AL_GBAManagerExecutor_Delete, 0x532C70);
@@ -213,65 +214,28 @@ ObjectFunc(j_Chao_Display, 0x53FCE0);
 ObjectFunc(AL_ExecShadowTex, 0x5412E0);
 ObjectFunc(KarateMainExec, 0x542DA0);
 ObjectFunc(FExec_4, 0x5436B0);
-ObjectFunc(ALO_ChaosDriveExecutor_Main, 0x5450C0);
-ObjectFunc(ALO_ChaosDriveExecutor_Display, 0x545150);
-FunctionPointer(int, ALO_ChaosDriveExecutor_Unknown, (int), 0x545430);
-ObjectFunc(ALO_ChaosDriveExecutor_Delete, 0x5455B0);
-FunctionPointer(task *, ALO_ChaosDriveExecutor_Load, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, CHAO_SAVE_INFO *a4), 0x545600);
-ObjectFunc(ALO_FruitExecutor_Main, 0x545E40);
-ObjectFunc(ALO_FruitExecutor_Display, 0x545EE0);
-FunctionPointer(task *, ALO_FruitExecutor_Load, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, CHAO_SAVE_INFO *a5), 0x546180);
-ObjectFunc(ALO_GrowTreeExecutor_Main, 0x546810);
-ObjectFunc(ALO_GrowTreeExecutor_Display, 0x547E70);
-ObjectFunc(ALO_GrowTreeExecutor_Delete, 0x5481E0);
-FunctionPointer(int, ALO_GrowTreeExecutor_Load, (int, int), 0x548210);
-ObjectFunc(AL_MinimalExecutor_Display, 0x5489D0);
-ObjectFunc(AL_MinimalExecutor_Delete, 0x548C30);
-ObjectFunc(AL_MinimalExecutor_Main, 0x548C50);
-FunctionPointer(task *, AL_MinimalExecutor_Load, (char a1, NJS_VECTOR *a2, int a3, void *a4, int a5), 0x548D30);
-ObjectFunc(AL_MinimalCreateManagerExecutor, 0x5492B0);
-ObjectFunc(ALO_SeedExecutor_Main, 0x549860);
-ObjectFunc(ALO_SeedExecutor_Display, 0x5498E0);
-FunctionPointer(task *, ALO_SeedExecutor_Load, (int a1, NJS_VECTOR *position, NJS_VECTOR *a3, int a4), 0x549B00);
-FastcallFunctionPointer(int, CalcChaoSaveChecksum, (char *a1), 0x549C40);
-ObjectFunc(ALO_ObakeHeadExecutor_Main, 0x54A050);
-ObjectFunc(ALO_ObakeHeadExecutor_Display, 0x54A0F0);
-FunctionPointer(task *, ALO_ObakeHeadExecutor_Load, (int a1, NJS_VECTOR *position, int a3, NJS_VECTOR *a4, int a5), 0x54A540);
-FunctionPointer(void, ChaoStgDark_Prolog, (), 0x54B420);
+FunctionPointer(task *, ALO_ChaosDriveCreate, (unsigned __int8 a1, NJS_VECTOR *position, NJS_VECTOR *idkvector, ITEM_SAVE_INFO *a4), 0x545600);
+FunctionPointer(task *, ALO_FruitCreate, (int a1, NJS_VECTOR *position, Angle angle, NJS_VECTOR *a4, ITEM_SAVE_INFO *a5), 0x546180);
+ObjectFunc(ALO_GrowTreeDisplayer, 0x547E70);
+FunctionPointer(task *, AL_MinimalCreate, (char a1, NJS_VECTOR *a2, int a3, void *a4, ITEM_SAVE_INFO* a5), 0x548D30);
+FunctionPointer(task *, ALO_SeedCreate, (int a1, NJS_VECTOR *position, NJS_VECTOR *a3, ITEM_SAVE_INFO* a4), 0x549B00);
+ObjectFunc(ALO_ObakeHeadExecutor, 0x54A050);
+FunctionPointer(task *, ALO_ObakeHeadCreate, (int a1, NJS_VECTOR *position, int a3, NJS_VECTOR *a4, ITEM_SAVE_INFO* a5), 0x54A540);
+
 ObjectFunc(AL_DarkGardenMaster, 0x54B730);
 ObjectFunc(AL_OdekakeStage, 0x54BCE0);
-FunctionPointer(int, ChaoStgLobby_Prolog, (), 0x54BFB0);
 ObjectFunc(AL_LobbyMaster, 0x54C2A0);
-FunctionPointer(void, ChaoStgNeut_Prolog, (), 0x54C4F0);
 ObjectFunc(AL_NeutGardenMaster, 0x54C7B0);
-FunctionPointer(void, ChaoStgHero_Prolog, (), 0x54CCE0);
 ObjectFunc(AL_HeroGardenMaster, 0x54D210);
 ObjectFunc(AL_EntranceMaster, 0x54DAD0);
 ObjectFunc(AL_StadiumMaster, 0x54E010);
 ObjectFunc(AlgKinderMaster, 0x54E780);
-ObjectFunc(Chao_Main, 0x54FE20);
-ObjectFunc(Chao_Delete, 0x54FF30);
-ObjectFunc(Chao_Display, 0x54FF80);
-FunctionPointer(task *, CreateChao, (CHAO_SAVE_INFO *chaoData, int a2, KarateOpponent *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
+ObjectFunc(ChaoExecutor, 0x54FE20);
+ObjectFunc(ChaoDestructor, 0x54FF30);
+ObjectFunc(ChaoDisplayer, 0x54FF80);
+FunctionPointer(task *, CreateChaoExtra, (CHAO_PARAM_GC *chaoData, int a2, AL_SHAPE_ELEMENT *a3, NJS_VECTOR *position, Angle angle), 0x5501D0);
 ObjectFunc(ChaoSelectMenuManager, 0x5542B0);
-ObjectFunc(ALO_EntranceElevatorExecutor_Main, 0x557FC0);
-ObjectFunc(ALO_EntranceElevatorExecutor_Display, 0x558350);
-ObjectFunc(ALO_EntranceElevatorExecutor_Delete, 0x5584C0);
-FunctionPointer(int, ALO_EntranceElevatorExecutor_Load, (), 0x558510);
-ObjectFunc(ALO_RaceFruit_Main2, 0x55A290);
-ObjectFunc(ALO_RaceFruit_Display, 0x55A2F0);
-ObjectFunc(ALO_RaceFruit_Main, 0x55A560);
-FunctionPointer(int, ALO_RaceFruit_Load, (int), 0x55A5E0);
-ObjectFunc(AL_FieldExecutor_Main, 0x55A6A0);
-ObjectFunc(AL_FieldExecutor_Display, 0x55A6D0);
-FunctionPointer(task *, AL_FieldExecutor_Load, (char a1, NJS_VECTOR *a2, float a3, int a4), 0x55A850);
-ObjectFunc(ALO_TVExecutor_Main, 0x55C540);
-ObjectFunc(ALO_TVExecutor_Display, 0x55C9E0);
-ObjectFunc(ALO_TVExecutor_Delete, 0x55CB70);
-FunctionPointer(void, ALO_TVExecutor_Load, (NJS_VECTOR *position), 0x55CB90);
-ObjectFunc(ALO_Ball_Main2, 0x55D310);
-ObjectFunc(ALO_Ball_Display, 0x55D3B0);
-ObjectFunc(ALO_Ball_Main, 0x55D640);
+ObjectFunc(ALO_TVDisplayer, 0x55C9E0);
 FunctionPointer(char *, ALO_Ball_Load, (NJS_VECTOR *position, NJS_VECTOR *a2), 0x55D6B0);
 ObjectFunc(ALO_ShabonExecutor_Display, 0x55D830);
 ObjectFunc(ALO_ShabonExecutor_Main, 0x55D960);
@@ -286,20 +250,19 @@ ObjectFunc(CnkWaterManagerExecutor, 0x56B1B0);
 ObjectFunc(KarateCameraExec, 0x574480);
 ObjectFunc(KarateChaoExec_Main, 0x578D30);
 ObjectFunc(EGG, 0x57B520);
-ObjectFunc(ALO_Delete, 0x57B9B0);
-FunctionPointer(task *, CreateChaoEgg, (const void *a1, CHAO_SAVE_INFO *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
+ObjectFunc(ALW_CancelEntry, 0x57B9B0);
+FunctionPointer(task *, CreateEgg, (const void *a1, CHAO_PARAM_GC *chaoData, int a3, NJS_VECTOR *position, int a5), 0x57B9C0);
 ObjectFunc(ALO_RadicaseExecutor_Main, 0x57C840);
-ObjectFunc(ALO_RadicaseExecutor_Display, 0x57CA80);
+ObjectFunc(ALO_RadicaseDisplayer, 0x57CA80);
 ObjectFunc(ALO_RadicaseExecutor_Delete, 0x57CC80);
 FunctionPointer(int, ALO_RadicaseExecutor_Load, (int), 0x57CCA0);
 ObjectFunc(AL_NormalCameraExecutor_Main, 0x57CD50);
-FunctionPointer(int, AL_NormalCameraExecutor_Load, (), 0x57D2E0);
+FunctionPointer(int, AL_CreateNormalCameraTask, (), 0x57D2E0);
 ObjectFunc(ALCAM_CameraManagerExecutor, 0x57D400);
 ObjectFunc(ALO_OdekakeMachine_Main2, 0x57D540);
 ObjectFunc(ALO_OdekakeMachine_Delete, 0x57E040);
 ObjectFunc(ALO_OdekakeMachine_Display, 0x57E060);
 ObjectFunc(ALO_OdekakeMachine_Main, 0x57E460);
-ObjectFunc(AL_OdekakeMenuMaster, 0x57E5F0);
 ObjectFunc(FExec_5, 0x57EDD0);
 ObjectFunc(ALO_LobbyGateKinderExecutor, 0x57EF00);
 ObjectFunc(ALO_LobbyGateKinderExecutor_Display, 0x57EF30);
@@ -310,9 +273,7 @@ ObjectFunc(ALO_LobbyGateHeroExecutor_Main, 0x57F940);
 ObjectFunc(ALO_LobbyGateHeroExecutor_Display, 0x57F980);
 ObjectFunc(ALO_LobbyGateDarkExecutor_Main, 0x57FD60);
 ObjectFunc(ALO_LobbyGateDarkExecutor_Display, 0x57FDF0);
-ObjectFunc(ALO_BoxExecutor_Main, 0x5801C0);
-ObjectFunc(ALO_BoxExecutor_Display, 0x580510);
-ObjectFunc(ALO_BoxExecutor_Delete, 0x580870);
+ObjectFunc(ALO_BoxExecutor, 0x5801C0);
 FunctionPointer(void, ALO_BoxExecutor_Load, (NJS_VECTOR *position), 0x580890);
 ObjectFunc(ALO_Horse_Main, 0x580E80);
 FunctionPointer(int, ALO_Horse_Load, (), 0x580F30);
@@ -348,7 +309,6 @@ ObjectFunc(SayounaraWindowExecutor, 0x5AC410);
 ObjectFunc(ChaoParamWindowExecutor, 0x5ACC50);
 ObjectFunc(ChaoParamWindowExecutor_Display, 0x5ACF40);
 ObjectFunc(ChaoParamWindowExecutor_Delete, 0x5AD660);
-FunctionPointer(int, ChaoParamWindowExecutor_Load, (float, float), 0x5AD690);
 
 ObjectFunc(Omochao_Main, 0x6C0780);
 ObjectFunc(MsgerDmyTaskExec, 0x6C0A50);
@@ -388,13 +348,13 @@ FunctionPointer(void, LoadMechTails, (int playerNum), 0x740EB0);
 FunctionPointer(void, LoadChaoWalker, (int playerNum), 0x741110);
 FunctionPointer(void, LoadDarkChaoWalker, (int playerNum), 0x7412F0);
 
-FunctionPointer(int, GetDllData, (LPCSTR lpProcName), 0x77DEF0);
+FunctionPointer(int, GetDataDllProcAddr, (LPCSTR lpProcName), 0x77DEF0);
 FunctionPointer(void *, MemoryManager__Allocate, (int size, char *file, int line), 0x77DFA0);
 FunctionPointer(void *, MemoryManager__AllocateArray, (int count, int size), 0x77DFB0);
 FunctionPointer(void, MemoryManager__Deallocate2, (AllocatedMem *a1, size_t count), 0x77DFE0);
 VoidFunc(UpdateControllers, 0x77E780);
 
-FunctionPointer(UnknownData2 *, AllocateUnknownData2, (task *obj), 0x7966D0);
+FunctionPointer(MOVE_WORK *, MOV_Init, (task *tp), 0x7966D0);
 VoidFunc(nullsub_1, 0x6FE430);
 FunctionPointer(int, nullsub_2, (), 0x7B4AEF);
 FunctionPointer(int, nullsub_3, (), 0x7F4700);
@@ -408,826 +368,163 @@ VoidFunc(nullsub_8, 0x8704F0);
 VoidFunc(nullsub_6, 0x870580);
 VoidFunc(nullsub_4, 0x870590);
 
-// HWND __usercall@<eax>(int nWidth@<eax>, HINSTANCE hInstance, int nHeight, unsigned __int8 isWindowed)
-static const void *const CreateMainWindowPtr = (void*)0x4019D0;
-static inline HWND CreateMainWindow(int nWidth, HINSTANCE hInstance, int nHeight, unsigned __int8 isWindowed)
-{
-	HWND result;
-	__asm
-	{
-		push dword ptr [isWindowed]
-		push[nHeight]
-		push[hInstance]
-		mov eax, [nWidth]
-		call CreateMainWindowPtr
-		add esp, 12
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC void SE_Call(int a1, int a2, char a3, char a4) {
+    // save regs
+    ASM_PUSH( esi );
+
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+1) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+1) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+1) ); // a2
+    ASM_MOVE( esi, ASM_ESP(1+3+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x437260 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // restore regs
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// UserConfigData *__usercall@<eax>(LaunchConfig *a1@<ebx>)
-static const void *const ReadConfigPtr = (void*)0x405310;
-static inline UserConfigData * ReadConfig(LaunchConfig *a1)
-{
-	UserConfigData * result;
-	__asm
-	{
-		mov ebx, [a1]
-		call ReadConfigPtr
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC void Jingle_Play(const char *a1) {
+    // save regs
+    ASM_PUSH( ebx );
+
+    // arguments
+    ASM_MOVE( ebx, ASM_ESP(1+0+1) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x00443480 );
+
+    // restore regs
+    ASM_POP( ebx );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// int __usercall@<eax>(char *path@<ecx>, void *a2@<edx>, size_t count)
-static const void *const WriteSaveFileThingPtr = (void*)0x426760;
-static inline int WriteSaveFileThing(char *path, void *a2, size_t count)
-{
-	int result;
-	__asm
-	{
-		push[count]
-		mov edx, [a2]
-		mov ecx, [path]
-		call WriteSaveFileThingPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC void BGM_SetFile(const char *song) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( edi, ASM_ESP(1+0+1) ); // song
+
+    // call
+    ASM_CALL_R( edx, 0x442CF0 );
+
+    // restore regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// int __usercall@<eax>(char *path@<ecx>, void *buffer@<edx>, size_t size)
-static const void *const ReadSaveFileThingPtr = (void*)0x426860;
-static inline int ReadSaveFileThing(char *path, void *buffer, size_t _size)
-{
-	int result;
-	__asm
-	{
-		push[_size]
-		mov edx, [buffer]
-		mov ecx, [path]
-		call ReadSaveFileThingPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
+static ASM_FUNC void SE_CallV2(int a1, int a3, char a4, char a5, NJS_VECTOR *a2) {
+    // save regs
+    ASM_PUSH( esi );
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( esi, ASM_ESP(5+0 +2) ); // pPos
+    ASM_PUSH(      ASM_ESP(4+0 +2) ); // volofs
+    ASM_PUSH(      ASM_ESP(3+1 +2) ); // pri
+    ASM_PUSH(      ASM_ESP(2+2 +2) ); // id
+    ASM_MOVE( edi, ASM_ESP(1+3 +2) ); // tone
+
+    // call
+    ASM_CALL_R( edx, 0x4372E0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // pull regs
+    ASM_POP( edi );
+    ASM_POP( esi );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// char __usercall@<al>(_DWORD *a1@<esi>)
-static const void *const IsByteswappedPtr = (void*)0x429840;
-static inline char IsByteswapped(void *a1)
-{
-	char result;
-	__asm
-	{
-		mov esi, [a1]
-		call IsByteswappedPtr
-		mov result, al
-	}
-	return result;
+static ASM_FUNC task* CreateElementalTask(__int8 flags, tasklevel list, void(__cdecl *mainSub)(task *), const char *name) {
+    // save regs
+    ASM_PUSH( edi );
+
+    // arguments
+    ASM_MOVE( eax, ASM_ESP(4+0 +1) ); // name
+    ASM_MOVE( edi, ASM_ESP(3+0 +1) ); // exec
+    ASM_MOVE( ecx, ASM_ESP(2+0 +1) ); // level
+    ASM_PUSH(      ASM_ESP(1+0 +1) ); // im
+
+    // call
+    ASM_CALL_R( edx, 0x46F610 );
+
+    // end arguments
+    ASM_ESP_ADD( 1 );
+
+    // pull regs
+    ASM_POP( edi );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// void __usercall(int a1@<esi>, int a2, char a3, char a4)
-static const void *const PlaySoundProbablyPtr = (void*)0x437260;
-static inline void PlaySoundProbably(int a1, int a2, char a3, char a4)
-{
-	__asm
-	{
-		push dword ptr [a4]
-		push dword ptr [a3]
-		push[a2]
-		mov esi, [a1]
-		call PlaySoundProbablyPtr
-		add esp, 12
-	}
+static ASM_FUNC int CCL_Init(task *obj, CCL_INFO *collision, int count, unsigned __int8 a4) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0) ); // id
+    ASM_PUSH(      ASM_ESP(3+1) ); // nbInfo
+    ASM_PUSH(      ASM_ESP(2+2) ); // info
+    ASM_MOVE( eax, ASM_ESP(1+3) ); // tp
+
+    // call
+    ASM_CALL_R( edx, 0x47E520 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// void __usercall(int pnum@<eax>, signed int a2@<edx>, signed int a3@<ecx>, int a4)
-static const void *const KnockBackRumblePtr = (void*)0x438F80;
-static inline void KnockBackRumble(int pnum, signed int a2, signed int a3, int a4)
-{
-	__asm
-	{
-		push[a4]
-		mov ecx, [a3]
-		mov edx, [a2]
-		mov eax, [pnum]
-		call KnockBackRumblePtr
-		add esp, 4
-	}
+static ASM_FUNC void njDrawSprite2D(NJS_SPRITE *_sp, Int n, Float pri, char attr) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0) ); // attr
+    ASM_PUSH(      ASM_ESP(3+1) ); // pri
+    ASM_MOVE( eax, ASM_ESP(2+2) ); // n
+    ASM_PUSH(      ASM_ESP(1+2) ); // sp
+
+    // call
+    ASM_CALL_R( edx, 0x77D0B0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
 }
 
-// void __usercall(__int16 stageNumber@<ax>)
-static const void *const SetCurrentLevelPtr = (void*)0x43D8A0;
-static inline void SetCurrentLevel(__int16 stageNumber)
-{
-	__asm
-	{
-		mov ax, [stageNumber]
-		call SetCurrentLevelPtr
-	}
-}
+static Angle AdjustAngle(Angle ang0, Angle ang1, Angle dang) {
+    Sint16 diff;
 
-// Sint32 __usercall@<eax>(int playerNumber@<ecx>, NJS_VECTOR *position@<edi>, Rotation *rotation)
-static const void *const LoadStartPositionPtr = (void*)0x43D8E0;
-static inline Sint32 LoadStartPosition(int playerNumber, NJS_VECTOR *position, Angle3 *rotation)
-{
-	Sint32 result;
-	__asm
-	{
-		push[rotation]
-		mov edi, [position]
-		mov ecx, [playerNumber]
-		call LoadStartPositionPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
+    ang0 = (Uint16)ang0;
+    ang1 = (Uint16)ang1;
+    
+    diff = ang1 - ang0;
+    if(diff <= dang && diff >= -dang) {
+        return ang1;
+    }
+    
+    if (diff & 0x8000) {
+        diff = ang0 - dang;
+    }   
+    else {
+        diff = ang0 + dang;
+    }
 
-// void __usercall(int n@<eax>)
-static const void *const InitPlayerPtr = (void*)0x43DA40;
-static inline void InitPlayer(int n)
-{
-	__asm
-	{
-		mov eax, [n]
-		call InitPlayerPtr
-	}
-}
-
-// void __usercall(int a1@<eax>)
-static const void *const Load2PIntroPosPtr = (void*)0x43DBD0;
-static inline void Load2PIntroPos(int a1)
-{
-	__asm
-	{
-		mov eax, [a1]
-		call Load2PIntroPosPtr
-	}
-}
-
-// signed int __usercall@<eax>(int playerNum@<eax>)
-static const void *const LoadEndPositionPtr = (void*)0x43DD50;
-static inline signed int LoadEndPosition(int playerNum)
-{
-	signed int result;
-	__asm
-	{
-		mov eax, [playerNum]
-		call LoadEndPositionPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(signed int n@<esi>)
-static const void *const AwardWinPtr = (void*)0x43E6D0;
-static inline void AwardWin(signed int n)
-{
-	__asm
-	{
-		mov esi, [n]
-		call AwardWinPtr
-	}
-}
-
-// void __usercall(int pnum@<esi>)
-static const void *const PlayWinnerVoiceProbablyPtr = (void*)0x43ECA0;
-static inline void PlayWinnerVoiceProbably(int pnum)
-{
-	__asm
-	{
-		mov esi, [pnum]
-		call PlayWinnerVoiceProbablyPtr
-	}
-}
-
-// void __usercall(const char *song@<edi>)
-static const void *const PlayMusicPtr = (void*)0x442CF0;
-static inline void PlayMusic(const char *song)
-{
-	__asm
-	{
-		mov edi, [song]
-		call PlayMusicPtr
-	}
-}
-
-// void __usercall(const char *a1@<edi>)
-static const void *const _PlayMusicOncePtr = (void*)0x442E60;
-static inline void _PlayMusicOnce(const char *a1)
-{
-	__asm
-	{
-		mov edi, [a1]
-		call _PlayMusicOncePtr
-	}
-}
-
-// void __usercall(int a1@<ecx>, const char *a2@<edi>)
-static const void *const PlayMusicOncePtr = (void*)0x442EF0;
-static inline void PlayMusicOnce(int a1, const char *a2)
-{
-	__asm
-	{
-		mov edi, [a2]
-		mov ecx, [a1]
-		call PlayMusicOncePtr
-	}
-}
-
-// signed int __usercall@<eax>(int idk@<edx>, int num)
-static const void *const PlayVoicePtr = (void*)0x443130;
-static inline signed int PlayVoice(int idk, int num)
-{
-	signed int result;
-	__asm
-	{
-		push[num]
-		mov edx, [idk]
-		call PlayVoicePtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(const char *song@<eax>)
-static const void *const PlaySong_QueuePtr = (void*)0x443530;
-static inline void PlaySong_Queue(const char *song)
-{
-	__asm
-	{
-		mov eax, [song]
-		call PlaySong_QueuePtr
-	}
-}
-
-// void __usercall(TexPackInfo *pack@<eax>)
-static const void *const LoadTexturesPtr = (void*)0x44C2D0;
-static inline void LoadTextures(TexPackInfo *pack)
-{
-	__asm
-	{
-		mov eax, [pack]
-		call LoadTexturesPtr
-	}
-}
-
-// void __usercall(char id@<al>, __int16 count@<bx>)
-static const void *const AddLivesPtr = (void*)0x44CB10;
-static inline void AddLives(char id, __int16 count)
-{
-	__asm
-	{
-		mov bx, [count]
-		mov al, [id]
-		call AddLivesPtr
-	}
-}
-
-// void __usercall(char playerNum@<al>, int numRings@<edx>)
-static const void *const AddRingsPtr = (void*)0x44CE10;
-static inline void AddRings(char playerNum, int numRings)
-{
-	__asm
-	{
-		mov edx, [numRings]
-		mov al, [playerNum]
-		call AddRingsPtr
-	}
-}
-
-// void __usercall(int a1@<eax>)
-static const void *const AddScorePtr = (void*)0x44D2D0;
-static inline void AddScore(int a1)
-{
-	__asm
-	{
-		mov eax, [a1]
-		call AddScorePtr
-	}
-}
-
-// ModelIndex *__usercall@<eax>(char *filename@<eax>)
-static const void *const LoadMDLFilePtr = (void*)0x459590;
-static inline ModelIndex * LoadMDLFile(char *filename)
-{
-	ModelIndex * result;
-	__asm
-	{
-		mov eax, [filename]
-		call LoadMDLFilePtr
-		mov result, eax
-	}
-	return result;
-}
-
-//void __usercall(int a1@<edi>, NJS_VECTOR *a2@<esi>, int a3, char a4, char a5)
-static const void *const PlaySound_XYZPtr = (void*)0x4372E0;
-static inline void PlaySound_XYZ(int a1, NJS_VECTOR *a2, int a3, char a4, char a5)
-{
-	__asm
-	{
-		push dword ptr[a5]
-		push dword ptr[a4]
-		push a3
-		mov esi, a2
-		mov edi, a1
-		call PlaySound_XYZPtr
-		add esp, 12
-	}
-}
-
-// void __usercall(ModelIndex *a1<esi>)
-static const void *const ReleaseMDLFilePtr = (void*)0x4596D0;
-static inline void ReleaseMDLFile(ModelIndex *a1)
-{
-	__asm
-	{
-		mov esi, [a1]
-		call ReleaseMDLFilePtr
-	}
-}
-
-// AnimationIndex *__usercall@<eax>(char *filename@<eax>)
-static const void *const LoadMTNFilePtr = (void*)0x459740;
-static inline AnimationIndex * LoadMTNFile(char *filename)
-{
-	AnimationIndex * result;
-	__asm
-	{
-		mov eax, [filename]
-		call LoadMTNFilePtr
-		mov result, eax
-	}
-	return result;
-}
-
-// int __usercall@<eax>(task *a1@<eax>)
-static const void *const GetPlayerNumberPtr = (void*)0x46DCC0;
-static inline int GetPlayerNumber(task *a1)
-{
-	int result;
-	__asm
-	{
-		mov eax, [a1]
-		call GetPlayerNumberPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// task *__usercall@<eax>(int list@<ecx>, char *name@<eax>, void (__cdecl *mainSub)(task *)@<edi>, LoadObj flags)
-static const void *const LoadObjectPtr = (void*)0x46F610;
-static inline task * CreateElementalTask(int list, const char *name, void(__cdecl *mainSub)(task *), LoadObj flags)
-{
-	task * result;
-	__asm
-	{
-		push dword ptr [flags]
-		mov edi, [mainSub]
-		mov eax, [name]
-		mov ecx, [list]
-		call LoadObjectPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// task *__usercall@<eax>(void (__cdecl *mainSub)(task *)@<edi>, int list@<esi>, char *name)
-static const void *const AllocatetaskPtr = (void*)0x46F680;
-static inline task * Allocatetask(void(__cdecl *mainSub)(task *), int list, const char *name)
-{
-	task * result;
-	__asm
-	{
-		push[name]
-		mov esi, [list]
-		mov edi, [mainSub]
-		call AllocatetaskPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// int __usercall@<eax>(int targetAlpha@<edx>)
-static const void *const ScreenFadePtr = (void*)0x478730;
-static inline int ScreenFade(int targetAlpha)
-{
-	int result;
-	__asm
-	{
-		mov edx, [targetAlpha]
-		call ScreenFadePtr
-		mov result, eax
-	}
-	return result;
-}
-
-// signed int __usercall@<eax>(task *obj@<eax>, CollisionData *collision, int count, unsigned __int8 a4)
-static const void *const InitCollisionPtr = (void*)0x47E520;
-static inline signed int InitCollision(task *obj, CollisionData *collision, int count, unsigned __int8 a4)
-{
-	signed int result;
-	__asm
-	{
-		push dword ptr [a4]
-		push[count]
-		push[collision]
-		mov eax, [obj]
-		call InitCollisionPtr
-		add esp, 12
-		mov result, eax
-	}
-	return result;
-}
-
-// bool __usercall@<eax>(NJS_VECTOR *a1@<ecx>, float x, float y, float z, float distance_maybe)
-static const void *const SETDistanceCheckThingPtr = (void*)0x488340;
-static inline bool SETDistanceCheckThing(NJS_VECTOR *a1, float x, float y, float z, float distance_maybe)
-{
-	bool result;
-	__asm
-	{
-		push[distance_maybe]
-		push[z]
-		push[y]
-		push[x]
-		mov ecx, [a1]
-		call SETDistanceCheckThingPtr
-		add esp, 16
-		mov result, al
-	}
-	return result;
-}
-
-// void *__usercall@<eax>(int size@<eax>, char *name_s@<ecx>, char *name_u)
-static const void *const LoadSETFilePtr = (void*)0x488DD0;
-static inline void * LoadSETFile(int _size, char *name_s, char *name_u)
-{
-	void * result;
-	__asm
-	{
-		push[name_u]
-		mov ecx, [name_s]
-		mov eax, [_size]
-		call LoadSETFilePtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(NJS_VECTOR *a1@<ebx>)
-static const void *const ChaosDrive_LoadPtr = (void*)0x48F8E0;
-static inline void ChaosDrive_Load(NJS_VECTOR *a1)
-{
-	__asm
-	{
-		mov ebx, [a1]
-		call ChaosDrive_LoadPtr
-	}
-}
-
-// void __usercall(char *a1@<esi>)
-static const void *const WriteChaoSaveChecksumPtr = (void*)0x52EEE0;
-static inline void WriteChaoSaveChecksum(char *a1)
-{
-	__asm
-	{
-		mov esi, [a1]
-		call WriteChaoSaveChecksumPtr
-	}
-}
-
-// signed int __usercall@<eax>(unsigned __int16 a1@<cx>, task *obj@<ebx>, __int16 a3, CHAO_SAVE_INFO *data)
-static const void *const AddToGlobalChaoThingMaybePtr = (void*)0x530750;
-static inline signed int AddToGlobalChaoThingMaybe(unsigned __int16 a1, task *obj, __int16 a3, CHAO_SAVE_INFO *data)
-{
-	signed int result;
-	__asm
-	{
-		push[data]
-		push[a3]
-		mov ebx, [obj]
-		mov cx, [a1]
-		call AddToGlobalChaoThingMaybePtr
-		add esp, 6
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(char *a1@<eax>, char *a2)
-static const void *const AddChaoSaveSignaturePtr = (void*)0x5326C0;
-static inline void AddChaoSaveSignature(char *a1, char *a2)
-{
-	__asm
-	{
-		push[a2]
-		mov eax, [a1]
-		call AddChaoSaveSignaturePtr
-		add esp, 4
-	}
-}
-
-// int __usercall@<eax>(AL_GENE *a1@<esi>)
-static const void *const InitChaoDNAPtr = (void*)0x5506B0;
-static inline int InitChaoDNA(AL_GENE *a1)
-{
-	int result;
-	__asm
-	{
-		mov esi, [a1]
-		call InitChaoDNAPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(task *a1@<eax>)
-static const void *const LoadChaoMotionTablePtr = (void*)0x55C370;
-static inline void LoadChaoMotionTable(task *a1)
-{
-	__asm
-	{
-		mov eax, [a1]
-		call LoadChaoMotionTablePtr
-	}
-}
-
-// int __usercall@<eax>(NJS_VECTOR *position@<ebx>, int a2)
-static const void *const ALO_ShabonExecutor_LoadPtr = (void*)0x55DA10;
-static inline int ALO_ShabonExecutor_Load(NJS_VECTOR *position, int a2)
-{
-	int result;
-	__asm
-	{
-		push[a2]
-		mov ebx, [position]
-		call ALO_ShabonExecutor_LoadPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// EntityData1 *__usercall@<eax>(NJS_VECTOR *position@<ebx>, int a2)
-static const void *const ALO_OdekakeMachine_LoadPtr = (void*)0x57E4F0;
-static inline taskwk * ALO_OdekakeMachine_Load(NJS_VECTOR *position, int a2)
-{
-	taskwk * result;
-	__asm
-	{
-		push[a2]
-		mov ebx, [position]
-		call ALO_OdekakeMachine_LoadPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
-static const void *const ALO_LobbyGateKinderExecutor_LoadPtr = (void*)0x57F060;
-static inline task * ALO_LobbyGateKinderExecutor_Load(NJS_VECTOR *position)
-{
-	task * result;
-	__asm
-	{
-		mov ebx, [position]
-		call ALO_LobbyGateKinderExecutor_LoadPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
-static const void *const ALO_LobbyGateNeutExecutor_LoadPtr = (void*)0x57F8C0;
-static inline task * ALO_LobbyGateNeutExecutor_Load(NJS_VECTOR *position)
-{
-	task * result;
-	__asm
-	{
-		mov ebx, [position]
-		call ALO_LobbyGateNeutExecutor_LoadPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
-static const void *const ALO_LobbyGateHeroExecutor_LoadPtr = (void*)0x57FCE0;
-static inline task * ALO_LobbyGateHeroExecutor_Load(NJS_VECTOR *position)
-{
-	task * result;
-	__asm
-	{
-		mov ebx, [position]
-		call ALO_LobbyGateHeroExecutor_LoadPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// task *__usercall@<eax>(NJS_VECTOR *position@<ebx>)
-static const void *const ALO_LobbyGateDarkExecutor_LoadPtr = (void*)0x580140;
-static inline task * ALO_LobbyGateDarkExecutor_Load(NJS_VECTOR *position)
-{
-	task * result;
-	__asm
-	{
-		mov ebx, [position]
-		call ALO_LobbyGateDarkExecutor_LoadPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(NJS_SPRITE *_sp@<ebx>, Int n@<eax>, Float pri, Uint32 attr)
-static const void *const njDrawSprite2D_0Ptr = (void*)0x66EF40;
-static inline void njDrawSprite2D_0(NJS_SPRITE *_sp, Int n, Float pri, Uint32 attr)
-{
-	__asm
-	{
-		push[attr]
-		push[pri]
-		mov eax, [n]
-		mov ebx, [_sp]
-		call njDrawSprite2D_0Ptr
-		add esp, 8
-	}
-}
-
-// Sint32 __usercall@<eax>(const char *path@<eax>, FogData *data@<ebx>)
-static const void *const LoadFogDataPtr = (void*)0x6DF840;
-static inline Sint32 LoadFogData(const char *path, FogData *data)
-{
-	Sint32 result;
-	__asm
-	{
-		mov ebx, [data]
-		mov eax, [path]
-		call LoadFogDataPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// void __usercall(const char *path@<eax>, FogData *data@<ecx>)
-static const void *const LoadFogData_FogtaskPtr = (void*)0x6DFF00;
-static inline void LoadFogData_Fogtask(const char *path, FogData *data)
-{
-	__asm
-	{
-		mov ecx, [data]
-		mov eax, [path]
-		call LoadFogData_FogtaskPtr
-	}
-}
-
-// void __usercall(NJS_VECTOR *a1@<ebx>, float a2, float a3)
-static const void *const LoadChaoKeyPtr = (void*)0x6E9D10;
-static inline void LoadChaoKey(NJS_VECTOR *a1, float a2, float a3)
-{
-	__asm
-	{
-		push[a3]
-		push[a2]
-		mov ebx, [a1]
-		call LoadChaoKeyPtr
-		add esp, 8
-	}
-}
-
-// void __usercall(int a1@<eax>)
-static const void *const LoadEggmanPtr = (void*)0x73C220;
-static inline void LoadEggman(int a1)
-{
-	__asm
-	{
-		mov eax, [a1]
-		call LoadEggmanPtr
-	}
-}
-
-// void __usercall(int a1@<eax>)
-static const void *const LoadTailsPtr = (void*)0x74CF00;
-static inline void LoadTails(int a1)
-{
-	__asm
-	{
-		mov eax, [a1]
-		call LoadTailsPtr
-	}
-}
-
-// void __usercall(NJS_SPRITE *sp, Int n@<eax>, Float pri, char attr)
-static const void *const njDrawSprite2DPtr = (void*)0x77D0B0;
-static inline void njDrawSprite2D(NJS_SPRITE *_sp, Int n, Float pri, char attr)
-{
-	__asm
-	{
-		push dword ptr [attr]
-		push[pri]
-		mov eax, [n]
-		push[_sp]
-		call njDrawSprite2DPtr
-		add esp, 12
-	}
-}
-
-// void *__usercall@<eax>(int size, int count@<edx>, char *file@<ecx>, int line@<eax>)
-static const void *const AllocateArrayPtr = (void*)0x77DF40;
-static inline void * AllocateArray(int _size, int count, char *file, int line)
-{
-	void * result;
-	__asm
-	{
-		mov eax, [line]
-		mov ecx, [file]
-		mov edx, [count]
-		push[_size]
-		call AllocateArrayPtr
-		add esp, 4
-		mov result, eax
-	}
-	return result;
-}
-
-// PDS_PERIPHERAL *__usercall@<eax>(signed int a1@<eax>, int a2@<ecx>)
-static const void *const pdGetPeripheralPtr = (void*)0x77E8A0;
-static inline PDS_PERIPHERAL * pdGetPeripheral(signed int a1, int a2)
-{
-	PDS_PERIPHERAL * result;
-	__asm
-	{
-		mov ecx, [a2]
-		mov eax, [a1]
-		call pdGetPeripheralPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// void *__usercall<eax>(char *filename<eax>)
-static const void *const LoadPRSFilePtr = (void*)0x4548C0;
-static inline void *LoadPRSFile(const char *filename)
-{
-	void *result;
-	__asm
-	{
-		mov eax, [filename]
-		call LoadPRSFilePtr
-		mov result, eax
-	}
-	return result;
-}
-
-// int __usercall@<eax>(int buttons@<edx>)
-static const void *const XInputToDreamcastButtonsPtr = (void*)0x77E910;
-static inline int XInputToDreamcastButtons(int buttons)
-{
-	int result;
-	__asm
-	{
-		mov edx, [buttons]
-		call XInputToDreamcastButtonsPtr
-		mov result, eax
-	}
-	return result;
-}
-
-// double __usercall@<st0>(NJS_VECTOR *a1@<eax>, NJS_VECTOR *a2@<ecx>)
-static const void *const CheckDistancePtr = (void*)0x77FBD0;
-static inline float CheckDistance(NJS_VECTOR *a1, NJS_VECTOR *a2)
-{
-	float result;
-	__asm
-	{
-		mov ecx, [a2]
-		mov eax, [a1]
-		call CheckDistancePtr
-		fstp result
-	}
-	return result;
-}
-
-// double __usercall@<st0>(NJS_VECTOR *a1@<eax>)
-static const void *const njScalorPtr = (void*)0x77FC30;
-static inline double njScalor(NJS_VECTOR *a1)
-{
-	double result;
-	__asm
-	{
-		mov eax, [a1]
-		call njScalorPtr
-		fstp result
-	}
-	return result;
+    return (Uint16)diff;
 }
