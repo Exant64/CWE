@@ -325,7 +325,8 @@ static void ChaoParamMenu() {
                 ImGui::InputScalar("XGradeValue", ImGuiDataType_S8, &pParamCwe->XGradeValue);
                 ImGui::Checkbox("DCWings", &pParamCwe->DCWings);
                 ImGui::Checkbox("Negative", &pParamCwe->Negative);
-                ImGui::InputScalar("Birthday", ImGuiDataType_S16, &pParamCwe->Birthday);
+                Sint16 step = 1;
+                ImGui::InputScalar("Birthday", ImGuiDataType_S16, &pParamCwe->Birthday, &step);
                 ImGui::Checkbox("ForceReincarnate", &pParamCwe->ForceReincarnate);
 
                 ImGui::InputText("TypeID", pParamCwe->TypeID, sizeof(pParamCwe->TypeID));
@@ -1271,15 +1272,26 @@ extern IDirect3DDevice9* cwe_device;
 
 FunctionHook<void> BeginScene(0x00424740);
 FunctionHook<void> FuncBeforeEndScene(0x44C260);
-StdcallFunctionHook<LRESULT, HWND, UINT, WPARAM, LPARAM> WndProcFunc(0x00401810);
+StdcallFunctionHook<LRESULT, HWND, UINT, WPARAM, LPARAM>* WndProcFunc;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT __stdcall WndProcHook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-        return true;
+    ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 
-    return WndProcFunc.Original(hWnd, uMsg, wParam, lParam);
+    switch(uMsg) {
+        case WM_KEYDOWN:
+        case WM_KEYUP:
+        case WM_SYSKEYDOWN:
+        case WM_SYSKEYUP:
+        case WM_CHAR:
+        case WM_INPUT:
+            if(ImGui::GetIO().WantCaptureKeyboard) {
+                return DefWindowProcA(hWnd, uMsg, wParam, lParam);
+            }
+    }
+
+    return WndProcFunc->Original(hWnd, uMsg, wParam, lParam);
 }
 
 ImGuiKey ImGui_ImplWin32_KeyEventToImGuiKey(WPARAM wParam, LPARAM lParam);
@@ -1307,9 +1319,11 @@ static void BeforeEndSceneHook() {
 }
 
 void ImGui_Init() {
+    WndProcFunc = new StdcallFunctionHook<LRESULT, HWND, UINT, WPARAM, LPARAM>((uint32_t)GetWindowLongW(MainWindowHandle, GWL_WNDPROC));
+    WndProcFunc->Hook(WndProcHook);
+
     BeginScene.Hook(BeginSceneHook);
     FuncBeforeEndScene.Hook(BeforeEndSceneHook);
-    WndProcFunc.Hook(WndProcHook);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
