@@ -10,6 +10,7 @@ DataPointer(NJS_TEXLIST, al_mini_parts_tex_texlist, 0x01366AE4);
 DataPointer(NJS_TEXLIST, al_minimal_texlist, 0x01366AEC);
 DataPointer(NJS_TEXLIST, stru_1366AD4, 0x01366AD4);
 DataPointer(NJS_TEXLIST, AL_TOY_TEXLIST, 0x01366AFC);
+DataPointer(NJS_TEXLIST, texlist_al_tex_common, 0x1366ABC);
 
 #define EXTERNLENS(name) extern NJS_TEXLIST name## _TEXLIST ;
 EXTERNLENS(CWE_LENS_GREEN)

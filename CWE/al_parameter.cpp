@@ -171,6 +171,42 @@ ASM_FUNC void AL_ParameterGrow(task* a1, unsigned __int16 a2, unsigned __int16 a
     ASM_RET( 0 );
 }
 
+ASM_FUNC void AL_ParameterDrawSkill(unsigned int a1, float a2, float a3, float a4) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(4+0+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+1+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+2+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+3+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x5369F0 );
+
+    // end arguments
+    ASM_ESP_ADD( 3 );
+
+    // return
+    ASM_RET( 0 );
+}
+
+ASM_FUNC void AL_ParameterDrawSkillGauge(unsigned int a1, float a2, float a3, float a4, float a5, float a6) {
+    // arguments
+    ASM_PUSH(      ASM_ESP(6+0+0) ); // a6
+    ASM_PUSH(      ASM_ESP(5+1+0) ); // a5
+    ASM_PUSH(      ASM_ESP(4+2+0) ); // a4
+    ASM_PUSH(      ASM_ESP(3+3+0) ); // a3
+    ASM_PUSH(      ASM_ESP(2+4+0) ); // a2
+    ASM_MOVE( eax, ASM_ESP(1+5+0) ); // a1
+
+    // call
+    ASM_CALL_R( edx, 0x536770 );
+
+    // end arguments
+    ASM_ESP_ADD( 5 );
+
+    // return
+    ASM_RET( 0 );
+}
+
 void IncrementFlySwim(task* a1, float a2)
 {
 	chaowk* v2; // edx

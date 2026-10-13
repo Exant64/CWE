@@ -5,8 +5,6 @@
 #include "alg_kinder_ortho.h"
 #include <ChaoMain.h>
 
-DataArray(CHS_BILL_INFO, StatText, 0x13128B0, 10);
-
 static void AL_ChaoCounterDisplayer(task* tp) {
 	if (ssGameMode != MD_GAME_PAUSE) {
 		return;
@@ -43,8 +41,8 @@ static void AL_ChaoCounterDisplayer(task* tp) {
 	const float y_pos = 400;
 
 	chSetBillboardColor(1, 1, 1, 1);
-	chDrawBillboardSR(&StatText[chaoCount / 10], x_pos, y_pos, -1.5, 1.0, 1.0, 0, -1);
-	chDrawBillboardSR(&StatText[chaoCount % 10], x_pos + 12, y_pos, -1.5, 1.0, 1.0, 0, -1);
+	chDrawBillboardSR(&ChaoTexCommonData[BBI_CMN_0 + chaoCount / 10], x_pos, y_pos, -1.5, 1.0, 1.0, 0, -1);
+	chDrawBillboardSR(&ChaoTexCommonData[BBI_CMN_0 + chaoCount % 10], x_pos + 12, y_pos, -1.5, 1.0, 1.0, 0, -1);
 
 	SetShaderType(shaderBackup);
 }

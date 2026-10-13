@@ -137,7 +137,7 @@ void DisplayChaoName_NewFont(const char* pName, float xpos, float ypos, float xs
 	CHS_BILL_INFO bbi;
 
 	if(gConfigVal.OldName) {
-		bbi.pTexlist = (NJS_TEXLIST*)0x01366ABC;
+		bbi.pTexlist = &texlist_al_tex_common;
 		bbi.TexNum = 1;
 	}
 	else {

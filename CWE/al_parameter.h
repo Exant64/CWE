@@ -118,6 +118,9 @@ Bool AL_IsEmotionTimerReset(task* tp);
 void AL_ParameterAddAPos(task* a1, float a2);
 void AL_ParameterAddGrowth(task* tp, float add);
 
+void AL_ParameterDrawSkill(unsigned int a1, float a2, float a3, float a4);
+void AL_ParameterDrawSkillGauge(unsigned int a1, float a2, float a3, float a4, float a5, float a6);
+
 void sub_535E90(CHAO_PARAM_GC *a1, int a2);
 
 void AL_ParameterAddUserLike(task* tp, int add, float AddAttr);

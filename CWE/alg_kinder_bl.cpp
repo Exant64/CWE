@@ -31,6 +31,7 @@
 #include "al_modelcontainer.h"
 #include "al_marketattr.h"
 
+#include <alo_ringwin.h>
 #include "ui/al_ortho.h"
 #include "al_stage.h"
 #include "al_msg_font.h"
@@ -1465,7 +1466,7 @@ void DrawTimer()
 	a2->u1 = 43 / 56.0f;
 	a2->u2 = 1;
 	sub_5A6450((int)a2, 0.99f);
-	njSetTexture((NJS_TEXLIST*)0x01366ABC);
+	njSetTexture(&texlist_al_tex_common);
 	njSetTextureNum(1, 0, 0, 0);
 
 	int timerDiff = *(int*)0x1DBED8C - *(int*)0x0174B038;
@@ -1881,26 +1882,8 @@ static void ASM_FUNC FSellListStartHook() {
 	ASM_RET(0);
 }
 
-void FBuyListSetItemDesc(BlackMarketData* a1)
-{
+void FBuyListSetItemDesc(BlackMarketData* a1) {
 	FItemDescSet(BM_GetSelectedItem(a1), a1);
-}
-
-ASM_FUNC void ALO_RingWinAdd_(int a1) {
-    // arguments
-    ASM_MOVE( eax, ASM_ESP(1+0+0) ); // result
-
-    // call
-    ASM_CALL_R( edx, 0x005A6B30 );
-
-    // return
-    ASM_RET( 0 );
-}
-
-DataPointer(int, RingDisplayFieldC, 0x01A2787C);
-//normally RingWinAdd adds it to num inside it, but for some reason sa2 optimized it to be outside
-void ALO_RingWinAdd(int num) {
-	ALO_RingWinAdd_(RingDisplayFieldC + num);
 }
 
 ASM_FUNC void FMainWinWaitClose(BlackMarketData* a1) {
@@ -2274,10 +2257,9 @@ static void ASM_FUNC sub_58A170Hook() {
 }
 
 float ringDisplayY = 80.0f;
-FunctionPointer(void, LoadRingDisplay, (float x, float y), 0x005A6AC0);
 void LoadRingDisplayHook()
 {
-	LoadRingDisplay(640, 80);
+	ALO_RingWinCreate(640, 80);
 	
 	bool empty = true;
 	//todo: std::all_of

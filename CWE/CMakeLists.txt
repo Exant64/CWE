@@ -1,4 +1,5 @@
 add_library(CWE SHARED
+    alo_ringwin.cpp
     ef_kiran.cpp
     ParticleCore.cpp
     BrightFix/BrightFix.cpp

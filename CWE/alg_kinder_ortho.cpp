@@ -39,7 +39,7 @@ ASM_FUNC void chDrawBillboardSR(CHS_BILL_INFO* a1, float a2, float a3, float a4,
     ASM_RET( 0 );
 }
 
-ASM_FUNC void AlgKinderOrthoQuadDraw(SAlgKinderOrthoQuad* a1, int a2) {
+ASM_FUNC void AlgKinderOrthoQuadDraw(const SAlgKinderOrthoQuad* a1, int a2) {
     // arguments
     ASM_MOVE( ecx, ASM_ESP(2+0+0) ); // a2
     ASM_MOVE( eax, ASM_ESP(1+0+0) ); // a1
@@ -208,7 +208,7 @@ void __cdecl AlgKinderOrthoQuadDrawArrayTile(SAlgKinderOrthoQuad* a3, int count,
         } while (v12);
     }
 }
-void __cdecl AlgKinderOrthoQuadDrawArray(SAlgKinderOrthoQuad* q, int len, Uint32 color)
+void __cdecl AlgKinderOrthoQuadDrawArray(const SAlgKinderOrthoQuad* q, int len, Uint32 color)
 {
     for (int i = 0; i < len; i++) {
         AlgKinderOrthoQuadDraw(&q[i], color);
