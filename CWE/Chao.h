@@ -13,6 +13,7 @@
 struct chaowk_cwe {
 	size_t LocalCharacterChaoType;
 	bool IsCustomChaoTypeLoaded;
+	bool ForceVisible;
 	unsigned char AnimRandomized;
 	unsigned char ExtraSound;
 

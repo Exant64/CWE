@@ -1,3 +1,4 @@
+#include "al_misc.h"
 #include "stdafx.h"
 
 #include "ninja_functions.h"
@@ -1165,12 +1166,35 @@ static void EggDisplayer_r(task* tp) {
 	AL_DayNightCycle_PostDrawSetupShinyTexture(backupTex);
 }
 
+static int AL_Draw_IsOnScreen3_r(task* tp) {
+	auto pCweWork = GET_CHAOWK_CWE(tp);
+
+	if (pCweWork->ForceVisible) {
+		return TRUE;
+	}
+
+	return AL_IsOnScreen3(tp, 5.2f, 4.5f, 2.9f);
+}
+
+static void ASM_FUNC AL_Draw_IsOnScreen3_t() {
+    ASM_PUSH(eax);
+
+	// Call your __cdecl function here:
+	ASM_CALL(AL_Draw_IsOnScreen3_r);
+
+	ASM_POP(eax);
+	ASM_RET(0);
+}
 
 void AL_Draw_Init() {
 	// daynight cycle hooks
 	Chao_Display_t.Hook(Chao_Display_r);
 	EggDisplayer_t.Hook(EggDisplayer_r);
 	ColorEggModel_t.Hook(ColorEggModel_r);
+
+	// this is to force visibility under scenarios where a Chao gets erroneously culled
+	// currently only used in alg_kinder_he
+	WriteCall((void*)0x540B90, (void*)AL_Draw_IsOnScreen3_t);
 
 	//draw chao
 	WriteJump((void*)0x0053FCF0, (void*)DrawChao);

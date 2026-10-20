@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "al_msg_warn.h"
 #include <ui/al_ortho.h>
 #include <ui/al_tween.h>
 #include "FunctionHook.h"
@@ -8,16 +9,12 @@
 #include "asmutil.h"
 #include "ChaoMain.h"
 #include "al_minimal.h"
-#include "alo_fruit.h"
 #include "alg_kinder_he.h"
-#include "alg_kinder_bl.h"
 #include "al_sandhole.h"
 #include "alg_kinder_ortho.h"
 #include "al_behavior/al_knowledge.h"
 #include "Chao.h"
-#include "al_odekake.h"
 #include "alo_obakehead.h"
-#include "al_growtree.h"
 #include "al_modelcontainer.h"
 #include <api/api_tree.h>
 #include <al_garden_info.h>
@@ -31,6 +28,7 @@ struct HealthCenterCWE {
 	task* pMotherChaoTask;
 	task* pFatherChaoTask;
 	Sint8 inUpgrade;
+	Sint8 upgradeWarnMode;
 	Sint8 upgradeCursor;
 };
 #define GET_HE_CWE_WORK(work) ((HealthCenterCWE*)(work + 1))
@@ -96,6 +94,10 @@ static ASM_FUNC void HE_MenuDraw(int a1, HealthCenter* TextLocation) {
 
     // return
     ASM_RET( 0 );
+}
+
+static const char* AL_HealthCenter_GetMsg(HealthCenter* work, const size_t id) {
+	return (const char*)&work->dword60[*(int*)&work->dword60[4 * id]];
 }
 
 static NJS_TEXLIST* texlist_cwe_health_center = NULL;
@@ -231,7 +233,7 @@ const static SAlgKinderOrthoQuad HE_TabsCWE[] = {
 
 constexpr static size_t HE_TabCount = (_countof(HE_TabsVanilla) + _countof(HE_TabsCWE)) / 3;
 constexpr static Sint16 HE_LRIcon_Width = 32;
-const static SAlgKinderOrthoQuad HE_LIcon = { TAB_MIDDLE_START(0), TAB_MIDDLE_START(0) + HE_LRIcon_Width, 40, 56, 2320, 3312, 2576, 3056 };
+const static SAlgKinderOrthoQuad HE_LIcon = { TAB_MIDDLE_START(0), TAB_MIDDLE_START(0) + HE_LRIcon_Width, 40, 56, 3312,2320,  2064, 2544 };
 const static SAlgKinderOrthoQuad HE_RIcon = { TAB_MIDDLE_START(3) + TAB_MIDDLE_WIDTH - HE_LRIcon_Width, TAB_MIDDLE_START(3) + TAB_MIDDLE_WIDTH, 40, 56, 2320, 3312, 2064, 2544 };
 
 const static SAlgKinderOrthoQuad HE_ParentsMenuSpritesBase[] = {
@@ -277,78 +279,48 @@ const static SAlgKinderOrthoQuad HE_ParentsMenuSprites[] = {
 	{ 496, 600, 158, 266, 3088, 3312, 16, 240 }, //right chao display
 };
 
-FastcallFunctionPointer(void, sub_57A6F0, (char* a1, __int16* a2), 0x57A6F0);
-
-__int16 wcbuffer[8] = { 0,0,0,0,0,0,0,0 };
-void ConvertName(char* original_, char* output)
-{
-	char buffer[8];
-	unsigned char* original = (unsigned char*)original_;
-	for (size_t i = 0; i < strlen(original_); i++)
-	{
-		if (original[i] >= 0x10 && original[i] <= 0x19)
-			output[i] = 0x30 + (original[i] - 0x10);
-		else if (original[i] >= 0x21 && original[i] <= 0x3A)
-			output[i] = 0x41 + (original[i] - 0x21);
-		else if (original[i] >= 0x41 && original[i] <= 0x5A)
-			output[i] = 0x61 + (original[i] - 0x41);
-		else// if (original[i] == 0x5F)
-			output[i] = ' ';
-	}
-	output[strlen(original_)] = 0;
-	return;
-
-	*(int*)(&buffer[0]) = *(int*)(original);
-	*(short*)(&buffer[4]) = *(short*)(&original[4]);
-	buffer[6] = original[6];
-	buffer[7] = 0;
-
-	sub_57A6F0(buffer, wcbuffer);
-	WcConvFromCStr((int)output, (int)wcbuffer, Language == 0);
-}
-
 static void HE_ParentsMenu(HealthCenter* work) {
 	auto pCweWork = GET_HE_CWE_WORK(work);
 
 	sub_583C60();
-
 	njSetTexture(texlist_cwe_health_center);
-	njSetTextureNum(2, 0, 0, 0);
-
+	njSetTextureNum(1, 0, 0, 0);
 	AlgKinderOrthoQuadDrawArray(HE_ParentsMenuSpritesBase, _countof(HE_ParentsMenuSpritesBase), 0xFFFFFFFF);
 
+	DrawMedicalChartText("Parents", 444, 83.5f, 999, 20.0f, 5);
+
 	if (!pCweWork->pMotherChaoTask || !pCweWork->pFatherChaoTask) {
-		DrawMedicalChartText("Parents", 444, 83.5f, 999, 20.0f, 5);
 		DrawMedicalChartText("No data", 444, 130.0f, 999, 20.0f, 5);
 		return;
 	}
 
 	auto pParam = GET_CWEPARAM(work->medicalChartChao_);
 
-	AL_NAME motherName;
-	AL_NAME fatherName;
-	AL_NAME mgmName;
-	AL_NAME mgfName;
-	AL_NAME fgmName;
-	AL_NAME fgfName;
+	char motherName[sizeof(AL_NAME) + 1];
+	char fatherName[sizeof(AL_NAME) + 1];
+	char mgmName[sizeof(AL_NAME) + 1];
+	char mgfName[sizeof(AL_NAME) + 1];
+	char fgmName[sizeof(AL_NAME) + 1];
+	char fgfName[sizeof(AL_NAME) + 1];
 
-	ConvertName(pParam->MotherName, motherName);
-	ConvertName(pParam->MGroundMotherName, mgmName);
-	ConvertName(pParam->MGroundFatherName, mgfName);
-	ConvertName(pParam->FatherName, fatherName);
-	ConvertName(pParam->FGroundMotherName, fgmName);
-	ConvertName(pParam->FGroundFatherName, fgfName);
+	AL_ParameterConvertName(pParam->MotherName, motherName);
+	AL_ParameterConvertName(pParam->MGroundMotherName, mgmName);
+	AL_ParameterConvertName(pParam->MGroundFatherName, mgfName);
+	AL_ParameterConvertName(pParam->FatherName, fatherName);
+	AL_ParameterConvertName(pParam->FGroundMotherName, fgmName);
+	AL_ParameterConvertName(pParam->FGroundFatherName, fgfName);
 
+	sub_583C60();
+	njSetTexture(texlist_cwe_health_center);
+	njSetTextureNum(1, 0, 0, 0);
 	AlgKinderOrthoQuadDrawArray(HE_ParentsMenuSprites, _countof(HE_ParentsMenuSprites), 0xFFFFFFFF);
-
-	DrawMedicalChartText("Parents", 444, 83.5f, 999, 20.0f, 5);
 
 	DrawMedicalChartText (
 		"Grandparents",
-		288.0,
+		288,
 		292,
-		999.0,
-		16.0,
+		999,
+		16,
 		0
 	);
 
@@ -364,27 +336,27 @@ static void HE_ParentsMenu(HealthCenter* work) {
 
 	DoLighting(10);
 
-	const auto drawChao = [&work, &pCweWork](task* pChaoTask, float x, float y) {
+	const auto drawChao = [&work, &pCweWork](task* pChaoTask, float x, float y, float iconOffsetX) {
 		njPushUnitMatrix();
 		OrthoDrawBegin();
 		OrthoScreenTranslate(x, y, 1.75f);
 		njRotateY(NULL, NJM_ANG_DEG(180));
 		work->Chao_DisplaySub(pChaoTask);
 		OrthoDrawEnd();
-		njPushMatrixEx();
+		njPopMatrixEx();
 
 		njPushUnitMatrix();
-		ProjectToScreen(x, y, -23.f);
+		ProjectToScreen(x + iconOffsetX, y, -23.f);
 		work->Chao_field_20(pChaoTask);
-		njPushMatrixEx();
+		njPopMatrixEx();
 	};
 
 	if (pCweWork->pMotherChaoTask) {
-		drawChao(pCweWork->pMotherChaoTask, 388 - 50, 272.f - 6);
+		drawChao(pCweWork->pMotherChaoTask, 338, 272.f - 6, 0);
 	}
 
 	if (pCweWork->pFatherChaoTask) {
-		drawChao(pCweWork->pFatherChaoTask, 548, 272.f - 6);
+		drawChao(pCweWork->pFatherChaoTask, 548, 272.f - 6, -4.3f);
 	}
 
 	DoLighting(LightIndexBackupMaybe);
@@ -397,15 +369,12 @@ static void HE_DispTabs() {
 	njSetTextureNum(7, 0, 0, 0);
 	AlgKinderOrthoQuadDrawArray(HE_TabsVanilla, _countof(HE_TabsVanilla), 0xFFFFFFFF);
 
-	AlgKinderOrthoQuadDraw(&HE_LIcon, 0xFFFFFFFF);
-	
 	njSetTexture(texlist_cwe_health_center);
-	njSetTextureNum(2, 0, 0, 0);
+	njSetTextureNum(1, 0, 0, 0);
 	AlgKinderOrthoQuadDrawArray(HE_TabsCWE, _countof(HE_TabsCWE), 0xFFFFFFFF);
 	
 	// we had to separate the R icon into our texlist so we can recolor it freely to match the last tab
-	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
-	njSetTextureNum(7, 0, 0, 0);
+	AlgKinderOrthoQuadDraw(&HE_LIcon, 0x000073FF);
 	AlgKinderOrthoQuadDraw(&HE_RIcon, 0x10A010FF);
 }
 
@@ -419,12 +388,12 @@ static void HE_DispBars(HealthCenter* work) {
 
 		CHAO_PARAM_GC* pParam = GET_CHAOPARAM(work->field_8);
 
-		if (i == 5 || pParam->Abl[i] >= 5) {
+		if (i == 5 || pParam->Abl[i] >= ChaoGrade_A) {
 			return 0xA0A0A0FF;
 		}
 
 		if (!CanStatBeUpgraded(work->field_8, i)) {
-			return 0xC03030FF;
+			// return 0xC03030FF;
 		}
 
 		if (i == pCweWork->upgradeCursor) {
@@ -434,53 +403,26 @@ static void HE_DispBars(HealthCenter* work) {
 		return 0x009CBDFF;
 	};
 
-	if (pCweWork->inUpgrade) {
-		CHAO_PARAM_GC* pParam = GET_CHAOPARAM(work->field_8);
-
-		const auto countDigits = [](int n) {
-			int c = 0;
-
-			while(n > 0) {
-				c++;
-				n /= 10;
-			}
-
-			return c;
-		};
-
-		const float space = 14.f;
-		int price = GradePurchasePrice[pParam->Abl[pCweWork->upgradeCursor]];
-		const float width = space * countDigits(price);
-
-		int i = 0;
-		chSetBillboardColor(1, 1, 1, 1);
-		while(price > 0) {
-    		chDrawBillboardSR(&ChaoTexCommonData[price % 10], 296 - space * (i + 1), 265, -1.2f, 1, 1, -1, -1);
-
-			price /= 10;
-			i++;
-		}
-	}
-
 	sub_583C60();
 
 	njSetTexture(texlist_cwe_health_center);
-	njSetTextureNum(2, 0, 0, 0);
+	njSetTextureNum(1, 0, 0, 0);
 
 	SAlgKinderOrthoQuad bar[] = {
 		{ 296, 580, 260, 284, 1680, 1776, 2448, 2544 },
 		{ 580, 596, 260, 284, 1552, 2032, 2064, 2800 }
 	};
 
-	for(size_t i = 0; i < 6; ++i) {
+	const size_t barCount = (!pCweWork->inUpgrade) ? 6 : 5;
+	for(size_t i = 0; i < barCount; ++i) {
 		if (pCweWork->inUpgrade && i == pCweWork->upgradeCursor) {
 			const Sint16 outlineWidth = 3;
-			SAlgKinderOrthoQuad bar[] = {
-				{ 296 - outlineWidth, 580, 260 - outlineWidth, 284 + outlineWidth, 1680, 1776, 2448, 2544 },
-				{ 580, 596 + outlineWidth, 260 - outlineWidth, 284 + outlineWidth, 1552, 2032, 2064, 2800 }
+			const SAlgKinderOrthoQuad outline[] = {
+				{ 296 - outlineWidth, 580, Sint16(260 - outlineWidth + 32 * i), Sint16(284 + outlineWidth + 32 * i), 1680, 1776, 2448, 2544 },
+				{ 580, 596 + 2 + outlineWidth, Sint16(260 - outlineWidth + 32 * i), Sint16(284 + outlineWidth + 32 * i), 1552, 2032, 2064, 2800 }
 			};
 			
-			AlgKinderOrthoQuadDrawArray(bar, _countof(bar), 0x4F4FFFA0);
+			AlgKinderOrthoQuadDrawArray(outline, _countof(outline), 0xFFFF7DA0);
 		}
 
 		AlgKinderOrthoQuadDrawArray(bar, _countof(bar), getColor(i));
@@ -492,13 +434,112 @@ static void HE_DispBars(HealthCenter* work) {
 	}
 }
 
+static void HE_FirstTabDrawSkillInfo(HealthCenter* work) {
+	DataArray(char, byte_8A274C, 0x008A274C, 8);
+
+	for (size_t i = 0; i < 5; ++i) {
+		int statIndex = byte_8A274C[i];
+		if (statIndex >= 8u) {
+			statIndex = 0;
+		}
+
+		const Uint16 stat = AL_ParameterGetSkill(work->field_8, statIndex);
+		const Float y = 264 + float(i) * 32;
+
+		AL_ParameterDrawSkillGauge(
+			stat,
+			380, 
+			y + 1, 
+			92, 
+			14, 
+			1
+		);
+		
+		AL_ParameterDrawSkill(stat, 476, y, 1);
+	}
+}
+
+static void HE_FirstTabDrawLifespanInfo(HealthCenter* work) {
+	CHAO_PARAM_GC* pParam = GET_CHAOPARAM(work->field_8);
+
+	sub_583C60();
+	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
+	njSetTextureNum(7, 0, 0, 0);
+
+	AL_ParameterDrawSkillGauge(
+		(Uint32)((pParam->life / 3900.0f) * 1000),
+		380.0f, 
+		(264 + 32 * 5) + 1, 
+		92.0f, 
+		14.0f, 
+		1.0f
+	);
+
+	AL_ParameterDrawSkill(pParam->life, 476, (264 + 32 * 5), 1.0f);
+
+	sub_583C60();
+	njSetTexture(texlist_cwe_health_center);
+	njSetTextureNum(0, 0, 0, 0);
+
+	const SAlgKinderOrthoQuad lifespan = { 305, 377, 423, 442, 85, 3655, 2790, 3400 };
+	AlgKinderOrthoQuadDraw(&lifespan, 0xFFFFFFFF);
+
+	chSetBillboardColor(1, 0.72f, 1, 0.4f);
+
+	const Sint8 lifeTimeGene = NJM_MAX(pParam->gene.LifeTime[0], pParam->gene.LifeTime[1]);
+	if(lifeTimeGene >= 0 && lifeTimeGene < 10) {
+		chDrawBillboardSR(&ChaoTexCommonData[BBI_CMN_0 + lifeTimeGene], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
+	}
+}
+
+static void HE_DrawAbility(int abl, Sint16 x, Sint16 y) {
+	SAlgKinderOrthoQuad gradeElem;
+	gradeElem.x0 = x;
+	gradeElem.x1 = x + 20;
+	
+	if (abl == 6 || abl == 7) {
+		// X grade
+		njSetTexture(texlist_cwe_health_center);
+		njSetTextureNum(1, 0, 0, 0);
+
+		gradeElem.u0 = 2850;
+		gradeElem.u1 = 4096;
+		gradeElem.v0 = 2800;
+		gradeElem.v1 = 4096;
+	}
+	else {
+		DataArray(Sint16, HE_GradeUVs, 0x8A2754, 1);
+
+		njSetTexture((NJS_TEXLIST*)0x011D2ACC);
+		njSetTextureNum(7, 0, 0, 0);
+
+		gradeElem.u0 = HE_GradeUVs[2 * abl];
+		gradeElem.u1 = HE_GradeUVs[2 * abl] + 624;
+		gradeElem.v0 = HE_GradeUVs[(2 * abl) + 1];
+		gradeElem.v1 = HE_GradeUVs[(2 * abl) + 1] + 624;
+	}
+
+	gradeElem.y0 = y;
+	gradeElem.y1 = y + 20;
+
+	AlgKinderOrthoQuadDraw(&gradeElem, -1);
+}
+
 static void HE_FirstTabDraw(HealthCenter* work) {
 	if(!work->field_8) {
 		return;
 	}
 
-	DataArray(SAlgKinderOrthoQuad, HE_StatText, 0x8A2100, 5);
 	DataArray(char, byte_8A274C, 0x008A274C, 8);
+
+	// UVs adjusted to fix it on HD port
+	const SAlgKinderOrthoQuad HE_StatText[] = {
+		{ 306, 353, 263, 280, 120, 2130, 20, 532 },
+		{ 306, 335, 295, 315, 120, 1450, 585, 1170 },
+		{ 306, 342, 327, 343, 120, 1750, 1200, 1680 },
+		{ 306, 364, 359, 376, 120, 2650, 1720, 2220 },
+		{ 305, 376, 390, 408, 108, 3400, 2220, 2760 },
+	};
 
 	auto workCwe = GET_HE_CWE_WORK(work);
 
@@ -513,118 +554,194 @@ static void HE_FirstTabDraw(HealthCenter* work) {
 	/* We have to draw everything above the bars ourselves instead of letting the game do it. */
 
 	// draw stat texts
-	njSetTexture(&texlist_al_tex_common);
-	njSetTextureNum(2, 0, 0, 0);
-	AlgKinderOrthoQuadDrawArray(HE_StatText, HE_StatText_Length, 0xFFFFFFFF);
+	njSetTexture(texlist_cwe_health_center);
+	njSetTextureNum(0, 0, 0, 0);
+	AlgKinderOrthoQuadDrawArray(HE_StatText, _countof(HE_StatText), 0xFFFFFFFF);
 
-	// draw stat bars and numbers
-	for (size_t i = 0; i < 5; ++i) {
-		int statIndex = byte_8A274C[i];
-		if (statIndex >= 8u) {
-			statIndex = 0;
-		}
+	if (!workCwe->inUpgrade) {
+		const float textXPos = (Language != 2) ? 501 : 481;
 
-		const Uint16 stat = AL_ParameterGetSkill(work->field_8, statIndex);
-		const Float y = 264 + float(i) * 32;
-
-		AL_ParameterDrawSkillGauge(
-			(Uint32)((GET_CHAOPARAM(work->field_8)->life / 3900.0f) * 1000),
-			380, 
-			y + 1, 
-			92, 
-			14, 
-			1
+		// "Skill" text
+		DrawMedicalChartText(
+			AL_HealthCenter_GetMsg(work, 11),
+			textXPos,
+			251,
+			999,
+			13,
+			5
 		);
-		
-		AL_ParameterDrawSkill(GET_CHAOPARAM(work->field_8)->life, 476, y, 1);
-	}
 
-	// draw grades
-	{
+		// "Ability" text
+		DrawMedicalChartText(
+			AL_HealthCenter_GetMsg(work, 9),
+			565,
+			251,
+			999,
+			13,
+			5
+		);
+
+		HE_FirstTabDrawSkillInfo(work);
+
 		sub_583C60();
-		
-		SAlgKinderOrthoQuad gradeElem;
-		gradeElem.x0 = 558;
-		gradeElem.x1 = 578;
 		for (size_t i = 0; i < 5; i++) {
 			int gradeIndex = byte_8A274C[i];
 			if (gradeIndex >= 8u) {
 				gradeIndex = 0;
 			}
 
-			int grade = pParam->Abl[gradeIndex];
-			if (grade == 6 || grade == 7) {
-				// X grade
+			HE_DrawAbility(pParam->Abl[gradeIndex], 558, 32 * i + 262);
+		}
+
+		HE_FirstTabDrawLifespanInfo(work);
+
+		if (!IsUpgradeBlockedByGuest(work->field_8)) {
+			sub_583C60();
+
+			const Sint16 upgradeX = 251 + 36 + 6;
+			const Sint16 upgradeY = 264 + 32 * 6 - 3;
+			const SAlgKinderOrthoQuad yButton = { upgradeX, upgradeX + 18, upgradeY,  upgradeY + 18, 1, 4095, 1, 4095 };
+			const SAlgKinderOrthoQuad upgradeText = { upgradeX + 18 + 2, upgradeX + 18 + 2 + 71, upgradeY + 2, upgradeY + 2 + 18, 80, 3640, 3450, 4056 };
+			
+			njSetTexture(texlist_cwe_health_center);
+
+			njSetTextureNum(2, 0, 0, 0);
+			AlgKinderOrthoQuadDraw(&yButton, 0xFFFFFFFF);
+
+			njSetTextureNum(0, 0, 0, 0);
+			AlgKinderOrthoQuadDraw(&upgradeText, 0xFFFFFFFF);
+		}
+	}
+	else {
+		const float lvlXPos = 472;
+		const float digitSpace = 14.f;
+
+		// "Ability" text
+		DrawMedicalChartText(
+			AL_HealthCenter_GetMsg(work, 9),
+			420,
+			251,
+			999,
+			13,
+			5
+		);
+
+		DrawMedicalChartText(
+			"Lv.",
+			lvlXPos + digitSpace - 2,
+			251,
+			999,
+			13,
+			5
+		);
+
+		DrawMedicalChartText(
+			"Price",
+			568 - 1.5f * 14,
+			251,
+			999,
+			13,
+			5
+		);
+
+		for (size_t i = 0; i < 5; i++) {
+			int statIndex = byte_8A274C[i];
+			if (statIndex >= 8u) {
+				statIndex = 0;
+			}
+
+			const Sint8 abl = pParam->Abl[statIndex];
+
+			const Float y = 264 + float(i) * 32;
+
+			const auto countDigits = [](int n) {
+				int c = 0;
+
+				while(n > 0) {
+					c++;
+					n /= 10;
+				}
+
+				return c;
+			};
+
+			int price = GradePurchasePrice[abl];
+			const float width = digitSpace * countDigits(price);
+
+			if (abl < ChaoGrade_A) {
+				chSetBillboardColor(1, 1, 1, 1);
+
+				if (gu32TotalRing < GradePurchasePrice[abl]) {
+					chSetBillboardColor(1, 1, 0.25f, 0.25f);
+				}
+				else {
+					chSetBillboardColor(1, 1, 1, 1);
+				}
+
+				int digit = 0;
+				while(price > 0) {
+					chDrawBillboardSR(&ChaoTexCommonData[price % 10], 568 - digitSpace * digit, y, -1.2f, 1, 1, -1, -1);
+
+					price /= 10;
+					digit++;
+				}
+			}
+			else {
+				const Sint16 dashX = Sint16(568 - digitSpace * 2.65f + 3);
+				const Sint16 dashY = Sint16(y + 3);
+				const SAlgKinderOrthoQuad dash = {dashX, Sint16(dashX + 35 * 0.85f), dashY, Sint16(dashY + 10 * 0.85f), 216, 1350, 2230, 2575 };
+
+				sub_583C60();
+
 				njSetTexture(texlist_cwe_health_center);
 				njSetTextureNum(1, 0, 0, 0);
 
-				gradeElem.u0 = 0;
-				gradeElem.u1 = (short)((39 / 76.0f) * 4096);
-				gradeElem.v0 = 0;
-				gradeElem.v1 = 4096;
+				AlgKinderOrthoQuadDraw(&dash, 0xFFFFFFFF);
+			}
+
+			const Sint8 lvl = pParam->Lev[statIndex];
+			if (lvl != 99) {
+				chSetBillboardColor(1, 1, 0.25f, 0.25f);
 			}
 			else {
-				DataArray(Sint16, HE_GradeUVs, 0x8A2754, 1);
-
-				njSetTexture((NJS_TEXLIST*)0x011D2ACC);
-				njSetTextureNum(7, 0, 0, 0);
-
-				gradeElem.u0 = HE_GradeUVs[2 * grade];
-				gradeElem.u1 = HE_GradeUVs[2 * grade] + 624;
-				gradeElem.v0 = HE_GradeUVs[(2 * grade) + 1];
-				gradeElem.v1 = HE_GradeUVs[(2 * grade) + 1] + 624;
+				chSetBillboardColor(1, 1, 1, 1);
 			}
 
-			gradeElem.y0 = 32 * i + 262;
-			gradeElem.y1 = 32 * i + 282;
-			AlgKinderOrthoQuadDraw(&gradeElem, -1);       // grades	
+			chDrawBillboardSR(&ChaoTexCommonData[(lvl / 10) % 10], lvlXPos, y, -1.2f, 1, 1, -1, -1);
+			chDrawBillboardSR(&ChaoTexCommonData[lvl % 10], lvlXPos + digitSpace, y, -1.2f, 1, 1, -1, -1);
+
+			const Sint16 ablBaseX = 410;
+			sub_583C60();
+			if (abl >= ChaoGrade_A) {
+				HE_DrawAbility(abl, ablBaseX, 32 * i + 262);
+			}
+			else {
+				const Sint16 ablY = Sint16(y) - 2;
+				HE_DrawAbility(abl, ablBaseX - 25, ablY);
+				HE_DrawAbility(abl + 1, ablBaseX + 25, ablY);
+
+				const Sint16 arrowX = Sint16(ablBaseX - 3);
+				const Sint16 arrowY = Sint16(ablY);
+				const SAlgKinderOrthoQuad arrow = { arrowX, arrowX + 25, arrowY, Sint16(arrowY + 20), 340, 1180, 2880, 3540 };
+
+				njSetTexture(texlist_cwe_health_center);
+				njSetTextureNum(1, 0, 0, 0);
+
+				AlgKinderOrthoQuadDraw(&arrow, 0xFFFFFFFF);
+			}
 		}
-	}
 
-	sub_583C60();
-	njSetTexture((NJS_TEXLIST*)0x011D2ACC);
-	njSetTextureNum(7, 0, 0, 0);
-
-	CHS_BILL_INFO lifespan = { 1, 128 * 0.55f, 34 * 0.5f, 0,0,0.995f,0.98f, texlist_cwe_health_center, 0 };
-
-	AL_ParameterDrawSkillGauge(
-		(Uint32)((GET_CHAOPARAM(work->field_8)->life / 3900.0f) * 1000),
-		380.0f, 
-		(264 + 32 * 5) + 1, 
-		92.0f, 
-		14.0f, 
-		1.0f
-	);
-
-	AL_ParameterDrawSkill(GET_CHAOPARAM(work->field_8)->life, 476, (264 + 32 * 5), 1.0f);
-
-	chDrawBillboardSR(&lifespan, 306, (264 + 32 * 5), -1.2f, 1.0f, 1.0f, -1, -1);
-	chSetBillboardColor(1, 0.72f, 1, 0);
-
-	const Sint8 lifeTimeGene = NJM_MAX(pParam->gene.LifeTime[0], pParam->gene.LifeTime[1]);
-	if(lifeTimeGene >= 0 && lifeTimeGene < 10) {
-		chDrawBillboardSR(&ChaoTexCommonData[BBI_CMN_0 + lifeTimeGene], 561, (264 + 32 * 5) - 2, -1.2f, 1.25f, 1.25f, -1, -1);
-	}
-
-	char buff[256];
-	if (IsUpgradeBlockedByGuest(work->field_8)) {
-		sprintf_s(buff, "Upgrades blocked!");
-	}
-	else if (workCwe->inUpgrade || pParamCwe->UpgradeCounter >= 3) {
+		char buff[32];
 		sprintf_s(buff, "Upgrades left: %d", 3 - pParamCwe->UpgradeCounter);
+		DrawMedicalChartText(
+			buff,
+			410 - 25 - 20,
+			260 + 32 * 5,
+			999,
+			20,
+			0
+		);
 	}
-	else if (!workCwe->inUpgrade) {
-		sprintf_s(buff, "Press Y to upgrade stats");
-	}
-
-	DrawMedicalChartText(
-		buff,
-		296,
-		251,
-		999,
-		13,
-		4
-	);
 }
 
 static void HE_SecondTabDraw(HealthCenter* work) {
@@ -675,6 +792,8 @@ static task* CreateParentChao(const CHAO_ID& chaoID, AL_SHAPE_ELEMENT& fallbackS
 	GET_CHAOWK(pChaoTask)->ChaoFlag |= 0x2000;
 	GET_CHAOWK(pChaoTask)->ChaoFlag &= ~0x10;
 	GET_CHAOWK(pChaoTask)->ChaoFlag &= ~0x20000;
+
+	GET_CHAOWK_CWE(pChaoTask)->ForceVisible = true;
 
 	pChaoTask->disp = NULL;
 	pChaoTask->disp_sort = NULL;
@@ -782,6 +901,132 @@ static void HE_MenuCleanup(HealthCenter* work) {
 	}
 }
 
+static void HE_MenuUpgradeExecutor(HealthCenter* work) {
+	enum {
+		MD_INIT = 0,
+		MD_IDLE = 1,
+		MD_WAIT_FOR_CLOSE = 2,
+		MD_CLOSE = 3
+	};
+
+	auto pCweWork = GET_HE_CWE_WORK(work);
+
+	VoidFunc(sub_5438A0, 0x5438A0);
+	VoidFunc(sub_543970, 0x543970);
+
+	switch (pCweWork->upgradeWarnMode) {
+		case MD_INIT:
+			sub_5438A0();
+			pCweWork->upgradeWarnMode = MD_IDLE;
+			break;
+
+		case MD_IDLE:
+			break;
+
+		case MD_WAIT_FOR_CLOSE:
+			if (AL_MSGWarnKinderMessageArray[0].mWin && AL_MSGWarnKinderMessageArray[0].mWin->wordsLeftMaybe > 0) {
+				return;
+			}
+
+			AlMsgWarnDelete(0);
+
+			pCweWork->upgradeWarnMode = MD_IDLE;
+			break;
+
+		case MD_CLOSE:
+			break;
+	}
+
+	if (SWDATAE[0] & BTN_UP) {
+		if (--pCweWork->upgradeCursor < 0) {
+			pCweWork->upgradeCursor = 4;
+		}
+		#if 0
+		int finder = pCweWork->upgradeCursor - 1;
+		for(size_t i = 0; i < 5; ++i) {
+			const auto statIndex = ((finder - i) % 5 + 5) % 5;
+
+			if (CanStatBeUpgraded(work->field_8, statIndex)) {
+				pCweWork->upgradeCursor = statIndex;
+				break;
+			}
+		}
+		#endif
+
+		SE_Call(TONE(8, 0), 0, 0, 0);
+	}
+	
+	if (SWDATAE[0] & BTN_DOWN) {
+		if (++pCweWork->upgradeCursor >= 5) {
+			pCweWork->upgradeCursor = 0;
+		}
+
+		#if 0
+		int finder = pCweWork->upgradeCursor + 1;
+		for(size_t i = 0; i < 5; ++i) {
+			const auto statIndex = (finder + i) % 5;
+
+			if (CanStatBeUpgraded(work->field_8, statIndex)) {
+				pCweWork->upgradeCursor = statIndex;
+				break;
+			}
+		}
+		#endif
+
+		SE_Call(TONE(8, 0), 0, 0, 0);
+	}
+
+	if (SWDATAE[0] & BTN_A) {
+		CHAO_PARAM_GC* pParam = GET_CHAOPARAM(work->field_8);
+		CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(pParam);
+		const auto statIndex = pCweWork->upgradeCursor;
+
+		if (CanStatBeUpgraded(work->field_8, statIndex)) {
+			pParam->Lev[statIndex] = 1;
+			pParam->Skill[statIndex] /= 100;
+
+			pParamCwe->UpgradeCounter++;
+
+			SE_Call_Timer(TONE(1, 5), (void*)0x616C7277, 1, 0, 120);
+
+			ALO_RingWinAdd(-GradePurchasePrice[pParam->Abl[statIndex]]);
+			pParam->Abl[statIndex]++;
+		}
+		else {
+			AlMsgWarnCreate(0,50, 125, 200, 225);
+			AlMsgWarnOpen(0);
+
+			if (pParam->Abl[statIndex] >= ChaoGrade_A) {
+				AlMsgWarnAddLineC(0,"You can't upgrade grades past grade A.");
+			}
+			else if (pParamCwe->UpgradeCounter >= 3) {
+				AlMsgWarnAddLineC(0,"You don't have any upgrades left.");
+			}
+			else if (pParam->Lev[statIndex] < 99) {
+				AlMsgWarnAddLineC(0,"You need to reach Level 99 for this stat to upgrade it.");
+			}
+			else if (gu32TotalRing < GradePurchasePrice[pParam->Abl[statIndex]]) {
+				AlMsgWarnAddLineC(0,"You can't afford upgrading this stat.");
+			}
+
+			AlMsgWarnWaitClose(0);
+
+			pCweWork->upgradeWarnMode = MD_WAIT_FOR_CLOSE;
+		}
+	}
+
+	if (per[0]->press & (BTN_B | BTN_X)) {
+		sub_543970();
+
+		CreateTween(gRingWinTask, EASE_IN, INTERP_CUBIC, (float*)0x01A27870, 640.f, 20, [](task*) {
+			ALO_RingWinDelete();
+		});
+
+		pCweWork->inUpgrade = FALSE;
+		SE_Call(TONE(1, 10), 0, 0, 0);
+	}
+}
+
 static void sub_58EA40_r (HealthCenter* work) {
 	if (!work->openedMedicalChart) {
 		return;
@@ -790,100 +1035,44 @@ static void sub_58EA40_r (HealthCenter* work) {
 	auto pCweWork = GET_HE_CWE_WORK(work);
 
 	if (!work->medicalChartMenu && !pCweWork->inUpgrade && !IsUpgradeBlockedByGuest(work->field_8) && (SWDATA[0] & BTN_Y)) {
-		gu32TotalRing = 1000000;
+		gu32TotalRing = 32000;
 
 		ALO_RingWinCreate(640, 80);
 		CreateTween(gRingWinTask, EASE_OUT, INTERP_CUBIC, (float*)0x01A27870, 400.f, 20, NULL);
 
 		pCweWork->inUpgrade = TRUE;
+		pCweWork->upgradeWarnMode = 0;
 		pCweWork->upgradeCursor = 0;
-		for(size_t i = 0; i < 5; ++i) {
-			if (CanStatBeUpgraded(work->field_8, i)) {
-				pCweWork->upgradeCursor = i;
-				break;
-			}
-		}
-	}
-
-	if (!pCweWork->inUpgrade) {
-		if ((per[0]->press & BTN_L) || (SWDATAE[0] & BTN_LEFT)) {
-			if (--work->medicalChartMenu < 0) {
-				work->medicalChartMenu = 3;
-			}
-
-			SE_Call(TONE(8, 0), 0, 0, 0);
-		}
-		
-		if ((per[0]->press & (BTN_R | BTN_A)) || (SWDATAE[0] & BTN_RIGHT)) {
-			if (++work->medicalChartMenu == 4) {
-				work->medicalChartMenu = 0;
-			}
-
-			SE_Call(TONE(8, 0), 0, 0, 0);
-		}
-
-		if (per[0]->press & (BTN_B | BTN_X)) {
-			HE_MenuCleanup(work);
-
-			SE_Call(TONE(1, 10), 0, 0, 0);
-		}
-	}
-	else {
-		if (SWDATAE[0] & BTN_UP) {
-			int finder = pCweWork->upgradeCursor - 1;
-			for(size_t i = 0; i < 5; ++i) {
-				const auto statIndex = ((finder - i) % 5 + 5) % 5;
-
-				if (CanStatBeUpgraded(work->field_8, statIndex)) {
-					pCweWork->upgradeCursor = statIndex;
-					break;
-				}
-			}
-
-			SE_Call(TONE(8, 0), 0, 0, 0);
-		}
-		
-		if (SWDATAE[0] & BTN_DOWN) {
-			int finder = pCweWork->upgradeCursor + 1;
-			for(size_t i = 0; i < 5; ++i) {
-				const auto statIndex = (finder + i) % 5;
-
-				if (CanStatBeUpgraded(work->field_8, statIndex)) {
-					pCweWork->upgradeCursor = statIndex;
-					break;
-				}
-			}
-
-			SE_Call(TONE(8, 0), 0, 0, 0);
-		}
-
-		if ((SWDATAE[0] & BTN_A) && CanStatBeUpgraded(work->field_8, pCweWork->upgradeCursor)) {
-			CHAO_PARAM_GC* pParam = GET_CHAOPARAM(work->field_8);
-			CHAO_PARAM_CWE* pParamCwe = GET_CWEPARAM(pParam);
-			const auto i = pCweWork->upgradeCursor;
-
-			pParam->Lev[i] = 1;
-			pParam->Skill[i] /= 100;
-
-			pParamCwe->UpgradeCounter++;
-
-			SE_Call_Timer(TONE(1, 5), (void*)0x616C7277, 1, 0, 120);
-
-			ALO_RingWinAdd(-GradePurchasePrice[pParam->Abl[i]]);
-			pParam->Abl[i]++;
-		}
-
-		if (per[0]->press & (BTN_B | BTN_X)) {
-			CreateTween(gRingWinTask, EASE_IN, INTERP_CUBIC, (float*)0x01A27870, 640.f, 20, [](task*) {
-				ALO_RingWinDelete();
-			});
-
-			pCweWork->inUpgrade = FALSE;
-			SE_Call(TONE(1, 10), 0, 0, 0);
-		}
 	}
 
 	work->field_16 += 16;
+
+	if (pCweWork->inUpgrade) {
+		HE_MenuUpgradeExecutor(work);
+		return;
+	}
+
+	if ((per[0]->press & BTN_L) || (SWDATAE[0] & BTN_LEFT)) {
+		if (--work->medicalChartMenu < 0) {
+			work->medicalChartMenu = 3;
+		}
+
+		SE_Call(TONE(8, 0), 0, 0, 0);
+	}
+	
+	if ((per[0]->press & (BTN_R | BTN_A)) || (SWDATAE[0] & BTN_RIGHT)) {
+		if (++work->medicalChartMenu == 4) {
+			work->medicalChartMenu = 0;
+		}
+
+		SE_Call(TONE(8, 0), 0, 0, 0);
+	}
+
+	if (per[0]->press & (BTN_B | BTN_X)) {
+		HE_MenuCleanup(work);
+
+		SE_Call(TONE(1, 10), 0, 0, 0);
+	}
 }
 
 static void ASM_FUNC sub_58EA40_t() {
@@ -939,9 +1128,9 @@ static int AL_HealthCenter_GetSickness(task* tp) {
 static void ConditionText(HealthCenter* work) {
 	DataArray(short, word_8A1DA0, 0x008A1DA0, 6);
 
-	int msgID = AL_HealthCenter_GetSickness(work->field_8);
-	if(msgID != -1) {
-		DrawMedicalChartText((const char*)&work->dword60[*(int*)&work->dword60[4 * word_8A1DA0[msgID]]], 288.0, 307.0, 312.0, 20.0, 0);
+	int sicknessIndex = AL_HealthCenter_GetSickness(work->field_8);
+	if(sicknessIndex != -1) {
+		DrawMedicalChartText(AL_HealthCenter_GetMsg(work, word_8A1DA0[sicknessIndex]), 288, 307, 312, 20, 0);
 		return;
 	}
 
@@ -1198,6 +1387,10 @@ void alg_kinder_he_Init() {
 	WriteCall((void*)0x58DC25, (void*)nullsub_1);
 	WriteCall((void*)0x58DF23, (void*)nullsub_1);
 	WriteCall((void*)0x58DF44, (void*)nullsub_1);
+
+	// kill ability and skill text so we can control when they're drawn for upgrade menu
+	WriteCall((void*)0x58DCF5, (void*)nullsub_1);
+	WriteCall((void*)0x58DD31, (void*)nullsub_1);
 
 	WriteCall((void*)0x0058E8FC, (void*)nullsub_1); //killing the age call so that i can run my own 
 	WriteCall((void*)0x0058F9A3, (void*)HE_MenuDisp_t);

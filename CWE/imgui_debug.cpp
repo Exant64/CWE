@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "al_parameter.h"
 #include <imgui/imgui_impl_win32.h>
 #include <imgui/imgui_impl_dx9.h>
 #include "imgui/imgui.h"
@@ -54,15 +56,6 @@ static bool ShowSoundsMenu = false;
 static bool ShowMoreFacesMenu = false;
 static bool ShowNavSysMenu = false;
 static bool ShowGuestMenu = false;
-
-static void ConvertName(char* pName, char* pOut) {
-    FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
-
-    wchar_t namebuf[128];
-
-    sub_57A6F0(pName, (int)namebuf);
-    WcConvFromCStr((int)pOut, (int)namebuf, Language == 0);
-}
 
 static task* GetSelectedChao() {
     return ALW_GetTaskCount(0, SelectedChaoIndex);
@@ -174,10 +167,10 @@ static void ChaoParamMenu() {
                 {
                     char namebuf[256];
 
-                    ConvertName(pParam->name, namebuf);
+                    AL_ParameterConvertName(pParam->name, namebuf);
                     ImGui::Text("Vanilla Name: %s", namebuf);
 
-                    ConvertName(GET_CWEPARAM(pParam)->Name, namebuf);
+                    AL_ParameterConvertName(GET_CWEPARAM(pParam)->Name, namebuf);
                     ImGui::Text("CWE Name: %s", namebuf);
                 }
 

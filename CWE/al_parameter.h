@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "alg_kinder_ortho.h"
 
 enum {
     SKILL_SWIM,
@@ -99,6 +100,22 @@ static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Birthday) == 0x61
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, MGroundMotherName) == 0x64B);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, Accessories) == 0x6B1);
 static_assert(sizeof(CHAO_PARAM_GC) + offsetof(CHAO_PARAM_CWE, XGradeValue) == 0x59e);
+
+template<std::size_t size, std::size_t outSize>
+static void AL_ParameterConvertName(const char (&array)[size], char (&out)[outSize]) {
+	FastcallFunctionPointer(void, sub_57A6F0, (char* a1, int a2), 0x57A6F0);
+
+	static_assert(outSize >= size + 1);
+
+	char name[size + 1];
+	name[size] = 0;
+	memcpy(&name, &array, size);
+
+	Uint16 nameConv[size + 1];
+	sub_57A6F0(name, (int)nameConv);
+
+	WcConvFromCStr((int)&out, (int)nameConv, Language == 0);
+}
 
 bool AL_ParameterIsGuest(const CHAO_PARAM_GC* pParam);
 bool AL_ParameterIsGuest(const task* tp);
