@@ -313,7 +313,7 @@ static void ASM_FUNC OpenNameMenuHook() {
 	ASM_RET(0);
 }
 
-AL_NAME FortuneTellerNameBuffer;
+Uint16 FortuneTellerNameBuffer[sizeof(AL_NAME) + 1];
 
 static void __fastcall sub_57A6F0_(char* a1, int a2)
 {
