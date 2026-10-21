@@ -1,6 +1,6 @@
 {
   "textureFileName": "AL_HERO_SKY",
-  "hasRain": false,
+  "hasRain": true,
   "phases": {
     "day": {
       "color": "#FFFFFF",
