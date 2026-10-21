@@ -17,6 +17,11 @@ static bool CnkApplyScalingFlag = false;
 static void CnkMdlApplyScaling(NJS_CNK_MODEL* pModel, NJS_MATRIX* pMatrix) {
 	if(!pModel->vlist) return;
 
+	{
+		NJS_POINT3 center = pModel->center;
+		sub_426CC0(pMatrix, &pModel->center, &center, FALSE);
+	}
+
 	Sint32* vlist = pModel->vlist;
 
 	while (CNK_GET_OFFTYPE(vlist) != 0xFF) {
