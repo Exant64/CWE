@@ -635,6 +635,11 @@ Uint32 AL_DayNightCycle_PreDrawSetupShinyTexture() {
 }
 
 void AL_DayNightCycle_SetLerpShinyTexture() {
+	if (!gConfigVal.DayNightShinyTex) {
+		SetPixelShaderFloat(82, 0);
+		return;
+	}
+
 	if (!pDayNightTask) return;
 	const auto& work = GetWork(pDayNightTask);
 	if (!work.pTexlist) return;
