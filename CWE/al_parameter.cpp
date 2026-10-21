@@ -74,10 +74,14 @@ bool AL_IsNegative(task* tp) {
 	return negative;
 }
 
-void AL_ParameterClearAccessory(task* tp, int slot) {
-	auto pParam = GET_CWEPARAM(tp);
+void AL_ParameterClearAccessory(CHAO_PARAM_GC* pParam, int slot) {
+	auto pCweParam = GET_CWEPARAM(pParam);
 
-	memset(&pParam->Accessories[slot], 0, sizeof(pParam->Accessories[slot]));
+	memset(&pCweParam->Accessories[slot], 0, sizeof(pCweParam->Accessories[slot]));
+}
+
+void AL_ParameterClearAccessory(task* tp, int slot) {
+	AL_ParameterClearAccessory(GET_CHAOPARAM(tp), slot);
 }
 
 Bool AL_IsEmotionTimerReset(task* tp) {

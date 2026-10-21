@@ -1,3 +1,4 @@
+#include "al_parameter.h"
 #include "stdafx.h"
 #include <Chao.h>
 #include "al_parts.h"
@@ -42,6 +43,14 @@ void AL_ShapeExpandElementToParam(AL_SHAPE_ELEMENT* pElement, CHAO_PARAM_GC* pPa
 	memcpy(pParam->name, pElement->name, sizeof(pParam->name));
 
 	memcpy(pParam->Skill, pElement->Skill, sizeof(pParam->Skill));
+
+	CHAO_PARAM_CWE* pCweParam = GET_CWEPARAM(pParam);
+	for (size_t i = 0; i < _countof(pCweParam->Accessories); ++i) {
+		AL_ParameterClearAccessory(pParam, i);
+	}
+
+	pCweParam->EyeAlignment = 0;
+	pCweParam->EyeColor = 0;
 }
 
 static void ASM_FUNC AL_ShapeExpandElementToParam_Hook() {

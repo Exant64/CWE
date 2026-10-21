@@ -112,6 +112,8 @@ bool AL_IsNegative(task* tp);
 bool AL_IsCustomChao(task* tp);
 
 void AL_ShapeElementFromParam(AL_SHAPE_ELEMENT* a1, CHAO_PARAM_GC* a2);
+
+void AL_ParameterClearAccessory(CHAO_PARAM_GC* pParam, int slot);
 void AL_ParameterClearAccessory(task* tp, int slot);
 
 Bool AL_IsEmotionTimerReset(task* tp);
