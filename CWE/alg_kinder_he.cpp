@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "memory.h"
 #include "al_msg_warn.h"
 #include <ui/al_ortho.h>
 #include <ui/al_tween.h>
@@ -23,10 +24,17 @@
 #include "playsound.h"
 #include "ui/al_tween_types.h"
 
+enum {
+	MD_UPGRADE_WARN_INIT = 0,
+	MD_UPGRADE_WARN_IDLE = 1,
+	MD_UPGRADE_WARN_WAIT_FOR_CLOSE = 2,
+};
+
 struct HealthCenterCWE {
 	const char* pConditionMsg;
 	task* pMotherChaoTask;
 	task* pFatherChaoTask;
+	task* pTweenTask;
 	Sint8 inUpgrade;
 	Sint8 upgradeWarnMode;
 	Sint8 upgradeCursor;
@@ -902,38 +910,28 @@ static void HE_MenuCleanup(HealthCenter* work) {
 }
 
 static void HE_MenuUpgradeExecutor(HealthCenter* work) {
-	enum {
-		MD_INIT = 0,
-		MD_IDLE = 1,
-		MD_WAIT_FOR_CLOSE = 2,
-		MD_CLOSE = 3
-	};
-
 	auto pCweWork = GET_HE_CWE_WORK(work);
 
 	VoidFunc(sub_5438A0, 0x5438A0);
 	VoidFunc(sub_543970, 0x543970);
 
 	switch (pCweWork->upgradeWarnMode) {
-		case MD_INIT:
+		case MD_UPGRADE_WARN_INIT:
 			sub_5438A0();
-			pCweWork->upgradeWarnMode = MD_IDLE;
+			pCweWork->upgradeWarnMode = MD_UPGRADE_WARN_IDLE;
 			break;
 
-		case MD_IDLE:
+		case MD_UPGRADE_WARN_IDLE:
 			break;
 
-		case MD_WAIT_FOR_CLOSE:
+		case MD_UPGRADE_WARN_WAIT_FOR_CLOSE:
 			if (AL_MSGWarnKinderMessageArray[0].mWin && AL_MSGWarnKinderMessageArray[0].mWin->wordsLeftMaybe > 0) {
 				return;
 			}
 
 			AlMsgWarnDelete(0);
 
-			pCweWork->upgradeWarnMode = MD_IDLE;
-			break;
-
-		case MD_CLOSE:
+			pCweWork->upgradeWarnMode = MD_UPGRADE_WARN_IDLE;
 			break;
 	}
 
@@ -941,17 +939,6 @@ static void HE_MenuUpgradeExecutor(HealthCenter* work) {
 		if (--pCweWork->upgradeCursor < 0) {
 			pCweWork->upgradeCursor = 4;
 		}
-		#if 0
-		int finder = pCweWork->upgradeCursor - 1;
-		for(size_t i = 0; i < 5; ++i) {
-			const auto statIndex = ((finder - i) % 5 + 5) % 5;
-
-			if (CanStatBeUpgraded(work->field_8, statIndex)) {
-				pCweWork->upgradeCursor = statIndex;
-				break;
-			}
-		}
-		#endif
 
 		SE_Call(TONE(8, 0), 0, 0, 0);
 	}
@@ -960,18 +947,6 @@ static void HE_MenuUpgradeExecutor(HealthCenter* work) {
 		if (++pCweWork->upgradeCursor >= 5) {
 			pCweWork->upgradeCursor = 0;
 		}
-
-		#if 0
-		int finder = pCweWork->upgradeCursor + 1;
-		for(size_t i = 0; i < 5; ++i) {
-			const auto statIndex = (finder + i) % 5;
-
-			if (CanStatBeUpgraded(work->field_8, statIndex)) {
-				pCweWork->upgradeCursor = statIndex;
-				break;
-			}
-		}
-		#endif
 
 		SE_Call(TONE(8, 0), 0, 0, 0);
 	}
@@ -1011,16 +986,17 @@ static void HE_MenuUpgradeExecutor(HealthCenter* work) {
 
 			AlMsgWarnWaitClose(0);
 
-			pCweWork->upgradeWarnMode = MD_WAIT_FOR_CLOSE;
+			pCweWork->upgradeWarnMode = MD_UPGRADE_WARN_WAIT_FOR_CLOSE;
 		}
 	}
 
-	if (per[0]->press & (BTN_B | BTN_X)) {
+	if ((per[0]->press & (BTN_B | BTN_X)) && !pCweWork->pTweenTask) {
 		sub_543970();
 
-		CreateTween(gRingWinTask, EASE_IN, INTERP_CUBIC, (float*)0x01A27870, 640.f, 20, [](task*) {
+		pCweWork->pTweenTask = CreateTween(gRingWinTask, EASE_IN, INTERP_CUBIC, (float*)0x01A27870, 640.f, 20, [](task*) {
 			ALO_RingWinDelete();
 		});
+		TweenSetTaskPointer<float>(pCweWork->pTweenTask, &pCweWork->pTweenTask);
 
 		pCweWork->inUpgrade = FALSE;
 		SE_Call(TONE(1, 10), 0, 0, 0);
@@ -1034,16 +1010,18 @@ static void sub_58EA40_r (HealthCenter* work) {
 
 	auto pCweWork = GET_HE_CWE_WORK(work);
 
-	if (!work->medicalChartMenu && !pCweWork->inUpgrade && !IsUpgradeBlockedByGuest(work->field_8) && (SWDATA[0] & BTN_Y)) {
-		gu32TotalRing = 32000;
+	if (!work->medicalChartMenu && !pCweWork->inUpgrade) {
+		if(!IsUpgradeBlockedByGuest(work->field_8) && (SWDATA[0] & BTN_Y) && !pCweWork->pTweenTask) {
+			ALO_RingWinCreate(640, 80);
 
-		ALO_RingWinCreate(640, 80);
-		CreateTween(gRingWinTask, EASE_OUT, INTERP_CUBIC, (float*)0x01A27870, 400.f, 20, NULL);
+			pCweWork->pTweenTask = CreateTween(gRingWinTask, EASE_OUT, INTERP_CUBIC, (float*)0x01A27870, 400.f, 20, NULL);
+			TweenSetTaskPointer<float>(pCweWork->pTweenTask, &pCweWork->pTweenTask);
 
-		pCweWork->inUpgrade = TRUE;
-		pCweWork->upgradeWarnMode = 0;
-		pCweWork->upgradeCursor = 0;
-	}
+			pCweWork->inUpgrade = TRUE;
+			pCweWork->upgradeWarnMode = MD_UPGRADE_WARN_INIT;
+			pCweWork->upgradeCursor = 0;
+		}
+	} 
 
 	work->field_16 += 16;
 
@@ -1371,14 +1349,28 @@ static void HealthCenterFree_r(task* tp) {
 	HealthCenterFree_t.Original(tp);
 }
 
+// we fake a pointer to a memorymanager struct here, that would have allocate as the first member
+static void* HE_WorkAlloc_t() {
+	return MemoryManager__Allocate(sizeof(HealthCenter) + sizeof(HealthCenterCWE) + 4, __FILE__, __LINE__);
+}
+
+static void *(*HE_WorkAlloc_t_ptr)() = &HE_WorkAlloc_t;
+static void* HE_WorkAlloc_t_fakemem = &HE_WorkAlloc_t_ptr;
+
+static void HE_WorkClear_t(void* p, int, size_t) {
+	memset(p, 0, sizeof(HealthCenter) + sizeof(HealthCenterCWE));
+}
+
 void alg_kinder_he_Init() {
 	// texture load and free hooks
 	HealthCenterExec_t.Hook(HealthCenterExec_r);
 	HealthCenterFree_t.Hook(HealthCenterFree_r);
 
 	// expand work struct
-	WriteData((Uint8*)0x58F9CF, Uint8(sizeof(HealthCenter) + sizeof(HealthCenterCWE) + 4));
-	WriteData((Uint8*)0x58F9D3, Uint8(sizeof(HealthCenter) + sizeof(HealthCenterCWE)));
+	// due to the push instructions to allocate and memset having Sint8 args and our new struct size
+	// not fitting in it, we have to hook the allocate and memset calls directly to override the args
+	WriteData((void**)0x58F9BD, (void*)&HE_WorkAlloc_t_fakemem);
+	WriteCall((void*)0x58F9E0, (void*)HE_WorkClear_t);
 
 	/* We have to draw the stat texts, bars, points, and grades ourselves
 	   Both because we draw the bars later now, which causes them to draw below,
