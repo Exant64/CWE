@@ -648,6 +648,10 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				if (data == nullptr)
 				{
 					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->motherData;
+					if(!opponentPtr->type) {
+						opponentPtr = NULL;
+						noMother = true;
+					}
 				}
 			}
 
@@ -678,8 +682,12 @@ void __cdecl HealthCenterDNAHook(int a1, HealthCenter* TextLocation)
 				data = AL_KW_FindChaoBasedOnId(GET_CHAOPARAM(TextLocation->medicalChartChao_)->gene.FatherID); //find current parent
 				if (data == nullptr)
 				{
-					//if cant find it, use last "image" of them
 					opponentPtr = &GET_CWEPARAM(TextLocation->medicalChartChao_)->fatherData;
+
+					if(!opponentPtr->type) {
+						opponentPtr = NULL;
+						noFather = true;
+					}
 				}
 			}
 
