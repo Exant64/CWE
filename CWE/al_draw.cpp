@@ -855,17 +855,11 @@ static void AL_DrawSetupParams(task* tp, AL_OBJECT* pObject) {
 		}
 	}
 
-	const uint32_t prevFlag = (work->ChaoFlag & 0x20);
-	if (disableJiggle) {
-		work->ChaoFlag &= ~0x20;
-	}
-	else {
-		work->ChaoFlag |= 0x20;
-	}
-
-	if((work->ChaoFlag & 0x20) != prevFlag) {
+	if(cwe_work->JiggleDisable != disableJiggle) {
 		cwe_work->JiggleFlagChanged = true;
 	}
+
+	cwe_work->JiggleDisable = disableJiggle;
 
 	cwe_work->BaldHideHead = false;
 

@@ -385,28 +385,6 @@ static int __cdecl AL_ShapeInit_r(task* tp) {
 	return result;
 }
 
-static void AL_BuyoBuyoControl_r(task* tp);
-static FunctionHook<void, task*> AL_BuyoBuyoControl(0x56FC20, AL_BuyoBuyoControl_r);
-static void AL_BuyoBuyoControl_r(task* tp) {
-	AL_BuyoBuyo_AccessoryHandling(tp);
-	
-	AL_BuyoBuyoControl.Original(tp);
-
-	auto* work = GET_CHAOWK_CWE(tp);
-	if (!work->BaldHideHead || !work->pBaldAdjacencyIndices) {
-		return;
-	}
-
-	for (size_t i = 0; i < work->BaldAdjacencyIndexCount; ++i) {
-		const auto index = work->pBaldAdjacencyIndices[i];
-
-		auto* model = GET_CHAOWK(tp)->Shape.CurrObjectList[16]->pModel;
-		auto* points = (NJS_POINT3*)(model->VList + 2);
-
-		points[index * 2] = { 0,0,0 };
-	}
-}
-
 void __cdecl sub_58D9F0(char a1, HealthCenter* a2, float a3, float a4, float a5, float a6, float a7) {
 	chaowk* work = GET_CHAOWK(a2->field_8);
 	CHAO_PARAM_GC* pParam = work->pParamGC;

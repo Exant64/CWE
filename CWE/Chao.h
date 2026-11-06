@@ -20,6 +20,12 @@ struct chaowk_cwe {
 	Uint32 AccessoryIndices[4];
 
 	bool JiggleFlagChanged;
+
+	/* this field exists to track whether jiggle should be disabled without permanently altering the flag
+	   this lets us preserve the initial jiggle configuration the chao already had before we mess with it
+	   when drawing accessories */
+	bool JiggleDisable;
+
 	bool BaldHideHead;
 	Uint16* pBaldAdjacencyIndices;
 	size_t BaldAdjacencyIndexCount;
@@ -485,8 +491,6 @@ void AL_SetNextBehavior(task* a1, BHV_FUNC a2);
 void __cdecl AL_ForwardAcc(task* a1, float a2);
 BHV_FUNC AL_GetBehavior(task* a1);
 void Chao_Init();
-
-void AL_BuyoBuyo_AccessoryHandling(task* tp);
 
 void ColorEggModel(NJS_CNK_MODEL* a1, int a2);
 
