@@ -193,3 +193,20 @@ if (IMGUIDEBUG)
         navigation/navsys_debug.cpp
     )
 endif()
+
+if (STRIP)
+    add_custom_command(TARGET CWE POST_BUILD
+        COMMAND objcopy --only-keep-debug
+            $<TARGET_FILE:CWE>
+            $<TARGET_FILE_DIR:CWE>/cwe.debug
+
+        COMMAND objcopy --strip-debug
+            $<TARGET_FILE:CWE>
+
+        COMMAND objcopy --add-gnu-debuglink=cwe.debug
+            $<TARGET_FILE:CWE>
+
+        WORKING_DIRECTORY $<TARGET_FILE_DIR:CWE>
+        VERBATIM
+    )
+endif()

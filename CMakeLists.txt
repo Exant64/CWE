@@ -18,16 +18,9 @@ target_compile_options(CWE PRIVATE -Wno-error=narrowing)
 
 target_compile_definitions(CWE PRIVATE CWEV9 _UNICODE)
 
-
 target_link_options(CWE PRIVATE
     -static-libgcc -static-libstdc++ -static
 )
-
-if (STRIP)
-    target_link_options(CWE PRIVATE
-        -s
-    )
-endif()
 
 target_include_directories(CWE PRIVATE
     CWE
