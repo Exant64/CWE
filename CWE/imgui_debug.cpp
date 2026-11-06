@@ -715,6 +715,112 @@ static void ChaoInfoMenu() {
             }
 
             if (ImGui::BeginTabItem("Shape")) {
+                static const char* PartNodeNames[] = {
+                    "AL_PART_ROOT",
+                    "AL_PART_BODY",
+                    "AL_PART_ARM_L_POS",
+                    "AL_PART_ARM_L",
+                    "AL_PART_HAND_L",
+                    "AL_PART_REG_L_POS",
+                    "AL_PART_REG_L",
+                    "AL_PART_TAIL_POS",
+                    "AL_PART_TAIL",
+                    "AL_PART_ARM_R_POS",
+                    "AL_PART_ARM_R",
+                    "AL_PART_HAND_R",
+                    "AL_PART_REG_R_POS",
+                    "AL_PART_REG_R",
+                    "AL_PART_NECK",
+                    "AL_PART_HEAD_POS",
+                    "AL_PART_HEAD",
+                    "AL_PART_EYE_L_POS",
+                    "AL_PART_EYE_L",
+                    "AL_PART_EYELID_L",
+                    "AL_PART_EYE_R_POS",
+                    "AL_PART_EYE_R",
+                    "AL_PART_EYELID_R",
+                    "AL_PART_FEELER_L",
+                    "AL_PART_EAR_L",
+                    "AL_PART_FEELER_R",
+                    "AL_PART_EAR_R",
+                    "AL_PART_MOUTH",
+                    "AL_PART_TONGUE_POS",
+                    "AL_PART_FOREHEAD",
+                    "AL_PART_HORN_L",
+                    "AL_PART_HORN_R",
+                    "AL_PART_OFFICE_POS",
+                    "AL_PART_OFFICE",
+                    "AL_PART_BACK",
+                    "AL_PART_NAVEL",
+                    "AL_PART_WING_L_POS",
+                    "AL_PART_WING_L",
+                    "AL_PART_WING_R_POS",
+                    "AL_PART_WING_R",
+                };     
+
+                if (ImGui::TreeNode("Objects")) {
+                    for(size_t i = 0; i < 40; ++i) {
+                        AL_OBJECT* pObj = work->Shape.CurrObjectList[i];
+                        if(pObj && ImGui::TreeNode(pObj, "%d (%s)", int(i), PartNodeNames[i])) {
+                            auto pMdl = pObj->pModel;
+                            if (pMdl) {
+                                if (ImGui::TreeNode("VertInfo")) {
+                                    for(size_t v = 0; v < pMdl->nbVertex; ++v) {
+                                        const auto& vert = pMdl->pVertexInfo[v];
+                                        ImGui::Text(
+                                            "%d: Velo(%f %f %f), Weight(%f), Spring(%f), Frict(%f)",
+                                            int(v),
+                                            vert.Velo.x, vert.Velo.y, vert.Velo.z,
+                                            vert.Weight,
+                                            vert.Spring,
+                                            vert.Friction
+                                        );
+                                    }
+
+                                    ImGui::TreePop();
+                                }
+                            }
+
+                            if (ImGui::TreeNode("Buyo")) {
+                                ImGui::InputFloat3("GlobalAimPos", &pObj->GlobalAimPos.x);
+                                ImGui::InputFloat3("OrgPos", &pObj->OrgPos.x);
+                                ImGui::InputFloat3("Velo", &pObj->Velo.x);
+                                ImGui::InputFloat3("OrgAng", &pObj->OrgAng.x);
+                                ImGui::InputFloat3("AngSpd", &pObj->AngSpd.x);
+
+                                ImGui::Text(
+                                    "Weight(%f), Spring(%f), Friction(%f)",
+                                    pObj->Weight,
+                                    pObj->Spring,
+                                    pObj->Friction
+                                );
+
+                                ImGui::Checkbox("NoBuyoFlag", (bool*)&pObj->NoBuyoFlag);
+                                ImGui::Checkbox("CalcBuyoPosFlag", (bool*)&pObj->CalcBuyoPosFlag);
+
+                                ImGui::TreePop();
+                            }
+
+                            if (ImGui::TreeNode("OldMatrix")) {
+                                float* pf = pObj->pOldMatrix->f;
+
+                                ImGui::Text(
+                                    "%f %f %f %f\n%f %f %f %f\n%f %f %f %f", 
+                                    pf[0], pf[1], pf[2], pf[3],
+                                    pf[4], pf[5], pf[6], pf[7],
+                                    pf[8], pf[9], pf[10], pf[11]
+                                );
+
+                                ImGui::TreePop();
+                            }
+
+                            ImGui::TreePop();
+                        }
+                    }
+
+                    ImGui::TreePop();
+                }
+
                 int flags = work->Shape.Flag;
                 ImGui::CheckboxFlags("Deform", &flags, 2);
                 ImGui::CheckboxFlags("Shadow", &flags, 8);

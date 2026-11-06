@@ -151,6 +151,13 @@ struct CNK_VN_VERTEX {
 	NJS_POINT3 Normal;
 };
 
+typedef struct AL_VERTEX_INFO {
+    NJS_POINT3 Velo;
+    float Weight;
+    float Spring;
+    float Friction;
+} AL_VERTEX_INFO;
+
 struct AL_MODEL {
 	int* VList;
 	__int16* PList;
@@ -160,6 +167,9 @@ struct AL_MODEL {
 	int PListSize;
 	int nbVertex;
 	CNK_VN_VERTEX* pVertex;
+	NJS_POINT3* pOrgVertexPos;
+    NJS_POINT3* pOrgVertexNormal;
+    AL_VERTEX_INFO* pVertexInfo;
 };
 
 typedef struct {
