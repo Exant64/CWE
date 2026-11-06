@@ -790,10 +790,12 @@ static void AL_MoreSoundData() {
 
 	WriteData((unsigned int*)0x005A15B5, (unsigned int)TONE(6, AngrySound[AngryRNG]));
 
-	const int HeroHiSound[] = { 145, 134 };
-	int HeroHiRNG = rand() % std::size(HeroHiSound);
+	if (!gConfigVal.MoreAnimation) {
+		const int HeroHiSound[] = { 145, 134 };
+		int HeroHiRNG = rand() % std::size(HeroHiSound);
 
-	WriteData((unsigned int*)0x005A041B, (unsigned int)TONE(6, HeroHiSound[HeroHiRNG]));
+		WriteData((unsigned int*)0x005A041B, (unsigned int)TONE(6, HeroHiSound[HeroHiRNG]));
+	}
 
 	const int GorillaSound[] = { 135, 136 };
 	int GorillaRNG = rand() % std::size(GorillaSound);
@@ -926,7 +928,12 @@ static int ALBHV_Greet_r(task* tp) {
 					AL_SetMotionLinkStep(tp, ALM_OJIGI, 20);
 				}
 
-                AL_SE_CallV2(TONE(6, 145), 0, 0, 0, &tp->twp->pos);
+				if (gConfigVal.MoreSound && njRandom() < 0.5f) {
+					AL_SE_CallV2(TONE(6, 134), 0, 0, 0, &tp->twp->pos);
+				}
+            	else {
+					AL_SE_CallV2(TONE(6, 145), 0, 0, 0, &tp->twp->pos);
+				}
             }
             else {
 				const auto calm = AL_EmotionGetValue(tp, EM_PER_CALM);
