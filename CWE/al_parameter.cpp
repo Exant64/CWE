@@ -311,12 +311,30 @@ static void AL_CalcParameter_r(task* tp) {
 	}
 }
 
+/* the vanilla code that calls CalcParameter modulos with 32 to not
+   affect the timing of CalcParameter calls, we handle the additional
+   new 32 slots by simulatenously calling it for them */
+static void AL_CalcParameter_t_MoreChao(task* tp) {
+	DataPointer(int, ChaoGlobalTimer, 0x1DBED70);
+
+	if(tp) {
+		AL_CalcParameter_r(tp);
+	}
+
+	// hack: make a proper "ALW_GetTask" definition in the future
+	DataArray(ALW_ENTRY_WORK, WorldEntryListChao, 0x1DC0FC0, 64);
+	task* pOtherChao = WorldEntryListChao[(ChaoGlobalTimer % 32) + 32].tp;
+	if (pOtherChao) {
+		AL_CalcParameter_r(pOtherChao);
+	}
+}
+
 static void ASM_FUNC AL_CalcParameter_t() {
 	ASM_PUSH(esi); // a1
 
 	ASM_PUSH(esi); // a1
 	// Call your __cdecl function here:
-	ASM_CALL (AL_CalcParameter_r);
+	ASM_CALL (AL_CalcParameter_t_MoreChao);
 	ASM_ESP_ADD(1); // a1
 
 	ASM_POP(esi); // a1
@@ -325,6 +343,7 @@ static void ASM_FUNC AL_CalcParameter_t() {
 
 void AL_ParameterInit() {
 	WriteCall((void*)0x53640F, (void*)AL_CalcParameter_t);
+	WriteData<4>((Uint8*)0x053640B, (Uint8)0x90);
 }
 
 int AL_ParameterGetSkill(task* tp, Uint16 SkillKind) {
