@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "al_world.h"
+#include "alg_kinder_bl.h"
 #include "api_idhash.h"
 #include <cwe_api.h>
 #include <al_modelcontainer.h>
@@ -247,8 +249,12 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 
 	error = { "Error in AddChaoAccessory (id: %s): ", pAccessoryData->ID };
 
-	if (AccessoryIDLookupTable.contains(pAccessoryData->ID)) {
-		error.print("ID is already taken!", pAccessoryData->ID);
+	extern NJS_CNK_OBJECT object_alo_missing;
+	if (pAccessoryData->pObject != &object_alo_missing && !AccessoryCheckID(pAccessoryData->ID)) {
+		const auto index = ItemMetadata::Get()->GetIndex(ALW_CATEGORY_ACCESSORY, pAccessoryData->ID);
+		const auto nameIndex = BlackMarketAttributes::Get()->Attrib(ALW_CATEGORY_ACCESSORY, index)->Name;
+
+		error.print("ID is already taken (by item with name %s)!", MsgAlItem[nameIndex]);
 		return -1;
 	}
 
@@ -285,6 +291,7 @@ size_t AddChaoAccessory(const CWE_API_ACCESSORY_DATA* pAccessoryData) {
 	}
 
 	ItemMetadata::Get()->Add(ALW_CATEGORY_ACCESSORY, pAccessoryData->ID);
+	AccessoryIDLookupTable.insert(pAccessoryData->ID);
 
 	BlackMarketAttributes::Get()->Add(
 		ALW_CATEGORY_ACCESSORY,
